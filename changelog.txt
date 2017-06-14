@@ -1,0 +1,126 @@
+*** Facebook for WooCommerce Changelog ***
+2017-06-05 version 1.4.0
+* Background sync! Products will now sync in the background if you keep your settings page open.
+* Fix purchase pixel fires for product variants
+* Fix state on hide/show buttons
+* Fix issue with incorrect price rounding
+* Delete FB metadata from product items as well as groups 
+* Add GPL license to repo
+
+2017-05-30 version 1.3.3
+* Use display prices for regular prices (includes VAT if used)
+* Switch from checkboxes to buttons on Products page
+* Add "Reset Facebook metadata" option for merchants that duplicate products
+* Add "Delete on Facebook" option for products
+* Only delete products when actually deleted (vs trashed)
+* Allow pixel resetting after setup completion
+* Disable plugin if WP_DEBUG_DISPLAY is detected (prevent PHP notice injection)
+
+2017-05-25 version 1.3.2
+* Allow Force Resync button to resume stalled product syncs.
+* Handle WP_Error errors
+
+2017-05-23 - version 1.3.1
+* Only use checkout urls if valid cart url is detected
+* Set priority and namespacing for all ajax functions
+* Workaround for staticxx domain redirects
+
+2017-05-15 - version 1.3.0
+* Improve memory usage and remove OOM for large product catalogs
+* Split variant methods for product groups and product items (fix mismatches)
+* Make re-sync button work for updates as well as creates
+* Fix issue with newly added variants breaking out of their product group
+* Use default form values for variants if present
+* Strip registered shortcodes from descriptions via strip_shortcodes
+* Remove PHP warning about variable passed by reference
+* Capture and save existing FBIDs on "Duplicate Retailer ID" error
+
+2017-05-11 - version 1.2.6
+* Remove use of post guid for product URLs
+
+2017-05-06 - version 1.2.5
+* Ajax lockdown: transmit fb-specific code and set priority on save_settings
+
+2017-05-05 - version 1.2.4
+* Fix issue with pixel selection step freezing due to missing site url.
+
+2017-05-04 - version 1.2.3
+* Workaround for servers that send additional characters on ajax responses
+
+2017-05-02 - version 1.2.2
+* Fix issues with non-english variant labels
+* Support gallery image urls
+
+2017-05-02 - version 1.2.1
+* Use wc_get_cart_url to support custom cart URLs
+* Fix logging bug for users without manage_woocommerce attempting to set up
+
+2017-04-27 - version 1.2.0
+* Allow regular admins with manage_woocommerce permission to use plugin
+* Lock settings during product sync
+* Do not allow product sync during an existing product sync
+* Validate catalog ID before product sync
+* Fix issue with resync products button
+* Fix issue with plugin breaking product search
+
+2017-04-25 - version 1.1.0
+* Support duplicate SKUs via better retailer ID logic
+* Add "resync products" button
+* Update FB logging to support objects as well as strings
+* Add support for regular and sale pricing
+
+2017-04-20 - version 1.0.3
+* Remove delete button (use Advanced Settings tab instead)
+* Cleaned up admin messages, prepended them with "Facebook for WooCommerce"
+
+2017-04-13 - version 1.0.2
+* Remove Save Settings button when not in debug mode
+
+2017-04-11 - version 1.0.1
+* Prevent blank item descriptions
+* Update copy on setup page
+* Sanitize settings before sending via fblog
+* Show better warnings for duplicate SKUs
+
+2017-04-10 - version 1.0.0
+ * First release! Woo!
+
+2017-04-09 - version 0.8.0
+ * Include status messages during background sync
+ * Fix several PHP warnings and various WooCommerce 3.0 compatibility issues
+
+2017-04-07 - version 0.7.2
+ * Fix issue where products were not being created due to blank descriptions
+
+2017-04-04 - version 0.7.1
+ * Clean up output for checkboxes via printf
+ * Bug fixes and performance improvements
+
+2017-04-03 - version 0.7.0
+ * Add new product visibility checkbox toggle for Facebook Shops on Product list
+ * Official rename: Facebook for WooCommerce
+
+2017-03-30 - version 0.6.0
+ * Revert back to minor revisions for versioning
+ * Add ability to reset all settings to start over
+
+2017-03-20 - version 0.0.5
+ * Fix "Get Started" button bug
+ * Fix issue preventing "Use Advanced Matching" setting from properly saving
+ * Various security fixes
+
+2017-03-01 - version 0.0.4
+
+ * Add Facebook metabox on product page with products' FB ID and a Visibility toggle (publish/unpublish).
+
+2017-02-15 - version 0.0.3
+
+ * Add a change log!
+ * Modify plugin to check for both local and network installs of WooCommerce.
+ * Disable plugin hooks that were triggering before setup was complete.
+ * Escape HTML tags in product descriptions.
+ * Use attribute label name instead of first-letter-capitalized slug.
+
+2017-02-02 - version 0.0.2
+
+ * Fix breaking when debug mode is disabled (null check in facebook-settings.js)
