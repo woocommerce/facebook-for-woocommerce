@@ -27,4 +27,4 @@ See the CONTRIBUTING file for how to help out.
 
 ## License
 
-Facebook for WooCommerce is GPLv2-licensed. 
+Facebook for WooCommerce is GPLv2-licensed.

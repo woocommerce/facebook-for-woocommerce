@@ -371,7 +371,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $args = array(
       'post_type' => 'product',
       'post_status' => 'publish',
-      'posts_per_page' => -1 );
+      'posts_per_page' => -1,
+      'fields'         => 'ids'
+    );
     $products = new WP_Query($args);
 
     wp_reset_postdata();

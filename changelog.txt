@@ -1,4 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
+
+2017-06-15 version 1.4.1
+* Fix OOM/whitescreen of death error (constrain product count query to IDs)
+
 2017-06-05 version 1.4.0
 * Background sync! Products will now sync in the background if you keep your settings page open.
 * Fix purchase pixel fires for product variants
