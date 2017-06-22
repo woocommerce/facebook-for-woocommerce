@@ -64,14 +64,6 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      * @return string
      */
     public static function get_fb_retailer_id($woo_product) {
-      if (!$woo_product instanceof WC_Product) {
-        WC_Facebookcommerce_Integration::log(
-          'WARNING: Facebook Pixel wont\'t track user behavior correctly.'.
-          'expected WC_Product as parameter for get_fb_retailer_id but got '.
-          'something else: ' . $woo_product);
-        return '';
-      }
-
       $woo_id = $woo_product->get_id();
 
       // Call $woo_product->get_id() instead of ->id to account for Variable

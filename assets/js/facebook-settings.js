@@ -221,8 +221,8 @@ function sync_in_progress(){
   //Set a product sync status
   if(document.querySelector('#sync_status')){
     document.querySelector('#sync_status').innerHTML =
-      '<strong>Facebook product sync in progress! <br/> ' +
-      'LEAVE THIS PAGE OPEN TO KEEP SYNCING!</strong><br/>';
+      '<strong>Facebook product upload in progress. <br/> ' +
+      'Leave this page open to continue upload.</strong><br/>';
   }
   if(document.querySelector('#sync_progress')){
     document.querySelector('#sync_progress').innerHTML = '';

@@ -1,5 +1,13 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-06-20 version 1.4.2
+* Add custom Facebook description box
+* Less yelling during product sync
+* Remove deprecation warnings
+* Fix RTL issue for JS loading (thanks Ariel!)
+* Validate gender param to FB enum
+* Fix product deletion for sub variants
+
 2017-06-15 version 1.4.1
 * Fix OOM/whitescreen of death error (constrain product count query to IDs)
 
