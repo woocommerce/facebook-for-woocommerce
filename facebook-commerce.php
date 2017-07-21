@@ -195,6 +195,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array($this->events_tracker, 'inject_base_pixel'));
       add_action('woocommerce_after_single_product',
         array($this->events_tracker, 'inject_view_content_event'));
+      add_action('woocommerce_after_shop_loop',
+        array($this->events_tracker, 'inject_view_category_event'));
       add_action('pre_get_posts',
         array($this->events_tracker, 'inject_search_event'));
       add_action('woocommerce_after_cart',
@@ -203,9 +205,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array($this->events_tracker, 'inject_initiate_checkout_event'));
       add_action('woocommerce_thankyou',
         array($this->events_tracker, 'inject_purchase_event'));
-      add_action('woocommerce_after_shop_loop',
-        array($this->events_tracker, 'inject_view_category_event'));
-
     }
 
     // Attempt to load background processing (Woo 3.x.x only)
@@ -932,6 +931,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $display_price = floatval($woo_product->get_display_price());
     }
 
+    $id = $woo_product->get_id();
+    if ($woo_product->get_type() === 'variation') {
+      $id = $woo_product->get_parent_id();
+    }
+    $categories =
+      WC_Facebookcommerce_Utils::get_product_categories($id);
+
     // Use display price to include tax (if it's included)
     $price = intval($display_price * 100);
     $sale_price = intval($woo_product->get_sale_price() * 100);
@@ -941,7 +947,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       'image_url' => $image_url,
       'additional_image_urls' => $additional_image_urls,
       'url'=> $product_url,
-      'category' => 'General', // TODO: How should we handle categories?
+      'category' => $categories['categories'],
       'brand' => $this->get_store_name(),
       'retailer_id' => $retailer_id,
       'price' => $price,
@@ -1499,7 +1505,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       delete_post_meta($product_id, self::FB_PRODUCT_GROUP_ID);
       delete_post_meta($product_id, self::FB_PRODUCT_ITEM_ID);
       delete_post_meta($product_id, self::FB_VISIBILITY);
-      delete_post_meta($product_id, self::FB_PRODUCT_DESCRIPTION);
     }
   }
 
@@ -1965,10 +1970,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           <?php
             if ($this->settings['fb_api_key'] && !$page_name) {
                // API key is set, but no page name.
-               echo sprintf(__('<strong>You must be logged in as an
-                  Administrator <br/>of a Facebook page to use Facebook for
-                  WooCommerce.</strong></br>',
+               echo sprintf(__('<strong>Your API key is no longer valid.
+                Please click "Re-configure Facebook Settings >
+                Advanced Options > Delete Settings" and setup
+                Facebook for WooCommerce again.</strong></br>',
                 'facebook-for-woocommerce'));
+                echo '<p id ="configure_button"><a href="#"
+                  class="btn" onclick="facebookConfig()" id="set_dia" ';
+                echo '>' . esc_html($configure_button_text) . '</a></p>';
             } else {
               if (!current_user_can('manage_woocommerce')) {
                 printf(__('<strong>You must have "manage_woocommerce"

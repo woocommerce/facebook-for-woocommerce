@@ -29,7 +29,7 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers ViewContent for product pages
+  * Triggers ViewCategory for product category listings
   */
   public function inject_view_category_event() {
     global $wp_query;
@@ -52,20 +52,14 @@ class WC_Facebookcommerce_EventsTracker {
       }
     }
 
-    $category_path = wp_get_post_terms(
-      get_the_ID(), 'product_cat', array('fields' => 'all'));
+    $categories =
+      WC_Facebookcommerce_Utils::get_product_categories(get_the_ID());
 
-    $content_category = array_values(array_map(function($item) {
-        return $item->name;
-      },
-      $category_path));
-
-    $content_category_slice = array_slice($content_category, -1);
     $this->pixel->inject_event(
       'ViewCategory',
       array(
-        'content_name' => array_pop($content_category_slice),
-        'content_category' => json_encode(implode(' > ', $content_category)),
+        'content_name' => $categories['name'],
+        'content_category' => $categories['categories'],
         'content_ids' => json_encode(array_slice($product_ids, 0, 10)),
         'content_type' => $content_type
       ));
@@ -75,7 +69,10 @@ class WC_Facebookcommerce_EventsTracker {
   * Triggers Search for result pages
   */
   public function inject_search_event() {
-    if (is_search() && get_search_query() !== '') {
+    if (!is_admin() && is_search() && get_search_query() !== '') {
+      if ($this->pixel->check_last_event('Search')) {
+        return;
+      }
       $this->pixel->inject_event(
         'Search',
         array(

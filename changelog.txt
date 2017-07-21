@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-06-26 version 1.4.3
+* Remove search event for admin panel searches (fix JS error preventing quick edit)
+* Prevent search event from firing twice
+* Add categories to items
+* Add re-configure button back if merchant is locked out (e.g. due to password change)
+
 2017-06-20 version 1.4.2
 * Add custom Facebook description box
 * Less yelling during product sync

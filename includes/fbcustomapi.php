@@ -29,25 +29,20 @@ class WC_Facebookcommerce_REST_Controller extends WP_REST_Controller {
   }
 
   /**
-   * Function to define each of the custom path
+   * Function to define custom routes
    */
   public function register_routes() {
-
-      register_rest_route('facebook/v1', '/test' ,
-        array(
-          'methods'             => WP_REST_Server::READABLE,
-          'callback'            => array($this, 'fb_test_function'),
-        ));
+    register_rest_route('facebook/v1', '/version' ,
+      array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => array($this, 'fb_test_function'),
+      ));
   }
 
   public function fb_test_function(WP_REST_Request $request) {
     $parameters = $request->get_params();
-    // hardcoded product ID just for demo purposes
-    $item = wc_get_product(17);
-    // error_log($item);
-
     // Create the response object
-    $res = new WP_REST_Response($item);
+    $res = new WP_REST_Response(WC_Facebookcommerce::PLUGIN_VERSION);
 
     // Add a custom status code
     $res->set_status(200);

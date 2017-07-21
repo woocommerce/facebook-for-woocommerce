@@ -72,6 +72,30 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
          $woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
     }
 
+    /**
+     * Return categories for products/pixel
+     *
+     * @access public
+     * @param String $id
+     * @return Array
+     */
+    public static function get_product_categories($wpid) {
+      $category_path = wp_get_post_terms(
+        $wpid,
+        'product_cat',
+        array('fields' => 'all'));
+      $content_category = array_values(
+        array_map(
+          function($item) {
+            return $item->name;
+          },
+          $category_path));
+      $content_category_slice = array_slice($content_category, -1);
+      return array(
+        'name' => array_pop($content_category_slice),
+        'categories' => json_encode(implode(', ', $content_category))
+      );
+    }
 
     /**
      * Compatibility method for legacy retailer IDs prior to 1.1

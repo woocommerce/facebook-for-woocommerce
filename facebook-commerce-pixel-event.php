@@ -11,6 +11,7 @@ class WC_Facebookcommerce_Pixel {
   public function __construct($pixel_id, $user_info=array()) {
     $this->pixel_id = $pixel_id;
     $this->user_info = $user_info;
+    $this->last_event = '';
   }
 
   /**
@@ -43,12 +44,21 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"
       esc_js($this->pixel_id));
   }
 
+
+  /**
+  * Prevent double-fires by checking the last event
+  */
+  public function check_last_event($event_name) {
+    return $event_name === $this->last_event;
+  }
+
   /**
   * Preferred method to inject events in a page, normally you should use this
   * instead of WC_Facebookcommerce_Pixel::build_event()
   */
   public function inject_event($event_name, $params, $method='track') {
     $code = self::build_event($event_name, $params, $method);
+    $this->last_event = $event_name;
     WC_Facebookcommerce_Utils::wc_enqueue_js($code);
   }
 
