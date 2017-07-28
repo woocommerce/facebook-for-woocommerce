@@ -1,6 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
-2017-06-26 version 1.4.3
+2017-07-25 version 1.4.4
+* Remove duplicate and blank content ids in pixel fires.
+
+2017-07-26 version 1.4.3
 * Remove search event for admin panel searches (fix JS error preventing quick edit)
 * Prevent search event from firing twice
 * Add categories to items
@@ -22,7 +25,7 @@
 * Fix purchase pixel fires for product variants
 * Fix state on hide/show buttons
 * Fix issue with incorrect price rounding
-* Delete FB metadata from product items as well as groups 
+* Delete FB metadata from product items as well as groups
 * Add GPL license to repo
 
 2017-05-30 version 1.3.3
