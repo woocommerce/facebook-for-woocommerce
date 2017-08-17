@@ -1,7 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-08-25 version 1.4.5
+* Prevent printed output from breaking the popupOrigin
+* Add composer.json file
+
 2017-07-25 version 1.4.4
 * Remove duplicate and blank content ids in pixel fires.
+* Fix warning when sale price is malformed.
 
 2017-07-26 version 1.4.3
 * Remove search event for admin panel searches (fix JS error preventing quick edit)

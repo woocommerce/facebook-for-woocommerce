@@ -940,7 +940,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Use display price to include tax (if it's included)
     $price = intval($display_price * 100);
-    $sale_price = intval($woo_product->get_sale_price() * 100);
+    $sale_price = $woo_product->get_sale_price();
+    $sale_price = is_numeric($sale_price) ?
+      intval($woo_product->get_sale_price() * 100) :
+      0;
     $product_data = array(
       'name' => $woo_product->get_title(),
       'description' => $woo_product->get_fb_description(),
@@ -1461,6 +1464,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function get_sample_product_feed() {
+    ob_start();
 
     // Get up to 12 published posts that are products
     $args = array(
@@ -1494,6 +1498,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
     // https://codex.wordpress.org/Function_Reference/wp_reset_postdata
     wp_reset_postdata();
+    ob_end_clean();
     return json_encode(array($items));
   }
 
