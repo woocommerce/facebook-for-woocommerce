@@ -93,7 +93,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       $content_category_slice = array_slice($content_category, -1);
       return array(
         'name' => array_pop($content_category_slice),
-        'categories' => json_encode(implode(', ', $content_category))
+        'categories' => implode(', ', $content_category)
       );
     }
 
