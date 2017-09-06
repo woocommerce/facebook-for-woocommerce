@@ -16,6 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
+    const PLUGIN_VERSION = '1.5.0';  // Change it in `facebook-for-*.php` also
 
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
@@ -153,5 +154,54 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       }
     }
 
+    /**
+     * Returns true if WooCommerce plugin found.
+     *
+     * @access public
+     * @return bool
+     */
+    public static function isWoocommerceIntegration() {
+      return class_exists('WooCommerce');
+    }
+
+    /**
+     * Returns integration dependent name.
+     *
+     * @access public
+     * @return string
+     */
+    public static function getIntegrationName() {
+      if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
+        return 'WooCommerce';
+      } else {
+        return 'WordPress';
+      }
+    }
+
+    /**
+     * Returns user info for the current WP user.
+     *
+     * @access public
+     * @param boolean $use_pii
+     * @return array
+     */
+    public static function get_user_info($use_pii) {
+      $current_user = wp_get_current_user();
+      if (0 === $current_user->ID || $use_pii === false) {
+        // User not logged in or admin chose not to send PII.
+        return array();
+      } else {
+        return array_filter(
+          array(
+            // Keys documented in
+            // https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/
+            // /conversion-tracking#advanced_match
+            'em' => $current_user->user_email,
+            'fn' => $current_user->user_firstname,
+            'ln' => $current_user->user_lastname
+          ),
+          function ($value) { return $value !== null && $value !== ''; });
+      }
+    }
   }
 endif;

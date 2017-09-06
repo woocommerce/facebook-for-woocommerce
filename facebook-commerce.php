@@ -57,8 +57,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * @return void
    */
   public function __construct() {
-    global $woocommerce;
-
     if (!class_exists('WC_Facebookcommerce_REST_Controller')) {
       include_once( 'includes/fbcustomapi.php' );
       $this->customapi = new WC_Facebookcommerce_REST_Controller();
@@ -186,7 +184,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     if ($this->pixel_id) {
-      $user_info = $this->get_user_info();
+      $user_info = WC_Facebookcommerce_Utils::get_user_info($this->use_pii);
       $this->events_tracker = new WC_Facebookcommerce_EventsTracker(
         $this->pixel_id, $user_info);
 
@@ -498,7 +496,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         ,version: '<?php echo WC()->version ?>'
         ,php_version: '<?php echo PHP_VERSION ?>'
         ,plugin_version:
-          '<?php echo WC_Facebookcommerce::PLUGIN_VERSION ?>'
+          '<?php echo WC_Facebookcommerce_Utils::PLUGIN_VERSION ?>'
       }
       ,feed: {
         totalVisibleProducts: '<?php echo $this->get_product_count() ?>'
@@ -515,25 +513,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       '/assets/js/facebook-settings.js?ts=' . time(), __FILE__));
     wp_enqueue_style('wc_facebook_css', plugins_url(
       '/assets/css/facebook.css', __FILE__));
-  }
-
-  private function get_user_info() {
-    $current_user = wp_get_current_user();
-    if (0 === $current_user->ID || $this->use_pii === false) {
-      // User not logged in or admin chose not to send PII.
-      return array();
-    } else {
-      return array_filter(
-        array(
-          // Keys documented in
-          // https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/
-          // /conversion-tracking#advanced_match
-          'em' => $current_user->user_email,
-          'fn' => $current_user->user_firstname,
-          'ln' => $current_user->user_lastname
-        ),
-        function ($value) { return $value !== null && $value !== ''; });
-    }
   }
 
   function on_product_delete($wp_id) {
@@ -865,26 +844,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $retailer_id =
         WC_Facebookcommerce_Utils::get_fb_retailer_id($woo_product);
     }
-
-    $image_url = wp_get_attachment_url($woo_product->get_image_id());
-    // Image URL is required, but product may have been published w/out an image
-    if (!$image_url) {
-      $name = urlencode(strip_tags($woo_product->get_title()));
-        $image_url = 'https://placeholdit.imgix.net/~text?txtsize=33&txt='
-          . $name . '&w=530&h=530'; // TODO: BETTER PLACEHOLDER
-    }
-    $image_url = WC_Facebookcommerce_Utils::make_url($image_url);
-
-    $additional_image_urls = array($image_url);
-    $attachment_ids = $woo_product->get_image_urls();
-
-    foreach ($attachment_ids as $attachment_id) {
-      $attachment_url = wp_get_attachment_url($attachment_id);
-      if (!empty($attachment_url)) {
-        array_push($additional_image_urls,
-          WC_Facebookcommerce_Utils::make_url($attachment_url));
-      }
-    }
+    $image_urls = $woo_product->get_all_image_urls();
 
     // Replace Wordpress sanitization's ampersand with a real ampersand.
     $product_url = str_replace(
@@ -939,16 +899,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       WC_Facebookcommerce_Utils::get_product_categories($id);
 
     // Use display price to include tax (if it's included)
-    $price = intval($display_price * 100);
+    $price = intval(round($display_price * 100, 2));
     $sale_price = $woo_product->get_sale_price();
     $sale_price = is_numeric($sale_price) ?
-      intval($woo_product->get_sale_price() * 100) :
+      intval(round($woo_product->get_sale_price() * 100, 2)) :
       0;
     $product_data = array(
       'name' => $woo_product->get_title(),
       'description' => $woo_product->get_fb_description(),
-      'image_url' => $image_url,
-      'additional_image_urls' => $additional_image_urls,
+      'image_url' => $image_urls[0], // The array can't be empty.
+      'additional_image_urls' => array_filter($image_urls),
       'url'=> $product_url,
       'category' => $categories['categories'],
       'brand' => $this->get_store_name(),
@@ -1846,7 +1806,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           'facebook-for-woocommerce'),
         'type'        => 'checkbox',
         'description' => __('Enabling Advanced Matching
-          improves audience buiding.', 'facebook-for-woocommerce'),
+          improves audience building.', 'facebook-for-woocommerce'),
         'default'     => 'yes'
         ),
       'fb_external_merchant_settings_id' => array(

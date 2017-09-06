@@ -14,23 +14,24 @@ if (!class_exists('WC_Facebookcommerce_Pixel')) {
 }
 
 class WC_Facebookcommerce_EventsTracker {
+  private $pixel;
 
   public function __construct($pixel_id, $user_info) {
     $this->pixel = new WC_Facebookcommerce_Pixel($pixel_id, $user_info);
   }
 
   /**
-  * Base pixel code to be injected on page head. Because of this, it's better to
-  * echo the return value than using WC_Facebookcommerce_Utils::wc_enqueue_js()
-  * in this case
-  */
+   * Base pixel code to be injected on page head. Because of this, it's better
+   * to echo the return value than using
+   * WC_Facebookcommerce_Utils::wc_enqueue_js() in this case
+   */
   public function inject_base_pixel() {
     echo $this->pixel->pixel_base_code();
   }
 
   /**
-  * Triggers ViewCategory for product category listings
-  */
+   * Triggers ViewCategory for product category listings
+   */
   public function inject_view_category_event() {
     global $wp_query;
 
@@ -66,24 +67,36 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers Search for result pages
-  */
+   * Triggers Search for result pages (deduped)
+   */
   public function inject_search_event() {
     if (!is_admin() && is_search() && get_search_query() !== '') {
       if ($this->pixel->check_last_event('Search')) {
         return;
       }
-      $this->pixel->inject_event(
-        'Search',
-        array(
-          'search_string' => get_search_query()
-      ));
+
+      if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
+        $this->actually_inject_search_event();
+      } else {
+        add_action('wp_head', array($this, 'actually_inject_search_event'), 11);
+      }
     }
   }
 
   /**
-  * Helper function to iterate through a cart and gather all content ids
-  */
+   * Triggers Search for result pages
+   */
+  public function actually_inject_search_event() {
+    $this->pixel->inject_event(
+      'Search',
+      array(
+        'search_string' => get_search_query()
+      ));
+  }
+
+  /**
+   * Helper function to iterate through a cart and gather all content ids
+   */
   private function get_content_ids_from_cart($cart) {
     $product_ids = array();
     foreach ($cart as $item) {
@@ -95,8 +108,8 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers ViewContent product pages
-  */
+   * Triggers ViewContent product pages
+   */
   public function inject_view_content_event() {
     $product = wc_get_product(get_the_ID());
     $content_type = 'product';
@@ -122,8 +135,8 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers AddToCart for cart page and add_to_cart button clicks
-  */
+   * Triggers AddToCart for cart page and add_to_cart button clicks
+   */
   public function inject_add_to_cart_event() {
     $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
 
@@ -138,8 +151,8 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers InitiateCheckout for checkout page
-  */
+   * Triggers InitiateCheckout for checkout page
+   */
   public function inject_initiate_checkout_event() {
     $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
 
@@ -155,8 +168,8 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-  * Triggers Purchase for thank you page
-  */
+   * Triggers Purchase for thank you page
+   */
   public function inject_purchase_event($order_id) {
     $order = new WC_Order($order_id);
     $content_type = 'product';

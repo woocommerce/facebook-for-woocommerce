@@ -7,6 +7,9 @@ if (!class_exists('WC_Facebookcommerce_Pixel')) :
 
 
 class WC_Facebookcommerce_Pixel {
+  private $pixel_id;
+  private $user_info;
+  private $last_event;
 
   public function __construct($pixel_id, $user_info=array()) {
     $this->pixel_id = $pixel_id;
@@ -15,13 +18,13 @@ class WC_Facebookcommerce_Pixel {
   }
 
   /**
-  * Returns FB pixel code
-  */
+   * Returns FB pixel code
+   */
   public function pixel_base_code() {
     $params = self::add_version_info();
 
     return sprintf("
-<!-- WooCommerce Facebook Integration Begin -->
+<!-- %s Facebook Integration Begin -->
 <!-- Facebook Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -37,66 +40,91 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"
 /></noscript>
 <!-- DO NOT MODIFY -->
 <!-- End Facebook Pixel Code -->
-<!-- WooCommerce Facebook Integration end -->
+<!-- %s Facebook Integration end -->
       ",
+      WC_Facebookcommerce_Utils::getIntegrationName(),
       $this->pixel_init_code(),
       json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
-      esc_js($this->pixel_id));
+      esc_js($this->pixel_id),
+      WC_Facebookcommerce_Utils::getIntegrationName());
   }
 
-
   /**
-  * Prevent double-fires by checking the last event
-  */
+   * Prevent double-fires by checking the last event
+   */
   public function check_last_event($event_name) {
     return $event_name === $this->last_event;
   }
 
   /**
-  * Preferred method to inject events in a page, normally you should use this
-  * instead of WC_Facebookcommerce_Pixel::build_event()
-  */
+   * Preferred method to inject events in a page, normally you should use this
+   * instead of WC_Facebookcommerce_Pixel::build_event()
+   */
   public function inject_event($event_name, $params, $method='track') {
     $code = self::build_event($event_name, $params, $method);
     $this->last_event = $event_name;
-    WC_Facebookcommerce_Utils::wc_enqueue_js($code);
+
+    if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
+      WC_Facebookcommerce_Utils::wc_enqueue_js($code);
+    } else {
+      printf("
+<!-- Facebook Pixel Event Code -->
+<script>
+%s
+</script>
+<!-- End Facebook Pixel Event Code -->
+        ",
+        $code);
+    }
   }
 
   /**
-  * You probably should use WC_Facebookcommerce_Pixel::inject_event() but
-  * this method is available if you need to modify the JS code somehow
-  */
+   * You probably should use WC_Facebookcommerce_Pixel::inject_event() but
+   * this method is available if you need to modify the JS code somehow
+   */
   public static function build_event($event_name, $params, $method='track') {
     $params = self::add_version_info($params);
     return sprintf(
-      "// WooCommerce Facebook Integration Event Tracking\n".
+      "// %s Facebook Integration Event Tracking\n".
       "fbq('%s', '%s', %s);",
+      WC_Facebookcommerce_Utils::getIntegrationName(),
       $method,
       $event_name,
       json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
   }
 
   private static function get_version_info() {
+    global $wp_version;
+
+    if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
+      return array(
+        'source' => 'woocommerce',
+        'version' => WC()->version,
+        'pluginVersion' => WC_Facebookcommerce_Utils::PLUGIN_VERSION
+      );
+    }
+
     return array(
-      'source' => 'woocommerce',
-      'version' => WC()->version,
-      'pluginVersion' => WC_Facebookcommerce::PLUGIN_VERSION);
+      'source' => 'wordpress',
+      'version' => $wp_version,
+      'pluginVersion' => WC_Facebookcommerce_Utils::PLUGIN_VERSION
+    );
   }
 
   /**
-  * Returns an array with version_info for pixel fires. Parameters provided by
-  * users should not be overwritten by this function
-  */
+   * Returns an array with version_info for pixel fires. Parameters provided by
+   * users should not be overwritten by this function
+   */
   private static function add_version_info($params=array()) {
     // if any parameter is passed in the pixel, do not overwrite it
     return array_replace(self::get_version_info(), $params);
   }
 
   /**
-  * Init code might contain additional information to help matching website
-  * users with facebook users. Information is hashed in JS side using SHA256
-  * before sending to Facebook.
-  */
+   * Init code might contain additional information to help matching website
+   * users with facebook users. Information is hashed in JS side using SHA256
+   * before sending to Facebook.
+   */
   private function pixel_init_code() {
     $version_info = self::get_version_info();
     $agent_string = sprintf(

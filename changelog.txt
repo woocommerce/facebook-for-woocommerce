@@ -1,6 +1,15 @@
 *** Facebook for WooCommerce Changelog ***
 
-2017-08-25 version 1.4.5
+2017-09-05 version 1.5.0
+* Added support for generic WordPress installations (without WooCommerce)
+  * Added Search events
+  * Setting page for Pixel ID and for enabling advanced measurement
+* Use featured image as primary image for variants, and variant images as additional images.
+
+2017-08-25 version 1.4.6
+* Fix issue where prices were rounded incorrectly
+
+2017-08-15 version 1.4.5
 * Prevent printed output from breaking the popupOrigin
 * Add composer.json file
 

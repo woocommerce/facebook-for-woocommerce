@@ -42,7 +42,7 @@ class WC_Facebookcommerce_REST_Controller extends WP_REST_Controller {
   public function fb_test_function(WP_REST_Request $request) {
     $parameters = $request->get_params();
     // Create the response object
-    $res = new WP_REST_Response(WC_Facebookcommerce::PLUGIN_VERSION);
+    $res = new WP_REST_Response(WC_Facebookcommerce_Utils::PLUGIN_VERSION);
 
     // Add a custom status code
     $res->set_status(200);
