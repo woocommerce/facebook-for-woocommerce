@@ -4,7 +4,7 @@
  * Description: The Facebook pixel is an analytics tool that helps you measure the effectiveness of your advertising. You can use the Facebook pixel to understand the actions people are taking on your website and reach audiences you care about.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 1.5.0
+ * Version: 1.5.1
  * Text Domain: facebook-pixel
  */
 /**

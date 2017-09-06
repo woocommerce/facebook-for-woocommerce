@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-09-05 version 1.5.1
+* Fix critical issue with ViewContent events not matching products.
+
 2017-09-05 version 1.5.0
 * Added support for generic WordPress installations (without WooCommerce)
   * Added Search events

@@ -16,7 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.5.0';  // Change it in `facebook-for-*.php` also
+    const PLUGIN_VERSION = '1.5.1';  // Change it in `facebook-for-*.php` also
 
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
@@ -107,11 +107,11 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      * @return array
      */
     public static function get_fb_content_ids($woo_product) {
-      return array_unique(array_filter(array(
+      return array_values(array_unique(array_filter(array(
         $woo_product->get_sku(),
         self::FB_RETAILER_ID_PREFIX . $woo_product->get_id(),
         self::get_fb_retailer_id($woo_product)
-      )));
+      ))));
     }
 
     /**
