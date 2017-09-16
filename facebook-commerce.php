@@ -191,6 +191,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       // Pixel Tracking Hooks
       add_action('wp_head',
         array($this->events_tracker, 'inject_base_pixel'));
+      add_action('wp_footer',
+        array($this->events_tracker, 'inject_base_pixel_noscript'));
       add_action('woocommerce_after_single_product',
         array($this->events_tracker, 'inject_view_content_event'));
       add_action('woocommerce_after_shop_loop',
@@ -397,6 +399,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       printf('Visible:  <input name="%1$s" type="checkbox" value="1" %2$s/>',
         self::FB_VISIBILITY,
         $checkbox_value === '' ? '' : 'checked');
+      printf('<p/><input name="is_product_page" type="hidden" value="1"');
 
       printf(
         '<p/><a href="#" onclick="fb_reset_product(%1$s)">
@@ -593,17 +596,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       true);
 
     if ($fb_product_group_id) {
-      // Set explicit boolean for fb_visibility (published vs staging)
-      $visibility = get_post_meta($wp_id, self::FB_VISIBILITY, true);
-      if ($visibility) {
-        $woo_product->fb_visibility = $visibility;
-      } else {
-        $woo_product->fb_visibility = isset($_POST[self::FB_VISIBILITY])
-        ? true : false;
-        update_post_meta($wp_id, self::FB_VISIBILITY,
-          $woo_product->fb_visibility);
-      }
-
+      $woo_product->update_visibility(
+        isset($_POST['is_product_page']),
+        isset($_POST[self::FB_VISIBILITY]));
       $this->update_product_group($woo_product);
       $child_products = $woo_product->get_children();
       foreach ($child_products as $item_id) {
@@ -631,15 +626,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // If not, it's new!
     $fb_product_item_id = get_post_meta($wp_id, self::FB_PRODUCT_ITEM_ID, true);
     if ($fb_product_item_id) {
-      $visibility = get_post_meta($wp_id, self::FB_VISIBILITY, true);
-      if ($visibility) {
-        $woo_product->fb_visibility = $visibility;
-      } else {
-        $woo_product->fb_visibility = isset($_POST[self::FB_VISIBILITY])
-        ? true : false;
-        update_post_meta($wp_id, self::FB_VISIBILITY,
-          $woo_product->fb_visibility);
-      }
+      $woo_product->update_visibility(
+        isset($_POST['is_product_page']),
+        isset($_POST[self::FB_VISIBILITY]));
       $this->update_product_item($woo_product, $fb_product_item_id);
     } else {
       // Check if this is a new product item for an existing product group
@@ -884,12 +873,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $checkout_url = null;
     }
 
-    // Use new Woo 3.x function if exists
-    if (function_exists('wc_get_price_to_display')) {
-      $display_price = floatval(wc_get_price_to_display($woo_product));
-    } else {
-      $display_price = floatval($woo_product->get_display_price());
-    }
+    // Get regular price: regular price doesn't include sales
+    $regular_price = floatval($woo_product->get_regular_price());
+
+    // Get regular price plus tax, if it's set to display and taxable
+    $price = $woo_product->get_price_plus_tax($regular_price);
 
     $id = $woo_product->get_id();
     if ($woo_product->get_type() === 'variation') {
@@ -898,12 +886,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $categories =
       WC_Facebookcommerce_Utils::get_product_categories($id);
 
-    // Use display price to include tax (if it's included)
-    $price = intval(round($display_price * 100, 2));
-    $sale_price = $woo_product->get_sale_price();
-    $sale_price = is_numeric($sale_price) ?
-      intval(round($woo_product->get_sale_price() * 100, 2)) :
-      0;
+    // whether price including tax is based on 'woocommerce_tax_display_shop'
+    $price = intval(round($price * 100));
+
     $product_data = array(
       'name' => $woo_product->get_title(),
       'description' => $woo_product->get_fb_description(),
@@ -917,7 +902,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       'currency' => get_woocommerce_currency(),
       'availability' => $woo_product->is_in_stock() ? 'in stock' :
         'out of stock',
-      'visibility' => $woo_product->fb_visibility ? 'published' : 'staging'
+      'visibility' => !$woo_product->is_hidden()
+        ? 'published'
+        : 'staging'
     );
 
     // Only use checkout URLs if they exist.
@@ -925,13 +912,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $product_data['checkout_url'] = $checkout_url;
     }
 
-    if ($sale_price > 0) {
-      $product_data['sale_price'] = $sale_price;
-    }
+    $product_data = $woo_product->add_sale_price($product_data);
 
     // Loop through variants (size, color, etc) if they exist
     // For each product field type, pull the single variant
-    $variants = $this->prepare_variants_for_item($woo_product);
+    $variants = $this->prepare_variants_for_item($woo_product, $product_data);
     if ($variants) {
       foreach ($variants as $variant) {
 
@@ -963,11 +948,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             // This is for any custom_data.
             if (!isset($product_data['custom_data'])) {
               $product_data['custom_data'] = array(
-                $product_field => $variant['options'][0],
+                $product_field => urldecode($variant['options'][0]),
               );
             } else {
               $product_data['custom_data'][$product_field]
-                = $variant['options'][0];
+                = urldecode($variant['options'][0]);
             }
 
             break;
@@ -1026,6 +1011,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array_unshift($option_values, $first_option);
       }
 
+      if (
+        function_exists('taxonomy_is_product_attribute') &&
+        taxonomy_is_product_attribute($name)
+      ) {
+        $option_values = $woo_product->get_grouped_product_option_names(
+          $key,
+          $option_values);
+      }
+
       // Clean up variant name (e.g. pa_color should be color)
       $name = $this->sanitize_variant_name($name);
 
@@ -1043,7 +1037,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   /**
    * Modify Woo variant/taxonomies to be FB compatible
    **/
-  function prepare_variants_for_item($woo_product) {
+  function prepare_variants_for_item($woo_product, &$product_data) {
     if ($woo_product->get_type() !== 'variation') {
       return;
     }
@@ -1066,12 +1060,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       // Sometimes WC returns an array, sometimes it's an assoc array, depending
       // on what type of taxonomy it's using.  array_values will guarantee we
       // only get a flat array of values.
-      $options = $attributes[$orig_name];
+      $options = $woo_product->get_variant_option_name(
+        $label,
+        $attributes[$orig_name]);
       if (isset($options)) {
         if (is_array($options)) {
           $option_values = array_values($options);
         } else {
           $option_values = array($options);
+          // If this attribute has value 'any', options will be empty strings
+          // Redirect to product page to select variants.
+          // Reset checkout url since checkout_url (build from query data will
+          // be invalid in this case.
+          if (count($option_values) === 1 && empty($option_values[0])) {
+            $option_values[0] =
+              'any '.str_replace('custom_data:', '', $new_name);
+            $product_data['checkout_url'] = $product_data['url'];
+          }
         }
       } else {
         self::log($woo_product->get_id() . ": No options for " . $orig_name);
@@ -2054,5 +2059,4 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
     return $gender;
   }
-
 }

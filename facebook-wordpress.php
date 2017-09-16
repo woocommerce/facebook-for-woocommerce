@@ -30,6 +30,8 @@ class WP_Facebook_Integration {
       // Pixel Tracking Hooks
       add_action('wp_head',
         array($this->events_tracker, 'inject_base_pixel'));
+      add_action('wp_head',
+        array($this->events_tracker, 'inject_base_pixel_noscript'));
       add_action('posts_search',
         array($this->events_tracker, 'inject_search_event'));
     }

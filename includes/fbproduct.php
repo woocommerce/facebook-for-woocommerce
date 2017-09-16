@@ -14,11 +14,14 @@ if (! class_exists('WC_Facebook_Product')) :
 class WC_Facebook_Product {
 
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
+  const FB_VISIBILITY = 'fb_visibility';
+  const MIN_DATE = '0001-01-01';
+  const MAX_DATE = '9999-12-31';
 
   public function __construct($wpid) {
     $this->id = $wpid;
     $this->fb_description = '';
-    $this->fb_visibility = 'published';
+    $this->fb_visibility = get_post_meta($wpid, self::FB_VISIBILITY, true);
     $this->woo_product = wc_get_product($wpid);
   }
 
@@ -93,7 +96,8 @@ class WC_Facebook_Product {
   }
 
   public function set_description($description) {
-    $description = WC_Facebookcommerce_Utils::clean_string($description);
+    $description = stripslashes(
+      WC_Facebookcommerce_Utils::clean_string($description));
     $this->fb_description = $description;
     update_post_meta(
       $this->id,
@@ -136,6 +140,105 @@ class WC_Facebook_Product {
     }
 
     return $description;
+  }
+
+  public function add_sale_price($product_data) {
+    // initialize sale date and sale_price
+    $product_data['sale_price_start_date'] = self::MIN_DATE;
+    $product_data['sale_price_end_date'] = self::MIN_DATE;
+    $product_data['sale_price'] = $product_data['price'];
+
+    $sale_price = $this->woo_product->get_sale_price();
+    // check if sale exist
+    if (!is_numeric($sale_price)) {
+      return $product_data;
+    }
+    $sale_price =
+      intval(round($this->get_price_plus_tax($sale_price) * 100));
+
+    $sale_start =
+      ($date = get_post_meta($this->id, '_sale_price_dates_from', true))
+      ? date_i18n('Y-m-d', $date)
+      : self::MIN_DATE;
+
+    $sale_end =
+      ($date = get_post_meta($this->id, '_sale_price_dates_to', true))
+      ? date_i18n('Y-m-d', $date)
+      : self::MAX_DATE;
+
+    // check if sale is expired and sale time range is valid
+    if (strtotime($sale_end) >= time()
+      && strtotime($sale_end) >= strtotime($sale_start)) {
+        $product_data['sale_price_start_date'] = $sale_start;
+        $product_data['sale_price_end_date'] = $sale_end;
+        $product_data['sale_price'] = $sale_price;
+   }
+    return $product_data;
+  }
+
+  public function is_hidden() {
+    $hidden_from_catalog = has_term(
+      'exclude-from-catalog',
+      'product_visibility',
+      $this->id);
+    $hidden_from_search = has_term(
+      'exclude-from-search',
+      'product_visibility',
+      $this->id);
+    return ($hidden_from_catalog && $hidden_from_search) || !$this->fb_visibility;
+  }
+
+  public function get_price_plus_tax($price) {
+    $woo_product = $this->woo_product;
+    // // wc_get_price_including_tax exist for Woo > 2.7
+    if (function_exists('wc_get_price_including_tax')) {
+      $args = array( 'qty' => 1, 'price' => $price);
+      return get_option('woocommerce_tax_display_shop') === 'incl'
+              ? wc_get_price_including_tax($woo_product, $args)
+              : wc_get_price_excluding_tax($woo_product, $args);
+    } else {
+      return get_option('woocommerce_tax_display_shop') === 'incl'
+              ? $woo_product->get_price_including_tax(1, $price)
+              : $woo_product->get_price_excluding_tax(1, $price);
+    }
+  }
+
+  public function get_grouped_product_option_names($key, $option_values) {
+    // Convert all slug_names in $option_values into the visible names that
+    // advertisers have set to be the display names for a given attribute value
+    $terms = get_the_terms($this->id, $key);
+    return array_map(
+      function ($slug_name) use ($terms) {
+        foreach ($terms as $term) {
+          if ($term->slug === $slug_name) {
+            return $term->name;
+          }
+        }
+        return $slug_name;
+      },
+      $option_values);
+  }
+
+  public function get_variant_option_name($label, $default_value) {
+    // For the given label, get the Visible name rather than the slug
+    $meta = get_post_meta($this->id, $label, true);
+    $attribute_name = str_replace('attribute_', '', $label);
+    $term = get_term_by('slug', $meta, $attribute_name);
+    return $term->name ?: $default_value;
+  }
+
+  public function update_visibility($is_product_page, $visible_box_checked) {
+    $visibility = get_post_meta($this->id, self::FB_VISIBILITY, true);
+    if ($visibility && !$is_product_page) {
+      // If the product was previously set to visible, keep it as visible
+      // (unless we're on the product page)
+      $this->fb_visibility = $visibility;
+    } else {
+      // If the product is not visible OR we're on the product page,
+      // then update the visibility as needed.
+      $this->fb_visibility = $visible_box_checked ? true : false;
+      update_post_meta($this->id, self::FB_VISIBILITY, $this->fb_visibility);
+    }
   }
 
 }

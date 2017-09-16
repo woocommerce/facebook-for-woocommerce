@@ -1,5 +1,19 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-09-15 version 1.6.0
+* Support sale start and end dates
+* Include tax on sale price as needed
+* Fix visibility toggle on the product page
+* No longer publish hidden products
+* Use variable products' attribute name, instead of slug name
+* Fix encoding issue in Variation names
+* Resolve W3 validation error caused by pixel code
+* Correctly sync variants where the attribute is not specified or set to 'any'.
+* Save Changes button no longer disappears in other settings pages
+* Fix a JS warning caused by ViewCategory events by switching to trackCustom
+* Fix quoted strings having unneeded slashes in the FB Description
+* Fix Unicode encoding in Category Names. Thanks @jancinert.
+
 2017-09-05 version 1.5.1
 * Fix critical issue with ViewContent events not matching products.
 

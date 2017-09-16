@@ -16,7 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.5.1';  // Change it in `facebook-for-*.php` also
+    const PLUGIN_VERSION = '1.6.0';  // Change it in `facebook-for-*.php` also
 
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
@@ -92,9 +92,11 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
           },
           $category_path));
       $content_category_slice = array_slice($content_category, -1);
+      $categories =
+        empty($content_category) ? '""' : implode(', ', $content_category);
       return array(
         'name' => array_pop($content_category_slice),
-        'categories' => implode(', ', $content_category)
+        'categories' => $categories
       );
     }
 

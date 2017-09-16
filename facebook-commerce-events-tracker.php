@@ -30,6 +30,14 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
+   * Base pixel noscript to be injected on page body. This is to avoid W3
+   * validation error.
+   */
+  public function inject_base_pixel_noscript() {
+    echo $this->pixel->pixel_base_code_noscript();
+  }
+
+  /**
    * Triggers ViewCategory for product category listings
    */
   public function inject_view_category_event() {
@@ -63,7 +71,8 @@ class WC_Facebookcommerce_EventsTracker {
         'content_category' => $categories['categories'],
         'content_ids' => json_encode(array_slice($product_ids, 0, 10)),
         'content_type' => $content_type
-      ));
+      ),
+      'trackCustom');
   }
 
   /**

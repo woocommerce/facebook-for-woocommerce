@@ -18,7 +18,7 @@ class WC_Facebookcommerce_Pixel {
   }
 
   /**
-   * Returns FB pixel code
+   * Returns FB pixel code script part
    */
   public function pixel_base_code() {
     $params = self::add_version_info();
@@ -35,9 +35,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 %s
 fbq('track', 'PageView', %s);
 </script>
-<noscript><img height=\"1\" width=\"1\" style=\"display:none\"
-src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"
-/></noscript>
 <!-- DO NOT MODIFY -->
 <!-- End Facebook Pixel Code -->
 <!-- %s Facebook Integration end -->
@@ -45,8 +42,23 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"
       WC_Facebookcommerce_Utils::getIntegrationName(),
       $this->pixel_init_code(),
       json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
-      esc_js($this->pixel_id),
       WC_Facebookcommerce_Utils::getIntegrationName());
+  }
+
+  /**
+   * Returns FB pixel code noscript part to avoid W3 validation error
+   */
+  public function pixel_base_code_noscript() {
+    return sprintf("
+<!-- Facebook Pixel Code -->
+<noscript>
+<img height=\"1\" width=\"1\" style=\"display:none\"
+src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
+</noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
+    ",
+    esc_js($this->pixel_id));
   }
 
   /**
