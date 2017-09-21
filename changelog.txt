@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-09-21 version 1.6.1
+* Prevent save settings button for other WooCommerce plugins erasing FB settings.
+
 2017-09-15 version 1.6.0
 * Support sale start and end dates
 * Include tax on sale price as needed

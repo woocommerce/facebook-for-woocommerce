@@ -113,9 +113,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // Hooks
     if (is_admin()) {
       add_action('admin_notices', array( $this, 'checks' ));
-      add_action('woocommerce_update_options_integration', array(
-        $this, 'process_admin_options'
-      ));
+      add_action('woocommerce_update_options_integration_facebookcommerce',
+        array($this, 'process_admin_options'));
       add_action('admin_enqueue_scripts', array( $this, 'load_assets'));
 
       add_action('wp_ajax_ajax_save_fb_settings',
