@@ -600,21 +600,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         isset($_POST[self::FB_VISIBILITY]));
       $this->update_product_group($woo_product);
       $child_products = $woo_product->get_children();
+      $gallery_urls = $woo_product->get_image_urls();
       foreach ($child_products as $item_id) {
-        $this->on_simple_product_publish($item_id, null);
+        $this->on_simple_product_publish($item_id, null, $gallery_urls);
       }
     } else {
       $this->create_product_variable($woo_product);
     }
   }
 
-  function on_simple_product_publish($wp_id, $woo_product = null) {
+  function on_simple_product_publish(
+    $wp_id,
+    $woo_product = null,
+    &$gallery_urls = null) {
     if (get_post_status($wp_id) != 'publish') {
       return;
     }
 
     if (!$woo_product) {
-      $woo_product = new WC_Facebook_Product($wp_id);
+      $woo_product = new WC_Facebook_Product($wp_id, $gallery_urls);
     }
 
     if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
@@ -661,8 +665,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if ($fb_product_group_id) {
       $child_products = $woo_product->get_children();
+      $gallery_urls = $woo_product->get_image_urls();
       foreach ($child_products as $item_id) {
-        $woo_product = new WC_Facebook_Product($item_id);
+        $woo_product = new WC_Facebook_Product($item_id, $gallery_urls);
         $retailer_id =
           WC_Facebookcommerce_Utils::get_fb_retailer_id($woo_product);
 

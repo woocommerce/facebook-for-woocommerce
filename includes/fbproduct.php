@@ -15,14 +15,16 @@ class WC_Facebook_Product {
 
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
   const FB_VISIBILITY = 'fb_visibility';
-  const MIN_DATE = '0001-01-01';
-  const MAX_DATE = '9999-12-31';
+  const MIN_DATE_1 = '1970-01-29';
+  const MIN_DATE_2 = '1970-01-30';
+  const MAX_DATE = '2038-01-17';
 
-  public function __construct($wpid) {
+  public function __construct($wpid, $gallery_urls = null) {
     $this->id = $wpid;
     $this->fb_description = '';
     $this->fb_visibility = get_post_meta($wpid, self::FB_VISIBILITY, true);
     $this->woo_product = wc_get_product($wpid);
+    $this->gallery_urls = $gallery_urls;
   }
 
   // Fall back to calling method on $woo_product
@@ -32,10 +34,20 @@ class WC_Facebook_Product {
 
   public function get_image_urls() {
     if (is_callable(array($this, 'get_gallery_image_ids'))) {
-      return $this->get_gallery_image_ids();
+      $image_ids = $this->get_gallery_image_ids();
     } else {
-      return $this->get_gallery_attachment_ids();
+      $image_ids = $this->get_gallery_attachment_ids();
     }
+    $gallery_urls = array();
+    foreach ($image_ids as $image_id) {
+      $image_url = wp_get_attachment_url($image_id);
+      if (!empty($image_url)) {
+        array_push($gallery_urls,
+          WC_Facebookcommerce_Utils::make_url($image_url));
+      }
+    }
+    $gallery_urls = array_filter($gallery_urls);
+    return $gallery_urls;
   }
 
   public function get_post_data() {
@@ -56,7 +68,6 @@ class WC_Facebook_Product {
       $image_url = WC_Facebookcommerce_Utils::make_url($image_url);
       array_push($image_urls, $image_url);
     }
-    $attachment_ids = $this->get_image_urls();
 
     // For variable products, add the variation specific image.
     if ($parent_image_id) {
@@ -67,13 +78,8 @@ class WC_Facebook_Product {
       }
     }
 
-    foreach ($attachment_ids as $attachment_id) {
-      $attachment_url = wp_get_attachment_url($attachment_id);
-      if (!empty($attachment_url)) {
-        array_push($image_urls,
-          WC_Facebookcommerce_Utils::make_url($attachment_url));
-      }
-    }
+    $gallery_urls = $this->gallery_urls ?: $this->get_image_urls();
+    $image_urls = array_merge($image_urls, $gallery_urls);
     $image_urls = array_filter($image_urls);
 
     // If there are no images, create a placeholder image.
@@ -144,8 +150,8 @@ class WC_Facebook_Product {
 
   public function add_sale_price($product_data) {
     // initialize sale date and sale_price
-    $product_data['sale_price_start_date'] = self::MIN_DATE;
-    $product_data['sale_price_end_date'] = self::MIN_DATE;
+    $product_data['sale_price_start_date'] = self::MIN_DATE_1;
+    $product_data['sale_price_end_date'] = self::MIN_DATE_2;
     $product_data['sale_price'] = $product_data['price'];
 
     $sale_price = $this->woo_product->get_sale_price();
@@ -159,7 +165,7 @@ class WC_Facebook_Product {
     $sale_start =
       ($date = get_post_meta($this->id, '_sale_price_dates_from', true))
       ? date_i18n('Y-m-d', $date)
-      : self::MIN_DATE;
+      : self::MIN_DATE_1;
 
     $sale_end =
       ($date = get_post_meta($this->id, '_sale_price_dates_to', true))
@@ -167,12 +173,9 @@ class WC_Facebook_Product {
       : self::MAX_DATE;
 
     // check if sale is expired and sale time range is valid
-    if (strtotime($sale_end) >= time()
-      && strtotime($sale_end) >= strtotime($sale_start)) {
-        $product_data['sale_price_start_date'] = $sale_start;
-        $product_data['sale_price_end_date'] = $sale_end;
-        $product_data['sale_price'] = $sale_price;
-   }
+    $product_data['sale_price_start_date'] = $sale_start;
+    $product_data['sale_price_end_date'] = $sale_end;
+    $product_data['sale_price'] = $sale_price;
     return $product_data;
   }
 

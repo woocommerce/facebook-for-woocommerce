@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-09-28 version 1.6.2
+* Fix "Invalid Parameter" API error caused by invalid sale dates.
+* Fix variable product unable to sync gallery images.
+* Cache gallery image urls for variable products to reduce DB load.
+* Fix exception during generation of some ViewCategory events.
+
 2017-09-21 version 1.6.1
 * Prevent save settings button for other WooCommerce plugins erasing FB settings.
 

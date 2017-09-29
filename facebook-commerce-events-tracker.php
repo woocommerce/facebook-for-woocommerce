@@ -53,6 +53,9 @@ class WC_Facebookcommerce_EventsTracker {
     $content_type = 'product';
     $product_ids = array();
     foreach ($products as $product) {
+      if (!$product) {
+        continue;
+      }
       $product_ids = array_merge(
         $product_ids,
         WC_Facebookcommerce_Utils::get_fb_content_ids($product));

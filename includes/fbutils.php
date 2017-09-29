@@ -16,7 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.6.1';  // Change it in `facebook-for-*.php` also
+    const PLUGIN_VERSION = '1.6.2';  // Change it in `facebook-for-*.php` also
 
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
