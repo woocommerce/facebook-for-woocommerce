@@ -1206,8 +1206,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     // Do not allow reset in the middle of product sync
-    $currently_sycing = get_transient(self::FB_SYNC_IN_PROGRESS);
-    if ($currently_sycing) {
+    $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
+    if ($currently_syncing) {
       wp_send_json('A Facebook product sync is currently in progress.
         Deleting settings during product sync may cause errors.');
       return;
@@ -1575,16 +1575,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       return;
     }
 
-    $currently_sycing = get_transient(self::FB_SYNC_IN_PROGRESS);
+    $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
 
     if (isset($this->background_processor)) {
       if ($this->background_processor->is_updating()) {
         $this->background_processor->handle_cron_healthcheck();
-        $currently_sycing = 1;
+        $currently_syncing = 1;
       }
     }
 
-    if ($currently_sycing) {
+    if ($currently_syncing) {
       self::log('Not syncing, sync in progress');
       $this->fblog('Tried to sync during an in-progress sync!');
       $this->display_warning_message('A product sync is in progress.
@@ -1959,7 +1959,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                       'facebook-for-woocommerce')) .
                     '</p>';
               } else {
-                $currently_sycing = get_transient(self::FB_SYNC_IN_PROGRESS);
+                $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
                 $connected = ($page_name != '');
 
                 echo '<p id="connection_status">';
@@ -1976,25 +1976,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 echo '<p id="resync_button"><a href="#"
                     class="btn" onclick="sync_confirm()" id="resync_products" ';
 
-                if (($connected && $currently_sycing) || !$connected) {
+                if (($connected && $currently_syncing) || !$connected) {
                   echo 'style="display:none;" ';
                 }
                 echo '>Force Product Resync</a><p/>';
 
                 echo '<p id ="configure_button"><a href="#"
                   class="btn" onclick="facebookConfig()" id="set_dia" ';
-                if ($currently_sycing) {
+                if ($currently_syncing) {
                   echo 'style="display:none;" ';
                 }
                 echo '>' . esc_html($configure_button_text) . '</a></p>';
 
                 echo '<p id="sync_status">';
-                if ($connected && $currently_sycing) {
+                if ($connected && $currently_syncing) {
                   echo sprintf(__('<strong>Facebook product sync in progress!
                     <br/>LEAVE THIS PAGE OPEN TO KEEP SYNCING!</strong></br>',
                     'facebook-for-woocommerce'));
                 }
-                if ($connected && !$currently_sycing) {
+                if ($connected && !$currently_syncing) {
                   echo '<strong>Status: </strong>' .
                   'Products are synced to Facebook.';
                 }
