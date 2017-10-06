@@ -540,14 +540,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     foreach ($products as $item_id) {
-      $fb_product_item_id = get_post_meta(
-        $item_id,
-        self::FB_PRODUCT_ITEM_ID,
-        true);
-      if ($fb_product_item_id) {
-        $pi_result = $this->fbgraph->delete_product_item($fb_product_item_id);
-        self::log($pi_result);
-      }
+      $this->delete_product_item ($item_id);
     }
 
     if ($fb_product_group_id) {
@@ -600,9 +593,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         isset($_POST[self::FB_VISIBILITY]));
       $this->update_product_group($woo_product);
       $child_products = $woo_product->get_children();
+      $variation_id = $woo_product->find_matching_product_variation();
       $gallery_urls = $woo_product->get_image_urls();
+      // check if item_id is default variation. If yes, update in the end.
+      // If default variation value is to update, delete old fb_product_item_id
+      // and create new one in order to make it order correctly.
       foreach ($child_products as $item_id) {
-        $this->on_simple_product_publish($item_id, null, $gallery_urls);
+        if ($item_id !== $variation_id) {
+          $this->on_simple_product_publish($item_id, null, $gallery_urls);
+        } else {
+          $this->delete_product_item($item_id);
+        }
+      }
+      if ($variation_id) {
+        $this->on_simple_product_publish(
+          $variation_id,
+          null,
+          $gallery_urls,
+          true);
       }
     } else {
       $this->create_product_variable($woo_product);
@@ -612,7 +620,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   function on_simple_product_publish(
     $wp_id,
     $woo_product = null,
-    &$gallery_urls = null) {
+    &$gallery_urls = null,
+    $reset = false) {
     if (get_post_status($wp_id) != 'publish') {
       return;
     }
@@ -628,7 +637,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // Check if this product has already been published to FB.
     // If not, it's new!
     $fb_product_item_id = get_post_meta($wp_id, self::FB_PRODUCT_ITEM_ID, true);
-    if ($fb_product_item_id) {
+    if ($fb_product_item_id && !$reset) {
       $woo_product->update_visibility(
         isset($_POST['is_product_page']),
         isset($_POST[self::FB_VISIBILITY]));
@@ -665,16 +674,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if ($fb_product_group_id) {
       $child_products = $woo_product->get_children();
+      $variation_id = $woo_product->find_matching_product_variation();
       $gallery_urls = $woo_product->get_image_urls();
       foreach ($child_products as $item_id) {
-        $woo_product = new WC_Facebook_Product($item_id, $gallery_urls);
-        $retailer_id =
-          WC_Facebookcommerce_Utils::get_fb_retailer_id($woo_product);
-
-        $this->create_product_item(
-          $woo_product,
-          $retailer_id,
-          $fb_product_group_id);
+        if ($item_id !== $variation_id) {
+          $this->create_product_item_using_itemid(
+            $item_id,
+            $fb_product_group_id,
+            $gallery_urls);
+        }
+      }
+      // In FB shop, when clicking on a variable product, it will redirect to
+      // last child of this product group.
+      if ($variation_id) {
+        $this->create_product_item_using_itemid(
+          $variation_id,
+          $fb_product_group_id,
+          $gallery_urls);
       }
     }
   }
@@ -879,6 +895,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Get regular price: regular price doesn't include sales
     $regular_price = floatval($woo_product->get_regular_price());
+
+    // If it's a bookable product, the normal price is null/0.
+    if (!$regular_price) {
+      $regular_price = $woo_product->get_bookable_price();
+    }
 
     // Get regular price plus tax, if it's set to display and taxable
     $price = $woo_product->get_price_plus_tax($regular_price);
@@ -2062,5 +2083,31 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       return null;
     }
     return $gender;
+  }
+
+  function delete_product_item($wp_id) {
+    $fb_product_item_id = get_post_meta(
+      $wp_id,
+      self::FB_PRODUCT_ITEM_ID,
+      true);
+    if ($fb_product_item_id) {
+      $pi_result =
+        $this->fbgraph->delete_product_item($fb_product_item_id);
+      self::log($pi_result);
+    }
+  }
+
+  function create_product_item_using_itemid(
+    $wp_id,
+    $product_group_id,
+    &$gallery_urls) {
+    $woo_product = new WC_Facebook_Product($wp_id, $gallery_urls);
+    $retailer_id =
+      WC_Facebookcommerce_Utils::get_fb_retailer_id($woo_product);
+    return $this->create_product_item(
+      $woo_product,
+      $retailer_id,
+      $product_group_id);
+
   }
 }

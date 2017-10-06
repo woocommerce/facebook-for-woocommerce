@@ -58,6 +58,14 @@ class WC_Facebook_Product {
     }
   }
 
+  public function get_bookable_price() {
+    if (property_exists($this->woo_product, "wc_booking_cost")) {
+      return $this->woo_product->wc_booking_cost;
+    } else {
+      return 0;
+    }
+  }
+
   public function get_all_image_urls() {
     $image_urls = array();
     $parent_image_id = $this->get_parent_image_id();
@@ -227,7 +235,7 @@ class WC_Facebook_Product {
     $meta = get_post_meta($this->id, $label, true);
     $attribute_name = str_replace('attribute_', '', $label);
     $term = get_term_by('slug', $meta, $attribute_name);
-    return $term->name ?: $default_value;
+    return $term && $term->name ? $term->name : $default_value;
   }
 
   public function update_visibility($is_product_page, $visible_box_checked) {
@@ -244,6 +252,35 @@ class WC_Facebook_Product {
     }
   }
 
+  // wrapper function to find item_id for default variation
+  function find_matching_product_variation() {
+    if (is_callable(array($this, 'get_default_attributes'))) {
+      $default_attributes = $this->get_default_attributes();
+    } else {
+      $default_attributes = $this->get_variation_default_attributes();
+    }
+
+    if (!$default_attributes) {
+      return;
+    }
+    foreach ($default_attributes as $key => $value) {
+      if (strncmp($key, 'attribute_', strlen('attribute_')) === 0) {
+          continue;
+      }
+      unset($default_attributes[$key]);
+      $default_attributes[sprintf('attribute_%s', $key)] = $value;
+    }
+    if (class_exists('WC_Data_Store')) {
+      //  for >= woo 3.0.0
+      $data_store = WC_Data_Store::load('product');
+      return
+        $data_store->find_matching_product_variation(
+          $this,
+          $default_attributes);
+    } else {
+      return $this->get_matching_variation($default_attributes);
+    }
+  }
 }
 
 endif;
