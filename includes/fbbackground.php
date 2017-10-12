@@ -133,7 +133,7 @@ class WC_Facebookcommerce_Background_Process extends WP_Background_Process {
     delete_transient($commerce::FB_SYNC_IN_PROGRESS);
     delete_transient($commerce::FB_SYNC_REMAINING);
     $commerce::log("Background sync complete!");
-    $commerce->fblog("Background sync complete!");
+    WC_Facebookcommerce_Utils::fblog("Background sync complete!");
     $this->commerce->remove_sticky_message();
     $this->commerce->display_info_message('Facebook product sync complete!');
     parent::complete();

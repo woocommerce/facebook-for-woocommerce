@@ -13,18 +13,32 @@ if (! class_exists('WC_Facebook_Product')) :
  */
 class WC_Facebook_Product {
 
+  // Should match facebook-commerce.php while we migrate that code over
+  // to this object.
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
+  const FB_VARIANT_IMAGE = 'fb_image';
   const FB_VISIBILITY = 'fb_visibility';
+
   const MIN_DATE_1 = '1970-01-29';
   const MIN_DATE_2 = '1970-01-30';
   const MAX_DATE = '2038-01-17';
 
-  public function __construct($wpid, $gallery_urls = null) {
+  public function __construct(
+    $wpid, $parent_product = null) {
     $this->id = $wpid;
     $this->fb_description = '';
     $this->fb_visibility = get_post_meta($wpid, self::FB_VISIBILITY, true);
     $this->woo_product = wc_get_product($wpid);
-    $this->gallery_urls = $gallery_urls;
+    $this->gallery_urls = null;
+    $this->fb_use_parent_image = null;
+    $this->fb_price = 0;
+
+    // Variable products should use some data from the parent_product
+    // For performance reasons, that data shouldn't be regenerated every time.
+    if ($parent_product) {
+      $this->gallery_urls = $parent_product->get_gallery_urls();
+      $this->fb_use_parent_image = $parent_product->get_use_parent_image();
+    }
   }
 
   // Fall back to calling method on $woo_product
@@ -32,22 +46,25 @@ class WC_Facebook_Product {
     return call_user_func_array(array($this->woo_product, $function), $args);
   }
 
-  public function get_image_urls() {
-    if (is_callable(array($this, 'get_gallery_image_ids'))) {
-      $image_ids = $this->get_gallery_image_ids();
-    } else {
-      $image_ids = $this->get_gallery_attachment_ids();
-    }
-    $gallery_urls = array();
-    foreach ($image_ids as $image_id) {
-      $image_url = wp_get_attachment_url($image_id);
-      if (!empty($image_url)) {
-        array_push($gallery_urls,
-          WC_Facebookcommerce_Utils::make_url($image_url));
+  public function get_gallery_urls() {
+    if ($this->gallery_urls === null) {
+      if (is_callable(array($this, 'get_gallery_image_ids'))) {
+        $image_ids = $this->get_gallery_image_ids();
+      } else {
+        $image_ids = $this->get_gallery_attachment_ids();
       }
+      $gallery_urls = array();
+      foreach ($image_ids as $image_id) {
+        $image_url = wp_get_attachment_url($image_id);
+        if (!empty($image_url)) {
+          array_push($gallery_urls,
+            WC_Facebookcommerce_Utils::make_url($image_url));
+        }
+      }
+      $this->gallery_urls = array_filter($gallery_urls);
     }
-    $gallery_urls = array_filter($gallery_urls);
-    return $gallery_urls;
+
+    return $this->gallery_urls;
   }
 
   public function get_post_data() {
@@ -58,12 +75,28 @@ class WC_Facebook_Product {
     }
   }
 
-  public function get_bookable_price() {
-    if (property_exists($this->woo_product, "wc_booking_cost")) {
-      return $this->woo_product->wc_booking_cost;
-    } else {
-      return 0;
+  public function get_fb_price() {
+    // Cache the price in this object in case of multiple calls.
+    if ($this->fb_price) {
+      return $this->fb_price;
     }
+
+    // Get regular price: regular price doesn't include sales
+    $regular_price = floatval($this->get_regular_price());
+
+    // If it's a bookable product, the normal price is null/0.
+    if (!$regular_price &&
+        class_exists('WC_Product_Booking') &&
+        is_wc_booking_product($this)) {
+      $product = new WC_Product_Booking($this->woo_product);
+      $regular_price = $product->get_display_cost();
+    }
+
+    // Get regular price plus tax, if it's set to display and taxable
+    // whether price includes tax is based on 'woocommerce_tax_display_shop'
+    $price = $this->get_price_plus_tax($regular_price);
+    $this->fb_price = intval(round($price * 100));
+    return $this->fb_price;
   }
 
   public function get_all_image_urls() {
@@ -82,11 +115,17 @@ class WC_Facebook_Product {
       $image_url2 = wp_get_attachment_url($this->woo_product->get_image_id());
       $image_url2 = WC_Facebookcommerce_Utils::make_url($image_url2);
       if ($image_url != $image_url2) {
-        array_push($image_urls, $image_url2);
+        // A Checkbox toggles which image is primary.
+        // Default to variant specific image as primary.
+        if ($this->fb_use_parent_image) {
+          array_push($image_urls, $image_url2);
+        } else {
+          array_unshift($image_urls, $image_url2);
+        }
       }
     }
 
-    $gallery_urls = $this->gallery_urls ?: $this->get_image_urls();
+    $gallery_urls = $this->get_gallery_urls();
     $image_urls = array_merge($image_urls, $gallery_urls);
     $image_urls = array_filter($image_urls);
 
@@ -117,6 +156,23 @@ class WC_Facebook_Product {
       $this->id,
       self::FB_PRODUCT_DESCRIPTION,
       $description);
+  }
+
+  public function get_use_parent_image() {
+    if ($this->fb_use_parent_image === null) {
+      $variant_image_setting =
+        get_post_meta($this->id, self::FB_VARIANT_IMAGE, true);
+      $this->fb_use_parent_image = ($variant_image_setting) ? true : false;
+    }
+    return $this->fb_use_parent_image;
+  }
+
+  public function set_use_parent_image($setting) {
+    $this->fb_use_parent_image = ($setting == 'yes');
+    update_post_meta(
+      $this->id,
+      self::FB_VARIANT_IMAGE,
+      $this->fb_use_parent_image);
   }
 
   public function get_fb_description() {
@@ -196,7 +252,8 @@ class WC_Facebook_Product {
       'exclude-from-search',
       'product_visibility',
       $this->id);
-    return ($hidden_from_catalog && $hidden_from_search) || !$this->fb_visibility;
+    return ($hidden_from_catalog && $hidden_from_search) ||
+      !$this->fb_visibility || !$this->get_fb_price();
   }
 
   public function get_price_plus_tax($price) {

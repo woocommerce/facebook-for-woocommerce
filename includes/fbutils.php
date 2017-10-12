@@ -16,8 +16,9 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.6.3';  // Change it in `facebook-for-*.php` also
-
+    const PLUGIN_VERSION = '1.6.4';  // Change it in `facebook-for-*.php` also
+    public static $ems = null;
+    public static $fbgraph = null;
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
      *
@@ -203,6 +204,30 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
             'ln' => $current_user->user_lastname
           ),
           function ($value) { return $value !== null && $value !== ''; });
+      }
+    }
+
+    /**
+     * Utility function for development logging.
+     */
+    public static function fblog(
+      $message,
+      $object = array(),
+      $error = false,
+      $ems = '') {
+      $message = json_encode(array(
+        'message' => $message,
+        'object' => $object
+      ));
+      $ems = $ems ?: self::$ems;
+      if ($ems) {
+        self::$fbgraph->log(
+          $ems,
+          $message,
+          $error);
+      } else {
+        error_log('external merchant setting is null, something wrong here: ' .
+          $message);
       }
     }
   }
