@@ -163,6 +163,31 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
+  * Triggered by add_to_cart jquery trigger
+  */
+  public function inject_ajax_add_to_cart_event() {
+    ob_start();
+    
+    echo '<script>';
+    
+    $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
+
+    echo $this->pixel->build_event(
+      'AddToCart',
+      array(
+        'content_ids' => json_encode($product_ids),
+        'content_type' => 'product',
+        'value' => WC()->cart->total,
+        'currency' => get_woocommerce_currency()
+      ));
+    echo '</script>';
+
+    $pixel = ob_get_clean();
+
+    wp_send_json( $pixel );
+  }
+
+  /**
    * Triggers InitiateCheckout for checkout page
    */
   public function inject_initiate_checkout_event() {
