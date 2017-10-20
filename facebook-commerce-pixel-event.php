@@ -38,11 +38,11 @@ fbq('track', 'PageView', %s);
 <!-- Support AJAX add to cart -->
 if(typeof jQuery != 'undefined') {
   jQuery(document).ready(function($){
-    jQuery( 'body' ).on( 'added_to_cart', function( event ) {
+    jQuery('body').on('added_to_cart', function(event) {
 
       // Ajax action.
-      $.get( '?wc-ajax=fb_inject_add_to_cart_event', function( data ) {
-        $('head').append( data );
+      $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
+        $('head').append(data);
       });
       
     });

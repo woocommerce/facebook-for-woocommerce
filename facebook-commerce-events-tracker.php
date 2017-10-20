@@ -184,7 +184,7 @@ class WC_Facebookcommerce_EventsTracker {
 
     $pixel = ob_get_clean();
 
-    wp_send_json( $pixel );
+    wp_send_json($pixel);
   }
 
   /**

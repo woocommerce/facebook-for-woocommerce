@@ -212,8 +212,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array($this->events_tracker, 'inject_search_event'));
       add_action('woocommerce_add_to_cart',
         array($this->events_tracker, 'inject_add_to_cart_event'));
-      add_action( 'wc_ajax_fb_inject_add_to_cart_event', 
-        array($this->events_tracker, 'inject_ajax_add_to_cart_event' ) );
+      add_action('wc_ajax_fb_inject_add_to_cart_event', 
+        array($this->events_tracker, 'inject_ajax_add_to_cart_event' ));
       add_action('woocommerce_after_checkout_form',
         array($this->events_tracker, 'inject_initiate_checkout_event'));
       add_action('woocommerce_thankyou',
