@@ -21,6 +21,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   const FB_MESSAGE_DISPLAY_TIME = 180;
 
+  // Number of days to wait before showing a link to our ads products.
+  const FB_SHOW_REDIRECT = 7;
+
   const FB_VARIANT_IMAGE = 'fb_image';
   const FB_VARIANT_SIZE = 'size';
   const FB_VARIANT_COLOR = 'color';
@@ -85,6 +88,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $this->pixel_id = isset($this->settings['fb_pixel_id'])
      ? $this->settings['fb_pixel_id']
      : '';
+
+    $this->pixel_install_time = isset($this->settings['pixel_install_time'])
+    ? $this->settings['pixel_install_time']
+    : '';
 
     $this->use_pii = isset($this->settings['fb_pixel_use_pii'])
      && $this->settings['fb_pixel_use_pii'] === 'yes'
@@ -1206,6 +1213,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         // only save a pixel if we already have an API key.
         if ($this->settings['fb_api_key']) {
           $this->settings['fb_pixel_id'] = $_REQUEST['pixel_id'];
+          if ($this->pixel_id != $_REQUEST['pixel_id']) {
+            $this->settings['pixel_install_time'] = current_time('mysql');
+          }
         } else {
           self::log("Got pixel-only settings, doing nothing");
           echo "Not saving pixel-only settings";
@@ -1280,6 +1290,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
       $this->settings['fb_page_id'] = '';
       $this->settings['fb_external_merchant_settings_id'] = '';
+      $this->settings['pixel_install_time'] = '';
 
       update_option(
         $this->get_option_key(),
@@ -1958,6 +1969,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   function admin_options() {
     $configure_button_text = __('Get Started', 'facebook-for-woocommerce');
     $page_name = '';
+    $redirect_uri = '';
     if (!empty($this->settings['fb_page_id']) &&
       !empty($this->settings['fb_api_key']) ) {
 
@@ -1966,6 +1978,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
       $configure_button_text = __('Re-configure Facebook Settings',
         'facebook-for-woocommerce');
+
+      $redirect_uri = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
+        . $this->external_merchant_settings_id;
     }
     ?>
     <h2><?php _e('Facebook', 'facebook-for-woocommerce'); ?></h2>
@@ -2054,6 +2069,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       </div>
     </div>
     <br/><hr/><br/>
+    <div>
+      <p><?php
+        $now = new DateTime(current_time('mysql'));
+        // check if pixel_install_date has been set or cleared before
+        // DateInterveral::diff: difference in days
+        $diff = !$this->pixel_install_time
+          ? null
+          : $now->diff(new DateTime($this->pixel_install_time))->format('%a');
+        if ($redirect_uri !== '' &&
+          is_numeric($diff) && (int)$diff > self::FB_SHOW_REDIRECT) {
+          echo sprintf(__('<strong><font size="3"> Good News! You\'re now
+            eligible to use an advanced feature on Facebook to create ads.
+            <a href='. $redirect_uri. ' target="_blank">'. ' Try it out.
+            </a></font></strong>', 'facebook-for-woocommerce'));
+          }
+        ?>
+      </p>
+    </div>
     <?php
 
       $GLOBALS['hide_save_button'] = true;

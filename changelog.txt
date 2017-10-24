@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-10-19 version 1.6.5
+* Fix unterminated div tag. Thanks @pwag42
+* After 7 days, show a link to a new ads interface on the settings page.
+
 2017-10-04 version 1.6.4
 * Default to variant specific image as primary image for FB.
   * Add a Checkbox to allow override to use the parent product image.
