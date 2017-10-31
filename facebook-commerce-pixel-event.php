@@ -113,7 +113,7 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
   public static function build_event($event_name, $params, $method='track') {
     $params = self::add_version_info($params);
     return sprintf(
-      "// %s Facebook Integration Event Tracking\n".
+      "/* %s Facebook Integration Event Tracking */\n".
       "fbq('%s', '%s', %s);",
       WC_Facebookcommerce_Utils::getIntegrationName(),
       $method,
