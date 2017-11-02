@@ -1026,9 +1026,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
      */
     return apply_filters(
         "facebook_for_woocommerce_integration_prepare_product",
-        $id,
-        $product_data
-    );
+        $product_data,
+        $id);
   }
 
   /**
