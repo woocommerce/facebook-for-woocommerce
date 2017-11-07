@@ -167,9 +167,9 @@ class WC_Facebookcommerce_EventsTracker {
   */
   public function inject_ajax_add_to_cart_event() {
     ob_start();
-    
+
     echo '<script>';
-    
+
     $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
 
     echo $this->pixel->build_event(

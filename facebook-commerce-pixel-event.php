@@ -44,7 +44,7 @@ if(typeof jQuery != 'undefined') {
       $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
         $('head').append(data);
       });
-      
+
     });
   });
 }

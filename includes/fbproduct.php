@@ -189,6 +189,14 @@ class WC_Facebook_Product {
       return $description;
     }
 
+    if ($this->woo_product->get_type() === 'variation') {
+      $description = WC_Facebookcommerce_Utils::clean_string(
+        $this->get_variation_description());
+      if ($description) {
+        return $description;
+      }
+    }
+
     $post = $this->get_post_data();
 
     $post_content = WC_Facebookcommerce_Utils::clean_string(

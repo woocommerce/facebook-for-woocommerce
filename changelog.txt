@@ -1,5 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-11-03 version 1.6.6
+* Solve race condition to avoid minus remaining number in syncing process.
+* Fix sync of variant product description.
+* Enable line breaks in product main description.
+* Enable upsell message and redirect link visible for upgrading users.
+* Improve upsell message content and style.
+
 2017-10-19 version 1.6.5
 * Fix unterminated div tag. Thanks @pwag42
 * After 7 days, show a link to a new ads interface on the settings page.

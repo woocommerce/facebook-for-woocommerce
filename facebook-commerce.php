@@ -124,6 +124,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Hooks
     if (is_admin()) {
+      if (!$this->pixel_install_time && $this->pixel_id) {
+        $this->pixel_install_time = current_time('mysql');
+        $this->settings['pixel_install_time'] = $this->pixel_install_time;
+        update_option(
+          $this->get_option_key(),
+          apply_filters(
+            'woocommerce_settings_api_sanitized_fields_' . $this->id,
+              $this->settings));
+      }
       add_action('admin_notices', array( $this, 'checks' ));
       add_action('woocommerce_update_options_integration_facebookcommerce',
         array($this, 'process_admin_options'));
@@ -219,7 +228,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array($this->events_tracker, 'inject_search_event'));
       add_action('woocommerce_add_to_cart',
         array($this->events_tracker, 'inject_add_to_cart_event'));
-      add_action('wc_ajax_fb_inject_add_to_cart_event', 
+      add_action('wc_ajax_fb_inject_add_to_cart_event',
         array($this->events_tracker, 'inject_ajax_add_to_cart_event' ));
       add_action('woocommerce_after_checkout_form',
         array($this->events_tracker, 'inject_initiate_checkout_event'));
@@ -1760,6 +1769,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
 
       $this->background_processor->save()->dispatch();
+      // reset FB_SYNC_REMAINING to avoid race condition
+      set_transient(
+        self::FB_SYNC_REMAINING,
+        (int)$total);
       // handle_cron_healthcheck must be called
       // https://github.com/A5hleyRich/wp-background-processing/issues/34
       $this->background_processor->handle_cron_healthcheck();
@@ -2004,6 +2017,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       <div class="wrapper">
         <header></header>
         <div class="content">
+          <div style="white-space: nowrap; font-size: 12.5px"}>
+            <?php $now = new DateTime(current_time('mysql'));
+            // check if pixel_install_date has been set or cleared before
+            // DateInterveral::diff: difference in days
+            $diff = !$this->pixel_install_time
+              ? null
+              : $now->diff(new DateTime($this->pixel_install_time))
+                ->format('%a');
+              if ($redirect_uri !== '' &&
+                is_numeric($diff) && (int)$diff > self::FB_SHOW_REDIRECT) {
+                  echo sprintf(__('<strong> Good News! You can now optimize your
+                    Facebook Ads, based on data from your pixel.<br>
+                    <a href='. $redirect_uri. ' target="_blank">'
+                    .'Get Started</a></strong>',
+                    'facebook-for-woocommerce'));
+              }
+              ?>
+          </div>
           <h1><?php _e('Grow your business on Facebook',
           'facebook-for-woocommerce'); ?></h1>
           <p><?php _e('Use this official plugin to help sell more of your
@@ -2080,24 +2111,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       </div>
     </div>
     <br/><hr/><br/>
-    <div>
-      <p><?php
-        $now = new DateTime(current_time('mysql'));
-        // check if pixel_install_date has been set or cleared before
-        // DateInterveral::diff: difference in days
-        $diff = !$this->pixel_install_time
-          ? null
-          : $now->diff(new DateTime($this->pixel_install_time))->format('%a');
-        if ($redirect_uri !== '' &&
-          is_numeric($diff) && (int)$diff > self::FB_SHOW_REDIRECT) {
-          echo sprintf(__('<strong><font size="3"> Good News! You\'re now
-            eligible to use an advanced feature on Facebook to create ads.
-            <a href='. $redirect_uri. ' target="_blank">'. ' Try it out.
-            </a></font></strong>', 'facebook-for-woocommerce'));
-          }
-        ?>
-      </p>
-    </div>
     <?php
 
       $GLOBALS['hide_save_button'] = true;

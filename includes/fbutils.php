@@ -16,7 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.6.5';  // Change it in `facebook-for-*.php` also
+    const PLUGIN_VERSION = '1.6.6';  // Change it in `facebook-for-*.php` also
     public static $ems = null;
     public static $fbgraph = null;
     /**
@@ -130,11 +130,11 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      */
     public static function clean_string($string) {
       $string = str_replace(array('&amp%3B', '&amp;'), '&', $string);
-      $string = str_replace(array("\r", "\n", "&nbsp;", "\t"), ' ', $string);
+      $string = str_replace(array("\r", "&nbsp;", "\t"), ' ', $string);
       // Strip shortcodes via regex but keep inner content
       $string = preg_replace("~(?:\[/?)[^/\]]+/?\]~s", '', $string);
-      $string = wp_strip_all_tags($string, true); // true == remove line breaks
-      return trim($string);
+      $string = wp_strip_all_tags($string, false); // true == remove line breaks
+      return $string;
     }
 
     /**
