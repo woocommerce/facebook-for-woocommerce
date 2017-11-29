@@ -16,7 +16,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
   class WC_Facebookcommerce_Utils {
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-    const PLUGIN_VERSION = '1.6.6';  // Change it in `facebook-for-*.php` also
+    const PLUGIN_VERSION = '1.7.0';  // Change it in `facebook-for-*.php` also
     public static $ems = null;
     public static $fbgraph = null;
     /**
@@ -102,19 +102,14 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
     }
 
     /**
-     * Compatibility method for legacy retailer IDs prior to 1.1
-     * Returns a variety of IDs to match on for Pixel fires.
+     * Returns content id to match on for Pixel fires.
      *
      * @access public
      * @param WC_Product $woo_product
      * @return array
      */
     public static function get_fb_content_ids($woo_product) {
-      return array_values(array_unique(array_filter(array(
-        $woo_product->get_sku(),
-        self::FB_RETAILER_ID_PREFIX . $woo_product->get_id(),
-        self::get_fb_retailer_id($woo_product)
-      ))));
+      return array(self::get_fb_retailer_id($woo_product));
     }
 
     /**

@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 include_once('facebook-config-warmer.php');
 include_once('includes/fbproduct.php');
+include_once('includes/fb-github-plugin-updater.php');
 
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
@@ -107,6 +108,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
      ? $this->settings['fb_external_merchant_settings_id']
      : '';
 
+    $this->last_dismissed_time =
+      get_option('fb_info_banner_last_dismiss_time', '');
+
     $this->init_form_fields();
 
     if (!class_exists('WC_Facebookcommerce_Utils')) {
@@ -122,8 +126,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
 
+    // Display an info banner for eligible pixel and user.
+    if (is_admin() && !class_exists('WC_Facebookcommerce_Info_Banner') &&
+      $this->external_merchant_settings_id && $this->pixel_id ) {
+     include_once 'includes/fbinfobanner.php';
+     WC_Facebookcommerce_Info_Banner::get_instance(
+      $this->last_dismissed_time,
+      $this->external_merchant_settings_id,
+      $this->pixel_install_time);
+    }
+
     // Hooks
     if (is_admin()) {
+      $path = __FILE__;
+      $path = substr($path, 0, strrpos($path, '/') + 1) .
+        'facebook-for-woocommerce.php';
+      WC_Facebook_Github_Updater::get_instance(
+        $path, 'facebookincubator', 'facebook-for-woocommerce');
+
       if (!$this->pixel_install_time && $this->pixel_id) {
         $this->pixel_install_time = current_time('mysql');
         $this->settings['pixel_install_time'] = $this->pixel_install_time;
@@ -174,6 +194,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         );
 
         add_action(
+          'woocommerce_process_product_meta_external',
+          array($this, 'on_simple_product_publish'),
+          10,  // Action priority
+          1    // Args passed to on_product_publish (should be 'id')
+        );
+
+        add_action(
           'before_delete_post',
           array($this, 'on_product_delete'),
           10,
@@ -185,7 +212,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           array($this, 'fb_product_columns'));
         add_action('manage_product_posts_custom_column',
           array( $this, 'fb_render_product_columns' ), 2);
-
+        add_action('transition_post_status',
+          array($this, 'fb_change_product_published_status'), 10, 3);
 
         // Product data tab
         add_filter('woocommerce_product_data_tabs',
@@ -601,6 +629,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   /**
+   * Update FB visibility for trashing and restore.
+   */
+  function fb_change_product_published_status($new_status, $old_status, $post) {
+    global $post;
+    $visibility = $new_status == 'publish' ? 'published' : 'staging';
+
+    // change from publish status -> unpublish status, e.g. trash, draft, etc.
+    // change from trash status -> publish status
+    // no need to update for change from trash <-> unpublish status
+    if (($old_status == 'publish' && $new_status != 'publish') ||
+      ($old_status == 'trash' && $new_status == 'publish')) {
+        $woo_product = new WC_Facebook_Product($post->ID);
+        $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
+        foreach ($products as $item_id) {
+          $fb_product_item_id = get_post_meta(
+            $item_id,
+            self::FB_PRODUCT_ITEM_ID,
+            true);
+          $result = $this->check_api_result(
+            $this->fbgraph->update_product_item(
+            $fb_product_item_id,
+            array('visibility' => $visibility)));
+          if ($result) {
+            update_post_meta($item_id, self::FB_VISIBILITY, $visibility);
+            update_post_meta($post->ID, self::FB_VISIBILITY, $visibility);
+          }
+        }
+    }
+  }
+
+  /**
    * Generic function for use with any product publishing.
    * Will determine product type (simple or variable) and delegate to
    * appropriate handler.
@@ -917,7 +976,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       '&',
       html_entity_decode($woo_product->get_permalink()));
 
-    if (wc_get_cart_url()) {
+    // Use product_url for external product setting.
+    if ($woo_product->get_type() == 'external') {
+      $checkout_url = $woo_product->get_product_url();
+    } else if (wc_get_cart_url()) {
       $char = '?';
       // Some merchant cart pages are actually a querystring
       if (strpos(wc_get_cart_url(), '?') !== false) {
@@ -957,7 +1019,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       WC_Facebookcommerce_Utils::get_product_categories($id);
 
     $product_data = array(
-      'name' => $woo_product->get_title(),
+      'name' => WC_Facebookcommerce_Utils::clean_string(
+        $woo_product->get_title()),
       'description' => $woo_product->get_fb_description(),
       'image_url' => $image_urls[0], // The array can't be empty.
       'additional_image_urls' => array_filter($image_urls),
@@ -1151,8 +1214,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           // Reset checkout url since checkout_url (build from query data will
           // be invalid in this case.
           if (count($option_values) === 1 && empty($option_values[0])) {
-            $option_values[0] =
-              'any '.str_replace('custom_data:', '', $new_name);
+            $option_values[0] = 'any';
             $product_data['checkout_url'] = $product_data['url'];
           }
         }

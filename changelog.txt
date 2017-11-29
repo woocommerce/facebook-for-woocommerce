@@ -1,5 +1,15 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-11-29 version 1.7.0
+* Enable auto-upgrading.
+* Remove the extra content IDs to fix match rate issue.
+* Only show 'Any' in attribute value string and show attribute name.
+* Fix trash/restore products visibility on Facebook Shop.
+* Fix deprecated function for variant description.
+* Add hook and fix checkout url for external products.
+* Clean HTML tag in product title.
+* Add info dialog on WooCommerce report, settings and status page.
+
 2017-11-03 version 1.6.6
 * Solve race condition to avoid minus remaining number in syncing process.
 * Fix sync of variant product description.

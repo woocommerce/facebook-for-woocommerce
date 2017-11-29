@@ -191,7 +191,7 @@ class WC_Facebook_Product {
 
     if ($this->woo_product->get_type() === 'variation') {
       $description = WC_Facebookcommerce_Utils::clean_string(
-        $this->get_variation_description());
+        $this->get_description());
       if ($description) {
         return $description;
       }
