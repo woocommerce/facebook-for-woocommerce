@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 include_once('facebook-config-warmer.php');
 include_once('includes/fbproduct.php');
-include_once('includes/fb-github-plugin-updater.php');
 
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
@@ -108,9 +107,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
      ? $this->settings['fb_external_merchant_settings_id']
      : '';
 
-    $this->last_dismissed_time =
-      get_option('fb_info_banner_last_dismiss_time', '');
-
     $this->init_form_fields();
 
     if (!class_exists('WC_Facebookcommerce_Utils')) {
@@ -126,18 +122,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
 
-    // Display an info banner for eligible pixel and user.
-    if (is_admin() && !class_exists('WC_Facebookcommerce_Info_Banner') &&
-      $this->external_merchant_settings_id && $this->pixel_id ) {
-     include_once 'includes/fbinfobanner.php';
-     WC_Facebookcommerce_Info_Banner::get_instance(
-      $this->last_dismissed_time,
-      $this->external_merchant_settings_id,
-      $this->pixel_install_time);
-    }
-
     // Hooks
     if (is_admin()) {
+      // Display an info banner for eligible pixel and user.
+      if ($this->external_merchant_settings_id && $this->pixel_id) {
+        if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
+          include_once 'includes/fbinfobanner.php';
+        }
+        $this->last_dismissed_time =
+          get_option('fb_info_banner_last_dismiss_time', '');
+        WC_Facebookcommerce_Info_Banner::get_instance(
+         $this->last_dismissed_time,
+         $this->external_merchant_settings_id,
+         $this->pixel_install_time);
+      }
+
+      if (!class_exists('WC_Facebook_Github_Updater')) {
+        include_once 'includes/fb-github-plugin-updater.php';
+      }
       $path = __FILE__;
       $path = substr($path, 0, strrpos($path, '/') + 1) .
         'facebook-for-woocommerce.php';

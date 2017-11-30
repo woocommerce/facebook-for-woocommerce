@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-11-30 version 1.7.1
+* Move class loading and DB read into admin gate to fix site slowdown.
+
 2017-11-29 version 1.7.0
 * Enable auto-upgrading.
 * Remove the extra content IDs to fix match rate issue.
