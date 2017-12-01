@@ -125,26 +125,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // Hooks
     if (is_admin()) {
       // Display an info banner for eligible pixel and user.
-      if ($this->external_merchant_settings_id && $this->pixel_id) {
-        if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
-          include_once 'includes/fbinfobanner.php';
-        }
+      if ($this->external_merchant_settings_id
+       && $this->pixel_id
+       && $this->pixel_install_time
+       && self::check_time_cap(
+          $this->pixel_install_time, self::FB_SHOW_REDIRECT)) {
+
         $this->last_dismissed_time =
           get_option('fb_info_banner_last_dismiss_time', '');
-        WC_Facebookcommerce_Info_Banner::get_instance(
-         $this->last_dismissed_time,
-         $this->external_merchant_settings_id,
-         $this->pixel_install_time);
+        if (!$this->last_dismissed_time) {
+          if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
+            include_once 'includes/fbinfobanner.php';
+          }
+          WC_Facebookcommerce_Info_Banner::get_instance(
+            $this->last_dismissed_time,
+            $this->external_merchant_settings_id);
+        }
       }
-
-      if (!class_exists('WC_Facebook_Github_Updater')) {
-        include_once 'includes/fb-github-plugin-updater.php';
-      }
-      $path = __FILE__;
-      $path = substr($path, 0, strrpos($path, '/') + 1) .
-        'facebook-for-woocommerce.php';
-      WC_Facebook_Github_Updater::get_instance(
-        $path, 'facebookincubator', 'facebook-for-woocommerce');
+      $this->fb_check_for_new_version();
 
       if (!$this->pixel_install_time && $this->pixel_id) {
         $this->pixel_install_time = current_time('mysql');
@@ -317,6 +315,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       'class'   => array( 'show_if_simple', 'show_if_variable'  ),
     );
     return $tabs;
+  }
+
+  public function fb_check_for_new_version() {
+    if (!class_exists('WC_Facebook_Github_Updater')) {
+      include_once 'includes/fb-github-plugin-updater.php';
+    }
+    $path = __FILE__;
+    $path = substr($path, 0, strrpos($path, '/') + 1) .
+      'facebook-for-woocommerce.php';
+    WC_Facebook_Github_Updater::get_instance(
+      $path, 'facebookincubator', 'facebook-for-woocommerce');
   }
 
   public function fb_new_product_tab_content() {
@@ -2254,5 +2263,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $retailer_id,
       $product_group_id);
 
+  }
+
+  /**
+   * Helper function to check time cap.
+   */
+  private static function check_time_cap($from, $date_cap) {
+    $now = new DateTime(current_time('mysql'));
+    $diff_in_day = $now->diff(new DateTime($from))->format('%a');
+    return is_numeric($diff_in_day) && (int)$diff_in_day > $date_cap;
   }
 }

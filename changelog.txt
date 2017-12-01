@@ -1,6 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
-2017-11-30 version 1.7.1
+2017-11-30 version 1.7.2
+* Fix issue with get_plugin_data being called before it was loaded.
+* Improve perf of info dialog.
 * Move class loading and DB read into admin gate to fix site slowdown.
 
 2017-11-29 version 1.7.0

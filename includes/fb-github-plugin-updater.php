@@ -44,7 +44,7 @@ class WC_Facebook_Github_Updater {
       $this->username = $gitHubUsername;
       $this->repo = $gitHubProjectName;
       $this->slug = plugin_basename($this->pluginFile);
-      $this->pluginData = get_plugin_data($this->pluginFile);
+      $this->pluginData = null;
       add_filter("pre_set_site_transient_update_plugins",
         array($this, "setTransient"));
       add_filter("plugins_api", array($this, "setPluginInfo"), 10, 3);
@@ -92,6 +92,9 @@ class WC_Facebook_Github_Updater {
       !isset($transient->checked[$this->slug])) {
       return $transient;
     }
+    if (!$this->pluginData) {
+      $this->pluginData = get_plugin_data($this->pluginFile);
+    }
     // Get plugin & GitHub release information
     $this->getRepoReleaseInfo();
     // Check the versions if we need to do an update
@@ -115,6 +118,9 @@ class WC_Facebook_Github_Updater {
     // For multiple self-host plugins, check slug.
     if (!isset($response->slug) || ($response->slug != $this->slug)) {
       return $false;
+    }
+    if (!$this->pluginData) {
+      $this->pluginData = get_plugin_data($this->pluginFile);
     }
     $this->getRepoReleaseInfo();
     // Add our plugin information
