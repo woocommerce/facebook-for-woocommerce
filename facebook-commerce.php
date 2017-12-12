@@ -107,8 +107,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
      ? $this->settings['fb_external_merchant_settings_id']
      : '';
 
-    $this->init_form_fields();
-
     if (!class_exists('WC_Facebookcommerce_Utils')) {
       include_once 'includes/fbutils.php';
     }
@@ -124,6 +122,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Hooks
     if (is_admin()) {
+      $this->init_form_fields();
       // Display an info banner for eligible pixel and user.
       if ($this->external_merchant_settings_id
        && $this->pixel_id
@@ -231,7 +230,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         add_action('wp_ajax_ajax_delete_fb_product',
           array($this, 'ajax_delete_fb_product'));
 
+        add_filter('woocommerce_duplicate_product_exclude_meta',
+          array($this, 'fb_duplicate_product_reset_meta'));
+
       }
+      $this->load_background_sync_process();
     }
 
     if (!class_exists('WC_Facebookcommerce_EventsTracker')) {
@@ -263,7 +266,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       add_action('woocommerce_thankyou',
         array($this->events_tracker, 'inject_purchase_event'));
     }
+  }
 
+  public function load_background_sync_process() {
     // Attempt to load background processing (Woo 3.x.x only)
     include_once('includes/fbbackground.php');
     if (class_exists('WC_Facebookcommerce_Background_Process')) {
@@ -2249,6 +2254,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         $this->fbgraph->delete_product_item($fb_product_item_id);
       self::log($pi_result);
     }
+  }
+
+  function fb_duplicate_product_reset_meta($to_delete) {
+    array_push($to_delete, self::FB_PRODUCT_ITEM_ID);
+    array_push($to_delete, self::FB_PRODUCT_GROUP_ID);
+    return $to_delete;
   }
 
   function create_product_item_using_itemid(
