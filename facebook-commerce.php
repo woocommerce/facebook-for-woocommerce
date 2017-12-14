@@ -607,6 +607,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         ,feedPingUrl: ''
         ,samples: <?php echo $this->get_sample_product_feed()?>
       }
+      ,tokenExpired: '<?php echo $this->settings['fb_api_key'] &&
+        !$this->get_page_name()?>'
     };
     </script>
   <?php
@@ -2078,18 +2080,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   }
 
-  /**
-   * Admin Panel Options
-   */
-  function admin_options() {
-    $configure_button_text = __('Get Started', 'facebook-for-woocommerce');
+  function get_page_name() {
     $page_name = '';
-    $redirect_uri = '';
     if (!empty($this->settings['fb_page_id']) &&
       !empty($this->settings['fb_api_key']) ) {
 
       $page_name = $this->fbgraph->get_page_name($this->settings['fb_page_id'],
         $this->settings['fb_api_key']);
+    }
+    return $page_name;
+  }
+
+  /**
+   * Admin Panel Options
+   */
+  function admin_options() {
+    $configure_button_text = __('Get Started', 'facebook-for-woocommerce');
+    $page_name = $this->get_page_name();
+    $redirect_uri = '';
+    if (!empty($this->settings['fb_page_id']) &&
+      !empty($this->settings['fb_api_key']) ) {
 
       $configure_button_text = __('Re-configure Facebook Settings',
         'facebook-for-woocommerce');
@@ -2137,10 +2147,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           <?php
             if ($this->settings['fb_api_key'] && !$page_name) {
                // API key is set, but no page name.
-               echo sprintf(__('<strong>Your API key is no longer valid.
+               echo sprintf(__('<div id="token_text">
+                <strong>Your API key is no longer valid.
                 Please click "Re-configure Facebook Settings >
-                Advanced Options > Delete Settings" and setup
-                Facebook for WooCommerce again.</strong></br>',
+                Advanced Options > Update Token".</strong></br></div>',
                 'facebook-for-woocommerce'));
                 echo '<p id ="configure_button"><a href="#"
                   class="btn" onclick="facebookConfig()" id="set_dia" ';

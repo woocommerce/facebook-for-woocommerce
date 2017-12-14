@@ -96,7 +96,7 @@ function sync_all_products() {
   if (get_api_key_box() && !get_api_key_box().value){
     return;
   }
-  console.log('Syncing all products!');  
+  console.log('Syncing all products!');
   window.fb_connected = true;
   sync_in_progress();
   return ajax('ajax_sync_all_fb_products');
@@ -138,7 +138,7 @@ function delete_all_settings(callback = null, failcallback = null) {
 // if called multiple times, race conditions might occur
 // ---
 // It's also called again if the pixel id is ever changed or pixel pii is
-// enabled or disabled. 
+// enabled or disabled.
 function save_settings(message, callback = null, failcallback = null, localsettings = null){
   if (!localsettings) {
     localsettings = settings;
@@ -159,7 +159,7 @@ function save_settings(message, callback = null, failcallback = null, localsetti
 
 // see comments in save_settings function above
 function save_settings_and_sync(message) {
-  if ('api_key' in settings && 'product_catalog_id' in settings){
+  if ('api_key' in settings){
     save_settings(message,
       function(response){
         if (response && response.includes('settings_saved')){
@@ -183,7 +183,7 @@ function save_settings_and_sync(message) {
 }
 
 //Reset buttons to brand new setup state
-function reset_buttons(){  
+function reset_buttons(){
   if(document.querySelector('#connection_status')){
     document.querySelector('#connection_status').style.display = 'none';
   }
@@ -203,7 +203,7 @@ function reset_buttons(){
 }
 
 //Remove reset/settings buttons during product sync
-function sync_in_progress(){  
+function sync_in_progress(){
   if(document.querySelector('#connection_status')){
     document.querySelector('#connection_status').style.display = '';
   }
@@ -229,23 +229,23 @@ function sync_in_progress(){
   }
 }
 
-function sync_not_in_progress(){      
+function sync_not_in_progress(){
   if(document.querySelector('#connection_status')){
     document.querySelector('#connection_status').style.display = '';
   }
   if(document.querySelector('#set_dia')){
     document.querySelector('#set_dia').style.display = '';
     document.querySelector('#set_dia').text = 'Re-configure Facebook Settings';
-  }  
+  }
   if(document.querySelector('#resync_products')) {
     document.querySelector('#resync_products').style.display = '';
-  }    
+  }
   if(document.querySelector('#sync_progress')){
     document.querySelector('#sync_progress').innerHTML = '';
   }
 }
 
-function not_connected(){  
+function not_connected(){
   if(document.querySelector('#connection_status')){
     document.querySelector('#connection_status').style.display = 'none';
   }
@@ -326,16 +326,16 @@ function setPixel(message) {
   }
 
   // We need this to support changing the pixel id after setup.
-  save_settings(message, 
+  save_settings(message,
     function(response){
-      if (response && response.includes('settings_saved')){        
+      if (response && response.includes('settings_saved')){
         window.sendToFacebook('ack set pixel', message.params);
       } //may not get settings_saved if we try to save pixel before an API key
-    }, 
+    },
     function(errorResponse){
       console.log(errorResponse);
       window.sendToFacebook('fail set pixel', errorResponse);
-    }, 
+    },
     pixel_settings
   );
 }
@@ -366,6 +366,13 @@ function setAccessTokenAndPageId(message) {
   settings.api_key = message.params.page_token;
   settings.page_id = message.params.page_id;
   //Ack token in "save_settings_and_sync" for final ack
+
+  window.facebookAdsToolboxConfig.tokenExpired = false;
+  if(document.querySelector('#token_text')){
+    document.querySelector('#token_text').innerHTML =
+      `<strong>Your API key has been updated.<br />
+      Please refresh the page.</strong>`;
+  }
 }
 
 function iFrameListener(event) {
@@ -403,7 +410,7 @@ function iFrameListener(event) {
       setCatalog(event.data);
       break;
     case 'set pixel':
-      setPixel(event.data);      
+      setPixel(event.data);
       break;
     case 'gen feed':
       genFeed();
@@ -441,57 +448,57 @@ window.fb_pings = setInterval(function(){
 }, 5000);
 
 
-function product_sync_complete(sync_progress_element, sync_status_element){    
+function product_sync_complete(sync_progress_element, sync_status_element){
   sync_not_in_progress();
-  if(sync_status_element) {            
-    sync_status_element.innerHTML =       
-      '<strong>Status: </strong>Products are synced to Facebook.';      
-  } 
-  if(sync_progress_element) {                        
-    sync_progress_element.innerHTML = '';                            
+  if(sync_status_element) {
+    sync_status_element.innerHTML =
+      '<strong>Status: </strong>Products are synced to Facebook.';
+  }
+  if(sync_progress_element) {
+    sync_progress_element.innerHTML = '';
   }
 }
 
-function check_queues(){    
-  ajax('ajax_fb_background_check_queue', 
-    {"request_time": new Date().getTime()}, function(res){    
+function check_queues(){
+  ajax('ajax_fb_background_check_queue',
+    {"request_time": new Date().getTime()}, function(res){
     var sync_progress_element = document.querySelector('#sync_progress');
     var sync_status_element = document.querySelector('#sync_status');
     if(res){
        console.log(res);
        res = res.substring(res.indexOf("{")); //Trim leading extra chars (rnrnr)
-       res = JSON.parse(res);       
+       res = JSON.parse(res);
        if(!res.connected && !window.fb_connected){
           not_connected();
           return;
        }
        if(!res.background){
-        console.log("No background sync found, disabling pings");       
+        console.log("No background sync found, disabling pings");
         clearInterval(window.fb_pings);
        }
-       
+
        var processing = !!res.processing; //explicit boolean conversion
        var remaining = res.remaining;
-       if(processing) {         
-         if(sync_progress_element) {                        
-            sync_progress_element.innerHTML = 
+       if(processing) {
+         if(sync_progress_element) {
+            sync_progress_element.innerHTML =
               '<strong>Progress:</strong> ' + remaining + ' item' +
               (remaining > 1 ? 's' : '') + ' remaining.';
          }
          if(remaining === 0){
             product_sync_complete(sync_progress_element, sync_status_element);
          }
-       } else {          
+       } else {
           //Not processing, none remaining.  Either long complete, or just completed
-          if(window.fb_sync_start_time && res.request_time){            
-            var request_time = new Date(parseInt(res.request_time));            
+          if(window.fb_sync_start_time && res.request_time){
+            var request_time = new Date(parseInt(res.request_time));
             if(window.fb_sync_start_time > request_time){
               //Old ping, do nothing.
               console.log("OLD PING");
               return;
             }
           }
-          
+
           if(remaining === 0){
             product_sync_complete(sync_progress_element, sync_status_element);
           }
