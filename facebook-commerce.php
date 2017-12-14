@@ -2090,6 +2090,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $configure_button_text = __('Get Started', 'facebook-for-woocommerce');
     $page_name = $this->get_page_name();
     $redirect_uri = '';
+
+    $remove_http_active = is_plugin_active('remove-http/remove-http.php');
+    $https_will_be_stripped = $remove_http_active &&
+      !get_option('factmaven_rhttp')['external'];
+    if ($https_will_be_stripped) {
+      $this->display_sticky_message(__('You\'re using Remove HTTP which has
+        incompatibilities with our extension. Please disable it, or select the
+        "Ignore external links" option on the Remove HTTP settings page.'));
+    }
+
     if (!empty($this->settings['fb_page_id']) &&
       !empty($this->settings['fb_api_key']) ) {
 

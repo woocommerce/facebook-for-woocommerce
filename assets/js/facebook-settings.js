@@ -8,6 +8,9 @@ function openPopup() {
   if(window.facebookAdsToolboxConfig.popupOrigin.includes('staticxx')) {
     window.facebookAdsToolboxConfig.popupOrigin = 'https://www.facebook.com/';
   }
+  window.facebookAdsToolboxConfig.popupOrigin = prepend_protocol(
+    window.facebookAdsToolboxConfig.popupOrigin
+  );
   popupUrl = window.facebookAdsToolboxConfig.popupOrigin;
 
   var path = '/ads/dia';
@@ -19,6 +22,14 @@ function openPopup() {
       params: params
     }, window.facebookAdsToolboxConfig.popupOrigin);
   };
+}
+
+function prepend_protocol(url) {
+  // Preprend https if the url begis with //www.
+  if (url.indexOf('//www.') === 0) {
+    url = 'https:' + url;
+  }
+  return url;
 }
 
 function get_product_catalog_id_box() {
