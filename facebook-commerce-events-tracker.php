@@ -205,7 +205,8 @@ class WC_Facebookcommerce_EventsTracker {
   }
 
   /**
-   * Triggers Purchase for thank you page
+   * Triggers Purchase for payment transaction complete and for the thank you
+   * page in cases of delayed payment.
    */
   public function inject_purchase_event($order_id) {
     $order = new WC_Order($order_id);
@@ -229,6 +230,19 @@ class WC_Facebookcommerce_EventsTracker {
         'value' => $order->get_total(),
         'currency' => get_woocommerce_currency()
       ));
+  }
+
+  /**
+   * Triggers Purchase for thank you page for COD, BACS CHEQUE payment
+   * which won't invoke woocommerce_payment_complete.
+   */
+  public function inject_gateway_purchase_event($order_id) {
+    $order = new WC_Order($order_id);
+    $payment = $order->get_payment_method();
+    if (!in_array($payment, array('cod', 'cheque', 'bacs'))) {
+      return;
+    }
+    $this->inject_purchase_event($order_id);
   }
 }
 

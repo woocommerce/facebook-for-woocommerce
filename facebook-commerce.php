@@ -264,7 +264,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       add_action('woocommerce_after_checkout_form',
         array($this->events_tracker, 'inject_initiate_checkout_event'));
       add_action('woocommerce_thankyou',
-        array($this->events_tracker, 'inject_purchase_event'));
+        array($this->events_tracker, 'inject_gateway_purchase_event'));
+      add_action('woocommerce_payment_complete',
+         array($this->events_tracker, 'inject_purchase_event'));
+
     }
   }
 
