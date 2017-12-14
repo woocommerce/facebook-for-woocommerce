@@ -201,9 +201,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
         add_action(
           'woocommerce_product_quick_edit_save',
-          array($this, 'on_quick_edit_save'),
+          array($this, 'on_quick_and_bulk_edit_save'),
           10,  // Action priority
-          1    // Args passed to on_product_publish (should be 'product')
+          1    // Args passed to on_quick_and_bulk_edit_save ('product')
+        );
+
+        add_action(
+          'woocommerce_product_bulk_edit_save',
+          array($this, 'on_quick_and_bulk_edit_save'),
+          10,  // Action priority
+          1    // Args passed to on_quick_and_bulk_edit_save ('product')
         );
 
         add_action(
@@ -2336,7 +2343,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
   }
 
-  function on_quick_edit_save($product) {
+  function on_quick_and_bulk_edit_save($product) {
     $wp_id = $product->get_id();
     $visibility = get_post_status($wp_id) == 'publish'
     ? 'published'
