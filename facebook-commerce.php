@@ -200,6 +200,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         );
 
         add_action(
+          'woocommerce_product_quick_edit_save',
+          array($this, 'on_quick_edit_save'),
+          10,  // Action priority
+          1    // Args passed to on_product_publish (should be 'product')
+        );
+
+        add_action(
           'before_delete_post',
           array($this, 'on_product_delete'),
           10,
@@ -662,22 +669,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // no need to update for change from trash <-> unpublish status
     if (($old_status == 'publish' && $new_status != 'publish') ||
       ($old_status == 'trash' && $new_status == 'publish')) {
-        $woo_product = new WC_Facebook_Product($post->ID);
-        $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
-        foreach ($products as $item_id) {
-          $fb_product_item_id = get_post_meta(
-            $item_id,
-            self::FB_PRODUCT_ITEM_ID,
-            true);
-          $result = $this->check_api_result(
-            $this->fbgraph->update_product_item(
-            $fb_product_item_id,
-            array('visibility' => $visibility)));
-          if ($result) {
-            update_post_meta($item_id, self::FB_VISIBILITY, $visibility);
-            update_post_meta($post->ID, self::FB_VISIBILITY, $visibility);
-          }
-        }
+        $this->update_fb_visibility($post->ID, $visibility);
     }
   }
 
@@ -2306,5 +2298,46 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $now = new DateTime(current_time('mysql'));
     $diff_in_day = $now->diff(new DateTime($from))->format('%a');
     return is_numeric($diff_in_day) && (int)$diff_in_day > $date_cap;
+  }
+
+  /**
+   * Helper function to update FB visibility.
+   */
+  function update_fb_visibility($wp_id, $visibility) {
+    $woo_product = new WC_Facebook_Product($wp_id);
+    $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
+    foreach ($products as $item_id) {
+      $fb_product_item_id = get_post_meta(
+        $item_id,
+        self::FB_PRODUCT_ITEM_ID,
+        true);
+      // Product never publish to FB new status is not publish, or no post id.
+      if (!$fb_product_item_id) {
+        continue;
+      }
+      $result = $this->check_api_result(
+        $this->fbgraph->update_product_item(
+        $fb_product_item_id,
+        array('visibility' => $visibility)));
+      if ($result) {
+        update_post_meta($item_id, self::FB_VISIBILITY, $visibility);
+        update_post_meta($wp_id, self::FB_VISIBILITY, $visibility);
+      }
+    }
+  }
+
+  function on_quick_edit_save($product) {
+    $wp_id = $product->get_id();
+    $visibility = get_post_status($wp_id) == 'publish'
+    ? 'published'
+    : 'staging';
+    // case 1: new status is 'publish' regardless of old status, sync to FB
+    if ($visibility == 'published') {
+      $this->on_product_publish($wp_id);
+    } else {
+      // case 2: product never publish to FB, new status is not publish
+      // case 3: product new status is not publish and published before
+      $this->update_fb_visibility($wp_id, $visibility);
+    }
   }
 }
