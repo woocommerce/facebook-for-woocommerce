@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-12-13 version 1.7.3
+* Fix security hole that would allow a logged in user without
+  manage_woocommerce permissions to toggle the fb_visibility of products.
+* Handle shortcodes.
+* Support product duplication.
+
 2017-11-30 version 1.7.2
 * Fix issue with get_plugin_data being called before it was loaded.
 * Improve perf of info dialog.
