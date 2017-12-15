@@ -1065,6 +1065,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     $product_data = $woo_product->add_sale_price($product_data);
 
+    // IF using WPML, set the product to staging unless it is in the
+    // default language. WPML >= 3.2 Supported.
+    if (defined('ICL_LANGUAGE_CODE')) {
+      if (!$this->default_lang) {
+        $this->default_lang = apply_filters('wpml_default_language', null);
+      }
+      $product_lang = apply_filters('wpml_post_language_details', null, $id);
+      if ($product_lang &&
+          $product_lang['language_code'] != $this->default_lang) {
+        $product_data['visibility'] = 'staging';
+      }
+    }
+
     // Loop through variants (size, color, etc) if they exist
     // For each product field type, pull the single variant
     $variants = $this->prepare_variants_for_item($woo_product, $product_data);
