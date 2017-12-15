@@ -141,7 +141,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      */
     public static function get_product_array($woo_product) {
       $result = array();
-      if ($woo_product->get_type() === 'variable') {
+      if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
         foreach ($woo_product->get_children() as $item_id) {
           array_push($result, $item_id);
         }
@@ -223,6 +223,14 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
         error_log('external merchant setting is null, something wrong here: ' .
           $message);
       }
+    }
+
+    public static function is_variation_type($type) {
+      return $type == 'variation' || $type == 'subscription_variation';
+    }
+
+    public static function is_variable_type($type) {
+      return $type == 'variable' || $type == 'variable-subscription';
     }
   }
 endif;

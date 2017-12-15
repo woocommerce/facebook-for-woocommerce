@@ -59,7 +59,7 @@ class WC_Facebookcommerce_EventsTracker {
       $product_ids = array_merge(
         $product_ids,
         WC_Facebookcommerce_Utils::get_fb_content_ids($product));
-      if ($product->get_type() === 'variable') {
+      if (WC_Facebookcommerce_Utils::is_variable_type($product->get_type())) {
         $content_type = 'product_group';
       }
     }
@@ -130,7 +130,7 @@ class WC_Facebookcommerce_EventsTracker {
     }
 
     // if product is a variant, fire the pixel with content_type: product_group
-    if ($product->get_type() === 'variable') {
+    if (WC_Facebookcommerce_Utils::is_variable_type($product->get_type())) {
       $content_type = 'product_group';
     }
 
@@ -217,7 +217,7 @@ class WC_Facebookcommerce_EventsTracker {
       $product_ids = array_merge(
         $product_ids,
         WC_Facebookcommerce_Utils::get_fb_content_ids($product));
-      if ($product->get_type() === 'variable') {
+      if (WC_Facebookcommerce_Utils::is_variable_type($product->get_type())) {
         $content_type = 'product_group';
       }
     }

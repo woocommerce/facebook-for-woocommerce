@@ -360,7 +360,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       true);
 
     $image_setting = null;
-    if ($woo_product->get_type() === 'variable') {
+    if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $image_setting = $woo_product->get_use_parent_image();
     }
 
@@ -491,7 +491,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           $fb_product_group_id . '</a><p/>');
 
       $woo_product = new WC_Facebook_Product($post->ID);
-      if ($woo_product->get_type() === 'variable') {
+      if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
         printf('<p>Variant IDs:<br/>');
         $children = $woo_product->get_children();
         foreach ($children as $child_id) {
@@ -649,7 +649,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     $products = array($wp_id);
-    if ($woo_product->get_type() == 'variable') {
+    if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $children = $woo_product->get_children();
       $products = array_merge($products, $children);
     }
@@ -692,7 +692,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     $woo_product = new WC_Facebook_Product($wp_id);
     $product_type = $woo_product->get_type();
-    if ($product_type === 'variable') {
+    if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $this->on_variable_product_publish($wp_id, $woo_product);
     } else {
       $this->on_simple_product_publish($wp_id, $woo_product);
@@ -1010,7 +1010,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $checkout_url = WC_Facebookcommerce_Utils::make_url(
         wc_get_cart_url() . $char);
 
-      if ($woo_product->get_type() === 'variation') {
+      if (WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())) {
         $query_data = array(
           'add-to-cart' => $woo_product->get_parent_id(),
           'variation_id' => $woo_product->get_id()
@@ -1033,7 +1033,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     $id = $woo_product->get_id();
-    if ($woo_product->get_type() === 'variation') {
+    if (WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())) {
       $id = $woo_product->get_parent_id();
     }
     $categories =
@@ -1140,7 +1140,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Modify Woo variant/taxonomies for variable products to be FB compatible
    **/
   function prepare_variants_for_group($woo_product) {
-    if ($woo_product->get_type() !== 'variable') {
+    if (!WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       WC_Facebookcommerce_Utils::fblog(
         "prepare_variants_for_group called on non-variable product");
       return;
@@ -1213,7 +1213,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Modify Woo variant/taxonomies to be FB compatible
    **/
   function prepare_variants_for_item($woo_product, &$product_data) {
-    if ($woo_product->get_type() !== 'variation') {
+    if (!WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())) {
       return;
     }
 
@@ -1708,7 +1708,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   function reset_single_product($wp_id) {
     $woo_product = new WC_Facebook_Product($wp_id);
     $products = array($woo_product->get_id());
-    if ($woo_product->get_type() === 'variable') {
+    if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $products = array_merge($products, $woo_product->get_children());
     }
 

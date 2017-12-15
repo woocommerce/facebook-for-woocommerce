@@ -141,7 +141,7 @@ class WC_Facebook_Product {
 
   // Returns the parent image id for variable products only.
   public function get_parent_image_id() {
-    if ($this->woo_product->get_type() === 'variation') {
+    if (WC_Facebookcommerce_Utils::is_variation_type($this->woo_product->get_type())) {
       $parent_data = $this->get_parent_data();
       return $parent_data['image_id'];
     }
@@ -189,7 +189,7 @@ class WC_Facebook_Product {
       return $description;
     }
 
-    if ($this->woo_product->get_type() === 'variation') {
+    if (WC_Facebookcommerce_Utils::is_variation_type($this->woo_product->get_type())) {
       $description = WC_Facebookcommerce_Utils::clean_string(
         $this->get_description());
       if ($description) {
