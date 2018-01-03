@@ -4,7 +4,7 @@
  * Description: The Facebook pixel is an analytics tool that helps you measure the effectiveness of your advertising. You can use the Facebook pixel to understand the actions people are taking on your website and reach audiences you care about.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 1.6.0
+ * Version: 1.7.6
  * Text Domain: facebook-pixel
  */
 /**
@@ -27,12 +27,11 @@ class WP_FacebookPixel {
       $options = get_option(FacebookWordPress_Config::SETTINGS_KEY);
       $pixel_id = $options[FacebookWordPress_Config::PIXEL_ID_KEY];
       $should_update = false;
-      if ((!isset($pixel_id) || !is_numeric($pixel_id)) &&
+      if (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) &&
           class_exists('WC_Facebookcommerce_WarmConfig')) {
         $fb_warm_pixel_id = WC_Facebookcommerce_WarmConfig::$fb_warm_pixel_id;
 
-        if (isset($fb_warm_pixel_id) &&
-            is_numeric($fb_warm_pixel_id) &&
+        if (WC_Facebookcommerce_Utils::is_valid_id($fb_warm_pixel_id) &&
             (int)$fb_warm_pixel_id == $fb_warm_pixel_id) {
           $pixel_id = (string)$fb_warm_pixel_id;
           $should_update = true;
@@ -72,7 +71,8 @@ class WP_FacebookPixel {
    */
   public function register_settings_page() {
     if (is_admin()) {
-      new FacebookWordPress_Config();
+      $plugin_name = plugin_basename(__FILE__);
+      new FacebookWordPress_Config($plugin_name);
     }
   }
 }

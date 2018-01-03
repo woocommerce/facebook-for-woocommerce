@@ -22,7 +22,7 @@ class WP_Facebook_Integration {
     $pixel_id = $options[FacebookWordPress_Config::PIXEL_ID_KEY];
     $use_pii = $options[FacebookWordPress_Config::USE_PII_KEY];
 
-    if (is_numeric($pixel_id)) {
+    if (WC_Facebookcommerce_Utils::is_valid_id($pixel_id)) {
       $user_info = WC_Facebookcommerce_Utils::get_user_info($use_pii == '1');
       $this->events_tracker = new WC_Facebookcommerce_EventsTracker(
         $pixel_id, $user_info);

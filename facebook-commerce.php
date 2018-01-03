@@ -1988,8 +1988,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       'fb_pixel_id' => array(
         'title'       => __('Pixel ID', 'facebook-for-woocommerce'),
         'type'        => 'text',
-        'description' => __('The unique identifier for your unique Facebook
-          Pixel.', 'facebook-for-woocommerce'),
+        'description' => __('The unique identifier for your Facebook pixel',
+          'facebook-for-woocommerce'),
         'default'     => ''
         ),
       'fb_pixel_use_pii' => array(

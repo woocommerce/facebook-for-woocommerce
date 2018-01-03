@@ -1,0 +1,3 @@
+.hide-last-button button:last-of-type{
+  display: none;
+}

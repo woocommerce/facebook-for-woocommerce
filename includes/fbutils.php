@@ -232,5 +232,16 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
     public static function is_variable_type($type) {
       return $type == 'variable' || $type == 'variable-subscription';
     }
+
+    /**
+     * Returns true if id is a positive non-zero integer
+     *
+     * @access public
+     * @param string $pixel_id
+     * @return bool
+     */
+    public static function is_valid_id($pixel_id) {
+      return isset($pixel_id) && is_numeric($pixel_id) && (int)$pixel_id > 0;
+    }
   }
 endif;

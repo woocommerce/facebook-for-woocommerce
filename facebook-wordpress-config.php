@@ -9,19 +9,28 @@ class FacebookWordPress_Config {
   const SETTINGS_KEY = 'facebook_config';
   const PIXEL_ID_KEY = 'pixel_id';
   const USE_PII_KEY = 'use_pii';
-  const MENU_SLUG = 'facebook_options';
+  const MENU_SLUG = 'facebook_pixel_options';
   const OPTION_GROUP = 'facebook_option_group';
   const SECTION_ID = 'facebook_settings_section';
+  const IGNORE_PIXEL_ID_NOTICE = 'ignore_pixel_id_notice';
+  const DISMISS_PIXEL_ID_NOTICE = 'dismiss_pixel_id_notice';
 
   private $options;
+  private $options_page;
 
-  public function __construct() {
+  public function __construct($plugin_name) {
     add_action('admin_menu', array($this, 'add_menu'));
     add_action('admin_init', array($this, 'register_settings'));
+    add_action('current_screen', array($this, 'register_notices'));
+    add_action('admin_init', array($this, 'dismiss_notices'));
+    add_action('admin_enqueue_scripts', array($this, 'register_plugin_styles'));
+    add_filter(
+      'plugin_action_links_'.$plugin_name,
+      array($this, 'add_settings_link'));
   }
 
   public function add_menu() {
-    add_options_page(
+    $this->options_page = add_options_page(
       'Facebook Pixel Settings',
       'Facebook Pixel',
       'manage_options',
@@ -91,7 +100,7 @@ class FacebookWordPress_Config {
     printf(
       '
 <input name="%s" id="%s" value="%s" />
-<p class="description">The unique identifier for your unique Facebook Pixel.</p>
+<p class="description">The unique identifier for your Facebook pixel.</p>
       ',
       self::SETTINGS_KEY . '[' . self::PIXEL_ID_KEY . ']',
       self::PIXEL_ID_KEY,
@@ -120,6 +129,69 @@ class FacebookWordPress_Config {
       </a> for suggestions on complying with EU privacy requirements.
     </p>
     <?php
+  }
+
+  public function register_notices() {
+    // Update class field
+    $this->options = get_option(self::SETTINGS_KEY);
+    $pixel_id = $this->options[self::PIXEL_ID_KEY];
+    $current_screen_id = get_current_screen()->id;
+    if (
+      !WC_Facebookcommerce_Utils::is_valid_id($pixel_id)
+        && current_user_can('manage_options')
+        && in_array(
+          $current_screen_id,
+          array('dashboard', 'plugins', $this->options_page),
+          true)
+        && !get_user_meta(
+             get_current_user_id(),
+             self::IGNORE_PIXEL_ID_NOTICE,
+             true)) {
+      add_action('admin_notices', array($this, 'pixel_id_not_set_notice'));
+    }
+  }
+
+  public function dismiss_notices() {
+    $user_id = get_current_user_id();
+    if (isset($_GET[self::DISMISS_PIXEL_ID_NOTICE])) {
+      update_user_meta($user_id, self::IGNORE_PIXEL_ID_NOTICE, true);
+    }
+  }
+
+  public function pixel_id_not_set_notice() {
+    ?>
+      <div class="notice notice-warning is-dismissible hide-last-button">
+        <p>
+          The Facebook Pixel plugin requires a Pixel ID.
+          Click
+          <a href="<?
+            echo admin_url('options-general.php?page='.self::MENU_SLUG);
+          ?>">here</a>
+          to configure the plugin.
+        </p>
+        <button
+          type="button"
+          class="notice-dismiss"
+          onClick="location.href='?<? echo self::DISMISS_PIXEL_ID_NOTICE ?>'">
+          <span class="screen-reader-text">Dismiss this notice.</span>
+        </button>
+      </div>
+    <?php
+  }
+
+  public function register_plugin_styles() {
+    wp_register_style('facebook-pixel', plugins_url('css/admin.css', __FILE__));
+    wp_enqueue_style('facebook-pixel');
+  }
+
+  public function add_settings_link($links) {
+    $settings = array(
+      'settings' => sprintf(
+        '<a href="%s">%s</a>',
+        admin_url('options-general.php?page='.self::MENU_SLUG),
+        'Settings')
+      );
+    return array_merge($settings, $links);
   }
 }
 
