@@ -1,5 +1,14 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-01-05 version 1.7.4
+* Fix purchase event not firing for some payment types.
+* Provide functionality to refresh API token when invalid.
+* Added Quick Edit Compatibility.
+* Fix Incompatibility with remove HTTP extension.
+* Added Bulk Edit Compatibility.
+* WPML compatibility: products in non-default language set to staging
+* Add support for variable subscription products.
+
 2017-12-13 version 1.7.3
 * Fix security hole that would allow a logged in user without
   manage_woocommerce permissions to toggle the fb_visibility of products.
