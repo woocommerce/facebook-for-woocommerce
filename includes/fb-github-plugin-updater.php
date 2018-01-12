@@ -101,8 +101,13 @@ class WC_Facebook_Github_Updater {
     $shouldUpdate = version_compare(
       substr($this->githubAPIResult->tag_name, 1),
       $transient->checked[$this->slug]);
+
+    // Only process download url if shouldUpdate
     if ($shouldUpdate == 1) {
-      $package = $this->githubAPIResult->zipball_url;
+      $package = $this->get_asset_download_url($this->githubAPIResult->assets);
+      if (!$package) {
+        return $transient;
+      }
       $obj = new stdClass();
       $obj->slug = $this->slug;
       $obj->new_version = $this->githubAPIResult->tag_name;
@@ -132,7 +137,8 @@ class WC_Facebook_Github_Updater {
     $response->homepage = $this->pluginData["PluginURI"];
 
     // This is our release download zip file
-    $downloadLink = $this->githubAPIResult->zipball_url;
+    $downloadLink =
+      $this->get_asset_download_url($this->githubAPIResult->assets);
     $response->download_link = $downloadLink;
     // Create tabs in the lightbox
     $response->sections = array(
@@ -172,8 +178,26 @@ class WC_Facebook_Github_Updater {
     $text = trim($text, "\n");
     $lines = explode("\n", $text);
     $lines = array_filter($lines, 'strlen');
-    return implode("<br>", $lines);
+    $woo_changelog = array_filter($lines, function($line) {
+      return !is_numeric(strpos($line, 'WordPress'));
+    });
+    $woo_changelog = implode("<br>", $woo_changelog);
+    return $woo_changelog;
   }
+
+  public function get_asset_download_url($assets) {
+    $assets = json_decode(json_encode($assets), true);
+    array_filter($assets, function($asset) {
+      return strpos($asset["browser_download_url"],
+        "facebook-for-woocommerce-v") !== false;
+    });
+    if (!empty($assets)) {
+      $valid_asset = reset($assets);
+      return $valid_asset["browser_download_url"];
+    }
+    return false;
+  }
+
 }
 
 endif;

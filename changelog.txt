@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-01-11 version 1.7.5
+* Fix auto-updater to upgrade facebook-for-woocommerce only.
+
 2018-01-05 version 1.7.4
 * Fix purchase event not firing for some payment types.
 * Provide functionality to refresh API token when invalid.
