@@ -346,6 +346,219 @@ class WC_Facebook_Product {
       return $this->get_matching_variation($default_attributes);
     }
   }
+
+  /**
+   * Assemble product payload for POST
+   **/
+  function prepare_product($retailer_id = null) {
+    if (!$retailer_id) {
+      $retailer_id =
+        WC_Facebookcommerce_Utils::get_fb_retailer_id($this);
+    }
+    $image_urls = $this->get_all_image_urls();
+
+    // Replace Wordpress sanitization's ampersand with a real ampersand.
+    $product_url = str_replace(
+      '&amp%3B',
+      '&',
+      html_entity_decode($this->get_permalink()));
+
+    // Use product_url for external product setting.
+    if ($this->get_type() == 'external') {
+      $checkout_url = $this->get_product_url();
+    } else if (wc_get_cart_url()) {
+      $char = '?';
+      // Some merchant cart pages are actually a querystring
+      if (strpos(wc_get_cart_url(), '?') !== false) {
+        $char = '&';
+      }
+
+      $checkout_url = WC_Facebookcommerce_Utils::make_url(
+        wc_get_cart_url() . $char);
+
+      if (WC_Facebookcommerce_Utils::is_variation_type($this->get_type())) {
+        $query_data = array(
+          'add-to-cart' => $this->get_parent_id(),
+          'variation_id' => $this->get_id()
+        );
+
+        $query_data = array_merge(
+          $query_data,
+          $this->get_variation_attributes());
+
+      } else {
+        $query_data = array(
+          'add-to-cart' => $this->get_id()
+        );
+      }
+
+      $checkout_url = $checkout_url . http_build_query($query_data);
+
+    } else {
+      $checkout_url = null;
+    }
+
+    $id = $this->get_id();
+    if (WC_Facebookcommerce_Utils::is_variation_type($this->get_type())) {
+      $id = $this->get_parent_id();
+    }
+    $categories =
+      WC_Facebookcommerce_Utils::get_product_categories($id);
+
+    $product_data = array(
+      'name' => WC_Facebookcommerce_Utils::clean_string(
+        $this->get_title()),
+      'description' => $this->get_fb_description(),
+      'image_url' => $image_urls[0], // The array can't be empty.
+      'additional_image_urls' => array_filter($image_urls),
+      'url'=> $product_url,
+      'category' => $categories['categories'],
+      'brand' => WC_Facebookcommerce_Utils::get_store_name(),
+      'retailer_id' => $retailer_id,
+      'price' => $this->get_fb_price(),
+      'currency' => get_woocommerce_currency(),
+      'availability' => $this->is_in_stock() ? 'in stock' :
+        'out of stock',
+      'visibility' => !$this->is_hidden()
+        ? 'published'
+        : 'staging'
+    );
+
+    // Only use checkout URLs if they exist.
+    if ($checkout_url) {
+      $product_data['checkout_url'] = $checkout_url;
+    }
+
+    $product_data = $this->add_sale_price($product_data);
+
+    // IF using WPML, set the product to staging unless it is in the
+    // default language. WPML >= 3.2 Supported.
+    if (defined('ICL_LANGUAGE_CODE')) {
+      if (!$this->default_lang) {
+        $this->default_lang = apply_filters('wpml_default_language', null);
+      }
+      $product_lang = apply_filters('wpml_post_language_details', null, $id);
+      if ($product_lang &&
+          $product_lang['language_code'] != $this->default_lang) {
+        $product_data['visibility'] = 'staging';
+      }
+    }
+
+    // Loop through variants (size, color, etc) if they exist
+    // For each product field type, pull the single variant
+    $variants = $this->prepare_variants_for_item($product_data);
+    if ($variants) {
+      foreach ($variants as $variant) {
+
+        // Replace "custom_data:foo" with just "foo" so we can use the key
+        // Product item API expects "custom_data" instead of "custom_data:foo"
+        $product_field = str_replace(
+          'custom_data:',
+          '',
+          $variant['product_field']);
+        if ($product_field === WC_Facebookcommerce_Utils::FB_VARIANT_GENDER) {
+          // If we can't validate the gender, this will be null.
+          $product_data[$product_field] =
+            WC_Facebookcommerce_Utils::validateGender($variant['options'][0]);
+        }
+
+        switch ($product_field) {
+          case WC_Facebookcommerce_Utils::FB_VARIANT_SIZE:
+          case WC_Facebookcommerce_Utils::FB_VARIANT_COLOR:
+          case WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN:
+            $product_data[$product_field] = $variant['options'][0];
+            break;
+          case WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
+            // If we can't validate the GENDER field, we'll fall through to the
+            // default case and set the gender into custom data.
+            if ($product_data[$product_field]) {
+              break;
+            }
+          default:
+            // This is for any custom_data.
+            if (!isset($product_data['custom_data'])) {
+              $product_data['custom_data'] = array();
+            }
+            $product_data['custom_data'][$product_field]
+              = urldecode($variant['options'][0]);
+
+            break;
+        }
+      }
+    }
+
+    /**
+     * Filters the generated product data.
+     *
+     * @param int   $id           Woocommerce product id
+     * @param array $product_data An array of product data
+     */
+    return apply_filters(
+        "facebook_for_woocommerce_integration_prepare_product",
+        $product_data,
+        $id);
+  }
+
+
+  /**
+   * Modify Woo variant/taxonomies to be FB compatible
+   **/
+  private function prepare_variants_for_item(&$product_data) {
+    if (!WC_Facebookcommerce_Utils::is_variation_type(
+      $this->get_type())) {
+      return;
+    }
+
+    $attributes = $this->get_variation_attributes();
+    if (!$attributes) {
+      return;
+    }
+
+    $variant_names = array_keys($attributes);
+    $variant_array = array();
+
+    foreach ($variant_names as $orig_name) {
+      // Retrieve label name for attribute
+      $label = wc_attribute_label($orig_name, $this);
+
+      // Clean up variant name (e.g. pa_color should be color)
+      $new_name = WC_Facebookcommerce_Utils::sanitize_variant_name($orig_name);
+
+      // Sometimes WC returns an array, sometimes it's an assoc array, depending
+      // on what type of taxonomy it's using.  array_values will guarantee we
+      // only get a flat array of values.
+      $options = $this->get_variant_option_name(
+        $label,
+        $attributes[$orig_name]);
+      if (isset($options)) {
+        if (is_array($options)) {
+          $option_values = array_values($options);
+        } else {
+          $option_values = array($options);
+          // If this attribute has value 'any', options will be empty strings
+          // Redirect to product page to select variants.
+          // Reset checkout url since checkout_url (build from query data will
+          // be invalid in this case.
+          if (count($option_values) === 1 && empty($option_values[0])) {
+            $option_values[0] = 'any';
+            $product_data['checkout_url'] = $product_data['url'];
+          }
+        }
+      } else {
+        WC_Facebookcommerce_Utils::log(
+          $this->get_id() . ": No options for " . $orig_name);
+        continue;
+      }
+
+      array_push($variant_array, array(
+        'product_field' => $new_name,
+        'label' => $label,
+        'options' => $option_values,
+      ));
+    }
+
+    return $variant_array;
+  }
 }
 
 endif;

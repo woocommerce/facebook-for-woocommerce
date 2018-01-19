@@ -17,8 +17,20 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
 
     const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
     const PLUGIN_VERSION = '1.7.5';  // Change it in `facebook-for-*.php` also
+
+    const FB_VARIANT_IMAGE = 'fb_image';
+    const FB_VARIANT_SIZE = 'size';
+    const FB_VARIANT_COLOR = 'color';
+    const FB_VARIANT_COLOUR = 'colour';
+    const FB_VARIANT_PATTERN = 'pattern';
+    const FB_VARIANT_GENDER = 'gender';
+
     public static $ems = null;
     public static $fbgraph = null;
+    public static $store_name = null;
+
+    public static $validGenderArray =
+      array("male" => 1, "female" => 1, "unisex" => 1);
     /**
      * WooCommerce 2.1 support for wc_enqueue_js
      *
@@ -243,5 +255,127 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
     public static function is_valid_id($pixel_id) {
       return isset($pixel_id) && is_numeric($pixel_id) && (int)$pixel_id > 0;
     }
+
+    /**
+     * Helper log function for debugging
+     */
+    public static function log($message) {
+      if (WP_DEBUG === true) {
+        if (is_array($message) || is_object($message)) {
+          error_log(json_encode($message));
+        }
+        else {
+          error_log($message);
+        }
+      }
+    }
+
+    /**
+     * Helper function to query posts.
+     */
+    public static function get_wp_posts($product_group_id, $compare_condition) {
+      $args = array(
+        'post_type'  => 'product',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'fields'         => 'ids',
+        'meta_query' => array(
+         array(
+           'key'     => $product_group_id,
+           'compare' => $compare_condition,
+         ),
+        ),
+      );
+      return get_posts($args);
+    }
+
+    // Return store name with sanitized apostrophe
+    public static function get_store_name() {
+      if (self::$store_name) {
+        return self::$store_name;
+      }
+      $name = trim(str_replace(
+        "'",
+        "\u{2019}",
+        html_entity_decode(
+          get_bloginfo('name'),
+          ENT_QUOTES,
+          'UTF-8')));
+      if ($name) {
+        self::$store_name = $name;
+        return $name;
+      }
+      // Fallback to site url
+      $url = get_site_url();
+      if ($url) {
+        self::$store_name = parse_url($url, PHP_URL_HOST);
+        return self::$store_name;
+      }
+      // If site url doesn't exist, fall back to http host.
+      if ($_SERVER['HTTP_HOST']) {
+        self::$store_name = $_SERVER['HTTP_HOST'];
+        return self::$store_name;
+      }
+
+      // If http host doesn't exist, fall back to local host name.
+      $url = gethostname();
+      self::$store_name = $url;
+      return (self::$store_name) ? (self::$store_name) : 'A Store Has No Name';
+    }
+
+    /*
+    * Change variant product field name from Woo taxonomy to FB name
+    */
+    public static function sanitize_variant_name($name) {
+      $name = str_replace(array('attribute_', 'pa_'), '', strtolower($name));
+
+      // British spelling
+      if ($name === self::FB_VARIANT_COLOUR) {
+        $name = self::FB_VARIANT_COLOR;
+      }
+
+      switch ($name) {
+        case self::FB_VARIANT_SIZE:
+        case self::FB_VARIANT_COLOR:
+        case self::FB_VARIANT_GENDER:
+        case self::FB_VARIANT_PATTERN:
+          break;
+        default:
+          $name = 'custom_data:' . strtolower($name);
+          break;
+      }
+
+      return $name;
+    }
+
+    public static function validateGender($gender) {
+      if ($gender && !isset(self::$validGenderArray[$gender])) {
+        $first_char = strtolower(substr($gender, 0, 1));
+        // Men, Man, Boys
+        if ($first_char === 'm' || $first_char === 'b') {
+          return "male";
+        }
+        // Women, Woman, Female, Ladies
+        if ($first_char === 'w' || $first_char === 'f' || $first_char === 'l') {
+          return "female";
+        }
+        if ($first_char === 'u') {
+          return "unisex";
+        }
+        if (strlen($gender) >= 3) {
+          $gender = strtolower(substr($gender, 0, 3));
+          if ($gender === 'gir' || $gender === 'her') {
+            return "female";
+          }
+          if ($gender === 'him' || $gender === 'his' || $gender == 'guy') {
+            return "male";
+          }
+        }
+        return null;
+      }
+      return $gender;
+    }
+
   }
+
 endif;

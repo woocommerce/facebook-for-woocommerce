@@ -103,7 +103,7 @@ class WC_Facebookcommerce_Graph_API {
       . '/?fields=name';
     $response = self::_get($url, $api_key);
     if (is_wp_error($response)) {
-      WC_Facebookcommerce_Integration::log($response->get_error_message());
+      WC_Facebookcommerce_Utils::log($response->get_error_message());
       return;
     }
     if ($response['response']['code'] != '200') {
@@ -119,7 +119,7 @@ class WC_Facebookcommerce_Graph_API {
     $url = self::GRAPH_API_URL . (string)$product_catalog_id;
     $response = self::_get($url);
     if (is_wp_error($response)) {
-      WC_Facebookcommerce_Integration::log($response->get_error_message());
+      WC_Facebookcommerce_Utils::log($response->get_error_message());
       return;
     }
     return $response['response']['code'] == '200';
