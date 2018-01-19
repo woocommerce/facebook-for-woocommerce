@@ -191,6 +191,10 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers InitiateCheckout for checkout page
    */
   public function inject_initiate_checkout_event() {
+    if ($this->pixel->check_last_event('InitiateCheckout')) {
+      return;
+    }
+
     $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
 
     $this->pixel->inject_event(
@@ -209,6 +213,10 @@ class WC_Facebookcommerce_EventsTracker {
    * page in cases of delayed payment.
    */
   public function inject_purchase_event($order_id) {
+    if ($this->pixel->check_last_event('Purchase')) {
+      return;
+    }
+
     $order = new WC_Order($order_id);
     $content_type = 'product';
     $product_ids = array();
@@ -237,6 +245,10 @@ class WC_Facebookcommerce_EventsTracker {
    * which won't invoke woocommerce_payment_complete.
    */
   public function inject_gateway_purchase_event($order_id) {
+    if ($this->pixel->check_last_event('Purchase')) {
+      return;
+    }
+
     $order = new WC_Order($order_id);
     $payment = $order->get_payment_method();
     if (!in_array($payment, array('cod', 'cheque', 'bacs'))) {

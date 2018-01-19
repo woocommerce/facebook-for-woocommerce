@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-01-19 version 1.7.7
+* Fix duplicate pixel issue for Initiate Checkout and Purchase events
+
 2018-01-03 version 1.7.6
 * WordPress only plugin notice on missing Pixel ID.
 * WordPress only plugin direct link to settings page from plugin page.
