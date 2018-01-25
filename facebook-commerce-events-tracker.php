@@ -16,8 +16,8 @@ if (!class_exists('WC_Facebookcommerce_Pixel')) {
 class WC_Facebookcommerce_EventsTracker {
   private $pixel;
 
-  public function __construct($pixel_id, $user_info) {
-    $this->pixel = new WC_Facebookcommerce_Pixel($pixel_id, $user_info);
+  public function __construct($user_info) {
+    $this->pixel = new WC_Facebookcommerce_Pixel($user_info);
   }
 
   /**

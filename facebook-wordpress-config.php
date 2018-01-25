@@ -6,9 +6,6 @@
 if (!class_exists('FacebookWordPress_Config')) :
 
 class FacebookWordPress_Config {
-  const SETTINGS_KEY = 'facebook_config';
-  const PIXEL_ID_KEY = 'pixel_id';
-  const USE_PII_KEY = 'use_pii';
   const MENU_SLUG = 'facebook_pixel_options';
   const OPTION_GROUP = 'facebook_option_group';
   const SECTION_ID = 'facebook_settings_section';
@@ -43,7 +40,7 @@ class FacebookWordPress_Config {
       wp_die(__('You do not have sufficient permissions to access this page'));
     }
     // Update class field
-    $this->options = get_option(self::SETTINGS_KEY);
+    $this->options = get_option(WC_Facebookcommerce_Pixel::SETTINGS_KEY);
 
     ?>
     <div class="wrap">
@@ -62,7 +59,7 @@ class FacebookWordPress_Config {
   public function register_settings() {
     register_setting(
       self::OPTION_GROUP,
-      self::SETTINGS_KEY,
+      WC_Facebookcommerce_Pixel::SETTINGS_KEY,
       array($this, 'sanitize_input'));
     add_settings_section(
       self::SECTION_ID,
@@ -70,13 +67,13 @@ class FacebookWordPress_Config {
       null,
       self::MENU_SLUG);
     add_settings_field(
-      self::PIXEL_ID_KEY,
+      WC_Facebookcommerce_Pixel::PIXEL_ID_KEY,
       'Pixel ID',
       array($this, 'pixel_id_form_field'),
       self::MENU_SLUG,
       self::SECTION_ID);
     add_settings_field(
-      self::USE_PII_KEY,
+      WC_Facebookcommerce_Pixel::USE_PII_KEY,
       'Use Advanced Matching on pixel?',
       array($this, 'use_pii_form_field'),
       self::MENU_SLUG,
@@ -84,16 +81,13 @@ class FacebookWordPress_Config {
   }
 
   public function sanitize_input($input) {
-    $new_config = array();
-    if (isset($input[self::PIXEL_ID_KEY])) {
-      $new_config[self::PIXEL_ID_KEY] = absint($input[self::PIXEL_ID_KEY]);
-    }
-    $new_config[self::USE_PII_KEY] =
-      isset($input[self::USE_PII_KEY]) && $input[self::USE_PII_KEY] == 1
+    $input[WC_Facebookcommerce_Pixel::USE_PII_KEY] =
+      isset($input[WC_Facebookcommerce_Pixel::USE_PII_KEY]) &&
+        $input[WC_Facebookcommerce_Pixel::USE_PII_KEY] == 1
         ? '1'
         : '0';
 
-    return $new_config;
+    return $input;
   }
 
   public function pixel_id_form_field() {
@@ -102,22 +96,22 @@ class FacebookWordPress_Config {
 <input name="%s" id="%s" value="%s" />
 <p class="description">The unique identifier for your Facebook pixel.</p>
       ',
-      self::SETTINGS_KEY . '[' . self::PIXEL_ID_KEY . ']',
-      self::PIXEL_ID_KEY,
-      isset($this->options[self::PIXEL_ID_KEY])
-        ? esc_attr($this->options[self::PIXEL_ID_KEY])
+      WC_Facebookcommerce_Pixel::SETTINGS_KEY . '[' . WC_Facebookcommerce_Pixel::PIXEL_ID_KEY . ']',
+      WC_Facebookcommerce_Pixel::PIXEL_ID_KEY,
+      isset($this->options[WC_Facebookcommerce_Pixel::PIXEL_ID_KEY])
+        ? esc_attr($this->options[WC_Facebookcommerce_Pixel::PIXEL_ID_KEY])
         : '');
   }
 
   public function use_pii_form_field() {
     ?>
-    <label for="<?= self::USE_PII_KEY ?>">
+    <label for="<?= WC_Facebookcommerce_Pixel::USE_PII_KEY ?>">
       <input
         type="checkbox"
-        name="<?= self::SETTINGS_KEY . '[' . self::USE_PII_KEY . ']' ?>"
-        id="<?= self::USE_PII_KEY ?>"
+        name="<?= WC_Facebookcommerce_Pixel::SETTINGS_KEY . '[' . WC_Facebookcommerce_Pixel::USE_PII_KEY . ']' ?>"
+        id="<?= WC_Facebookcommerce_Pixel::USE_PII_KEY ?>"
         value="1"
-        <?php checked(1, $this->options[self::USE_PII_KEY]) ?>
+        <?php checked(1, $this->options[WC_Facebookcommerce_Pixel::USE_PII_KEY]) ?>
       />
       Enabling Advanced Matching improves audience building.
     </label>
@@ -133,8 +127,8 @@ class FacebookWordPress_Config {
 
   public function register_notices() {
     // Update class field
-    $this->options = get_option(self::SETTINGS_KEY);
-    $pixel_id = $this->options[self::PIXEL_ID_KEY];
+    $this->options = get_option(WC_Facebookcommerce_Pixel::SETTINGS_KEY);
+    $pixel_id = $this->options[WC_Facebookcommerce_Pixel::PIXEL_ID_KEY];
     $current_screen_id = get_current_screen()->id;
     if (
       !WC_Facebookcommerce_Utils::is_valid_id($pixel_id)

@@ -36,13 +36,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   public function init_settings() {
     parent::init_settings();
 
-    // side-load pixel config if not present in WordPress config
-    if (!isset($this->settings['fb_pixel_id']) && class_exists('WC_Facebookcommerce_WarmConfig')) {
-      $fb_warm_pixel_id = WC_Facebookcommerce_WarmConfig::$fb_warm_pixel_id;
+    WC_Facebookcommerce_Pixel::initialize();
 
-      if (isset($fb_warm_pixel_id) && is_numeric($fb_warm_pixel_id) && (int)$fb_warm_pixel_id == $fb_warm_pixel_id) {
-        $this->settings['fb_pixel_id'] = (string)$fb_warm_pixel_id;
-        update_option($this->get_option_key(), apply_filters('woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings));
+    // Migrate WC customer pixel_id from WC settings to WP options.
+    // This is part of a larger effort to consolidate all the FB-specific
+    // settings for all plugin integrations.
+    if (is_admin()) {
+      $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
+      $settings_pixel_id = (string)$this->settings['fb_pixel_id'];
+      if (
+        WC_Facebookcommerce_Utils::is_valid_id($settings_pixel_id) &&
+        !WC_Facebookcommerce_Utils::is_valid_id($pixel_id)
+      ) {
+        WC_Facebookcommerce_Pixel::set_pixel_id($settings_pixel_id);
       }
     }
   }
@@ -57,6 +63,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!class_exists('WC_Facebookcommerce_REST_Controller')) {
       include_once( 'includes/fbcustomapi.php' );
       $this->customapi = new WC_Facebookcommerce_REST_Controller();
+    }
+
+    if (!class_exists('WC_Facebookcommerce_EventsTracker')) {
+      include_once 'facebook-commerce-events-tracker.php';
+    }
+
+    // Pixel Proxy
+    // TODO T24108703: Move wp_options to its own file so this one doesn't
+    // need to be included
+    if (!class_exists('FacebookWordPress_Pixel_Proxy')) {
+      include_once 'includes/fb-pixel-proxy.php';
     }
 
     $this->id = 'facebookcommerce';
@@ -78,9 +95,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
      ? $this->settings['fb_api_key']
      : '';
 
-    $this->pixel_id = isset($this->settings['fb_pixel_id'])
-     ? $this->settings['fb_pixel_id']
-     : '';
+    $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
+    $this->pixel_id = isset($pixel_id)
+      ? $pixel_id
+      : '';
 
     $this->pixel_install_time = isset($this->settings['pixel_install_time'])
     ? $this->settings['pixel_install_time']
@@ -112,6 +130,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
+
+    add_action('rest_api_init', function () {
+      FacebookWordPress_Pixel_Proxy::register_pixel_proxy_api();
+    });
 
     // Hooks
     if (is_admin()) {
@@ -244,14 +266,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->load_background_sync_process();
     }
 
-    if (!class_exists('WC_Facebookcommerce_EventsTracker')) {
-      include_once 'facebook-commerce-events-tracker.php';
-    }
-
     if ($this->pixel_id) {
       $user_info = WC_Facebookcommerce_Utils::get_user_info($this->use_pii);
-      $this->events_tracker = new WC_Facebookcommerce_EventsTracker(
-        $this->pixel_id, $user_info);
+      $this->events_tracker = new WC_Facebookcommerce_EventsTracker($user_info);
 
       // Pixel Tracking Hooks
       add_action('wp_head',
@@ -1068,10 +1085,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         // To prevent race conditions with pixel-only settings,
         // only save a pixel if we already have an API key.
         if ($this->settings['fb_api_key']) {
-          $this->settings['fb_pixel_id'] = $_REQUEST['pixel_id'];
-          if ($this->pixel_id != $_REQUEST['pixel_id']) {
+          $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
+          if ($pixel_id != $_REQUEST['pixel_id']) {
             $this->settings['pixel_install_time'] = current_time('mysql');
           }
+
+          WC_Facebookcommerce_Pixel::set_pixel_id($_REQUEST['pixel_id']);
         } else {
           WC_Facebookcommerce_Utils::log(
             "Got pixel-only settings, doing nothing");
@@ -1145,6 +1164,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->settings['fb_page_id'] = '';
       $this->settings['fb_external_merchant_settings_id'] = '';
       $this->settings['pixel_install_time'] = '';
+
+      WC_Facebookcommerce_Pixel::set_pixel_id(0);
 
       update_option(
         $this->get_option_key(),

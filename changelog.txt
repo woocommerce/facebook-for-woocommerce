@@ -1,7 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
-2018-01-19 version 1.7.7
+2018-01-22 version 1.7.7
 * Fix duplicate pixel issue for Initiate Checkout and Purchase events
+* Pixel basecode is fetched from Facebook when setup is completed.
+* Pixel proxy endpoints added for cases where pixel script cannot be loaded.
 
 2018-01-03 version 1.7.6
 * WordPress only plugin notice on missing Pixel ID.

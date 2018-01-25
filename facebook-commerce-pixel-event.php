@@ -5,76 +5,113 @@
 
 if (!class_exists('WC_Facebookcommerce_Pixel')) :
 
+include_once 'includes/fb-pixel-proxy.php';
 
 class WC_Facebookcommerce_Pixel {
-  private $pixel_id;
+  const BASECODE_KEY = 'proxy_basecode';
+  const SETTINGS_KEY = 'facebook_config';
+  const PIXEL_ID_KEY = 'pixel_id';
+  const USE_PII_KEY = 'use_pii';
+
+  const NOSCRIPT_REGEX = '/<noscript.*?\/noscript>/s';
+  const PIXEL_RENDER = 'pixel_render';
+  const NO_SCRIPT_RENDER = 'no_script_render';
+
   private $user_info;
   private $last_event;
+  static $render_cache = array();
 
-  public function __construct($pixel_id, $user_info=array()) {
-    $this->pixel_id = $pixel_id;
+  static $default_pixel_basecode = "
+<script type='text/javascript'>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+</script>
+";
+
+  public function __construct($user_info=array()) {
     $this->user_info = $user_info;
     $this->last_event = '';
+  }
+
+  public static function initialize() {
+    if (!is_admin()) {
+      return;
+    }
+    // run the replace basecode call any time the pixel is replaced
+    add_action(
+      'add_option_'.self::SETTINGS_KEY,
+      function($option_name, $option_value) {
+        WC_Facebookcommerce_Pixel::on_settings_changed(array(), $option_value);
+      },
+      /* priority */ 10,
+      /* accepted_args*/ 2);
+    add_action(
+      'update_option_'.self::SETTINGS_KEY,
+      array(WC_Facebookcommerce_Pixel, 'on_settings_changed'),
+      /* priority */ 10,
+      /* accepted_args*/ 2);
+
+    // Initialize PixelID in storage - this will only need to happen when the
+    // use is an admin
+    $pixel_id = self::get_pixel_id();
+    $should_update = false;
+    if (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) &&
+      class_exists('WC_Facebookcommerce_WarmConfig')) {
+      $fb_warm_pixel_id = WC_Facebookcommerce_WarmConfig::$fb_warm_pixel_id;
+
+      if (WC_Facebookcommerce_Utils::is_valid_id($fb_warm_pixel_id) &&
+          (int)$fb_warm_pixel_id == $fb_warm_pixel_id) {
+        $fb_warm_pixel_id = (string)$fb_warm_pixel_id;
+        self::set_pixel_id($fb_warm_pixel_id);
+      }
+    }
   }
 
   /**
    * Returns FB pixel code script part
    */
   public function pixel_base_code() {
+    $pixel_id = self::get_pixel_id();
+    if (
+      self::$render_cache[self::PIXEL_RENDER] === true ||
+      !isset($pixel_id) ||
+      $pixel_id === 0
+    ) {
+      return;
+    }
+
+    self::$render_cache[self::PIXEL_RENDER] = true;
+
     $params = self::add_version_info();
 
     return sprintf("
 <!-- %s Facebook Integration Begin -->
-<!-- Facebook Pixel Code -->
+%s
 <script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
 %s
 fbq('track', 'PageView', %s);
-
 <!-- Support AJAX add to cart -->
-if(typeof jQuery != 'undefined') {
-  jQuery(document).ready(function($){
-    jQuery('body').on('added_to_cart', function(event) {
-
-      // Ajax action.
-      $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
-        $('head').append(data);
-      });
-
+jQuery && jQuery(function($){
+  $('body').on('added_to_cart', function(event) {
+    // Ajax action.
+    $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
+      $('head').append(data);
     });
   });
-}
+});
 <!-- End Support AJAX add to cart -->
-
 </script>
 <!-- DO NOT MODIFY -->
-<!-- End Facebook Pixel Code -->
 <!-- %s Facebook Integration end -->
-      ",
-      WC_Facebookcommerce_Utils::getIntegrationName(),
-      $this->pixel_init_code(),
-      json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
-      WC_Facebookcommerce_Utils::getIntegrationName());
-  }
-
-  /**
-   * Returns FB pixel code noscript part to avoid W3 validation error
-   */
-  public function pixel_base_code_noscript() {
-    return sprintf("
-<!-- Facebook Pixel Code -->
-<noscript>
-<img height=\"1\" width=\"1\" alt=\"\" style=\"display:none\"
-src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
-</noscript>
-<!-- DO NOT MODIFY -->
-<!-- End Facebook Pixel Code -->
     ",
-    esc_js($this->pixel_id));
+    WC_Facebookcommerce_Utils::getIntegrationName(),
+    self::get_basecode(),
+    $this->pixel_init_code(),
+    json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
+    WC_Facebookcommerce_Utils::getIntegrationName());
   }
 
   /**
@@ -107,6 +144,33 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
   }
 
   /**
+   * Returns FB pixel code noscript part to avoid W3 validation error
+   */
+  public function pixel_base_code_noscript() {
+    $pixel_id = self::get_pixel_id();
+    if (
+      self::$render_cache[self::NO_SCRIPT_RENDER] === true ||
+      !isset($pixel_id) ||
+      $pixel_id === 0
+    ) {
+      return;
+    }
+
+    self::$render_cache[self::NO_SCRIPT_RENDER] = true;
+
+    return sprintf("
+<!-- Facebook Pixel Code -->
+<noscript>
+<img height=\"1\" width=\"1\" style=\"display:none\" alt=\"fbpx\"
+src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
+</noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
+    ",
+    esc_js($pixel_id));
+  }
+
+  /**
    * You probably should use WC_Facebookcommerce_Pixel::inject_event() but
    * this method is available if you need to modify the JS code somehow
    */
@@ -119,6 +183,48 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
       $method,
       $event_name,
       json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
+  }
+
+  public static function get_pixel_id() {
+    $fb_options = self::get_options();
+    return $fb_options[self::PIXEL_ID_KEY];
+  }
+
+  public static function set_pixel_id($pixel_id) {
+    $fb_options = self::get_options();
+
+    if ($fb_options[self::PIXEL_ID_KEY] == $pixel_id) {
+      return;
+    }
+
+    $fb_options[self::PIXEL_ID_KEY] = $pixel_id;
+    update_option(self::SETTINGS_KEY, $fb_options);
+  }
+
+  public static function set_basecode($new_basecode) {
+    $fb_options = self::get_options();
+    $new_basecode = preg_replace(self::NOSCRIPT_REGEX, '', $new_basecode);
+    $fb_options[self::BASECODE_KEY] =
+      htmlentities(stripslashes($new_basecode));
+    update_option(self::SETTINGS_KEY, $fb_options);
+  }
+
+  public static function get_basecode() {
+    $fb_options = self::get_options();
+    $basecode = $fb_options[self::BASECODE_KEY];
+    if (!isset($basecode)) {
+      return self::$default_pixel_basecode;
+    }
+
+    return htmlspecialchars_decode($basecode);
+  }
+
+  public static function on_settings_changed($old_value, $new_value) {
+    $old_pixel = $old_value[self::PIXEL_ID_KEY];
+    $new_pixel = $new_value[self::PIXEL_ID_KEY];
+    if (isset($new_pixel) && $old_pixel !== $new_pixel) {
+      FacebookWordPress_Pixel_Proxy::replace_basecode($new_pixel);
+    }
   }
 
   private static function get_version_info() {
@@ -137,6 +243,13 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
       'version' => $wp_version,
       'pluginVersion' => WC_Facebookcommerce_Utils::PLUGIN_VERSION
     );
+  }
+
+  public static function get_options() {
+    return get_option(self::SETTINGS_KEY, array(
+      self::PIXEL_ID_KEY => '0',
+      self::USE_PII_KEY => 0,
+    ));
   }
 
   /**
@@ -166,7 +279,7 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
 
     return sprintf(
       "fbq('init', '%s', %s, %s);\n",
-      esc_js($this->pixel_id),
+      esc_js(self::get_pixel_id()),
       json_encode($this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
       json_encode($params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
   }

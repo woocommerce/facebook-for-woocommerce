@@ -18,19 +18,18 @@ class WP_Facebook_Integration {
       include_once 'facebook-commerce-events-tracker.php';
     }
 
-    $options = get_option(FacebookWordPress_Config::SETTINGS_KEY);
-    $pixel_id = $options[FacebookWordPress_Config::PIXEL_ID_KEY];
-    $use_pii = $options[FacebookWordPress_Config::USE_PII_KEY];
+    $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 
     if (WC_Facebookcommerce_Utils::is_valid_id($pixel_id)) {
+      $options = WC_Facebookcommerce_Pixel::get_options();
+      $use_pii = $options[WC_Facebookcommerce_Pixel::USE_PII_KEY];
       $user_info = WC_Facebookcommerce_Utils::get_user_info($use_pii == '1');
-      $this->events_tracker = new WC_Facebookcommerce_EventsTracker(
-        $pixel_id, $user_info);
+      $this->events_tracker = new WC_Facebookcommerce_EventsTracker($user_info);
 
       // Pixel Tracking Hooks
       add_action('wp_head',
         array($this->events_tracker, 'inject_base_pixel'));
-      add_action('wp_head',
+      add_action('wp_footer',
         array($this->events_tracker, 'inject_base_pixel_noscript'));
       add_action('posts_search',
         array($this->events_tracker, 'inject_search_event'));
