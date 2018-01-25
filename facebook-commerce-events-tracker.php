@@ -251,9 +251,6 @@ class WC_Facebookcommerce_EventsTracker {
 
     $order = new WC_Order($order_id);
     $payment = $order->get_payment_method();
-    if (!in_array($payment, array('cod', 'cheque', 'bacs'))) {
-      return;
-    }
     $this->inject_purchase_event($order_id);
   }
 }

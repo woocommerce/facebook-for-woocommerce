@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2018-01-22 version 1.7.7
+* Fix purchase event not firing for Stripe.
 * Fix duplicate pixel issue for Initiate Checkout and Purchase events
 * Pixel basecode is fetched from Facebook when setup is completed.
 * Pixel proxy endpoints added for cases where pixel script cannot be loaded.
