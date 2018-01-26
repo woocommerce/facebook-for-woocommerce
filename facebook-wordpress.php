@@ -8,6 +8,7 @@ if (!class_exists('WP_Facebook_Integration')) :
 
 include_once 'facebook-wordpress-config.php';
 include_once 'facebook-config-warmer.php';
+include_once 'facebook-commerce-pixel-event.php';
 
 class WP_Facebook_Integration {
   private $events_tracker;
