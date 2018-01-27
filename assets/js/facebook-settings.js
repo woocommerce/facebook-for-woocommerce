@@ -110,6 +110,15 @@ function sync_all_products() {
   console.log('Syncing all products!');
   window.fb_connected = true;
   sync_in_progress();
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Upload via feed is coming, but not ready yet.
+  /*
+  if ($using_feed) {
+    return ajax('ajax_sync_all_fb_products_using_feed');
+  } else {
+    return ajax('ajax_sync_all_fb_products');
+  }
+  */
   return ajax('ajax_sync_all_fb_products');
 }
 

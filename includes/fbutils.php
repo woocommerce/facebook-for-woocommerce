@@ -83,7 +83,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       // Call $woo_product->get_id() instead of ->id to account for Variable
       // products, which have their own variant_ids.
       return $woo_product->get_sku() ? $woo_product->get_sku() . '_' .
-         $woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
+        $woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
     }
 
     /**
@@ -257,6 +257,28 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
     }
 
     /**
+     * Helper function to query posts.
+     */
+    public static function get_wp_posts(
+      $product_group_id,
+      $compare_condition,
+      $post_type = 'product') {
+      $args = array(
+        'fields'         => 'ids',
+        'meta_query' => array(
+           array(
+             'key'     => $product_group_id,
+             'compare' => $compare_condition,
+           ),
+        ),
+        'post_status' => 'publish',
+        'post_type'  => $post_type,
+        'posts_per_page' => -1,
+      );
+      return get_posts($args);
+    }
+
+    /**
      * Helper log function for debugging
      */
     public static function log($message) {
@@ -268,25 +290,6 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
           error_log($message);
         }
       }
-    }
-
-    /**
-     * Helper function to query posts.
-     */
-    public static function get_wp_posts($product_group_id, $compare_condition) {
-      $args = array(
-        'post_type'  => 'product',
-        'posts_per_page' => -1,
-        'post_status' => 'publish',
-        'fields'         => 'ids',
-        'meta_query' => array(
-         array(
-           'key'     => $product_group_id,
-           'compare' => $compare_condition,
-         ),
-        ),
-      );
-      return get_posts($args);
     }
 
     // Return store name with sanitized apostrophe

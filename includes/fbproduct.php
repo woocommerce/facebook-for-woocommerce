@@ -22,6 +22,8 @@ class WC_Facebook_Product {
   const MIN_DATE_1 = '1970-01-29';
   const MIN_DATE_2 = '1970-01-30';
   const MAX_DATE = '2038-01-17';
+  const MAX_TIME = 'T23:59+00:00';
+  const MIN_TIME = 'T00:00+00:00';
 
   public function __construct(
     $wpid, $parent_product = null) {
@@ -222,8 +224,8 @@ class WC_Facebook_Product {
 
   public function add_sale_price($product_data) {
     // initialize sale date and sale_price
-    $product_data['sale_price_start_date'] = self::MIN_DATE_1;
-    $product_data['sale_price_end_date'] = self::MIN_DATE_2;
+    $product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
+    $product_data['sale_price_end_date'] = self::MIN_DATE_2 . self::MAX_TIME;
     $product_data['sale_price'] = $product_data['price'];
 
     $sale_price = $this->woo_product->get_sale_price();
@@ -236,13 +238,13 @@ class WC_Facebook_Product {
 
     $sale_start =
       ($date = get_post_meta($this->id, '_sale_price_dates_from', true))
-      ? date_i18n('Y-m-d', $date)
-      : self::MIN_DATE_1;
+      ? date_i18n('Y-m-d', $date) . self::MIN_TIME
+      : self::MIN_DATE_1 . self::MIN_TIME;
 
     $sale_end =
       ($date = get_post_meta($this->id, '_sale_price_dates_to', true))
-      ? date_i18n('Y-m-d', $date)
-      : self::MAX_DATE;
+      ? date_i18n('Y-m-d', $date) . self::MAX_TIME
+      : self::MAX_DATE . self::MAX_TIME;
 
     // check if sale is expired and sale time range is valid
     $product_data['sale_price_start_date'] = $sale_start;
@@ -350,7 +352,9 @@ class WC_Facebook_Product {
   /**
    * Assemble product payload for POST
    **/
-  function prepare_product($retailer_id = null) {
+  function prepare_product(
+    $retailer_id = null,
+    $prepare_for_product_feed = false) {
     if (!$retailer_id) {
       $retailer_id =
         WC_Facebookcommerce_Utils::get_fb_retailer_id($this);
@@ -444,47 +448,8 @@ class WC_Facebook_Product {
       }
     }
 
-    // Loop through variants (size, color, etc) if they exist
-    // For each product field type, pull the single variant
-    $variants = $this->prepare_variants_for_item($product_data);
-    if ($variants) {
-      foreach ($variants as $variant) {
-
-        // Replace "custom_data:foo" with just "foo" so we can use the key
-        // Product item API expects "custom_data" instead of "custom_data:foo"
-        $product_field = str_replace(
-          'custom_data:',
-          '',
-          $variant['product_field']);
-        if ($product_field === WC_Facebookcommerce_Utils::FB_VARIANT_GENDER) {
-          // If we can't validate the gender, this will be null.
-          $product_data[$product_field] =
-            WC_Facebookcommerce_Utils::validateGender($variant['options'][0]);
-        }
-
-        switch ($product_field) {
-          case WC_Facebookcommerce_Utils::FB_VARIANT_SIZE:
-          case WC_Facebookcommerce_Utils::FB_VARIANT_COLOR:
-          case WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN:
-            $product_data[$product_field] = $variant['options'][0];
-            break;
-          case WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
-            // If we can't validate the GENDER field, we'll fall through to the
-            // default case and set the gender into custom data.
-            if ($product_data[$product_field]) {
-              break;
-            }
-          default:
-            // This is for any custom_data.
-            if (!isset($product_data['custom_data'])) {
-              $product_data['custom_data'] = array();
-            }
-            $product_data['custom_data'][$product_field]
-              = urldecode($variant['options'][0]);
-
-            break;
-        }
-      }
+    if (!$prepare_for_product_feed) {
+      $this->prepare_variants_for_item($product_data);
     }
 
     /**
@@ -503,7 +468,7 @@ class WC_Facebook_Product {
   /**
    * Modify Woo variant/taxonomies to be FB compatible
    **/
-  private function prepare_variants_for_item(&$product_data) {
+  public function prepare_variants_for_item(&$product_data) {
     if (!WC_Facebookcommerce_Utils::is_variation_type(
       $this->get_type())) {
       return;
@@ -517,12 +482,19 @@ class WC_Facebook_Product {
     $variant_names = array_keys($attributes);
     $variant_array = array();
 
+    // Loop through variants (size, color, etc) if they exist
+    // For each product field type, pull the single variant
     foreach ($variant_names as $orig_name) {
       // Retrieve label name for attribute
       $label = wc_attribute_label($orig_name, $this);
 
       // Clean up variant name (e.g. pa_color should be color)
-      $new_name = WC_Facebookcommerce_Utils::sanitize_variant_name($orig_name);
+      // Replace "custom_data:foo" with just "foo" so we can use the key
+      // Product item API expects "custom_data" instead of "custom_data:foo"
+      $new_name = str_replace(
+        'custom_data:',
+        '',
+        WC_Facebookcommerce_Utils::sanitize_variant_name($orig_name));
 
       // Sometimes WC returns an array, sometimes it's an assoc array, depending
       // on what type of taxonomy it's using.  array_values will guarantee we
@@ -544,20 +516,128 @@ class WC_Facebook_Product {
             $product_data['checkout_url'] = $product_data['url'];
           }
         }
+        if ($new_name === WC_Facebookcommerce_Utils::FB_VARIANT_GENDER) {
+          // If we can't validate the gender, this will be null.
+          $product_data[$new_name] =
+            WC_Facebookcommerce_Utils::validateGender($option_values[0]);
+        }
+
+        switch ($new_name) {
+          case WC_Facebookcommerce_Utils::FB_VARIANT_SIZE:
+          case WC_Facebookcommerce_Utils::FB_VARIANT_COLOR:
+          case WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN:
+            array_push($variant_array, array(
+              'product_field' => $new_name,
+              'label' => $label,
+              'options' => $option_values,
+            ));
+            $product_data[$new_name] = $option_values[0];
+            break;
+          case WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
+            // If we can't validate the GENDER field, we'll fall through to the
+            // default case and set the gender into custom data.
+            if ($product_data[$new_name]) {
+              array_push($variant_array, array(
+                'product_field' => $new_name,
+                'label' => $label,
+                'options' => $option_values,
+              ));
+              break;
+            }
+
+          default:
+            // This is for any custom_data.
+            if (!isset($product_data['custom_data'])) {
+              $product_data['custom_data'] = array();
+            }
+            $product_data['custom_data'][$new_name]
+              = urldecode($option_values[0]);
+            break;
+        }
       } else {
         WC_Facebookcommerce_Utils::log(
           $this->get_id() . ": No options for " . $orig_name);
         continue;
       }
+    }
+    return $variant_array;
+  }
 
-      array_push($variant_array, array(
-        'product_field' => $new_name,
+  /**
+   * Modify Woo variant/taxonomies for variable products to be FB compatible
+   **/
+  public function prepare_variants_for_group() {
+    if (!WC_Facebookcommerce_Utils::is_variable_type(
+      $this->get_type())) {
+      WC_Facebookcommerce_Utils::fblog(
+        "prepare_variants_for_group called on non-variable product");
+      return;
+    }
+
+    $variation_attributes = $this->get_variation_attributes();
+    if (!$variation_attributes) {
+      return;
+    }
+    $final_variants = array();
+
+    $attrs = array_keys($this->get_attributes());
+    foreach ($attrs as $name) {
+      $label = wc_attribute_label($name, $this);
+
+      if (taxonomy_is_product_attribute($name)) {
+        $key = $name;
+      } else {
+        // variation_attributes keys are labels for custom attrs for some reason
+        $key = $label;
+      }
+
+      if (!$key) {
+        WC_Facebookcommerce_Utils::fblog(
+          "Critical error: can't get attribute name or label!");
+        return;
+      }
+
+      if (isset($variation_attributes[$key])) {
+         // Array of the options (e.g. small, medium, large)
+        $option_values = $variation_attributes[$key];
+      } else {
+        WC_Facebookcommerce_Utils::log(
+          $this->get_id() . ": No options for " . $name);
+        continue; // Skip variations without valid attribute options
+      }
+
+      // If this is a wc_product_variable, check default attrib.
+      // If it's being used, show it as the first option on Facebook.
+      $first_option = $this->get_variation_default_attribute($key);
+      if ($first_option) {
+        $idx = array_search($first_option, $option_values);
+        unset($option_values[$idx]);
+        array_unshift($option_values, $first_option);
+      }
+
+      if (
+        function_exists('taxonomy_is_product_attribute') &&
+        taxonomy_is_product_attribute($name)
+      ) {
+        $option_values = $this->get_grouped_product_option_names(
+          $key,
+          $option_values);
+      }
+
+      // Clean up variant name (e.g. pa_color should be color)
+      $name = str_replace(
+        'custom_data:',
+        '',
+        WC_Facebookcommerce_Utils::sanitize_variant_name($name));
+      array_push($final_variants, array(
+        'product_field' => $name,
         'label' => $label,
         'options' => $option_values,
       ));
     }
 
-    return $variant_array;
+    return $final_variants;
+
   }
 }
 

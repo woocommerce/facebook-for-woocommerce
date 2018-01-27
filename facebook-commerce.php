@@ -182,8 +182,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       add_action('wp_ajax_ajax_sync_all_fb_products',
         array($this, 'ajax_sync_all_fb_products'), self::FB_PRIORITY_MID);
 
+      add_action('wp_ajax_ajax_sync_all_fb_products_using_feed',
+        array($this, 'ajax_sync_all_fb_products_using_feed'),
+        self::FB_PRIORITY_MID);
+
       add_action('wp_ajax_ajax_reset_all_fb_products',
-        array($this, 'ajax_reset_all_fb_products'), self::FB_PRIORITY_MID);
+        array($this, 'ajax_reset_all_fb_products'),
+        self::FB_PRIORITY_MID);
 
       // Only load product processing hooks if we have completed setup.
       if ($this->api_key && $this->product_catalog_id) {
@@ -845,7 +850,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if ($variants) {
       $product_group_data['variants'] =
-        $this->prepare_variants_for_group($woo_product);
+        $woo_product->prepare_variants_for_group();
     }
 
     $create_product_group_result = $this->check_api_result(
@@ -921,7 +926,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       return;
     }
 
-    $variants = $this->prepare_variants_for_group($woo_product);
+    $variants = $woo_product->prepare_variants_for_group();
 
     if (!$variants) {
       WC_Facebookcommerce_Utils::log(
@@ -964,82 +969,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         'Updated product  <a href="https://facebook.com/'. $fb_product_item_id .
           '" target="_blank">' . $fb_product_item_id . '</a> on Facebook.');
     }
-  }
-
-
-
-  /**
-   * Modify Woo variant/taxonomies for variable products to be FB compatible
-   **/
-  function prepare_variants_for_group($woo_product) {
-    if (!WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
-      WC_Facebookcommerce_Utils::fblog(
-        "prepare_variants_for_group called on non-variable product");
-      return;
-    }
-
-    $variation_attributes = $woo_product->get_variation_attributes();
-    if (!$variation_attributes) {
-      return;
-    }
-    $final_variants = array();
-
-    $attrs = array_keys($woo_product->get_attributes());
-    foreach ($attrs as $name) {
-      $label = wc_attribute_label($name, $woo_product);
-
-      if (taxonomy_is_product_attribute($name)) {
-        $key = $name;
-      }else {
-        // variation_attributes keys are labels for custom attrs for some reason
-        $key = $label;
-      }
-
-      if (!$key) {
-        WC_Facebookcommerce_Utils::fblog(
-          "Critical error: can't get attribute name or label!");
-        return;
-      }
-
-      if (isset($variation_attributes[$key])) {
-         // Array of the options (e.g. small, medium, large)
-        $option_values = $variation_attributes[$key];
-      } else {
-        WC_Facebookcommerce_Utils::log(
-          $woo_product->get_id() . ": No options for " . $name);
-        continue; // Skip variations without valid attribute options
-      }
-
-      // If this is a wc_product_variable, check default attrib.
-      // If it's being used, show it as the first option on Facebook.
-      $first_option = $woo_product->get_variation_default_attribute($key);
-      if ($first_option) {
-        $idx = array_search($first_option, $option_values);
-        unset($option_values[$idx]);
-        array_unshift($option_values, $first_option);
-      }
-
-      if (
-        function_exists('taxonomy_is_product_attribute') &&
-        taxonomy_is_product_attribute($name)
-      ) {
-        $option_values = $woo_product->get_grouped_product_option_names(
-          $key,
-          $option_values);
-      }
-
-      // Clean up variant name (e.g. pa_color should be color)
-      $name = WC_Facebookcommerce_Utils::sanitize_variant_name($name);
-
-      array_push($final_variants, array(
-        'product_field' => $name,
-        'label' => $label,
-        'options' => $option_values,
-      ));
-    }
-
-    return $final_variants;
-
   }
 
   public function check_woo_ajax_permissions($action_text, $die) {
@@ -1165,6 +1094,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->settings['fb_page_id'] = '';
       $this->settings['fb_external_merchant_settings_id'] = '';
       $this->settings['pixel_install_time'] = '';
+      $this->settings['fb_feed_id'] = '';
+      $this->settings['fb_upload_id'] = '';
 
       WC_Facebookcommerce_Pixel::set_pixel_id(0);
 
@@ -1649,6 +1580,55 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // This is important, for some reason.
     // See https://codex.wordpress.org/AJAX_in_Plugins
     wp_die();
+  }
+
+  /**
+   * Special function to run all visible products by uploading feed.
+   **/
+  function ajax_sync_all_fb_products_using_feed() {
+    $this->check_woo_ajax_permissions('syncall products using feed', true);
+    if (!$this->api_key || !$this->product_catalog_id) {
+      self::log("No API key or catalog ID: " . $this->api_key .
+        ' and ' . $this->product_catalog_id);
+      wp_die();
+      return;
+    }
+    $is_valid_product_catalog =
+      $this->fbgraph->validate_product_catalog($this->product_catalog_id);
+
+    if (!$is_valid_product_catalog) {
+      WC_Facebookcommerce_Utils::log('Not syncing, invalid product catalog!');
+      WC_Facebookcommerce_Utils::fblog(
+        'Tried to sync with an invalid product catalog!');
+      $this->display_warning_message('We\'ve detected that your
+        Facebook Product Catalog is no longer valid. This may happen if it was
+        deleted, or this may be a transient error.
+        If this error persists please delete your settings via
+        "Re-configure Facebook Settings > Advanced Settings > Delete Settings"
+        and try setup again');
+      wp_die();
+      return;
+    }
+    if (!class_exists('WC_Facebook_Product_Feed')) {
+      include_once 'includes/fbproductfeed.php';
+    }
+    $this->fbproductfeed = new WC_Facebook_Product_Feed(
+      $this->product_catalog_id, $this->fbgraph);
+    $upload_success = $this->fbproductfeed->sync_all_products_using_feed();
+    if ($upload_success) {
+      $this->settings['fb_feed_id'] = $this->fbproductfeed->feed_id;
+      $this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
+      update_option($this->get_option_key(),
+        apply_filters('woocommerce_settings_api_sanitized_fields_' .
+          $this->id, $this->settings));
+      wp_reset_postdata();
+      wp_die();
+    } else {
+      // curl failed, roll back to original sync approach.
+      WC_Facebookcommerce_Utils::fblog(
+        'Sync all products using feed, curl failed');
+      $this->sync_all_products();
+    }
   }
 
   /**
