@@ -98,8 +98,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
     $this->pixel_id = isset($pixel_id)
-      ? $pixel_id
-      : '';
+    ? $pixel_id
+    : '';
 
     $this->pixel_install_time = isset($this->settings['pixel_install_time'])
     ? $this->settings['pixel_install_time']
@@ -184,6 +184,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
       add_action('wp_ajax_ajax_sync_all_fb_products_using_feed',
         array($this, 'ajax_sync_all_fb_products_using_feed'),
+        self::FB_PRIORITY_MID);
+
+      add_action('wp_ajax_ajax_check_feed_upload_status',
+        array($this, 'ajax_check_feed_upload_status'),
         self::FB_PRIORITY_MID);
 
       add_action('wp_ajax_ajax_reset_all_fb_products',
@@ -1122,6 +1126,48 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     wp_die();
   }
 
+  /**
+   * Check Feed Upload Status
+   **/
+  function ajax_check_feed_upload_status() {
+    $this->check_woo_ajax_permissions('check feed upload status', true);
+    if ($this->settings['fb_api_key']) {
+      $response = array(
+        'connected'  => true,
+        'status'  => 'in progress',
+      );
+      if ($this->settings['fb_upload_id']) {
+        if (!isset($this->fbproductfeed)) {
+          if (!class_exists('WC_Facebook_Product_Feed')) {
+            include_once 'includes/fbproductfeed.php';
+          }
+          $this->fbproductfeed = new WC_Facebook_Product_Feed(
+            $this->product_catalog_id, $this->fbgraph);
+        }
+        $status = $this->fbproductfeed->is_upload_complete($this->settings);
+
+        $response['status'] = $status;
+      } else {
+        $response = array(
+          'connected'  => true,
+          'status'  => 'error',
+        );
+      }
+      if ($response['status'] == 'complete') {
+        update_option(
+          $this->get_option_key(),
+          apply_filters(
+            'woocommerce_settings_api_sanitized_fields_' . $this->id,
+              $this->settings));
+      }
+    } else {
+      $response = array(
+        'connected' => false,
+      );
+    }
+    printf(json_encode($response));
+    wp_die();
+  }
 
   /**
    * Display custom success message (sugar)

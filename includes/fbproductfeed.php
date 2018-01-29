@@ -257,6 +257,21 @@ class WC_Facebook_Product_Feed {
       $value);
   }
 
+   public function is_upload_complete(&$settings) {
+     $result = $this->fbgraph->get_upload_status($settings['fb_upload_id']);
+     if (is_wp_error($result) || !isset($result['body'])) {
+       WC_Facebookcommerce_Utils::fblog(json_encode($result));
+       return 'error';
+     }
+     $end_time = json_decode($result['body'])->end_time;
+     if (isset($end_time)) {
+       $settings['upload_end_time'] = $end_time;
+       return 'complete';
+     } else {
+       return 'in progress';
+     }
+   }
+
 }
 
 endif;

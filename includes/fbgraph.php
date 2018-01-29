@@ -196,6 +196,14 @@ class WC_Facebookcommerce_Graph_API {
     return self::_post($url, $data);
   }
 
+  public function get_upload_status($facebook_upload_id) {
+    $url = $this->build_url($facebook_upload_id, '/?fields=end_time');
+    // success API call will return
+    // {id: <upload id>, end_time: <time when upload completes>}
+    // failure API will return {error: <error message>}
+    return self::_get($url);
+  }
+
   private function build_url($field_id, $param ='') {
     return self::GRAPH_API_URL . (string)$field_id . $param;
   }

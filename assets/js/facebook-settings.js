@@ -100,7 +100,7 @@ function sync_confirm() {
   }
 }
 
-function sync_all_products() {
+function sync_all_products($using_feed = false) {
   if (get_product_catalog_id_box() && !get_product_catalog_id_box().value){
     return;
   }
@@ -112,14 +112,13 @@ function sync_all_products() {
   sync_in_progress();
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Upload via feed is coming, but not ready yet.
-  /*
   if ($using_feed) {
+    window.feed_upload = true;
+    ping_feed_status_queue();
     return ajax('ajax_sync_all_fb_products_using_feed');
   } else {
     return ajax('ajax_sync_all_fb_products');
   }
-  */
-  return ajax('ajax_sync_all_fb_products');
 }
 
 // Reset all state
@@ -467,6 +466,12 @@ window.fb_pings = setInterval(function(){
   check_queues();
 }, 5000);
 
+function ping_feed_status_queue() {
+  window.fb_feed_pings = setInterval(function() {
+    console.log('Pinging feed uploading queue...');
+    check_feed_upload_queue();
+  }, 30000);
+}
 
 function product_sync_complete(sync_progress_element, sync_status_element){
   sync_not_in_progress();
@@ -481,17 +486,14 @@ function product_sync_complete(sync_progress_element, sync_status_element){
 
 function check_queues(){
   ajax('ajax_fb_background_check_queue',
-    {"request_time": new Date().getTime()}, function(res){
+    {"request_time": new Date().getTime()}, function(response){
+    if (window.feed_upload) {
+      return;
+    }
     var sync_progress_element = document.querySelector('#sync_progress');
     var sync_status_element = document.querySelector('#sync_status');
+    var res = parse_response_check_connection(response);
     if(res){
-       console.log(res);
-       res = res.substring(res.indexOf("{")); //Trim leading extra chars (rnrnr)
-       res = JSON.parse(res);
-       if(!res.connected && !window.fb_connected){
-          not_connected();
-          return;
-       }
        if(!res.background){
         console.log("No background sync found, disabling pings");
         clearInterval(window.fb_pings);
@@ -523,6 +525,49 @@ function check_queues(){
             product_sync_complete(sync_progress_element, sync_status_element);
           }
        }
+    }
+  });
+}
+
+function parse_response_check_connection(res) {
+  if (res) {
+    console.log(res);
+    var response = res.substring(res.indexOf("{")); //Trim leading extra chars (rnrnr)
+    var response = JSON.parse(response);
+    if(!response.connected && !window.fb_connected){
+       not_connected();
+       return null;
+    }
+    return response;
+  }
+  return null;
+}
+
+function check_feed_upload_queue() {
+  ajax('ajax_check_feed_upload_status', null, function(response) {
+    var sync_progress_element = document.querySelector('#sync_progress');
+    var sync_status_element = document.querySelector('#sync_status');
+    var res = parse_response_check_connection(response);
+    if (res) {
+      var status = res.status;
+      switch (status) {
+        case 'complete':
+          product_sync_complete(sync_progress_element, sync_status_element);
+          clearInterval(window.fb_feed_pings);
+          window.feed_upload = false;
+          break;
+        case 'in progress':
+          if (sync_progress_element) {
+            sync_progress_element.innerHTML =
+              '<strong>Product uploading in progress...</strong>';
+          }
+          break;
+        default:
+          sync_progress_element.innerHTML =
+            '<strong>Something wrong when uploading, please try again.</strong>';
+          window.feed_upload = false;
+          clearInterval(window.fb_feed_pings);
+      }
     }
   });
 }
