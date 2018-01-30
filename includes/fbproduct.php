@@ -40,6 +40,8 @@ class WC_Facebook_Product {
     if ($parent_product) {
       $this->gallery_urls = $parent_product->get_gallery_urls();
       $this->fb_use_parent_image = $parent_product->get_use_parent_image();
+      $this->main_description = WC_Facebookcommerce_Utils::clean_string(
+        $parent_product->get_description());
     }
   }
 
@@ -196,6 +198,9 @@ class WC_Facebook_Product {
         $this->get_description());
       if ($description) {
         return $description;
+      }
+      if ($this->main_description) {
+        return $this->main_description;
       }
     }
 
