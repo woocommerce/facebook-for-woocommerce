@@ -1,6 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
-2018-01-22 version 1.7.8
+2017-01-30 version 1.7.9
+* Add Filter hook for other plugins to override pixel behavior.
+* Fix 500 errors when saving settings.
+
+2018-01-25 version 1.7.8
 * Fixes WC_Facebookcommerce_Pixel reference error
 
 

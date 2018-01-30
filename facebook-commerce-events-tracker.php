@@ -15,9 +15,17 @@ if (!class_exists('WC_Facebookcommerce_Pixel')) {
 
 class WC_Facebookcommerce_EventsTracker {
   private $pixel;
+  private static $isEnabled = true;
 
   public function __construct($user_info) {
     $this->pixel = new WC_Facebookcommerce_Pixel($user_info);
+    self::apply_filters();
+  }
+
+  public static function apply_filters() {
+    self::$isEnabled = apply_filters(
+        "facebook_for_woocommerce_integration_pixel_enabled",
+        self::$isEnabled);
   }
 
   /**
@@ -26,7 +34,9 @@ class WC_Facebookcommerce_EventsTracker {
    * WC_Facebookcommerce_Utils::wc_enqueue_js() in this case
    */
   public function inject_base_pixel() {
-    echo $this->pixel->pixel_base_code();
+    if (self::$isEnabled) {
+      echo $this->pixel->pixel_base_code();
+    }
   }
 
   /**
@@ -34,7 +44,9 @@ class WC_Facebookcommerce_EventsTracker {
    * validation error.
    */
   public function inject_base_pixel_noscript() {
-    echo $this->pixel->pixel_base_code_noscript();
+    if (self::$isEnabled) {
+      echo $this->pixel->pixel_base_code_noscript();
+    }
   }
 
   /**
@@ -42,6 +54,9 @@ class WC_Facebookcommerce_EventsTracker {
    */
   public function inject_view_category_event() {
     global $wp_query;
+    if (!self::$isEnabled) {
+      return;
+    }
 
     $products = array_values(array_map(function($item) {
         return wc_get_product($item->ID);
@@ -82,6 +97,10 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers Search for result pages (deduped)
    */
   public function inject_search_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+
     if (!is_admin() && is_search() && get_search_query() !== '') {
       if ($this->pixel->check_last_event('Search')) {
         return;
@@ -99,6 +118,10 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers Search for result pages
    */
   public function actually_inject_search_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+
     $this->pixel->inject_event(
       'Search',
       array(
@@ -123,6 +146,10 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers ViewContent product pages
    */
   public function inject_view_content_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+
     $product = wc_get_product(get_the_ID());
     $content_type = 'product';
     if (!$product) {
@@ -150,6 +177,10 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers AddToCart for cart page and add_to_cart button clicks
    */
   public function inject_add_to_cart_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+
     $product_ids = $this->get_content_ids_from_cart(WC()->cart->get_cart());
 
     $this->pixel->inject_event(
@@ -166,6 +197,10 @@ class WC_Facebookcommerce_EventsTracker {
   * Triggered by add_to_cart jquery trigger
   */
   public function inject_ajax_add_to_cart_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+
     ob_start();
 
     echo '<script>';
@@ -191,7 +226,8 @@ class WC_Facebookcommerce_EventsTracker {
    * Triggers InitiateCheckout for checkout page
    */
   public function inject_initiate_checkout_event() {
-    if ($this->pixel->check_last_event('InitiateCheckout')) {
+    if (!self::$isEnabled ||
+        $this->pixel->check_last_event('InitiateCheckout')) {
       return;
     }
 
@@ -213,7 +249,8 @@ class WC_Facebookcommerce_EventsTracker {
    * page in cases of delayed payment.
    */
   public function inject_purchase_event($order_id) {
-    if ($this->pixel->check_last_event('Purchase')) {
+    if (!self::$isEnabled ||
+        $this->pixel->check_last_event('Purchase')) {
       return;
     }
 
@@ -245,7 +282,8 @@ class WC_Facebookcommerce_EventsTracker {
    * which won't invoke woocommerce_payment_complete.
    */
   public function inject_gateway_purchase_event($order_id) {
-    if ($this->pixel->check_last_event('Purchase')) {
+    if (!self::$isEnabled ||
+        $this->pixel->check_last_event('Purchase')) {
       return;
     }
 

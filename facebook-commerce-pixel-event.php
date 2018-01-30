@@ -187,13 +187,18 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
 
   public static function get_pixel_id() {
     $fb_options = self::get_options();
-    return $fb_options[self::PIXEL_ID_KEY];
+    if (!$fb_options) {
+      return '';
+    }
+    return isset($fb_options[self::PIXEL_ID_KEY]) ?
+           $fb_options[self::PIXEL_ID_KEY] : '';
   }
 
   public static function set_pixel_id($pixel_id) {
     $fb_options = self::get_options();
 
-    if ($fb_options[self::PIXEL_ID_KEY] == $pixel_id) {
+    if (isset($fb_options[self::PIXEL_ID_KEY])
+        && $fb_options[self::PIXEL_ID_KEY] == $pixel_id) {
       return;
     }
 
