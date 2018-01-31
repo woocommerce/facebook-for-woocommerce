@@ -2,6 +2,8 @@
 
 2017-01-31 version 1.7.10
 * Disable Alternate Pixel Basecode fetching due to issues for some stores.
+* Fix variation carry main description if variant description is empty.
+* Add version check information.
 
 2017-01-30 version 1.7.9
 * Add Filter hook for other plugins to override pixel behavior.
