@@ -12,6 +12,7 @@ class WC_Facebookcommerce_Pixel {
   const SETTINGS_KEY = 'facebook_config';
   const PIXEL_ID_KEY = 'pixel_id';
   const USE_PII_KEY = 'use_pii';
+  const IS_BASECODE_FETCH_ENABLED = false;
 
   const NOSCRIPT_REGEX = '/<noscript.*?\/noscript>/s';
   const PIXEL_RENDER = 'pixel_render';
@@ -40,19 +41,24 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
     if (!is_admin()) {
       return;
     }
-    // run the replace basecode call any time the pixel is replaced
-    add_action(
-      'add_option_'.self::SETTINGS_KEY,
-      function($option_name, $option_value) {
-        WC_Facebookcommerce_Pixel::on_settings_changed(array(), $option_value);
-      },
-      /* priority */ 10,
-      /* accepted_args*/ 2);
-    add_action(
-      'update_option_'.self::SETTINGS_KEY,
-      array(WC_Facebookcommerce_Pixel, 'on_settings_changed'),
-      /* priority */ 10,
-      /* accepted_args*/ 2);
+
+    if (self::IS_BASECODE_FETCH_ENABLED) {
+      // run the replace basecode call any time the pixel is replaced
+      add_action(
+        'add_option_'.self::SETTINGS_KEY,
+        function($option_name, $option_value) {
+          WC_Facebookcommerce_Pixel::on_settings_changed(
+            array(),
+            $option_value);
+        },
+        /* priority */ 10,
+        /* accepted_args*/ 2);
+      add_action(
+        'update_option_'.self::SETTINGS_KEY,
+        array(WC_Facebookcommerce_Pixel, 'on_settings_changed'),
+        /* priority */ 10,
+        /* accepted_args*/ 2);
+    }
 
     // Initialize PixelID in storage - this will only need to happen when the
     // use is an admin

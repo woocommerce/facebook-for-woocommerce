@@ -49,7 +49,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $settings_pixel_id = (string)$this->settings['fb_pixel_id'];
       if (
         WC_Facebookcommerce_Utils::is_valid_id($settings_pixel_id) &&
-        !WC_Facebookcommerce_Utils::is_valid_id($pixel_id)
+        (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) ||
+          $pixel_id != $settings_pixel_id
+        )
       ) {
         WC_Facebookcommerce_Pixel::set_pixel_id($settings_pixel_id);
       }
