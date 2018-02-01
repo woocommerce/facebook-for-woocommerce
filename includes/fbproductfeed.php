@@ -130,7 +130,7 @@ class WC_Facebook_Product_Feed {
       $item_group_id = $parent_id;
       if (!isset($attribute_variants[$parent_id])) {
         $parent_product = new WC_Facebook_Product($parent_id);
-        $variants_for_group = $parent_product->prepare_variants_for_group();
+        $variants_for_group = $parent_product->prepare_variants_for_group(true);
         $parent_attribute_values = array();
         foreach ($variants_for_group as $variant) {
           $parent_attribute_values[$variant['product_field']] =

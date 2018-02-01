@@ -571,7 +571,7 @@ class WC_Facebook_Product {
   /**
    * Modify Woo variant/taxonomies for variable products to be FB compatible
    **/
-  public function prepare_variants_for_group() {
+  public function prepare_variants_for_group($feed_data = false) {
     if (!WC_Facebookcommerce_Utils::is_variable_type(
       $this->get_type())) {
       WC_Facebookcommerce_Utils::fblog(
@@ -629,11 +629,15 @@ class WC_Facebook_Product {
           $option_values);
       }
 
+// https://developers.facebook.com/docs/marketing-api/reference/product-variant/
+// For API approach, product_field need to start with 'custom_data:'
       // Clean up variant name (e.g. pa_color should be color)
-      $name = str_replace(
-        'custom_data:',
-        '',
-        WC_Facebookcommerce_Utils::sanitize_variant_name($name));
+      $name = WC_Facebookcommerce_Utils::sanitize_variant_name($name);
+
+      // For feed uploading, product field should remove prefix 'custom_data:'
+      if ($feed_data) {
+        $name = str_replace('custom_data:', '', $name);
+      }
       array_push($final_variants, array(
         'product_field' => $name,
         'label' => $label,

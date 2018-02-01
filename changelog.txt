@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-02-01 version 1.7.11
+* Fix permission error due to difference in data format between graphapi and feed uploading.
+
 2017-01-31 version 1.7.10
 * Disable Alternate Pixel Basecode fetching due to issues for some stores.
 * Fix variation carry main description if variant description is empty.
