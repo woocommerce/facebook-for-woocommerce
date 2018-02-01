@@ -19,10 +19,10 @@ class WC_Facebookcommerce_EventsTracker {
 
   public function __construct($user_info) {
     $this->pixel = new WC_Facebookcommerce_Pixel($user_info);
-    self::apply_filters();
+    add_action('wp_head', array($this, 'apply_filters'), 9);
   }
 
-  public static function apply_filters() {
+  public function apply_filters() {
     self::$isEnabled = apply_filters(
         "facebook_for_woocommerce_integration_pixel_enabled",
         self::$isEnabled);
