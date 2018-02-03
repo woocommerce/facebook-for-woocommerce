@@ -234,6 +234,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         );
 
         add_action(
+          'woocommerce_process_product_meta_subscription',
+          array($this, 'on_product_publish'),
+          10,  // Action priority
+          1    // Args passed to on_product_publish (should be 'id')
+        );
+
+        add_action(
+          'woocommerce_process_product_meta_variable-subscription',
+          array($this, 'on_product_publish'),
+          10,  // Action priority
+          1    // Args passed to on_product_publish (should be 'id')
+        );
+
+        add_action(
           'woocommerce_product_quick_edit_save',
           array($this, 'on_quick_and_bulk_edit_save'),
           10,  // Action priority
