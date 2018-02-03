@@ -19,7 +19,7 @@ class WC_Facebookcommerce_EventsTracker {
 
   public function __construct($user_info) {
     $this->pixel = new WC_Facebookcommerce_Pixel($user_info);
-    add_action('wp_head', array($this, 'apply_filters'), 9);
+    add_action('wp_head', array($this, 'apply_filters'));
   }
 
   public function apply_filters() {
