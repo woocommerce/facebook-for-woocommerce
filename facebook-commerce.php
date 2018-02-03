@@ -288,29 +288,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if ($this->pixel_id) {
       $user_info = WC_Facebookcommerce_Utils::get_user_info($this->use_pii);
       $this->events_tracker = new WC_Facebookcommerce_EventsTracker($user_info);
-
-      // Pixel Tracking Hooks
-      add_action('wp_head',
-        array($this->events_tracker, 'inject_base_pixel'));
-      add_action('wp_footer',
-        array($this->events_tracker, 'inject_base_pixel_noscript'));
-      add_action('woocommerce_after_single_product',
-        array($this->events_tracker, 'inject_view_content_event'));
-      add_action('woocommerce_after_shop_loop',
-        array($this->events_tracker, 'inject_view_category_event'));
-      add_action('pre_get_posts',
-        array($this->events_tracker, 'inject_search_event'));
-      add_action('woocommerce_add_to_cart',
-        array($this->events_tracker, 'inject_add_to_cart_event'));
-      add_action('wc_ajax_fb_inject_add_to_cart_event',
-        array($this->events_tracker, 'inject_ajax_add_to_cart_event' ));
-      add_action('woocommerce_after_checkout_form',
-        array($this->events_tracker, 'inject_initiate_checkout_event'));
-      add_action('woocommerce_thankyou',
-        array($this->events_tracker, 'inject_gateway_purchase_event'));
-      add_action('woocommerce_payment_complete',
-         array($this->events_tracker, 'inject_purchase_event'));
-
     }
   }
 
