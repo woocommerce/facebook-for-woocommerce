@@ -82,6 +82,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
   public function pixel_base_code() {
     $pixel_id = self::get_pixel_id();
     if (
+      !isset(self::$render_cache[self::PIXEL_RENDER]) ||
       self::$render_cache[self::PIXEL_RENDER] === true ||
       !isset($pixel_id) ||
       $pixel_id === 0
@@ -155,6 +156,7 @@ jQuery && jQuery(function($){
   public function pixel_base_code_noscript() {
     $pixel_id = self::get_pixel_id();
     if (
+      !isset(self::$render_cache[self::NO_SCRIPT_RENDER]) ||
       self::$render_cache[self::NO_SCRIPT_RENDER] === true ||
       !isset($pixel_id) ||
       $pixel_id === 0
@@ -222,12 +224,11 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
 
   public static function get_basecode() {
     $fb_options = self::get_options();
-    $basecode = $fb_options[self::BASECODE_KEY];
-    if (!isset($basecode)) {
+    if (!isset($fb_options[self::BASECODE_KEY])) {
       return self::$default_pixel_basecode;
     }
 
-    return htmlspecialchars_decode($basecode);
+    return htmlspecialchars_decode($fb_options[self::BASECODE_KEY]);
   }
 
   public static function on_settings_changed($old_value, $new_value) {
