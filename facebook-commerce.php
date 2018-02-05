@@ -74,13 +74,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       include_once 'facebook-commerce-events-tracker.php';
     }
 
-    // Pixel Proxy
-    // TODO T24108703: Move wp_options to its own file so this one doesn't
-    // need to be included
-    if (!class_exists('FacebookWordPress_Pixel_Proxy')) {
-      include_once 'includes/fb-pixel-proxy.php';
-    }
-
     $this->id = 'facebookcommerce';
     $this->method_title = __(
       'Facebook for WooCommerce',
@@ -139,10 +132,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
-
-    add_action('rest_api_init', function () {
-      FacebookWordPress_Pixel_Proxy::register_pixel_proxy_api();
-    });
 
     // Hooks
     if (is_admin()) {
