@@ -1,4 +1,4 @@
-# Contributing to Facebook or WooCommerce
+# Contributing to Facebook for WooCommerce
 We want to make contributing to this project as easy and transparent as
 possible.
 
@@ -30,6 +30,6 @@ outlined on that page and do not file a public issue.
 * 80 character line length
 
 ## License
-By contributing to Facebook for WooCommerce, you agree that your contributions 
-will be licensed under the LICENSE file in the root directory of 
+By contributing to Facebook for WooCommerce, you agree that your contributions
+will be licensed under the LICENSE file in the root directory of
 this source tree.

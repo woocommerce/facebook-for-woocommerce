@@ -5,16 +5,12 @@
 
 if (!class_exists('WC_Facebookcommerce_Pixel')) :
 
-include_once 'includes/fb-pixel-proxy.php';
 
 class WC_Facebookcommerce_Pixel {
-  const BASECODE_KEY = 'proxy_basecode';
   const SETTINGS_KEY = 'facebook_config';
   const PIXEL_ID_KEY = 'pixel_id';
   const USE_PII_KEY = 'use_pii';
-  const IS_BASECODE_FETCH_ENABLED = false;
 
-  const NOSCRIPT_REGEX = '/<noscript.*?\/noscript>/s';
   const PIXEL_RENDER = 'pixel_render';
   const NO_SCRIPT_RENDER = 'no_script_render';
 
@@ -42,28 +38,9 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
       return;
     }
 
-    if (self::IS_BASECODE_FETCH_ENABLED) {
-      // run the replace basecode call any time the pixel is replaced
-      add_action(
-        'add_option_'.self::SETTINGS_KEY,
-        function($option_name, $option_value) {
-          WC_Facebookcommerce_Pixel::on_settings_changed(
-            array(),
-            $option_value);
-        },
-        /* priority */ 10,
-        /* accepted_args*/ 2);
-      add_action(
-        'update_option_'.self::SETTINGS_KEY,
-        array(WC_Facebookcommerce_Pixel, 'on_settings_changed'),
-        /* priority */ 10,
-        /* accepted_args*/ 2);
-    }
-
     // Initialize PixelID in storage - this will only need to happen when the
     // use is an admin
     $pixel_id = self::get_pixel_id();
-    $should_update = false;
     if (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) &&
       class_exists('WC_Facebookcommerce_WarmConfig')) {
       $fb_warm_pixel_id = WC_Facebookcommerce_WarmConfig::$fb_warm_pixel_id;
@@ -93,7 +70,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
     }
 
     self::$render_cache[self::PIXEL_RENDER] = true;
-
     $params = self::add_version_info();
 
     return sprintf("
@@ -218,24 +194,8 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
     update_option(self::SETTINGS_KEY, $fb_options);
   }
 
-  public static function set_basecode($new_basecode) {
-    $fb_options = self::get_options();
-    $new_basecode = preg_replace(self::NOSCRIPT_REGEX, '', $new_basecode);
-    $fb_options[self::BASECODE_KEY] =
-      htmlentities(stripslashes($new_basecode));
-    update_option(self::SETTINGS_KEY, $fb_options);
-  }
-
   public static function get_basecode() {
     return self::$default_pixel_basecode;
-  }
-
-  public static function on_settings_changed($old_value, $new_value) {
-    $old_pixel = $old_value[self::PIXEL_ID_KEY];
-    $new_pixel = $new_value[self::PIXEL_ID_KEY];
-    if (isset($new_pixel) && $old_pixel !== $new_pixel) {
-      FacebookWordPress_Pixel_Proxy::replace_basecode($new_pixel);
-    }
   }
 
   private static function get_version_info() {
