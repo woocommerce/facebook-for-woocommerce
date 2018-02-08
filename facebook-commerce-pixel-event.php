@@ -227,12 +227,7 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
   }
 
   public static function get_basecode() {
-    $fb_options = self::get_options();
-    if (!isset($fb_options[self::BASECODE_KEY])) {
-      return self::$default_pixel_basecode;
-    }
-
-    return htmlspecialchars_decode($fb_options[self::BASECODE_KEY]);
+    return self::$default_pixel_basecode;
   }
 
   public static function on_settings_changed($old_value, $new_value) {
