@@ -79,14 +79,16 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 %s
 fbq('track', 'PageView', %s);
 <!-- Support AJAX add to cart -->
-jQuery && jQuery(function($){
-  $('body').on('added_to_cart', function(event) {
-    // Ajax action.
-    $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
-      $('head').append(data);
+document.addEventListener('DOMContentLoaded', function() {
+  jQuery && jQuery(function($){
+    $('body').on('added_to_cart', function(event) {
+      // Ajax action.
+      $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
+        $('head').append(data);
+      });
     });
   });
-});
+}, false);
 <!-- End Support AJAX add to cart -->
 </script>
 <!-- DO NOT MODIFY -->
