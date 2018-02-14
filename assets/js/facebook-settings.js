@@ -187,7 +187,7 @@ function save_settings_and_sync(message) {
           window.sendToFacebook('ack set pixel', message.params);
           window.sendToFacebook('ack set page access token', message.params);
           window.sendToFacebook('ack set merchant settings', message.params);
-          sync_all_products();
+          sync_all_products(true);
         } else {
           window.sendToFacebook('fail save_settings', response);
           console.log('Fail response on save_settings_and_sync');

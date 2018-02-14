@@ -465,10 +465,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     if ($column === 'fb') {
-      $fb_product_group_id = get_post_meta(
-        $post->ID,
+      $fb_product_group_id = $this->get_product_fbid(
         self::FB_PRODUCT_GROUP_ID,
-        true);
+        $post->ID,
+        $the_product);
       if (!$fb_product_group_id) {
         printf('<span>Not Synced</span>');
       } else {
@@ -512,25 +512,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   public function fb_product_meta_box_html() {
     global $post;
-    $fb_product_group_id = get_post_meta(
-      $post->ID,
+    $woo_product = new WC_Facebook_Product($post->ID);
+    $fb_product_group_id = $this->get_product_fbid(
       self::FB_PRODUCT_GROUP_ID,
-      true);
+      $post->ID,
+      $woo_product);
     printf('<span id="fb_metadata">');
     if ($fb_product_group_id) {
       printf('Facebook ID: <a href="https://facebook.com/'.
           $fb_product_group_id . '" target="_blank">' .
           $fb_product_group_id . '</a><p/>');
-
-      $woo_product = new WC_Facebook_Product($post->ID);
       if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
         printf('<p>Variant IDs:<br/>');
         $children = $woo_product->get_children();
         foreach ($children as $child_id) {
-          $fb_product_item_id = get_post_meta(
-            $child_id,
+          $fb_product_item_id = $this->get_product_fbid(
             self::FB_PRODUCT_ITEM_ID,
-            true);
+            $child_id);
           printf($child_id .' : <a href="https://facebook.com/'.
           $fb_product_item_id . '" target="_blank">' .
           $fb_product_item_id . '</a><br/>');
@@ -640,16 +638,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   function on_product_delete($wp_id) {
     $woo_product = new WC_Facebook_Product($wp_id);
-    $fb_product_group_id = get_post_meta(
-      $wp_id,
+    $fb_product_group_id = $this->get_product_fbid(
       self::FB_PRODUCT_GROUP_ID,
-      true);
-
-    $fb_product_item_id = get_post_meta(
       $wp_id,
+      $woo_product);
+    $fb_product_item_id = $this->get_product_fbid(
       self::FB_PRODUCT_ITEM_ID,
-      true);
-
+      $wp_id,
+      $woo_product);
     if (! ($fb_product_group_id || $fb_product_item_id ) ) {
       return;  // No synced product, no-op.
     }
@@ -722,11 +718,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       (isset($_POST[self::FB_VARIANT_IMAGE])) ?
         $_POST[self::FB_VARIANT_IMAGE] :
         null);
-
-    $fb_product_group_id = get_post_meta(
-      $wp_id,
+    $fb_product_group_id = $this->get_product_fbid(
       self::FB_PRODUCT_GROUP_ID,
-      true);
+      $wp_id,
+      $woo_product);
 
     if ($fb_product_group_id) {
       $woo_product->update_visibility(
@@ -776,7 +771,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Check if this product has already been published to FB.
     // If not, it's new!
-    $fb_product_item_id = get_post_meta($wp_id, self::FB_PRODUCT_ITEM_ID, true);
+    $fb_product_item_id = $this->get_product_fbid(
+      self::FB_PRODUCT_ITEM_ID,
+      $wp_id,
+      $woo_product);
+
     if ($fb_product_item_id && !$reset) {
       $woo_product->update_visibility(
         isset($_POST['is_product_page']),
@@ -785,10 +784,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     } else {
       // Check if this is a new product item for an existing product group
       if ($woo_product->get_parent_id()) {
-        $fb_product_group_id = get_post_meta(
-          $woo_product->get_parent_id(),
+        $fb_product_group_id = $this->get_product_fbid(
           self::FB_PRODUCT_GROUP_ID,
-          true);
+          $woo_product->get_parent_id(),
+          $woo_product);
 
         // New variant added
         if ($fb_product_group_id) {
@@ -933,10 +932,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Update existing product group (variant data only)
    **/
   function update_product_group($woo_product) {
-    $fb_product_group_id = get_post_meta(
-      $woo_product->get_id(),
+    $fb_product_group_id = $this->get_product_fbid(
       self::FB_PRODUCT_GROUP_ID,
-      true);
+      $woo_product->get_id(),
+      $woo_product);
 
     if (!$fb_product_group_id) {
       return;
@@ -1110,6 +1109,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->settings['pixel_install_time'] = '';
       $this->settings['fb_feed_id'] = '';
       $this->settings['fb_upload_id'] = '';
+      $this->settings['upload_end_time'] = '';
 
       WC_Facebookcommerce_Pixel::set_pixel_id(0);
 
@@ -1704,12 +1704,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     // Loop through product items and flip visibility
     foreach ($products as $item_id) {
-
-      $fb_product_item_id = get_post_meta(
-        $item_id,
+      $fb_product_item_id = $this->get_product_fbid(
         self::FB_PRODUCT_ITEM_ID,
-        true);
-
+        $item_id);
       $data = array(
         'visibility' => $published ? 'published' : 'staging'
       );
@@ -2098,4 +2095,52 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->update_fb_visibility($wp_id, $visibility);
     }
   }
+
+  private function get_product_fbid($fbid_type, $wp_id, $woo_product = null) {
+    $fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta(
+      $wp_id,
+      $fbid_type);
+    if ($fb_id) {
+      return $fb_id;
+    }
+    if (!isset($this->settings['upload_end_time'])) {
+      return null;
+    }
+    if (!$woo_product) {
+      $woo_product = new WC_Facebook_Product($wp_id);
+    }
+    $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
+    $fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
+      new WC_Facebook_Product(current($products)));
+
+    $product_fbid_result = $this->fbgraph->get_facebook_id(
+      $this->product_catalog_id,
+      $fb_retailer_id);
+    if (is_wp_error($product_fbid_result)) {
+      WC_Facebookcommerce_Utils::log($product_fbid_result->get_error_message());
+      $this->display_error_message(
+        "There was an issue connecting to the Facebook API: ".
+          $product_fbid_result->get_error_message());
+      return;
+    }
+
+    if ($product_fbid_result && isset($product_fbid_result['body'])) {
+      $body = json_decode($product_fbid_result['body']);
+      if ($body && $body->id) {
+        if ($fbid_type == self::FB_PRODUCT_GROUP_ID) {
+          $fb_id = $body->product_group->id;
+        } else {
+          $fb_id = $body->id;
+        }
+        update_post_meta(
+          $wp_id,
+          $fbid_type,
+          $fb_id);
+        update_post_meta($wp_id, self::FB_VISIBILITY, true);
+        return $fb_id;
+      }
+    }
+    return;
+  }
+
 }

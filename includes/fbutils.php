@@ -379,6 +379,10 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       return $gender;
     }
 
+    public static function get_fbid_post_meta($wp_id, $fbid_type) {
+      return get_post_meta($wp_id, $fbid_type, true);
+    }
+
   }
 
 endif;
