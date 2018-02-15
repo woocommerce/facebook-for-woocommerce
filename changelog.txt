@@ -1,5 +1,14 @@
 *** Facebook for WooCommerce Changelog ***
 
+2017-02-14 version 1.8.0
+* Up to 15x Performance Improvement of Initial Product Sync by using a feed upload.
+* Fix Subscription Product Bug Due to API Change.
+* Fix Undefined Index Notices.
+* Ensure jQuery is Loaded before Using it.
+* Moved apply_filters from Constructor to wp_head Action.
+* Remove Atlernative Pixel Basecode Fetching.
+* [WordPress]Separate the Plugins to Different Directories
+
 2017-02-01 version 1.7.11
 * Fix permission error due to difference in data format between graphapi and feed uploading.
 
