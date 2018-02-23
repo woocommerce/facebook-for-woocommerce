@@ -69,8 +69,13 @@ class WC_Facebook_Github_Updater {
       $body = wp_remote_retrieve_body($response);
       if (!empty($body)) {
         $body = @json_decode($body);
-        if (is_array($body) && $body[0]->tag_name) {
-          $this->githubAPIResult = $body[0];
+        if (is_array($body)) {
+          foreach ($body as $release) {
+            if (strpos($release->tag_name, 'beta') === false) {
+              $this->githubAPIResult = $release;
+              break;
+            }
+          }
         }
       }
     }
