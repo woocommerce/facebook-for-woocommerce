@@ -455,6 +455,11 @@ class WC_Facebook_Product {
 
     if (!$prepare_for_product_feed) {
       $this->prepare_variants_for_item($product_data);
+    } else if (
+      WC_Facebookcommerce_Utils::is_all_caps($product_data['description'])
+    ) {
+      $product_data['description'] =
+        mb_strtolower($product_data['description']);
     }
 
     /**

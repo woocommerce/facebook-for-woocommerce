@@ -383,6 +383,22 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       return get_post_meta($wp_id, $fbid_type, true);
     }
 
+    public static function is_all_caps($value) {
+      if ($value === null || $value === '') {
+        return true;
+      }
+      if (preg_match('/[^\\p{Common}\\p{Latin}]/u', $value)) {
+        // Contains non-western characters
+        // So, it can't be all uppercase
+        return true;
+      }
+      $latin_string = preg_replace('/[^\\p{Latin}]/u', '', $value);
+      if ($latin_string === '') {
+        // Symbols only
+        return true;
+      }
+      return strtoupper($latin_string) === $latin_string;
+    }
   }
 
 endif;
