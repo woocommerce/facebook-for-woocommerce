@@ -171,7 +171,7 @@ class WC_Facebook_Product_Feed {
       static::format_string_for_feed($product_data['description']) . ',' .
       $product_data['image_url'] . ',' .
       $product_data['url'] . ',' .
-      $product_data['category'] . ',' .
+      static::format_string_for_feed($product_data['category']) . ',' .
       static::format_string_for_feed($product_data['brand']) . ',' .
       static::format_price_for_feed(
         $product_data['price'], $product_data['currency']) . ',' .
