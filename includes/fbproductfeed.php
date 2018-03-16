@@ -14,7 +14,7 @@ if (! class_exists('WC_Facebook_Product_Feed')) :
 class WC_Facebook_Product_Feed {
 
   const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
-  const FB_ADDITIONAL_IMAGES_FOR_FEED = 10;
+  const FB_ADDITIONAL_IMAGES_FOR_FEED = 5;
   const FEED_NAME = 'Initial product sync from WooCommerce. DO NOT DELETE.';
   const FB_PRODUCT_GROUP_ID  = 'fb_product_group_id';
   const FB_VISIBILITY = 'fb_visibility';
@@ -130,8 +130,10 @@ class WC_Facebook_Product_Feed {
       $item_group_id = $parent_id;
       if (!isset($attribute_variants[$parent_id])) {
         $parent_product = new WC_Facebook_Product($parent_id);
+        $gallery_urls = array_filter($parent_product->get_gallery_urls());
         $variants_for_group = $parent_product->prepare_variants_for_group(true);
         $parent_attribute_values = array();
+        $parent_attribute_values['gallery_urls'] = $gallery_urls;
         foreach ($variants_for_group as $variant) {
           $parent_attribute_values[$variant['product_field']] =
             $variant['options'];
@@ -162,6 +164,11 @@ class WC_Facebook_Product_Feed {
       if (!empty($variant_feed_column)) {
         $product_data['variant'] =
           "\"" . implode(',', $variant_feed_column) . "\"";
+      }
+      if (isset($parent_attribute_values['gallery_urls'])) {
+        $product_data['additional_image_urls'] =
+          array_merge($product_data['additional_image_urls'],
+            $parent_attribute_values['gallery_urls']);
       }
     }
 
