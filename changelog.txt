@@ -1,5 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-03-XX version 1.8.2
+* Fix category column in feed.
+* Update Force Resync to use a feed. (~15x faster)
+* Fix all caps description products being rejected from feed.
+* Fix gallery images for variable products not showing in feed.
+* Fix multiple category error in feed upload.
+
 2018-02-27 version 1.8.1
 * Fix Upgrade TagName For Beta Version
 

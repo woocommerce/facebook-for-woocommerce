@@ -110,7 +110,7 @@ class WC_Facebook_Product_Feed {
   }
 
   public function get_product_feed_header_row() {
-    return 'id,title,description,image_link,link,google_product_category,' .
+    return 'id,title,description,image_link,link,product_type,' .
       'brand,price,availability,item_group_id,checkout_url,' .
       'additional_image_link,sale_price_effective_date,sale_price,condition,' .
       'visibility,variant' . PHP_EOL;
