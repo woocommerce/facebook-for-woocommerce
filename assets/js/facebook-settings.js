@@ -1,3 +1,5 @@
+var fb_sync_no_response_count = 0;
+
 function openPopup() {
   var width = 1153;
   var height = 808;
@@ -95,7 +97,7 @@ function sync_confirm() {
     'This will query all published products and may take some time. ' +
     'You only need to do this if your products are out of sync ' +
     'or some of your products did not sync.')) {
-    sync_all_products();
+    sync_all_products(window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload);
     window.fb_sync_start_time = new Date().getTime();
   }
 }
@@ -113,6 +115,7 @@ function sync_all_products($using_feed = false) {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Upload via feed is coming, but not ready yet.
   if ($using_feed) {
+    window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
     window.feed_upload = true;
     ping_feed_status_queue();
     return ajax('ajax_sync_all_fb_products_using_feed');
@@ -241,7 +244,8 @@ function sync_in_progress(){
   if(document.querySelector('#sync_status')){
     document.querySelector('#sync_status').innerHTML =
       '<strong>Facebook product upload in progress. <br/> ' +
-      'Leave this page open to continue upload.</strong><br/>';
+      'Leave this page open to continue upload.</strong><br/>' +
+      '<div class="loader"></div>';
   }
   if(document.querySelector('#sync_progress')){
     document.querySelector('#sync_progress').innerHTML = '';
@@ -461,16 +465,20 @@ function parseURL(url) {
   return parser;
 }
 
-window.fb_pings = setInterval(function(){
+// Only do pings for supporting older (pre 1.8) setups.
+window.fb_pings =
+(window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload) ?
+null :
+setInterval(function(){
   console.log("Pinging queue...");
   check_queues();
-}, 5000);
+}, 10000);
 
-function ping_feed_status_queue() {
+function ping_feed_status_queue(count = 0) {
   window.fb_feed_pings = setInterval(function() {
     console.log('Pinging feed uploading queue...');
-    check_feed_upload_queue();
-  }, 30000);
+    check_feed_upload_queue(count);
+  }, 30000*(1 << count));
 }
 
 function product_sync_complete(sync_progress_element, sync_status_element){
@@ -482,17 +490,27 @@ function product_sync_complete(sync_progress_element, sync_status_element){
   if(sync_progress_element) {
     sync_progress_element.innerHTML = '';
   }
+  clearInterval(window.fb_pings);
 }
 
 function check_queues(){
   ajax('ajax_fb_background_check_queue',
     {"request_time": new Date().getTime()}, function(response){
     if (window.feed_upload) {
+      clearInterval(window.fb_pings);
       return;
     }
     var sync_progress_element = document.querySelector('#sync_progress');
     var sync_status_element = document.querySelector('#sync_status');
     var res = parse_response_check_connection(response);
+    if (!res) {
+      if (fb_sync_no_response_count++ > 5) {
+        clearInterval(window.fb_pings);
+      }
+      return;
+    }
+    fb_sync_no_response_count = 0;
+
     if(res){
        if(!res.background){
         console.log("No background sync found, disabling pings");
@@ -543,17 +561,17 @@ function parse_response_check_connection(res) {
   return null;
 }
 
-function check_feed_upload_queue() {
+function check_feed_upload_queue(check_num) {
   ajax('ajax_check_feed_upload_status', null, function(response) {
     var sync_progress_element = document.querySelector('#sync_progress');
     var sync_status_element = document.querySelector('#sync_status');
     var res = parse_response_check_connection(response);
+    clearInterval(window.fb_feed_pings);
     if (res) {
       var status = res.status;
       switch (status) {
         case 'complete':
           product_sync_complete(sync_progress_element, sync_status_element);
-          clearInterval(window.fb_feed_pings);
           window.feed_upload = false;
           break;
         case 'in progress':
@@ -561,12 +579,12 @@ function check_feed_upload_queue() {
             sync_progress_element.innerHTML =
               '<strong>Product uploading in progress...</strong>';
           }
+          ping_feed_status_queue(check_num+1);
           break;
         default:
           sync_progress_element.innerHTML =
             '<strong>Something wrong when uploading, please try again.</strong>';
           window.feed_upload = false;
-          clearInterval(window.fb_feed_pings);
       }
     }
   });

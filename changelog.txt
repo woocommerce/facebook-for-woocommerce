@@ -2,7 +2,7 @@
 
 2018-03-XX version 1.8.2
 * Fix category column in feed.
-* Update Force Resync to use a feed. (~15x faster)
+* Update Force Resync to use a feed if feed was used for initial sync. (~15x faster)
 * Fix all caps description products being rejected from feed.
 * Fix gallery images for variable products not showing in feed.
 * Fix multiple category error in feed upload.

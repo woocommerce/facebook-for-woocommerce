@@ -156,6 +156,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         }
       }
       $this->fb_check_for_new_version();
+      $this->feed_id = isset($this->settings['fb_feed_id'])
+       ? $this->settings['fb_feed_id']
+       : '';
 
       if (!$this->pixel_install_time && $this->pixel_id) {
         $this->pixel_install_time = current_time('mysql');
@@ -596,6 +599,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
       ,feed: {
         totalVisibleProducts: '<?php echo $this->get_product_count() ?>'
+        ,hasClientSideFeedUpload: '<?php echo !!$this->feed_id ?>'
       }
       ,feedPrepared: {
         feedUrl: ''
@@ -1646,7 +1650,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       include_once 'includes/fbproductfeed.php';
     }
     $this->fbproductfeed = new WC_Facebook_Product_Feed(
-      $this->product_catalog_id, $this->fbgraph);
+      $this->product_catalog_id, $this->fbgraph, $this->feed_id);
     $upload_success = $this->fbproductfeed->sync_all_products_using_feed();
     if ($upload_success) {
       $this->settings['fb_feed_id'] = $this->fbproductfeed->feed_id;

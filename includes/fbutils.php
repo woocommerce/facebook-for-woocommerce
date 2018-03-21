@@ -260,16 +260,18 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      * Helper function to query posts.
      */
     public static function get_wp_posts(
-      $product_group_id,
-      $compare_condition,
+      $product_group_id = null,
+      $compare_condition = null,
       $post_type = 'product') {
       $args = array(
         'fields'         => 'ids',
         'meta_query' => array(
-           array(
-             'key'     => $product_group_id,
-             'compare' => $compare_condition,
-           ),
+          (($product_group_id) ?
+            array(
+              'key'     => $product_group_id,
+              'compare' => $compare_condition,
+            ) : array()
+          ),
         ),
         'post_status' => 'publish',
         'post_type'  => $post_type,
