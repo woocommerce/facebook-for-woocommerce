@@ -122,7 +122,7 @@ class WC_Facebook_Product_Feed {
     return 'id,title,description,image_link,link,product_type,' .
       'brand,price,availability,item_group_id,checkout_url,' .
       'additional_image_link,sale_price_effective_date,sale_price,condition,' .
-      'visibility,variant' . PHP_EOL;
+      'visibility,default_product,variant' . PHP_EOL;
   }
 
   /**
@@ -139,10 +139,13 @@ class WC_Facebook_Product_Feed {
       $item_group_id = $parent_id;
       if (!isset($attribute_variants[$parent_id])) {
         $parent_product = new WC_Facebook_Product($parent_id);
+
         $gallery_urls = array_filter($parent_product->get_gallery_urls());
+        $variation_id = $parent_product->find_matching_product_variation();
         $variants_for_group = $parent_product->prepare_variants_for_group(true);
         $parent_attribute_values = array();
         $parent_attribute_values['gallery_urls'] = $gallery_urls;
+        $parent_attribute_values['default_variant_id'] = $variation_id;
         foreach ($variants_for_group as $variant) {
           $parent_attribute_values[$variant['product_field']] =
             $variant['options'];
@@ -179,7 +182,13 @@ class WC_Facebook_Product_Feed {
           array_merge($product_data['additional_image_urls'],
             $parent_attribute_values['gallery_urls']);
       }
+
+      $product_data['default_product'] =
+        $parent_attribute_values['default_variant_id'] == $woo_product->id
+        ? 'default'
+        :'';
     }
+
 
     return
       $product_data['retailer_id'] . ',' .
@@ -202,6 +211,7 @@ class WC_Facebook_Product_Feed {
         $product_data['sale_price'], $product_data['currency']) . ',' .
       'new' . ',' .
       'published' . ',' .
+      $product_data['default_product'] . ',' .
       $product_data['variant'] . PHP_EOL;
   }
 
