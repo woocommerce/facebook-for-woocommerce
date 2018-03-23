@@ -214,6 +214,11 @@ class WC_Facebookcommerce_Graph_API {
     return self::_get($url);
   }
 
+  public function set_default_variant($product_group_id, $data) {
+    $url = $this->build_url($product_group_id);
+    return self::_post($url, $data);
+  }
+
   private function build_url($field_id, $param ='') {
     return self::GRAPH_API_URL . (string)$field_id . $param;
   }
