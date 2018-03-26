@@ -210,7 +210,7 @@ class WC_Facebook_Product_Feed {
       static::format_price_for_feed(
         $product_data['sale_price'], $product_data['currency']) . ',' .
       'new' . ',' .
-      'published' . ',' .
+      $product_data['visibility'] . ',' .
       $product_data['default_product'] . ',' .
       $product_data['variant'] . PHP_EOL;
   }
