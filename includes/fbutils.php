@@ -221,6 +221,10 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       $object = array(),
       $error = false,
       $ems = '') {
+      if ($error) {
+        $object['plugin_version'] = self::PLUGIN_VERSION;
+        $object['php_version'] = phpversion();
+      }
       $message = json_encode(array(
         'message' => $message,
         'object' => $object

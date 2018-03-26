@@ -770,7 +770,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         } else {
           WC_Facebookcommerce_Utils::fblog(
             "Wrong! simple_product_publish called without group ID for
-              a variable product!");
+              a variable product!", array(), true);
         }
       } else {
         return $this->create_product_simple($woo_product);  // new product
@@ -1492,7 +1492,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if ($currently_syncing) {
       WC_Facebookcommerce_Utils::log('Not syncing, sync in progress');
       WC_Facebookcommerce_Utils::fblog(
-        'Tried to sync during an in-progress sync!');
+        'Tried to sync during an in-progress sync!', array(), true);
       $this->display_warning_message('A product sync is in progress.
         Please wait until the sync finishes before starting a new one.');
       wp_die();
@@ -1505,7 +1505,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!$is_valid_product_catalog) {
       WC_Facebookcommerce_Utils::log('Not syncing, invalid product catalog!');
       WC_Facebookcommerce_Utils::fblog(
-        'Tried to sync with an invalid product catalog!');
+        'Tried to sync with an invalid product catalog!', array(), true);
       $this->display_warning_message('We\'ve detected that your
         Facebook Product Catalog is no longer valid. This may happen if it was
         deleted, or this may be a transient error.
@@ -1627,7 +1627,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!$is_valid_product_catalog) {
       WC_Facebookcommerce_Utils::log('Not syncing, invalid product catalog!');
       WC_Facebookcommerce_Utils::fblog(
-        'Tried to sync with an invalid product catalog!');
+        'Tried to sync with an invalid product catalog!', array(), true);
       $this->display_warning_message('We\'ve detected that your
         Facebook Product Catalog is no longer valid. This may happen if it was
         deleted, or this may be a transient error.
@@ -1654,7 +1654,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     } else {
       // curl failed, roll back to original sync approach.
       WC_Facebookcommerce_Utils::fblog(
-        'Sync all products using feed, curl failed');
+        'Sync all products using feed, curl failed', array(), true);
       $this->sync_all_products();
     }
   }
@@ -2107,7 +2107,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $product_group_id,
       array('default_product_id' => $product_item_id)));
     if (!$result) {
-      WC_Facebookcommerce_Utils::fblog('Fail to set default product item');
+      WC_Facebookcommerce_Utils::fblog(
+        'Fail to set default product item',
+        array(),
+        true);
     }
   }
 
