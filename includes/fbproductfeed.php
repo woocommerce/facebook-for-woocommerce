@@ -149,7 +149,9 @@ class WC_Facebook_Product_Feed {
     $product_data = $woo_product->prepare_product(null, true);
     $item_group_id = $product_data['retailer_id'];
     // prepare variant column for variable products
-    if ($woo_product->get_type() == 'variation') {
+    if (
+      WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())
+    ) {
       $parent_id = $woo_product->get_parent_id();
       $item_group_id = $parent_id;
       if (!isset($attribute_variants[$parent_id])) {
