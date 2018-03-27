@@ -259,14 +259,18 @@ class WC_Facebook_Product {
   }
 
   public function is_hidden() {
+    $wpid = $this->id;
+    if (WC_Facebookcommerce_Utils::is_variation_type($this->get_type())) {
+      $wpid = $this->get_parent_id();
+    }
     $hidden_from_catalog = has_term(
       'exclude-from-catalog',
       'product_visibility',
-      $this->id);
+      $wpid);
     $hidden_from_search = has_term(
       'exclude-from-search',
       'product_visibility',
-      $this->id);
+      $wpid);
     return ($hidden_from_catalog && $hidden_from_search) ||
       !$this->fb_visibility || !$this->get_fb_price();
   }
