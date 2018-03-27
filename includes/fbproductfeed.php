@@ -19,6 +19,9 @@ class WC_Facebook_Product_Feed {
   const FB_PRODUCT_GROUP_ID  = 'fb_product_group_id';
   const FB_VISIBILITY = 'fb_visibility';
 
+  private $has_default_product_count = 0;
+  private $no_default_product_count = 0;
+
   public function __construct(
     $facebook_catalog_id,
     $fbgraph,
@@ -73,8 +76,20 @@ class WC_Facebook_Product_Feed {
     unlink(dirname(__FILE__) .
       DIRECTORY_SEPARATOR . (self::FACEBOOK_CATALOG_FEED_FILENAME));
 
-    WC_Facebookcommerce_Utils::fblog('Complete - Sync all products using feed');
+    $total_product_count =
+      $this->has_default_product_count + $this->no_default_product_count;
+    if ($total_product_count == 0) {
+      $message = 'no products.';
+    } else if ($this->has_default_product_count == 0) {
+      $message = 'no products have a default variant.';
+    } else {
+      $message =
+        ($this->has_default_product_count / $total_product_count * 100) .
+        '% products have a default variant.';
+    }
 
+    WC_Facebookcommerce_Utils::fblog('Complete - Sync all products using feed, '
+      . $message);
     return true;
   }
 
@@ -187,6 +202,19 @@ class WC_Facebook_Product_Feed {
         $parent_attribute_values['default_variant_id'] == $woo_product->id
         ? 'default'
         :'';
+
+      // If this group has default variant value, log this product item
+      if (isset($parent_attribute_values['default_variant_id']) &&
+        !empty($parent_attribute_values['default_variant_id'])) {
+          $this->has_default_product_count++;
+      } else {
+        $this->no_default_product_count++;
+      }
+    }
+
+    // log simple product
+    if (!isset($product_data['default_product'])) {
+      $this->no_default_product_count++;
     }
 
 
