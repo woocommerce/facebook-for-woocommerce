@@ -1,5 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-03-30 version 1.8.3
+* Fix Hidden Product Showing Up in Shop after Initial Sync.
+* Hiding a variable product now hides the product on FB.
+* Fix Variable Subscription Products Not Syncing Variants.
+* Support Default Variant in Plugin via Graph API: Create and Update.
+* Set Default Variant as Default Product in Feed.
+
 2018-03-20 version 1.8.2
 * Fix category column in feed.
 * Update Force Resync to use a feed if feed was used for initial sync. (~15x faster)
