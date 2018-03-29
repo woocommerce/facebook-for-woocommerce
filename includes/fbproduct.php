@@ -271,8 +271,11 @@ class WC_Facebook_Product {
       'exclude-from-search',
       'product_visibility',
       $wpid);
+    // fb_visibility === '': after initial sync by feed
+    // fb_visibility === false: set hidden on FB metadata
+    // Explicitly check whether flip 'hide' before.
     return ($hidden_from_catalog && $hidden_from_search) ||
-      !$this->fb_visibility || !$this->get_fb_price();
+      $this->fb_visibility === false || !$this->get_fb_price();
   }
 
   public function get_price_plus_tax($price) {
