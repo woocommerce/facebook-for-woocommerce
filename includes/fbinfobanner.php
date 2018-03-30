@@ -65,7 +65,7 @@ class WC_Facebookcommerce_Info_Banner {
     echo '<div class="updated fade"><p>' . $message . "\n";
     echo '<p><a href="' . $redirect_url . '" title="' .
       __('Click and redirect.', 'facebook-for-woocommerce').
-      '"> ' . __('Get Started', 'facebook-for-woocommerce') . '</a>' . ' | '.
+      '"> ' . __('Get More Sales', 'facebook-for-woocommerce') . '</a>' . ' | '.
       '<a href="' . esc_url($dismiss_url). '" title="' .
       __('Dismiss this notice.', 'facebook-for-woocommerce').
       '"> ' . __('Dismiss', 'facebook-for-woocommerce') . '</a></p></div>';

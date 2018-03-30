@@ -1892,7 +1892,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   echo sprintf(__('<strong> Good News! You can now optimize your
                     Facebook Ads, based on data from your pixel.<br>
                     <a href='. $redirect_uri. ' target="_blank">'
-                    .'Get Started</a></strong>',
+                    .'Get More Sales</a></strong>',
                     'facebook-for-woocommerce'));
               }
               ?>
