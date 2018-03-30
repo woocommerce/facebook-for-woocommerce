@@ -32,6 +32,7 @@ class WC_Facebook_Product_Feed {
   }
 
   public function sync_all_products_using_feed() {
+    $start_time = microtime(true);
     WC_Facebookcommerce_Utils::fblog('Sync all products using feed');
 
     if (!is_writable(dirname(__FILE__))) {
@@ -78,18 +79,17 @@ class WC_Facebook_Product_Feed {
 
     $total_product_count =
       $this->has_default_product_count + $this->no_default_product_count;
-    if ($total_product_count == 0) {
-      $message = 'no products.';
-    } else if ($this->has_default_product_count == 0) {
-      $message = 'no products have a default variant.';
-    } else {
-      $message =
-        ($this->has_default_product_count / $total_product_count * 100) .
-        '% products have a default variant.';
-    }
-
-    WC_Facebookcommerce_Utils::fblog('Complete - Sync all products using feed, '
-      . $message);
+    $default_product_percentage =
+      ($total_product_count == 0 || $this->has_default_product_count == 0)
+      ? 0
+      : $this->has_default_product_count / $total_product_count * 100;
+    $time_spent = microtime(true) - $start_time;
+    $data = array(
+      'sync_time' => $time_spent,
+      'default_product_percentage' => $default_product_percentage,
+    );
+    WC_Facebookcommerce_Utils::fblog('Complete - Sync all products using feed. '
+    , $data);
     return true;
   }
 
