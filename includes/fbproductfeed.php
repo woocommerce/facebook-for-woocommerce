@@ -84,10 +84,16 @@ class WC_Facebook_Product_Feed {
       ? 0
       : $this->has_default_product_count / $total_product_count * 100;
     $time_spent = microtime(true) - $start_time;
-    $data = array(
-      'sync_time' => $time_spent,
-      'default_product_percentage' => $default_product_percentage,
-    );
+    $data = array();
+    // Only log performance if this store has products in order to get average
+    // performance.
+    if ($total_product_count != 0) {
+      $data = array(
+        'sync_time' => $time_spent,
+        'total' => $total_product_count,
+        'default_product_percentage' => $default_product_percentage,
+      );
+    }
     WC_Facebookcommerce_Utils::fblog('Complete - Sync all products using feed. '
     , $data);
     return true;
