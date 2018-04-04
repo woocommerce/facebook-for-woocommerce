@@ -33,6 +33,8 @@ class WC_Facebookcommerce_EventsTracker {
       array($this, 'inject_view_category_event'));
     add_action('pre_get_posts',
       array($this, 'inject_search_event'));
+    add_action('woocommerce_after_cart',
+      array($this, 'inject_add_to_cart_redirect_event'));
     add_action('woocommerce_add_to_cart',
       array($this, 'inject_add_to_cart_event'));
     add_action('wc_ajax_fb_inject_add_to_cart_event',
@@ -244,6 +246,21 @@ class WC_Facebookcommerce_EventsTracker {
     $pixel = ob_get_clean();
 
     wp_send_json($pixel);
+  }
+
+  /**
+  * Trigger AddToCart for cart page and woocommerce_after_cart hook.
+  * When set 'redirect to cart', ajax call for button click and
+  * woocommerce_add_to_cart will be skipped.
+  */
+  public function inject_add_to_cart_redirect_event() {
+    if (!self::$isEnabled) {
+      return;
+    }
+    $redirect_checked = get_option('woocommerce_cart_redirect_after_add', 'no');
+    if ($redirect_checked == 'yes') {
+      $this->inject_add_to_cart_event();
+    }
   }
 
   /**
