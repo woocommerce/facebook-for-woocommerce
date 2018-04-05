@@ -78,7 +78,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 <script>
 %s
 fbq('track', 'PageView', %s);
-<!-- Support AJAX add to cart -->
+
 document.addEventListener('DOMContentLoaded', function() {
   jQuery && jQuery(function($){
     $('body').on('added_to_cart', function(event) {
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 }, false);
-<!-- End Support AJAX add to cart -->
+
 </script>
 <!-- DO NOT MODIFY -->
 <!-- %s Facebook Integration end -->
