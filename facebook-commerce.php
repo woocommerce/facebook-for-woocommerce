@@ -1637,6 +1637,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_die();
       return;
     }
+
+    // Cache the cart URL to display a warning in case it changes later
+    $cart_url = get_option(self::FB_CART_URL);
+    if ($cart_url != wc_get_cart_url()) {
+      update_option(self::FB_CART_URL, wc_get_cart_url());
+    }
+
     if (!class_exists('WC_Facebook_Product_Feed')) {
       include_once 'includes/fbproductfeed.php';
     }
