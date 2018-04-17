@@ -6,6 +6,10 @@ if (! defined('ABSPATH')) {
   exit;
 }
 
+if (!class_exists('WC_Facebookcommerce_Utils')) {
+  include_once 'includes/fbutils.php';
+}
+
 if (! class_exists('WC_Facebook_Product')) :
 
 /**
@@ -47,7 +51,17 @@ class WC_Facebook_Product {
 
   // Fall back to calling method on $woo_product
   public function __call($function, $args) {
-    return call_user_func_array(array($this->woo_product, $function), $args);
+    if ($this->woo_product) {
+      return call_user_func_array(array($this->woo_product, $function), $args);
+    } else {
+      $e = new Exception();
+      $backtrace = var_export($e->getTraceAsString(), true);
+      WC_Facebookcommerce_Utils::fblog(
+        "Calling $function on Null Woo Object. Trace:\n".$backtrace,
+        array(),
+        true);
+      return null;
+    }
   }
 
   public function get_gallery_urls() {
