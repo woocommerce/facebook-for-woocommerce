@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-04-17 version 1.8.5
+* Fix ViewContent event incorrectly firing with content_type 'product'
+* Fix product group retailer id not matching ViewContent content id.
+* Added logging and defensive code to debug #348
+* Warning about Cart URL changes now clears with Force Resync
+
 2018-04-06 version 1.8.4
 * Fire AddToCart on Cart Viewed for shops which redirect to cart.
 * Fix HTML AJAX comment inside script breaking HTML optimizers.
