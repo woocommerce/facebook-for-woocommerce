@@ -177,14 +177,14 @@ class WC_Facebookcommerce_EventsTracker {
     }
 
     $product = wc_get_product(get_the_ID());
-    $content_type = 'product';
+    $content_type = 'product_group';
     if (!$product) {
       return;
     }
 
     // if product is a variant, fire the pixel with content_type: product_group
-    if (WC_Facebookcommerce_Utils::is_variable_type($product->get_type())) {
-      $content_type = 'product_group';
+    if (WC_Facebookcommerce_Utils::is_variation_type($product->get_type())) {
+      $content_type = 'product';
     }
 
     $content_ids = WC_Facebookcommerce_Utils::get_fb_content_ids($product);

@@ -162,7 +162,7 @@ class WC_Facebook_Product_Feed {
       WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())
     ) {
       $parent_id = $woo_product->get_parent_id();
-      $item_group_id = $parent_id;
+
       if (!isset($attribute_variants[$parent_id])) {
         $parent_product = new WC_Facebook_Product($parent_id);
 
@@ -172,6 +172,8 @@ class WC_Facebook_Product_Feed {
         $parent_attribute_values = array();
         $parent_attribute_values['gallery_urls'] = $gallery_urls;
         $parent_attribute_values['default_variant_id'] = $variation_id;
+        $parent_attribute_values['item_group_id'] =
+          WC_Facebookcommerce_Utils::get_fb_retailer_id($parent_product);
         foreach ($variants_for_group as $variant) {
           $parent_attribute_values[$variant['product_field']] =
             $variant['options'];
@@ -207,6 +209,9 @@ class WC_Facebook_Product_Feed {
         $product_data['additional_image_urls'] =
           array_merge($product_data['additional_image_urls'],
             $parent_attribute_values['gallery_urls']);
+      }
+      if (isset($parent_attribute_values['item_group_id'])) {
+        $item_group_id = $parent_attribute_values['item_group_id'];
       }
 
       $product_data['default_product'] =
