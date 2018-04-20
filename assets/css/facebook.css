@@ -7,7 +7,7 @@
   background-position-y: 100%;
 }
 #fbsetup .content {
-  padding: 16px 234px 20px 20px;
+  padding: 16px 10px 20px 20px;
 }
 
 #fbsetup .loader {
@@ -23,11 +23,24 @@
     100% { transform: rotate(360deg); }
 }
 
-#fbsetup .btn {
+#fbsetup .create_ad {
+  align-content: center;
+  padding: 0px 0px 120px 0px;
+}
+
+#fbsetup .btn2 a {
+  text-decoration: none;
+  color: #FFFFFF;
+  font-family: Helvetica-Bold;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#fbsetup .btn2 {
   /* container: */
-  background: #4267B2;
-  border-radius: 2px;
-  padding: 12px 20px;
+  background: #09AA32;
+  border-radius: 5px;
+  padding: 20px 20px;
   /* Get started: */
   font-family: Helvetica-Bold;
   font-size: 12px;
@@ -35,6 +48,21 @@
   text-decoration: none;
   display: inline-block;
 }
+
+
+#fbsetup .btn {
+  /* container: */
+  background: #4267B2;
+  border-radius: 10px;
+  padding: 10px 20px;
+  /* Get started: */
+  font-family: Helvetica-Bold;
+  font-size: 12px;
+  color: #FFFFFF;
+  text-decoration: none;
+  display: inline-block;
+}
+
 #fbsetup header {
   display: block;
   background: url(../image/facebook.png) no-repeat #4267B2;

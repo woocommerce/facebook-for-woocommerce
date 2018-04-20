@@ -1904,6 +1904,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               }
               ?>
           </div>
+          <table width="100%"><tr><td>
           <h1><?php _e('Grow your business on Facebook',
           'facebook-for-woocommerce'); ?></h1>
           <p><?php _e('Use this official plugin to help sell more of your
@@ -1944,14 +1945,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 }
                 echo '</p>';
 
-                echo '<p id="resync_button"><a href="#"
-                    class="btn" onclick="sync_confirm()" id="resync_products" ';
-
-                if (($connected && $currently_syncing) || !$connected) {
-                  echo 'style="display:none;" ';
-                }
-                echo '>Force Product Resync</a><p/>';
-
                 echo '<p id ="configure_button"><a href="#"
                   class="btn" onclick="facebookConfig()" id="set_dia" ';
                 if ($currently_syncing) {
@@ -1962,21 +1955,44 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 echo '<p id="sync_status">';
                 if ($connected && $currently_syncing) {
                   echo sprintf(__('<strong>Facebook product sync in progress!
-                    <br/>LEAVE THIS PAGE OPEN TO KEEP SYNCING!</strong></br>',
+                    </strong></br>',
                     'facebook-for-woocommerce'));
                 }
                 if ($connected && !$currently_syncing) {
                   echo '<strong>Status: </strong>' .
                   'Products are synced to Facebook.';
+                  echo '<br/><a href="#"
+                      class="resync" onclick="sync_confirm()" id="resync_products" ';
+                  echo '>Force Resync</a>';
                 }
                 echo '</p>';
-
                 echo '<p id="sync_progress"></p>';
 
               }
             }
           ?>
+          </td>
+          <td width="250px" align="center">
+            <div class="create_ad">
+            <?php
+              if (!empty($this->settings['fb_page_id']) &&
+                !empty($this->settings['fb_api_key']) &&
+                $this->external_merchant_settings_id) {
+                  $redirect_uri =
+                    'https://www.facebook.com/ads/dia/redirect/?settings_id='
+                    . $this->external_merchant_settings_id;
+                echo '<p id="create_ad" class="btn2">';
+                echo '<a href='.$redirect_uri.'>Create Ad</a>';
+                echo '</p>';
+              }
+            ?>
+            </div>
+          </td>
+
+          </tr>
+          </table>
         </div>
+
       </div>
     </div>
     <br/><hr/><br/>
