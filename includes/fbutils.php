@@ -41,11 +41,12 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
      * @return void
      */
     public static function wc_enqueue_js($code) {
-      if (function_exists('wc_enqueue_js')) {
+      global $wc_queued_js;
+
+      if (function_exists('wc_enqueue_js') && empty($wc_queued_js)) {
         wc_enqueue_js($code);
       } else {
-        global $woocommerce;
-        $woocommerce->add_inline_js($code);
+        $wc_queued_js = $code."\n".$wc_queued_js;
       }
     }
 
