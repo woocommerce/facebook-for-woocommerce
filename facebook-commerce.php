@@ -2031,10 +2031,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function delete_product_item($wp_id) {
-    $fb_product_item_id = get_post_meta(
-      $wp_id,
-      self::FB_PRODUCT_ITEM_ID,
-      true);
+    $fb_product_item_id = $this->get_product_fbid(
+        self::FB_PRODUCT_ITEM_ID,
+        $wp_id);
     if ($fb_product_item_id) {
       $pi_result =
         $this->fbgraph->delete_product_item($fb_product_item_id);
@@ -2064,12 +2063,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $woo_product = new WC_Facebook_Product($wp_id);
     $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
     foreach ($products as $item_id) {
-      $fb_product_item_id = get_post_meta(
-        $item_id,
-        self::FB_PRODUCT_ITEM_ID,
-        true);
-      // Product never publish to FB new status is not publish, or no post id.
+      $fb_product_item_id = $this->get_product_fbid(
+          self::FB_PRODUCT_ITEM_ID,
+          $item_id);
+
       if (!$fb_product_item_id) {
+        WC_Facebookcommerce_Utils::fblog(
+          $fb_product_item_id." doesn't exist but underwent a visibility transform.",
+          array(),
+          true);
         continue;
       }
       $result = $this->check_api_result(
