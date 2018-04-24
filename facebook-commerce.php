@@ -293,6 +293,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         add_filter('woocommerce_duplicate_product_exclude_meta',
           array($this, 'fb_duplicate_product_reset_meta'));
 
+        add_action('pmxi_after_xml_import',
+          array($this, 'wp_all_import_compat'));
+
       }
       $this->load_background_sync_process();
     }
@@ -1285,6 +1288,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       return null;
     }
     return $result;
+  }
+
+  function wp_all_import_compat($import_id) {
+    $import = new PMXI_Import_Record();
+    $import->getById($import_id);
+    if (!$import->isEmpty() && in_array($import->options['custom_type'], array('product', 'product_variation'))) {
+      $this->display_sticky_message(
+        sprintf(
+          'Products may be out of Sync with Facebook due to your recent import.'.
+          ' <a href="%s&fb_force_resync=true">Re-Sync them with FB.</a>',
+          WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL));
+    }
   }
 
   /**
