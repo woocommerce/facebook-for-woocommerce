@@ -2091,8 +2091,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $woo_product = new WC_Facebook_Product($wp_id);
     }
     $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
-    $fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
-      new WC_Facebook_Product(current($products)));
+    $woo_product = new WC_Facebook_Product(current($products));
+    // This is a generalized function used elsewhere
+    // Cannot call is_hidden for VC_Product_Variable Object
+    if ($woo_product->is_hidden()) {
+      return null;
+    }
+    $fb_retailer_id =
+      WC_Facebookcommerce_Utils::get_fb_retailer_id($woo_product);
 
     $product_fbid_result = $this->fbgraph->get_facebook_id(
       $this->product_catalog_id,
