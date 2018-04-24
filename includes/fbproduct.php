@@ -393,9 +393,9 @@ class WC_Facebook_Product {
       '&',
       html_entity_decode($this->get_permalink()));
 
-    // Use product_url for external product setting.
-    if ($this->get_type() == 'external') {
-      $checkout_url = $this->get_product_url();
+    // Use product_url for external/bundle product setting.
+    if ($this->get_type() == 'external' || $this->get_type() == 'woosb') {
+      $checkout_url = $product_url;
     } else if (wc_get_cart_url()) {
       $char = '?';
       // Some merchant cart pages are actually a querystring
