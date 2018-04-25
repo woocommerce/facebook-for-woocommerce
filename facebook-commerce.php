@@ -1885,24 +1885,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       <div class="wrapper">
         <header></header>
         <div class="content">
-          <div style="white-space: nowrap; font-size: 12.5px"}>
-            <?php $now = new DateTime(current_time('mysql'));
-            // check if pixel_install_date has been set or cleared before
-            // DateInterveral::diff: difference in days
-            $diff = !$this->pixel_install_time
-              ? null
-              : $now->diff(new DateTime($this->pixel_install_time))
-                ->format('%a');
-              if ($redirect_uri !== '' &&
-                is_numeric($diff) && (int)$diff > self::FB_SHOW_REDIRECT) {
-                  echo sprintf(__('<strong> Good News! You can now optimize your
-                    Facebook Ads, based on data from your pixel.<br>
-                    <a href='. $redirect_uri. ' target="_blank">'
-                    .'Get More Sales</a></strong>',
-                    'facebook-for-woocommerce'));
-              }
-              ?>
-          </div>
           <table width="100%"><tr><td>
           <h1><?php _e('Grow your business on Facebook',
           'facebook-for-woocommerce'); ?></h1>
