@@ -1223,24 +1223,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   /**
-   *  Specific handling for Error #10800 (duplicate retailer_id)
-   **/
-  function display_duplicate_retailer_id_message($result) {
-    $msg = __('We\'ve detected duplicate SKUs in your shop. This can happen
-      for a few reasons, including the effects of other plugins. <br/>
-      Some of your products may not have been synced to Facebook.
-      Please <a href="' . WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL . '">
-      delete your settings via the "Advanced" tab and try setup again.</a><br/>
-
-      If this error persists, or you have a use-case for duplicated SKUs,
-      <a href="mailto:ads_extension_woocommerce@fb.com">please contact us.</a>',
-    'facebook-for-woocommerce');
-    WC_Facebookcommerce_Utils::log($msg);
-    set_transient('facebook_plugin_api_error', $msg,
-      self::FB_MESSAGE_DISPLAY_TIME);
-  }
-
-  /**
    * Deal with FB API responses, display error if FB API returns error
    *
    * @return result if response is 200, null otherwise
@@ -1261,16 +1243,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         $error_data = $body->error->error_data; // error_data may contain FBIDs
         if ($error_data && $wpid) {
           $existing_id = $this->get_existing_fbid($error_data, $wpid);
-          if (!$existing_id) {
-            $this->display_duplicate_retailer_id_message($result);
-          } else {
+          if ($existing_id) {
             // Add "existing_id" ID to result
             $body->id = $existing_id;
             $result['body'] = json_encode($body);
             return $result;
           }
-        } else {
-          $this->display_duplicate_retailer_id_message($result);
         }
       } else {
         $this->display_error_message_from_result($result);
