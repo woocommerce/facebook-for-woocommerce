@@ -470,12 +470,7 @@ class WC_Facebook_Product {
     // IF using WPML, set the product to staging unless it is in the
     // default language. WPML >= 3.2 Supported.
     if (defined('ICL_LANGUAGE_CODE')) {
-      if (!$this->default_lang) {
-        $this->default_lang = apply_filters('wpml_default_language', null);
-      }
-      $product_lang = apply_filters('wpml_post_language_details', null, $id);
-      if ($product_lang &&
-          $product_lang['language_code'] != $this->default_lang) {
+      if (class_exists('WC_Facebook_WPML_Injector') && WC_Facebook_WPML_Injector::should_hide($id)) {
         $product_data['visibility'] = 'staging';
       }
     }

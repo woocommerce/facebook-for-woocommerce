@@ -296,6 +296,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         add_action('pmxi_after_xml_import',
           array($this, 'wp_all_import_compat'));
 
+        if (defined('ICL_LANGUAGE_CODE')) {
+          include_once('includes/fbwpml.php');
+          new WC_Facebook_WPML_Injector();
+        }
+
       }
       $this->load_background_sync_process();
     }
