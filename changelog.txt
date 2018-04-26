@@ -1,5 +1,18 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-04-26 version 1.8.6
+* Potential Fix for Compatibility with Enhanced ECommerce Plugin
+* Reduce Fetch ID API Call for Hidden Products
+* Support Product Bundles Extension
+* Basic Support for WP All Import
+* Fix Trashing and Deletion
+* Fetch Brand and Support WooCommerce Brand Extension
+* Remove warning for duplicate SKUs
+* Remove upsell header on config page
+* Update Info Banner Content
+* Fix Warning When Deleting NON PRODUCT post
+* WPML Support : Language Selector
+
 2018-04-17 version 1.8.5
 * Fix ViewContent event incorrectly firing with content_type 'product'
 * Fix product group retailer id not matching ViewContent content id.
