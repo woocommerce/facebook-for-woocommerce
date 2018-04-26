@@ -628,6 +628,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   function on_product_delete($wp_id) {
     $woo_product = new WC_Facebook_Product($wp_id);
+    if (!$woo_product->exists()) {
+      // This happens when the wp_id is not a product or it's already
+      // been deleted.
+      return;
+    }
     $fb_product_group_id = $this->get_product_fbid(
       self::FB_PRODUCT_GROUP_ID,
       $wp_id,
@@ -639,17 +644,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (! ($fb_product_group_id || $fb_product_item_id ) ) {
       return;  // No synced product, no-op.
     }
-
     $products = array($wp_id);
     if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $children = $woo_product->get_children();
       $products = array_merge($products, $children);
     }
-
     foreach ($products as $item_id) {
-      $this->delete_product_item ($item_id);
+      $this->delete_product_item($item_id);
     }
-
     if ($fb_product_group_id) {
       $pg_result = $this->fbgraph->delete_product_group($fb_product_group_id);
       WC_Facebookcommerce_Utils::log($pg_result);
@@ -2021,6 +2023,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    */
   function update_fb_visibility($wp_id, $visibility) {
     $woo_product = new WC_Facebook_Product($wp_id);
+    if (!$woo_product->exists()) {
+      // This function can be called for non-woo products.
+      return;
+    }
+
     $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
     foreach ($products as $item_id) {
       $fb_product_item_id = $this->get_product_fbid(

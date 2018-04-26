@@ -49,6 +49,10 @@ class WC_Facebook_Product {
     }
   }
 
+  public function exists() {
+    return ($this->woo_product !== null && $this->woo_product !== false);
+  }
+
   // Fall back to calling method on $woo_product
   public function __call($function, $args) {
     if ($this->woo_product) {
