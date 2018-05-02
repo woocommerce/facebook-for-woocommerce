@@ -438,8 +438,10 @@ class WC_Facebook_Product {
     }
     $categories =
       WC_Facebookcommerce_Utils::get_product_categories($id);
-    $brand = WC_Facebookcommerce_Utils::clean_string(
-      get_the_term_list($this->ID, 'product_brand', '', ', '));
+    $brand = get_the_term_list($this->ID, 'product_brand', '', ', ');
+    $brand = is_wp_error($brand) || !$brand
+      ? WC_Facebookcommerce_Utils::get_store_name()
+      : WC_Facebookcommerce_Utils::clean_string($brand);
 
     $product_data = array(
       'name' => WC_Facebookcommerce_Utils::clean_string(
@@ -449,7 +451,7 @@ class WC_Facebook_Product {
       'additional_image_urls' => array_filter($image_urls),
       'url'=> $product_url,
       'category' => $categories['categories'],
-      'brand' => $brand ?: WC_Facebookcommerce_Utils::get_store_name(),
+      'brand' => $brand,
       'retailer_id' => $retailer_id,
       'price' => $this->get_fb_price(),
       'currency' => get_woocommerce_currency(),
