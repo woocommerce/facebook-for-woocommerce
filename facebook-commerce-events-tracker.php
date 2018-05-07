@@ -88,7 +88,7 @@ class WC_Facebookcommerce_EventsTracker {
     $products = array_values(array_map(function($item) {
         return wc_get_product($item->ID);
       },
-      $wp_query->get_posts()));
+      $wp_query->posts));
 
     // if any product is a variant, fire the pixel with
     // content_type: product_group
