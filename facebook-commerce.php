@@ -433,7 +433,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     $columns = array();
-    $columns['fb'] = __('Facebook Shop', 'facebook-for-woocommerce');
+    $columns['fb'] = __('FB Shop', 'facebook-for-woocommerce');
 
     // Verify that cart URL hasn't changed.  We do it here because this page
     // is most likely to be visited (so it's a handy place to make the check)
