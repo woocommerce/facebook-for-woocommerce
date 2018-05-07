@@ -60,16 +60,14 @@ class WC_Facebookcommerce_Info_Banner {
         .$this->external_merchant_settings_id);
     $dismiss_url = $this->dismiss_url();
     $message = __('<strong>Facebook for WooCommerce: </strong>' .
-      'Take advantage of your integration between WooCommerce and Facebook.
-      Create ads that are designed for getting more website purchases. You\'ll
-      see the impact on sales and revenue.',
+      'Create ads that are designed for getting online sales and revenue.',
 
 
       'facebook-for-woocommerce');
     echo '<div class="updated fade"><p>' . $message . "\n";
     echo '<p><a href="' . $redirect_url . '" title="' .
       __('Click and redirect.', 'facebook-for-woocommerce').
-      '"> ' . __('Create an Ad', 'facebook-for-woocommerce') . '</a>' . ' | '.
+      '"> ' . __('Create Ad', 'facebook-for-woocommerce') . '</a>' . ' | '.
       '<a href="' . esc_url($dismiss_url). '" title="' .
       __('Dismiss this notice.', 'facebook-for-woocommerce').
       '"> ' . __('Dismiss', 'facebook-for-woocommerce') . '</a></p></div>';
