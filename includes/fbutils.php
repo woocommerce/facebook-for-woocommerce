@@ -406,6 +406,11 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       }
       return strtoupper($latin_string) === $latin_string;
     }
+
+    public static function decode_json($json_string, $assoc = false) {
+      $data = json_decode($json_string, $assoc, 512, JSON_BIGINT_AS_STRING);
+      return $data;
+    }
   }
 
 endif;

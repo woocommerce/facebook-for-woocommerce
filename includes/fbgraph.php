@@ -186,7 +186,7 @@ class WC_Facebookcommerce_Graph_API {
       WC_Facebookcommerce_Utils::fblog($response);
       return null;
     }
-    return json_decode($response, true);
+    return WC_Facebookcommerce_Utils::decode_json($response, true);
   }
 
   public function create_feed($facebook_catalog_id, $data) {

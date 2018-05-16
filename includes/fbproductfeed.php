@@ -266,7 +266,8 @@ class WC_Facebook_Product_Feed {
       WC_Facebookcommerce_Utils::fblog(json_encode($result));
       return null;
     }
-    $feed_id = json_decode($result['body'])->id;
+    $decode_result = WC_Facebookcommerce_Utils::decode_json($result['body']);
+    $feed_id = $decode_result->id;
     if (!$feed_id) {
       WC_Facebookcommerce_Utils::fblog(
         'Response from creating feed not return feed id!');
@@ -333,7 +334,8 @@ class WC_Facebook_Product_Feed {
        WC_Facebookcommerce_Utils::fblog(json_encode($result));
        return 'error';
      }
-     $end_time = json_decode($result['body'])->end_time;
+     $decode_result = WC_Facebookcommerce_Utils::decode_json($result['body']);
+     $end_time = $decode_result->end_time;
      if (isset($end_time)) {
        $settings['upload_end_time'] = $end_time;
        return 'complete';

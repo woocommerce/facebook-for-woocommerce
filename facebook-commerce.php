@@ -865,9 +865,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
      // New variant added
     if ($create_product_group_result) {
-      $fb_product_group_id = json_decode(
-        $create_product_group_result['body'])->id;
-
+      $decode_result = WC_Facebookcommerce_Utils::decode_json($create_product_group_result['body']);
+      $fb_product_group_id = $decode_result->id;
       // update_post_meta is actually more of a create_or_update
       update_post_meta(
         $woo_product->get_id(),
@@ -901,7 +900,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         $woo_product->get_id());
 
     if ($product_result) {
-      $fb_product_item_id = json_decode($product_result['body'])->id;
+      $decode_result = WC_Facebookcommerce_Utils::decode_json($product_result['body']);
+      $fb_product_item_id = $decode_result->id;
 
       update_post_meta($woo_product->get_id(),
         self::FB_PRODUCT_ITEM_ID, $fb_product_item_id);
@@ -1245,7 +1245,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if ($result['response']['code'] != '200') {
       // Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
       // if possible, otherwise let user know we found dupe SKUs
-      $body = json_decode($result['body']);
+      $body = WC_Facebookcommerce_Utils::decode_json($result['body']);
       if ($body && $body->error->code == '10800') {
         $error_data = $body->error->error_data; // error_data may contain FBIDs
         if ($error_data && $wpid) {
@@ -2107,7 +2107,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     if ($product_fbid_result && isset($product_fbid_result['body'])) {
-      $body = json_decode($product_fbid_result['body']);
+      $body = WC_Facebookcommerce_Utils::decode_json($product_fbid_result['body']);
       if ($body && $body->id) {
         if ($fbid_type == self::FB_PRODUCT_GROUP_ID) {
           $fb_id = $body->product_group->id;
