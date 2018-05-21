@@ -29,6 +29,8 @@ class WC_Facebook_Product {
   const MAX_TIME = 'T23:59+00:00';
   const MIN_TIME = 'T00:00+00:00';
 
+  static $use_checkout_url = array('simple' => 1, 'variable' => 1, 'variation' => 1);
+
   public function __construct(
     $wpid, $parent_product = null) {
     $this->id = $wpid;
@@ -398,7 +400,8 @@ class WC_Facebook_Product {
       html_entity_decode($this->get_permalink()));
 
     // Use product_url for external/bundle product setting.
-    if ($this->get_type() == 'external' || $this->get_type() == 'woosb') {
+    $product_type = $this->get_type();
+    if (!$product_type || !isset(self::$use_checkout_url[$product_type])) {
       $checkout_url = $product_url;
     } else if (wc_get_cart_url()) {
       $char = '?';
