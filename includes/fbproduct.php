@@ -438,7 +438,7 @@ class WC_Facebook_Product {
     }
     $categories =
       WC_Facebookcommerce_Utils::get_product_categories($id);
-    $brand = get_the_term_list($this->ID, 'product_brand', '', ', ');
+    $brand = get_the_term_list($id, 'product_brand', '', ', ');
     $brand = is_wp_error($brand) || !$brand
       ? WC_Facebookcommerce_Utils::get_store_name()
       : WC_Facebookcommerce_Utils::clean_string($brand);
