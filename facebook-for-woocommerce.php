@@ -71,7 +71,7 @@ class WC_Facebookcommerce {
       <p>
       <?php
         printf(__('To use Facebook for WooCommerce,
-          please disable WP_DEBUG_DISPLAY in your wp-config.php file.
+          please disable WP_DEBUG and WP_DEBUG_DISPLAY in your wp-config.php file.
           Contact your server administrator for more assistance.',
           'facebook-for-woocommerce'));
        ?>
