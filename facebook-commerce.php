@@ -157,8 +157,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
       $this->fb_check_for_new_version();
       $this->feed_id = isset($this->settings['fb_feed_id'])
-       ? $this->settings['fb_feed_id']
-       : '';
+        ? $this->settings['fb_feed_id']
+        : '';
+
+      if (!class_exists('WC_Facebook_Integration_Test')) {
+        include_once 'includes/test/facebook-integration-test.php';
+      }
+      $integration_test = WC_Facebook_Integration_Test::get_instance($this);
+      $integration_test::$fbgraph = $this->fbgraph;
 
       if (!$this->pixel_install_time && $this->pixel_id) {
         $this->pixel_install_time = current_time('mysql');
@@ -194,6 +200,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       add_action('wp_ajax_ajax_reset_all_fb_products',
         array($this, 'ajax_reset_all_fb_products'),
         self::FB_PRIORITY_MID);
+      add_action('wp_ajax_ajax_display_test_result',
+        array($this, 'ajax_display_test_result'));
 
       // Only load product processing hooks if we have completed setup.
       if ($this->api_key && $this->product_catalog_id) {
@@ -1396,8 +1404,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!is_admin()) {
       WC_Facebookcommerce_Utils::log("Not resetting any FBIDs from products,
         must call reset from admin context.");
-      return;
+      return false;
     }
+
+    $test_instance = WC_Facebook_Integration_Test::get_instance($this);
+    $this->test_mode = $test_instance::$test_mode;
 
     // Include draft products (omit 'post_status' => 'publish')
     WC_Facebookcommerce_Utils::log("Removing FBIDs from all products");
@@ -1421,6 +1432,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $this->delete_post_meta_loop($post_ids);
 
     WC_Facebookcommerce_Utils::log("Product FBIDs deleted");
+    return true;
   }
 
   /**
@@ -1620,12 +1632,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Special function to run all visible products by uploading feed.
    **/
   function ajax_sync_all_fb_products_using_feed() {
-    $this->check_woo_ajax_permissions('syncall products using feed', true);
+    $this->check_woo_ajax_permissions(
+      'syncall products using feed', !$this->test_mode);
     if (!$this->api_key || !$this->product_catalog_id) {
       self::log("No API key or catalog ID: " . $this->api_key .
         ' and ' . $this->product_catalog_id);
-      wp_die();
-      return;
+      $this->fb_wp_die();
+      return false;
     }
     $is_valid_product_catalog =
       $this->fbgraph->validate_product_catalog($this->product_catalog_id);
@@ -1640,8 +1653,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         If this error persists please delete your settings via
         "Re-configure Facebook Settings > Advanced Settings > Delete Settings"
         and try setup again');
-      wp_die();
-      return;
+      $this->fb_wp_die();
+      return false;
     }
 
     // Cache the cart URL to display a warning in case it changes later
@@ -1653,8 +1666,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!class_exists('WC_Facebook_Product_Feed')) {
       include_once 'includes/fbproductfeed.php';
     }
-    $this->fbproductfeed = new WC_Facebook_Product_Feed(
-      $this->product_catalog_id, $this->fbgraph, $this->feed_id);
+    if ($this->test_mode) {
+      $this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
+        $this->product_catalog_id, $this->fbgraph, $this->feed_id);
+    } else {
+      $this->fbproductfeed = new WC_Facebook_Product_Feed(
+        $this->product_catalog_id, $this->fbgraph, $this->feed_id);
+    }
+
     $upload_success = $this->fbproductfeed->sync_all_products_using_feed();
     if ($upload_success) {
       $this->settings['fb_feed_id'] = $this->fbproductfeed->feed_id;
@@ -1663,13 +1682,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         apply_filters('woocommerce_settings_api_sanitized_fields_' .
           $this->id, $this->settings));
       wp_reset_postdata();
-      wp_die();
-    } else {
+      $this->fb_wp_die();
+      return true;
+    } else if (!$this->test_mode) {
       // curl failed, roll back to original sync approach.
       WC_Facebookcommerce_Utils::fblog(
         'Sync all products using feed, curl failed', array(), true);
       $this->sync_all_products();
     }
+    return false;
   }
 
   /**
@@ -2111,15 +2132,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       if ($body && $body->id) {
         if ($fbid_type == self::FB_PRODUCT_GROUP_ID) {
           $fb_id = $body->product_group->id;
-        } else {
-          $fb_id = $body->id;
-        }
-        update_post_meta(
-          $wp_id,
-          $fbid_type,
-          $fb_id);
-        update_post_meta($wp_id, self::FB_VISIBILITY, true);
-        return $fb_id;
+          } else {
+           $fb_id = $body->id;
+          }
+          update_post_meta(
+            $wp_id,
+            $fbid_type,
+            $fb_id);
+          update_post_meta($wp_id, self::FB_VISIBILITY, true);
+          return $fb_id;
       }
     }
     return;
@@ -2136,6 +2157,33 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         array(),
         true);
     }
+  }
+
+  private function fb_wp_die() {
+    if (!$this->test_mode) {
+      wp_die();
+    }
+  }
+
+  /**
+   * Display test result.
+   **/
+  function ajax_display_test_result() {
+    $response = array(
+      'pass'  => 'true',
+    );
+    $test_pass = $this->settings['test_pass'];
+    if (isset($test_pass) && !$test_pass) {
+      $response['pass'] = 'false';
+      $response['debug_info'] = get_transient('facebook_plugin_test_fail');
+      $response['stack_trace'] =
+      get_transient('facebook_plugin_test_stack_trace');
+      delete_transient('facebook_plugin_test_fail');
+      delete_transient('facebook_plugin_test_stack_trace');
+    }
+    $this->settings['test_pass'] = '';
+    printf(json_encode($response));
+    wp_die();
   }
 
 }

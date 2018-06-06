@@ -411,6 +411,15 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       $data = json_decode($json_string, $assoc, 512, JSON_BIGINT_AS_STRING);
       return $data;
     }
+
+    public static function set_test_fail_reason($msg, $trace) {
+      $reason_msg = get_transient('facebook_plugin_test_fail');
+      if ($reason_msg) {
+        $msg = $reason_msg . PHP_EOL . $msg;
+      }
+      set_transient('facebook_plugin_test_fail', $msg);
+      set_transient('facebook_plugin_test_stack_trace', $trace);
+    }
   }
 
 endif;
