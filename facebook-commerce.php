@@ -1975,6 +1975,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   echo '>Force Resync</a>';
                 }
                 echo '</p>';
+                echo sprintf(__('<a href="#" onclick="show_debug_info()"
+                  id="debug_info" style="display:none;" >More Info</a>',
+                  'facebook-for-woocommerce'));
                 echo '<p id="sync_progress"></p>';
 
               }
@@ -2002,6 +2005,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           </table>
         </div>
 
+      </div>
+
+      <br/>
+      <div>
+        <?php
+        echo '<p id="stack_trace"></p>'
+        ?>
       </div>
     </div>
     <br/><hr/><br/>
@@ -2172,16 +2182,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $response = array(
       'pass'  => 'true',
     );
-    $test_pass = $this->settings['test_pass'];
-    if (isset($test_pass) && !$test_pass) {
+    $test_pass = get_option('fb_test_pass', null);
+    if (!isset($test_pass)) {
+      $response['pass'] = 'in progress';
+    } else if ($test_pass == 0) {
       $response['pass'] = 'false';
       $response['debug_info'] = get_transient('facebook_plugin_test_fail');
       $response['stack_trace'] =
       get_transient('facebook_plugin_test_stack_trace');
+      $response['stack_trace'] =
+        preg_replace("/\n/", '<br>', $response['stack_trace']);
       delete_transient('facebook_plugin_test_fail');
       delete_transient('facebook_plugin_test_stack_trace');
     }
-    $this->settings['test_pass'] = '';
+    delete_option('fb_test_pass');
     printf(json_encode($response));
     wp_die();
   }

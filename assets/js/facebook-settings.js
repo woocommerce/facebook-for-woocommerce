@@ -91,26 +91,43 @@ function fb_flush(){
   return ajax('ajax_reset_all_fb_products');
 }
 
-function sync_confirm(verbose = true) {
-  const msg = (verbose) ?
-  'Facebook for WooCommerce automatically syncs your products on ' +
-    'create/update. Are you sure you want to force product resync? ' +
-    'This will query all published products and may take some time. ' +
-    'You only need to do this if your products are out of sync ' +
-    'or some of your products did not sync.' :
-  'Your products will now be resynced with Facebook, this may take some time.'
+function sync_confirm(verbose = null) {
+  var msg = '';
+  switch (verbose) {
+    case 'fb_force_resync':
+      msg = 'Your products will now be resynced with Facebook, ' +
+        'this may take some time.';
+      break;
+    case 'fb_test_product_sync':
+      msg = 'Launch Test?';
+      break;
+    default:
+      msg = 'Facebook for WooCommerce automatically syncs your products on ' +
+      'create/update. Are you sure you want to force product resync? ' +
+      'This will query all published products and may take some time. ' +
+      'You only need to do this if your products are out of sync ' +
+      'or some of your products did not sync.';
+  }
+
   if(confirm(msg)) {
-    sync_all_products(window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload);
+    sync_all_products(
+      window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload,
+      verbose == 'fb_test_product_sync'
+    );
     window.fb_sync_start_time = new Date().getTime();
   }
 }
 
 // Launch the confirm dialog immediately if the param is in the URL.
 if (window.location.href.includes("fb_force_resync")) {
-    window.onload = function() { sync_confirm(false); };
+    window.onload = function() { sync_confirm("fb_force_resync"); };
+} else if (window.location.href.includes("fb_test_product_sync")) {
+  // Test products sync by feed.
+  window.is_test = true;
+  window.onload = function() { sync_confirm("fb_test_product_sync"); };
 }
 
-function sync_all_products($using_feed = false) {
+function sync_all_products($using_feed = false, $is_test = false) {
   if (get_product_catalog_id_box() && !get_product_catalog_id_box().value){
     return;
   }
@@ -120,13 +137,13 @@ function sync_all_products($using_feed = false) {
   console.log('Syncing all products!');
   window.fb_connected = true;
   sync_in_progress();
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // Upload via feed is coming, but not ready yet.
   if ($using_feed) {
     window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
     window.feed_upload = true;
     ping_feed_status_queue();
-    return ajax('ajax_sync_all_fb_products_using_feed');
+    return $is_test
+      ? ajax('ajax_test_sync_products_using_feed')
+      : ajax('ajax_sync_all_fb_products_using_feed');
   } else {
     return ajax('ajax_sync_all_fb_products');
   }
@@ -579,8 +596,12 @@ function check_feed_upload_queue(check_num) {
       var status = res.status;
       switch (status) {
         case 'complete':
-          product_sync_complete(sync_progress_element, sync_status_element);
           window.feed_upload = false;
+          if (window.is_test) {
+            display_test_result();
+          } else {
+            product_sync_complete(sync_progress_element, sync_status_element);
+          }
           break;
         case 'in progress':
           if (sync_progress_element) {
@@ -593,7 +614,65 @@ function check_feed_upload_queue(check_num) {
           sync_progress_element.innerHTML =
             '<strong>Something wrong when uploading, please try again.</strong>';
           window.feed_upload = false;
+          if (window.is_test) {
+            display_test_result();
+          }
       }
     }
   });
+}
+
+function display_test_result() {
+  ajax('ajax_display_test_result', null, function(response) {
+    var sync_progress_element = document.querySelector('#sync_progress');
+    var sync_status_element = document.querySelector('#sync_status');
+    var res = parse_response_check_connection(response);
+    if (res) {
+      var status = res.pass;
+      switch (status) {
+        case 'true':
+          sync_not_in_progress();
+          if(sync_status_element) {
+            sync_status_element.innerHTML =
+              '<strong>Status: </strong>Test Pass.';
+          }
+          if(sync_progress_element) {
+            sync_progress_element.innerHTML = '';
+          }
+          window.is_test = false;
+          break;
+        case 'in progress':
+          if (sync_progress_element) {
+            sync_progress_element.innerHTML =
+              '<strong>Integration test in progress...</strong>';
+          }
+          ping_feed_status_queue();
+          break;
+        default:
+          window.debug_info = res.debug_info + '<br/>' + res.stack_trace;
+          if(sync_status_element) {
+            sync_status_element.innerHTML =
+              '<strong>Status: </strong>Test Fail.';
+          }
+          if (sync_progress_element) {
+            sync_progress_element.innerHTML = '';
+          }
+          if(document.querySelector('#debug_info')) {
+            document.querySelector('#debug_info').style.display = '';
+          }
+          window.is_test = false;
+      }
+    }
+  });
+}
+
+function show_debug_info() {
+  var stack_trace_element = document.querySelector('#stack_trace');
+  if(stack_trace_element) {
+    stack_trace_element.innerHTML = window.debug_info;
+  }
+  if(document.querySelector('#debug_info')) {
+    document.querySelector('#debug_info').style.display = 'none';
+  }
+  window.debug_info = '';
 }

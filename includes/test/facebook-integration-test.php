@@ -39,7 +39,7 @@ class WC_Facebook_Integration_Test {
   public static $retailer_ids = array();
   // product and product_variation post id for test
   public $product_post_wpid = null;
-  public static $test_pass = true;
+  public static $test_pass = 1;
 
   /**
    * Get the class instance
@@ -72,12 +72,13 @@ class WC_Facebook_Integration_Test {
       WC_Facebookcommerce_Utils::log('Test - Removing FBIDs from all products');
       $this->product_post_wpid = $this->create_data();
       if (empty($this->product_post_wpid)) {
-        self::$test_pass = false;
+        self::$test_pass = 0;
         WC_Facebookcommerce_Utils::log(
           'Test - Fail to create test product by inserting posts.');
         WC_Facebookcommerce_Utils::set_test_fail_reason(
           'Fail to create test products by inserting posts.',
           (new Exception)->getTraceAsString());
+        update_option('fb_test_pass', false);
         wp_die();
         return;
       }
@@ -100,7 +101,7 @@ class WC_Facebook_Integration_Test {
         $this->sleep_til_upload_complete(60);
         $check_product_create = $this->check_product_create();
         if (!$check_product_create) {
-          self::$test_pass = false;
+          self::$test_pass = 0;
         } else {
           WC_Facebookcommerce_Utils::log(
             'Test - Products create successfully.');
@@ -109,7 +110,7 @@ class WC_Facebook_Integration_Test {
         // Test on_product_delete API hook.
         $clean_up = $this->clean_up();
         if (!$clean_up) {
-          self::$test_pass = false;
+          self::$test_pass = 0;
           WC_Facebookcommerce_Utils::log(
             'Test - Fail to delete product from FB');
           WC_Facebookcommerce_Utils::set_test_fail_reason(
@@ -120,7 +121,7 @@ class WC_Facebook_Integration_Test {
             'Test - Delete product from FB successfully');
         }
       } else {
-        self::$test_pass = false;
+        self::$test_pass = 0;
         WC_Facebookcommerce_Utils::log(
           'Test - Sync all products using feed, curl failed.');
         WC_Facebookcommerce_Utils::set_test_fail_reason(
@@ -129,14 +130,14 @@ class WC_Facebook_Integration_Test {
       }
 
     } else {
-      self::$test_pass = false;
+      self::$test_pass = 0;
       WC_Facebookcommerce_Utils::log(
         'Test - Fail to remove FBIDs from local DB');
       WC_Facebookcommerce_Utils::set_test_fail_reason(
         'Fail to remove FBIDs from local DB',
         (new Exception)->getTraceAsString());
     }
-
+    update_option('fb_test_pass', self::$test_pass);
     wp_die();
     return;
   }
@@ -484,25 +485,6 @@ class WC_Facebook_Integration_Test {
   }
 
   /**
-   * Display test result.
-   **/
-  function ajax_display_test_result() {
-    $response = array(
-      'pass'  => 'true',
-    );
-    if (!self::$test_pass) {
-      $response['pass'] = 'false';
-      $response['debug_info'] = get_transient('facebook_plugin_test_fail');
-      $response['stack_trace'] =
-        get_transient('facebook_plugin_test_stack_trace');
-      delete_transient('facebook_plugin_test_fail');
-      delete_transient('facebook_plugin_test_stack_trace');
-    }
-    printf(json_encode($response));
-    wp_die();
-  }
-
-  /**
    * IMPORTANT! Wait for Ents creation and prevent race condition.
    **/
   function sleep_til_upload_complete($sec) {
@@ -512,7 +494,6 @@ class WC_Facebook_Integration_Test {
   function set_product_wpid($product_post_wpid) {
     WC_Facebook_Product_Feed_Test_Mock::$product_post_wpid = $product_post_wpid;
   }
-
 }
 
 endif;
