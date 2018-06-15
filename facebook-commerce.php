@@ -1904,6 +1904,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $redirect_uri = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
         . $this->external_merchant_settings_id;
     }
+    $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
+    $connected = ($page_name != '');
     ?>
     <h2><?php _e('Facebook', $domain); ?></h2>
     <p><?php _e('Control how WooCommerce integrates with your Facebook store.',
@@ -1988,9 +1990,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             "manage_woocommerce" permissions to use this plugin.', $domain) .
             '</h2>';
           } else {
-            $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
-            $connected = ($page_name != '');
-
             echo '<h2><span id="connection_status"';
             if (!$connected) {
               echo ' style="display: none;"';
@@ -2042,6 +2041,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       </div>
     </div>
     <div>
+      <p class="tooltip" id="test_product_sync">
+      <?php
+        // WP_DEBUG mode: button to launch test
+        echo sprintf(__('<a href="%s&fb_test_product_sync=true"', $domain),
+          WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL);
+        if (($connected && $currently_syncing) || !defined('WP_DEBUG') ||
+          WP_DEBUG !== true) {
+          echo ' style="display:none;" ';
+        }
+        echo '>' . esc_html__('Launch Test', $domain);
+      ?>
+      <span class='tooltiptext'>
+        <?php
+          _e('This button will run an integration test suite verifying the
+          extension. Note that this will reset your products and resync them
+          to Facebook. Not recommended to use unless you are changing the
+          extension code and want to test your changes.', $domain);
+        ?>
+      </span>
+      <?php
+         echo '</a>';
+      ?>
+      </p>
       <p id="stack_trace"></p>
     </div>
     </div>

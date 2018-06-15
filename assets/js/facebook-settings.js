@@ -278,6 +278,9 @@ function sync_in_progress(){
   if(document.querySelector('#resync_products')) {
     document.querySelector('#resync_products').style['pointer-events'] = 'none';
   }
+  if(document.querySelector('#test_product_sync')) {
+    document.querySelector('#test_product_sync').style.display = 'none';
+  }
   //Set a product sync status
   if(document.querySelector('#sync_progress')){
     document.querySelector('#sync_progress').innerHTML =
@@ -666,6 +669,7 @@ function check_feed_upload_queue(check_num) {
 function display_test_result() {
   ajax('ajax_display_test_result', null, function(response) {
     var sync_complete_element = document.querySelector('#sync_complete');
+    var sync_progress_element = document.querySelector('#sync_progress');
     var res = parse_response_check_connection(response);
     if (res) {
       var status = res.pass;
