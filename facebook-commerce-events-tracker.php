@@ -176,8 +176,8 @@ class WC_Facebookcommerce_EventsTracker {
     if (!self::$isEnabled) {
       return;
     }
-
-    $product = wc_get_product(get_the_ID());
+    global $post;
+    $product = wc_get_product($post->ID);
     $content_type = 'product_group';
     if (!$product) {
       return;
