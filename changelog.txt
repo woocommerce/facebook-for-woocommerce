@@ -1,5 +1,17 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-06-15 version 1.9.0
+* Fix Performance Issue by Reusing Existing wp_query Object Contents.
+* Rename Long Column Which Causes UI Issues for Users in Product Overview.
+* Update Admin Notice Content.
+* Fix Weird ID Error Message.
+* Fix Product ID for Brand Attribute.
+* Don't use Checkout URL for Unknown Product Types.
+* Add Beta Integration Test for Syncing Products by Uploading Feed.
+* Fix Pixel Fired on Related Products.
+* Redesign Admin Panel.
+* Add Integration Test Entry Point Button.
+
 2018-05-02 version 1.8.7
 * Fix PHP Error Due to product_brand Taxonomy Not Existing
 
