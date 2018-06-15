@@ -2026,7 +2026,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             if ($connected && $currently_syncing) {
               echo ' style="pointer-events: none;" ';
             }
-            echo '>' . __('Resync Products', $domain) . '</a></span><hr/>
+            echo '>' . __('Sync Products', $domain) . '</a></span><hr/>
 
             <p id="sync_progress">';
             if ($connected && $currently_syncing) {
