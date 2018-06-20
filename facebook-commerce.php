@@ -1906,6 +1906,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
     $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
     $connected = ($page_name != '');
+    $hide_test = ($connected && $currently_syncing) || !defined('WP_DEBUG') ||
+      WP_DEBUG !== true;
+
     ?>
     <h2><?php _e('Facebook', $domain); ?></h2>
     <p><?php _e('Control how WooCommerce integrates with your Facebook store.',
@@ -2040,16 +2043,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         </div>
       </div>
     </div>
-    <div>
+    <div <?php echo ($hide_test) ? ' style="display:none;" ' : ''; ?> >
       <p class="tooltip" id="test_product_sync">
       <?php
         // WP_DEBUG mode: button to launch test
         echo sprintf(__('<a href="%s&fb_test_product_sync=true"', $domain),
           WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL);
-        if (($connected && $currently_syncing) || !defined('WP_DEBUG') ||
-          WP_DEBUG !== true) {
-          echo ' style="display:none;" ';
-        }
         echo '>' . esc_html__('Launch Test', $domain);
       ?>
       <span class='tooltiptext'>
