@@ -157,3 +157,6 @@
   visibility: visible;
   opacity: 1;
 }
+#connection_status a {
+  text-decoration: none;
+}
