@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-06-22 version 1.9.1
+* Fix Page Name Extra Space .
+* Remove Strange Box in Design.
+
 2018-06-15 version 1.9.0
 * Fix Performance Issue by Reusing Existing wp_query Object Contents.
 * Rename Long Column Which Causes UI Issues for Users in Product Overview.
