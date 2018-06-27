@@ -11,7 +11,6 @@ include_once 'facebook-commerce-pixel-event.php';
 
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
-
   const FB_PRODUCT_GROUP_ID  = 'fb_product_group_id';
   const FB_PRODUCT_ITEM_ID = 'fb_product_item_id';
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
@@ -317,6 +316,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $user_info = WC_Facebookcommerce_Utils::get_user_info($this->use_pii);
       $this->events_tracker = new WC_Facebookcommerce_EventsTracker($user_info);
     }
+
+    if (isset($this->settings['is_messenger_chat_plugin_enabled']) &&
+        $this->settings['is_messenger_chat_plugin_enabled'] === 'yes') {
+      if (!class_exists('WC_Facebookcommerce_MessengerChat')) {
+        include_once 'facebook-commerce-messenger-chat.php';
+      }
+      $this->messenger_chat = new WC_Facebookcommerce_MessengerChat($this->settings);
+    }
+
   }
 
   public function load_background_sync_process() {
@@ -1051,6 +1059,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         ctype_digit($_REQUEST['external_merchant_settings_id'])) {
           $this->settings['fb_external_merchant_settings_id'] =
           $_REQUEST['external_merchant_settings_id'];
+      }
+      if (isset($_REQUEST['is_messenger_chat_plugin_enabled'])) {
+        $this->settings['is_messenger_chat_plugin_enabled'] =
+          ($_REQUEST['is_messenger_chat_plugin_enabled'] === 'true' ||
+          $_REQUEST['is_messenger_chat_plugin_enabled'] === true) ? 'yes' : 'no';
+      }
+      if (isset($_REQUEST['facebook_jssdk_version'])) {
+        $this->settings['facebook_jssdk_version'] =
+          $_REQUEST['facebook_jssdk_version'];
       }
 
       update_option(

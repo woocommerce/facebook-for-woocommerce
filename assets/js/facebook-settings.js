@@ -91,24 +91,14 @@ function fb_flush(){
   return ajax('ajax_reset_all_fb_products');
 }
 
-function sync_confirm(verbose = null) {
-  var msg = '';
-  switch (verbose) {
-    case 'fb_force_resync':
-      msg = 'Your products will now be resynced with Facebook, ' +
-        'this may take some time.';
-      break;
-    case 'fb_test_product_sync':
-      msg = 'Launch Test?';
-      break;
-    default:
-      msg = 'Facebook for WooCommerce automatically syncs your products on ' +
-      'create/update. Are you sure you want to force product resync? ' +
-      'This will query all published products and may take some time. ' +
-      'You only need to do this if your products are out of sync ' +
-      'or some of your products did not sync.';
-  }
-
+function sync_confirm(verbose = true) {
+  const msg = (verbose) ?
+  'Facebook for WooCommerce automatically syncs your products on ' +
+    'create/update. Are you sure you want to force product resync? ' +
+    'This will query all published products and may take some time. ' +
+    'You only need to do this if your products are out of sync ' +
+    'or some of your products did not sync.' :
+  'Your products will now be resynced with Facebook, this may take some time.';
   if(confirm(msg)) {
     sync_all_products(
       window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload,
@@ -141,8 +131,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
     window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
     window.feed_upload = true;
     ping_feed_status_queue();
-    return $is_test
-      ? ajax('ajax_test_sync_products_using_feed')
+    return $is_test ? ajax('ajax_test_sync_products_using_feed')
       : ajax('ajax_sync_all_fb_products_using_feed');
   } else {
     return ajax('ajax_sync_all_fb_products');
@@ -186,7 +175,7 @@ function delete_all_settings(callback = null, failcallback = null) {
 // ---
 // It's also called again if the pixel id is ever changed or pixel pii is
 // enabled or disabled.
-function save_settings(message, callback = null, failcallback = null, localsettings = null){
+function save_settings(callback = null, failcallback = null, localsettings = null){
   if (!localsettings) {
     localsettings = settings;
   }
@@ -204,10 +193,32 @@ function save_settings(message, callback = null, failcallback = null, localsetti
   );
 }
 
+// save_settings wrapper for plugins as we do not need to:
+//   1.  sync products again after plugin is configured
+//   2.  check api_key, which is from facebook and is only necessary
+//       for following sync products
+function save_settings_for_plugin(plugin_settings, callback, failcallback) {
+  settings = Object.assign({}, settings, plugin_settings);
+  save_settings(
+    function(response){
+      if (response && response.includes('settings_saved')){
+        console.log(response);
+        callback(response);
+      } else {
+        console.log('Fail response on save_settings_and_sync');
+        failcallback(response);
+      }
+    },
+    function(errorResponse){
+      console.log('Ajax error while saving settings:' + JSON.stringify(errorResponse));
+      failcallback(errorResponse);
+    });
+}
+
 // see comments in save_settings function above
 function save_settings_and_sync(message) {
   if ('api_key' in settings){
-    save_settings(message,
+    save_settings(
       function(response){
         if (response && response.includes('settings_saved')){
           console.log(response);
@@ -239,8 +250,8 @@ function reset_buttons(){
     cta_element.innerHTML = 'Get Started';
     cta_element.style['font-size'] = '13px';
     cta_element.style.width = '80px';
-  	cta_element.href = '#';
-  	cta_element.onclick= function(){ facebookConfig();};
+    cta_element.href = '#';
+    cta_element.onclick= function() { facebookConfig(); };
   }
   if(document.querySelector('#setup_h1')) {
     document.querySelector('#setup_h1').innerHTML =
@@ -293,18 +304,18 @@ function sync_in_progress(){
 function sync_not_in_progress(){
   // Reset to pre-setup state.
   if(document.querySelector('#cta_button')){
-  	var cta_element = document.querySelector('#cta_button');
-      cta_element.innerHTML = 'Create Ad';
-      cta_element.style['font-size'] = '12px';
-      cta_element.style.width = '60px';
-      if (window.facebookAdsToolboxConfig.diaSettingId) {
-  		cta_element.onclick= function() {
-        window.open('https://www.facebook.com/ads/dia/redirect/?settings_id=' +
-          window.facebookAdsToolboxConfig.diaSettingId);
+    var cta_element = document.querySelector('#cta_button');
+    cta_element.innerHTML = 'Create Ad';
+    cta_element.style['font-size'] = '12px';
+    cta_element.style.width = '60px';
+    if (window.facebookAdsToolboxConfig.diaSettingId) {
+    cta_element.onclick= function() {
+      window.open('https://www.facebook.com/ads/dia/redirect/?settings_id=' +
+        window.facebookAdsToolboxConfig.diaSettingId);
       };
-  	} else {
-  		cta_element.style['pointer-events'] = 'none';
-  	}
+    } else {
+      cta_element.style['pointer-events'] = 'none';
+    }
   }
   if(document.querySelector('#setup_h1')) {
     document.querySelector('#setup_h1').innerHTML =
@@ -469,6 +480,20 @@ function setAccessTokenAndPageId(message) {
   }
 }
 
+function setMsgerChatSetup(data) {
+  if (data.hasOwnProperty('is_facebook_messenger_chat_plugin_enabled')) {
+    settings.messenger_chat_plugin_enabled =
+      data.is_facebook_messenger_chat_plugin_enabled;
+  }
+  if (data.hasOwnProperty('facebook_jssdk_version')) {
+    settings.messenger_chat_jssdk_version =
+      data.facebook_jssdk_version;
+  }
+  if (data.hasOwnProperty('page_id')) {
+    settings.fb_page_id = data.page_id;
+  }
+}
+
 function iFrameListener(event) {
   // Fix for web.facebook.com
   const origin = event.origin || event.originalEvent.origin;
@@ -513,6 +538,16 @@ function iFrameListener(event) {
       //Should be last message received
       setAccessTokenAndPageId(event.data);
       save_settings_and_sync(event.data);
+      break;
+    case 'set msger chat':
+      setMsgerChatSetup(event.data);
+      save_settings_for_plugin(event.data.params,
+        function(response) {
+          window.sendToFacebook('ack msger chat', event.data);
+        },
+        function(response) {
+          window.sendToFacebook('fail ack msger chat', event.data);
+        });
       break;
   }
 }
@@ -609,7 +644,7 @@ function check_queues(){
           }
 
           if(remaining === 0){
-            product_sync_complete(sync_progress_element,);
+            product_sync_complete(sync_progress_element);
           }
        }
     }
@@ -620,7 +655,7 @@ function parse_response_check_connection(res) {
   if (res) {
     console.log(res);
     var response = res.substring(res.indexOf("{")); //Trim leading extra chars (rnrnr)
-    var response = JSON.parse(response);
+    response = JSON.parse(response);
     if(!response.connected && !window.fb_connected){
        not_connected();
        return null;
