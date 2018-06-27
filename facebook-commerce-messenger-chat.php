@@ -30,6 +30,7 @@ class WC_Facebookcommerce_MessengerChat {
   public function inject_messenger_chat_plugin() {
     if ($this->enabled === 'yes') {
       echo sprintf("<div><div
+  attribution=\"fbe_woocommerce\"
   class=\"fb-customerchat\"
   page_id=\"%s\"
 /></div>
