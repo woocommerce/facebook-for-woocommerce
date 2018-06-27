@@ -597,6 +597,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     window.facebookAdsToolboxConfig = {
       hasGzipSupport:
         '<?php echo extension_loaded('zlib') ? 'true' : 'false' ?>'
+      ,enabledPlugins: ['MESSENGER_CHAT']
       ,popupOrigin: '<?php echo isset($_GET['url']) ? esc_js($_GET['url']) :
         'https://www.facebook.com/' ?>'
       ,feedWasDisabled: 'true'
