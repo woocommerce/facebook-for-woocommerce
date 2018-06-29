@@ -1920,7 +1920,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (!$pre_setup) {
       $cta_button_text = __('Create Ad', $domain);
       $redirect_uri = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
-        . $this->external_merchant_settings_id;
+        . $this->external_merchant_settings_id . '&version=2';
     }
     $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
     $connected = ($page_name != '');
