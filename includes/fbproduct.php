@@ -479,6 +479,12 @@ class WC_Facebook_Product {
         $product_data['visibility'] = 'staging';
       }
     }
+    
+    //Exclude variations that are "virtual" products from export to Facebook
+    //&& No Visibility Option for Variations
+    if($woo_product->get_type() == 'virtual') {
+      $product_data['visibility'] = 'staging';
+    }
 
     if (!$prepare_for_product_feed) {
       $this->prepare_variants_for_item($product_data);
