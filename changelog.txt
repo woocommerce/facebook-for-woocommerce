@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-07-08 - Version 1.9.2
+* Exclude Virtual Variation and Set Staging.
+* Add Version Number for Logging.
+
 2018-06-22 - version 1.9.1
 * Fix Page Name Extra Space .
 * Remove Strange Box in Design.
