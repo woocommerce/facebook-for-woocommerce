@@ -26,6 +26,8 @@ class WC_Facebook_Integration_Test {
   const FB_PRODUCT_GROUP_ID  = 'fb_product_group_id';
   const FB_PRODUCT_ITEM_ID = 'fb_product_item_id';
   const MAX_SLEEP_IN_SEC = 90;
+  const MAX_TIME = 'T23:59+00:00';
+  const MIN_TIME = 'T00:00+00:00';
   /** Class Instance */
   private static $instance;
 
@@ -151,6 +153,15 @@ class WC_Facebook_Integration_Test {
       return false;
     }
 
+    if (count(self::$retailer_ids) > 3) {
+      WC_Facebookcommerce_Utils::log(
+        'Test - Failed to skip invisible products.');
+      WC_Facebookcommerce_Utils::set_test_fail_reason(
+        'Failed to skip invisible products.',
+        (new Exception)->getTraceAsString());
+      return false;
+    }
+
     // Check 3 products have been created.
     for ($i = 0; $i < 3; $i++) {
       $product_type = $i == 0? 'Simple' : 'Variable';
@@ -173,6 +184,12 @@ class WC_Facebook_Integration_Test {
       'name' => 'a simple product for test',
       'price' => '20.00',
       'description' => 'This is to test a simple product.',
+      'sale_price' => '10.00',
+      'sale_price_dates_from' =>
+        date_i18n('Y-m-d', strtotime('now')) . self::MIN_TIME,
+      'sale_price_dates_to' =>
+        date_i18n('Y-m-d', strtotime('+10 day')) . self::MAX_TIME,
+      'visibility' => 'published',
     );
     $simple_product_result =
       $this->check_product_info(self::$retailer_ids[0], false, $data);
@@ -180,7 +197,7 @@ class WC_Facebook_Integration_Test {
       WC_Facebookcommerce_Utils::log('Test - Simple product failed to match ' .
       'product details.');
       WC_Facebookcommerce_Utils::set_test_fail_reason('Simple product failed to'
-      . ' match product failed to create.', (new Exception)->getTraceAsString());
+      . ' match product details.', (new Exception)->getTraceAsString());
       return false;
     }
 
@@ -189,6 +206,7 @@ class WC_Facebook_Integration_Test {
       'price' => '30.00',
       'description' => 'This is to test a variable product. - Red',
       'additional_variant_attributes' => array('value' => 'Red'),
+      'visibility' => 'published',
     );
     $variable_product_result =
       $this->check_product_info(self::$retailer_ids[1], true, $data);
@@ -281,6 +299,32 @@ class WC_Facebook_Integration_Test {
           'Test - ' . $retailer_id . " doesn\'t match price.");
         $match = false;
       }
+      // Check sale price and dates.
+      if (isset($data['sale_price'])) {
+          $sale_price = floatval(
+            preg_replace('/[^\d\.]+/', '', $body['sale_price']));
+        if ($sale_price != $data['sale_price']) {
+          WC_Facebookcommerce_Utils::log(
+            'Test - ' . $retailer_id . " doesn\'t match sale price.");
+          $match = false;
+        }
+        if ($body['sale_price_start_date'] != $data['sale_price_dates_from']) {
+          WC_Facebookcommerce_Utils::log(
+            'Test - ' . $retailer_id . " doesn\'t match sale price start date");
+          $match = false;
+        }
+        if ($body['sale_price_end_date'] != $data['sale_price_dates_to']) {
+          WC_Facebookcommerce_Utils::log(
+            'Test - ' . $retailer_id . " doesn\'t match sale price end date.");
+          $match = false;
+        }
+      }
+
+      if ($body['visibility'] != $data['visibility']) {
+        WC_Facebookcommerce_Utils::log(
+          'Test - ' . $retailer_id . " doesn\'t match visibility.");
+        $match = false;
+      }
 
       if ($has_variant &&
         (!isset($body['additional_variant_attributes']) ||
@@ -351,8 +395,20 @@ class WC_Facebook_Integration_Test {
       'post_status' => 'publish',
       'post_type' => 'product',
       'term' => $term,
-      'price' => 20
+      'price' => 20,
+      'sale_price' => 10,
+      'sale_price_dates_from' => strtotime('now'),
+      'sale_price_dates_to' => strtotime('+10 day'),
     );
+    $simple_product_result =
+      $this->create_test_simple_product($data, $prod_and_variant_wpid);
+
+    if (!$simple_product_result) {
+      return false;
+    }
+
+    // Test an invisible product - invisible products won't be synced by feed.
+    $data['visibility'] = false;
     $simple_product_result =
       $this->create_test_simple_product($data, $prod_and_variant_wpid);
 
@@ -363,6 +419,8 @@ class WC_Facebook_Integration_Test {
     $data['post_content'] = 'This is to test a variable product.';
     $data['post_title'] = 'a variable product for test';
     $data['price'] = 30;
+
+    // Test variable products.
     $variable_product_result =
       $this->create_test_variable_product($data, $prod_and_variant_wpid);
     if (!$variable_product_result) {
@@ -377,10 +435,21 @@ class WC_Facebook_Integration_Test {
       return false;
     }
     array_push($prod_and_variant_wpid, $post_id);
-    array_push(self::$wp_post_ids, $post_id);
-    array_push(self::$retailer_ids, 'wc_post_id_' . $post_id);
     update_post_meta($post_id, '_regular_price', $data['price']);
+    update_post_meta($post_id, '_sale_price', $data['sale_price']);
+    update_post_meta($post_id, '_sale_price_dates_from', $data['sale_price_dates_from']);
+    update_post_meta($post_id, '_sale_price_dates_to', $data['sale_price_dates_to']);
+
     wp_set_object_terms($post_id, 'simple', 'product_type');
+    // Invisible products won't be synced by feed.
+    if (isset($data['visibility'])) {
+      $terms = array('exclude-from-catalog', 'exclude-from-search');
+      wp_set_object_terms($post_id, $terms, 'product_visibility');
+    } else {
+      array_push(self::$wp_post_ids, $post_id);
+      array_push(self::$retailer_ids, 'wc_post_id_' . $post_id);
+    }
+
     $product = wc_get_product($post_id);
     $product->set_stock_status('instock');
     wp_set_object_terms($post_id, $data['term']->term_id, 'product_cat');

@@ -217,7 +217,8 @@ class WC_Facebookcommerce_Graph_API {
   public function check_product_info($facebook_catalog_id, $product_id, $pr_v) {
     $param = 'catalog:' . (string)$facebook_catalog_id . ':' .
       base64_encode($product_id) . '/?fields=id,name,description,price,' .
-      'sale_price,sale_price_start_date,sale_price_end_date';
+      'sale_price,sale_price_start_date,sale_price_end_date,image_url,' .
+      'visibility';
     if ($pr_v) {
       $param = $param . ',additional_variant_attributes{value}';
     }
