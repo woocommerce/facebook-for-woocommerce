@@ -40,6 +40,7 @@ class WC_Facebook_Product {
     $this->gallery_urls = null;
     $this->fb_use_parent_image = null;
     $this->fb_price = 0;
+    $this->main_description = '';
 
     // Variable products should use some data from the parent_product
     // For performance reasons, that data shouldn't be regenerated every time.

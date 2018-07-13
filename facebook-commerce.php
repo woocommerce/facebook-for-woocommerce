@@ -33,6 +33,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   const FB_SYNC_TIMEOUT = 30;
   const FB_PRIORITY_MID = 9;
 
+  private $test_mode = false;
+
   public function init_settings() {
     parent::init_settings();
   }

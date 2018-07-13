@@ -151,6 +151,7 @@ class WC_Facebook_Product_Feed {
     $product_data = $woo_product->prepare_product(null, true);
     $item_group_id = $product_data['retailer_id'];
     // prepare variant column for variable products
+    $product_data['variant'] = '';
     if (
       WC_Facebookcommerce_Utils::is_variation_type($woo_product->get_type())
     ) {
@@ -224,8 +225,8 @@ class WC_Facebook_Product_Feed {
     // log simple product
     if (!isset($product_data['default_product'])) {
       $this->no_default_product_count++;
+      $product_data['default_product'];
     }
-
 
     return
       $product_data['retailer_id'] . ',' .
