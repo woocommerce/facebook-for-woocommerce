@@ -431,7 +431,7 @@ function setPixel(message) {
   }
 
   // We need this to support changing the pixel id after setup.
-  save_settings(message,
+  save_settings(
     function(response){
       if (response && response.includes('settings_saved')){
         window.sendToFacebook('ack set pixel', message.params);
