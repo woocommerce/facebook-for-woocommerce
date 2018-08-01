@@ -299,12 +299,6 @@ class WC_Facebookcommerce_EventsTracker {
     $this->inject_subscribe_event($order_id);
 
     $order = new WC_Order($order_id);
-    if (function_exists(wcs_order_contains_subscription) &&
-        wcs_order_contains_subscription($order)) {
-      WC_Facebookcommerce_Utils::fblog("purchase with subscription: true");
-    } else {
-      WC_Facebookcommerce_Utils::fblog("purchase with subscription: false");
-    }
     $content_type = 'product';
     $product_ids = array();
     foreach ($order->get_items() as $item) {
