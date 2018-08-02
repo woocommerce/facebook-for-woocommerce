@@ -91,14 +91,23 @@ function fb_flush(){
   return ajax('ajax_reset_all_fb_products');
 }
 
-function sync_confirm(verbose = true) {
-  const msg = (verbose) ?
-  'Facebook for WooCommerce automatically syncs your products on ' +
-    'create/update. Are you sure you want to force product resync? ' +
-    'This will query all published products and may take some time. ' +
-    'You only need to do this if your products are out of sync ' +
-    'or some of your products did not sync.' :
-  'Your products will now be resynced with Facebook, this may take some time.';
+function sync_confirm(verbose = null) {
+  var msg = '';
+  switch (verbose) {
+    case 'fb_force_resync':
+      msg = 'Your products will now be resynced with Facebook, ' +
+        'this may take some time.';
+      break;
+    case 'fb_test_product_sync':
+      msg = 'Launch Test?';
+      break;
+    default:
+      msg = 'Facebook for WooCommerce automatically syncs your products on ' +
+      'create/update. Are you sure you want to force product resync? ' +
+      'This will query all published products and may take some time. ' +
+      'You only need to do this if your products are out of sync ' +
+      'or some of your products did not sync.';
+  }
   if(confirm(msg)) {
     sync_all_products(
       window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload,
