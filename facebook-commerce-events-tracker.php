@@ -17,6 +17,7 @@ class WC_Facebookcommerce_EventsTracker {
   private $pixel;
   private static $isEnabled = true;
   const FB_PRIORITY_HIGH = 2;
+  const FB_PRIORITY_LOW = 11;
 
   public function __construct($user_info) {
     $this->pixel = new WC_Facebookcommerce_Pixel($user_info);
@@ -46,6 +47,8 @@ class WC_Facebookcommerce_EventsTracker {
       array($this, 'inject_gateway_purchase_event'), self::FB_PRIORITY_HIGH);
     add_action('woocommerce_payment_complete',
       array($this, 'inject_purchase_event'), self::FB_PRIORITY_HIGH);
+    add_action('wpcf7_contact_form',
+      array($this, 'inject_lead_event_hook'), self::FB_PRIORITY_LOW);
 
   }
 
@@ -362,6 +365,21 @@ class WC_Facebookcommerce_EventsTracker {
     $payment = $order->get_payment_method();
     $this->inject_purchase_event($order_id);
     $this->inject_subscribe_event($order_id);
+  }
+
+  /** Contact Form 7 Support **/
+  public function inject_lead_event_hook() {
+    add_action('wp_footer', array($this, 'inject_lead_event'), 11);
+  }
+
+  public function inject_lead_event() {
+    if (!is_admin()) {
+      $this->pixel->inject_conditional_event(
+        'Lead',
+        array(),
+        'wpcf7submit',
+        '{ em: event.detail.inputs.filter(ele => ele.name.includes("email"))[0].value }');
+    }
   }
 }
 

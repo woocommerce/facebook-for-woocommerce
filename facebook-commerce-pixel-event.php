@@ -130,6 +130,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  public function inject_conditional_event(
+    $event_name, $params, $listener, $jsonified_pii = '') {
+    $code = self::build_event($event_name, $params, 'track');
+    $this->last_event = $event_name;
+
+    // Prepends fbq(...) with pii information to the injected code.
+    if ($jsonified_pii && get_option(self::SETTINGS_KEY)[self::USE_PII_KEY]) {
+      $this->user_info = '%s';
+      $code =
+        sprintf($this->pixel_init_code(), '" || '.$jsonified_pii.' || "').$code;
+    }
+
+    printf("
+<!-- Facebook Pixel Event Code -->
+<script>
+document.addEventListener('%s', function (event) {
+  %s
+}, false );
+</script>
+<!-- End Facebook Pixel Event Code -->
+      ",
+      $listener,
+      $code);
+  }
+
   /**
    * Returns FB pixel code noscript part to avoid W3 validation error
    */
