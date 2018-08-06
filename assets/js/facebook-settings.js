@@ -320,7 +320,8 @@ function sync_not_in_progress(){
     if (window.facebookAdsToolboxConfig.diaSettingId) {
     cta_element.onclick= function() {
       window.open('https://www.facebook.com/ads/dia/redirect/?settings_id=' +
-        window.facebookAdsToolboxConfig.diaSettingId + '&version=2');
+        window.facebookAdsToolboxConfig.diaSettingId + '&version=2' +
+        '&entry_point=admin_panel');
       };
     } else {
       cta_element.style['pointer-events'] = 'none';

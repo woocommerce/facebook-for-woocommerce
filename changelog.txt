@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-08-06 - Version 1.9.4
+* Support Lead Gen Event - Contact Form 7
+* Separate Redirect Entry Point Logging
+
 2018-08-01 - Version 1.9.3
 * Add Edge Cases for Integration Test.
 * Fix Undefined PHP Warning.

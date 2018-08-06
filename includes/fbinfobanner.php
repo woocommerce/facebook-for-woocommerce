@@ -57,7 +57,7 @@ class WC_Facebookcommerce_Info_Banner {
     }
     $redirect_url =
       esc_url('https://www.facebook.com/ads/dia/redirect/?settings_id='
-        .$this->external_merchant_settings_id);
+        .$this->external_merchant_settings_id . '&entry_point=aymt');
     $dismiss_url = $this->dismiss_url();
     $message = __('<strong>Facebook for WooCommerce: </strong>' .
       'Create ads that are designed for getting online sales and revenue.',
