@@ -46,6 +46,11 @@ class WC_Facebookcommerce {
       return;
     }
 
+    if (is_admin()) {
+      add_filter('plugin_action_links_'.plugin_basename(__FILE__),
+        array($this, 'add_settings_link'));
+    }
+
     if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
       include_once('woo-includes/woo-functions.php');
       if (!defined('WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL')) {
@@ -63,6 +68,16 @@ class WC_Facebookcommerce {
         'add_woocommerce_integration'
       ));
     }
+  }
+
+  public function add_settings_link($links) {
+    $settings = array(
+      'settings' => sprintf(
+        '<a href="%s">%s</a>',
+        admin_url('admin.php?page=wc-settings&tab=integration&section=facebookcommerce'),
+        'Settings')
+    );
+    return array_merge($settings, $links);
   }
 
   public function wp_debug_display_error() {

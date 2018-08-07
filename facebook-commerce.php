@@ -326,7 +326,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
       $this->messenger_chat = new WC_Facebookcommerce_MessengerChat($this->settings);
     }
-
   }
 
   public function load_background_sync_process() {
