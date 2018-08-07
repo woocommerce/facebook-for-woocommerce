@@ -47,7 +47,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     // settings for all plugin integrations.
     if (is_admin()) {
       $pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
-      $settings_pixel_id = (string)$this->settings['fb_pixel_id'];
+      $settings_pixel_id = isset($this->settings['fb_pixel_id']) ?
+        (string)$this->settings['fb_pixel_id'] : null;
       if (
         WC_Facebookcommerce_Utils::is_valid_id($settings_pixel_id) &&
         (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) ||
@@ -1905,10 +1906,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $cta_button_text = __('Get Started', $domain);
     $page_name = $this->get_page_name();
 
-    $apikey_invalid = $this->settings['fb_api_key'] && !$page_name;
     $can_manage = current_user_can('manage_woocommerce');
     $pre_setup = empty($this->settings['fb_page_id']) ||
       empty($this->settings['fb_api_key']);
+    $apikey_invalid = !$pre_setup && $this->settings['fb_api_key'] && !$page_name;
 
     $redirect_uri = '';
     $remove_http_active = is_plugin_active('remove-http/remove-http.php');
