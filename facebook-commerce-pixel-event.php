@@ -275,7 +275,7 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
     $params = array(
       'agent' => $agent_string);
 
-    return apply_filter('facebook_woocommerce_pixel_init', sprintf(
+    return apply_filters('facebook_woocommerce_pixel_init', sprintf(
       "fbq('init', '%s', %s, %s);\n",
       esc_js(self::get_pixel_id()),
       json_encode($this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT),
