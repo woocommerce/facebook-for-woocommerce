@@ -1,10 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
-2018-08-06 - Version 1.9.4
+2018-08-10 - Version 1.9.4
 * Support Lead Gen Event - Contact Form 7
 * Separate Redirect Entry Point Logging
 * Fix undefined variable warnings.
 * Add a Settings link to the plugin config page from the WP Plugins page.
+* Adding filter to Pixel init for injection of fbq(consent, revoke) (GDPR)
 
 2018-08-01 - Version 1.9.3
 * Add Edge Cases for Integration Test.
