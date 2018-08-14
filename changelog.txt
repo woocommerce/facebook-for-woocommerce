@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-08-14 - Version 1.9.5
+* Fix Subscription Event Injection
+
 2018-08-10 - Version 1.9.4
 * Support Lead Gen Event - Contact Form 7
 * Separate Redirect Entry Point Logging
