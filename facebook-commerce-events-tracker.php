@@ -329,7 +329,7 @@ class WC_Facebookcommerce_EventsTracker {
    * subscription.
    */
   public function inject_subscribe_event($order_id) {
-    if (!function_exists(wcs_get_subscriptions_for_order)) {
+    if (!function_exists("wcs_get_subscriptions_for_order")) {
       return;
     }
 
