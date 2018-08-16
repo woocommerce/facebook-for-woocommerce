@@ -340,11 +340,6 @@ class WC_Facebookcommerce_EventsTracker {
         'Subscribe',
         array(
           'sign_up_fee' => $subscription->get_sign_up_fee(),
-          'start' => $subscription->get_date('start'),
-          'trial_end' => $subscription->get_date('trial_end'),
-          'end' => $subscription->get_date('end'),
-          'last_payment' => $subscription->get_date('last_payment'),
-          'next_payment' => $subscription->get_date('next_payment'),
           'value' => $subscription->get_total(),
           'currency' => get_woocommerce_currency()
         ));
