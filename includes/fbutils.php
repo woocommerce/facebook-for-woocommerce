@@ -242,6 +242,26 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       }
     }
 
+    /**
+     * Utility function for development Tip Events logging.
+     */
+     public static function tip_events_log(
+       $tip_id,
+       $channel_id,
+       $event,
+       $ems = '') {
+
+       $ems = $ems ?: self::$ems;
+       if ($ems) {
+         self::$fbgraph->log_tip_event(
+           $tip_id,
+           $channel_id,
+           $event);
+       } else {
+         error_log('external merchant setting is null');
+       }
+     }
+
     public static function is_variation_type($type) {
       return $type == 'variation' || $type == 'subscription_variation';
     }

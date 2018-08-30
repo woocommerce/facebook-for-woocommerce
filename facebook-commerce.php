@@ -24,6 +24,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   // Number of days to wait before showing a link to our ads products.
   const FB_SHOW_REDIRECT = 7;
 
+  const FB_SHOW_TIP = 1;
+
   const FB_VARIANT_IMAGE = 'fb_image';
 
   const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -145,16 +147,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
        && $this->pixel_install_time
        && self::check_time_cap(
           $this->pixel_install_time, self::FB_SHOW_REDIRECT)) {
-
+        // TODO: T33369030 dismissal being permanent
         $this->last_dismissed_time =
           get_option('fb_info_banner_last_dismiss_time', '');
+        $this->last_tip_showing_time =
+          get_option('fb_info_banner_last_show_tip_time', '');
         if (!$this->last_dismissed_time) {
           if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
             include_once 'includes/fbinfobanner.php';
           }
-          WC_Facebookcommerce_Info_Banner::get_instance(
-            $this->last_dismissed_time,
-            $this->external_merchant_settings_id);
+          if (self::check_time_cap($this->last_tip_showing_time, self::FB_SHOW_TIP)) {
+            WC_Facebookcommerce_Info_Banner::get_instance(
+                $this->last_dismissed_time,
+                $this->external_merchant_settings_id,
+                $this->fbgraph);
+          }
         }
       }
       $this->fb_check_for_new_version();
