@@ -350,7 +350,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   public function ajax_fb_background_check_queue() {
-    $this->check_woo_ajax_permissions('background check queue', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('background check queue', true);
     $request_time = null;
     if (isset($_POST['request_time'])) {
       $request_time = esc_js($_POST['request_time']);
@@ -596,6 +596,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    */
   public function load_assets() {
     $screen = get_current_screen();
+
+    // load banner assets
+    wp_enqueue_script('wc_facebook_infobanner_jsx', plugins_url(
+      '/assets/js/facebook-infobanner.js?ts=' . time(), __FILE__));
+
+    wp_enqueue_style('wc_facebook_infobanner_css', plugins_url(
+      '/assets/css/facebook-infobanner.css', __FILE__));
 
     if (strpos($screen->id , "page_wc-settings") == 0) {
       return;
@@ -1002,24 +1009,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
   }
 
-  public function check_woo_ajax_permissions($action_text, $die) {
-    if (!current_user_can('manage_woocommerce')) {
-      WC_Facebookcommerce_Utils::log('Non manage_woocommerce user attempting to
-        '.$action_text.'!');
-      echo "Non manage_woocommerce user attempting to ".$action_text."!";
-      if ($die) {
-        wp_die();
-      }
-      return false;
-    }
-    return true;
-  }
-
   /**
    * Save settings via AJAX (to preserve window context for onboarding)
    **/
   function ajax_save_fb_settings() {
-    $this->check_woo_ajax_permissions('save settings', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('save settings', true);
 
     if (isset($_REQUEST)) {
       if (!isset($_REQUEST['facebook_for_woocommerce'])) {
@@ -1100,7 +1094,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Delete all settings via AJAX
    **/
   function ajax_delete_fb_settings() {
-    if (!$this->check_woo_ajax_permissions('delete settings', false)) {
+    if (!WC_Facebookcommerce_Utils::check_woo_ajax_permissions('delete settings', false)) {
       return;
     }
 
@@ -1165,7 +1159,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Check Feed Upload Status
    **/
   function ajax_check_feed_upload_status() {
-    $this->check_woo_ajax_permissions('check feed upload status', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('check feed upload status', true);
     if ($this->settings['fb_api_key']) {
       $response = array(
         'connected'  => true,
@@ -1480,14 +1474,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function ajax_reset_all_fb_products() {
-    $this->check_woo_ajax_permissions('reset products', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('reset products', true);
     $this->reset_all_products();
     wp_reset_postdata();
     wp_die();
   }
 
   function ajax_reset_single_fb_product() {
-    $this->check_woo_ajax_permissions('reset single product', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('reset single product', true);
     if (!isset($_POST['wp_id'])) {
       wp_die();
     }
@@ -1503,7 +1497,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function ajax_delete_fb_product() {
-    $this->check_woo_ajax_permissions('delete single product', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('delete single product', true);
     if (!isset($_POST['wp_id'])) {
       wp_die();
     }
@@ -1519,7 +1513,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Special function to run all visible products through on_product_publish
    **/
   function ajax_sync_all_fb_products() {
-    $this->check_woo_ajax_permissions('syncall products', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('syncall products', true);
     if (!$this->api_key || !$this->product_catalog_id) {
       WC_Facebookcommerce_Utils::log("No API key or catalog ID: " .
         $this->api_key . ' and ' . $this->product_catalog_id);
@@ -1661,7 +1655,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Special function to run all visible products by uploading feed.
    **/
   function ajax_sync_all_fb_products_using_feed() {
-    $this->check_woo_ajax_permissions(
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
       'syncall products using feed', !$this->test_mode);
     if (!$this->api_key || !$this->product_catalog_id) {
       self::log("No API key or catalog ID: " . $this->api_key .
@@ -1726,7 +1720,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   * Toggles product visibility via AJAX (checks current viz and flips it)
   **/
   function ajax_toggle_visibility() {
-    $this->check_woo_ajax_permissions('toggle visibility', true);
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('toggle visibility', true);
     if (!isset($_POST['wp_id']) || ! isset($_POST['published'])) {
       wp_die();
     }

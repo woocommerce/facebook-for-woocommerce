@@ -6,6 +6,10 @@ if (! defined('ABSPATH')) {
   exit;
 }
 
+if (!class_exists('WC_Facebookcommerce_Utils')) {
+  include_once 'includes/fbutils.php';
+}
+
 if (! class_exists('WC_Facebookcommerce_Info_Banner')) :
 
 /**
@@ -18,6 +22,10 @@ class WC_Facebookcommerce_Info_Banner {
                 for getting online sales and revenue.';
   const DEFAULT_TIP_ACTION = 'Create Ads';
   const DEFAULT_TIP_ACTION_LINK = 'https://www.facebook.com/ads/dia/redirect/?settings_id=';
+  const DEFAULT_TIP_IMG_URL_PREFIX = 'https://www.facebook.com';
+  const DEFAULT_TIP_IMG_URL = '../wp-content/plugins/facebook-for-woocommerce/assets/image/ongoing-promotion.png';
+  const CHANNEL_ID = 2087541767986590;
+  private $tip_id = '';
 
   /** @var object Class Instance */
   private static $instance;
@@ -52,9 +60,53 @@ class WC_Facebookcommerce_Info_Banner {
     $this->last_dismissed_time = $last_dismissed_time;
     $this->external_merchant_settings_id = $external_merchant_settings_id;
     $this->fbgraph = $fbgraph;
+    add_action('wp_ajax_ajax_woo_infobanner_post_click', array($this, 'ajax_woo_infobanner_post_click'));
+    add_action('wp_ajax_ajax_woo_infobanner_post_xout', array($this, 'ajax_woo_infobanner_post_xout'));
     add_action('admin_notices', array($this, 'banner'));
     add_action('admin_init', array($this, 'dismiss_banner'));
   }
+
+  /**
+   * Post click event when hit primary button.
+   */
+   function ajax_woo_infobanner_post_click() {
+     WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
+       'post tip click event',
+       true);
+     if ($this->tip_id == null) {
+       WC_Facebookcommerce_Utils::fblog(
+         'Do not have tip id maybe
+         rendering static one',
+         array(),
+         true);
+     } else {
+       WC_Facebookcommerce_Utils::tip_events_log(
+         $this->tip_id,
+         self::CHANNEL_ID,
+         'click');
+     }
+   }
+
+  /**
+   * Post xout event when hit dismiss button.
+   */
+   function ajax_woo_infobanner_post_xout() {
+     WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
+       'post tip xout event',
+       true);
+     if ($this->tip_id == null) {
+       WC_Facebookcommerce_Utils::fblog(
+         'Do not have tip id maybe
+         rendering static one',
+         array(),
+         true);
+     } else {
+       WC_Facebookcommerce_Utils::tip_events_log(
+         $this->tip_id,
+         self::CHANNEL_ID,
+         'xout');
+     }
+   }
 
   /**
    * Display a info banner on Woocommerce pages.
@@ -80,6 +132,7 @@ class WC_Facebookcommerce_Info_Banner {
       $tip_action = self::DEFAULT_TIP_ACTION;
       $tip_action_link = esc_url(self::DEFAULT_TIP_ACTION_LINK.
         $this->external_merchant_settings_id);
+      $tip_img_url = self::DEFAULT_TIP_IMG_URL;
       if (!$is_default) {
         $tip_body = isset($tip_info->tip_body->__html)
           ? $tip_info->tip_body->__html
@@ -93,22 +146,32 @@ class WC_Facebookcommerce_Info_Banner {
         $tip_action = isset($tip_info->tip_action->__html)
           ? $tip_info->tip_action->__html
           : self::DEFAULT_TIP_ACTION;
+
+        $tip_img_url = isset($tip_info->tip_img_url)
+          ? self::DEFAULT_TIP_IMG_URL_PREFIX . $tip_info->tip_img_url
+          : self::DEFAULT_TIP_IMG_URL;
+
+        $tip_id = isset($tip_info->tip_id)
+          ? $tip_info->tip_id
+          : '';
       }
 
       $dismiss_url = $this->dismiss_url();
-      $message = __('<strong>Facebook for WooCommerce: </strong>' .
-          $tip_body,
+      $tip_title = __('<strong>Facebook for WooCommerce</strong>',
           'facebook-for-woocommerce');
-      echo '<div class="updated fade"><p>' . $message . "\n";
-      echo '<p><a href="' . $tip_action_link . '" title="' .
+      echo '<div class="updated fade"><div id="fbinfobanner"><div><img src="'. $tip_img_url .
+      '" class="iconDetails"></div><p style="padding:9px 12px 5px 100px">' . $tip_title . "\n";
+      echo '<p style = "padding:9px 12px 5px 100px">'.
+        __($tip_body, 'facebook-for-woocommerce') . '</p>';
+      echo '<p><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click()" title="' .
         __('Click and redirect.', 'facebook-for-woocommerce').
-        '"> ' . __($tip_action, 'facebook-for-woocommerce') . '</a>' . ' | '.
-        '<a href="' . esc_url($dismiss_url). '" title="' .
+        '"> ' . __($tip_action, 'facebook-for-woocommerce') . '</a>' .
+        '<a href="' . esc_url($dismiss_url). '" class = "btn dismiss" onclick="fb_woo_infobanner_post_xout()" title="' .
         __('Dismiss this notice.', 'facebook-for-woocommerce').
-        '"> ' . __('Dismiss', 'facebook-for-woocommerce') . '</a></p></div>';
+        '"> ' . __('Dismiss', 'facebook-for-woocommerce') . '</a></p></div></div>';
     } else {
       WC_Facebookcommerce_Utils::fblog(
-        "Fail to get Tip via GraphAPI", array(), true);
+        "Fail to get tip via GraphAPI", array(), true);
     }
   }
 

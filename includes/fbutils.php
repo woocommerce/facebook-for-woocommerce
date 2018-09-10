@@ -270,6 +270,20 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       return $type == 'variable' || $type == 'variable-subscription';
     }
 
+    public static function check_woo_ajax_permissions($action_text, $die) {
+      if (!current_user_can('manage_woocommerce')) {
+        self::log(
+          'Non manage_woocommerce user attempting to'.$action_text.'!',
+          array(),
+          true);
+        if ($die) {
+          wp_die();
+        }
+        return false;
+      }
+      return true;
+    }
+
     /**
      * Returns true if id is a positive non-zero integer
      *
