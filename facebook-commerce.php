@@ -1948,7 +1948,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             <?php
               $pre_setup
                 ? _e('Grow your business on Facebook', $domain)
-                : _e('Reach the right people and sell more products', $domain);
+                : _e('Reach The Right People and Sell More Online', $domain);
             ?>
           </h1>
           <h2>
@@ -1991,79 +1991,97 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 !isset($this->external_merchant_settings_id)) {
                 echo ' style="pointer-events: none;"';
               }
-              echo '><a href='.$redirect_uri.' class="btn" id="cta_button">' .
-                esc_html($cta_button_text) . '</a></span>';
+              echo (
+                '><a href='.$redirect_uri.' class="btn" id="cta_button">' .
+                esc_html($cta_button_text) . '</a>' .
+                '<a href="" class="btn grey" id="learnmore_button" style="display: none;">' .
+                __("Learn More") .
+                '</a>' .
+                '</span>'
+              );
             }
           ?>
-        <hr>
-        <div id="settings"
-        <?php
-        if ($pre_setup && $can_manage) {
-          echo ' style="display:none;"';
-        }
-        echo '><h1>' . esc_html__('Settings', $domain) . '</h1>';
-        if ($apikey_invalid) {
-          // API key is set, but no page name.
-          echo '<h2 id="token_text" style="color:red;">' .
-            __('Your API key is no longer valid. Please click "Settings >
-            Advanced Options > Update Token".', $domain) . '</h2>
-
-            <span><a href="#" class="btn small" onclick="facebookConfig()"
-            id="setting_button">' . __('Settings', $domain) . '</a>
-            </span>';
-        } else {
-          if (!$can_manage) {
-            echo '<h2 style="color:red;">' . __('You must have
-            "manage_woocommerce" permissions to use this plugin.', $domain) .
-            '</h2>';
-          } else {
-            echo '<h2><span id="connection_status"';
-            if (!$connected) {
-              echo ' style="display: none;"';
-            }
-            echo '>';
-            echo __('Your WooCommerce store is connected to ', $domain) .
-              ($page_name != '' ? sprintf(__('the Facebook page
-              <a target="_blank" href="https://www.facebook.com/%1$s">%2$s
-              </a></span>', $domain), $this->settings['fb_page_id'],
-              esc_html($page_name)) : sprintf(__('<a target="_blank"
-              href="https://www.facebook.com/%1$s">your Facebook page</a></span>',
-              $domain), $this->settings['fb_page_id'])) .
-
-              '.<span id="sync_complete" style="margin-left: 5px;';
-            if (!$connected || $currently_syncing) {
-              echo ' display: none;';
-            }
-            echo '">' . __('Status', $domain) . ': '
-              . __('Products are synced to Facebook.', $domain) . '</span>'.
-              sprintf(__('<span><a href="#" onclick="show_debug_info()"
-              id="debug_info" style="display:none;" > More Info </a></span>',
-              $domain)) . '</span></h2>
-              <span><a href="#" class="btn small" onclick="facebookConfig()"
-                id="setting_button"';
-
-            if ($currently_syncing) {
-              echo ' style="pointer-events: none;" ';
-            }
-            echo '>' . __('Settings', $domain) . '</a></span>
-
-            <span><a href="#" class="btn small" onclick="sync_confirm()"
-              id="resync_products"';
-
-            if ($connected && $currently_syncing) {
-              echo ' style="pointer-events: none;" ';
-            }
-            echo '>' . __('Sync Products', $domain) . '</a></span><hr/>
-
-            <p id="sync_progress">';
-            if ($connected && $currently_syncing) {
-              echo __('Syncing... Keep this browser open', $domain);
-              echo '<br/>';
-              echo __('Until sync is complete', $domain);
-            }
-            echo '</p>';
+        <hr />
+        <div class="settings-container">
+          <div id="plugins" class="settings-section"
+            <?php echo ($pre_setup && $can_manage) ? ' style="display:none;"' : ''; ?>
+          >
+            <h1><?php echo __('Add Ways for People to Shop'); ?></h1>
+            <h2><?php echo __('Connect your business with features on Instagram, Messenger and more.'); ?></h2>
+            <a href="#" class="btn small" onclick="facebookConfig()" id="connect_button">
+            <?php echo __('Connect'); ?>
+            </a>
+          </div>
+          <div id="settings" class="settings-section"
+          <?php
+          if ($pre_setup && $can_manage) {
+            echo ' style="display:none;"';
           }
-        } ?>
+          echo '><h1>' . esc_html__('Settings', $domain) . '</h1>';
+          if ($apikey_invalid) {
+            // API key is set, but no page name.
+            echo '<h2 id="token_text" style="color:red;">' .
+              __('Your API key is no longer valid. Please click "Settings >
+              Advanced Options > Update Token".', $domain) . '</h2>
+
+              <span><a href="#" class="btn small" onclick="facebookConfig()"
+              id="setting_button">' . __('Settings', $domain) . '</a>
+              </span>';
+          } else {
+            if (!$can_manage) {
+              echo '<h2 style="color:red;">' . __('You must have
+              "manage_woocommerce" permissions to use this plugin.', $domain) .
+              '</h2>';
+            } else {
+              echo '<h2><span id="connection_status"';
+              if (!$connected) {
+                echo ' style="display: none;"';
+              }
+              echo '>';
+              echo __('Your WooCommerce store is connected to ', $domain) .
+                ($page_name != '' ? sprintf(__('the Facebook page
+                <a target="_blank" href="https://www.facebook.com/%1$s">%2$s
+                </a></span>', $domain), $this->settings['fb_page_id'],
+                esc_html($page_name)) : sprintf(__('<a target="_blank"
+                href="https://www.facebook.com/%1$s">your Facebook page</a></span>',
+                $domain), $this->settings['fb_page_id'])) .
+
+                '.<span id="sync_complete" style="margin-left: 5px;';
+              if (!$connected || $currently_syncing) {
+                echo ' display: none;';
+              }
+              echo '">' . __('Status', $domain) . ': '
+                . __('Products are synced to Facebook.', $domain) . '</span>'.
+                sprintf(__('<span><a href="#" onclick="show_debug_info()"
+                id="debug_info" style="display:none;" > More Info </a></span>',
+                $domain)) . '</span></h2>
+                <span><a href="#" class="btn small" onclick="facebookConfig()"
+                  id="setting_button"';
+
+              if ($currently_syncing) {
+                echo ' style="pointer-events: none;" ';
+              }
+              echo '>' . __('Settings', $domain) . '</a></span>
+
+              <span><a href="#" class="btn small" onclick="sync_confirm()"
+                id="resync_products"';
+
+              if ($connected && $currently_syncing) {
+                echo ' style="pointer-events: none;" ';
+              }
+              echo '>' . __('Sync Products', $domain) . '</a></span>
+
+              <p id="sync_progress">';
+              if ($connected && $currently_syncing) {
+                echo '<hr/>';
+                echo __('Syncing... Keep this browser open', $domain);
+                echo '<br/>';
+                echo __('Until sync is complete', $domain);
+              }
+              echo '</p>';
+            }
+          } ?>
+          </div>
         </div>
       </div>
     </div>

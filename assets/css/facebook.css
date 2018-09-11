@@ -96,17 +96,26 @@
   margin: 2px 0px;
   padding-left: 8px;
 }
-#settings h1 {
+#fbsetup .settings-section {
+  display: inline-block;
+  min-width: 45%;
+  max-width: 45%;
+  margin-right: 8px;
+  vertical-align: top;
+}
+#fbsetup .settings-section h1 {
   color: rgb(126,129,136);
   font-size: 14px;
   margin-top: 0px;
+  width: auto;
 }
-#settings h2 {
+#fbsetup .settings-section h2 {
   color: rgb(126,129,136);
   font-size: 14px;
   margin-top: 2px;
+  width: auto;
 }
-#settings .btn.small {
+#fbsetup .settings-section .btn.small {
   background: #f6f7f8;
   border-color: #e0e1e2;
   color: #4e5665;
@@ -152,11 +161,10 @@
   left: 50%;
   margin-left: -60px;
 }
-
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
 }
-#connection_status a {
+#fbsetup a {
   text-decoration: none;
 }
