@@ -17,6 +17,7 @@ if (! class_exists('WC_Facebookcommerce_Info_Banner')) :
  */
 class WC_Facebookcommerce_Info_Banner {
 
+  const FB_DEFAULT_TIP_DISMISS_TIME_CAP = 60;
   const FB_NO_TIP_EXISTS = 'No Tip Exist!';
   const DEFAULT_TIP_BODY = 'Create ads that are designed
                 for getting online sales and revenue.';
@@ -127,6 +128,13 @@ class WC_Facebookcommerce_Info_Banner {
 
     if ($tip_info != null) {
       $is_default = ($tip_info === self::FB_NO_TIP_EXISTS);
+
+      // Will not show tip if tip is default and has not over 60 days after last dismissed
+      if ($is_default &&
+      !WC_Facebookcommerce_Utils::check_time_cap($this->last_dismissed_time,
+      self::FB_DEFAULT_TIP_DISMISS_TIME_CAP)) {
+          return;
+      }
       // Get tip creatives via API
       $tip_body = self::DEFAULT_TIP_BODY;
       $tip_action = self::DEFAULT_TIP_ACTION;

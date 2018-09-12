@@ -454,6 +454,18 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       set_transient('facebook_plugin_test_fail', $msg);
       set_transient('facebook_plugin_test_stack_trace', $trace);
     }
+
+    /**
+     * Helper function to check time cap.
+     */
+    public static function check_time_cap($from, $date_cap) {
+      if ($from == null) {
+        return true;
+      }
+      $now = new DateTime(current_time('mysql'));
+      $diff_in_day = $now->diff(new DateTime($from))->format('%a');
+      return is_numeric($diff_in_day) && (int)$diff_in_day > $date_cap;
+    }
   }
 
 endif;
