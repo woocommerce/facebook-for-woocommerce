@@ -14,7 +14,6 @@
   text-decoration: none;
   display: inline-block;
   margin: 5px 10px 1px 1px;
-  width: 65px;
 }
 
 #fbinfobanner .btn.dismiss {
@@ -25,7 +24,6 @@
   background: #f6f7f8;
   border-color: #e0e1e2;
   color: #4e5665;
-  width: 65px;
 }
 
 #fbinfobanner .iconDetails {
