@@ -24,7 +24,7 @@ class WC_Facebookcommerce_Info_Banner {
   const DEFAULT_TIP_ACTION = 'Create Ads';
   const DEFAULT_TIP_ACTION_LINK = 'https://www.facebook.com/ads/dia/redirect/?settings_id=';
   const DEFAULT_TIP_IMG_URL_PREFIX = 'https://www.facebook.com';
-  const DEFAULT_TIP_IMG_URL = '../wp-content/plugins/facebook-for-woocommerce/assets/image/ongoing-promotion.png';
+  const DEFAULT_TIP_IMG_URL = 'https://www.facebook.com/images/ads/growth/aymt/glyph-shopping-cart_page-megaphone.png';
   const CHANNEL_ID = 2087541767986590;
   private $tip_id = '';
 
@@ -168,13 +168,13 @@ class WC_Facebookcommerce_Info_Banner {
       $tip_title = __('<strong>Facebook for WooCommerce</strong>',
           'facebook-for-woocommerce');
       echo '<div class="updated fade"><div id="fbinfobanner"><div><img src="'. $tip_img_url .
-      '" class="iconDetails"></div><p style="padding:9px 12px 5px 100px">' . $tip_title . "\n";
-      echo '<p style = "padding:9px 12px 5px 100px">'.
+      '" class="iconDetails"></div><p class = "tipTitle">' . $tip_title . "\n";
+      echo '<p class = "tipContent">'.
         __($tip_body, 'facebook-for-woocommerce') . '</p>';
-      echo '<p><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click()" title="' .
+      echo '<p class = "tipButton"><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click()" title="' .
         __('Click and redirect.', 'facebook-for-woocommerce').
         '"> ' . __($tip_action, 'facebook-for-woocommerce') . '</a>' .
-        '<a href="' . esc_url($dismiss_url). '" class = "btn dismiss" onclick="fb_woo_infobanner_post_xout()" title="' .
+        '<a href="' . esc_url($dismiss_url). '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout()" title="' .
         __('Dismiss this notice.', 'facebook-for-woocommerce').
         '"> ' . __('Dismiss', 'facebook-for-woocommerce') . '</a></p></div></div>';
     } else {
