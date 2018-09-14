@@ -19,6 +19,7 @@ class WC_Facebookcommerce_Info_Banner {
 
   const FB_DEFAULT_TIP_DISMISS_TIME_CAP = 60;
   const FB_NO_TIP_EXISTS = 'No Tip Exist!';
+  const DEFAULT_TIP_TITLE = 'Facebook for WooCommerce';
   const DEFAULT_TIP_BODY = 'Create ads that are designed
                 for getting online sales and revenue.';
   const DEFAULT_TIP_ACTION = 'Create Ads';
@@ -136,12 +137,17 @@ class WC_Facebookcommerce_Info_Banner {
           return;
       }
       // Get tip creatives via API
+      $tip_title = self::DEFAULT_TIP_TITLE;
       $tip_body = self::DEFAULT_TIP_BODY;
       $tip_action = self::DEFAULT_TIP_ACTION;
       $tip_action_link = esc_url(self::DEFAULT_TIP_ACTION_LINK.
         $this->external_merchant_settings_id);
       $tip_img_url = self::DEFAULT_TIP_IMG_URL;
       if (!$is_default) {
+        $tip_title = isset($tip_info->tip_title->__html)
+          ? $tip_info->tip_title->__html
+          : self::DEFAULT_TIP_TITLE;
+
         $tip_body = isset($tip_info->tip_body->__html)
           ? $tip_info->tip_body->__html
           : self::DEFAULT_TIP_BODY;
@@ -165,10 +171,9 @@ class WC_Facebookcommerce_Info_Banner {
       }
 
       $dismiss_url = $this->dismiss_url();
-      $tip_title = __('<strong>Facebook for WooCommerce</strong>',
-          'facebook-for-woocommerce');
       echo '<div class="updated fade"><div id="fbinfobanner"><div><img src="'. $tip_img_url .
-      '" class="iconDetails"></div><p class = "tipTitle">' . $tip_title . "\n";
+      '" class="iconDetails"></div><p class = "tipTitle">' .
+      __('<strong>' . $tip_title . '</strong>', 'facebook-for-woocommerce') . "\n";
       echo '<p class = "tipContent">'.
         __($tip_body, 'facebook-for-woocommerce') . '</p>';
       echo '<p class = "tipButton"><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click()" title="' .
