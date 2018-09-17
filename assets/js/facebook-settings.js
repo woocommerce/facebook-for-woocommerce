@@ -262,6 +262,9 @@ function reset_buttons(){
     cta_element.href = '#';
     cta_element.onclick= function() { facebookConfig(); };
   }
+  if(document.querySelector('#learnmore_button')){
+    document.querySelector('#learnmore_button').style.display = 'none';
+  }
   if(document.querySelector('#setup_h1')) {
     document.querySelector('#setup_h1').innerHTML =
     'Grow your business on Facebook';
@@ -325,6 +328,12 @@ function sync_not_in_progress(){
       };
     } else {
       cta_element.style['pointer-events'] = 'none';
+    }
+  }
+  if(document.querySelector('#learnmore_button')){
+    var learnmore_element = document.querySelector('#learnmore_button');
+    if (window.facebookAdsToolboxConfig.diaSettingId) {
+      learnmore_element.style.display = '';
     }
   }
   if(document.querySelector('#setup_h1')) {

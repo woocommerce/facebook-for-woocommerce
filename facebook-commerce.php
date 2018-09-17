@@ -1996,10 +1996,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               echo (
                 '><a href='.$redirect_uri.' class="btn" id="cta_button">' .
                 esc_html($cta_button_text) . '</a>' .
-                '<a href="" class="btn grey" id="learnmore_button" style="display: none;">' .
-                __("Learn More") .
-                '</a>' .
-                '</span>'
+                '<a href="https://www.facebook.com/business/m/drive-more-online-sales"
+                 class="btn grey" id="learnmore_button">' . __("Learn More") .
+                '</a></span>'
               );
             }
           ?>
