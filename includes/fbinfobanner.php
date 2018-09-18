@@ -121,11 +121,8 @@ class WC_Facebookcommerce_Info_Banner {
       $screen->is_network || $screen->action) {
       return;
     }
-    $aymt_gate = get_option('fb_aymt_temporary_gatekeeper');
-    $tip_info = $aymt_gate
-    ? $this->fbgraph->get_tip_info(
-      $this->external_merchant_settings_id)
-    : self::FB_NO_TIP_EXISTS;
+    $tip_info = $this->fbgraph->get_tip_info(
+      $this->external_merchant_settings_id);
 
     if ($tip_info != null) {
       $is_default = ($tip_info === self::FB_NO_TIP_EXISTS);
