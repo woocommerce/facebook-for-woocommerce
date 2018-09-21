@@ -1,5 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-09-21 - Version 1.9.6
+* Update plugin description of new design for WooCommerce.
+* Remove get_date() in Woocommerce plugin.
+* Add External Action-to-Make Channel Support.
+
 2018-08-14 - Version 1.9.5
 * Fix Subscription Event Injection
 
