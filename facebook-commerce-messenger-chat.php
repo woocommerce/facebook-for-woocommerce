@@ -24,16 +24,30 @@ class WC_Facebookcommerce_MessengerChat {
       ? $settings['facebook_jssdk_version']
       : '';
 
+    $this->greeting_text_code = isset($settings['msger_chat_customization_greeting_text_code'])
+      ? $settings['msger_chat_customization_greeting_text_code']
+      : null;
+
+    $this->locale = isset($settings['msger_chat_customization_locale'])
+      ? $settings['msger_chat_customization_locale']
+      : null;
+
+    $this->theme_color_code = isset($settings['msger_chat_customization_theme_color_code'])
+      ? $settings['msger_chat_customization_theme_color_code']
+      : null;
+
     add_action('wp_footer', array($this, 'inject_messenger_chat_plugin'));
   }
 
   public function inject_messenger_chat_plugin() {
     if ($this->enabled === 'yes') {
-      echo sprintf("<div><div
+      echo sprintf("<div
   attribution=\"fbe_woocommerce\"
   class=\"fb-customerchat\"
   page_id=\"%s\"
-/></div>
+  %s
+  %s
+  %s /></div>
 <!-- Facebook JSSDK -->
 <script>
   window.fbAsyncInit = function() {
@@ -49,13 +63,17 @@ class WC_Facebookcommerce_MessengerChat {
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) {return;}
       js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/en_US/sdk.js';
+      js.src = 'https://connect.facebook.net/%s/sdk/xfbml.customerchat.js';
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 </script>
 <div></div>",
         $this->page_id,
-        $this->jssdk_version);
+        $this->theme_color_code ? sprintf('theme_color="%s"', $this->theme_color_code) : '',
+        $this->greeting_text_code ? sprintf('logged_in_greeting="%s"', $this->greeting_text_code) : '',
+        $this->greeting_text_code ? sprintf('logged_out_greeting="%s"', $this->greeting_text_code) : '',
+        $this->jssdk_version,
+        $this->locale ? $this->locale : 'en_US');
     }
   }
 

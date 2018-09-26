@@ -206,8 +206,7 @@ function save_settings(callback = null, failcallback = null, localsettings = nul
 //   1.  sync products again after plugin is configured
 //   2.  check api_key, which is from facebook and is only necessary
 //       for following sync products
-function save_settings_for_plugin(plugin_settings, callback, failcallback) {
-  settings = Object.assign({}, settings, plugin_settings);
+function save_settings_for_plugin(callback, failcallback) {
   save_settings(
     function(response){
       if (response && response.includes('settings_saved')){
@@ -500,16 +499,33 @@ function setAccessTokenAndPageId(message) {
 }
 
 function setMsgerChatSetup(data) {
-  if (data.hasOwnProperty('is_facebook_messenger_chat_plugin_enabled')) {
-    settings.messenger_chat_plugin_enabled =
-      data.is_facebook_messenger_chat_plugin_enabled;
+  if (data.hasOwnProperty('is_messenger_chat_plugin_enabled')) {
+    settings.is_messenger_chat_plugin_enabled =
+      data.is_messenger_chat_plugin_enabled;
   }
   if (data.hasOwnProperty('facebook_jssdk_version')) {
-    settings.messenger_chat_jssdk_version =
+    settings.facebook_jssdk_version =
       data.facebook_jssdk_version;
   }
   if (data.hasOwnProperty('page_id')) {
     settings.fb_page_id = data.page_id;
+  }
+
+  if (data.hasOwnProperty('customization')) {
+    var customization = data.customization;
+
+    if (customization.hasOwnProperty('greetingTextCode')) {
+      settings.msger_chat_customization_greeting_text_code =
+        customization.greetingTextCode;
+    }
+    if (customization.hasOwnProperty('locale')) {
+      settings.msger_chat_customization_locale =
+        customization.locale;
+    }
+    if (customization.hasOwnProperty('themeColorCode')) {
+      settings.msger_chat_customization_theme_color_code =
+        customization.themeColorCode;
+    }
   }
 }
 
@@ -559,8 +575,8 @@ function iFrameListener(event) {
       save_settings_and_sync(event.data);
       break;
     case 'set msger chat':
-      setMsgerChatSetup(event.data);
-      save_settings_for_plugin(event.data.params,
+      setMsgerChatSetup(event.data.params);
+      save_settings_for_plugin(
         function(response) {
           window.sendToFacebook('ack msger chat', event.data);
         },

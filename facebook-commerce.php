@@ -1076,6 +1076,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         $this->settings['facebook_jssdk_version'] =
           $_REQUEST['facebook_jssdk_version'];
       }
+      if (isset($_REQUEST['msger_chat_customization_greeting_text_code'])) {
+        $this->settings['msger_chat_customization_greeting_text_code'] =
+          $_REQUEST['msger_chat_customization_greeting_text_code'];
+      }
+      if (isset($_REQUEST['msger_chat_customization_locale'])) {
+        $this->settings['msger_chat_customization_locale'] =
+          $_REQUEST['msger_chat_customization_locale'];
+      }
+      if (isset($_REQUEST['msger_chat_customization_theme_color_code'])) {
+        $this->settings['msger_chat_customization_theme_color_code'] =
+          $_REQUEST['msger_chat_customization_theme_color_code'];
+      }
 
       update_option(
         $this->get_option_key(),
