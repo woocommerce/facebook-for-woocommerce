@@ -1,12 +1,19 @@
 <?php
 /**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * @package FacebookCommerce
+ *
  * usage:
  * 1. set WP_DEBUG = true and WP_DEBUG_DISPLAY = false
  * 2. append "&fb_test_product_sync=true" to the url when you are on facebook-for-woocommerce setting pages
  * 3. refresh the page to launch test
  * https://codex.wordpress.org/WP_DEBUG
  */
+
 if (!defined('ABSPATH')) {
   exit;
 }
