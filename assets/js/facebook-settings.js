@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @package FacebookCommerce
+ */
+
 var fb_sync_no_response_count = 0;
 
 function openPopup() {

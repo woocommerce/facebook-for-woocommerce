@@ -1,5 +1,14 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @package FacebookCommerce
+ */
+
 /*
- *  Ajax helper function.  
+ *  Ajax helper function.
  *  Takes optional payload for POST and optional callback.
  */
 function ajax(action, payload = null, cb = null, failcb = null) {
@@ -8,34 +17,34 @@ function ajax(action, payload = null, cb = null, failcb = null) {
   };
   if (payload){
     for (var attrname in payload) { data[attrname] = payload[attrname]; }
-  }  
+  }
 
   // Since  Wordpress 2.8 ajaxurl is always defined in admin header and
   // points to admin-ajax.php
-  jQuery.post(ajaxurl, data, function(response) {    
-    if(cb) {      
+  jQuery.post(ajaxurl, data, function(response) {
+    if(cb) {
       cb(response);
     }
-  }).fail(function(errorResponse){    
-    if(failcb) {      
+  }).fail(function(errorResponse){
+    if(failcb) {
       failcb(errorResponse);
     }
-  });  
+  });
 }
 
-function fb_toggle_visibility(wp_id, published) {  
+function fb_toggle_visibility(wp_id, published) {
   var buttonId = document.querySelector("#viz_" + wp_id);
   var tooltip = document.querySelector("#tip_" + wp_id);
 
   if(published){
-    tooltip.setAttribute('data-tip', 
+    tooltip.setAttribute('data-tip',
       'Product is synced and published (visible) on Facebook.'
     );
     buttonId.setAttribute('onclick','fb_toggle_visibility('+wp_id+', false)');
     buttonId.innerHTML = 'Hide';
     buttonId.setAttribute('class', 'button');
   } else {
-    tooltip.setAttribute('data-tip', 
+    tooltip.setAttribute('data-tip',
       'Product is synced but not marked as published (visible) on Facebook.'
     );
     buttonId.setAttribute('onclick','fb_toggle_visibility('+wp_id+', true)');
@@ -44,7 +53,7 @@ function fb_toggle_visibility(wp_id, published) {
   }
 
   //Reset tooltip
-  jQuery(function($) { 
+  jQuery(function($) {
     $('.tips').tipTip({
       'attribute': 'data-tip',
       'fadeIn': 50,
@@ -54,7 +63,7 @@ function fb_toggle_visibility(wp_id, published) {
   });
 
   return ajax(
-    'ajax_fb_toggle_visibility', 
+    'ajax_fb_toggle_visibility',
     {'wp_id': wp_id, 'published': published}
   );
 }
