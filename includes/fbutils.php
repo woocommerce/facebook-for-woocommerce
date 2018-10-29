@@ -436,7 +436,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       if (preg_match('/[^\\p{Common}\\p{Latin}]/u', $value)) {
         // Contains non-western characters
         // So, it can't be all uppercase
-        return true;
+        return false;
       }
       $latin_string = preg_replace('/[^\\p{Latin}]/u', '', $value);
       if ($latin_string === '') {
