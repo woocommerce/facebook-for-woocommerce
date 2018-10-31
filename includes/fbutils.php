@@ -471,6 +471,12 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
       $diff_in_day = $now->diff(new DateTime($from))->format('%a');
       return is_numeric($diff_in_day) && (int)$diff_in_day > $date_cap;
     }
+
+    public static function get_cached_best_tip() {
+      $cached_best_tip = WC_Facebookcommerce_Utils::decode_json(
+        get_option('fb_info_banner_last_best_tip', ''));
+      return $cached_best_tip;
+    }
   }
 
 endif;

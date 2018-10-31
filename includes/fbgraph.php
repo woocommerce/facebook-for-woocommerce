@@ -225,20 +225,34 @@ class WC_Facebookcommerce_Graph_API {
   public function get_tip_info($external_merchant_settings_id) {
     $url = $this->build_url($external_merchant_settings_id, '/?fields=connect_woo');
     $response = self::_get($url, $this->api_key);
+    $data = array(
+      'response' => $response,
+    );
     if (is_wp_error($response)) {
-      WC_Facebookcommerce_Utils::fblog($response->get_error_message());
+      $data['error_type'] = 'is_wp_error';
+      WC_Facebookcommerce_Utils::fblog(
+        'Failed to get AYMT tip info via API.',
+        $data,
+        true);
       return;
     }
     if ($response['response']['code'] != '200') {
+      $data['error_type'] = 'Non-200 error code from FB';
+      WC_Facebookcommerce_Utils::fblog(
+        'Failed to get AYMT tip info via API.',
+        $data,
+        true);
       return;
     }
 
     $response_body = wp_remote_retrieve_body($response);
-    $connect_woo = json_decode($response_body)->connect_woo;
+    $connect_woo =
+      WC_Facebookcommerce_Utils::decode_json($response_body)->connect_woo;
     if (!isset($connect_woo)) {
+      $data['error_type'] = 'Response body not set';
       WC_Facebookcommerce_Utils::fblog(
         "Failed to get AYMT tip info via API.",
-        array(),
+        $data,
         true);
     }
     return $connect_woo;

@@ -26,10 +26,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   const FB_MESSAGE_DISPLAY_TIME = 180;
 
-  // Number of days to wait before showing a link to our ads products.
-  const FB_SHOW_REDIRECT = 7;
-
-  const FB_SHOW_TIP = 1;
+  // Number of days to query tip.
+  const FB_TIP_QUERY = 1;
 
   const FB_DISMISS_TIME_CAP = 30;
 
@@ -151,24 +149,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       // Display an info banner for eligible pixel and user.
       if ($this->external_merchant_settings_id
        && $this->pixel_id
-       && $this->pixel_install_time
-       && WC_Facebookcommerce_Utils::check_time_cap(
-          $this->pixel_install_time, self::FB_SHOW_REDIRECT)) {
-        $this->last_dismissed_time =
-          get_option('fb_info_banner_last_dismiss_time', '');
-        $this->last_tip_showing_time =
-          get_option('fb_info_banner_last_show_tip_time', '');
-        if (WC_Facebookcommerce_Utils::check_time_cap($this->last_dismissed_time,
-            self::FB_DISMISS_TIME_CAP)
-         && WC_Facebookcommerce_Utils::check_time_cap($this->last_tip_showing_time,
-            self::FB_SHOW_TIP)) {
+       && $this->pixel_install_time) {
+        $should_query_tip =
+          WC_Facebookcommerce_Utils::check_time_cap(
+            get_option('fb_info_banner_last_query_time', ''),
+            self::FB_TIP_QUERY);
+        $last_tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
+        $default_tip_pass_cap =
+          WC_Facebookcommerce_Utils::check_time_cap(
+            get_option('fb_info_banner_last_dismiss_time', ''),
+            self::FB_DISMISS_TIME_CAP);
+
+        if ($should_query_tip || $last_tip_info || $default_tip_pass_cap) {
           if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
             include_once 'includes/fbinfobanner.php';
           }
           WC_Facebookcommerce_Info_Banner::get_instance(
-              $this->last_dismissed_time,
               $this->external_merchant_settings_id,
-              $this->fbgraph);
+              $this->fbgraph,
+              $should_query_tip,
+              $default_tip_pass_cap);
         }
       }
       $this->fb_check_for_new_version();
