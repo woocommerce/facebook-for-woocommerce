@@ -1971,7 +1971,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             ?>
           </h1>
           <h2>
-            <?php _e('Use this WooCommerce and Facebook Integration to:',
+            <?php _e('Use this WooCommerce and Facebook integration to:',
               $domain); ?>
           </h2>
           <ul>
@@ -1986,7 +1986,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               <?php
                 $pre_setup
                   ? _e('Upload your products and create a shop', $domain)
-                  : _e('Use built-in best practice for online sales', $domain);
+                  : _e('Use built-in best practices for online sales', $domain);
                 ?>
             </li>
             <li id="setup_l3">
@@ -2027,7 +2027,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             <h1><?php echo __('Add Ways for People to Shop'); ?></h1>
             <h2><?php echo __('Connect your business with features on Instagram, Messenger and more.'); ?></h2>
             <a href="#" class="btn small" onclick="facebookConfig()" id="connect_button">
-            <?php echo __('Connect'); ?>
+            <?php echo __('Add Features'); ?>
             </a>
           </div>
           <div id="settings" class="settings-section"
@@ -2057,13 +2057,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               }
               echo '>';
               echo __('Your WooCommerce store is connected to ', $domain) .
-                ($page_name != '' ? sprintf(__('the Facebook page
-                <a target="_blank" href="https://www.facebook.com/%1$s">%2$s
-                </a></span>', $domain), $this->settings['fb_page_id'],
-                esc_html($page_name)) : sprintf(__('<a target="_blank"
-                href="https://www.facebook.com/%1$s">your Facebook page</a></span>',
-                $domain), $this->settings['fb_page_id'])) .
-
+                (($page_name != '')
+                 ? sprintf(
+                     __('the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain),
+                     $this->settings['fb_page_id'],
+                     esc_html($page_name))
+                 : sprintf(
+                     __('<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain),
+                     $this->settings['fb_page_id'])
+                   ) .
                 '.<span id="sync_complete" style="margin-left: 5px;';
               if (!$connected || $currently_syncing) {
                 echo ' display: none;';
@@ -2079,7 +2081,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               if ($currently_syncing) {
                 echo ' style="pointer-events: none;" ';
               }
-              echo '>' . __('Settings', $domain) . '</a></span>
+              echo '>' . __('Manage Settings', $domain) . '</a></span>
 
               <span><a href="#" class="btn small" onclick="sync_confirm()"
                 id="resync_products"';
