@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-11-01 - Version 1.9.7
+* Support messenger chat customization dialog
+* Add Copyright header.
+* Fix lowercasting product description.
+* Fix Connect Woo AYMT Logic Flow and improve Logging.
+
 2018-09-21 - Version 1.9.6
 * Update plugin description of new design for WooCommerce.
 * Remove get_date() in Woocommerce plugin.
