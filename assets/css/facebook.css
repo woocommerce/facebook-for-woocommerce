@@ -104,6 +104,48 @@
   margin: 2px 0px;
   padding-left: 8px;
 }
+#fbsetup .nux-message {
+  box-sizing: border-box;
+  color: #fff;
+  overflow: hidden;
+  padding: 9px;
+  position: absolute;
+  text-align: left;
+  transform: translateZ(0);
+  transition: all 200ms cubic-bezier(.08,.52,.52,1);
+  z-index: 5;
+}
+#fbsetup .nux-message .nux-message-text {
+  background: #3578e5;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  box-sizing: border-box;
+  padding: 10px 34px 12px 10px;
+  white-space: normal;
+  min-width: 252px;
+}
+#fbsetup .nux-message .nux-message-close-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 19px;
+  top: 19px;
+  height: 12px;
+  width: 12px;
+  font-style: normal;
+  color: #ccc;
+}
+#fbsetup .nux-message .nux-message-close-btn:hover {
+  color: #fff;
+}
+#fbsetup .nux-message .nux-message-arrow {
+  border-right: 9px solid #3578e5;
+  left: 0;
+  position: absolute;
+  border-bottom: 9px solid transparent;
+  border-top: 9px solid transparent;
+  margin-top: -9px;
+  top: 50%;
+}
 #fbsetup .settings-section {
   display: inline-block;
   min-width: 45%;

@@ -801,3 +801,25 @@ function show_debug_info() {
   }
   window.debug_info = '';
 }
+
+function fbe_init_nux_messages() {
+  var jQuery = window.jQuery;
+  jQuery(function() {
+    jQuery.each(jQuery('.nux-message'), function(_index, nux_msg) {
+      var nux_msg_elem = jQuery(nux_msg);
+      var targetid = nux_msg_elem.data('target');
+      var target_elem = jQuery('#' + targetid);
+      var t_pos = target_elem.position();
+      var t_half_height = target_elem.height() / 2;
+      var t_width = target_elem.outerWidth();
+      nux_msg_elem.css({
+        'top': '' + Math.ceil(t_pos.top + t_half_height) + 'px',
+        'left': '' + Math.ceil(t_pos.left + t_width) + 'px',
+        'display': 'block'
+      });
+      jQuery('.nux-message-close-btn', nux_msg_elem).click(function() {
+        jQuery(nux_msg).hide();
+      });
+    });
+  });
+}

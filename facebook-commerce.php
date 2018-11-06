@@ -1918,6 +1918,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     return $page_name;
   }
 
+  function get_nux_message_ifexist() {
+    $nux_type_to_elemid_map = array(
+      'messenger_chat' => 'connect_button',
+      'instagram_shopping' => 'connect_button'
+    );
+    $nux_type_to_message_map = array(
+      'messenger_chat' => __('Get started with Messenger Customer Chat'),
+      'instagram_shopping' => __('Get started with Instagram Shopping')
+    );
+    if (isset($_GET['nux'])) {
+      return sprintf('<div class="nux-message" style="display: none;" data-target="%s">
+          <div class="nux-message-text">%s</div>
+          <div class="nux-message-arrow"></div>
+          <i class="nux-message-close-btn">x</i>
+        </div>
+        <script>(function() { fbe_init_nux_messages(); })();</script>',
+        $nux_type_to_elemid_map[$_GET['nux']],
+        $nux_type_to_message_map[$_GET['nux']]);
+    } else {
+      return '';
+    }
+  }
+
   /**
    * Admin Panel Options
    */
@@ -1951,7 +1974,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $connected = ($page_name != '');
     $hide_test = ($connected && $currently_syncing) || !defined('WP_DEBUG') ||
       WP_DEBUG !== true;
-
+    $nux_message = $this->get_nux_message_ifexist();
     ?>
     <h2><?php _e('Facebook', $domain); ?></h2>
     <p><?php _e('Control how WooCommerce integrates with your Facebook store.',
@@ -2103,6 +2126,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           } ?>
           </div>
         </div>
+        <?php echo $nux_message; ?>
       </div>
     </div>
     <div <?php echo ($hide_test) ? ' style="display:none;" ' : ''; ?> >
@@ -2126,7 +2150,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       ?>
       </p>
       <p id="stack_trace"></p>
-    </div>
     </div>
     <br/><hr/><br/>
     <?php
