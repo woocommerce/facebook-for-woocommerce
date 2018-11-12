@@ -2124,9 +2124,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               echo '</p>';
             }
           } ?>
+          <hr />
           </div>
         </div>
         <?php echo $nux_message; ?>
+
+        <div>
+          <div id='fbAdvancedOptionsText' onclick="toggleAdvancedOptions();">
+            Show Advanced Settings
+          </div>
+
+          <div id='fbAdvancedOptions'>
+              <input type="checkbox" /> Sample Option
+          </div>
+        </div>
       </div>
     </div>
     <div <?php echo ($hide_test) ? ' style="display:none;" ' : ''; ?> >

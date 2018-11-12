@@ -218,3 +218,18 @@
 #fbsetup a {
   text-decoration: none;
 }
+
+#fbAdvancedOptionsText {
+  color: rgb(69, 114, 169);
+  font-size: 14px;
+  font-family: Helvetica;
+  padding: 8px 0px 8px 0px;
+}
+
+#fbAdvancedOptions {
+  color: black;
+  font-size: 12px;
+  font-family: Helvetica;
+  display: none;
+  padding: 8px 4px 8px 4px;
+}

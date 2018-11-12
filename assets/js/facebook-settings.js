@@ -8,6 +8,19 @@
  */
 
 var fb_sync_no_response_count = 0;
+var fb_show_advanced_options = false;
+
+function toggleAdvancedOptions() {
+    var opts = document.getElementById("fbAdvancedOptions");
+    if (!fb_show_advanced_options) {
+      opts.style.display = "block";
+      document.getElementById('fbAdvancedOptionsText').innerHTML = 'Hide Advanced Settings';
+    } else {
+      opts.style.display = "none";
+      document.getElementById('fbAdvancedOptionsText').innerHTML = 'Show Advanced Settings';
+    }
+    fb_show_advanced_options = !fb_show_advanced_options;
+}
 
 function openPopup() {
   var width = 1153;
