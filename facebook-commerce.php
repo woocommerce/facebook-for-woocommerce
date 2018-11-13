@@ -511,11 +511,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         if ($viz_value === '') {
           printf(
             '<a id="viz_%1$s" class="button button-primary button-large"
-            href="#" onclick="fb_toggle_visibility(%1$s, true)">Show</a>',
+            href="javascript:;" onclick="fb_toggle_visibility(%1$s, true)">Show</a>',
             $post->ID);
         } else {
           printf(
-            '<a id="viz_%1$s" class="button" href="#"
+            '<a id="viz_%1$s" class="button" href="javascript:;"
             onclick="fb_toggle_visibility(%1$s, false)">Hide</a>',
             $post->ID);
         }
