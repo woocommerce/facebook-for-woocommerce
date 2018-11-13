@@ -112,6 +112,16 @@ class WC_Facebook_Product {
       return $this->fb_price;
     }
 
+    // If product is composite product, we rely on their pricing.
+    if (class_exists('WC_Product_Composite')
+      && $this->woo_product->get_type() === 'composite') {
+      $price = get_option('woocommerce_tax_display_shop') === 'incl'
+        ? $this->woo_product->get_composite_price_including_tax()
+        : $this->woo_product->get_composite_price();
+        $this->fb_price = intval(round($price * 100));
+        return $this->fb_price;
+    }
+
     // Get regular price: regular price doesn't include sales
     $regular_price = floatval($this->get_regular_price());
 
