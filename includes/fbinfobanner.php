@@ -23,22 +23,14 @@ if (! class_exists('WC_Facebookcommerce_Info_Banner')) :
  */
 class WC_Facebookcommerce_Info_Banner {
 
-  const FB_DEFAULT_TIP_DISMISS_TIME_CAP = 60;
   const FB_NO_TIP_EXISTS = 'No Tip Exist!';
-  const DEFAULT_TIP_TITLE = 'Facebook for WooCommerce';
-  const DEFAULT_TIP_BODY = 'Create ads that are designed
-                for getting online sales and revenue.';
-  const DEFAULT_TIP_ACTION = 'Create Ads';
-  const DEFAULT_TIP_ACTION_LINK = 'https://www.facebook.com/ads/dia/redirect/?settings_id=';
   const DEFAULT_TIP_IMG_URL_PREFIX = 'https://www.facebook.com';
-  const DEFAULT_TIP_IMG_URL = 'https://www.facebook.com/images/ads/growth/aymt/glyph-shopping-cart_page-megaphone.png';
   const CHANNEL_ID = 2087541767986590;
 
   /** @var object Class Instance */
   private static $instance;
 
   /** @var string If the banner has been dismissed */
-  private $default_tip_pass_cap;
   private $external_merchant_settings_id;
   private $fbgraph;
   private $should_query_tip;
@@ -49,14 +41,12 @@ class WC_Facebookcommerce_Info_Banner {
   public static function get_instance(
     $external_merchant_settings_id,
     $fbgraph,
-    $should_query_tip = false,
-    $default_tip_pass_cap = false) {
+    $should_query_tip = false) {
     return null === self::$instance
       ? (self::$instance = new self(
         $external_merchant_settings_id,
         $fbgraph,
-        $should_query_tip,
-        $default_tip_pass_cap))
+        $should_query_tip))
       : self::$instance;
   }
 
@@ -66,10 +56,8 @@ class WC_Facebookcommerce_Info_Banner {
   public function __construct(
     $external_merchant_settings_id,
     $fbgraph,
-    $should_query_tip = false,
-    $default_tip_pass_cap = false) {
+    $should_query_tip = false) {
     $this->should_query_tip = $should_query_tip;
-    $this->default_tip_pass_cap = $default_tip_pass_cap;
     $this->external_merchant_settings_id = $external_merchant_settings_id;
     $this->fbgraph = $fbgraph;
     add_action('wp_ajax_ajax_woo_infobanner_post_click', array($this, 'ajax_woo_infobanner_post_click'));
@@ -91,9 +79,8 @@ class WC_Facebookcommerce_Info_Banner {
       : null;
      if ($tip_id == null) {
        WC_Facebookcommerce_Utils::fblog(
-         'Do not have tip id maybe
-         rendering static one',
-         array(),
+         'Do not have tip id when click, sth went wrong',
+         array('tip_info' => $tip_info),
          true);
      } else {
        WC_Facebookcommerce_Utils::tip_events_log(
@@ -114,11 +101,12 @@ class WC_Facebookcommerce_Info_Banner {
      $tip_id = isset($tip_info->tip_id)
        ? $tip_info->tip_id
        : null;
+     // Delete cached tip if xout.
+    update_option('fb_info_banner_last_best_tip', '');
      if ($tip_id == null) {
        WC_Facebookcommerce_Utils::fblog(
-         'Do not have tip id maybe
-         rendering static one',
-         array(),
+         'Do not have tip id when xout, sth went wrong',
+         array('tip_info' => $tip_info),
          true);
      } else {
        WC_Facebookcommerce_Utils::tip_events_log(
@@ -149,48 +137,45 @@ class WC_Facebookcommerce_Info_Banner {
         $this->external_merchant_settings_id);
       update_option('fb_info_banner_last_query_time', current_time('mysql'));
     }
-    $is_default = !$tip_info || ($tip_info === self::FB_NO_TIP_EXISTS);
 
-    // Will not show tip if tip is default and has not over 60 days after last dismissed
-    if ($is_default) {
+    // Not render if no cached best tip, or no best tip returned from FB.
+    if (!$tip_info || ($tip_info === self::FB_NO_TIP_EXISTS)) {
       // Delete cached tip if should query and get no tip.
       delete_option('fb_info_banner_last_best_tip');
-      if (!$this->default_tip_pass_cap) {
-        return;
+      return;
+    } else {
+      // Get tip creatives via API
+      if (is_string($tip_info)) {
+        $tip_info = WC_Facebookcommerce_Utils::decode_json($tip_info);
       }
-    }
-
-    // Get default tip creatives
-    $tip_title = self::DEFAULT_TIP_TITLE;
-    $tip_body = self::DEFAULT_TIP_BODY;
-    $tip_action = self::DEFAULT_TIP_ACTION;
-    $tip_action_link = esc_url(self::DEFAULT_TIP_ACTION_LINK .
-      $this->external_merchant_settings_id.'&entry_point=aymt');
-    $tip_img_url = self::DEFAULT_TIP_IMG_URL;
-
-    // Get tip creatives via API
-    if (!$is_default) {
       $tip_title = isset($tip_info->tip_title->__html)
         ? $tip_info->tip_title->__html
-        : self::DEFAULT_TIP_TITLE;
+        : null;
 
       $tip_body = isset($tip_info->tip_body->__html)
         ? $tip_info->tip_body->__html
-        : self::DEFAULT_TIP_BODY;
+        : null;
 
       $tip_action_link = isset($tip_info->tip_action_link)
         ? $tip_info->tip_action_link
-        : esc_url(self::DEFAULT_TIP_ACTION_LINK.
-          $this->external_merchant_settings_id);
+        : null;
 
       $tip_action = isset($tip_info->tip_action->__html)
         ? $tip_info->tip_action->__html
-        : self::DEFAULT_TIP_ACTION;
+        : null;
 
       $tip_img_url = isset($tip_info->tip_img_url)
         ? self::DEFAULT_TIP_IMG_URL_PREFIX . $tip_info->tip_img_url
-        : self::DEFAULT_TIP_IMG_URL;
+        : null;
 
+      if ($tip_title == null || $tip_body == null || $tip_action_link == null
+        || $tip_action == null || $tip_action == null) {
+        WC_Facebookcommerce_Utils::fblog(
+          'Unexpected response from FB for tip info.',
+          array('tip_info' => $tip_info),
+          true);
+        return;
+      }
       update_option('fb_info_banner_last_best_tip',
         is_object($tip_info) || is_array($tip_info)
         ? json_encode($tip_info) : $tip_info);
@@ -242,10 +227,8 @@ class WC_Facebookcommerce_Info_Banner {
     if (!check_admin_referer('woocommerce_info_banner_dismiss')) {
       return;
     }
-    // Not to show default tip 30 days.
-    if (!WC_Facebookcommerce_Utils::get_cached_best_tip()) {
-      update_option('fb_info_banner_last_dismiss_time', current_time('mysql'));
-    }
+
+    // Delete cached tip if xout.
     delete_option('fb_info_banner_last_best_tip');
     if (wp_get_referer()) {
       wp_safe_redirect(wp_get_referer());

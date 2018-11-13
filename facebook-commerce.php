@@ -29,8 +29,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   // Number of days to query tip.
   const FB_TIP_QUERY = 1;
 
-  const FB_DISMISS_TIME_CAP = 30;
-
   const FB_VARIANT_IMAGE = 'fb_image';
 
   const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -155,20 +153,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             get_option('fb_info_banner_last_query_time', ''),
             self::FB_TIP_QUERY);
         $last_tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
-        $default_tip_pass_cap =
-          WC_Facebookcommerce_Utils::check_time_cap(
-            get_option('fb_info_banner_last_dismiss_time', ''),
-            self::FB_DISMISS_TIME_CAP);
 
-        if ($should_query_tip || $last_tip_info || $default_tip_pass_cap) {
+        if ($should_query_tip || $last_tip_info) {
           if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
             include_once 'includes/fbinfobanner.php';
           }
           WC_Facebookcommerce_Info_Banner::get_instance(
               $this->external_merchant_settings_id,
               $this->fbgraph,
-              $should_query_tip,
-              $default_tip_pass_cap);
+              $should_query_tip);
         }
       }
       $this->fb_check_for_new_version();
