@@ -447,8 +447,11 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
     }
 
     public static function decode_json($json_string, $assoc = false) {
-      $data = json_decode($json_string, $assoc, 512, JSON_BIGINT_AS_STRING);
-      return $data;
+      // Plugin requires 5.6.0 but for some user use 5.5.9 JSON_BIGINT_AS_STRING
+      // will cause 502 issue when redirect.
+      return version_compare(phpversion(), '5.6.0') >= 0
+        ? json_decode($json_string, $assoc, 512, JSON_BIGINT_AS_STRING)
+        : json_decode($json_string, $assoc, 512);
     }
 
     public static function set_test_fail_reason($msg, $trace) {
