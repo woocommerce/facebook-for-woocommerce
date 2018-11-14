@@ -139,6 +139,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
 
     WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
+    $this->feed_id = isset($this->settings['fb_feed_id'])
+      ? $this->settings['fb_feed_id']
+      : '';
 
     // Hooks
     if (is_admin()) {
@@ -165,9 +168,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         }
       }
       $this->fb_check_for_new_version();
-      $this->feed_id = isset($this->settings['fb_feed_id'])
-        ? $this->settings['fb_feed_id']
-        : '';
 
       if (!class_exists('WC_Facebook_Integration_Test')) {
         include_once 'includes/test/facebook-integration-test.php';
@@ -211,6 +211,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         self::FB_PRIORITY_MID);
       add_action('wp_ajax_ajax_display_test_result',
         array($this, 'ajax_display_test_result'));
+
+      add_action('wp_ajax_ajax_schedule_force_resync',
+        array($this, 'ajax_schedule_force_resync'), self::FB_PRIORITY_MID);
 
       // Only load product processing hooks if we have completed setup.
       if ($this->api_key && $this->product_catalog_id) {
@@ -321,6 +324,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
       $this->load_background_sync_process();
     }
+    // Must be outside of admin for cron to schedule correctly.
+    add_action('sync_all_fb_products_using_feed',
+      array($this, 'sync_all_fb_products_using_feed'),
+      self::FB_PRIORITY_MID);
 
     if ($this->pixel_id) {
       $user_info = WC_Facebookcommerce_Utils::get_user_info($this->use_pii);
@@ -1743,6 +1750,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   function ajax_sync_all_fb_products_using_feed() {
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
       'syncall products using feed', !$this->test_mode);
+    return $this->sync_all_fb_products_using_feed();
+  }
+
+  // Separate entry point that bypasses permission check for use in cron.
+  function sync_all_fb_products_using_feed() {
     if (!$this->api_key || !$this->product_catalog_id) {
       self::log("No API key or catalog ID: " . $this->api_key .
         ' and ' . $this->product_catalog_id);
@@ -2191,8 +2203,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               echo '</p>';
             }
           } ?>
-          <hr />
           </div>
+          <hr />
         </div>
         <?php echo $nux_message; ?>
 
@@ -2202,7 +2214,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           </div>
 
           <div id='fbAdvancedOptions'>
-              <input type="checkbox" /> Sample Option
+              <div class='autosync' title="This experimental feature will call force resync at the specified time using wordpress cron scheduling.">
+                <input type="checkbox"
+                  onclick="saveAutoSyncSchedule()"
+                  class="autosyncCheck"
+                  <?php echo get_option('woocommerce_fb_autosync_time', false) ? 'checked' : 'unchecked'; ?>>
+                Automatically Force Resync of Products At
+
+                <input
+                  type="time"
+                  value="<?php echo get_option('woocommerce_fb_autosync_time', '23:00'); ?>"
+                  class="autosyncTime"
+                  onfocusout="saveAutoSyncSchedule()"
+                  <?php echo get_option('woocommerce_fb_autosync_time', 0) ? '' : 'disabled'; ?> />
+                Every Day.
+                <span class="autosyncSavedNotice" disabled> Saved </span>
+              </div>
           </div>
         </div>
       </div>
@@ -2385,6 +2412,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Display test result.
    **/
   function ajax_display_test_result() {
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('test result', true);
     $response = array(
       'pass'  => 'true',
     );
@@ -2405,5 +2433,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     printf(json_encode($response));
     wp_die();
   }
+
+  /**
+   * Schedule Force Resync
+   */
+   function ajax_schedule_force_resync() {
+     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('resync schedule', true);
+     if (isset($_POST) && isset($_POST['enabled'])) {
+       if (isset($_POST['time']) && $_POST['enabled']) { // Enabled
+          wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
+          wp_schedule_event(
+            strtotime($_POST['time']),
+            'daily',
+            'sync_all_fb_products_using_feed');
+          WC_Facebookcommerce_Utils::fblog('Scheduled autosync for '.$_POST['time'], $_POST);
+          update_option('woocommerce_fb_autosync_time', $_POST['time']);
+       } else if (!$_POST['enabled']) { // Disabled
+          wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
+          WC_Facebookcommerce_Utils::fblog('Autosync disabled', $_POST);
+          delete_option('woocommerce_fb_autosync_time');
+       }
+     } else {
+       WC_Facebookcommerce_Utils::fblog('Autosync AJAX Problem', $_POST, true);
+     }
+     wp_die();
+   }
 
 }

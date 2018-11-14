@@ -836,3 +836,25 @@ function fbe_init_nux_messages() {
     });
   });
 }
+
+function saveAutoSyncSchedule() {
+    var isChecked = document.getElementsByClassName('autosyncCheck')[0].checked;
+    var timebox = document.getElementsByClassName('autosyncTime')[0];
+    var button = document.getElementsByClassName('autosyncSaveButton')[0];
+    var saved = document.getElementsByClassName('autosyncSavedNotice')[0];
+
+    if (!isChecked) {
+      timebox.setAttribute('disabled', true);
+    } else {
+      timebox.removeAttribute('disabled');
+      saved.style.transition = '';
+      saved.style.opacity = 1;
+      // Fade out the small 'Saved' after 3 seconds.
+      setTimeout(function() {
+        saved.style.opacity = 0;
+        saved.style.transition = 'opacity 5s';}
+        ,3000);
+    }
+
+    ajax('ajax_schedule_force_resync', {"enabled": isChecked ? 1 : 0, "time": timebox.value});
+}

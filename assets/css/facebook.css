@@ -233,3 +233,9 @@
   display: none;
   padding: 8px 4px 8px 4px;
 }
+
+#fbAdvancedOptions .autosyncSavedNotice {
+  color: green;
+  font-size: 10px;
+  display: none;
+}
