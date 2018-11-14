@@ -410,6 +410,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       self::FB_PRODUCT_DESCRIPTION,
       true);
 
+    $price = get_post_meta(
+      $post->ID,
+      WC_Facebook_Product::FB_PRODUCT_PRICE,
+      true);
+
     $image_setting = null;
     if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $image_setting = $woo_product->get_use_parent_image();
@@ -431,6 +436,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             'cols' => 40,
             'rows' => 20,
             'value' => $description,
+          ));
+        woocommerce_wp_text_input(
+          array(
+            'id' => WC_Facebook_Product::FB_PRODUCT_PRICE,
+            'label' => __('Facebook Price (' .
+              get_woocommerce_currency_symbol() . ')', 'facebook-for-woocommerce'),
+            'desc_tip' => 'true',
+            'description' => __(
+              'Custom price for product on Facebook. '.
+              'Please enter in monetary decimal (.) format without thousand '.
+              'separators and currency symbols. '.
+              'If blank, product price will be used. ',
+              'facebook-for-woocommerce'),
+            'cols' => 40,
+            'rows' => 60,
+            'value' => $price,
           ));
         if ($image_setting !== null) {
          woocommerce_wp_checkbox(array(
@@ -746,6 +767,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
       $woo_product->set_description($_POST[self::FB_PRODUCT_DESCRIPTION]);
     }
+    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
+      $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
+    }
+
     $woo_product->set_use_parent_image(
       (isset($_POST[self::FB_VARIANT_IMAGE])) ?
         $_POST[self::FB_VARIANT_IMAGE] :
@@ -791,6 +816,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
       $woo_product->set_description($_POST[self::FB_PRODUCT_DESCRIPTION]);
+    }
+
+    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
+      $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
     }
 
     // Check if this product has already been published to FB.

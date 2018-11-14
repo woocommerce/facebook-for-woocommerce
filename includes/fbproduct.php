@@ -26,6 +26,7 @@ class WC_Facebook_Product {
   // Should match facebook-commerce.php while we migrate that code over
   // to this object.
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
+  const FB_PRODUCT_PRICE = 'fb_product_price';
   const FB_VARIANT_IMAGE = 'fb_image';
   const FB_VISIBILITY = 'fb_visibility';
 
@@ -110,6 +111,15 @@ class WC_Facebook_Product {
     // Cache the price in this object in case of multiple calls.
     if ($this->fb_price) {
       return $this->fb_price;
+    }
+
+    $price = get_post_meta(
+      $this->id,
+      self::FB_PRODUCT_PRICE,
+      true);
+
+    if (is_numeric($price)) {
+      return intval(round($price * 100));
     }
 
     // If product is composite product, we rely on their pricing.
@@ -197,6 +207,20 @@ class WC_Facebook_Product {
       $this->id,
       self::FB_PRODUCT_DESCRIPTION,
       $description);
+  }
+
+  public function set_price($price) {
+    if (is_numeric($price)) {
+      $this->fb_price = intval(round($price * 100));
+      update_post_meta(
+        $this->id,
+        self::FB_PRODUCT_PRICE,
+        $price);
+    } else {
+      delete_post_meta(
+        $this->id,
+        self::FB_PRODUCT_PRICE);
+    }
   }
 
   public function get_use_parent_image() {
