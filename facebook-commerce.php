@@ -29,6 +29,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   // Number of days to query tip.
   const FB_TIP_QUERY = 1;
 
+  const FB_DISMISS_TIME_CAP = 30;
+
   const FB_VARIANT_IMAGE = 'fb_image';
 
   const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -153,15 +155,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             get_option('fb_info_banner_last_query_time', ''),
             self::FB_TIP_QUERY);
         $last_tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
+        $default_tip_pass_cap =
+          WC_Facebookcommerce_Utils::check_time_cap(
+            get_option('fb_info_banner_last_dismiss_time', ''),
+            self::FB_DISMISS_TIME_CAP);
 
-        if ($should_query_tip || $last_tip_info) {
+        if ($should_query_tip || $last_tip_info || $default_tip_pass_cap) {
           if (!class_exists('WC_Facebookcommerce_Info_Banner')) {
             include_once 'includes/fbinfobanner.php';
           }
           WC_Facebookcommerce_Info_Banner::get_instance(
               $this->external_merchant_settings_id,
               $this->fbgraph,
-              $should_query_tip);
+              $should_query_tip,
+              $default_tip_pass_cap);
         }
       }
       $this->fb_check_for_new_version();
@@ -410,11 +417,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       self::FB_PRODUCT_DESCRIPTION,
       true);
 
-    $price = get_post_meta(
-      $post->ID,
-      WC_Facebook_Product::FB_PRODUCT_PRICE,
-      true);
-
     $image_setting = null;
     if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $image_setting = $woo_product->get_use_parent_image();
@@ -436,22 +438,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             'cols' => 40,
             'rows' => 20,
             'value' => $description,
-          ));
-        woocommerce_wp_text_input(
-          array(
-            'id' => WC_Facebook_Product::FB_PRODUCT_PRICE,
-            'label' => __('Facebook Price (' .
-              get_woocommerce_currency_symbol() . ')', 'facebook-for-woocommerce'),
-            'desc_tip' => 'true',
-            'description' => __(
-              'Custom price for product on Facebook. '.
-              'Please enter in monetary decimal (.) format without thousand '.
-              'separators and currency symbols. '.
-              'If blank, product price will be used. ',
-              'facebook-for-woocommerce'),
-            'cols' => 40,
-            'rows' => 60,
-            'value' => $price,
           ));
         if ($image_setting !== null) {
          woocommerce_wp_checkbox(array(
@@ -754,6 +740,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     }
   }
 
+  /**
+   * If the user has opt-in to remove products that are out of stock,
+   * this function will delete the product from FB Page as well.
+   */
+  function delete_on_out_of_stock($wp_id, $woo_product) {
+    if (get_option('woocommerce_hide_out_of_stock_items') === 'yes' &&
+      !$woo_product->is_in_stock()) {
+      $this->delete_product_item($wp_id);
+      return true;
+    }
+    return false;
+  }
+
   function on_variable_product_publish($wp_id, $woo_product = null) {
     if (get_post_status($wp_id) != 'publish') {
       return;
@@ -764,13 +763,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $woo_product = new WC_Facebook_Product($wp_id);
     }
 
+    if ($this->delete_on_out_of_stock($wp_id, $woo_product)) {
+      return;
+    }
+
     if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
       $woo_product->set_description($_POST[self::FB_PRODUCT_DESCRIPTION]);
     }
-    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
-      $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
-    }
-
     $woo_product->set_use_parent_image(
       (isset($_POST[self::FB_VARIANT_IMAGE])) ?
         $_POST[self::FB_VARIANT_IMAGE] :
@@ -814,12 +813,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $woo_product = new WC_Facebook_Product($wp_id, $parent_product);
     }
 
-    if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
-      $woo_product->set_description($_POST[self::FB_PRODUCT_DESCRIPTION]);
+    if ($this->delete_on_out_of_stock($wp_id, $woo_product)) {
+      return;
     }
 
-    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
-      $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
+    if (isset($_POST[self::FB_PRODUCT_DESCRIPTION])) {
+      $woo_product->set_description($_POST[self::FB_PRODUCT_DESCRIPTION]);
     }
 
     // Check if this product has already been published to FB.
