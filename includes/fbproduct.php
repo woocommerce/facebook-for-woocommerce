@@ -27,6 +27,7 @@ class WC_Facebook_Product {
   // to this object.
   const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
   const FB_PRODUCT_PRICE = 'fb_product_price';
+  const FB_PRODUCT_IMAGE = 'fb_product_image';
   const FB_VARIANT_IMAGE = 'fb_image';
   const FB_VISIBILITY = 'fb_visibility';
 
@@ -188,6 +189,13 @@ class WC_Facebook_Product {
               . $name . '&w=530&h=530'; // TODO: BETTER PLACEHOLDER
       return array($image_url);
     }
+
+    $image_override = get_post_meta($this->id, self::FB_PRODUCT_IMAGE, true);
+    if ($image_override) {
+      array_unshift($image_urls, $image_override);
+      $image_urls = array_unique($image_urls);
+    }
+
     return $image_urls;
   }
 
@@ -208,6 +216,17 @@ class WC_Facebook_Product {
       $this->id,
       self::FB_PRODUCT_DESCRIPTION,
       $description);
+  }
+
+  public function set_product_image($image) {
+    if ($image !== null && strlen($image) !== 0) {
+      $image = WC_Facebookcommerce_Utils::clean_string($image);
+      $image = WC_Facebookcommerce_Utils::make_url($image);
+      update_post_meta(
+       $this->id,
+       self::FB_PRODUCT_IMAGE,
+       $image);
+    }
   }
 
   public function set_price($price) {

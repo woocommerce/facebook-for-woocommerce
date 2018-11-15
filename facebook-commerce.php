@@ -433,6 +433,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       WC_Facebook_Product::FB_PRODUCT_PRICE,
       true);
 
+    $image = get_post_meta(
+      $post->ID,
+      WC_Facebook_Product::FB_PRODUCT_IMAGE,
+      true);
+
     $image_setting = null;
     if (WC_Facebookcommerce_Utils::is_variable_type($woo_product->get_type())) {
       $image_setting = $woo_product->get_use_parent_image();
@@ -455,6 +460,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             'rows' => 20,
             'value' => $description,
           ));
+      woocommerce_wp_textarea_input(
+        array(
+          'id' => WC_Facebook_Product::FB_PRODUCT_IMAGE,
+          'label' => __('Facebook Product Image', 'facebook-for-woocommerce'),
+          'desc_tip' => 'true',
+          'description' => __(
+            'Image URL for product on Facebook. Must be an absolute URL '.
+            'e.g. https://...'.
+            'This can be used to override the primary image that will be '.
+            'used on Facebook for this product. If blank, the primary '.
+            'product image in Woo will be used as the primary image on FB.',
+            'facebook-for-woocommerce'),
+          'cols' => 40,
+          'rows' => 10,
+          'value' => $image,
+        ));
         woocommerce_wp_text_input(
           array(
             'id' => WC_Facebook_Product::FB_PRODUCT_PRICE,
@@ -809,6 +830,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
       $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
     }
+    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_IMAGE])) {
+      $woo_product->set_product_image($_POST[WC_Facebook_Product::FB_PRODUCT_IMAGE]);
+    }
 
     $woo_product->set_use_parent_image(
       (isset($_POST[self::FB_VARIANT_IMAGE])) ?
@@ -867,6 +891,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE])) {
       $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
+    }
+
+    if (isset($_POST[WC_Facebook_Product::FB_PRODUCT_IMAGE])) {
+      $woo_product->set_product_image($_POST[WC_Facebook_Product::FB_PRODUCT_IMAGE]);
     }
 
     // Check if this product has already been published to FB.
