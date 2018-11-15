@@ -215,6 +215,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       add_action('wp_ajax_ajax_schedule_force_resync',
         array($this, 'ajax_schedule_force_resync'), self::FB_PRIORITY_MID);
 
+      add_action('wp_ajax_ajax_update_fb_option',
+        array($this, 'ajax_update_fb_option'), self::FB_PRIORITY_MID);
+
       // Only load product processing hooks if we have completed setup.
       if ($this->api_key && $this->product_catalog_id) {
         add_action(
@@ -783,6 +786,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function on_variable_product_publish($wp_id, $woo_product = null) {
+    if (get_option('fb_disable_sync_on_dev_environment', false)) {
+      return;
+    }
+
     if (get_post_status($wp_id) != 'publish') {
       return;
     }
@@ -844,6 +851,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     $wp_id,
     $woo_product = null,
     &$parent_product = null) {
+    if (get_option('fb_disable_sync_on_dev_environment', false)) {
+      return;
+    }
+
     if (get_post_status($wp_id) != 'publish') {
       return;
     }
@@ -1607,6 +1618,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    **/
   function ajax_sync_all_fb_products() {
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('syncall products', true);
+    if (get_option('fb_disable_sync_on_dev_environment', false)) {
+      WC_Facebookcommerce_Utils::log(
+        'Sync to FB Page is not allowed in Dev Environment');
+      wp_die();
+      return;
+    }
+
     if (!$this->api_key || !$this->product_catalog_id) {
       WC_Facebookcommerce_Utils::log("No API key or catalog ID: " .
         $this->api_key . ' and ' . $this->product_catalog_id);
@@ -1755,6 +1773,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
   // Separate entry point that bypasses permission check for use in cron.
   function sync_all_fb_products_using_feed() {
+    if (get_option('fb_disable_sync_on_dev_environment', false)) {
+      WC_Facebookcommerce_Utils::log(
+        'Sync to FB Page is not allowed in Dev Environment');
+      $this->fb_wp_die();
+      return false;
+    }
+
     if (!$this->api_key || !$this->product_catalog_id) {
       self::log("No API key or catalog ID: " . $this->api_key .
         ' and ' . $this->product_catalog_id);
@@ -2230,6 +2255,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 Every Day.
                 <span class="autosyncSavedNotice" disabled> Saved </span>
               </div>
+              <div title="This option is meant for development and testing environments.">
+                <input type="checkbox"
+                  onclick="onSetDisableSyncOnDevEnvironment()"
+                  <?php echo get_option('fb_disable_sync_on_dev_environment', false)
+                    ? 'checked'
+                    : 'unchecked'; ?> />
+                Disable Product Sync with FB
+              </div>
           </div>
         </div>
       </div>
@@ -2437,26 +2470,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   /**
    * Schedule Force Resync
    */
-   function ajax_schedule_force_resync() {
-     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('resync schedule', true);
-     if (isset($_POST) && isset($_POST['enabled'])) {
-       if (isset($_POST['time']) && $_POST['enabled']) { // Enabled
-          wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
-          wp_schedule_event(
-            strtotime($_POST['time']),
-            'daily',
-            'sync_all_fb_products_using_feed');
-          WC_Facebookcommerce_Utils::fblog('Scheduled autosync for '.$_POST['time'], $_POST);
-          update_option('woocommerce_fb_autosync_time', $_POST['time']);
-       } else if (!$_POST['enabled']) { // Disabled
-          wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
-          WC_Facebookcommerce_Utils::fblog('Autosync disabled', $_POST);
-          delete_option('woocommerce_fb_autosync_time');
-       }
-     } else {
-       WC_Facebookcommerce_Utils::fblog('Autosync AJAX Problem', $_POST, true);
-     }
-     wp_die();
-   }
+  function ajax_schedule_force_resync() {
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('resync schedule', true);
+    if (isset($_POST) && isset($_POST['enabled'])) {
+      if (isset($_POST['time']) && $_POST['enabled']) { // Enabled
+        wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
+        wp_schedule_event(
+          strtotime($_POST['time']),
+          'daily',
+          'sync_all_fb_products_using_feed');
+        WC_Facebookcommerce_Utils::fblog('Scheduled autosync for '.$_POST['time'], $_POST);
+        update_option('woocommerce_fb_autosync_time', $_POST['time']);
+      } else if (!$_POST['enabled']) { // Disabled
+        wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
+        WC_Facebookcommerce_Utils::fblog('Autosync disabled', $_POST);
+        delete_option('woocommerce_fb_autosync_time');
+      }
+    } else {
+      WC_Facebookcommerce_Utils::fblog('Autosync AJAX Problem', $_POST, true);
+    }
+    wp_die();
+  }
 
+  function ajax_update_fb_option() {
+    WC_Facebookcommerce_Utils::check_woo_ajax_permissions('update fb options', true);
+    if (isset($_POST) && stripos($_POST['option'], 'fb_') === 0) {
+      update_option($_POST['option'], $_POST['option_value']);
+    }
+  }
 }

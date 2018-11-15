@@ -858,3 +858,14 @@ function saveAutoSyncSchedule() {
 
     ajax('ajax_schedule_force_resync', {"enabled": isChecked ? 1 : 0, "time": timebox.value});
 }
+
+function onSetDisableSyncOnDevEnvironment() {
+  var isChecked = document.getElementsByClassName('disableOnDevEnvironment')[0].checked;
+  ajax(
+    'ajax_update_fb_option',
+    {
+      "option": "fb_disable_sync_on_dev_environment",
+      "option_value": isChecked ? 1 : 0
+    }
+  );
+}
