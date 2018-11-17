@@ -14,7 +14,8 @@
  * Woo: 2127297:0ea4fe4c2d7ca6338f8a322fb3e4e187
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.0.0
- * WC tested up to: 3.3.5
+ * WC tested up to: 3.5.1
+ * Tested up to: 4.9.8
  *
  * @package FacebookCommerce
  */
