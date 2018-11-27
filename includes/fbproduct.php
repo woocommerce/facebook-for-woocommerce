@@ -29,7 +29,6 @@ class WC_Facebook_Product {
   const FB_PRODUCT_PRICE = 'fb_product_price';
   const FB_VARIANT_IMAGE = 'fb_image';
   const FB_VISIBILITY = 'fb_visibility';
-  const FB_SYNC_STATUS = 'fb_sync_status';
 
   const MIN_DATE_1 = '1970-01-29';
   const MIN_DATE_2 = '1970-01-30';
@@ -390,17 +389,6 @@ class WC_Facebook_Product {
       // then update the visibility as needed.
       $this->fb_visibility = $visible_box_checked ? true : false;
       update_post_meta($this->id, self::FB_VISIBILITY, $this->fb_visibility);
-    }
-  }
-
-  public function get_sync_status() {
-    return !!get_post_meta($this->id, self::FB_SYNC_STATUS, true);
-  }
-
-  public function update_sync_status($is_product_page, $sync_status_checked) {
-    $old_status = $this->get_sync_status();
-    if (!$old_status || $is_product_page) {
-      update_post_meta($this->id, self::FB_SYNC_STATUS, $sync_status_checked);
     }
   }
 

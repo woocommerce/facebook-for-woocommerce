@@ -125,7 +125,7 @@ class WC_Facebook_Product_Feed {
       $product_group_attribute_variants = array();
       foreach ($wp_ids as $wp_id) {
         $woo_product = new WC_Facebook_Product($wp_id);
-        if ($woo_product->is_hidden() || !$woo_product->get_sync_status()) {
+        if ($woo_product->is_hidden()) {
           continue;
         }
         if (get_option('woocommerce_hide_out_of_stock_items') === 'yes' &&

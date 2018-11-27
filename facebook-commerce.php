@@ -605,14 +605,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     } else {
       printf("<b>This product is not yet synced to Facebook.</b>");
     }
-    $sync_checked = 'checked';
-    if (get_post_status($post->ID) == 'publish' && !$woo_product->get_sync_status()) {
-      $sync_checked = '';
-    }
-    // TODO: hide other metadata when this is checked
-    printf('<p/>Sync to Facebook:  <input name="%1$s" type="checkbox" value="1" %2$s/>',
-      WC_Facebook_Product::FB_SYNC_STATUS,
-      $sync_checked);
     printf('</span>');
   }
 
@@ -819,12 +811,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $wp_id,
       $woo_product);
 
-    $woo_product->update_sync_status(
-      isset($_POST['is_product_page']),
-      isset($_POST[WC_Facebook_Product::FB_SYNC_STATUS]));
-    if (!$woo_product->get_sync_status()) {
-      return;
-    }
     if ($fb_product_group_id) {
       $woo_product->update_visibility(
         isset($_POST['is_product_page']),
@@ -875,30 +861,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $woo_product->set_price($_POST[WC_Facebook_Product::FB_PRODUCT_PRICE]);
     }
 
-    $woo_product->update_sync_status(
-      isset($_POST['is_product_page']),
-      isset($_POST[WC_Facebook_Product::FB_SYNC_STATUS]));
-    // Check whether to sync product to Facebook
-    $sync_status = $woo_product->get_sync_status();
     // Check if this product has already been published to FB.
     // If not, it's new!
     $fb_product_item_id = $this->get_product_fbid(
       self::FB_PRODUCT_ITEM_ID,
       $wp_id,
       $woo_product);
+
     if ($fb_product_item_id) {
       $woo_product->update_visibility(
         isset($_POST['is_product_page']),
         isset($_POST[self::FB_VISIBILITY]));
-      if (!$sync_status) {
-        return $fb_product_item_id;
-      }
       $this->update_product_item($woo_product, $fb_product_item_id);
       return $fb_product_item_id;
     } else {
-      if (!$sync_status) {
-        return null;
-      }
       // Check if this is a new product item for an existing product group
       if ($woo_product->get_parent_id()) {
         $fb_product_group_id = $this->get_product_fbid(
