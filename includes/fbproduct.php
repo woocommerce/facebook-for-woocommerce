@@ -48,6 +48,7 @@ class WC_Facebook_Product {
     $this->fb_use_parent_image = null;
     $this->fb_price = 0;
     $this->main_description = '';
+    $this->sync_short_description = get_option('fb_sync_short_description', false);
 
     // Variable products should use some data from the parent_product
     // For performance reasons, that data shouldn't be regenerated every time.
@@ -278,7 +279,7 @@ class WC_Facebook_Product {
     if ($post_content) {
       $description = $post_content;
     }
-    if ($description == '' && $post_excerpt) {
+    if ($this->sync_short_description || ($description == '' && $post_excerpt)) {
       $description = $post_excerpt;
     }
     if ($description == '') {

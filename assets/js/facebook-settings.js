@@ -869,3 +869,14 @@ function onSetDisableSyncOnDevEnvironment() {
     }
   );
 }
+
+function syncShortDescription() {
+  var isChecked = document.getElementsByClassName('syncShortDescription')[0].checked;
+  ajax(
+    'ajax_update_fb_option',
+    {
+      "option": "fb_sync_short_description",
+      "option_value": isChecked ? 1 : 0
+    }
+  );
+}

@@ -2213,7 +2213,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           <div id='fbAdvancedOptionsText' onclick="toggleAdvancedOptions();">
             Show Advanced Settings
           </div>
-
           <div id='fbAdvancedOptions'>
               <div class='autosync' title="This experimental feature will call force resync at the specified time using wordpress cron scheduling.">
                 <input type="checkbox"
@@ -2234,10 +2233,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               <div title="This option is meant for development and testing environments.">
                 <input type="checkbox"
                   onclick="onSetDisableSyncOnDevEnvironment()"
+                  class="disableOnDevEnvironment"
                   <?php echo get_option('fb_disable_sync_on_dev_environment', false)
                     ? 'checked'
                     : 'unchecked'; ?> />
                 Disable Product Sync with FB
+              </div>
+              <div class='shortdescr' title="This experimental feature will import short description instead of description for all products.">
+                <input type="checkbox"
+                  onclick="syncShortDescription()"
+                  class="syncShortDescription"
+                  <?php echo get_option('fb_sync_short_description', false)
+                    ? 'checked'
+                    : 'unchecked'; ?> />
+                Sync Short Description Instead of Description
               </div>
           </div>
         </div>
@@ -2473,5 +2482,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     if (isset($_POST) && stripos($_POST['option'], 'fb_') === 0) {
       update_option($_POST['option'], $_POST['option_value']);
     }
+    wp_die();
   }
 }
