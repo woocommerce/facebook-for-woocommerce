@@ -319,6 +319,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         add_action('pmxi_after_xml_import',
           array($this, 'wp_all_import_compat'));
 
+        add_action('wp_ajax_wpmelon_adv_bulk_edit',
+          array($this, 'ajax_woo_adv_bulk_edit_compat'), self::FB_PRIORITY_MID);
+
+        // Used to remove the 'you need to resync' message.
+        if (isset($_GET['remove_sticky'])) {
+          $this->remove_sticky_message();
+        }
+
         if (defined('ICL_LANGUAGE_CODE')) {
           include_once('includes/fbwpml.php');
           new WC_Facebook_WPML_Injector();
@@ -1322,6 +1330,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     delete_transient('facebook_plugin_api_sticky');
   }
 
+  function remove_resync_message() {
+    $msg = get_transient('facebook_plugin_api_sticky');
+    if ($msg && strpos($msg, 'Sync') !== false) {
+      delete_transient('facebook_plugin_resync_sticky');
+    }
+  }
+
   /**
    * Display custom error message (sugar)
    **/
@@ -1386,16 +1401,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     return $result;
   }
 
+  function ajax_woo_adv_bulk_edit_compat($import_id) {
+    if (!WC_Facebookcommerce_Utils::check_woo_ajax_permissions('adv bulk edit', false)) {
+      return;
+    }
+    $type = isset($_POST["type"]) ? $_POST["type"] : "";
+    if (strpos($type, 'product') !== false && strpos($type, 'load') === false) {
+      $this->display_out_of_sync_message("advanced bulk edit");
+    }
+  }
+
   function wp_all_import_compat($import_id) {
     $import = new PMXI_Import_Record();
     $import->getById($import_id);
     if (!$import->isEmpty() && in_array($import->options['custom_type'], array('product', 'product_variation'))) {
-      $this->display_sticky_message(
-        sprintf(
-          'Products may be out of Sync with Facebook due to your recent import.'.
-          ' <a href="%s&fb_force_resync=true">Re-Sync them with FB.</a>',
-          WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL));
+      $this->display_out_of_sync_message("import");
     }
+  }
+
+  function display_out_of_sync_message($action_name) {
+    $this->display_sticky_message(
+      sprintf(
+        'Products may be out of Sync with Facebook due to your recent '.$action_name.'.'.
+        ' <a href="%s&fb_force_resync=true&remove_sticky=true">Re-Sync them with FB.</a>',
+        WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL));
   }
 
   /**
@@ -1607,6 +1636,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_die();
       return;
     }
+    $this->remove_resync_message();
 
     $currently_syncing = get_transient(self::FB_SYNC_IN_PROGRESS);
 
@@ -1762,6 +1792,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->fb_wp_die();
       return false;
     }
+    $this->remove_resync_message();
     $is_valid_product_catalog =
       $this->fbgraph->validate_product_catalog($this->product_catalog_id);
 
