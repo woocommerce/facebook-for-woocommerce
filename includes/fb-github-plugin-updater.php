@@ -5,8 +5,11 @@
  * This source code is licensed under the license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * This file is NOT included in the wordpress.org version of the plugin.
+ *
  * @package FacebookCommerce
  */
+
 
 if (!defined('ABSPATH')) {
   exit;

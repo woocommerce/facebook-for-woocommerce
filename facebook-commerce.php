@@ -409,7 +409,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     return $tabs;
   }
 
+  // Note : This function is empty in the wordpress.org version of the plugin
   public function fb_check_for_new_version() {
+    /** PUSH SCRIPT : EXCLUDE WORDPRESS BEGIN **/
     if (!class_exists('WC_Facebook_Github_Updater')) {
       include_once 'includes/fb-github-plugin-updater.php';
     }
@@ -418,6 +420,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       'facebook-for-woocommerce.php';
     WC_Facebook_Github_Updater::get_instance(
       $path, 'facebookincubator', 'facebook-for-woocommerce');
+    /** PUSH SCRIPT : EXCLUDE WORDPRESS END **/
   }
 
   public function fb_new_product_tab_content() {
