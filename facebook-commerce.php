@@ -371,7 +371,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('background check queue', true);
     $request_time = null;
     if (isset($_POST['request_time'])) {
-      $request_time = esc_js($_POST['request_time']);
+      $request_time = esc_js(sanitize_text_field($_POST['request_time']));
     }
     if ($this->settings['fb_api_key']) {
       if (isset($this->background_processor)) {
@@ -1176,17 +1176,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       }
       if (isset($_REQUEST['facebook_jssdk_version'])) {
         $this->settings['facebook_jssdk_version'] =
-          $_REQUEST['facebook_jssdk_version'];
+          sanitize_text_field($_REQUEST['facebook_jssdk_version']);
       }
-      if (isset($_REQUEST['msger_chat_customization_greeting_text_code'])) {
+      if (isset($_REQUEST['msger_chat_customization_greeting_text_code'])
+        && ctype_digit($_REQUEST['msger_chat_customization_greeting_text_code'])) {
         $this->settings['msger_chat_customization_greeting_text_code'] =
           $_REQUEST['msger_chat_customization_greeting_text_code'];
       }
       if (isset($_REQUEST['msger_chat_customization_locale'])) {
         $this->settings['msger_chat_customization_locale'] =
-          $_REQUEST['msger_chat_customization_locale'];
+          sanitize_text_field($_REQUEST['msger_chat_customization_locale']);
       }
-      if (isset($_REQUEST['msger_chat_customization_theme_color_code'])) {
+      if (isset($_REQUEST['msger_chat_customization_theme_color_code']) &&
+        ctype_digit($_REQUEST['msger_chat_customization_theme_color_code'])) {
         $this->settings['msger_chat_customization_theme_color_code'] =
           $_REQUEST['msger_chat_customization_theme_color_code'];
       }
@@ -1623,7 +1625,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_die();
     }
 
-    $wp_id = esc_js($_POST['wp_id']);
+    $wp_id = sanitize_text_field($_POST['wp_id']);
     $woo_product = new WC_Facebook_Product($wp_id);
     if ($woo_product) {
       $this->reset_single_product($wp_id);
@@ -1639,7 +1641,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_die();
     }
 
-    $wp_id = esc_js($_POST['wp_id']);
+    $wp_id = sanitize_text_field($_POST['wp_id']);
     $this->on_product_delete($wp_id);
     $this->reset_single_product($wp_id);
     wp_reset_postdata();
@@ -1883,8 +1885,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_die();
     }
 
-    $wp_id = esc_js($_POST['wp_id']);
-    $published = esc_js($_POST['published']) === 'true' ? true : false;
+    $wp_id = sanitize_text_field($_POST['wp_id']);
+    $published = ($_POST['published']) === 'true' ? true : false;
 
     $woo_product = new WC_Facebook_Product($wp_id);
     $products = WC_Facebookcommerce_Utils::get_product_array($woo_product);
@@ -2073,8 +2075,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           <i class="nux-message-close-btn">x</i>
         </div>
         <script>(function() { fbe_init_nux_messages(); })();</script>',
-        $nux_type_to_elemid_map[$_GET['nux']],
-        $nux_type_to_message_map[$_GET['nux']]);
+        $nux_type_to_elemid_map[sanitize_text_field($_GET['nux'])],
+        $nux_type_to_message_map[sanitize_text_field($_GET['nux'])]);
     } else {
       return '';
     }
@@ -2518,16 +2520,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('resync schedule', true);
     if (isset($_POST) && isset($_POST['enabled'])) {
       if (isset($_POST['time']) && $_POST['enabled']) { // Enabled
+        $time = sanitize_text_field($_POST['time']);
         wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
         wp_schedule_event(
-          strtotime($_POST['time']),
+          strtotime($time),
           'daily',
           'sync_all_fb_products_using_feed');
-        WC_Facebookcommerce_Utils::fblog('Scheduled autosync for '.$_POST['time'], $_POST);
-        update_option('woocommerce_fb_autosync_time', $_POST['time']);
+        WC_Facebookcommerce_Utils::fblog('Scheduled autosync for '.$time);
+        update_option('woocommerce_fb_autosync_time', $time);
       } else if (!$_POST['enabled']) { // Disabled
         wp_clear_scheduled_hook('sync_all_fb_products_using_feed');
-        WC_Facebookcommerce_Utils::fblog('Autosync disabled', $_POST);
+        WC_Facebookcommerce_Utils::fblog('Autosync disabled');
         delete_option('woocommerce_fb_autosync_time');
       }
     } else {
@@ -2539,7 +2542,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   function ajax_update_fb_option() {
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('update fb options', true);
     if (isset($_POST) && stripos($_POST['option'], 'fb_') === 0) {
-      update_option($_POST['option'], $_POST['option_value']);
+      update_option(sanitize_text_field($_POST['option']), sanitize_text_field($_POST['option_value']));
     }
     wp_die();
   }

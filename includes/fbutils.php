@@ -333,7 +333,7 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
           error_log(json_encode($message));
         }
         else {
-          error_log($message);
+          error_log(sanitize_textarea_field($message));
         }
       }
     }
