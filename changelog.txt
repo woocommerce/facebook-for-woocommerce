@@ -1,5 +1,18 @@
 *** Facebook for WooCommerce Changelog ***
 
+2018-11-30 - Version 1.9.8
+* Prevent Show/Hide button auto scroll.
+* DIY entry field for FB product Image.
+* Initial Support for Advanced Bulk Edit.
+* Added Option to Use short description instead of description.
+* Added checkbox for disable sync with FB for dev environment.
+* Add New Advanced Option : Auto Force Resync on Schedule.
+* Don't sync out of stock items to FB depending on Woo setting.
+* Add custom price.
+* Fix 502 Bad Gateway Error When Redirect.
+* Sync composite product with calculating the price based on the price of sub-items.
+* Advanced Options Toggle in Configuration Screen.
+
 2018-11-01 - Version 1.9.7
 * Support messenger chat customization dialog
 * Add Copyright header.
