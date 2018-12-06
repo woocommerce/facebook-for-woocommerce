@@ -2278,12 +2278,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             Show Advanced Settings
           </div>
           <div id='fbAdvancedOptions'>
-              <div class='autosync' title="This experimental feature will call force resync at the specified time using wordpress cron scheduling.">
+              <div class='advancedoption' title="This experimental feature will resync your products with FB at the specified time using wordpress cron scheduling.">
                 <input type="checkbox"
                   onclick="saveAutoSyncSchedule()"
                   class="autosyncCheck"
                   <?php echo get_option('woocommerce_fb_autosync_time', false) ? 'checked' : 'unchecked'; ?>>
-                Automatically Force Resync of Products At
+                Automatic Resync of Products At
 
                 <input
                   type="time"
@@ -2294,7 +2294,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                 Every Day.
                 <span class="autosyncSavedNotice" disabled> Saved </span>
               </div>
-              <div title="This option is meant for development and testing environments.">
+              <div class='advancedoption' title="This option is meant for development and testing environments.">
                 <input type="checkbox"
                   onclick="onSetDisableSyncOnDevEnvironment()"
                   class="disableOnDevEnvironment"
@@ -2303,7 +2303,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                     : 'unchecked'; ?> />
                 Disable Product Sync with FB
               </div>
-              <div class='shortdescr' title="This experimental feature will import short description instead of description for all products.">
+              <div class='advancedoption' title="This experimental feature will import short description instead of description for all products.">
                 <input type="checkbox"
                   onclick="syncShortDescription()"
                   class="syncShortDescription"

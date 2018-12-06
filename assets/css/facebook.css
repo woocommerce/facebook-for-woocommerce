@@ -239,3 +239,11 @@
   font-size: 10px;
   display: none;
 }
+
+#fbAdvancedOptions div {
+  padding: 4px 4px 4px 4px;
+}
+
+#fbAdvancedOptions input {
+  padding: 0px;
+}
