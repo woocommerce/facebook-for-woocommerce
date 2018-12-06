@@ -10,7 +10,7 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 1.9.8
+ * Version: 1.9.9
  * Woo: 2127297:0ea4fe4c2d7ca6338f8a322fb3e4e187
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.0.0

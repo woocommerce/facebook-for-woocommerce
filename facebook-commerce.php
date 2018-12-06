@@ -2192,7 +2192,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             <?php echo ($pre_setup && $can_manage) ? ' style="display:none;"' : ''; ?>
           >
             <h1><?php echo __('Add Ways for People to Shop'); ?></h1>
-            <h2><?php echo __('Connect your business with features on Instagram, Messenger and more.'); ?></h2>
+            <h2><?php echo __('Connect your business with features such as Messenger and more.'); ?></h2>
             <a href="#" class="btn small" onclick="facebookConfig()" id="connect_button">
             <?php echo __('Add Features'); ?>
             </a>
