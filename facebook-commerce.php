@@ -463,7 +463,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             'rows' => 20,
             'value' => $description,
           ));
-      woocommerce_wp_textarea_input(
+      woocommerce_wp_text_input(
         array(
           'id' => WC_Facebook_Product::FB_PRODUCT_IMAGE,
           'label' => __('Facebook Product Image', 'facebook-for-woocommerce'),
@@ -478,6 +478,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           'cols' => 40,
           'rows' => 10,
           'value' => $image,
+          'placeholder' => 'https://...',
         ));
         woocommerce_wp_text_input(
           array(
@@ -491,9 +492,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               'separators and currency symbols. '.
               'If blank, product price will be used. ',
               'facebook-for-woocommerce'),
-            'cols' => 40,
-            'rows' => 60,
+            'cols' => 10,
+            'rows' => 5,
             'value' => $price,
+            'style' => 'width: 100px;',
           ));
         if ($image_setting !== null) {
          woocommerce_wp_checkbox(array(
@@ -2283,7 +2285,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   onclick="saveAutoSyncSchedule()"
                   class="autosyncCheck"
                   <?php echo get_option('woocommerce_fb_autosync_time', false) ? 'checked' : 'unchecked'; ?>>
-                Automatic Resync of Products At
+                Automatic resync of products at
 
                 <input
                   type="time"
@@ -2291,7 +2293,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   class="autosyncTime"
                   onfocusout="saveAutoSyncSchedule()"
                   <?php echo get_option('woocommerce_fb_autosync_time', 0) ? '' : 'disabled'; ?> />
-                Every Day.
+                every day.
                 <span class="autosyncSavedNotice" disabled> Saved </span>
               </div>
               <div class='advancedoption' title="This option is meant for development and testing environments.">
@@ -2301,7 +2303,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   <?php echo get_option('fb_disable_sync_on_dev_environment', false)
                     ? 'checked'
                     : 'unchecked'; ?> />
-                Disable Product Sync with FB
+                Disable product sync with FB.
               </div>
               <div class='advancedoption' title="This experimental feature will import short description instead of description for all products.">
                 <input type="checkbox"
@@ -2310,7 +2312,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   <?php echo get_option('fb_sync_short_description', false)
                     ? 'checked'
                     : 'unchecked'; ?> />
-                Sync Short Description Instead of Description
+                Sync short description instead of description.
               </div>
           </div>
         </div>

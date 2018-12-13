@@ -227,7 +227,7 @@
 }
 
 #fbAdvancedOptions {
-  color: black;
+  color: rgb(126,129,136);
   font-size: 12px;
   font-family: Helvetica;
   display: none;
@@ -244,6 +244,9 @@
   padding: 4px 4px 4px 4px;
 }
 
-#fbAdvancedOptions input {
+.autosyncTime {
   padding: 0px;
+  font-family: Helvetica;
+  font-size: 12px;
+  height: 18px;
 }
