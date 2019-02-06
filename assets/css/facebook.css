@@ -15,6 +15,28 @@
   background-position-y: 172px;
   background-size: 180px;
 }
+
+#fbsetup .wrapper .help-center {
+  float: right;
+  margin-top: -23px;
+}
+
+#fbsetup .wrapper .help-center a {
+  color: white;
+}
+
+#fbsetup .wrapper .help-center-icon {
+  display: inline-block;
+  background-image: url(../image/help-center.png);
+  background-size: 38px 38px;
+  background-repeat: no-repeat;
+  width: 38px;
+  height: 38px;
+  zoom: 0.7;
+  top: 12px;
+  position: relative;
+}
+
 #fbsetup .content {
   padding: 10px 30px 20px 30px;
 }

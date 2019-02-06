@@ -2130,7 +2130,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     <div id="fbsetup">
       <div class="wrapper">
-        <header></header>
+        <header>
+          <div class="help-center">
+            <a href="https://www.facebook.com/business/help/900699293402826" target="_blank">Help Center <i class="help-center-icon" /></a>
+          </div>
+        </header>
         <div class="content">
           <h1 id="setup_h1">
             <?php
