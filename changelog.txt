@@ -2,6 +2,7 @@
 
 2019-02-11 - Version 1.9.10
 * Add facebook support link, this will help merchants to reach out to facebook customer service.
+* Make plugin wordpress compatible by removing woocommerce updater and removing woo_include
 
 2018-12-30 - Version 1.9.9
 * Fix issue with missing file in v1.9.8

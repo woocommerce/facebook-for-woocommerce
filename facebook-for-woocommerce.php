@@ -14,19 +14,11 @@
  * Woo: 2127297:0ea4fe4c2d7ca6338f8a322fb3e4e187
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.0.0
- * WC tested up to: 3.5.1
- * Tested up to: 4.9.8
+ * WC tested up to: 3.3.5
  *
  * @package FacebookCommerce
  */
 
-/**
- * Plugin updates
- */
-if (function_exists('woothemes_queue_update')) {
-  woothemes_queue_update(plugin_basename(__FILE__),
-    '0ea4fe4c2d7ca6338f8a322fb3e4e187', '2127297');
-}
 
 if (!class_exists('WC_Facebookcommerce')) :
 include_once 'includes/fbutils.php';
@@ -58,7 +50,6 @@ class WC_Facebookcommerce {
     }
 
     if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
-      include_once('woo-includes/woo-functions.php');
       if (!defined('WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL')) {
         define(
                 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL',

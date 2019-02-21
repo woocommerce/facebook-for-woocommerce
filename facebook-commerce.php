@@ -167,7 +167,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               $should_query_tip);
         }
       }
-      $this->fb_check_for_new_version();
 
       if (!class_exists('WC_Facebook_Integration_Test')) {
         include_once 'includes/test/facebook-integration-test.php';
@@ -409,20 +408,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     return $tabs;
   }
 
-  // Note : This function is empty in the wordpress.org version of the plugin
-  public function fb_check_for_new_version() {
-    /** PUSH SCRIPT : EXCLUDE WORDPRESS BEGIN **/
-    if (!class_exists('WC_Facebook_Github_Updater')) {
-      include_once 'includes/fb-github-plugin-updater.php';
-    }
-    $path = __FILE__;
-    $path = substr($path, 0, strrpos($path, '/') + 1) .
-      'facebook-for-woocommerce.php';
-    WC_Facebook_Github_Updater::get_instance(
-      $path, 'facebookincubator', 'facebook-for-woocommerce');
-    /** PUSH SCRIPT : EXCLUDE WORDPRESS END **/
-  }
-
   public function fb_new_product_tab_content() {
     global $post;
     $woo_product = new WC_Facebook_Product($post->ID);
@@ -463,7 +448,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             'rows' => 20,
             'value' => $description,
           ));
-      woocommerce_wp_text_input(
+      woocommerce_wp_textarea_input(
         array(
           'id' => WC_Facebook_Product::FB_PRODUCT_IMAGE,
           'label' => __('Facebook Product Image', 'facebook-for-woocommerce'),
@@ -478,7 +463,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
           'cols' => 40,
           'rows' => 10,
           'value' => $image,
-          'placeholder' => 'https://...',
         ));
         woocommerce_wp_text_input(
           array(
@@ -492,10 +476,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
               'separators and currency symbols. '.
               'If blank, product price will be used. ',
               'facebook-for-woocommerce'),
-            'cols' => 10,
-            'rows' => 5,
+            'cols' => 40,
+            'rows' => 60,
             'value' => $price,
-            'style' => 'width: 100px;',
           ));
         if ($image_setting !== null) {
          woocommerce_wp_checkbox(array(
@@ -2132,7 +2115,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       <div class="wrapper">
         <header>
           <div class="help-center">
-            <a href="https://www.facebook.com/business/help/900699293402826" target="_blank">Help Center <i class="help-center-icon" /></a>
+            <a href="https://www.facebook.com/business/help/900699293402826" target="_blank">Help Center <i class="help-center-icon"></i></a>
           </div>
         </header>
         <div class="content">
@@ -2284,12 +2267,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
             Show Advanced Settings
           </div>
           <div id='fbAdvancedOptions'>
-              <div class='advancedoption' title="This experimental feature will resync your products with FB at the specified time using wordpress cron scheduling.">
+              <div class='autosync' title="This experimental feature will call force resync at the specified time using wordpress cron scheduling.">
                 <input type="checkbox"
                   onclick="saveAutoSyncSchedule()"
                   class="autosyncCheck"
                   <?php echo get_option('woocommerce_fb_autosync_time', false) ? 'checked' : 'unchecked'; ?>>
-                Automatic resync of products at
+                Automatically Force Resync of Products At
 
                 <input
                   type="time"
@@ -2297,26 +2280,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
                   class="autosyncTime"
                   onfocusout="saveAutoSyncSchedule()"
                   <?php echo get_option('woocommerce_fb_autosync_time', 0) ? '' : 'disabled'; ?> />
-                every day.
+                Every Day.
                 <span class="autosyncSavedNotice" disabled> Saved </span>
               </div>
-              <div class='advancedoption' title="This option is meant for development and testing environments.">
+              <div title="This option is meant for development and testing environments.">
                 <input type="checkbox"
                   onclick="onSetDisableSyncOnDevEnvironment()"
                   class="disableOnDevEnvironment"
                   <?php echo get_option('fb_disable_sync_on_dev_environment', false)
                     ? 'checked'
                     : 'unchecked'; ?> />
-                Disable product sync with FB.
+                Disable Product Sync with FB
               </div>
-              <div class='advancedoption' title="This experimental feature will import short description instead of description for all products.">
+              <div class='shortdescr' title="This experimental feature will import short description instead of description for all products.">
                 <input type="checkbox"
                   onclick="syncShortDescription()"
                   class="syncShortDescription"
                   <?php echo get_option('fb_sync_short_description', false)
                     ? 'checked'
                     : 'unchecked'; ?> />
-                Sync short description instead of description.
+                Sync Short Description Instead of Description
               </div>
           </div>
         </div>
