@@ -3,7 +3,7 @@ Contributors: facebook4woocommerce
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 4.9.8
-Stable tag: 1.9.5
+Stable tag: 1.9.10
 Requires PHP: 5.6
 MySQL: 5.6 or greater
 License: GPLv2 or later
