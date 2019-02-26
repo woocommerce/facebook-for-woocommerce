@@ -1,4 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
+2019-02-26 - Version 1.9.11
+* changing contributor to facebook from facebook4woocommerce, so that
+  woo plugin will be shown under https://profiles.wordpress.org/facebook/#content-plugins
+* adding changelog in readme.txt so that notifications will be sent for updates and
+  changelog will be shown under https://wordpress.org/plugins/facebook-for-woocommerce/#developers
+* removing debug flags notice under facebook-for-woocommerce.php so that developers will
+  be able to debug with debug logs
 
 2019-02-11 - Version 1.9.10
 * Add facebook support link, this will help merchants to reach out to facebook customer service.
