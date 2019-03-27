@@ -44,7 +44,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
     }
 
     // Initialize PixelID in storage - this will only need to happen when the
-    // use is an admin
+    // user is an admin
     $pixel_id = self::get_pixel_id();
     if (!WC_Facebookcommerce_Utils::is_valid_id($pixel_id) &&
       class_exists('WC_Facebookcommerce_WarmConfig')) {
@@ -54,6 +54,16 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
           (int)$fb_warm_pixel_id == $fb_warm_pixel_id) {
         $fb_warm_pixel_id = (string)$fb_warm_pixel_id;
         self::set_pixel_id($fb_warm_pixel_id);
+      }
+    }
+
+    $is_advanced_matching_enabled = self::get_use_pii_key();
+    if ($is_advanced_matching_enabled == null &&
+        class_exists('WC_Facebookcommerce_WarmConfig')) {
+      $fb_warm_is_advanced_matching_enabled =
+        WC_Facebookcommerce_WarmConfig::$fb_warm_is_advanced_matching_enabled;
+      if (is_bool($fb_warm_is_advanced_matching_enabled)) {
+        self::set_use_pii_key($fb_warm_is_advanced_matching_enabled ? 1 : 0);
       }
     }
   }
@@ -223,6 +233,27 @@ src=\"https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1\"/>
     }
 
     $fb_options[self::PIXEL_ID_KEY] = $pixel_id;
+    update_option(self::SETTINGS_KEY, $fb_options);
+  }
+
+  public static function get_use_pii_key() {
+    $fb_options = self::get_options();
+    if (!$fb_options) {
+      return null;
+    }
+    return isset($fb_options[self::USE_PII_KEY]) ?
+           $fb_options[self::USE_PII_KEY] : null;
+  }
+
+  public static function set_use_pii_key($use_pii) {
+    $fb_options = self::get_options();
+
+    if (isset($fb_options[self::USE_PII_KEY])
+        && $fb_options[self::USE_PII_KEY] == $use_pii) {
+      return;
+    }
+
+    $fb_options[self::USE_PII_KEY] = $use_pii;
     update_option(self::SETTINGS_KEY, $fb_options);
   }
 
