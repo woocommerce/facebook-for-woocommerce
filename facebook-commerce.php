@@ -1855,12 +1855,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       wp_reset_postdata();
       $this->fb_wp_die();
       return true;
-    } else if (!$this->test_mode) {
-      // curl failed, roll back to original sync approach.
-      WC_Facebookcommerce_Utils::fblog(
-        'Sync all products using feed, curl failed', array(), true);
-      $this->sync_all_products();
     }
+    WC_Facebookcommerce_Utils::fblog(
+      'Sync all products using feed, curl failed', array(), true);
     return false;
   }
 

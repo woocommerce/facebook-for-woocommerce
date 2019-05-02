@@ -1,4 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
+2019-02-26 - Version 1.9.12
+* Remove dead code which causes exception (Issue 975)
+
 2019-02-26 - Version 1.9.11
 * changing contributor to facebook from facebook4woocommerce, so that
   woo plugin will be shown under https://profiles.wordpress.org/facebook/#content-plugins

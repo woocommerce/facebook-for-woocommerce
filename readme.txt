@@ -38,6 +38,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+= 1.9.12 - 2019-05-2 =
+* Remove dead code which causes exception (Issue 975)
 
 = 1.9.11 - 2019-02-26 =
 * changing contributor to facebook from facebook4woocommerce, so that
