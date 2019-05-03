@@ -1180,6 +1180,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         $this->settings['msger_chat_customization_theme_color_code'] =
           $_REQUEST['msger_chat_customization_theme_color_code'];
       }
+      if (isset($_REQUEST['msger_chat_customization_greeting_dialog_display'])) {
+        $this->settings['msger_chat_customization_greeting_dialog_display'] =
+          sanitize_text_field($_REQUEST['msger_chat_customization_greeting_dialog_display']);
+      }
 
       update_option(
         $this->get_option_key(),
