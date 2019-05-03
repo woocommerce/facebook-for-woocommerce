@@ -32,6 +32,10 @@ class WC_Facebookcommerce_MessengerChat {
     $this->greeting_text_code = isset($settings['msger_chat_customization_greeting_text_code'])
       ? $settings['msger_chat_customization_greeting_text_code']
       : null;
+    
+    $this->greeting_dialog_display = isset($settings['msger_chat_customization_greeting_dialog_display'])
+      ? $settings['msger_chat_customization_greeting_dialog_display']
+      : null;
 
     $this->locale = isset($settings['msger_chat_customization_locale'])
       ? $settings['msger_chat_customization_locale']
@@ -50,6 +54,7 @@ class WC_Facebookcommerce_MessengerChat {
   attribution=\"fbe_woocommerce\"
   class=\"fb-customerchat\"
   page_id=\"%s\"
+  %s
   %s
   %s
   %s /></div>
@@ -77,6 +82,7 @@ class WC_Facebookcommerce_MessengerChat {
         $this->theme_color_code ? sprintf('theme_color="%s"', $this->theme_color_code) : '',
         $this->greeting_text_code ? sprintf('logged_in_greeting="%s"', $this->greeting_text_code) : '',
         $this->greeting_text_code ? sprintf('logged_out_greeting="%s"', $this->greeting_text_code) : '',
+        $this->greeting_dialog_display ? sprintf('greeting_dialog_display="%s"', $this->greeting_dialog_display) : '',
         $this->jssdk_version,
         $this->locale ? $this->locale : 'en_US');
     }
