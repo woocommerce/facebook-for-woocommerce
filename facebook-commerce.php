@@ -1685,8 +1685,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->display_warning_message('We\'ve detected that your
         Facebook Product Catalog is no longer valid. This may happen if it was
         deleted, or this may be a transient error.
-        If this error persists please delete your settings via
-        "Re-configure Facebook Settings > Advanced Settings > Delete Settings"
+        If this error persists please remove your settings via
+        "Advanced Options > Advanced Settings > Remove"
         and try setup again');
       wp_die();
       return;
@@ -1821,8 +1821,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
       $this->display_warning_message('We\'ve detected that your
         Facebook Product Catalog is no longer valid. This may happen if it was
         deleted, or this may be a transient error.
-        If this error persists please delete your settings via
-        "Re-configure Facebook Settings > Advanced Settings > Delete Settings"
+        If this error persists please remove your settings via
+        "Advanced Options > Advanced Settings > Remove"
         and try setup again');
       $this->fb_wp_die();
       return false;
