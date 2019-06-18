@@ -79,26 +79,37 @@ function get_ems_id_box() {
  *  Ajax helper function.
  *  Takes optional payload for POST and optional callback.
  */
-function ajax(action, payload = null, callback = null, failcallback = null) {
-  var data = {
-    'action': action,
-  };
-  if (payload){
-    for (var attrname in payload) { data[attrname] = payload[attrname]; }
-  }
-
-  // Since  Wordpress 2.8 ajaxurl is always defined in admin header and
-  // points to admin-ajax.php
-  jQuery.post(ajaxurl, data, function(response) {
-    if(callback) {
-      callback(response);
-    }
-  }).fail(function(errorResponse){
-    if(failcallback) {
-      failcallback(errorResponse);
+var ajax = (function() {
+  var wpnonce = null;
+  jQuery(function() {
+    var wpnonceElem = document.querySelector('div#fbsetup input#_wpnonce');
+    if (wpnonceElem) {
+      wpnonce = wpnonceElem.getAttribute('value');
+      wpnonceElem.parentNode.removeChild(wpnonceElem);
     }
   });
-}
+  return function _ajax(action, payload = null, callback = null, failcallback = null) {
+    var data = {
+      'action': action,
+      '_wpnonce': wpnonce
+    };
+    if (payload) {
+      for (var attrname in payload) { data[attrname] = payload[attrname]; }
+    }
+
+    // Since  Wordpress 2.8 ajaxurl is always defined in admin header and
+    // points to admin-ajax.php
+    jQuery.post(ajaxurl, data, function(response) {
+      if(callback) {
+        callback(response);
+      }
+    }).fail(function(errorResponse){
+      if(failcallback) {
+        failcallback(errorResponse);
+      }
+    });
+  };
+})();
 
 var settings = {'facebook_for_woocommerce' : 1};
 var pixel_settings = {'facebook_for_woocommerce' : 1};

@@ -2109,6 +2109,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     <hr/>
 
     <div id="fbsetup">
+      <form><?php wp_nonce_field('wp_ajax_ajax_update_fb_option'); ?></form>
       <div class="wrapper">
         <header>
           <div class="help-center">
@@ -2529,8 +2530,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function ajax_update_fb_option() {
+    WC_Facebookcommerce_Utils::check_ajax_referer();
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('update fb options', true);
-    if (isset($_POST) && stripos($_POST['option'], 'fb_') === 0) {
+    $wpnonce = $_POST['_wpnonce'];
+    if (isset($_POST) &&
+        stripos($_POST['option'], 'fb_') === 0 &&
+        wp_verify_nonce($wpnonce, 'wp_ajax_ajax_update_fb_option')) {
       update_option(sanitize_text_field($_POST['option']), sanitize_text_field($_POST['option_value']));
     }
     wp_die();
