@@ -1,5 +1,5 @@
 === Facebook for WooCommerce ===
-Contributors: facebook
+Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 4.9.8
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+= 1.9.13 - 2019-06-18 =
+* Fix security issues
+* Add more contributors to the plugin
+
 = 1.9.12 - 2019-05-2 =
 * Remove dead code which causes exception (Issue 975)
 
@@ -54,7 +58,3 @@ When opening a bug on GitHub, please give us as many details as possible.
 = 1.9.10 - 2019-02-11 =
 * Add facebook support link, this will help merchants to reach out to facebook customer service.
 * Make plugin wordpress compatible by removing woocommerce updater and removing woo_include
-
-= 1.9.9 - 2018-12-30 =
-* Fix issue with missing file in v1.9.8
-* Remove misleading content relating to Instagram which is not launched yet.

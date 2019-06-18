@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
-2019-02-26 - Version 1.9.12
+2019-06-18 - Version 1.9.13
+* Fix security issue
+* Add more contributors to the plugin
+
+2019-05-02 - Version 1.9.12
 * Remove dead code which causes exception (Issue 975)
 
 2019-02-26 - Version 1.9.11
