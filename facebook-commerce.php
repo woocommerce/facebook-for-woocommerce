@@ -72,11 +72,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * @return void
    */
   public function __construct() {
-    if (!class_exists('WC_Facebookcommerce_REST_Controller')) {
-      include_once( 'includes/fbcustomapi.php' );
-      $this->customapi = new WC_Facebookcommerce_REST_Controller();
-    }
-
     if (!class_exists('WC_Facebookcommerce_EventsTracker')) {
       include_once 'facebook-commerce-events-tracker.php';
     }
