@@ -2436,7 +2436,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
     if ($product_fbid_result && isset($product_fbid_result['body'])) {
       $body = WC_Facebookcommerce_Utils::decode_json($product_fbid_result['body']);
-      if ($body && $body->id) {
+      if ($body && isset($body->id)) {
         if ($fbid_type == self::FB_PRODUCT_GROUP_ID) {
           $fb_id = $body->product_group->id;
           } else {
