@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 4.9.8
-Stable tag: 1.9.13
+Stable tag: 1.9.14
 Requires PHP: 5.6
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,8 +38,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+= 1.9.14 - 2019-06-20 =
+* Revisit CSRF security issue
+* Remove rest controller which is not used
+
 = 1.9.13 - 2019-06-18 =
-* Fix security issues
+* Fix security issue
 * Add more contributors to the plugin
 
 = 1.9.12 - 2019-05-2 =

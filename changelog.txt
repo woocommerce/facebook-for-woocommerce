@@ -1,4 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
+2019-06-20 - Version 1.9.14
+* Revisit CSRF security issue
+* Remove rest controller which is not used
+
 2019-06-18 - Version 1.9.13
 * Fix security issue
 * Add more contributors to the plugin
