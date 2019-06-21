@@ -79,37 +79,23 @@ function get_ems_id_box() {
  *  Ajax helper function.
  *  Takes optional payload for POST and optional callback.
  */
-var ajax = (function() {
-  var wpnonce = null;
-  jQuery(function() {
-    var wpnonceElem = document.querySelector('div#fbsetup input#_wpnonce');
-    if (wpnonceElem) {
-      wpnonce = wpnonceElem.getAttribute('value');
-      wpnonceElem.parentNode.removeChild(wpnonceElem);
-    }
-  });
-  return function _ajax(action, payload = null, callback = null, failcallback = null) {
-    var data = {
+ function ajax(action, payload = null, callback = null, failcallback = null) {
+   var data = Object.assign( {}, {
       'action': action,
-      '_wpnonce': wpnonce
-    };
-    if (payload) {
-      for (var attrname in payload) { data[attrname] = payload[attrname]; }
-    }
+    }, payload);
 
-    // Since  Wordpress 2.8 ajaxurl is always defined in admin header and
-    // points to admin-ajax.php
-    jQuery.post(ajaxurl, data, function(response) {
-      if(callback) {
-        callback(response);
-      }
-    }).fail(function(errorResponse){
-      if(failcallback) {
-        failcallback(errorResponse);
-      }
-    });
-  };
-})();
+   // Since  Wordpress 2.8 ajaxurl is always defined in admin header and
+   // points to admin-ajax.php
+   jQuery.post(ajaxurl, data, function(response) {
+     if(callback) {
+       callback(response);
+     }
+   }).fail(function(errorResponse){
+     if(failcallback) {
+       failcallback(errorResponse);
+     }
+   });
+ }
 
 var settings = {'facebook_for_woocommerce' : 1};
 var pixel_settings = {'facebook_for_woocommerce' : 1};
@@ -208,7 +194,14 @@ function delete_all_settings(callback = null, failcallback = null) {
   window.fb_connected = false;
 
   console.log('Deleting all settings and removing all FBIDs!');
-  return ajax('ajax_delete_fb_settings', null, callback, failcallback);
+  return ajax(
+    'ajax_delete_fb_settings',
+    {
+      "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+    },
+    callback,
+   failcallback
+ );
 }
 
 // save_settings and save_settings_and_sync should only be called once
@@ -876,7 +869,15 @@ function onSetDisableSyncOnDevEnvironment() {
     'ajax_update_fb_option',
     {
       "option": "fb_disable_sync_on_dev_environment",
-      "option_value": isChecked ? 1 : 0
+      "option_value": isChecked ? 1 : 0,
+      "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+    },
+    null,
+    function onSetDisableSyncOnDevEnvironmentFailCallback(error) {
+      document.getElementsByClassName(
+        'onSetDisableSyncOnDevEnvironment'
+      )[0].checked = !isChecked;
+      console.log('Failed to disable sync on dev environment');
     }
   );
 }
@@ -887,7 +888,13 @@ function syncShortDescription() {
     'ajax_update_fb_option',
     {
       "option": "fb_sync_short_description",
-      "option_value": isChecked ? 1 : 0
+      "option_value": isChecked ? 1 : 0,
+      "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+    },
+    null,
+    function syncShortDescriptionFailCallback(error) {
+      document.getElementsByClassName('syncShortDescription')[0].checked = ! isChecked;
+      console.log('Failed to sync Short Description');
     }
   );
 }

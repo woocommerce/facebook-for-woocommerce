@@ -703,8 +703,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     };
     </script>
   <?php
-    wp_enqueue_script('wc_facebook_jsx', plugins_url(
+      $ajax_data = array(
+      'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
+    );
+    wp_enqueue_script('wc_facebook_settings_jsx', plugins_url(
       '/assets/js/facebook-settings.js?ts=' . time(), __FILE__));
+    wp_localize_script(
+      'wc_facebook_settings_jsx',
+      'wc_facebook_settings_jsx',
+      $ajax_data
+    );
     wp_enqueue_style('wc_facebook_css', plugins_url(
       '/assets/css/facebook.css', __FILE__));
   }
@@ -1195,6 +1203,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
    * Delete all settings via AJAX
    **/
   function ajax_delete_fb_settings() {
+    check_ajax_referer( 'wc_facebook_settings_jsx' );
     if (!WC_Facebookcommerce_Utils::check_woo_ajax_permissions('delete settings', false)) {
       return;
     }
@@ -2104,7 +2113,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
     <hr/>
 
     <div id="fbsetup">
-      <form><?php wp_nonce_field('wp_ajax_ajax_update_fb_option'); ?></form>
       <div class="wrapper">
         <header>
           <div class="help-center">
@@ -2525,12 +2533,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
   }
 
   function ajax_update_fb_option() {
-    WC_Facebookcommerce_Utils::check_ajax_referer();
+    check_ajax_referer( 'wc_facebook_settings_jsx' );
     WC_Facebookcommerce_Utils::check_woo_ajax_permissions('update fb options', true);
-    $wpnonce = $_POST['_wpnonce'];
-    if (isset($_POST) &&
-        stripos($_POST['option'], 'fb_') === 0 &&
-        wp_verify_nonce($wpnonce, 'wp_ajax_ajax_update_fb_option')) {
+    if (isset($_POST) && stripos($_POST['option'], 'fb_') === 0) {
       update_option(sanitize_text_field($_POST['option']), sanitize_text_field($_POST['option_value']));
     }
     wp_die();

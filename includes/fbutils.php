@@ -480,20 +480,6 @@ if (!class_exists('WC_Facebookcommerce_Utils')) :
         get_option('fb_info_banner_last_best_tip', ''));
       return $cached_best_tip;
     }
-
-    public static function check_ajax_referer() {
-      $http_referer = null;
-      if (!empty($_SERVER['HTTP_REFERER'])) {
-        $http_referer = wp_unslash($_SERVER['HTTP_REFERER']);
-      }
-      $wp_site = get_site_url();
-      $http_referer_url = parse_url($http_referer);
-      $wp_site_url = parse_url($wp_site_url);
-      if (!empty($http_referer_url) && !empty($wp_site_url) && $http_referer_url['host'] === $wp_site_url['host']) {
-        return;
-      }
-      wp_die('FBE: bad requests!');
-    }
   }
 
 endif;
