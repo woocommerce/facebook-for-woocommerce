@@ -8,45 +8,46 @@
  * @package FacebookCommerce
  */
 
-if (!class_exists('WC_Facebookcommerce_MessengerChat')) :
+if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
-if (!class_exists('WC_Facebookcommerce_Utils')) {
-  include_once 'includes/fbutils.php';
-}
+	if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
+		include_once 'includes/fbutils.php';
+	}
 
-class WC_Facebookcommerce_MessengerChat {
+	class WC_Facebookcommerce_MessengerChat {
 
-  public function __construct($settings) {
-    $this->enabled = isset($settings['is_messenger_chat_plugin_enabled'])
-      ? $settings['is_messenger_chat_plugin_enabled']
-      : 'no';
+		public function __construct( $settings ) {
+			$this->enabled = isset( $settings['is_messenger_chat_plugin_enabled'] )
+			? $settings['is_messenger_chat_plugin_enabled']
+			: 'no';
 
-    $this->page_id = isset($settings['fb_page_id'])
-      ? $settings['fb_page_id']
-      : '';
+			$this->page_id = isset( $settings['fb_page_id'] )
+			? $settings['fb_page_id']
+			: '';
 
-    $this->jssdk_version = isset($settings['facebook_jssdk_version'])
-      ? $settings['facebook_jssdk_version']
-      : '';
+			$this->jssdk_version = isset( $settings['facebook_jssdk_version'] )
+			? $settings['facebook_jssdk_version']
+			: '';
 
-    $this->greeting_text_code = isset($settings['msger_chat_customization_greeting_text_code'])
-      ? $settings['msger_chat_customization_greeting_text_code']
-      : null;
+			$this->greeting_text_code = isset( $settings['msger_chat_customization_greeting_text_code'] )
+			? $settings['msger_chat_customization_greeting_text_code']
+			: null;
 
-    $this->locale = isset($settings['msger_chat_customization_locale'])
-      ? $settings['msger_chat_customization_locale']
-      : null;
+			$this->locale = isset( $settings['msger_chat_customization_locale'] )
+			? $settings['msger_chat_customization_locale']
+			: null;
 
-    $this->theme_color_code = isset($settings['msger_chat_customization_theme_color_code'])
-      ? $settings['msger_chat_customization_theme_color_code']
-      : null;
+			$this->theme_color_code = isset( $settings['msger_chat_customization_theme_color_code'] )
+			? $settings['msger_chat_customization_theme_color_code']
+			: null;
 
-    add_action('wp_footer', array($this, 'inject_messenger_chat_plugin'));
-  }
+			add_action( 'wp_footer', array( $this, 'inject_messenger_chat_plugin' ) );
+		}
 
-  public function inject_messenger_chat_plugin() {
-    if ($this->enabled === 'yes') {
-      echo sprintf("<div
+		public function inject_messenger_chat_plugin() {
+			if ( $this->enabled === 'yes' ) {
+				echo sprintf(
+					"<div
   attribution=\"fbe_woocommerce\"
   class=\"fb-customerchat\"
   page_id=\"%s\"
@@ -73,15 +74,16 @@ class WC_Facebookcommerce_MessengerChat {
     }(document, 'script', 'facebook-jssdk'));
 </script>
 <div></div>",
-        $this->page_id,
-        $this->theme_color_code ? sprintf('theme_color="%s"', $this->theme_color_code) : '',
-        $this->greeting_text_code ? sprintf('logged_in_greeting="%s"', $this->greeting_text_code) : '',
-        $this->greeting_text_code ? sprintf('logged_out_greeting="%s"', $this->greeting_text_code) : '',
-        $this->jssdk_version,
-        $this->locale ? $this->locale : 'en_US');
-    }
-  }
+					$this->page_id,
+					$this->theme_color_code ? sprintf( 'theme_color="%s"', $this->theme_color_code ) : '',
+					$this->greeting_text_code ? sprintf( 'logged_in_greeting="%s"', $this->greeting_text_code ) : '',
+					$this->greeting_text_code ? sprintf( 'logged_out_greeting="%s"', $this->greeting_text_code ) : '',
+					$this->jssdk_version,
+					$this->locale ? $this->locale : 'en_US'
+				);
+			}
+		}
 
-}
+	}
 
 endif;

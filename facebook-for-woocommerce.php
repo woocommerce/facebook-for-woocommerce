@@ -20,86 +20,97 @@
  */
 
 
-if (!class_exists('WC_Facebookcommerce')) :
-include_once 'includes/fbutils.php';
+if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
+	include_once 'includes/fbutils.php';
 
-class WC_Facebookcommerce {
+	class WC_Facebookcommerce {
 
-  // Change it above as well
-  const PLUGIN_VERSION = WC_Facebookcommerce_Utils::PLUGIN_VERSION;
+		// Change it above as well
+		const PLUGIN_VERSION = WC_Facebookcommerce_Utils::PLUGIN_VERSION;
 
-  /**
-   * Construct the plugin.
-   */
-  public function __construct() {
-    add_action('plugins_loaded', array( $this, 'init'));
-  }
+		/**
+		 * Construct the plugin.
+		 */
+		public function __construct() {
+			add_action( 'plugins_loaded', array( $this, 'init' ) );
+		}
 
-  /**
-   * Initialize the plugin.
-   */
-  public function init() {
-    if (is_admin()) {
-      add_filter('plugin_action_links_'.plugin_basename(__FILE__),
-        array($this, 'add_settings_link'));
-    }
+		/**
+		 * Initialize the plugin.
+		 */
+		public function init() {
+			if ( is_admin() ) {
+				add_filter(
+					'plugin_action_links_' . plugin_basename( __FILE__ ),
+					array( $this, 'add_settings_link' )
+				);
+			}
 
-    if (WC_Facebookcommerce_Utils::isWoocommerceIntegration()) {
-      if (!defined('WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL')) {
-        define(
-                'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL',
-                get_admin_url()
-                .'/admin.php?page=wc-settings&tab=integration'
-                .'&section=facebookcommerce');
-      }
-      include_once 'facebook-commerce.php';
+			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
+					define(
+						'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL',
+						get_admin_url()
+						. '/admin.php?page=wc-settings&tab=integration'
+						. '&section=facebookcommerce'
+					);
+				}
+				include_once 'facebook-commerce.php';
 
-      // Register WooCommerce integration.
-      add_filter('woocommerce_integrations', array(
-        $this,
-        'add_woocommerce_integration'
-      ));
-    }
-  }
+				// Register WooCommerce integration.
+				add_filter(
+					'woocommerce_integrations',
+					array(
+						$this,
+						'add_woocommerce_integration',
+					)
+				);
+			}
+		}
 
-  public function add_settings_link($links) {
-    $settings = array(
-      'settings' => sprintf(
-        '<a href="%s">%s</a>',
-        admin_url('admin.php?page=wc-settings&tab=integration&section=facebookcommerce'),
-        'Settings')
-    );
-    return array_merge($settings, $links);
-  }
+		public function add_settings_link( $links ) {
+			$settings = array(
+				'settings' => sprintf(
+					'<a href="%s">%s</a>',
+					admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ),
+					'Settings'
+				),
+			);
+			return array_merge( $settings, $links );
+		}
 
-  public function wp_debug_display_error() {
-    ?>
-    <div class="error below-h3">
-      <p>
-      <?php
-        printf(__('To use Facebook for WooCommerce,
+		public function wp_debug_display_error() {
+			?>
+	<div class="error below-h3">
+	  <p>
+			<?php
+			printf(
+				__(
+					'To use Facebook for WooCommerce,
           please disable WP_DEBUG_DISPLAY in your wp-config.php file.
           Contact your server administrator for more assistance.',
-          'facebook-for-woocommerce'));
-       ?>
-      </p>
-    </div>
-    <?php
-  }
+					'facebook-for-woocommerce'
+				)
+			);
+			?>
+	  </p>
+	</div>
+			<?php
+		}
 
-  /**
-   * Add a new integration to WooCommerce.
-   */
-  public function add_woocommerce_integration($integrations) {
-    $integrations[] = 'WC_Facebookcommerce_Integration';
-    return $integrations;
-  }
+		/**
+		 * Add a new integration to WooCommerce.
+		 */
+		public function add_woocommerce_integration( $integrations ) {
+			$integrations[] = 'WC_Facebookcommerce_Integration';
+			return $integrations;
+		}
 
-  public function add_wordpress_integration() {
-    new WP_Facebook_Integration();
-  }
-}
+		public function add_wordpress_integration() {
+			new WP_Facebook_Integration();
+		}
+	}
 
-$WC_Facebookcommerce = new WC_Facebookcommerce(__FILE__);
+	$WC_Facebookcommerce = new WC_Facebookcommerce( __FILE__ );
 
 endif;
