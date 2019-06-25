@@ -427,6 +427,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	public function ajax_fb_background_check_queue() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'background check queue', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		$request_time = null;
 		if ( isset( $_POST['request_time'] ) ) {
 			$request_time = esc_js( sanitize_text_field( $_POST['request_time'] ) );
@@ -1435,6 +1436,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 **/
 	function ajax_check_feed_upload_status() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		if ( $this->settings['fb_api_key'] ) {
 			$response = array(
 				'connected' => true,
@@ -1819,6 +1821,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function ajax_reset_all_fb_products() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'reset products', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		$this->reset_all_products();
 		wp_reset_postdata();
 		wp_die();
@@ -1858,6 +1861,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 **/
 	function ajax_sync_all_fb_products() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'syncall products', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
 			WC_Facebookcommerce_Utils::log(
 				'Sync to FB Page is not allowed in Dev Environment'
@@ -2037,6 +2041,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'syncall products using feed',
 			! $this->test_mode
 		);
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		return $this->sync_all_fb_products_using_feed();
 	}
 
@@ -2844,6 +2849,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 **/
 	function ajax_display_test_result() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'test result', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		$response  = array(
 			'pass' => 'true',
 		);
@@ -2870,6 +2876,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function ajax_schedule_force_resync() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'resync schedule', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		if ( isset( $_POST ) && isset( $_POST['enabled'] ) ) {
 			if ( isset( $_POST['time'] ) && $_POST['enabled'] ) { // Enabled
 				$time = sanitize_text_field( $_POST['time'] );

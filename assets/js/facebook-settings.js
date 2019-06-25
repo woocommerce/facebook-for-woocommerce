@@ -120,7 +120,14 @@ function facebookConfig() {
 
 function fb_flush(){
 	console.log( "Removing all FBIDs from all products!" );
-	return ajax( 'ajax_reset_all_fb_products' );
+	return ajax(
+		 'ajax_reset_all_fb_products',
+		 {"_ajax_nonce": wc_facebook_settings_jsx.nonce},
+		 null,
+		 function fb_flushFailCallback(error) {
+			 console.log('Failed to reset all FB products');
+		 }
+	 );
 }
 
 function sync_confirm(verbose = null) {
@@ -173,9 +180,19 @@ function sync_all_products($using_feed = false, $is_test = false) {
 		window.feed_upload = true;
 		ping_feed_status_queue();
 		return $is_test ? ajax( 'ajax_test_sync_products_using_feed' )
-		: ajax( 'ajax_sync_all_fb_products_using_feed' );
+		: ajax(
+			'ajax_sync_all_fb_products_using_feed',
+			{
+				"_ajax_nonce": wc_facebook_settings_jsx.nonce,
+			},
+		);
 	} else {
-		return ajax( 'ajax_sync_all_fb_products' );
+		return ajax(
+			'ajax_sync_all_fb_products',
+			{
+        "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+      }
+		);
 	}
 }
 
@@ -679,7 +696,7 @@ function ping_feed_status_queue(count = 0) {
 	);
 }
 
-function product_sync_complete(sync_progress_element){
+function product_sync_complete(sync_progress_element) {
 	sync_not_in_progress();
 	if (document.querySelector( '#sync_complete' )) {
 		document.querySelector( '#sync_complete' ).style.display = '';
@@ -690,54 +707,57 @@ function product_sync_complete(sync_progress_element){
 	clearInterval( window.fb_pings );
 }
 
-function check_queues(){
+function check_queues() {
 	ajax(
 		'ajax_fb_background_check_queue',
-		{"request_time": new Date().getTime()},
-		function(response){
-			if (window.feed_upload) {
+		{
+			"request_time": new Date().getTime(),
+			"_ajax_nonce": wc_facebook_settings_jsx.nonce,
+		},
+		function( response ) {
+			if ( window.feed_upload ) {
 				clearInterval( window.fb_pings );
 				return;
 			}
 			var sync_progress_element = document.querySelector( '#sync_progress' );
-			var res                   = parse_response_check_connection( response );
-			if ( ! res) {
-				if (fb_sync_no_response_count++ > 5) {
+			var res = parse_response_check_connection( response );
+			if ( !res ) {
+				if ( fb_sync_no_response_count++ > 5 ) {
 					clearInterval( window.fb_pings );
 				}
 				return;
 			}
 			fb_sync_no_response_count = 0;
 
-			if (res) {
-				if ( ! res.background) {
+			if ( res ) {
+				if ( !res.background ) {
 					console.log( "No background sync found, disabling pings" );
 					clearInterval( window.fb_pings );
 				}
 
-				var processing = ! ! res.processing; // explicit boolean conversion
+				var processing = !!res.processing; // explicit boolean conversion
 				var remaining  = res.remaining;
-				if (processing) {
-					if (sync_progress_element) {
+				if ( processing ) {
+					if ( sync_progress_element ) {
 						sync_progress_element.innerHTML =
 						'<strong>Progress:</strong> ' + remaining + ' item' +
-						(remaining > 1 ? 's' : '') + ' remaining.';
+						( remaining > 1 ? 's' : '' ) + ' remaining.';
 					}
-					if (remaining === 0) {
+					if ( remaining === 0 ) {
 						product_sync_complete( sync_progress_element );
 					}
 				} else {
 					// Not processing, none remaining.  Either long complete, or just completed
-					if (window.fb_sync_start_time && res.request_time) {
+					if ( window.fb_sync_start_time && res.request_time ) {
 						  var request_time = new Date( parseInt( res.request_time ) );
-						if (window.fb_sync_start_time > request_time) {
+						if ( window.fb_sync_start_time > request_time ) {
 							// Old ping, do nothing.
 							console.log( "OLD PING" );
 							return;
 						}
 					}
 
-					if (remaining === 0) {
+					if ( remaining === 0 ) {
 						  product_sync_complete( sync_progress_element );
 					}
 				}
@@ -763,7 +783,9 @@ function parse_response_check_connection(res) {
 function check_feed_upload_queue(check_num) {
 	ajax(
 		'ajax_check_feed_upload_status',
-		null,
+		{
+			"_ajax_nonce": wc_facebook_settings_jsx.nonce,
+		},
 		function(response) {
 			var sync_progress_element = document.querySelector( '#sync_progress' );
 			var res                   = parse_response_check_connection( response );
@@ -803,7 +825,9 @@ function check_feed_upload_queue(check_num) {
 function display_test_result() {
 	ajax(
 		'ajax_display_test_result',
-		null,
+		{
+			"_ajax_nonce": wc_facebook_settings_jsx.nonce
+		},
 		function(response) {
 			var sync_complete_element = document.querySelector( '#sync_complete' );
 			var sync_progress_element = document.querySelector( '#sync_progress' );
@@ -914,7 +938,13 @@ function saveAutoSyncSchedule() {
 		);
 	}
 
-	ajax( 'ajax_schedule_force_resync', {"enabled": isChecked ? 1 : 0, "time" : timebox.value} );
+	ajax( 'ajax_schedule_force_resync',
+	 {
+		 "enabled": isChecked ? 1 : 0,
+		 "time" : timebox.value,
+		 "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+	 }
+ );
 }
 
 function onSetDisableSyncOnDevEnvironment() {
