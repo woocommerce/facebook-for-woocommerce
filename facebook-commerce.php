@@ -1265,6 +1265,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 **/
 	function ajax_save_fb_settings() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'save settings', true );
+		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
 		if ( isset( $_REQUEST ) ) {
 			if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {

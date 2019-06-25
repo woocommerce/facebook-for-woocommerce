@@ -227,6 +227,7 @@ function save_settings(callback = null, failcallback = null, localsettings = nul
 	if ( ! localsettings) {
 		localsettings = settings;
 	}
+	localsettings["_ajax_nonce"] = wc_facebook_settings_jsx.nonce;
 	ajax(
 		'ajax_save_fb_settings',
 		localsettings,
