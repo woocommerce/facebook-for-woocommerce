@@ -12,13 +12,9 @@
  *  Takes optional payload for POST and optional callback.
  */
 function ajax(action, payload = null, cb = null, failcb = null) {
-	var data = {
+	var data = Object.assign( {}, {
 		'action': action,
-	};
-	if (payload) {
-		for (var attrname in payload) {
-			data[attrname] = payload[attrname]; }
-	}
+	}, payload);
 
 	// Since  Wordpress 2.8 ajaxurl is always defined in admin header and
 	// points to admin-ajax.php
@@ -53,7 +49,10 @@ function fb_reset_product(wp_id) {
 		}
 		return ajax(
 			'ajax_reset_single_fb_product',
-			{'wp_id': wp_id}
+			{
+				'wp_id': wp_id,
+				"_ajax_nonce": wc_facebook_metabox_jsx.nonce
+			}
 		);
 	}
 }
@@ -72,7 +71,10 @@ function fb_delete_product(wp_id) {
 		}
 		return ajax(
 			'ajax_delete_fb_product',
-			{'wp_id': wp_id}
+			{
+				'wp_id': wp_id,
+				"_ajax_nonce": wc_facebook_metabox_jsx.nonce,
+			}
 		);
 	}
 }

@@ -653,13 +653,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	public function fb_product_metabox() {
+		$ajax_data = array(
+      'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),
+    );
 		wp_enqueue_script(
-			'wc_facebook_jsx',
+			'wc_facebook_metabox_jsx',
 			plugins_url(
 				'/assets/js/facebook-metabox.js?ts=' . time(),
 				__FILE__
 			)
 		);
+		wp_localize_script(
+      'wc_facebook_metabox_jsx',
+      'wc_facebook_metabox_jsx',
+      $ajax_data
+    );
 
 		add_meta_box(
 			'facebook_metabox', // Meta box ID
@@ -1829,6 +1837,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function ajax_reset_single_fb_product() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'reset single product', true );
+		check_ajax_referer( 'wc_facebook_metabox_jsx' );
 		if ( ! isset( $_POST['wp_id'] ) ) {
 			wp_die();
 		}
@@ -1845,6 +1854,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function ajax_delete_fb_product() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'delete single product', true );
+		check_ajax_referer( 'wc_facebook_metabox_jsx' );
 		if ( ! isset( $_POST['wp_id'] ) ) {
 			wp_die();
 		}
