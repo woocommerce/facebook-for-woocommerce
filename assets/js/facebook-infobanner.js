@@ -11,13 +11,9 @@
  *  Takes optional payload for POST and optional callback.
  */
 function ajax(action, payload = null, callback = null, failcallback = null) {
-	var data = {
+	var data = Object.assign( {}, {
 		'action': action,
-	};
-	if (payload) {
-		for (var attrname in payload) {
-			data[attrname] = payload[attrname]; }
-	}
+	}, payload );
 
 	// Since  Wordpress 2.8 ajaxurl is always defined in admin header and
 	// points to admin-ajax.php
@@ -40,10 +36,20 @@ function ajax(action, payload = null, callback = null, failcallback = null) {
 
 function fb_woo_infobanner_post_click(){
 	console.log( "Woo infobanner post tip click!" );
-	return ajax( 'ajax_woo_infobanner_post_click' );
+	return ajax(
+		 'ajax_woo_infobanner_post_click',
+		 {
+			 "_ajax_nonce": wc_facebook_infobanner_jsx.nonce
+		 },
+	);
 }
 
 function fb_woo_infobanner_post_xout() {
 	console.log( "Woo infobanner post tip xout!" );
-	return ajax( 'ajax_woo_infobanner_post_xout' );
+	return ajax(
+			'ajax_woo_infobanner_post_xout',
+			{
+				"_ajax_nonce": wc_facebook_infobanner_jsx.nonce
+			},
+	);
 }

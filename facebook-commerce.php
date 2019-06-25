@@ -348,7 +348,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action(
 					'wp_ajax_ajax_fb_toggle_visibility',
-					array( $this, 'ajax_toggle_visibility' )
+					array( $this, 'ajax_fb_toggle_visibility' )
 				);
 
 				add_action(
@@ -601,14 +601,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	public function fb_render_product_columns( $column ) {
 		global $post, $the_product;
-
+		$ajax_data = array(
+      'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
+    );
 		wp_enqueue_script(
-			'wc_facebook_jsx',
+			'wc_facebook_product_jsx',
 			plugins_url(
 				'/assets/js/facebook-products.js?ts=' . time(),
 				__FILE__
 			)
 		);
+		wp_localize_script(
+      'wc_facebook_product_jsx',
+      'wc_facebook_product_jsx',
+      $ajax_data
+    );
 
 		if ( empty( $the_product ) || $the_product->get_id() != $post->ID ) {
 			$the_product = new WC_Facebook_Product( $post );
@@ -755,7 +762,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function load_assets() {
 		$screen = get_current_screen();
-
+		$ajax_data = array(
+      'nonce' => wp_create_nonce( 'wc_facebook_infobanner_jsx' ),
+    );
 		// load banner assets
 		wp_enqueue_script(
 			'wc_facebook_infobanner_jsx',
@@ -764,6 +773,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				__FILE__
 			)
 		);
+		wp_localize_script(
+		 'wc_facebook_infobanner_jsx',
+		 'wc_facebook_infobanner_jsx',
+		 $ajax_data
+	 );
 
 		wp_enqueue_style(
 			'wc_facebook_infobanner_css',
@@ -2146,8 +2160,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Toggles product visibility via AJAX (checks current viz and flips it)
 	 **/
-	function ajax_toggle_visibility() {
+	function ajax_fb_toggle_visibility() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'toggle visibility', true );
+		check_ajax_referer( 'wc_facebook_product_jsx' );
 		if ( ! isset( $_POST['wp_id'] ) || ! isset( $_POST['published'] ) ) {
 			wp_die();
 		}

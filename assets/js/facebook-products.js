@@ -12,13 +12,11 @@
  *  Takes optional payload for POST and optional callback.
  */
 function ajax(action, payload = null, cb = null, failcb = null) {
-	var data = {
-		'action': action,
-	};
-	if (payload) {
-		for (var attrname in payload) {
-			data[attrname] = payload[attrname]; }
-	}
+	var data = Object.assign( {},
+			{
+				'action': action,
+			}, payload
+		);
 
 	// Since  Wordpress 2.8 ajaxurl is always defined in admin header and
 	// points to admin-ajax.php
@@ -77,6 +75,10 @@ function fb_toggle_visibility(wp_id, published) {
 
 	return ajax(
 		'ajax_fb_toggle_visibility',
-		{'wp_id': wp_id, 'published': published}
+		{
+			'wp_id': wp_id,
+			'published': published,
+			"_ajax_nonce": wc_facebook_product_jsx.nonce
+		}
 	);
 }

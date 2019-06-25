@@ -75,6 +75,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 				'post tip click event',
 				true
 			);
+			check_ajax_referer( 'wc_facebook_infobanner_jsx' );
 			$tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
 			$tip_id   = isset( $tip_info->tip_id )
 			? $tip_info->tip_id
@@ -102,6 +103,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 				'post tip xout event',
 				true
 			);
+			check_ajax_referer( 'wc_facebook_infobanner_jsx' );
 			$tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
 			$tip_id   = isset( $tip_info->tip_id )
 			? $tip_info->tip_id
