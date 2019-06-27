@@ -20,7 +20,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 	class WC_Facebookcommerce_Utils {
 
 		const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
-		const PLUGIN_VERSION        = '1.9.14';  // Change it in `facebook-for-*.php` also
+		const PLUGIN_VERSION        = '1.9.15';  // Change it in `facebook-for-*.php` also
 
 		const FB_VARIANT_IMAGE   = 'fb_image';
 		const FB_VARIANT_SIZE    = 'size';
