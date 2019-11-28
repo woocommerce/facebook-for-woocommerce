@@ -832,7 +832,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			,feedPingUrl: ''
 			,samples: <?php echo $this->get_sample_product_feed(); ?>
 	  }
-	  ,tokenExpired: '<?php echo $this->settings['fb_api_key'] && ! $this->get_page_name(); ?>'
+	  ,tokenExpired: '<?php echo isset( $this->settings['fb_api_key'] ) ? $this->settings['fb_api_key'] && ! $this->get_page_name() : ''; ?>'
 	};
 	</script>
 		<?php
