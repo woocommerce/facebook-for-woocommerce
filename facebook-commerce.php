@@ -757,6 +757,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		echo $products->found_posts;
 	}
 
+	private function get_global_feed_url() {
+		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
+		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
+		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
+		$url = $http . $_SERVER['HTTP_HOST'] . $begin_path. WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
+		return $url;
+  }
+
 	/**
 	 * Load DIA specific JS Data
 	 */
@@ -828,11 +836,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			,hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
 	  }
 	  ,feedPrepared: {
-			feedUrl: ''
+			feedUrl: '<?php echo $this->get_global_feed_url(); ?>'
 			,feedPingUrl: ''
 			,samples: <?php echo $this->get_sample_product_feed(); ?>
 	  }
-	  ,tokenExpired: '<?php echo $this->settings['fb_api_key'] && ! $this->get_page_name(); ?>'
 	};
 	</script>
 		<?php
