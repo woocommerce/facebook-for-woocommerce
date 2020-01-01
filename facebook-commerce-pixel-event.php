@@ -218,8 +218,8 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('%s', '%s', %s);",
 				WC_Facebookcommerce_Utils::getIntegrationName(),
-				$method,
-				$event_name,
+				esc_js( $method ),
+				esc_js( $event_name ),
 				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}
