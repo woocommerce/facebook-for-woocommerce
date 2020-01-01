@@ -286,22 +286,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			$event_params = [
+				'content_ids'  => json_encode( $this->get_content_ids_from_cart( WC()->cart->get_cart() ) ),
+				'content_type' => 'product',
+				'value'        => WC()->cart->total,
+				'currency'     => get_woocommerce_currency(),
+			];
+
 			ob_start();
 
 			echo '<script>';
 
-			$product_ids = $this->get_content_ids_from_cart( WC()->cart->get_cart() );
-
 			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-			echo $this->pixel->build_event(
-				'AddToCart',
-				array(
-					'content_ids'  => json_encode( $product_ids ),
-					'content_type' => 'product',
-					'value'        => WC()->cart->total,
-					'currency'     => get_woocommerce_currency(),
-				)
-			);
+			echo $this->pixel->build_event( 'AddToCart', $event_params );
 
 			echo '</script>';
 
