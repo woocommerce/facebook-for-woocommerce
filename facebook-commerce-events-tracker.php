@@ -289,6 +289,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$product_ids = $this->get_content_ids_from_cart( WC()->cart->get_cart() );
 
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 			echo $this->pixel->build_event(
 				'AddToCart',
 				array(
@@ -298,6 +299,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'currency'     => get_woocommerce_currency(),
 				)
 			);
+
 			echo '</script>';
 
 			$pixel = ob_get_clean();
