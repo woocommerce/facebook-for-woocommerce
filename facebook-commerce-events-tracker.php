@@ -108,8 +108,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Base pixel noscript to be injected on page body. This is to avoid W3
-		 * validation error.
+		 * Prints the base <noscript> pixel code.
+		 *
+		 * This is necessary to avoid W3 validation errors.
 		 */
 		public function inject_base_pixel_noscript() {
 
@@ -118,6 +119,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				echo $this->pixel->pixel_base_code_noscript();
 			}
 		}
+
 
 		/**
 		 * Triggers ViewCategory for product category listings
