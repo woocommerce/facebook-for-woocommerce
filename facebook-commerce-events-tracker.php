@@ -112,7 +112,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * validation error.
 		 */
 		public function inject_base_pixel_noscript() {
+
 			if ( self::$isEnabled ) {
+				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code_noscript();
 			}
 		}
