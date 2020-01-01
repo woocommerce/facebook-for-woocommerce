@@ -94,17 +94,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			);
 		}
 
+
 		/**
-		 * Base pixel code to be injected on page head. Because of this, it's better
-		 * to echo the return value than using
-		 * WC_Facebookcommerce_Utils::wc_enqueue_js() in this case
+		 * Prints the base JavaScript pixel code.
 		 */
 		public function inject_base_pixel() {
+
 			if ( self::$isEnabled ) {
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code();
 			}
 		}
+
 
 		/**
 		 * Base pixel noscript to be injected on page body. This is to avoid W3
