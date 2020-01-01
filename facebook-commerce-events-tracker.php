@@ -276,9 +276,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 		/**
-		 * Triggered by add_to_cart jquery trigger
+		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
+		 *
+		 * Handler for the fb_inject_add_to_cart_event WC Ajax action.
 		 */
 		public function inject_ajax_add_to_cart_event() {
+
 			if ( ! self::$isEnabled ) {
 				return;
 			}
