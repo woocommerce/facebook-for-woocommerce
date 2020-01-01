@@ -83,16 +83,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			?>
 	<div class="error below-h3">
 	  <p>
-			<?php
-			printf(
-				__(
-					'To use Facebook for WooCommerce,
-          please disable WP_DEBUG_DISPLAY in your wp-config.php file.
-          Contact your server administrator for more assistance.',
-					'facebook-for-woocommerce'
-				)
-			);
-			?>
+			<?php esc_html__( 'To use Facebook for WooCommerce, please disable WP_DEBUG_DISPLAY in your wp-config.php file. Contact your server administrator for more assistance.', 'facebook-for-woocommerce' ); ?>
 	  </p>
 	</div>
 			<?php
