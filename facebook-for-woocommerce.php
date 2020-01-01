@@ -80,12 +80,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		public function wp_debug_display_error() {
+
 			?>
-	<div class="error below-h3">
-	  <p>
-			<?php esc_html__( 'To use Facebook for WooCommerce, please disable WP_DEBUG_DISPLAY in your wp-config.php file. Contact your server administrator for more assistance.', 'facebook-for-woocommerce' ); ?>
-	  </p>
-	</div>
+			<div class="error below-h3">
+				<p>
+					<?php esc_html__( 'To use Facebook for WooCommerce, please disable WP_DEBUG_DISPLAY in your wp-config.php file. Contact your server administrator for more assistance.', 'facebook-for-woocommerce' ); ?>
+				</p>
+			</div>
 			<?php
 		}
 
