@@ -108,7 +108,7 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 									<p>
 										<label>
 											<input type="checkbox" id="icl_fb_woo_chk" name="<?php echo esc_attr( $language ); ?>" <?php checked( $set, FB_WPML_Language_Status::VISIBLE ); ?>>
-											<?php echo esc_html( $active_languages[ $language ]['native_name'] ); ?>
+											<?php echo isset( $active_languages[ $language ]['native_name'] ) ? esc_html( $active_languages[ $language ]['native_name'] ) : esc_html( $language ); ?>
 										</label>
 									</p>
 								<?php endforeach; ?>
