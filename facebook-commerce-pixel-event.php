@@ -162,8 +162,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 
-		public function inject_conditional_event(
-		$event_name, $params, $listener, $jsonified_pii = '' ) {
+		/**
+		 * Prints the JavaScript code to track a conditional event.
+		 *
+		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 *
+		 * @param string $event_name
+		 * @param array $params custom event parameters
+		 * @param string $listener name of the JavaScript event to listen for
+		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
+		 */
+		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+
 			$code             = self::build_event( $event_name, $params, 'track' );
 			$this->last_event = $event_name;
 
@@ -187,6 +197,7 @@ document.addEventListener('%s', function (event) {
 			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 			printf( $output, esc_js( $listener ), $code );
 		}
+
 
 		/**
 		 * Returns FB pixel code noscript part to avoid W3 validation error
