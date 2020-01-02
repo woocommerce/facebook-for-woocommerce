@@ -233,11 +233,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			return wp_nonce_url( $url, 'woocommerce_info_banner_dismiss' );
 		}
 
+
 		/**
-		 * Handles the dismiss action so that the banner can be permanently hidden
-		 * during time threshold
+		 * Handles the action that dismisses the info banner.
+		 *
+		 * The banner will remain dismissed for at least one day and until a new info tip can be retrieved.
+		 *
+		 * @see \WC_Facebookcommerce_Integration::FB_TIP_QUERY
+		 * @see \WC_Facebookcommerce_Graph_API::get_tip_info()
 		 */
 		public function dismiss_banner() {
+
 			if ( ! isset( $_GET['wc-notice'] ) ) {
 				return;
 			}
@@ -258,6 +264,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 				wp_safe_redirect( admin_url( 'admin.php?page=wc-settings&tab=integration' ) );
 			}
 		}
+
+
 	}
 
 endif;
