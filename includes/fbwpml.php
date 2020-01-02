@@ -93,50 +93,51 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 					WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL
 				);
 
-				?><div id="lang-sec-fb" class="wpml-section wpml-section-languages">
-		  <div class="wpml-section-header">
-			  <h3><?php _e( 'Facebook Visibility', 'sitepress' ); ?></h3>
-		  </div>
-		  <div class="wpml-section-content">
-			WooCommerce Products with languages that are selected
-			here will be visible to customers who see your Facebook Shop.
-
-			<div class="wpml-section-content-inner">
-			  <form id="icl_fb_woo" name="icl_fb_woo" action="">
-				<?php
-				foreach ( $settings as $language => $set ) {
-					$is_checked = $set === FB_WPML_Language_Status::VISIBLE ?
-					'checked' : '';
-					$str        = '
-                      <p><label>
-                        <input type="checkbox" id="icl_fb_woo_chk" name="' . $language . '" ' . $is_checked . '>
-                        ' . $active_languages[ $language ]['native_name'] . '
-                      </label></p>
-                    ';
-					echo $str;
-				}
 				?>
-			  <p class="buttons-wrap">
-				<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
-				  <?php echo $ajax_response; ?>
-				</span>
-				<input class="button button-primary"
-					   name="save"
-					   value="<?php _e( 'Save', 'sitepress' ); ?>"
-					   type="submit" />
-			  </p>
-			  </form>
-			  <script type="text/javascript">
-				addLoadEvent(function(){
-				  jQuery('#icl_fb_woo').submit(iclSaveForm);
-				  jQuery('#icl_fb_woo').submit(function(){
-					jQuery('#icl_ajx_response_fb').show();
-				  });
-				});
-			  </script>
-			</div>
-		  </div>
-	  </div>
+				<div id="lang-sec-fb" class="wpml-section wpml-section-languages">
+					<div class="wpml-section-header">
+						<h3><?php _e( 'Facebook Visibility', 'sitepress' ); ?></h3>
+					</div>
+					<div class="wpml-section-content">
+						WooCommerce Products with languages that are selected
+						here will be visible to customers who see your Facebook Shop.
+
+						<div class="wpml-section-content-inner">
+							<form id="icl_fb_woo" name="icl_fb_woo" action="">
+								<?php
+								foreach ( $settings as $language => $set ) {
+									$is_checked = $set === FB_WPML_Language_Status::VISIBLE ?
+									'checked' : '';
+									$str        = '
+									<p><label>
+										<input type="checkbox" id="icl_fb_woo_chk" name="' . $language . '" ' . $is_checked . '>
+										' . $active_languages[ $language ]['native_name'] . '
+									</label></p>
+									';
+									echo $str;
+								}
+								?>
+								<p class="buttons-wrap">
+									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
+									<?php echo $ajax_response; ?>
+									</span>
+									<input class="button button-primary"
+										name="save"
+										value="<?php _e( 'Save', 'sitepress' ); ?>"
+										type="submit" />
+								</p>
+							</form>
+							<script type="text/javascript">
+								addLoadEvent(function(){
+								jQuery('#icl_fb_woo').submit(iclSaveForm);
+								jQuery('#icl_fb_woo').submit(function(){
+									jQuery('#icl_ajx_response_fb').show();
+								});
+								});
+							</script>
+						</div>
+					</div>
+				</div>
 				<?php
 			}
 		}
