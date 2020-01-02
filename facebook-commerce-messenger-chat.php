@@ -44,6 +44,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 			add_action( 'wp_footer', array( $this, 'inject_messenger_chat_plugin' ) );
 		}
 
+
+		/**
+		 * Outputs the Facebook Messenger chat script.
+		 *
+		 * @internal
+		 */
 		public function inject_messenger_chat_plugin() {
 
 			if ( $this->enabled === 'yes' ) :
