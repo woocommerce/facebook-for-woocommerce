@@ -204,7 +204,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 <!-- DO NOT MODIFY -->
 <!-- End Facebook Pixel Code -->
     ',
-				esc_js( $pixel_id )
+				esc_attr( $pixel_id )
 			);
 		}
 
