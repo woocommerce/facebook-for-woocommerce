@@ -70,7 +70,9 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 		public function wpml_support() {
 			global $sitepress;
-			if ( strpos( $_GET['page'], 'languages.php' ) ) {
+
+			if ( isset( $_GET['page'] ) && false !== strpos( esc_url_raw( wp_unslash( $_GET['page'] ) ), 'languages.php' ) ) {
+
 				$active_languages = $sitepress->get_active_languages();
 				$settings         = get_option( self::OPTION );
 
