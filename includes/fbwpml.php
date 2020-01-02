@@ -96,7 +96,7 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 				?>
 				<div id="lang-sec-fb" class="wpml-section wpml-section-languages">
 					<div class="wpml-section-header">
-						<h3><?php _e( 'Facebook Visibility', 'sitepress' ); ?></h3>
+						<h3><?php esc_html_e( 'Facebook Visibility', 'facebook-for-woocommerce' ); ?></h3>
 					</div>
 					<div class="wpml-section-content">
 						WooCommerce Products with languages that are selected
