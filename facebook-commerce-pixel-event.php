@@ -174,8 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				sprintf( $this->pixel_init_code(), '" || ' . $jsonified_pii . ' || "' ) . $code;
 			}
 
-			printf(
-				"
+			$output = "
 <!-- Facebook Pixel Event Code -->
 <script>
 document.addEventListener('%s', function (event) {
@@ -183,10 +182,10 @@ document.addEventListener('%s', function (event) {
 }, false );
 </script>
 <!-- End Facebook Pixel Event Code -->
-      ",
-				$listener,
-				$code
-			);
+";
+
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			printf( $output, esc_js( $listener ), $code );
 		}
 
 		/**
