@@ -84,7 +84,10 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 						array_keys( $active_languages ),
 						FB_WPML_Language_Status::HIDDEN
 					);
-					$settings[ self::$default_lang ] = FB_WPML_Language_Status::VISIBLE;
+
+					if ( self::$default_lang ) {
+						$settings[ self::$default_lang ] = FB_WPML_Language_Status::VISIBLE;
+					}
 				}
 				$ajax_response = sprintf(
 					'Saved. You should now ' .
