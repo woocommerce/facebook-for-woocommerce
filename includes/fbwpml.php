@@ -103,19 +103,16 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 						<div class="wpml-section-content-inner">
 							<form id="icl_fb_woo" name="icl_fb_woo" action="">
-								<?php
-								foreach ( $settings as $language => $set ) {
-									$is_checked = $set === FB_WPML_Language_Status::VISIBLE ?
-									'checked' : '';
-									$str        = '
-									<p><label>
-										<input type="checkbox" id="icl_fb_woo_chk" name="' . $language . '" ' . $is_checked . '>
-										' . $active_languages[ $language ]['native_name'] . '
-									</label></p>
-									';
-									echo $str;
-								}
-								?>
+
+								<?php foreach ( $settings as $language => $set ) : ?>
+									<p>
+										<label>
+											<input type="checkbox" id="icl_fb_woo_chk" name="<?php echo esc_attr( $language ); ?>" <?php checked( $set, FB_WPML_Language_Status::VISIBLE ); ?>>
+											<?php echo esc_html( $active_languages[ $language ]['native_name'] ); ?>
+										</label>
+									</p>
+								<?php endforeach; ?>
+
 								<p class="buttons-wrap">
 									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
 									<?php echo $ajax_response; ?>
