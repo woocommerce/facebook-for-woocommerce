@@ -68,6 +68,12 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 			}
 		}
 
+
+		/**
+		 * Prints the content for Facebook Visibility section.
+		 *
+		 * The section is shown at the bottom of the WPML > Languages settings page.
+		 */
 		public function wpml_support() {
 			global $sitepress;
 
@@ -139,6 +145,8 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 				<?php
 			}
 		}
+
+
 	}
 
 endif;
