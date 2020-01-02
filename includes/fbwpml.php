@@ -99,8 +99,7 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 						<h3><?php esc_html_e( 'Facebook Visibility', 'facebook-for-woocommerce' ); ?></h3>
 					</div>
 					<div class="wpml-section-content">
-						WooCommerce Products with languages that are selected
-						here will be visible to customers who see your Facebook Shop.
+						<?php esc_html_e( 'WooCommerce Products with languages that are selected here will be visible to customers who see your Facebook Shop.', 'facebook-for-woocommerce' ); ?>
 
 						<div class="wpml-section-content-inner">
 							<form id="icl_fb_woo" name="icl_fb_woo" action="">
