@@ -62,7 +62,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 						%s
 						%s
 						%s
-					/></div>
+					></div>
 					<!-- Facebook JSSDK -->
 					<script>
 					  window.fbAsyncInit = function() {
