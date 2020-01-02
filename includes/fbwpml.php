@@ -71,6 +71,8 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 		public function wpml_support() {
 			global $sitepress;
 
+			// there is no nonce to check here and the value of $_GET['page] is being compared against a known and safe string
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( isset( $_GET['page'] ) && false !== strpos( esc_url_raw( wp_unslash( $_GET['page'] ) ), 'languages.php' ) ) {
 
 				$active_languages = $sitepress->get_active_languages();
