@@ -201,17 +201,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			}
 
 			$dismiss_url = $this->dismiss_url();
-			echo '<div class="updated fade"><div id="fbinfobanner"><div><img src="' . $tip_img_url .
-			'" class="iconDetails"></div><p class = "tipTitle">' .
-			__( '<strong>' . $tip_title . '</strong>', 'facebook-for-woocommerce' ) . "\n";
-			echo '<p class = "tipContent">' .
-			__( $tip_body, 'facebook-for-woocommerce' ) . '</p>';
-			echo '<p class = "tipButton"><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' .
-			__( 'Click and redirect.', 'facebook-for-woocommerce' ) .
-			'"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>' .
-			'<a href="' . esc_url( $dismiss_url ) . '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout(); return true;" title="' .
-			__( 'Dismiss this notice.', 'facebook-for-woocommerce' ) .
-			'"> ' . __( 'Dismiss', 'facebook-for-woocommerce' ) . '</a></p></div></div>';
+
+			echo '<div class="updated fade">';
+			echo '<div id="fbinfobanner">';
+			echo '<div><img src="' . $tip_img_url . '" class="iconDetails"></div>';
+			echo '<p class = "tipTitle">' . __( '<strong>' . $tip_title . '</strong>', 'facebook-for-woocommerce' ) . "\n";
+			echo '<p class = "tipContent">' . __( $tip_body, 'facebook-for-woocommerce' ) . '</p>';
+			echo '<p class = "tipButton">';
+			echo '<a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' . __( 'Click and redirect.', 'facebook-for-woocommerce' ) . '"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>';
+			echo '<a href="' . esc_url( $dismiss_url ) . '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout(); return true;" title="' . __( 'Dismiss this notice.', 'facebook-for-woocommerce' ) . '"> ' . __( 'Dismiss', 'facebook-for-woocommerce' ) . '</a>';
+			echo '</p></div></div>';
 		}
 
 		/**
