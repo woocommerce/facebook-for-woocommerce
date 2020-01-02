@@ -208,7 +208,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			echo '<p class = "tipTitle"><strong>' . esc_html( $tip_title ) . "</strong></p>\n";
 			echo '<p class = "tipContent">' . esc_html( $tip_body ) . '</p>';
 			echo '<p class = "tipButton">';
-			echo '<a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' . __( 'Click and redirect.', 'facebook-for-woocommerce' ) . '"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>';
+			echo '<a href="' . esc_url( $tip_action_link ) . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' . __( 'Click and redirect.', 'facebook-for-woocommerce' ) . '"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>';
 			echo '<a href="' . esc_url( $dismiss_url ) . '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout(); return true;" title="' . __( 'Dismiss this notice.', 'facebook-for-woocommerce' ) . '"> ' . __( 'Dismiss', 'facebook-for-woocommerce' ) . '</a>';
 			echo '</p></div></div>';
 		}
