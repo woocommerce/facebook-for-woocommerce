@@ -205,7 +205,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			echo '<div class="updated fade">';
 			echo '<div id="fbinfobanner">';
 			echo '<div><img src="' . esc_url( $tip_img_url ) . '" class="iconDetails"></div>';
-			echo '<p class = "tipTitle">' . __( '<strong>' . $tip_title . '</strong>', 'facebook-for-woocommerce' ) . "\n";
+			echo '<p class = "tipTitle"><strong>' . esc_html( $tip_title ) . "</strong></p>\n";
 			echo '<p class = "tipContent">' . __( $tip_body, 'facebook-for-woocommerce' ) . '</p>';
 			echo '<p class = "tipButton">';
 			echo '<a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' . __( 'Click and redirect.', 'facebook-for-woocommerce' ) . '"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>';
