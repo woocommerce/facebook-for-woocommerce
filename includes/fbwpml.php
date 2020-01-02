@@ -127,7 +127,7 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 									</span>
 									<input class="button button-primary"
 										name="save"
-										value="<?php _e( 'Save', 'sitepress' ); ?>"
+										value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
 										type="submit" />
 								</p>
 							</form>
