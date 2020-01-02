@@ -1,1 +1,7 @@
-vendor
+# IDE
+/.project
+/.settings
+/.idea
+
+# composer packages
+/vendor
