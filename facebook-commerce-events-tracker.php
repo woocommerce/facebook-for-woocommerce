@@ -94,26 +94,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			);
 		}
 
+
 		/**
-		 * Base pixel code to be injected on page head. Because of this, it's better
-		 * to echo the return value than using
-		 * WC_Facebookcommerce_Utils::wc_enqueue_js() in this case
+		 * Prints the base JavaScript pixel code.
 		 */
 		public function inject_base_pixel() {
+
 			if ( self::$isEnabled ) {
+				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code();
 			}
 		}
 
+
 		/**
-		 * Base pixel noscript to be injected on page body. This is to avoid W3
-		 * validation error.
+		 * Prints the base <noscript> pixel code.
+		 *
+		 * This is necessary to avoid W3 validation errors.
 		 */
 		public function inject_base_pixel_noscript() {
+
 			if ( self::$isEnabled ) {
+				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code_noscript();
 			}
 		}
+
 
 		/**
 		 * Triggers ViewCategory for product category listings
@@ -270,28 +276,30 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 		/**
-		 * Triggered by add_to_cart jquery trigger
+		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
+		 *
+		 * Handler for the fb_inject_add_to_cart_event WC Ajax action.
 		 */
 		public function inject_ajax_add_to_cart_event() {
+
 			if ( ! self::$isEnabled ) {
 				return;
 			}
+
+			$event_params = [
+				'content_ids'  => json_encode( $this->get_content_ids_from_cart( WC()->cart->get_cart() ) ),
+				'content_type' => 'product',
+				'value'        => WC()->cart->total,
+				'currency'     => get_woocommerce_currency(),
+			];
 
 			ob_start();
 
 			echo '<script>';
 
-			$product_ids = $this->get_content_ids_from_cart( WC()->cart->get_cart() );
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			echo $this->pixel->build_event( 'AddToCart', $event_params );
 
-			echo $this->pixel->build_event(
-				'AddToCart',
-				array(
-					'content_ids'  => json_encode( $product_ids ),
-					'content_type' => 'product',
-					'value'        => WC()->cart->total,
-					'currency'     => get_woocommerce_currency(),
-				)
-			);
 			echo '</script>';
 
 			$pixel = ob_get_clean();
