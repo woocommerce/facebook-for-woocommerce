@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			$code             = self::build_event( $event_name, $params, 'track' );
 			$this->last_event = $event_name;
 
+			/** TODO: use the settings stored by {@see \WC_Facebookcommerce_Integration}. The use_pii setting here is currently always disabled regardless of the value configured in the plugin settings page {WV-2020-01-02} */
 			// Prepends fbq(...) with pii information to the injected code.
 			if ( $jsonified_pii && get_option( self::SETTINGS_KEY )[ self::USE_PII_KEY ] ) {
 				$this->user_info = '%s';
