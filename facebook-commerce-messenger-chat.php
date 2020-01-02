@@ -44,44 +44,55 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 			add_action( 'wp_footer', array( $this, 'inject_messenger_chat_plugin' ) );
 		}
 
-		public function inject_messenger_chat_plugin() {
-			if ( $this->enabled === 'yes' ) {
-				echo sprintf(
-					"<div
-  attribution=\"fbe_woocommerce\"
-  class=\"fb-customerchat\"
-  page_id=\"%s\"
-  %s
-  %s
-  %s /></div>
-<!-- Facebook JSSDK -->
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId            : '',
-      autoLogAppEvents : true,
-      xfbml            : true,
-      version          : '%s'
-    });
-  };
 
-  (function(d, s, id){
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) {return;}
-      js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/%s/sdk/xfbml.customerchat.js';
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-</script>
-<div></div>",
-					$this->page_id,
-					$this->theme_color_code ? sprintf( 'theme_color="%s"', $this->theme_color_code ) : '',
-					$this->greeting_text_code ? sprintf( 'logged_in_greeting="%s"', $this->greeting_text_code ) : '',
-					$this->greeting_text_code ? sprintf( 'logged_out_greeting="%s"', $this->greeting_text_code ) : '',
-					$this->jssdk_version,
-					$this->locale ? $this->locale : 'en_US'
+		/**
+		 * Outputs the Facebook Messenger chat script.
+		 *
+		 * @internal
+		 */
+		public function inject_messenger_chat_plugin() {
+
+			if ( $this->enabled === 'yes' ) :
+
+				printf( "
+					<div
+						attribution=\"fbe_woocommerce\"
+						class=\"fb-customerchat\"
+						page_id=\"%s\"
+						%s
+						%s
+						%s
+					></div>
+					<!-- Facebook JSSDK -->
+					<script>
+					  window.fbAsyncInit = function() {
+					    FB.init({
+					      appId            : '',
+					      autoLogAppEvents : true,
+					      xfbml            : true,
+					      version          : '%s'
+					    });
+					  };
+
+					  (function(d, s, id){
+					      var js, fjs = d.getElementsByTagName(s)[0];
+					      if (d.getElementById(id)) {return;}
+					      js = d.createElement(s); js.id = id;
+					      js.src = 'https://connect.facebook.net/%s/sdk/xfbml.customerchat.js';
+					      fjs.parentNode.insertBefore(js, fjs);
+					    }(document, 'script', 'facebook-jssdk'));
+					</script>
+					<div></div>
+					",
+					esc_attr( $this->page_id ),
+					esc_html( $this->theme_color_code   ? sprintf( 'theme_color="%s"', esc_attr( $this->theme_color_code ) ) : '' ),
+					esc_html( $this->greeting_text_code ? sprintf( 'logged_in_greeting="%s"', esc_attr( $this->greeting_text_code ) ) : '' ),
+					esc_html( $this->greeting_text_code ? sprintf( 'logged_out_greeting="%s"', esc_attr( $this->greeting_text_code ) ) : '' ),
+					esc_js( $this->jssdk_version ),
+					esc_js( $this->locale ?: 'en_US' )
 				);
-			}
+
+			endif;
 		}
 
 	}
