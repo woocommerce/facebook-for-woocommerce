@@ -89,12 +89,6 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 						$settings[ self::$default_lang ] = FB_WPML_Language_Status::VISIBLE;
 					}
 				}
-				$ajax_response = sprintf(
-					'Saved. You should now ' .
-					' <a href="%s&fb_force_resync=true">Re-Sync</a>' .
-					' your products with Facebook. ',
-					WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL
-				);
 
 				?>
 				<div id="lang-sec-fb" class="wpml-section wpml-section-languages">
