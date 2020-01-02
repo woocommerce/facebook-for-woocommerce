@@ -31,37 +31,25 @@
 	<rule ref="WordPress-Extra"/>
 	<rule ref="PHPCompatibility"/>
 
-	<rule ref="WordPress.VIP.ValidatedSanitizedInput">
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
 		<properties>
 			<property name="customSanitizingFunctions" type="array" value="wc_clean,wc_sanitize_tooltip,wc_format_decimal,wc_stock_amount,wc_sanitize_permalink,wc_sanitize_textarea" />
 		</properties>
 	</rule>
 
-	<rule ref="WordPress.XSS.EscapeOutput">
+	<rule ref="WordPress.Security.EscapeOutput">
 		<properties>
 			<property name="customEscapingFunctions" type="array" value="wc_help_tip,wc_sanitize_tooltip,wc_selected" />
 		</properties>
 	</rule>
 
 	<!-- really Important Sniffs -->
-	<rule ref="WordPress.XSS">
+	<rule ref="WordPress.Security">
 		<severity>10</severity>
 	</rule>
 
-	<rule ref="WordPress.CSRF">
+	<rule ref="WordPress.DB.PreparedSQL">
 		<severity>10</severity>
-	</rule>
-
-	<rule ref="WordPress.WP.PreparedSQL">
-		<severity>10</severity>
-	</rule>
-
-	<!-- Unimportant Sniffs -->
-	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
-		<!-- From "Extra": The create_function group is excluded as WP core still supports PHP 5.2 and 5.2 does not support anonymous functions. -->
-		<properties>
-			<property name="exclude" value="create_function"/>
-		</properties>
 	</rule>
 
 	<!-- Unimportant Sniffs -->
