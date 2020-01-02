@@ -125,11 +125,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			return $event_name === $this->last_event;
 		}
 
+
 		/**
-		 * Preferred method to inject events in a page, normally you should use this
-		 * instead of WC_Facebookcommerce_Pixel::build_event()
+		 * Prints or enqueues the JavaScript code to track an event.
+		 *
+		 * Preferred method to inject events in a page.
+		 *
+		 * @see \WC_Facebookcommerce_Pixel::build_event()
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $method name of the pixel's fbq() function to call
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
+
 			$code             = self::build_event( $event_name, $params, $method );
 			$this->last_event = $event_name;
 
@@ -151,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				printf( $output, $code );
 			}
 		}
+
 
 		public function inject_conditional_event(
 		$event_name, $params, $listener, $jsonified_pii = '' ) {
