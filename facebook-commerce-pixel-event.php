@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- DO NOT MODIFY -->
 <!-- %s Facebook Integration end -->
     ",
-				WC_Facebookcommerce_Utils::getIntegrationName(),
+				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() ),
 				self::get_basecode(),
 				$this->pixel_init_code(),
 				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-				WC_Facebookcommerce_Utils::getIntegrationName()
+				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() )
 			);
 		}
 
