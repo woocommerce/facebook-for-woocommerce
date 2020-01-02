@@ -134,18 +134,21 @@ document.addEventListener('DOMContentLoaded', function() {
 			$this->last_event = $event_name;
 
 			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+
 				WC_Facebookcommerce_Utils::wc_enqueue_js( $code );
+
 			} else {
-				printf(
-					'
+
+				$output = '
 <!-- Facebook Pixel Event Code -->
 <script>
 %s
 </script>
 <!-- End Facebook Pixel Event Code -->
-        ',
-					$code
-				);
+';
+
+				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+				printf( $output, $code );
 			}
 		}
 
