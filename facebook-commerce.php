@@ -2401,28 +2401,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Display relevant messages to user from transients, clear once displayed
-	 *
-	 * @param void
+	 * Displays relevant messages to user from transients, clear once displayed.
 	 */
 	public function maybe_display_facebook_api_messages() {
+
 		$error_msg = get_transient( 'facebook_plugin_api_error' );
 
 		if ( $error_msg ) {
-			echo $this->get_message_html(
-				sprintf(
-					__(
-						'Facebook extension error: %s ',
-						'facebook-for-woocommerce'
-					),
-					$error_msg
-				)
+
+			$message = sprintf(
+				__(
+					'Facebook extension error: %s ',
+					'facebook-for-woocommerce'
+				),
+				$error_msg
 			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message );
+
 			delete_transient( 'facebook_plugin_api_error' );
 
 			WC_Facebookcommerce_Utils::fblog(
 				$error_msg,
-				array(),
+				[],
 				true
 			);
 		}
@@ -2430,44 +2432,52 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$warning_msg = get_transient( 'facebook_plugin_api_warning' );
 
 		if ( $warning_msg ) {
-			echo $this->get_message_html(
-				__( $warning_msg, 'facebook-for-woocommerce' ),
-				'warning'
-			);
+
+			$message = __( $warning_msg, 'facebook-for-woocommerce' );
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message, 'warning' );
+
 			delete_transient( 'facebook_plugin_api_warning' );
 		}
 
 		$success_msg = get_transient( 'facebook_plugin_api_success' );
 
 		if ( $success_msg ) {
-			echo $this->get_message_html(
-				__( $success_msg, 'facebook-for-woocommerce' ),
-				'success'
-			);
+
+			$message = __( $success_msg, 'facebook-for-woocommerce' );
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html($message, 'success' );
+
 			delete_transient( 'facebook_plugin_api_success' );
 		}
 
 		$info_msg = get_transient( 'facebook_plugin_api_info' );
 
 		if ( $info_msg ) {
-			echo $this->get_message_html(
-				__( $info_msg, 'facebook-for-woocommerce' ),
-				'info'
-			);
+
+			$message = __( $info_msg, 'facebook-for-woocommerce' );
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message, 'info' );
+
 			delete_transient( 'facebook_plugin_api_info' );
 		}
 
 		$sticky_msg = get_transient( 'facebook_plugin_api_sticky' );
 
 		if ( $sticky_msg ) {
-			echo $this->get_message_html(
-				__( $sticky_msg, 'facebook-for-woocommerce' ),
-				'info'
-			);
-			// Transient must be deleted elsewhere, or wait for timeout
-		}
 
+			$message = __( $sticky_msg, 'facebook-for-woocommerce' );
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message, 'info' );
+
+			// transient must be deleted elsewhere, or wait for timeout
+		}
 	}
+
 
 	function get_page_name() {
 		$page_name = '';
