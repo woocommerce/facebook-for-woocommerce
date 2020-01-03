@@ -716,35 +716,46 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Renders the content of the product meta box.
 	 */
 	public function fb_product_meta_box_html() {
+
 		global $post;
+
 		$woo_product         = new WC_Facebook_Product( $post->ID );
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
 			$post->ID,
 			$woo_product
 		);
+
 		printf( '<span id="fb_metadata">' );
+
 		if ( $fb_product_group_id ) {
+
 			printf(
 				'Facebook ID: <a href="https://facebook.com/' .
 				$fb_product_group_id . '" target="_blank">' .
 				$fb_product_group_id . '</a><p/>'
 			);
+
 			if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
-				  printf( '<p>Variant IDs:<br/>' );
-				  $children = $woo_product->get_children();
+
+				printf( '<p>Variant IDs:<br/>' );
+				$children = $woo_product->get_children();
+
 				foreach ( $children as $child_id ) {
+
 					$fb_product_item_id = $this->get_product_fbid(
 						self::FB_PRODUCT_ITEM_ID,
 						$child_id
 					);
+
 					printf(
 						$child_id . ' : <a href="https://facebook.com/' .
 						$fb_product_item_id . '" target="_blank">' .
 						$fb_product_item_id . '</a><br/>'
 					);
 				}
-				  printf( '</p>' );
+
+				printf( '</p>' );
 			}
 
 			$checkbox_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
@@ -754,22 +765,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				self::FB_VISIBILITY,
 				$checkbox_value === '' ? '' : 'checked'
 			);
+
 			printf( '<p/><input name="is_product_page" type="hidden" value="1"' );
 
 			printf(
 				'<p/><a href="#" onclick="fb_reset_product(%1$s)">
-          Reset Facebook metadata</a>',
+				Reset Facebook metadata</a>',
 				$post->ID
 			);
 
 			printf(
 				'<p/><a href="#" onclick="fb_delete_product(%1$s)">
-          Delete product(s) on Facebook</a>',
+				Delete product(s) on Facebook</a>',
 				$post->ID
 			);
+
 		} else {
+
 			printf( '<b>This product is not yet synced to Facebook.</b>' );
 		}
+
 		printf( '</span>' );
 	}
 
