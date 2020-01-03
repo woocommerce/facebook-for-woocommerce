@@ -2386,8 +2386,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		ob_start();
 
 		?>
-			<div class="notice is-dismissible notice-<?php echo $type; ?>">
-				<p><?php echo $message; ?></p>
+			<div class="notice is-dismissible notice-<?php echo esc_attr( $type ); ?>">
+				<p>
+				<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $message;
+				?>
+				</p>
 			</div>
 		<?php
 
