@@ -2780,7 +2780,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 								<input
 									type="time"
-									value="<?php echo get_option( 'woocommerce_fb_autosync_time', '23:00' ); ?>"
+									value="<?php echo esc_attr( get_option( 'woocommerce_fb_autosync_time', '23:00' ) ); ?>"
 									class="autosyncTime"
 									onfocusout="saveAutoSyncSchedule()"
 									<?php echo get_option( 'woocommerce_fb_autosync_time', 0 ) ? '' : 'disabled'; ?> />
@@ -2811,10 +2811,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			<div <?php echo ( $hide_test ) ? ' style="display:none;" ' : ''; ?> >
 				<p class="tooltip" id="test_product_sync">
 					<?php // WP_DEBUG mode: button to launch test ?>
-					<a href="<?php echo WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL; ?>&fb_test_product_sync=true">
+					<a href="<?php echo esc_attr( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ); ?>&fb_test_product_sync=true">
 						<?php echo esc_html__( 'Launch Test', $domain ); ?>
 						<span class='tooltiptext'>
-							<?php _e( 'This button will run an integration test suite verifying the extension. Note that this will reset your products and resync them to Facebook. Not recommended to use unless you are changing the extension code and want to test your changes.', $domain ); ?>
+							<?php esc_html_e( 'This button will run an integration test suite verifying the extension. Note that this will reset your products and resync them to Facebook. Not recommended to use unless you are changing the extension code and want to test your changes.', $domain ); ?>
 						</span>
 					</a>
 				</p>
