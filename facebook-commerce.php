@@ -599,6 +599,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return array_merge( $columns, $existing_columns );
 	}
 
+
+	/**
+	 * Renders the content for the FB Shop custom column.
+	 *
+	 * @param string $column_name name of the column to display
+	 */
 	public function fb_render_product_columns( $column ) {
 		global $post, $the_product;
 		$ajax_data = array(
