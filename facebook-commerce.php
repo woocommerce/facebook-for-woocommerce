@@ -896,18 +896,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		store: {
 			baseUrl: window.location.protocol + '//' + window.location.host,
 			baseCurrency:'<?php echo esc_js( WC_Admin_Settings::get_option( 'woocommerce_currency' ) ); ?>',
-			timezoneId: '<?php echo date( 'Z' ); ?>',
+			timezoneId: '<?php echo esc_js( date( 'Z' ) ); ?>',
 			storeName: '<?php echo esc_js( WC_Facebookcommerce_Utils::get_store_name() ); ?>',
-			version: '<?php echo WC()->version; ?>',
+			version: '<?php echo esc_js( WC()->version ) ; ?>',
 			php_version: '<?php echo PHP_VERSION; ?>',
-			plugin_version: '<?php echo WC_Facebookcommerce_Utils::PLUGIN_VERSION; ?>'
+			plugin_version: '<?php echo esc_js( WC_Facebookcommerce_Utils::PLUGIN_VERSION ); ?>'
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->feed_id ); ?>'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo $this->get_global_feed_url(); ?>',
+			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
 			feedPingUrl: '',
 			samples: <?php echo $this->get_sample_product_feed(); ?>
 		}
