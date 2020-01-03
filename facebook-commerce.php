@@ -2499,28 +2499,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return string
 	 */
 	function get_nux_message_ifexist() {
-		$nux_type_to_elemid_map  = array(
+
+		$nux_type_to_elemid_map = [
 			'messenger_chat'     => 'connect_button',
 			'instagram_shopping' => 'connect_button',
-		);
-		$nux_type_to_message_map = array(
+		];
+
+		$nux_type_to_message_map = [
 			'messenger_chat'     => __( 'Get started with Messenger Customer Chat' ),
 			'instagram_shopping' => __( 'Get started with Instagram Shopping' ),
-		);
+		];
+
+		$message = '';
+
 		if ( isset( $_GET['nux'] ) ) {
-			return sprintf(
-				'<div class="nux-message" style="display: none;" data-target="%s">
-          <div class="nux-message-text">%s</div>
-          <div class="nux-message-arrow"></div>
-          <i class="nux-message-close-btn">x</i>
-        </div>
-        <script>(function() { fbe_init_nux_messages(); })();</script>',
-				$nux_type_to_elemid_map[ sanitize_text_field( $_GET['nux'] ) ],
-				$nux_type_to_message_map[ sanitize_text_field( $_GET['nux'] ) ]
-			);
-		} else {
-			return '';
+
+			ob_start();
+
+			?>
+
+			<div class="nux-message" style="display: none;"
+			     data-target="<?php echo esc_attr( $nux_type_to_elemid_map[ sanitize_text_field( $_GET['nux'] ) ] ); ?>">
+				<div class="nux-message-text">
+					<?php echo esc_attr( $nux_type_to_message_map[ sanitize_text_field( $_GET['nux'] ) ] ); ?>
+				</div>
+				<div class="nux-message-arrow"></div>
+				<i class="nux-message-close-btn">x</i>
+			</div>
+			<script>( function () { fbe_init_nux_messages(); } )();</script>
+
+			<?php
+
+			$message = ob_get_clean();
 		}
+
+		return $message;
 	}
 
 
