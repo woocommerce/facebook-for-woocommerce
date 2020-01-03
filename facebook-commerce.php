@@ -2378,9 +2378,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Get message
+	 * Gets message HTML.
 	 *
-	 * @return string Error
+	 * @return string
 	 */
 	private function get_message_html( $message, $type = 'error' ) {
 		ob_start();
@@ -2392,6 +2392,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<?php
 		return ob_get_clean();
 	}
+
 
 	/**
 	 * Display relevant messages to user from transients, clear once displayed
