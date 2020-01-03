@@ -124,8 +124,8 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 								<p class="buttons-wrap">
 									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
 										<?php printf(
-											/* translators: 1 - opening link HTML tag, 2 - closing link HTML tag */
-											esc_html( 'Saved. You should now %1$sRe-Sync%2$s your products with Facebook.', 'facebook-for-woocommerce' ),
+											/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
+											esc_html__( 'Saved. You should now %1$sRe-Sync%2$s your products with Facebook.', 'facebook-for-woocommerce' ),
 											sprintf( '<a href="%s">', esc_url( add_query_arg( 'fb_force_resync', 'true', WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) ) ),
 											'</a>'
 										); ?>
