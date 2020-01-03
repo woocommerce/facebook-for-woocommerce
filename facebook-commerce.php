@@ -638,21 +638,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				printf(
 					'<span class="tips" id="tip_%1$s" data-tip="%2$s">',
-					$post->ID,
-					$data_tip
+					esc_attr( $post->ID ),
+					esc_attr( $data_tip )
 				);
 
 				if ( $viz_value === '' ) {
 					printf(
 						'<a id="viz_%1$s" class="button button-primary button-large"
             href="javascript:;" onclick="fb_toggle_visibility(%1$s, true)">Show</a>',
-						$post->ID
+						esc_attr( $post->ID )
 					);
 				} else {
 					printf(
 						'<a id="viz_%1$s" class="button" href="javascript:;"
             onclick="fb_toggle_visibility(%1$s, false)">Hide</a>',
-						$post->ID
+						esc_attr( $post->ID )
 					);
 				}
 			}
