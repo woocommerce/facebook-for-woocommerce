@@ -2556,10 +2556,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$nux_message       = $this->get_nux_message_ifexist();
 
 		?>
-		<h2><?php _e( 'Facebook', $domain ); ?></h2>
+		<h2><?php esc_html_e( 'Facebook', $domain ); ?></h2>
 		<p>
 			<?php
-			_e(
+			esc_html_e(
 				'Control how WooCommerce integrates with your Facebook store.',
 				$domain
 			);
@@ -2579,14 +2579,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					<h1 id="setup_h1">
 						<?php
 							$pre_setup
-								? _e( 'Grow your business on Facebook', $domain )
-								: _e( 'Reach The Right People and Sell More Online', $domain );
+								? esc_html_e( 'Grow your business on Facebook', $domain )
+								: esc_html_e( 'Reach The Right People and Sell More Online', $domain );
 						?>
 					</h1>
 
 					<h2>
 						<?php
-							_e(
+							esc_html_e(
 								'Use this WooCommerce and Facebook integration to:',
 								$domain
 							);
@@ -2597,22 +2597,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<li id="setup_l1">
 							<?php
 								$pre_setup
-									? _e( 'Easily install a tracking pixel', $domain )
-									: _e( 'Create an ad in a few steps', $domain );
+									? esc_html_e( 'Easily install a tracking pixel', $domain )
+									: esc_html_e( 'Create an ad in a few steps', $domain );
 							?>
 						</li>
 						<li id="setup_l2">
 							<?php
 								$pre_setup
-									? _e( 'Upload your products and create a shop', $domain )
-									: _e( 'Use built-in best practices for online sales', $domain );
+									? esc_html_e( 'Upload your products and create a shop', $domain )
+									: esc_html_e( 'Use built-in best practices for online sales', $domain );
 							?>
 						</li>
 						<li id="setup_l3">
 							<?php
 								$pre_setup
-									? _e( 'Create dynamic ads with your products and pixel', $domain )
-									: _e( 'Get reporting on sales and revenue', $domain );
+									? esc_html_e( 'Create dynamic ads with your products and pixel', $domain )
+									: esc_html_e( 'Get reporting on sales and revenue', $domain );
 							?>
 						</li>
 					</ul>
@@ -2646,10 +2646,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							<?php echo ( $pre_setup && $can_manage ) ? ' style="display:none;"' : ''; ?>
 						>
 
-							<h1><?php echo __( 'Add Ways for People to Shop' ); ?></h1>
-							<h2><?php echo __( 'Connect your business with features such as Messenger and more.' ); ?></h2>
+							<h1><?php esc_html_e( 'Add Ways for People to Shop' ); ?></h1>
+							<h2><?php esc_html_e( 'Connect your business with features such as Messenger and more.' ); ?></h2>
 							<a href="#" class="btn small" onclick="facebookConfig()" id="connect_button">
-								<?php echo __( 'Add Features' ); ?>
+								<?php esc_html_e( 'Add Features' ); ?>
 							</a>
 						</div>
 
@@ -2662,12 +2662,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							<?php if ( $apikey_invalid ): // API key is set, but no page name ?>
 
 								<h2 id="token_text" style="color:red;">
-									<?php echo __('Your API key is no longer valid. Please click "Settings > Advanced Options > Update Token".', $domain); ?>
+									<?php esc_html_e('Your API key is no longer valid. Please click "Settings > Advanced Options > Update Token".', $domain); ?>
 								</h2>
 
 								<span>
 									<a href="#" class="btn small" onclick="facebookConfig()" id="setting_button">
-										<?php echo __( 'Settings', $domain ); ?>
+										<?php esc_html_e( 'Settings', $domain ); ?>
 									</a>
 								</span>
 
@@ -2676,14 +2676,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 								<?php if (! $can_manage ): ?>
 
 									<h2 style="color:red;">
-										<?php echo __('You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
+										<?php esc_html_e('You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
 									</h2>
 
 								<?php else: ?>
 
 									<h2>
 										<span id="connection_status" <?php echo ! $connected ? ' style="display: none;"' : ''; ?>>
-											<?php echo __( 'Your WooCommerce store is connected to ', $domain ); ?>
+											<?php esc_html_e( 'Your WooCommerce store is connected to ', $domain ); ?>
 											<?php if ( $page_name != '' ): ?>
 												<?php echo sprintf(
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
