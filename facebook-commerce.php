@@ -726,19 +726,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product
 		);
 
-		printf( '<span id="fb_metadata">' );
+		?>
+			<span id="fb_metadata">
+		<?php
 
 		if ( $fb_product_group_id ) {
 
-			printf(
-				'Facebook ID: <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' .
-				$fb_product_group_id . '</a><p/>'
-			);
+			?>
+				Facebook ID:
+				<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
+				target="_blank">
+					<?php echo esc_html( $fb_product_group_id); ?>
+				</a>
+				<p/>
+			<?php
 
 			if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
 
-				printf( '<p>Variant IDs:<br/>' );
+				?>
+					<p>Variant IDs:<br/>
+				<?php
+
 				$children = $woo_product->get_children();
 
 				foreach ( $children as $child_id ) {
@@ -748,44 +756,54 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						$child_id
 					);
 
-					printf(
-						$child_id . ' : <a href="https://facebook.com/' .
-						$fb_product_item_id . '" target="_blank">' .
-						$fb_product_item_id . '</a><br/>'
-					);
+					?>
+						<?php echo esc_html( $child_id ); ?>:
+						<a href="https://facebook.com/<?php echo esc_attr( $fb_product_item_id ); ?>"
+						target="_blank">
+							<?php echo esc_html( $fb_product_item_id ); ?>
+						</a><br/>
+					<?php
 				}
 
-				printf( '</p>' );
+				?>
+					</p>
+				<?php
 			}
 
 			$checkbox_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
 
-			printf(
-				'Visible:  <input name="%1$s" type="checkbox" value="1" %2$s/>',
-				self::FB_VISIBILITY,
-				$checkbox_value === '' ? '' : 'checked'
-			);
+			?>
+				Visible:
+				<input name="<?php echo esc_attr( self::FB_VISIBILITY ); ?>"
+				type="checkbox"
+				value="1"
+				<?php echo ( $checkbox_value === '' ? '' : 'checked' ); ?>/>
 
-			printf( '<p/><input name="is_product_page" type="hidden" value="1"' );
+				<p/>
+				<input name="is_product_page" type="hidden" value="1"
 
-			printf(
-				'<p/><a href="#" onclick="fb_reset_product(%1$s)">
-				Reset Facebook metadata</a>',
-				$post->ID
-			);
+				<p/>
+				<a href="#" onclick="fb_reset_product( <?php echo esc_js( $post->ID ); ?> )">
+					Reset Facebook metadata
+				</a>
 
-			printf(
-				'<p/><a href="#" onclick="fb_delete_product(%1$s)">
-				Delete product(s) on Facebook</a>',
-				$post->ID
-			);
+				<p/>
+				<a href="#" onclick="fb_delete_product( <?php echo esc_js( $post->ID ); ?> )">
+					Delete product(s) on Facebook
+				</a>
+
+			<?php
 
 		} else {
 
-			printf( '<b>This product is not yet synced to Facebook.</b>' );
+			?>
+				<b>This product is not yet synced to Facebook.</b>
+			<?php
 		}
 
-		printf( '</span>' );
+		?>
+			</span>
+		<?php
 	}
 
 	private function get_product_count() {
