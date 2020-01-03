@@ -2386,10 +2386,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		ob_start();
 
 		?>
-	<div class="notice is-dismissible notice-<?php echo $type; ?>">
-	  <p><?php echo $message; ?></p>
-	</div>
+			<div class="notice is-dismissible notice-<?php echo $type; ?>">
+				<p><?php echo $message; ?></p>
+			</div>
 		<?php
+
 		return ob_get_clean();
 	}
 
