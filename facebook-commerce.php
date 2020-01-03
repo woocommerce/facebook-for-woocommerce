@@ -1768,42 +1768,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Check for api key and any other API errors
-	 **/
+	 * Checks for API key and other API errors.
+	 */
 	function checks() {
-		// Check required fields
 
+		// check required fields
 		if ( ! $this->api_key || ! $this->product_catalog_id ) {
-			echo $this->get_message_html(
-				sprintf(
-					__(
-						'%1$sFacebook for WooCommerce
-        is almost ready.%2$s To complete your configuration, %3$scomplete the
-        setup steps%4$s.',
-						'facebook-for-woocommerce'
-					),
-					'<strong>',
-					'</strong>',
-					'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
-					'</a>'
+
+			$message = sprintf(
+				__(
+					'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
+					'facebook-for-woocommerce'
 				),
-				'info'
+				'<strong>',
+				'</strong>',
+				'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
+				'</a>'
 			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message, 'info' );
 		}
 
 		// WooCommerce 2.x upgrade nag
 		if ( $this->api_key && ( ! isset( $this->background_processor ) ) ) {
-			echo $this->get_message_html(
-				sprintf(
-					__(
-						'Facebook product sync may not work correctly in WooCommerce version
-        %1$s. Please upgrade to WooCommerce 3.',
-						'facebook-for-woocommerce'
-					),
-					WC()->version
+
+			$message = sprintf(
+				__(
+					'Facebook product sync may not work correctly in WooCommerce version %1$s. Please upgrade to WooCommerce 3.',
+					'facebook-for-woocommerce'
 				),
-				'warning'
+				esc_html( WC()->version )
 			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_message_html( $message, 'warning' );
 		}
 
 		$this->maybe_display_facebook_api_messages();
