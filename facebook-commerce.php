@@ -622,38 +622,54 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $column === 'fb' ) {
+
 			$fb_product_group_id = $this->get_product_fbid(
 				self::FB_PRODUCT_GROUP_ID,
 				$post->ID,
 				$the_product
 			);
+
 			if ( ! $fb_product_group_id ) {
-				printf( '<span>Not Synced</span>' );
+
+				?>
+					<span>Not Synced</span>
+				<?php
+
 			} else {
+
 				$viz_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
 				$data_tip  = $viz_value === '' ?
 				'Product is synced but not marked as published (visible)
           on Facebook.' :
 				'Product is synced and published (visible) on Facebook.';
 
-				printf(
-					'<span class="tips" id="tip_%1$s" data-tip="%2$s">',
-					esc_attr( $post->ID ),
-					esc_attr( $data_tip )
-				);
+				?>
+					<span class="tips"
+					id="tip_<?php echo esc_attr( $post->ID ); ?>"
+					data-tip="<?php echo esc_attr( $data_tip ); ?>">
+				<?php
 
 				if ( $viz_value === '' ) {
-					printf(
-						'<a id="viz_%1$s" class="button button-primary button-large"
-            href="javascript:;" onclick="fb_toggle_visibility(%1$s, true)">Show</a>',
-						esc_attr( $post->ID )
-					);
+
+					?>
+						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
+						class="button button-primary button-large"
+						href="javascript:;"
+						onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+							Show
+						</a>
+					<?php
+
 				} else {
-					printf(
-						'<a id="viz_%1$s" class="button" href="javascript:;"
-            onclick="fb_toggle_visibility(%1$s, false)">Hide</a>',
-						esc_attr( $post->ID )
-					);
+
+					?>
+						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
+						class="button"
+						href="javascript:;"
+						onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+							Hide
+						</a>
+					<?php
 				}
 			}
 		}
