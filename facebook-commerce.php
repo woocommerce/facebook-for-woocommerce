@@ -711,6 +711,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 	}
 
+
+	/**
+	 * Renders the content of the product meta box.
+	 */
 	public function fb_product_meta_box_html() {
 		global $post;
 		$woo_product         = new WC_Facebook_Product( $post->ID );
