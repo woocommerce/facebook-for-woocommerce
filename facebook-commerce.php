@@ -2572,7 +2572,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
 		$connected         = ( $page_name != '' );
 		$hide_test         = ( $connected && $currently_syncing ) || ! defined( 'WP_DEBUG' ) || WP_DEBUG !== true;
-		$nux_message       = $this->get_nux_message_ifexist();
 
 		?>
 		<h2><?php esc_html_e( 'Facebook', $domain ); ?></h2>
@@ -2762,7 +2761,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<hr />
 					</div>
 
-					<?php echo $nux_message; ?>
+					<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo $this->get_nux_message_ifexist();
+					?>
 
 					<div>
 						<div id='fbAdvancedOptionsText' onclick="toggleAdvancedOptions();">
