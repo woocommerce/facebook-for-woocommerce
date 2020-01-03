@@ -895,7 +895,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			,plugin_version: '<?php echo WC_Facebookcommerce_Utils::PLUGIN_VERSION; ?>'
 	  }
 	  ,feed: {
-			totalVisibleProducts: '<?php echo $this->get_product_count(); ?>'
+			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>'
 			,hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
 	  }
 	  ,feedPrepared: {
