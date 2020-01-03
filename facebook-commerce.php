@@ -880,39 +880,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 	<script>
+
 	window.facebookAdsToolboxConfig = {
-	  hasGzipSupport:
-		'<?php echo extension_loaded( 'zlib' ) ? 'true' : 'false'; ?>'
-	  ,enabledPlugins: ['MESSENGER_CHAT','INSTAGRAM_SHOP', 'PAGE_SHOP']
-	  ,enableSubscription: '<?php echo class_exists( 'WC_Subscriptions' ) ? 'true' : 'false'; ?>'
-	  ,popupOrigin: '<?php echo isset( $_GET['url'] ) ? esc_js( $_GET['url'] ) : 'https://www.facebook.com/'; ?>'
-	  ,feedWasDisabled: 'true'
-	  ,platform: 'WooCommerce'
-	  ,pixel: {
-			pixelId: '<?php echo $this->pixel_id ?: ''; ?>'
-		  ,advanced_matching_supported: true
-	  }
-	  ,diaSettingId: '<?php echo $this->external_merchant_settings_id ?: ''; ?>'
-	  ,store: {
-			baseUrl: window.location.protocol + '//' + window.location.host
-			,baseCurrency:'<?php echo esc_js( WC_Admin_Settings::get_option( 'woocommerce_currency' ) ); ?>'
-			,timezoneId: '<?php echo date( 'Z' ); ?>'
-			,storeName: '<?php echo esc_js( WC_Facebookcommerce_Utils::get_store_name() ); ?>'
-			,version: '<?php echo WC()->version; ?>'
-			,php_version: '<?php echo PHP_VERSION; ?>'
-			,plugin_version: '<?php echo WC_Facebookcommerce_Utils::PLUGIN_VERSION; ?>'
-	  }
-	  ,feed: {
-			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>'
-			,hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
-	  }
-	  ,feedPrepared: {
-			feedUrl: '<?php echo $this->get_global_feed_url(); ?>'
-			,feedPingUrl: ''
-			,samples: <?php echo $this->get_sample_product_feed(); ?>
-	  }
+		hasGzipSupport: '<?php echo extension_loaded( 'zlib' ) ? 'true' : 'false'; ?>',
+		enabledPlugins: ['MESSENGER_CHAT','INSTAGRAM_SHOP', 'PAGE_SHOP'],
+		enableSubscription: '<?php echo class_exists( 'WC_Subscriptions' ) ? 'true' : 'false'; ?>',
+		popupOrigin: '<?php echo isset( $_GET['url'] ) ? esc_js( $_GET['url'] ) : 'https://www.facebook.com/'; ?>',
+		feedWasDisabled: 'true',
+		platform: 'WooCommerce',
+		pixel: {
+			pixelId: '<?php echo $this->pixel_id ?: ''; ?>',
+			advanced_matching_supported: true
+		},
+		diaSettingId: '<?php echo $this->external_merchant_settings_id ?: ''; ?>',
+		store: {
+			baseUrl: window.location.protocol + '//' + window.location.host,
+			baseCurrency:'<?php echo esc_js( WC_Admin_Settings::get_option( 'woocommerce_currency' ) ); ?>',
+			timezoneId: '<?php echo date( 'Z' ); ?>',
+			storeName: '<?php echo esc_js( WC_Facebookcommerce_Utils::get_store_name() ); ?>',
+			version: '<?php echo WC()->version; ?>',
+			php_version: '<?php echo PHP_VERSION; ?>',
+			plugin_version: '<?php echo WC_Facebookcommerce_Utils::PLUGIN_VERSION; ?>'
+		},
+		feed: {
+			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
+			hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
+		},
+		feedPrepared: {
+			feedUrl: '<?php echo $this->get_global_feed_url(); ?>',
+			feedPingUrl: '',
+			samples: <?php echo $this->get_sample_product_feed(); ?>
+		}
 	};
+
 	</script>
+
 		<?php
 		$ajax_data = array(
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
