@@ -606,10 +606,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param string $column_name name of the column to display
 	 */
 	public function fb_render_product_columns( $column ) {
+
 		global $post, $the_product;
-		$ajax_data = array(
-      'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
-    );
+
+		$ajax_data = [
+			'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
+		];
+
 		wp_enqueue_script(
 			'wc_facebook_product_jsx',
 			plugins_url(
@@ -617,11 +620,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				__FILE__
 			)
 		);
+
 		wp_localize_script(
-      'wc_facebook_product_jsx',
-      'wc_facebook_product_jsx',
-      $ajax_data
-    );
+			'wc_facebook_product_jsx',
+			'wc_facebook_product_jsx',
+			$ajax_data
+		);
 
 		if ( empty( $the_product ) || $the_product->get_id() != $post->ID ) {
 			$the_product = new WC_Facebook_Product( $post );
