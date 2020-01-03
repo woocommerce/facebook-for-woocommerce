@@ -2492,6 +2492,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $page_name;
 	}
 
+
+	/**
+	 * Gets Messenger or Instagram tooltip message.
+	 *
+	 * @return string
+	 */
 	function get_nux_message_ifexist() {
 		$nux_type_to_elemid_map  = array(
 			'messenger_chat'     => 'connect_button',
