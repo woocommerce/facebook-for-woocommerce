@@ -201,17 +201,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			}
 
 			$dismiss_url = $this->dismiss_url();
-			echo '<div class="updated fade"><div id="fbinfobanner"><div><img src="' . $tip_img_url .
-			'" class="iconDetails"></div><p class = "tipTitle">' .
-			__( '<strong>' . $tip_title . '</strong>', 'facebook-for-woocommerce' ) . "\n";
-			echo '<p class = "tipContent">' .
-			__( $tip_body, 'facebook-for-woocommerce' ) . '</p>';
-			echo '<p class = "tipButton"><a href="' . $tip_action_link . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' .
-			__( 'Click and redirect.', 'facebook-for-woocommerce' ) .
-			'"> ' . __( $tip_action, 'facebook-for-woocommerce' ) . '</a>' .
-			'<a href="' . esc_url( $dismiss_url ) . '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout(); return true;" title="' .
-			__( 'Dismiss this notice.', 'facebook-for-woocommerce' ) .
-			'"> ' . __( 'Dismiss', 'facebook-for-woocommerce' ) . '</a></p></div></div>';
+
+			echo '<div class="updated fade">';
+			echo '<div id="fbinfobanner">';
+			echo '<div><img src="' . esc_url( $tip_img_url ) . '" class="iconDetails"></div>';
+			echo '<p class = "tipTitle"><strong>' . esc_html( $tip_title ) . "</strong></p>\n";
+			echo '<p class = "tipContent">' . esc_html( $tip_body ) . '</p>';
+			echo '<p class = "tipButton">';
+			echo '<a href="' . esc_url( $tip_action_link ) . '" class = "btn" onclick="fb_woo_infobanner_post_click(); return true;" title="' . esc_attr__( 'Click and redirect.', 'facebook-for-woocommerce' ) . '"> ' . esc_html( $tip_action ) . '</a>';
+			echo '<a href="' . esc_url( $dismiss_url ) . '" class = "btn dismiss grey" onclick="fb_woo_infobanner_post_xout(); return true;" title="' . esc_attr__( 'Dismiss this notice.', 'facebook-for-woocommerce' ) . '"> ' . esc_html__( 'Dismiss', 'facebook-for-woocommerce' ) . '</a>';
+			echo '</p></div></div>';
 		}
 
 		/**
@@ -234,11 +233,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 			return wp_nonce_url( $url, 'woocommerce_info_banner_dismiss' );
 		}
 
+
 		/**
-		 * Handles the dismiss action so that the banner can be permanently hidden
-		 * during time threshold
+		 * Handles the action that dismisses the info banner.
+		 *
+		 * The banner will remain dismissed for at least one day and until a new info tip can be retrieved.
+		 *
+		 * @see \WC_Facebookcommerce_Integration::FB_TIP_QUERY
+		 * @see \WC_Facebookcommerce_Graph_API::get_tip_info()
 		 */
 		public function dismiss_banner() {
+
 			if ( ! isset( $_GET['wc-notice'] ) ) {
 				return;
 			}
@@ -259,6 +264,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 				wp_safe_redirect( admin_url( 'admin.php?page=wc-settings&tab=integration' ) );
 			}
 		}
+
+
 	}
 
 endif;
