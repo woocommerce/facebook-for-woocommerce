@@ -88,7 +88,8 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 				// Default setting is only show default lang.
 				if ( ! $settings ) {
-					$settings                        = array_fill_keys(
+
+					$settings = array_fill_keys(
 						array_keys( $active_languages ),
 						FB_WPML_Language_Status::HIDDEN
 					);
@@ -110,12 +111,14 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 							<form id="icl_fb_woo" name="icl_fb_woo" action="">
 
 								<?php foreach ( $settings as $language => $set ) : ?>
+
 									<p>
 										<label>
 											<input type="checkbox" id="icl_fb_woo_chk" name="<?php echo esc_attr( $language ); ?>" <?php checked( $set, FB_WPML_Language_Status::VISIBLE ); ?>>
 											<?php echo isset( $active_languages[ $language ]['native_name'] ) ? esc_html( $active_languages[ $language ]['native_name'] ) : esc_html( $language ); ?>
 										</label>
 									</p>
+
 								<?php endforeach; ?>
 
 								<p class="buttons-wrap">
@@ -127,19 +130,21 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 											'</a>'
 										); ?>
 									</span>
-									<input class="button button-primary"
+									<input
+										class="button button-primary"
 										name="save"
 										value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
-										type="submit" />
+										type="submit"
+									/>
 								</p>
 							</form>
 							<script type="text/javascript">
-								addLoadEvent(function(){
-								jQuery('#icl_fb_woo').submit(iclSaveForm);
-								jQuery('#icl_fb_woo').submit(function(){
-									jQuery('#icl_ajx_response_fb').show();
-								});
-								});
+								addLoadEvent( function() {
+									jQuery( '#icl_fb_woo' ).submit( iclSaveForm );
+									jQuery( '#icl_fb_woo' ).submit( function() {
+										jQuery( '#icl_ajx_response_fb' ).show();
+									} );
+								} );
 							</script>
 						</div>
 					</div>
