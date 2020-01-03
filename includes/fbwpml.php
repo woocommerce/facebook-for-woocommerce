@@ -75,12 +75,14 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 		 * The section is shown at the bottom of the WPML > Languages settings page.
 		 */
 		public function wpml_support() {
+			/** @var object $sitepress */
 			global $sitepress;
 
 			// there is no nonce to check here and the value of $_GET['page] is being compared against a known and safe string
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( isset( $_GET['page'] ) && false !== strpos( esc_url_raw( wp_unslash( $_GET['page'] ) ), 'languages.php' ) ) {
 
+				/** @var array $active_languages */
 				$active_languages = $sitepress->get_active_languages();
 				$settings         = get_option( self::OPTION );
 
