@@ -1809,6 +1809,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->maybe_display_facebook_api_messages();
 	}
 
+
+	/**
+	 * Gets a sample feed with up to 12 published products.
+	 *
+	 * @return array
+	 */
 	function get_sample_product_feed() {
 		ob_start();
 
