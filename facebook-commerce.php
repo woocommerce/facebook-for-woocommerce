@@ -1816,25 +1816,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return array
 	 */
 	function get_sample_product_feed() {
+
 		ob_start();
 
-		// Get up to 12 published posts that are products
-		$args = array(
+		// get up to 12 published posts that are products
+		$args = [
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => 12,
 			'fields'         => 'ids',
-		);
+		];
 
 		$post_ids = get_posts( $args );
-		$items    = array();
+		$items    = [];
 
 		foreach ( $post_ids as $post_id ) {
 
 			$woo_product  = new WC_Facebook_Product( $post_id );
 			$product_data = $woo_product->prepare_product();
 
-			$feed_item = array(
+			$feed_item = [
 				'title'        => strip_tags( $product_data['name'] ),
 				'availability' => $woo_product->is_in_stock() ? 'in stock' :
 				'out of stock',
@@ -1844,14 +1845,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'brand'        => strip_tags( WC_Facebookcommerce_Utils::get_store_name() ),
 				'link'         => $product_data['url'],
 				'price'        => $product_data['price'] . ' ' . get_woocommerce_currency(),
-			);
+			];
 
 			array_push( $items, $feed_item );
 		}
+
 		// https://codex.wordpress.org/Function_Reference/wp_reset_postdata
 		wp_reset_postdata();
+
 		ob_end_clean();
-		return json_encode( array( $items ) );
+
+		return ( json_encode[ $items ] );
 	}
 
 	/**
