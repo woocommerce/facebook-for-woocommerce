@@ -2686,23 +2686,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 											<?php esc_html_e( 'Your WooCommerce store is connected to ', $domain ); ?>
 											<?php if ( $page_name != '' ): ?>
 												<?php echo sprintf(
+													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
-													$this->settings['fb_page_id'],
+													esc_html( $this->settings['fb_page_id'] ),
 													esc_html( $page_name ) ); ?>
 											<?php else: ?>
 												<?php echo sprintf(
+													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
-													$this->settings['fb_page_id'] ); ?>
+													esc_html( $this->settings['fb_page_id'] ) ); ?>
 											<?php endif; ?>
 
 											<span id="sync_complete" style="margin-left: 5px; <?php echo ( ! $connected || $currently_syncing ) ? ' display: none;' : ''; ?>">
-												<?php echo __( 'Status', $domain ); ?>:
-												<?php echo __( 'Products are synced to Facebook.', $domain ); ?>
+												<?php esc_html_e( 'Status', $domain ); ?>:
+												<?php esc_html_e( 'Products are synced to Facebook.', $domain ); ?>
 											</span>
 
 											<span>
 												<a href="#" onclick="show_debug_info()" id="debug_info" style="display:none;">
-													<?php echo __( 'More Info', $domain ); ?>
+													<?php esc_html_e( 'More Info', $domain ); ?>
 												</a>
 											</span>
 										</span>
@@ -2712,7 +2714,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 										<a href="#" class="btn small" onclick="facebookConfig()" id="setting_button"
 											<?php echo $currently_syncing ? ' style="pointer-events: none;"' : ''; ?>
 										>
-											<?php echo __( 'Manage Settings', $domain ); ?>
+											<?php esc_html_e( 'Manage Settings', $domain ); ?>
 										</a>
 									</span>
 
@@ -2720,16 +2722,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 										<a href="#" class="btn small" onclick="sync_confirm()" id="resync_products"
 											<?php echo ( $connected && $currently_syncing ) ? ' style="pointer-events: none;" ' : ''; ?>
 										>
-											<?php echo __( 'Sync Products', $domain ); ?>
+											<?php esc_html_e( 'Sync Products', $domain ); ?>
 										</a>
 									</span>
 
 									<p id="sync_progress">
 										<?php if ( $connected && $currently_syncing ): ?>
 											<hr/>
-											<?php echo __( 'Syncing... Keep this browser open', $domain ); ?>
+											<?php esc_html_e( 'Syncing... Keep this browser open', $domain ); ?>
 											<br/>
-											<?php echo __( 'Until sync is complete', $domain ); ?>
+											<?php esc_html_e( 'Until sync is complete', $domain ); ?>
 										<?php endif; ?>
 									</p>
 
