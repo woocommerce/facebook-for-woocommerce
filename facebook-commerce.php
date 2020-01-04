@@ -3041,11 +3041,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	function ajax_update_fb_option() {
+
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'update fb options', true );
-		if ( isset( $_POST ) && stripos( $_POST['option'], 'fb_' ) === 0 ) {
+
+		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && stripos( $_POST['option'], 'fb_' ) === 0 && isset( $_POST['option_value'] ) ) {
 			update_option( sanitize_text_field( $_POST['option'] ), sanitize_text_field( $_POST['option_value'] ) );
 		}
+
 		wp_die();
 	}
 }
