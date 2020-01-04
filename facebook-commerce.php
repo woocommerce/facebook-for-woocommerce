@@ -829,12 +829,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	private function get_global_feed_url() {
-		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
-		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
-		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
-		$url = $http . $_SERVER['HTTP_HOST'] . $begin_path. WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
+
+		$http       = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://";
+		$index      = ! empty( $_SERVER['REQUEST_URI'] ) ? strrpos( $_SERVER['REQUEST_URI'], '/wp-admin/' ) : null;
+		$begin_path = ! empty( $_SERVER['REQUEST_URI'] ) ? substr( $_SERVER['REQUEST_URI'], 0, $index ) : '';
+		$url        = $http . ( ! empty( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '' ) . $begin_path . WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
+
 		return $url;
-  }
+	}
 
 	/**
 	 * Load DIA specific JS Data
