@@ -831,9 +831,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function get_global_feed_url() {
 
 		$http       = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://";
-		$index      = ! empty( $_SERVER['REQUEST_URI'] ) ? strrpos( $_SERVER['REQUEST_URI'], '/wp-admin/' ) : null;
-		$begin_path = ! empty( $_SERVER['REQUEST_URI'] ) ? substr( $_SERVER['REQUEST_URI'], 0, $index ) : '';
-		$url        = $http . ( ! empty( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : '' ) . $begin_path . WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
+		$index      = ! empty( $_SERVER['REQUEST_URI'] ) ? strrpos( sanitize_text_field( $_SERVER['REQUEST_URI'] ), '/wp-admin/' ) : null;
+		$begin_path = ! empty( $_SERVER['REQUEST_URI'] ) ? substr( sanitize_text_field( $_SERVER['REQUEST_URI'] ), 0, $index ) : '';
+		$url        = $http . ( ! empty( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( $_SERVER['HTTP_HOST'] ) : '' ) . $begin_path . WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
 
 		return $url;
 	}
@@ -887,7 +887,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		hasGzipSupport: '<?php echo extension_loaded( 'zlib' ) ? 'true' : 'false'; ?>',
 		enabledPlugins: ['MESSENGER_CHAT','INSTAGRAM_SHOP', 'PAGE_SHOP'],
 		enableSubscription: '<?php echo class_exists( 'WC_Subscriptions' ) ? 'true' : 'false'; ?>',
-		popupOrigin: '<?php echo isset( $_GET['url'] ) ? esc_js( $_GET['url'] ) : 'https://www.facebook.com/'; ?>',
+		popupOrigin: '<?php echo isset( $_GET['url'] ) ? esc_js( sanitize_text_field( $_GET['url'] ) ) : 'https://www.facebook.com/'; ?>',
 		feedWasDisabled: 'true',
 		platform: 'WooCommerce',
 		pixel: {
@@ -1043,18 +1043,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
-			$woo_product->set_description( $_POST[ self::FB_PRODUCT_DESCRIPTION ] );
+			$woo_product->set_description( sanitize_text_field( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) );
 		}
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
-			$woo_product->set_price( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] );
+			$woo_product->set_price( sanitize_text_field( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) );
 		}
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
-			$woo_product->set_product_image( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] );
+			$woo_product->set_product_image( sanitize_text_field( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) );
 		}
 
 		$woo_product->set_use_parent_image(
 			( isset( $_POST[ self::FB_VARIANT_IMAGE ] ) ) ?
-			$_POST[ self::FB_VARIANT_IMAGE ] :
+			sanitize_text_field( $_POST[ self::FB_VARIANT_IMAGE ] ) :
 			null
 		);
 		$fb_product_group_id = $this->get_product_fbid(
@@ -1107,15 +1107,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
-			$woo_product->set_description( $_POST[ self::FB_PRODUCT_DESCRIPTION ] );
+			$woo_product->set_description( sanitize_text_field( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) );
 		}
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
-			$woo_product->set_price( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] );
+			$woo_product->set_price( sanitize_text_field( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) );
 		}
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
-			$woo_product->set_product_image( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] );
+			$woo_product->set_product_image( sanitize_text_field( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) );
 		}
 
 		// Check if this product has already been published to FB.
@@ -1380,24 +1380,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				return;
 			}
 
-			if ( isset( $_REQUEST['api_key'] ) && ctype_alnum( $_REQUEST['api_key'] ) ) {
-				$this->settings['fb_api_key'] = $_REQUEST['api_key'];
+			if ( isset( $_REQUEST['api_key'] ) && ctype_alnum( sanitize_text_field( $_REQUEST['api_key'] ) ) ) {
+				$this->settings['fb_api_key'] = sanitize_text_field( $_REQUEST['api_key'] );
 			}
-			if ( isset( $_REQUEST['product_catalog_id'] ) &&
-			ctype_digit( $_REQUEST['product_catalog_id'] ) ) {
+			if ( isset( $_REQUEST['product_catalog_id'] ) && ctype_digit( sanitize_text_field( $_REQUEST['product_catalog_id'] ) ) ) {
 
-				if ( $this->product_catalog_id != '' &&
-				$this->product_catalog_id != $_REQUEST['product_catalog_id'] ) {
+				if ( $this->product_catalog_id != '' && $this->product_catalog_id != $_REQUEST['product_catalog_id'] ) {
 					$this->reset_all_products();
 				}
-				$this->settings['fb_product_catalog_id'] =
-				$_REQUEST['product_catalog_id'];
+				$this->settings['fb_product_catalog_id'] = sanitize_text_field( $_REQUEST['product_catalog_id'] );
 			}
-			if ( isset( $_REQUEST['pixel_id'] ) && ctype_digit( $_REQUEST['pixel_id'] ) ) {
+			if ( isset( $_REQUEST['pixel_id'] ) && ctype_digit( sanitize_text_field ( $_REQUEST['pixel_id'] ) ) ) {
 				// To prevent race conditions with pixel-only settings,
 				// only save a pixel if we already have an API key.
 				if ( $this->settings['fb_api_key'] ) {
-					$this->settings['fb_pixel_id'] = $_REQUEST['pixel_id'];
+					$this->settings['fb_pixel_id'] = sanitize_text_field( $_REQUEST['pixel_id'] );
 					if ( $this->pixel_id != $_REQUEST['pixel_id'] ) {
 						$this->settings['pixel_install_time'] = current_time( 'mysql' );
 					}
@@ -1411,40 +1408,28 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 			if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
 				$this->settings['fb_pixel_use_pii'] =
-				( $_REQUEST['pixel_use_pii'] === 'true' ||
-				$_REQUEST['pixel_use_pii'] === true ) ? 'yes' : 'no';
+				( $_REQUEST['pixel_use_pii'] === 'true' || $_REQUEST['pixel_use_pii'] === true ) ? 'yes' : 'no';
 			}
-			if ( isset( $_REQUEST['page_id'] ) &&
-			ctype_digit( $_REQUEST['page_id'] ) ) {
-				$this->settings['fb_page_id'] = $_REQUEST['page_id'];
+			if ( isset( $_REQUEST['page_id'] ) && ctype_digit( sanitize_text_field( $_REQUEST['page_id'] ) ) ) {
+				$this->settings['fb_page_id'] = sanitize_text_field( $_REQUEST['page_id'] );
 			}
-			if ( isset( $_REQUEST['external_merchant_settings_id'] ) &&
-			ctype_digit( $_REQUEST['external_merchant_settings_id'] ) ) {
-				$this->settings['fb_external_merchant_settings_id'] =
-				$_REQUEST['external_merchant_settings_id'];
+			if ( isset( $_REQUEST['external_merchant_settings_id'] ) && ctype_digit( sanitize_text_field( $_REQUEST['external_merchant_settings_id'] ) ) ) {
+				$this->settings['fb_external_merchant_settings_id'] = sanitize_text_field( $_REQUEST['external_merchant_settings_id'] );
 			}
 			if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
-				$this->settings['is_messenger_chat_plugin_enabled'] =
-				( $_REQUEST['is_messenger_chat_plugin_enabled'] === 'true' ||
-				$_REQUEST['is_messenger_chat_plugin_enabled'] === true ) ? 'yes' : 'no';
+				$this->settings['is_messenger_chat_plugin_enabled'] = ( $_REQUEST['is_messenger_chat_plugin_enabled'] === 'true' || $_REQUEST['is_messenger_chat_plugin_enabled'] === true ) ? 'yes' : 'no';
 			}
 			if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-				$this->settings['facebook_jssdk_version'] =
-				sanitize_text_field( $_REQUEST['facebook_jssdk_version'] );
+				$this->settings['facebook_jssdk_version'] = sanitize_text_field( $_REQUEST['facebook_jssdk_version'] );
 			}
-			if ( isset( $_REQUEST['msger_chat_customization_greeting_text_code'] )
-			&& ctype_digit( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
-				$this->settings['msger_chat_customization_greeting_text_code'] =
-				$_REQUEST['msger_chat_customization_greeting_text_code'];
+			if ( isset( $_REQUEST['msger_chat_customization_greeting_text_code'] ) && ctype_digit( sanitize_text_field( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) ) {
+				$this->settings['msger_chat_customization_greeting_text_code'] = sanitize_text_field( $_REQUEST['msger_chat_customization_greeting_text_code'] );
 			}
 			if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
-				$this->settings['msger_chat_customization_locale'] =
-				sanitize_text_field( $_REQUEST['msger_chat_customization_locale'] );
+				$this->settings['msger_chat_customization_locale'] = sanitize_text_field( $_REQUEST['msger_chat_customization_locale'] );
 			}
-			if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) &&
-			ctype_digit( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
-				$this->settings['msger_chat_customization_theme_color_code'] =
-				$_REQUEST['msger_chat_customization_theme_color_code'];
+			if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) && ctype_digit( sanitize_text_field( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) ) {
+				$this->settings['msger_chat_customization_theme_color_code'] = sanitize_text_field( $_REQUEST['msger_chat_customization_theme_color_code'] );
 			}
 
 			update_option(
@@ -1719,7 +1704,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( ! WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'adv bulk edit', false ) ) {
 			return;
 		}
-		$type = isset( $_POST['type'] ) ? $_POST['type'] : '';
+		$type = isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : '';
 		if ( strpos( $type, 'product' ) !== false && strpos( $type, 'load' ) === false ) {
 			$this->display_out_of_sync_message( 'advanced bulk edit' );
 		}
@@ -2259,7 +2244,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$wp_id     = sanitize_text_field( $_POST['wp_id'] );
-		$published = ( $_POST['published'] ) === 'true' ? true : false;
+		$published = ( sanitize_text_field( $_POST['published'] ) === 'true' );
 
 		$woo_product = new WC_Facebook_Product( $wp_id );
 		$products    = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
@@ -3019,7 +3004,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'resync schedule', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		if ( isset( $_POST ) && isset( $_POST['enabled'] ) ) {
-			if ( isset( $_POST['time'] ) && $_POST['enabled'] ) { // Enabled
+			if ( isset( $_POST['time'] ) && ! empty( $_POST['enabled'] ) ) { // Enabled
 				$time = sanitize_text_field( $_POST['time'] );
 				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
 				wp_schedule_event(
@@ -3029,7 +3014,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				);
 				WC_Facebookcommerce_Utils::fblog( 'Scheduled autosync for ' . $time );
 				update_option( 'woocommerce_fb_autosync_time', $time );
-			} elseif ( ! $_POST['enabled'] ) { // Disabled
+			} elseif ( empty( $_POST['enabled'] ) ) { // Disabled
 				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
 				WC_Facebookcommerce_Utils::fblog( 'Autosync disabled' );
 				delete_option( 'woocommerce_fb_autosync_time' );
@@ -3045,7 +3030,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'update fb options', true );
 
-		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && stripos( $_POST['option'], 'fb_' ) === 0 && isset( $_POST['option_value'] ) ) {
+		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && stripos( sanitize_text_field( $_POST['option'] ), 'fb_' ) === 0 && isset( $_POST['option_value'] ) ) {
 			update_option( sanitize_text_field( $_POST['option'] ), sanitize_text_field( $_POST['option_value'] ) );
 		}
 
