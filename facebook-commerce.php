@@ -373,7 +373,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action(
 					'wp_ajax_wpmelon_adv_bulk_edit',
-					array( $this, 'ajax_woo_adv_bulk_edit_compat' ),
+					[ $this, 'ajax_woo_adv_bulk_edit_compat' ],
 					self::FB_PRIORITY_MID
 				);
 
@@ -1759,11 +1759,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $result;
 	}
 
+
+	/**
+	 * Displays out of sync message if products are edited using WooCommerce Advanced Bulk Edit.
+	 *
+	 * @param $import_id
+	 */
 	function ajax_woo_adv_bulk_edit_compat( $import_id ) {
+
 		if ( ! WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'adv bulk edit', false ) ) {
 			return;
 		}
+
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
+
 		if ( strpos( $type, 'product' ) !== false && strpos( $type, 'load' ) === false ) {
 			$this->display_out_of_sync_message( 'advanced bulk edit' );
 		}
