@@ -1771,6 +1771,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
 
 		if ( strpos( $type, 'product' ) !== false && strpos( $type, 'load' ) === false ) {
