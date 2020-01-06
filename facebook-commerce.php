@@ -377,9 +377,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					self::FB_PRIORITY_MID
 				);
 
-				  // Used to remove the 'you need to resync' message.
+				// used to remove the 'you need to resync' message
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				if ( isset( $_GET['remove_sticky'] ) ) {
-					  $this->remove_sticky_message();
+					$this->remove_sticky_message();
 				}
 
 				if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
