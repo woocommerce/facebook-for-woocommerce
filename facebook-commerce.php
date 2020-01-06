@@ -1027,7 +1027,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return false;
 	}
 
+
+	/**
+	 * Syncs product to Facebook when saving a variable product.
+	 *
+	 * @param int $wp_id product post ID
+	 * @param WC_Facebook_Product|null $woo_product product object
+	 */
 	function on_variable_product_publish( $wp_id, $woo_product = null ) {
+
 		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
 			return;
 		}
@@ -1035,6 +1043,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( get_post_status( $wp_id ) != 'publish' ) {
 			return;
 		}
+
 		// Check if product group has been published to FB.  If not, it's new.
 		// If yes, loop through variants and see if product items are published.
 		if ( ! $woo_product ) {
@@ -1047,16 +1056,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
+
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
 		}
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
+
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
 		}
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
+
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
@@ -1068,6 +1082,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			sanitize_text_field( wp_unslash( $_POST[ self::FB_VARIANT_IMAGE ] ) ) :
 			null
 		);
+
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
 			$wp_id,
@@ -1075,26 +1090,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $fb_product_group_id ) {
+
 			$woo_product->update_visibility(
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing
 				isset( $_POST['is_product_page'] ),
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing
 				isset( $_POST[ self::FB_VISIBILITY ] )
 			);
+
 			$this->update_product_group( $woo_product );
 			$child_products = $woo_product->get_children();
 			$variation_id   = $woo_product->find_matching_product_variation();
+
 			// check if item_id is default variation. If yes, update in the end.
 			// If default variation value is to update, delete old fb_product_item_id
 			// and create new one in order to make it order correctly.
 			foreach ( $child_products as $item_id ) {
-				  $fb_product_item_id =
-				  $this->on_simple_product_publish( $item_id, null, $woo_product );
+
+				$fb_product_item_id = $this->on_simple_product_publish( $item_id, null, $woo_product );
+
 				if ( $item_id == $variation_id && $fb_product_item_id ) {
 					$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
 				}
 			}
+
 		} else {
+
 			$this->create_product_variable( $woo_product );
 		}
 	}
