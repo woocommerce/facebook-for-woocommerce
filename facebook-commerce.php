@@ -2568,6 +2568,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$message = '';
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['nux'] ) ) {
 
 			ob_start();
@@ -2575,9 +2576,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			?>
 
 			<div class="nux-message" style="display: none;"
-			     data-target="<?php echo esc_attr( $nux_type_to_elemid_map[ sanitize_text_field( wp_unslash( $_GET['nux'] ) ) ] ); ?>">
+			     data-target="<?php echo esc_attr( $nux_type_to_elemid_map[ sanitize_text_field( wp_unslash( $_GET['nux'] ) ) ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>">
 				<div class="nux-message-text">
-					<?php echo esc_attr( $nux_type_to_message_map[ sanitize_text_field( wp_unslash( $_GET['nux'] ) ) ] ); ?>
+					<?php echo esc_attr( $nux_type_to_message_map[ sanitize_text_field( wp_unslash( $_GET['nux'] ) ) ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				</div>
 				<div class="nux-message-arrow"></div>
 				<i class="nux-message-close-btn">x</i>
