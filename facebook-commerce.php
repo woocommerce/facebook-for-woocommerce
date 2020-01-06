@@ -1147,15 +1147,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 
@@ -1166,7 +1175,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $fb_product_item_id ) {
 
 			$woo_product->update_visibility(
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
 				isset( $_POST['is_product_page'] ),
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
 				isset( $_POST[ self::FB_VISIBILITY ] )
 			);
 
