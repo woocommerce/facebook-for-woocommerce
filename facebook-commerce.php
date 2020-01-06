@@ -878,6 +878,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( 'integration' !== $_GET['tab'] ) {
 			return;
 		}
