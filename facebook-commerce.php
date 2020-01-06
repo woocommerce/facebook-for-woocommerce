@@ -1120,10 +1120,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
-	function on_simple_product_publish(
-	$wp_id,
-	$woo_product = null,
-	&$parent_product = null ) {
+
+	/**
+	 * Syncs product to Facebook when saving a simple product.
+	 *
+	 * @param int $wp_id product post ID
+	 * @param WC_Facebook_Product|null $woo_product product object
+	 * @param WC_Facebook_Product|null $parent_product parent object
+	 * @return int|mixed|void|null
+	 */
+	function on_simple_product_publish( $wp_id, $woo_product = null, &$parent_product = null ) {
+
 		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
 			return;
 		}
@@ -1154,22 +1161,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Check if this product has already been published to FB.
 		// If not, it's new!
-		$fb_product_item_id = $this->get_product_fbid(
-			self::FB_PRODUCT_ITEM_ID,
-			$wp_id,
-			$woo_product
-		);
+		$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $wp_id, $woo_product );
 
 		if ( $fb_product_item_id ) {
+
 			$woo_product->update_visibility(
 				isset( $_POST['is_product_page'] ),
 				isset( $_POST[ self::FB_VISIBILITY ] )
 			);
+
 			$this->update_product_item( $woo_product, $fb_product_item_id );
+
 			return $fb_product_item_id;
+
 		} else {
+
 			// Check if this is a new product item for an existing product group
 			if ( $woo_product->get_parent_id() ) {
+
 				$fb_product_group_id = $this->get_product_fbid(
 					self::FB_PRODUCT_GROUP_ID,
 					$woo_product->get_parent_id(),
@@ -1178,16 +1187,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				// New variant added
 				if ( $fb_product_group_id ) {
-					  return $this->create_product_simple( $woo_product, $fb_product_group_id );
+
+					return $this->create_product_simple( $woo_product, $fb_product_group_id );
+
 				} else {
+
 					WC_Facebookcommerce_Utils::fblog(
 						'Wrong! simple_product_publish called without group ID for
               a variable product!',
-						array(),
+						[],
 						true
 					);
 				}
+
 			} else {
+
 				return $this->create_product_simple( $woo_product );  // new product
 			}
 		}
