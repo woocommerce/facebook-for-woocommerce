@@ -2520,10 +2520,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $warning_msg ) {
 
-			$message = __( $warning_msg, 'facebook-for-woocommerce' );
-
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html( $message, 'warning' );
+			echo $this->get_message_html( $warning_msg, 'warning' );
 
 			delete_transient( 'facebook_plugin_api_warning' );
 		}
@@ -2532,10 +2530,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $success_msg ) {
 
-			$message = __( $success_msg, 'facebook-for-woocommerce' );
-
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html($message, 'success' );
+			echo $this->get_message_html( $success_msg, 'success' );
 
 			delete_transient( 'facebook_plugin_api_success' );
 		}
@@ -2544,10 +2540,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $info_msg ) {
 
-			$message = __( $info_msg, 'facebook-for-woocommerce' );
-
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html( $message, 'info' );
+			echo $this->get_message_html( $info_msg, 'info' );
 
 			delete_transient( 'facebook_plugin_api_info' );
 		}
@@ -2556,10 +2550,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $sticky_msg ) {
 
-			$message = __( $sticky_msg, 'facebook-for-woocommerce' );
-
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html( $message, 'info' );
+			echo $this->get_message_html( $sticky_msg, 'info' );
 
 			// transient must be deleted elsewhere, or wait for timeout
 		}
