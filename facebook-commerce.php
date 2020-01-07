@@ -2782,7 +2782,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 									<h2>
 										<span id="connection_status" <?php echo ! $connected ? ' style="display: none;"' : ''; ?>>
 											<?php esc_html_e( 'Your WooCommerce store is connected to ', $domain ); ?>
-											<?php if ( $page_name != '' ): ?>
+											<?php if ( $page_name != '' ) : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
