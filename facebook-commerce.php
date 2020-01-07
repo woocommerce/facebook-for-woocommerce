@@ -2757,7 +2757,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 							<h1><?php esc_html__( 'Settings', $domain ); ?></h1>
 
-							<?php if ( $apikey_invalid ): // API key is set, but no page name ?>
+							<?php if ( $apikey_invalid ) : // API key is set, but no page name ?>
 
 								<h2 id="token_text" style="color:red;">
 									<?php esc_html_e('Your API key is no longer valid. Please click "Settings > Advanced Options > Update Token".', $domain); ?>
