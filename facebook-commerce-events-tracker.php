@@ -39,6 +39,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				array( $this, 'inject_base_pixel_noscript' )
 			);
 
+			// ViewContent for individual products
 			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
 
 			add_action(
@@ -50,7 +51,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				array( $this, 'inject_search_event' )
 			);
 
-			// add to cart events
+			// AddToCart
 			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 10, 4 );
 			add_filter( 'woocommerce_add_to_cart_redirect',    [ $this, 'set_last_product_added_to_cart_upon_redirect' ], 10, 2 );
 			add_action( 'template_redirect',                   [ $this, 'inject_add_to_cart_redirect_event'] );
