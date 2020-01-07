@@ -219,18 +219,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers ViewContent product pages
 		 */
 		public function inject_view_content_event() {
+			global $post;
+
 			if ( ! self::$isEnabled ) {
 				return;
 			}
-			global $post;
-			$product      = wc_get_product( $post->ID );
-			$content_type = 'product_group';
-			if ( ! $product ) {
+
+			$product = wc_get_product( $post->ID );
+
+			if ( ! $product instanceof \WC_Product ) {
 				return;
 			}
 
 			// if product is a variation, fire the pixel with content_type: product_group
 			if ( \WC_Facebookcommerce_Utils::is_variation_type( $product->get_type() ) ) {
+				$content_type = 'product_group';
+			} else {
 				$content_type = 'product';
 			}
 
