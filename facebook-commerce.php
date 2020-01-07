@@ -2769,7 +2769,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 									</a>
 								</span>
 
-							<?php else: ?>
+							<?php else : ?>
 
 								<?php if (! $can_manage ): ?>
 
