@@ -1709,51 +1709,72 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->display_error_message( $msg );
 	}
 
+
 	/**
-	 * Deal with FB API responses, display error if FB API returns error
+	 * Deals with FB API responses, displays error if FB API returns error.
 	 *
-	 * @return result if response is 200, null otherwise
-	 **/
+	 * @param WP_Error|array $result API response
+	 * @param array|null $logdata additional data for logging
+	 * @param int|null $wpid post ID
+	 * @return array|null|void result if response is 200, null otherwise
+	 */
 	function check_api_result( $result, $logdata = null, $wpid = null ) {
+
 		if ( is_wp_error( $result ) ) {
+
 			WC_Facebookcommerce_Utils::log( $result->get_error_message() );
+
 			$this->display_error_message(
 				'There was an issue connecting to the Facebook API: ' .
 				$result->get_error_message()
 			);
+
 			return;
 		}
+
 		if ( $result['response']['code'] != '200' ) {
+
 			// Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
 			// if possible, otherwise let user know we found dupe SKUs
 			$body = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+
 			if ( $body && $body->error->code == '10800' ) {
+
 				$error_data = $body->error->error_data; // error_data may contain FBIDs
+
 				if ( $error_data && $wpid ) {
+
 					$existing_id = $this->get_existing_fbid( $error_data, $wpid );
+
 					if ( $existing_id ) {
+
 						// Add "existing_id" ID to result
 						$body->id       = $existing_id;
 						$result['body'] = json_encode( $body );
 						return $result;
 					}
 				}
+
 			} else {
+
 				$this->display_error_message_from_result( $result );
 			}
 
 			WC_Facebookcommerce_Utils::log( $result );
-			$data = array(
+
+			$data = [
 				'result' => $result,
 				'data'   => $logdata,
-			);
+			];
 			WC_Facebookcommerce_Utils::fblog(
 				'Non-200 error code from FB',
 				$data,
 				true
 			);
+
 			return null;
 		}
+
 		return $result;
 	}
 
