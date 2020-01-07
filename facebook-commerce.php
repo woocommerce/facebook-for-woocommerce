@@ -2717,7 +2717,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					<span <?php echo ( ! $can_manage || $apikey_invalid || ! isset( $this->external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<?php if ( $pre_setup ): ?>
+						<?php if ( $pre_setup ) : ?>
 
 							<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
 								<?php echo esc_html( $cta_button_text ); ?>
