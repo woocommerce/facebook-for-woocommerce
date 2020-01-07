@@ -233,8 +233,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// if product is variable, fire the pixel with content_type: product_group
-			if ( $product->is_type( 'variable' ) ) {
+			// if product is variable or grouped, fire the pixel with content_type: product_group
+			if ( $product->is_type( [ 'variable', 'grouped' ] ) ) {
 				$content_type = 'product_group';
 			} else {
 				$content_type = 'product';
