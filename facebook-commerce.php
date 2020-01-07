@@ -1735,7 +1735,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			WC_Facebookcommerce_Utils::log( $result->get_error_message() );
 
 			$message = sprintf(
-				esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
+				/* translators: Placeholders %1$s - original error message from Facebook API */
+				esc_html__( 'There was an issue connecting to the Facebook API:  %1$s', 'facebook-for-woocommerce' ),
 				$result->get_error_message()
 			);
 
@@ -1863,6 +1864,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( ! $this->api_key || ! $this->product_catalog_id ) {
 
 			$message = sprintf(
+				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
 				esc_html__(
 					'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
 					'facebook-for-woocommerce'
@@ -1881,6 +1883,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $this->api_key && ( ! isset( $this->background_processor ) ) ) {
 
 			$message = sprintf(
+				/* translators: Placeholders %1$s - WooCommerce version */
 				esc_html__(
 					'Facebook product sync may not work correctly in WooCommerce version %1$s. Please upgrade to WooCommerce 3.',
 					'facebook-for-woocommerce'
@@ -3034,6 +3037,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->display_error_message(
 				sprintf(
+					/* translators: Placeholders %1$s - original error message from Facebook API */
 					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
 					$product_fbid_result->get_error_message()
 				)
