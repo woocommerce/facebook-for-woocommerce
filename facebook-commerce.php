@@ -607,7 +607,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param string $column_name name of the column to display
 	 */
 	public function fb_render_product_columns( $column ) {
-
 		global $post, $the_product;
 
 		$ajax_data = [
@@ -717,7 +716,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Renders the content of the product meta box.
 	 */
 	public function fb_product_meta_box_html() {
-
 		global $post;
 
 		$woo_product         = new WC_Facebook_Product( $post->ID );
