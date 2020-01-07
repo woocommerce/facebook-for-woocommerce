@@ -2723,7 +2723,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 								<?php echo esc_html( $cta_button_text ); ?>
 							</a>
 
-						<?php else: ?>
+						<?php else : ?>
 
 							<a href='<?php esc_attr( $redirect_uri ); ?>' class="btn" id="cta_button">
 								<?php echo esc_html( $cta_button_text ); ?>
