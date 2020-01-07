@@ -776,7 +776,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<input name="<?php echo esc_attr( self::FB_VISIBILITY ); ?>"
 				type="checkbox"
 				value="1"
-				<?php echo ( $checkbox_value === '' ? '' : 'checked' ); ?>/>
+				<?php echo checked( $checkbox_value ); ?>/>
 
 				<p/>
 				<input name="is_product_page" type="hidden" value="1"
