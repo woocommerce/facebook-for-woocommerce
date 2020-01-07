@@ -51,20 +51,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'pre_get_posts',
 				array( $this, 'inject_search_event' )
 			);
-			add_action(
-				'woocommerce_after_cart',
-				array( $this, 'inject_add_to_cart_redirect_event' )
-			);
-			add_action(
-				'woocommerce_add_to_cart',
-				array( $this, 'inject_add_to_cart_event' ),
-				self::FB_PRIORITY_HIGH
-			);
-			add_action(
-				'wc_ajax_fb_inject_add_to_cart_event',
-				array( $this, 'inject_ajax_add_to_cart_event' ),
-				self::FB_PRIORITY_HIGH
-			);
+
+			add_action( 'woocommerce_after_cart', array( $this, 'inject_add_to_cart_redirect_event' ) );
+
+			add_action( 'woocommerce_add_to_cart', array( $this, 'inject_add_to_cart_event' ), 100 );
+
+			add_action( 'wc_ajax_fb_inject_add_to_cart_event', array( $this, 'inject_ajax_add_to_cart_event' ), self::FB_PRIORITY_HIGH );
+
 			add_action(
 				'woocommerce_after_checkout_form',
 				array( $this, 'inject_initiate_checkout_event' )
@@ -254,26 +247,45 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			);
 		}
 
+
 		/**
-		 * Triggers AddToCart for cart page and add_to_cart button clicks
+		 * Triggers an AddToCart event.
+		 *
+		 * @internal
+		 *
+		 * @param string $cart_item_key the cart item key
+		 * @param int $product_id the product identifier
+		 * @param int $quantity the added product quantity
+		 * @param int $variation_id the product variation identifier
 		 */
-		public function inject_add_to_cart_event() {
-			if ( ! self::$isEnabled ) {
+		public function inject_add_to_cart_event( $cart_item_key, $product_id, $quantity, $variation_id ) {
+
+			// bail if not enabled or invalid variables
+			if ( ! self::$isEnabled || ! $cart_item_key || ! $product_id || $quantity <= 0 ) {
 				return;
 			}
 
-			$product_ids = $this->get_content_ids_from_cart( WC()->cart->get_cart() );
+			$product = wc_get_product( $variation_id ?: $product_id );
 
-			$this->pixel->inject_event(
-				'AddToCart',
-				array(
-					'content_ids'  => json_encode( $product_ids ),
-					'content_type' => 'product',
-					'value'        => WC()->cart->total,
-					'currency'     => get_woocommerce_currency(),
-				)
-			);
+			// bail if invalid product or error
+			if ( ! $product instanceof \WC_Product ) {
+				return;
+			}
+
+			$fb_product_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+			$this->pixel->inject_event( 'AddToCart', [
+				'content_ids'  => wp_json_encode( [ $fb_product_id ] ),
+				'content_type' => 'product',
+				'contents'     => wp_json_encode( [
+					'id'      => $fb_product_id,
+					'quantity'=> (int) $quantity,
+				] ),
+				'value'        => (float) $product->get_price(),
+				'currency'     => get_woocommerce_currency(),
+			] );
 		}
+
 
 		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
