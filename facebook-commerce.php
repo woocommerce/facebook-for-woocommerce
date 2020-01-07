@@ -2774,7 +2774,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 								<?php if ( ! $can_manage ) : ?>
 
 									<h2 style="color:red;">
-										<?php esc_html_e('You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
+										<?php esc_html_e( 'You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
 									</h2>
 
 								<?php else : ?>
