@@ -38,11 +38,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'wp_footer',
 				array( $this, 'inject_base_pixel_noscript' )
 			);
-			add_action(
-				'woocommerce_after_single_product',
-				array( $this, 'inject_view_content_event' ),
-				self::FB_PRIORITY_HIGH
-			);
+
+			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
+
 			add_action(
 				'woocommerce_after_shop_loop',
 				array( $this, 'inject_view_category_event' )
@@ -215,8 +213,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			return $product_ids;
 		}
 
+
 		/**
-		 * Triggers ViewContent product pages
+		 * Triggers ViewContent event on product pages
+		 *
+		 * @internal
 		 */
 		public function inject_view_content_event() {
 			global $post;
