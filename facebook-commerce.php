@@ -779,7 +779,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<?php echo checked( $checkbox_value ); ?>/>
 
 				<p/>
-				<input name="is_product_page" type="hidden" value="1"
+				<input name="is_product_page" type="hidden" value="1"/>
 
 				<p/>
 				<a href="#" onclick="fb_reset_product( <?php echo esc_js( $post->ID ); ?> )">
