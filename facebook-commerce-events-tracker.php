@@ -281,9 +281,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'content_type' => 'product',
 				'contents'     => wp_json_encode( [
 					'id'      => $fb_product_id,
-					'quantity'=> (int) $quantity,
+					'quantity'=> $quantity,
 				] ),
-				'value'        => (float) $product->get_price(),
+				'value'        => $product->get_price(),
 				'currency'     => get_woocommerce_currency(),
 			] );
 		}
