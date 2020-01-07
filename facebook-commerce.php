@@ -2761,7 +2761,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							<?php echo ( $pre_setup && $can_manage ) ? ' style="display:none;"' : ''; ?>
 						>
 
-							<h1><?php esc_html__( 'Settings', $domain ); ?></h1>
+							<h1><?php echo esc_html__( 'Settings', $domain ); ?></h1>
 
 							<?php if ( $apikey_invalid ) : // API key is set, but no page name ?>
 
