@@ -1830,7 +1830,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( ! $this->api_key || ! $this->product_catalog_id ) {
 
 			$message = sprintf(
-				__(
+				esc_html__(
 					'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
 					'facebook-for-woocommerce'
 				),
@@ -1848,7 +1848,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $this->api_key && ( ! isset( $this->background_processor ) ) ) {
 
 			$message = sprintf(
-				__(
+				esc_html__(
 					'Facebook product sync may not work correctly in WooCommerce version %1$s. Please upgrade to WooCommerce 3.',
 					'facebook-for-woocommerce'
 				),
