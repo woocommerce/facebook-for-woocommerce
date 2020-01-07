@@ -2777,7 +2777,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 										<?php esc_html_e('You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
 									</h2>
 
-								<?php else: ?>
+								<?php else : ?>
 
 									<h2>
 										<span id="connection_status" <?php echo ! $connected ? ' style="display: none;"' : ''; ?>>
