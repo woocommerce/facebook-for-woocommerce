@@ -912,7 +912,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedPrepared: {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
 			feedPingUrl: '',
-			samples: <?php echo json_encode( $this->get_sample_product_feed() ); ?>
+			samples: <?php echo $this->get_sample_product_feed(); ?>
 		}
 	};
 
@@ -1866,7 +1866,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets a sample feed with up to 12 published products.
 	 *
-	 * @return array
+	 * @return string
 	 */
 	function get_sample_product_feed() {
 
@@ -1908,7 +1908,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		ob_end_clean();
 
-		return ( [ $items ] );
+		return json_encode( [ $items ] );
 	}
 
 	/**
