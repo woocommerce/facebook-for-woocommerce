@@ -732,7 +732,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $fb_product_group_id ) {
 
 			?>
-				Facebook ID:
+				<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
 				<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
 				target="_blank">
 					<?php echo esc_html( $fb_product_group_id ); ?>
@@ -743,7 +743,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
 
 				?>
-					<p>Variant IDs:<br/>
+					<p><?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
 				<?php
 
 				$children = $woo_product->get_children();
@@ -772,7 +772,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$checkbox_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
 
 			?>
-				Visible:
+				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( self::FB_VISIBILITY ); ?>"
 				type="checkbox"
 				value="1"
@@ -783,12 +783,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				<p/>
 				<a href="#" onclick="fb_reset_product( <?php echo esc_js( $post->ID ); ?> )">
-					Reset Facebook metadata
+					<?php echo esc_html__( 'Reset Facebook metadata', 'facebook-for-woocommerce' ); ?>
 				</a>
 
 				<p/>
 				<a href="#" onclick="fb_delete_product( <?php echo esc_js( $post->ID ); ?> )">
-					Delete product(s) on Facebook
+					<?php echo esc_html__( 'Delete product(s) on Facebook', 'facebook-for-woocommerce' ); ?>
 				</a>
 
 			<?php
@@ -796,7 +796,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} else {
 
 			?>
-				<b>This product is not yet synced to Facebook.</b>
+				<b><?php echo esc_html__( 'This product is not yet synced to Facebook.', 'facebook-for-woocommerce' ); ?></b>
 			<?php
 		}
 
