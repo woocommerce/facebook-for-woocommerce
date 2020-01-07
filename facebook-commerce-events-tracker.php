@@ -229,22 +229,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// if product is a variant, fire the pixel with content_type: product_group
-			if ( WC_Facebookcommerce_Utils::is_variation_type( $product->get_type() ) ) {
+			// if product is a variation, fire the pixel with content_type: product_group
+			if ( \WC_Facebookcommerce_Utils::is_variation_type( $product->get_type() ) ) {
 				$content_type = 'product';
 			}
 
-			$content_ids = WC_Facebookcommerce_Utils::get_fb_content_ids( $product );
-			$this->pixel->inject_event(
-				'ViewContent',
-				array(
-					'content_name' => $product->get_title(),
-					'content_ids'  => json_encode( $content_ids ),
-					'content_type' => $content_type,
-					'value'        => $product->get_price(),
-					'currency'     => get_woocommerce_currency(),
-				)
-			);
+			$this->pixel->inject_event( 'ViewContent', [
+				'content_name' => $product->get_title(),
+				'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+				'content_type' => $content_type,
+				'value'        => $product->get_price(),
+				'currency'     => get_woocommerce_currency(),
+			] );
 		}
 
 
