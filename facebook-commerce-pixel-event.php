@@ -93,18 +93,17 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 %s
 <script>
 %s
-fbq('track', 'PageView', %s);
+fbq( 'track', 'PageView', %s );
 
-document.addEventListener('DOMContentLoaded', function() {
-  jQuery && jQuery(function($){
-    $('body').on('added_to_cart', function(event) {
-      // Ajax action.
-      $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
-        $('head').append(data);
-      });
-    });
-  });
-}, false);
+document.addEventListener( 'DOMContentLoaded', function() {
+	jQuery && jQuery( function( $ ) {
+		$( '.add_to_cart_button' ).on( 'click', function( e ) {
+			$.get( '?wc-ajax=fb_inject_add_to_cart_event&product_id=' + $( this ).data( 'product_id' ), function( script ) {
+				$( 'head' ).append( script );
+			} );
+		} );
+	} );
+}, false );
 
 </script>
 <!-- DO NOT MODIFY -->

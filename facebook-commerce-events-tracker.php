@@ -52,7 +52,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				array( $this, 'inject_search_event' )
 			);
 
-			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 100, 4 );
+			// add to cart events
+			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 100, 4 );
+			add_action( 'wc_ajax_fb_inject_add_to_cart_event', [ $this, 'inject_ajax_add_to_cart_event' ], 100, 1 );
 
 			add_action(
 				'woocommerce_after_checkout_form',
@@ -245,7 +247,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers an AddToCart event.
+		 * Triggers an AddToCart event when a product is added to cart.
+		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::inject_ajax_add_to_cart_event() when the product is added to cart via AJAX add to cart button.
 		 *
 		 * @internal
 		 *
@@ -256,8 +260,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_add_to_cart_event( $cart_item_key, $product_id, $quantity, $variation_id ) {
 
-			// bail if not enabled or invalid variables
-			if ( ! self::$isEnabled || ! $cart_item_key || ! $product_id || $quantity <= 0 ) {
+			// bail if pixel tracking disabled or invalid variables
+			if ( ! self::$isEnabled || ! $product_id || $quantity <= 0 ) {
 				return;
 			}
 
@@ -286,13 +290,46 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
+		 * When a product is added to cart from the shop page or archives and the page does not reload,
+		 * the WooCommerce AJAX event alone is not sufficient to trigger an AddToCart event.
+		 * Pixel needs to output a JavaScript event on the DOM to track this.
+		 * @see \WC_Facebookcommerce_Pixel::pixel_base_code()
+		 *
 		 * @internal
-		 * @deprecated
 		 */
 		public function inject_ajax_add_to_cart_event() {
 
-			// TODO remove this deprecated method in a future release {FN 2020-01-07}
-			wc_deprecated_function( __METHOD__, '2.0.0' );
+			$product_id = isset( $_REQUEST['product_id'] ) ? (int) $_REQUEST['product_id'] : 0;
+
+			// bail if pixel tracking disabled or invalid product identifier
+			if ( ! self::$isEnabled || $product_id <= 0 ) {
+				die();
+			}
+
+			$product = wc_get_product( $product_id );
+
+			// bail if invalid product or error
+			if ( ! $product instanceof \WC_Product ) {
+				die();
+			}
+
+			$fb_product_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+			$fb_pixel      = $this->pixel;
+
+			wp_send_json(
+				'<script>' .
+					$fb_pixel::build_event( 'AddToCart', [
+						'content_ids'  => wp_json_encode( [ $fb_product_id ] ),
+						'content_type' => 'product',
+						'contents'     => wp_json_encode( [
+							'id'      => $fb_product_id,
+							'quantity'=> 1,
+						] ),
+						'value'        => $product->get_price(),
+						'currency'     => get_woocommerce_currency(),
+					] ) .
+				'</script>'
+			);
 		}
 
 
@@ -305,7 +342,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_add_to_cart_redirect_event() {
 
 			// TODO remove this deprecated method in a future release {FN 2020-01-07}
-			wc_deprecated_function( __METHOD__, '2.0.0' );
+			wc_deprecated_function( __METHOD__, \WC_Facebookcommerce::PLUGIN_VERSION );
 		}
 
 
