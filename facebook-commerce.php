@@ -3211,8 +3211,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'update fb options', true );
 
-		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && stripos( sanitize_text_field( wp_unslash( $_POST['option'] ) ), 'fb_' ) === 0 && isset( $_POST['option_value'] ) ) {
-			update_option( sanitize_text_field( wp_unslash( $_POST['option'] ) ), sanitize_text_field( wp_unslash( $_POST['option_value'] ) ) );
+		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && isset( $_POST['option_value'] ) ) {
+
+			$option_name  = sanitize_text_field( wp_unslash( $_POST['option'] ) );
+			$option_value = sanitize_text_field( wp_unslash( $_POST['option_value'] ) );
+
+			if ( stripos( $option_name, 'fb_' ) === 0  ) {
+				update_option( $option_name, $option_value );
+			}
 		}
 
 		wp_die();
