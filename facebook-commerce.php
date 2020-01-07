@@ -892,10 +892,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedWasDisabled: 'true',
 		platform: 'WooCommerce',
 		pixel: {
-			pixelId: '<?php echo $this->pixel_id ?: ''; ?>',
+			pixelId: '<?php echo $this->pixel_id ? esc_js( $this->pixel_id ) : ''; ?>',
 			advanced_matching_supported: true
 		},
-		diaSettingId: '<?php echo $this->external_merchant_settings_id ?: ''; ?>',
+		diaSettingId: '<?php echo $this->external_merchant_settings_id ? esc_js( $this->external_merchant_settings_id ) : ''; ?>',
 		store: {
 			baseUrl: window.location.protocol + '//' + window.location.host,
 			baseCurrency:'<?php echo esc_js( WC_Admin_Settings::get_option( 'woocommerce_currency' ) ); ?>',
