@@ -735,7 +735,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				Facebook ID:
 				<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
 				target="_blank">
-					<?php echo esc_html( $fb_product_group_id); ?>
+					<?php echo esc_html( $fb_product_group_id ); ?>
 				</a>
 				<p/>
 			<?php
