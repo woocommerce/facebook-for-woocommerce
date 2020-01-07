@@ -298,10 +298,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @see \WC_Facebookcommerce_Pixel::pixel_base_code()
 		 *
 		 * @internal
-		 *
-		 * @param int $product_id
 		 */
-		public function inject_ajax_add_to_cart_event( $product_id = 0 ) {
+		public function inject_ajax_add_to_cart_event() {
 
 			$product_id = isset( $_REQUEST['product_id'] ) ? (int) $_REQUEST['product_id'] : 0;
 
