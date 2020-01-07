@@ -3041,8 +3041,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
 
 			$this->display_error_message(
-				'There was an issue connecting to the Facebook API: ' .
-				$product_fbid_result->get_error_message()
+				sprintf(
+					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
+					$product_fbid_result->get_error_message()
+				)
 			);
 
 			return;
