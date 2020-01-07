@@ -52,7 +52,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				array( $this, 'inject_search_event' )
 			);
 
-			add_action( 'woocommerce_add_to_cart', array( $this, 'inject_add_to_cart_event' ), 100 );
+			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 100, 4 );
 
 			add_action(
 				'woocommerce_after_checkout_form',
