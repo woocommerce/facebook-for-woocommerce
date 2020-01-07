@@ -53,8 +53,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			);
 
 			// add to cart events
-			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 100, 4 );
-			add_action( 'wc_ajax_fb_inject_add_to_cart_event', [ $this, 'inject_ajax_add_to_cart_event' ], 100, 1 );
+			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 10, 4 );
+			add_filter( 'woocommerce_add_to_cart_redirect',    [ $this, 'set_last_product_added_to_cart_upon_redirect' ], 10, 2 );
+			add_action( 'template_redirect',                   [ $this, 'inject_add_to_cart_redirect_event'] );
+			add_action( 'wc_ajax_fb_inject_add_to_cart_event', [ $this, 'inject_ajax_add_to_cart_event' ] );
 
 			add_action(
 				'woocommerce_after_checkout_form',
@@ -296,8 +298,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @see \WC_Facebookcommerce_Pixel::pixel_base_code()
 		 *
 		 * @internal
+		 *
+		 * @param int $product_id
 		 */
-		public function inject_ajax_add_to_cart_event() {
+		public function inject_ajax_add_to_cart_event( $product_id = 0 ) {
 
 			$product_id = isset( $_REQUEST['product_id'] ) ? (int) $_REQUEST['product_id'] : 0;
 
@@ -334,15 +338,46 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Trigger AddToCart for cart page and woocommerce_after_cart hook.
+		 * Sets last product added to cart to session when adding to cart a product and redirection to cart is enabled.
 		 *
 		 * @internal
-		 * @deprecated
+		 *
+		 * @param string $redirect URL redirecting to (usually cart)
+		 * @param \WC_Product $product the product just added to the cart
+		 * @return string
+		 */
+		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product ) {
+
+			if ( $product instanceof \WC_Product ) {
+				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
+			}
+
+			return $redirect;
+		}
+
+
+		/**
+		 * Triggers an AddToCart event when redirecting to the cart page.
+		 *
+		 * Deletes the session value of the last product added to cart, if set.
+		 *
+		 * @internal
 		 */
 		public function inject_add_to_cart_redirect_event() {
 
-			// TODO remove this deprecated method in a future release {FN 2020-01-07}
-			wc_deprecated_function( __METHOD__, \WC_Facebookcommerce::PLUGIN_VERSION );
+			// bail if Pixel tracking disabled, not on cart page or not using redirect after adding to cart
+			if ( ! self::$isEnabled || 'yes' !== get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+				return;
+			}
+
+			$last_product_id = WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 );
+
+			if ( $last_product_id > 0 ) {
+
+				$this->inject_add_to_cart_event( '', $last_product_id, 1, 0 );
+
+				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', 0 );
+			}
 		}
 
 
