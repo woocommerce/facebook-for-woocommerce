@@ -2992,62 +2992,89 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
+
+	/**
+	 * Gets Facebook product ID from meta or from Facebook API.
+	 *
+	 * @param string $fbid_type ID type (group or item)
+	 * @param int $wp_id post ID
+	 * @param WC_Facebook_Product|null $woo_product product
+	 * @return mixed|void|null
+	 */
 	private function get_product_fbid( $fbid_type, $wp_id, $woo_product = null ) {
+
 		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta(
 			$wp_id,
 			$fbid_type
 		);
+
 		if ( $fb_id ) {
 			return $fb_id;
 		}
+
 		if ( ! isset( $this->settings['upload_end_time'] ) ) {
 			return null;
 		}
+
 		if ( ! $woo_product ) {
 			$woo_product = new WC_Facebook_Product( $wp_id );
 		}
+
 		$products    = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
 		$woo_product = new WC_Facebook_Product( current( $products ) );
+
 		// This is a generalized function used elsewhere
 		// Cannot call is_hidden for VC_Product_Variable Object
 		if ( $woo_product->is_hidden() ) {
 			return null;
 		}
-		$fb_retailer_id =
-		WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
+
+		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
 		$product_fbid_result = $this->fbgraph->get_facebook_id(
 			$this->product_catalog_id,
 			$fb_retailer_id
 		);
+
 		if ( is_wp_error( $product_fbid_result ) ) {
+
 			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
+
 			$this->display_error_message(
 				'There was an issue connecting to the Facebook API: ' .
 				$product_fbid_result->get_error_message()
 			);
+
 			return;
 		}
 
 		if ( $product_fbid_result && isset( $product_fbid_result['body'] ) ) {
+
 			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
+
 			if ( $body && $body->id ) {
+
 				if ( $fbid_type == self::FB_PRODUCT_GROUP_ID ) {
 					$fb_id = $body->product_group->id;
 				} else {
 					$fb_id = $body->id;
 				}
+
 				update_post_meta(
 					$wp_id,
 					$fbid_type,
 					$fb_id
 				);
+
 				update_post_meta( $wp_id, self::FB_VISIBILITY, true );
+
 				return $fb_id;
 			}
 		}
+
 		return;
 	}
+
 
 	private function set_default_variant( $product_group_id, $product_item_id ) {
 		$result = $this->check_api_result(
