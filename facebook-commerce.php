@@ -2788,7 +2788,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
 													esc_html( $this->settings['fb_page_id'] ),
 													esc_html( $page_name ) ); ?>
-											<?php else: ?>
+											<?php else : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
