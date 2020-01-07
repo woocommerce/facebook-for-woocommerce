@@ -2720,13 +2720,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					<span <?php echo ( ! $can_manage || $apikey_invalid || ! isset( $this->external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<?php if ( $pre_setup ): ?>
+						<?php if ( $pre_setup ) : ?>
 
 							<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
 								<?php echo esc_html( $cta_button_text ); ?>
 							</a>
 
-						<?php else: ?>
+						<?php else : ?>
 
 							<a href='<?php esc_attr( $redirect_uri ); ?>' class="btn" id="cta_button">
 								<?php echo esc_html( $cta_button_text ); ?>
@@ -2760,7 +2760,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 							<h1><?php esc_html__( 'Settings', $domain ); ?></h1>
 
-							<?php if ( $apikey_invalid ): // API key is set, but no page name ?>
+							<?php if ( $apikey_invalid ) : // API key is set, but no page name ?>
 
 								<h2 id="token_text" style="color:red;">
 									<?php esc_html_e('Your API key is no longer valid. Please click "Settings > Advanced Options > Update Token".', $domain); ?>
@@ -2772,26 +2772,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 									</a>
 								</span>
 
-							<?php else: ?>
+							<?php else : ?>
 
-								<?php if (! $can_manage ): ?>
+								<?php if ( ! $can_manage ) : ?>
 
 									<h2 style="color:red;">
-										<?php esc_html_e('You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
+										<?php esc_html_e( 'You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
 									</h2>
 
-								<?php else: ?>
+								<?php else : ?>
 
 									<h2>
 										<span id="connection_status" <?php echo ! $connected ? ' style="display: none;"' : ''; ?>>
 											<?php esc_html_e( 'Your WooCommerce store is connected to ', $domain ); ?>
-											<?php if ( $page_name != '' ): ?>
+											<?php if ( $page_name != '' ) : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
 													esc_html( $this->settings['fb_page_id'] ),
 													esc_html( $page_name ) ); ?>
-											<?php else: ?>
+											<?php else : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
