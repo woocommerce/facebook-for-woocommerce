@@ -1688,12 +1688,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
+
 	/**
-	 * Display custom error message (sugar)
-	 **/
+	 * Logs and stores custom error message (sugar).
+	 *
+	 * @param string $msg
+	 */
 	function display_error_message( $msg ) {
+
 		$msg = self::FB_ADMIN_MESSAGE_PREPEND . $msg;
+
 		WC_Facebookcommerce_Utils::log( $msg );
+
 		set_transient(
 			'facebook_plugin_api_error',
 			$msg,
@@ -1701,10 +1707,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 	}
 
+
 	/**
-	 *  Display error message from API result (sugar)
-	 **/
+	 * Displays error message from API result (sugar).
+	 *
+	 * @param array $result
+	 */
 	function display_error_message_from_result( $result ) {
+
 		$msg = json_decode( $result['body'] )->error->message;
 		$this->display_error_message( $msg );
 	}
