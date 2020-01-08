@@ -34,7 +34,25 @@ class Products {
 			if ( $product instanceof \WC_Product ) {
 
 				$product->update_meta_data( self::$sync_meta_key, 'yes' );
-				$product->save_meta_data();;
+				$product->save_meta_data();
+			}
+		}
+	}
+
+
+	/**
+	 * Disables sync for given products.
+	 *
+	 * @param \WC_Products[] $products an array of product objects
+	 */
+	public static function disable_sync_for_products( array $products ) {
+
+		foreach ( $products as $product ) {
+
+			if ( $product instanceof \WC_Product ) {
+
+				$product->update_meta_data( self::$sync_meta_key, 'no' );
+				$product->save_meta_data();
 			}
 		}
 	}
