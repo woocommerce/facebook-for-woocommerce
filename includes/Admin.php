@@ -32,6 +32,8 @@ class Admin {
 	/**
 	 * Adds a column for Facebook Sync in the products edit screen.
 	 *
+	 * @internal
+	 *
 	 * @param array $columns array of keys and labels
 	 * @return array
 	 */
@@ -45,6 +47,8 @@ class Admin {
 
 	/**
 	 * Outputs sync information for products in the edit screen.
+	 *
+	 * @internal
 	 *
 	 * @param string $column the current column in the posts table
 	 */
