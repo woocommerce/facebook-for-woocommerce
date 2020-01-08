@@ -100,6 +100,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
 		}
+
+
+		/**
+		 * Gets the admin handler instance.
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Admin|null
+		 */
+		public function get_admin_handler() {
+
+			return $this->admin;
+		}
+
+
 	}
 
 	$WC_Facebookcommerce = new WC_Facebookcommerce( __FILE__ );
