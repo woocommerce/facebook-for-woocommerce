@@ -18,12 +18,4 @@ defined( 'ABSPATH' ) or exit;
 class Products {
 
 
-	/**
-	 * Products handler constructor.
-	 */
-	public function __construct() {
-
-	}
-
-
 }
