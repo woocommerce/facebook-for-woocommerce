@@ -28,6 +28,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		// Change it above as well
 		const PLUGIN_VERSION = WC_Facebookcommerce_Utils::PLUGIN_VERSION;
 
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
+		private $admin;
+
+
 		/**
 		 * Construct the plugin.
 		 */
@@ -39,12 +44,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * Initialize the plugin.
 		 */
 		public function init() {
-			if ( is_admin() ) {
-				add_filter(
-					'plugin_action_links_' . plugin_basename( __FILE__ ),
-					array( $this, 'add_settings_link' )
-				);
-			}
+
+			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'add_settings_link' ] );
 
 			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
@@ -55,7 +56,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						. '&section=facebookcommerce'
 					);
 				}
+
 				include_once 'facebook-commerce.php';
+
+				if ( is_admin() ) {
+
+					require_once __DIR__ . '/includes/Admin.php';
+
+					$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+				}
 
 				// Register WooCommerce integration.
 				add_filter(
