@@ -59,6 +59,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once __DIR__ . '/includes/Products.php';
+
 				if ( is_admin() ) {
 
 					require_once __DIR__ . '/includes/Admin.php';
