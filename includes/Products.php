@@ -23,20 +23,32 @@ class Products {
 
 
 	/**
+	 * Sets the sync handling for products to enabled or disabled.
+	 *
+	 * @param \WC_Product[] $products array of product objects
+	 * @param string $handling either 'yes' (enable) or 'no' (disable)
+	 */
+	private static function toggle_sync_for_products( array $products, $handling ) {
+
+		foreach ( $products as $product ) {
+
+			if ( $product instanceof \WC_Product ) {
+
+				$product->update_meta_data( self::$sync_meta_key, $handling );
+				$product->save_meta_data();
+			}
+		}
+	}
+
+
+	/**
 	 * Enables sync for given products.
 	 *
 	 * @param \WC_Products[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
 
-		foreach ( $products as $product ) {
-
-			if ( $product instanceof \WC_Product ) {
-
-				$product->update_meta_data( self::$sync_meta_key, 'yes' );
-				$product->save_meta_data();
-			}
-		}
+		self::toggle_sync_for_products( $products, 'yes' );
 	}
 
 
@@ -47,14 +59,7 @@ class Products {
 	 */
 	public static function disable_sync_for_products( array $products ) {
 
-		foreach ( $products as $product ) {
-
-			if ( $product instanceof \WC_Product ) {
-
-				$product->update_meta_data( self::$sync_meta_key, 'no' );
-				$product->save_meta_data();
-			}
-		}
+		self::toggle_sync_for_products( $products, 'no' );
 	}
 
 
