@@ -63,4 +63,16 @@ class Products {
 	}
 
 
+	/**
+	 * Determines whether a product is set to be synced in Facebook.
+	 *
+	 * @param \WC_Product $product product object
+	 * @return bool
+	 */
+	public static function is_sync_enabled_for_product( \WC_Product $product ) {
+
+		return 'yes' === $product->get_meta( self::$sync_meta_key );
+	}
+
+
 }
