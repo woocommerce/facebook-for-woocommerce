@@ -23,6 +23,21 @@ class Admin {
 	 */
 	public function __construct() {
 
+		add_action( 'manage_product_posts_columns', [ $this, 'add_product_list_table_column' ] );
+	}
+
+
+	/**
+	 * Adds a column for Facebook Sync in the products edit screen.
+	 *
+	 * @param array $columns array of keys and labels
+	 * @return array
+	 */
+	public function add_product_list_table_column( $columns ) {
+
+		$columns['facebook'] = __( 'FB Sync Status', 'facebook-for-woocommerce' );
+
+		return $columns;
 	}
 
 
