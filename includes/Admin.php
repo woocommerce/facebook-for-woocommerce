@@ -23,7 +23,9 @@ class Admin {
 	 */
 	public function __construct() {
 
-		add_action( 'manage_product_posts_columns', [ $this, 'add_product_list_table_column' ] );
+		// add column for displaying Facebook sync status
+		add_action( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
+		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
 	}
 
 
@@ -38,6 +40,27 @@ class Admin {
 		$columns['facebook'] = __( 'FB Sync Status', 'facebook-for-woocommerce' );
 
 		return $columns;
+	}
+
+
+	/**
+	 * Outputs sync information for products in the edit screen.
+	 *
+	 * @param string $column the current column in the posts table
+	 */
+	public function add_product_list_table_column_content( $column ) {
+		global $post;
+
+		if ( 'facebook' === $column ) {
+
+			$product = wc_get_product( $post );
+
+			if ( $product && Products::is_sync_enabled_for_product( $product ) ) {
+				esc_html_e( 'Synced', 'facebook-for-woocommerce' );
+			} else {
+				esc_html_e( 'Not synced', 'facebook-for-woocommerce' );
+			}
+		}
 	}
 
 
