@@ -30,6 +30,9 @@ class Admin {
 		// add input to filter products by Facebook sync status
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_status_input_filter' ], 40 );
 		add_filter( 'request',               [ $this, 'filter_products_by_sync_status' ] );
+
+		// add bulk actions to manage products sync status
+		add_filter( 'bulk_actions-edit-product', [ $this, 'add_products_sync_bulk_actions' ], 40 );
 	}
 
 
@@ -136,6 +139,23 @@ class Admin {
 		}
 
 		return $query_vars;
+	}
+
+
+	/**
+	 * Adds bulk actions in the products edit screen.
+	 *
+	 * @internal
+	 *
+	 * @param array $bulk_actions array of bulk action keys and labels
+	 * @return array
+	 */
+	public function add_products_sync_bulk_actions( $bulk_actions ) {
+
+		$bulk_actions['facebook_include'] = __( 'Include in Facebook sync', 'facebook-for-woocommerce' );
+		$bulk_actions['facebook_exclude'] = __( 'Exclude from Facebook sync', 'facebook-for-woocommerce' );
+
+		return $bulk_actions;
 	}
 
 
