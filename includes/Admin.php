@@ -29,6 +29,7 @@ class Admin {
 
 		// add input to filter products by Facebook sync status
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_status_input_filter' ], 40 );
+		add_filter( 'request',               [ $this, 'filter_products_by_sync_status' ] );
 	}
 
 
@@ -92,6 +93,49 @@ class Admin {
 			<option value="no" <?php selected( $choice, 'no' ); ?>><?php esc_html_e( 'Not synced to Facebook', 'facebook-for-woocommerce' ); ?></option>
 		</select>
 		<?php
+	}
+
+
+	/**
+	 * Filters products by Facebook sync status.
+	 *
+	 * @internal
+	 *
+	 * @param array $query_vars product query vars for the edit screen
+	 * @return array
+	 */
+	public function filter_products_by_sync_status( $query_vars ) {
+
+		if ( isset( $_REQUEST['fb_sync_status'] ) && in_array( $_REQUEST['fb_sync_status'], [ 'yes', 'no' ], true ) ) {
+
+			// by default use an "AND" clause if multiple conditions exist for a meta query
+			if ( ! empty( $query_vars['meta_query'] ) ) {
+				$query_vars['meta_query']['relation'] = 'AND';
+			} else {
+				$query_vars['meta_query'] = [];
+			}
+
+			if ( 'yes' === $_REQUEST['fb_sync_status'] ) {
+				$query_vars['meta_query'][] = [
+					'key'   => '_wc_facebook_sync',
+					'value' => 'yes',
+				];
+			} else {
+
+				// when checking for products not synced we need to check both "no" and meta not set, this requires adding an "OR" clause
+				$query_vars['meta_query']['relation'] = 'OR';
+				$query_vars['meta_query'][]           = [
+					'key'   => '_wc_facebook_sync',
+					'value' => 'no',
+				];
+				$query_vars['meta_query'][]           = [
+					'key'     => '_wc_facebook_sync',
+					'compare' => 'NOT EXISTS',
+				];
+			}
+		}
+
+		return $query_vars;
 	}
 
 
