@@ -317,23 +317,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				die();
 			}
 
-			$fb_product_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
-			$fb_pixel      = $this->pixel;
+			$fb_product_id  = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+			$fb_pixel       = $this->pixel;
+			$fb_pixel_event = $fb_pixel::build_event( 'AddToCart', [
+				'content_ids'  => wp_json_encode( [ $fb_product_id ] ),
+				'content_type' => 'product',
+				'contents'     => wp_json_encode( [
+					'id'       => $fb_product_id,
+					'quantity' => 1,
+				] ),
+				'value'        => $product->get_price(),
+				'currency'     => get_woocommerce_currency(),
+			] );
 
-			wp_send_json(
-				'<script>' .
-					$fb_pixel::build_event( 'AddToCart', [
-						'content_ids'  => wp_json_encode( [ $fb_product_id ] ),
-						'content_type' => 'product',
-						'contents'     => wp_json_encode( [
-							'id'      => $fb_product_id,
-							'quantity'=> 1,
-						] ),
-						'value'        => $product->get_price(),
-						'currency'     => get_woocommerce_currency(),
-					] ) .
-				'</script>'
-			);
+			wp_send_json( '<script>' . $fb_pixel_event . '</script>' );
 		}
 
 
