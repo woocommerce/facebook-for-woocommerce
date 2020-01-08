@@ -317,17 +317,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1
 				);
 
-				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
+				add_action( 'add_meta_boxes', [ $this, 'fb_product_metabox' ] );
 
-				add_filter(
-					'manage_product_posts_columns',
-					array( $this, 'fb_product_columns' )
-				);
-				add_action(
-					'manage_product_posts_custom_column',
-					array( $this, 'fb_render_product_columns' ),
-					2
-				);
 				add_action(
 					'transition_post_status',
 					array( $this, 'fb_change_product_published_status' ),
@@ -576,114 +567,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<?php
 	}
 
+
+	/**
+	 * Filters the product columns in the admin edit screen.
+	 *
+	 * @internal
+	 * @deprecated
+	 *
+	 * @param array $existing_columns array of columns and labels
+	 * @return array
+	 */
 	public function fb_product_columns( $existing_columns ) {
-		if ( empty( $existing_columns ) && ! is_array( $existing_columns ) ) {
-			$existing_columns = array();
-		}
 
-		$columns       = array();
-		$columns['fb'] = __( 'FB Shop', 'facebook-for-woocommerce' );
+		wc_deprecated_function( __METHOD__, '2.0.0', '\\SkyVerge\\WooCommerce\\\Facebook\\Admin::add_product_list_table_column()' );
 
-		// Verify that cart URL hasn't changed.  We do it here because this page
-		// is most likely to be visited (so it's a handy place to make the check)
-		$cart_url = get_option( self::FB_CART_URL );
-		if ( ! empty( $cart_url ) && ( wc_get_cart_url() !== $cart_url ) ) {
-			$this->display_warning_message(
-				'One or more of your products is using a
-        checkout URL that may be different than your shop checkout URL.
-        <a href="' . WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL . '">
-      Re-sync your products to update checkout URLs on Facebook.</a>'
-			);
-		}
-
-		return array_merge( $columns, $existing_columns );
+		return $existing_columns;
 	}
 
+
+	/**
+	 * Outputs content for the FB Shop column in the edit screen.
+	 *
+	 * @internal
+	 * @deprecated
+	 *
+	 * @param array $column
+	 */
 	public function fb_render_product_columns( $column ) {
-		global $post, $the_product;
-		$ajax_data = array(
-      'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
-    );
-		wp_enqueue_script(
-			'wc_facebook_product_jsx',
-			plugins_url(
-				'/assets/js/facebook-products.js?ts=' . time(),
-				__FILE__
-			)
-		);
-		wp_localize_script(
-      'wc_facebook_product_jsx',
-      'wc_facebook_product_jsx',
-      $ajax_data
-    );
 
-		if ( empty( $the_product ) || $the_product->get_id() != $post->ID ) {
-			$the_product = new WC_Facebook_Product( $post );
-		}
-
-		if ( $column === 'fb' ) {
-			$fb_product_group_id = $this->get_product_fbid(
-				self::FB_PRODUCT_GROUP_ID,
-				$post->ID,
-				$the_product
-			);
-			if ( ! $fb_product_group_id ) {
-				printf( '<span>Not Synced</span>' );
-			} else {
-				$viz_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
-				$data_tip  = $viz_value === '' ?
-				'Product is synced but not marked as published (visible)
-          on Facebook.' :
-				'Product is synced and published (visible) on Facebook.';
-
-				printf(
-					'<span class="tips" id="tip_%1$s" data-tip="%2$s">',
-					$post->ID,
-					$data_tip
-				);
-
-				if ( $viz_value === '' ) {
-					printf(
-						'<a id="viz_%1$s" class="button button-primary button-large"
-            href="javascript:;" onclick="fb_toggle_visibility(%1$s, true)">Show</a>',
-						$post->ID
-					);
-				} else {
-					printf(
-						'<a id="viz_%1$s" class="button" href="javascript:;"
-            onclick="fb_toggle_visibility(%1$s, false)">Hide</a>',
-						$post->ID
-					);
-				}
-			}
-		}
+		wc_deprecated_function( __METHOD__, '2.0.0', '\\SkyVerge\\WooCommerce\\\Facebook\\Admin::add_product_list_table_column_content()' );
 	}
 
-	public function fb_product_metabox() {
-		$ajax_data = array(
-      'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),
-    );
-		wp_enqueue_script(
-			'wc_facebook_metabox_jsx',
-			plugins_url(
-				'/assets/js/facebook-metabox.js?ts=' . time(),
-				__FILE__
-			)
-		);
-		wp_localize_script(
-      'wc_facebook_metabox_jsx',
-      'wc_facebook_metabox_jsx',
-      $ajax_data
-    );
-
-		add_meta_box(
-			'facebook_metabox', // Meta box ID
-			'Facebook', // Meta box Title
-			array( $this, 'fb_product_meta_box_html' ), // Callback
-			'product', // Screen to which to add the meta box
-			'side' // Context
-		);
-	}
 
 	public function fb_product_meta_box_html() {
 		global $post;
