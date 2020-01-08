@@ -282,7 +282,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'content_ids'  => wp_json_encode( [ $fb_product_id ] ),
 				'content_type' => 'product',
 				'contents'     => wp_json_encode( [
-					'id'      => $fb_product_id,
+					'id'       => $fb_product_id,
 					'quantity' => $quantity,
 				] ),
 				'value'        => $product->get_price(),
