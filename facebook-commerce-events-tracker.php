@@ -365,7 +365,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_add_to_cart_redirect_event() {
 
-			// bail if Pixel tracking disabled, not on cart page or not using redirect after adding to cart
+			// bail if Pixel tracking disabled or not using redirect after adding to cart
 			if ( ! self::$isEnabled || 'yes' !== get_option( 'woocommerce_cart_redirect_after_add' ) ) {
 				return;
 			}
