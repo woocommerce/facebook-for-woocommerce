@@ -24,7 +24,7 @@ class Admin {
 	public function __construct() {
 
 		// add column for displaying Facebook sync status
-		add_action( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
+		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
 	}
 
