@@ -66,6 +66,15 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * Tests that Facebook\Products::is_sync_enabled_for_product() for products that don't have a preference set.
+	 */
+	public function test_is_sync_enabled_for_product_default() {
+
+		$this->assertTrue( Facebook\Products::is_sync_enabled_for_product( $this->get_product() ) );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 

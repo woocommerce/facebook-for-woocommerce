@@ -76,6 +76,11 @@ class Products {
 	/**
 	 * Determines whether a product is set to be synced in Facebook.
 	 *
+	 * If the product is not explicitly set to disable sync, it'll be considered enabled. This applies to products that
+	 * may not have the meta value set.
+	 *
+	 * TODO: update this method to check for the product's taxonomies when the taxonomy exclusions are implemented {CW 2020-01-09}
+	 *
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
@@ -83,7 +88,7 @@ class Products {
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
 
-		return 'yes' === $product->get_meta( self::SYNC_META_KEY );
+		return 'no' !== $product->get_meta( self::SYNC_META_KEY );
 	}
 
 
