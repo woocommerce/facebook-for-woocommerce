@@ -14,8 +14,82 @@ defined( 'ABSPATH' ) or exit;
 
 /**
  * Products handler.
+ *
+ * @since x.y.z
  */
 class Products {
+
+
+	/** @var string the meta key used to flag whether a product should be synced in Facebook */
+	const SYNC_META_KEY = '_wc_facebook_sync';
+
+
+	/**
+	 * Sets the sync handling for products to enabled or disabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product[] $products array of product objects
+	 * @param bool $enabled whether sync should be enabled for $products
+	 */
+	private static function set_sync_for_products( array $products, $enabled ) {
+
+		$meta_value = $enabled ? 'yes' : 'no';
+
+		foreach ( $products as $product ) {
+
+			if ( $product instanceof \WC_Product ) {
+
+				$product->update_meta_data( self::SYNC_META_KEY, $meta_value );
+				$product->save_meta_data();
+			}
+		}
+	}
+
+
+	/**
+	 * Enables sync for given products.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product[] $products an array of product objects
+	 */
+	public static function enable_sync_for_products( array $products ) {
+
+		self::set_sync_for_products( $products, true );
+	}
+
+
+	/**
+	 * Disables sync for given products.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product[] $products an array of product objects
+	 */
+	public static function disable_sync_for_products( array $products ) {
+
+		self::set_sync_for_products( $products, false );
+	}
+
+
+	/**
+	 * Determines whether a product is set to be synced in Facebook.
+	 *
+	 * If the product is not explicitly set to disable sync, it'll be considered enabled. This applies to products that
+	 * may not have the meta value set.
+	 *
+	 * TODO: update this method to check for the product's taxonomies when the taxonomy exclusions are implemented {CW 2020-01-09}
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product product object
+	 * @return bool
+	 */
+	public static function is_sync_enabled_for_product( \WC_Product $product ) {
+
+		return 'no' !== $product->get_meta( self::SYNC_META_KEY );
+	}
 
 
 }
