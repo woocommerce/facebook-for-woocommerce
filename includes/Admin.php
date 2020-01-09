@@ -50,7 +50,7 @@ class Admin {
 	 */
 	public function add_product_list_table_column( $columns ) {
 
-		$columns['facebook'] = __( 'FB Sync Status', 'facebook-for-woocommerce' );
+		$columns['facebook_sync_status'] = __( 'FB Sync Status', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
@@ -66,7 +66,7 @@ class Admin {
 	public function add_product_list_table_column_content( $column ) {
 		global $post;
 
-		if ( 'facebook' === $column ) {
+		if ( 'facebook_sync_status' === $column ) {
 
 			$product = wc_get_product( $post );
 
