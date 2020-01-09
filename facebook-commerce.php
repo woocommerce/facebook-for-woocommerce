@@ -592,8 +592,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$existing_columns = array();
 		}
 
-		$columns       = array();
-		$columns['fb'] = __( 'FB Shop', 'facebook-for-woocommerce' );
+		$columns = [ 'facebook_shop_visibility' => __( 'FB Shop Visibility', 'facebook-for-woocommerce' ) ];
 
 		$cart_url = get_option( self::FB_CART_URL );
 		if ( ! empty( $cart_url ) && ( wc_get_cart_url() !== $cart_url ) ) {
@@ -639,7 +638,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$the_product = new WC_Facebook_Product( $post );
 		}
 
-		if ( $column === 'fb' ) {
+		if ( $column === 'facebook_shop_visibility' ) {
 			$fb_product_group_id = $this->get_product_fbid(
 				self::FB_PRODUCT_GROUP_ID,
 				$post->ID,
