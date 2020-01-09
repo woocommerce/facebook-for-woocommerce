@@ -5,3 +5,8 @@
 
 # composer packages
 /vendor
+
+# Tests
+codeception.yml
+.env
+/tests/_data/dump.sql
