@@ -19,7 +19,7 @@ class Products {
 
 
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
-	private static $sync_meta_key = '_wc_facebook_sync';
+	const SYNC_META_KEY = '_wc_facebook_sync';
 
 
 	/**
@@ -34,7 +34,7 @@ class Products {
 
 			if ( $product instanceof \WC_Product ) {
 
-				$product->update_meta_data( self::$sync_meta_key, $handling );
+				$product->update_meta_data( self::SYNC_META_KEY, $handling );
 				$product->save_meta_data();
 			}
 		}
@@ -71,7 +71,7 @@ class Products {
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
 
-		return 'yes' === $product->get_meta( self::$sync_meta_key );
+		return 'yes' === $product->get_meta( self::SYNC_META_KEY );
 	}
 
 
