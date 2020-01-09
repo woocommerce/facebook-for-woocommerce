@@ -10,6 +10,7 @@ modules:
     enabled:
         - WPDb
         - WPBrowser
+        - WPLoader
         - \Helper\Acceptance
     config:
         WPDb:
@@ -21,7 +22,7 @@ modules:
             populate: true 
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
             cleanup: true 
-            waitlock: 10
+            waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%ACCEPTANCE_TABLE_PREFIX%'
@@ -33,3 +34,10 @@ modules:
             headers:
                 X_TEST_REQUEST: 1
                 X_WPBROWSER_REQUEST: 1
+        WPLoader:
+          loadOnly: true
+          wpRootFolder: '%WP_ROOT_FOLDER%'
+          dbName: "%ACCEPTANCE_DB_NAME%"
+          dbHost: "%ACCEPTANCE_DB_HOST%"
+          dbUser: "%ACCEPTANCE_DB_USER%"
+          dbPassword: "%ACCEPTANCE_DB_PASSWORD%"
