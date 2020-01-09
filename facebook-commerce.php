@@ -594,16 +594,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$columns = [ 'facebook_shop_visibility' => __( 'FB Shop Visibility', 'facebook-for-woocommerce' ) ];
 
-		$cart_url = get_option( self::FB_CART_URL );
-		if ( ! empty( $cart_url ) && ( wc_get_cart_url() !== $cart_url ) ) {
-			$this->display_warning_message(
-				'One or more of your products is using a
-				checkout URL that may be different than your shop checkout URL.
-				<a href="' . WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL . '">
-				Re-sync your products to update checkout URLs on Facebook.</a>'
-			);
-		}
-
 		return array_merge( $columns, $existing_columns );
 	}
 
