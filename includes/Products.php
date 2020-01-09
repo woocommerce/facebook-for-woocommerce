@@ -34,13 +34,11 @@ class Products {
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 
-		$meta_value = $enabled ? 'yes' : 'no';
-
 		foreach ( $products as $product ) {
 
 			if ( $product instanceof \WC_Product ) {
 
-				$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $meta_value );
+				$product->update_meta_data( self::SYNC_ENABLED_META_KEY, wc_bool_to_string( $enabled ) );
 				$product->save_meta_data();
 			}
 		}
