@@ -227,7 +227,8 @@ class Admin {
 				?>
 				<div class="notice notice-warning">
 					<?php printf(
-						'<p>' . esc_html__( 'One or more of your products is using a checkout URL that may be different than your shop checkout URL. %1$sRe-sync your products to update checkout URLs on Facebook%2$s.', 'facebook-for-woocommerce' ) . '</p>',
+						'<p>' . esc_html__( '%1$s: One or more of your products is using a checkout URL that may be different than your shop checkout URL. %2$sRe-sync your products to update checkout URLs on Facebook%3$s.', 'facebook-for-woocommerce' ) . '</p>',
+						'<strong>' . esc_html__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ) . '</strong>',
 						'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
 						'</a>'
 					); ?>
