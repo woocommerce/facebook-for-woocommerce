@@ -30,15 +30,17 @@ class Products {
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product[] $products array of product objects
-	 * @param string $handling either 'yes' (enable) or 'no' (disable)
+	 * @param bool $enabled whether sync should be enabled for $products
 	 */
-	private static function toggle_sync_for_products( array $products, $handling ) {
+	private static function set_sync_for_products( array $products, $enabled ) {
+
+		$meta_value = $enabled ? 'yes' : 'no';
 
 		foreach ( $products as $product ) {
 
 			if ( $product instanceof \WC_Product ) {
 
-				$product->update_meta_data( self::SYNC_META_KEY, $handling );
+				$product->update_meta_data( self::SYNC_META_KEY, $meta_value );
 				$product->save_meta_data();
 			}
 		}
@@ -54,21 +56,20 @@ class Products {
 	 */
 	public static function enable_sync_for_products( array $products ) {
 
-		self::toggle_sync_for_products( $products, 'yes' );
+		self::set_sync_for_products( $products, true );
 	}
 
 
 	/**
 	 * Disables sync for given products.
 	 *
-<<<<<<< HEAD
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function disable_sync_for_products( array $products ) {
 
-		self::toggle_sync_for_products( $products, 'no' );
+		self::set_sync_for_products( $products, false );
 	}
 
 
