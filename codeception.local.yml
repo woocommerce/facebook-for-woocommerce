@@ -1,0 +1,9 @@
+extensions:
+  enabled:
+  - tad\WPBrowser\Extension\Copier
+  config:
+    tad\WPBrowser\Extension\Copier:
+      files:
+        ./: '%WP_ROOT_FOLDER%/wp-content/plugins/facebook-for-woocommerce'
+params:
+- .env
