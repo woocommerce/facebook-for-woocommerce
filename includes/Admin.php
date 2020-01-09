@@ -31,7 +31,7 @@ class Admin {
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_status_input_filter' ], 40 );
 		add_filter( 'request',               [ $this, 'filter_products_by_sync_status' ] );
 
-		// add bulk actions to manage products sync status
+		// add bulk actions to manage products sync
 		add_filter( 'bulk_actions-edit-product',        [ $this, 'add_products_sync_bulk_actions' ], 40 );
 		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
 	}
