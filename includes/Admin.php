@@ -119,22 +119,24 @@ class Admin {
 				$query_vars['meta_query'] = [];
 			}
 
+			// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
 			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
-				$query_vars['meta_query'][] = [
-					'key'   => '_wc_facebook_sync',
-					'value' => 'yes',
-				];
-			} else {
 
-				// when checking for products not synced we need to check both "no" and meta not set, this requires adding an "OR" clause
 				$query_vars['meta_query']['relation'] = 'OR';
 				$query_vars['meta_query'][]           = [
 					'key'   => '_wc_facebook_sync',
-					'value' => 'no',
+					'value' => 'yes',
 				];
 				$query_vars['meta_query'][]           = [
 					'key'     => '_wc_facebook_sync',
 					'compare' => 'NOT EXISTS',
+				];
+
+			} else {
+
+				$query_vars['meta_query'][] = [
+					'key'   => '_wc_facebook_sync',
+					'value' => 'no',
 				];
 			}
 		}
