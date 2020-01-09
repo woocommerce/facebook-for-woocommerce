@@ -16,11 +16,18 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class AcceptanceTester extends \Codeception\Actor
-{
-    use _generated\AcceptanceTesterActions;
+class AcceptanceTester extends \Codeception\Actor {
 
-   /**
-    * Define custom actions here
-    */
+	use _generated\AcceptanceTesterActions;
+
+
+	/**
+	 * Go to the Products screen.
+	 */
+	public function amOnProductsPage() {
+
+		$this->amOnAdminPage('edit.php?post_type=product' );
+	}
+
+
 }
