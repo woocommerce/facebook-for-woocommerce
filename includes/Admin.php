@@ -30,6 +30,10 @@ class Admin {
 		// add input to filter products by Facebook sync status
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_status_input_filter' ], 40 );
 		add_filter( 'request',               [ $this, 'filter_products_by_sync_status' ] );
+
+		// add bulk actions to manage products sync
+		add_filter( 'bulk_actions-edit-product',        [ $this, 'add_products_sync_bulk_actions' ], 40 );
+		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
 	}
 
 
@@ -136,6 +140,68 @@ class Admin {
 		}
 
 		return $query_vars;
+	}
+
+
+	/**
+	 * Adds bulk actions in the products edit screen.
+	 *
+	 * @internal
+	 *
+	 * @param array $bulk_actions array of bulk action keys and labels
+	 * @return array
+	 */
+	public function add_products_sync_bulk_actions( $bulk_actions ) {
+
+		$bulk_actions['facebook_include'] = __( 'Include in Facebook sync', 'facebook-for-woocommerce' );
+		$bulk_actions['facebook_exclude'] = __( 'Exclude from Facebook sync', 'facebook-for-woocommerce' );
+
+		return $bulk_actions;
+	}
+
+
+	/**
+	 * Handles a Facebook product sync bulk action.
+	 *
+	 * @internal
+	 *
+	 * @param string $redirect admin URL used by WordPress to redirect after performing the bulk action
+	 * @return string
+	 */
+	public function handle_products_sync_bulk_actions( $redirect ) {
+
+		// primary dropdown at the top of the list table
+		$action = isset( $_REQUEST['action'] ) && -1 !== (int) $_REQUEST['action'] ? $_REQUEST['action'] : null;
+
+		// secondary dropdown at the bottom of the list table
+		if ( ! $action ) {
+			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? $_REQUEST['action2'] : null;
+		}
+
+		if ( $action && in_array( $action, [ 'facebook_include', 'facebook_exclude' ], true ) ) {
+
+			$products    = [];
+			$product_ids = isset( $_REQUEST['post'] ) && is_array( $_REQUEST['post'] ) ? array_map( 'absint', $_REQUEST['post'] ) : [];
+
+			if ( ! empty( $product_ids ) ) {
+
+				foreach ( $product_ids as $product_id ) {
+
+					if ( $product = wc_get_product( $product_id ) ) {
+
+						$products[] = $product;
+					}
+				}
+
+				if ( 'facebook_include' === $action ) {
+					Products::enable_sync_for_products( $products );
+				} elseif ( 'facebook_exclude' === $action ) {
+					Products::disable_sync_for_products( $products );
+				}
+			}
+		}
+
+		return $redirect;
 	}
 
 
