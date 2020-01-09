@@ -27,9 +27,9 @@ class Admin {
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
 
-		// add input to filter products by Facebook sync status
-		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_status_input_filter' ], 40 );
-		add_filter( 'request',               [ $this, 'filter_products_by_sync_status' ] );
+		// add input to filter products by Facebook sync enabled
+		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_enabled_input_filter' ], 40 );
+		add_filter( 'request',               [ $this, 'filter_products_by_sync_enabled' ] );
 
 		// add bulk actions to manage products sync
 		add_filter( 'bulk_actions-edit-product',        [ $this, 'add_products_sync_bulk_actions' ], 40 );
@@ -77,40 +77,40 @@ class Admin {
 
 
 	/**
-	 * Adds a dropdown input to let shop managers filter products by sync status.
+	 * Adds a dropdown input to let shop managers filter products by sync setting.
 	 *
 	 * @internal
 	 */
-	public function add_products_by_sync_status_input_filter() {
+	public function add_products_by_sync_enabled_input_filter() {
 		global $typenow;
 
 		if ( 'product' !== $typenow ) {
 			return;
 		}
 
-		$choice = isset( $_GET['fb_sync_status'] ) ? (string) $_GET['fb_sync_status'] : '';
+		$choice = isset( $_GET['fb_sync_enabled'] ) ? (string) $_GET['fb_sync_enabled'] : '';
 
 		?>
-		<select name="fb_sync_status">
-			<option value="" <?php selected( $choice, '' ); ?>><?php esc_html_e( 'Filter by Facebook sync status', 'facebook-for-woocommerce' ); ?></option>
-			<option value="yes" <?php selected( $choice, 'yes' ); ?>><?php esc_html_e( 'Synced to Facebook', 'facebook-for-woocommerce' ); ?></option>
-			<option value="no" <?php selected( $choice, 'no' ); ?>><?php esc_html_e( 'Not synced to Facebook', 'facebook-for-woocommerce' ); ?></option>
+		<select name="fb_sync_enabled">
+			<option value="" <?php selected( $choice, '' ); ?>><?php esc_html_e( 'Filter by Facebook sync setting', 'facebook-for-woocommerce' ); ?></option>
+			<option value="yes" <?php selected( $choice, 'yes' ); ?>><?php esc_html_e( 'Facebook sync enabled', 'facebook-for-woocommerce' ); ?></option>
+			<option value="no" <?php selected( $choice, 'no' ); ?>><?php esc_html_e( 'Facebook sync disabled', 'facebook-for-woocommerce' ); ?></option>
 		</select>
 		<?php
 	}
 
 
 	/**
-	 * Filters products by Facebook sync status.
+	 * Filters products by Facebook sync setting.
 	 *
 	 * @internal
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
 	 */
-	public function filter_products_by_sync_status( $query_vars ) {
+	public function filter_products_by_sync_enabled( $query_vars ) {
 
-		if ( isset( $_REQUEST['fb_sync_status'] ) && in_array( $_REQUEST['fb_sync_status'], [ 'yes', 'no' ], true ) ) {
+		if ( isset( $_REQUEST['fb_sync_enabled'] ) && in_array( $_REQUEST['fb_sync_enabled'], [ 'yes', 'no' ], true ) ) {
 
 			// by default use an "AND" clause if multiple conditions exist for a meta query
 			if ( ! empty( $query_vars['meta_query'] ) ) {
@@ -119,7 +119,7 @@ class Admin {
 				$query_vars['meta_query'] = [];
 			}
 
-			if ( 'yes' === $_REQUEST['fb_sync_status'] ) {
+			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
 				$query_vars['meta_query'][] = [
 					'key'   => '_wc_facebook_sync',
 					'value' => 'yes',
