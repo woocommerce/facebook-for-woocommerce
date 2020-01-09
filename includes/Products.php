@@ -14,27 +14,33 @@ defined( 'ABSPATH' ) or exit;
 
 /**
  * Products handler.
+ *
+ * @since x.y.z
  */
 class Products {
 
 
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
-	private static $sync_meta_key = '_wc_facebook_sync';
+	const SYNC_META_KEY = '_wc_facebook_sync';
 
 
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
 	 *
+	 * @since x.y.z
+	 *
 	 * @param \WC_Product[] $products array of product objects
-	 * @param string $handling either 'yes' (enable) or 'no' (disable)
+	 * @param bool $enabled whether sync should be enabled for $products
 	 */
-	private static function toggle_sync_for_products( array $products, $handling ) {
+	private static function set_sync_for_products( array $products, $enabled ) {
+
+		$meta_value = $enabled ? 'yes' : 'no';
 
 		foreach ( $products as $product ) {
 
 			if ( $product instanceof \WC_Product ) {
 
-				$product->update_meta_data( self::$sync_meta_key, $handling );
+				$product->update_meta_data( self::SYNC_META_KEY, $meta_value );
 				$product->save_meta_data();
 			}
 		}
@@ -44,34 +50,40 @@ class Products {
 	/**
 	 * Enables sync for given products.
 	 *
-	 * @param \WC_Products[] $products an array of product objects
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
 
-		self::toggle_sync_for_products( $products, 'yes' );
+		self::set_sync_for_products( $products, true );
 	}
 
 
 	/**
 	 * Disables sync for given products.
 	 *
-	 * @param \WC_Products[] $products an array of product objects
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function disable_sync_for_products( array $products ) {
 
-		self::toggle_sync_for_products( $products, 'no' );
+		self::set_sync_for_products( $products, false );
 	}
 
 
 	/**
 	 * Determines whether a product is set to be synced in Facebook.
 	 *
+	 * @since x.y.z
+	 *
 	 * @param \WC_Product $product product object
 	 * @return bool
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
 
-		return 'yes' === $product->get_meta( self::$sync_meta_key );
+		return 'yes' === $product->get_meta( self::SYNC_META_KEY );
 	}
 
 
