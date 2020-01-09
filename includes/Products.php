@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) or exit;
 
 /**
  * Products handler.
+ *
+ * @since x.y.z
  */
 class Products {
 
@@ -24,6 +26,8 @@ class Products {
 
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
+	 *
+	 * @since x.y.z
 	 *
 	 * @param \WC_Product[] $products array of product objects
 	 * @param string $handling either 'yes' (enable) or 'no' (disable)
@@ -44,6 +48,8 @@ class Products {
 	/**
 	 * Enables sync for given products.
 	 *
+	 * @since x.y.z
+	 *
 	 * @param \WC_Products[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
@@ -55,6 +61,8 @@ class Products {
 	/**
 	 * Disables sync for given products.
 	 *
+	 * @since x.y.z
+	 *
 	 * @param \WC_Products[] $products an array of product objects
 	 */
 	public static function disable_sync_for_products( array $products ) {
@@ -65,6 +73,8 @@ class Products {
 
 	/**
 	 * Determines whether a product is set to be synced in Facebook.
+	 *
+	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
 	 * @return bool
