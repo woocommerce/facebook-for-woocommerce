@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class ProductSyncColumnCest {
 
@@ -38,7 +38,7 @@ class ProductSyncColumnCest {
 
 
 	/**
-	 * Test that the column shows the correct status for a product that is synced.
+	 * Test that the column shows the correct value for a product that has sync enabled.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
@@ -49,14 +49,14 @@ class ProductSyncColumnCest {
 
 		$I->amOnProductsPage();
 
-		$I->wantTo( 'Test that the column displays the correct status for a sync-enabled product' );
+		$I->wantTo( 'Test that the column displays the correct value for a sync-enabled product' );
 
 		$this->seeColumnHasValue( $I, 'Enabled' );
 	}
 
 
 	/**
-	 * Test that the column shows the correct status for a product that is synced.
+	 * Test that the column shows the correct value for a product that has sync disabled.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
@@ -67,22 +67,22 @@ class ProductSyncColumnCest {
 
 		$I->amOnProductsPage();
 
-		$I->wantTo( 'Test that the column displays the correct status for a sync-disabled product' );
+		$I->wantTo( 'Test that the column displays the correct value for a sync-disabled product' );
 
 		$this->seeColumnHasValue( $I, 'Disabled' );
 	}
 
 
 	/**
-	 * Test that the column defaults to "Not synced"
+	 * Test that the column defaults to "Enabled"
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
-	public function try_column_defaults_to_not_synced( AcceptanceTester $I ) {
+	public function try_column_defaults_to_enabled( AcceptanceTester $I ) {
 
 		$I->amOnProductsPage();
 
-		$I->wantTo( 'Test that the column displays the correct status for a product with no sync status set' );
+		$I->wantTo( 'Test that the column displays the correct value for a product with no sync setting set' );
 
 		$this->seeColumnHasValue( $I, 'Enabled' );
 	}
