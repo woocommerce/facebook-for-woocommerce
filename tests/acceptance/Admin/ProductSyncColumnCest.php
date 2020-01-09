@@ -33,7 +33,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column is present' );
 
-		$I->see( 'FB Sync Status', 'table.wp-list-table th' );
+		$I->see( 'FB Sync Enabled', 'table.wp-list-table th' );
 	}
 
 
@@ -51,7 +51,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct status for a sync-enabled product' );
 
-		$this->seeColumnHasValue( $I, 'Synced' );
+		$this->seeColumnHasValue( $I, 'Enabled' );
 	}
 
 
@@ -69,7 +69,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct status for a sync-disabled product' );
 
-		$this->seeColumnHasValue( $I, 'Not synced' );
+		$this->seeColumnHasValue( $I, 'Disabled' );
 	}
 
 
@@ -84,7 +84,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct status for a product with no sync status set' );
 
-		$this->seeColumnHasValue( $I, 'Synced' );
+		$this->seeColumnHasValue( $I, 'Enabled' );
 	}
 
 
