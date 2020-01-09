@@ -23,7 +23,7 @@ class Admin {
 	 */
 	public function __construct() {
 
-		// add column for displaying Facebook sync status
+		// add column for displaying Facebook sync enabled/disabled
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
 
@@ -47,7 +47,7 @@ class Admin {
 	 */
 	public function add_product_list_table_column( $columns ) {
 
-		$columns['facebook_sync_status'] = __( 'FB Sync Status', 'facebook-for-woocommerce' );
+		$columns['facebook_sync_enabled'] = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
@@ -63,14 +63,14 @@ class Admin {
 	public function add_product_list_table_column_content( $column ) {
 		global $post;
 
-		if ( 'facebook_sync_status' === $column ) {
+		if ( 'facebook_sync_enabled' === $column ) {
 
 			$product = wc_get_product( $post );
 
 			if ( $product && Products::is_sync_enabled_for_product( $product ) ) {
-				esc_html_e( 'Synced', 'facebook-for-woocommerce' );
+				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
 			} else {
-				esc_html_e( 'Not synced', 'facebook-for-woocommerce' );
+				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
 			}
 		}
 	}
