@@ -328,6 +328,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					array( $this, 'fb_render_product_columns' ),
 					2
 				);
+
 				add_action(
 					'transition_post_status',
 					array( $this, 'fb_change_product_published_status' ),
@@ -577,23 +578,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<?php
 	}
 
+
+	/**
+	 * Filters the product columns in the admin edit screen.
+	 *
+	 * @internal
+	 * @deprecated
+	 *
+	 * @param array $existing_columns array of columns and labels
+	 * @return array
+	 */
 	public function fb_product_columns( $existing_columns ) {
 		if ( empty( $existing_columns ) && ! is_array( $existing_columns ) ) {
 			$existing_columns = array();
 		}
 
-		$columns       = array();
-		$columns['fb'] = __( 'FB Shop', 'facebook-for-woocommerce' );
+		$columns = [ 'facebook_shop_visibility' => __( 'FB Shop Visibility', 'facebook-for-woocommerce' ) ];
 
-		// Verify that cart URL hasn't changed.  We do it here because this page
-		// is most likely to be visited (so it's a handy place to make the check)
 		$cart_url = get_option( self::FB_CART_URL );
 		if ( ! empty( $cart_url ) && ( wc_get_cart_url() !== $cart_url ) ) {
 			$this->display_warning_message(
 				'One or more of your products is using a
-        checkout URL that may be different than your shop checkout URL.
-        <a href="' . WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL . '">
-      Re-sync your products to update checkout URLs on Facebook.</a>'
+				checkout URL that may be different than your shop checkout URL.
+				<a href="' . WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL . '">
+				Re-sync your products to update checkout URLs on Facebook.</a>'
 			);
 		}
 
@@ -602,9 +610,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Renders the content for the FB Shop custom column.
+	 * Outputs content for the FB Shop column in the edit screen.
 	 *
-	 * @param string $column_name name of the column to display
+	 * @internal
+	 *
+	 * @param string $column name of the column to display
 	 */
 	public function fb_render_product_columns( $column ) {
 		global $post, $the_product;
@@ -631,8 +641,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$the_product = new WC_Facebook_Product( $post );
 		}
 
-		if ( $column === 'fb' ) {
-
+		if ( $column === 'facebook_shop_visibility' ) {
 			$fb_product_group_id = $this->get_product_fbid(
 				self::FB_PRODUCT_GROUP_ID,
 				$post->ID,
@@ -648,10 +657,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			} else {
 
 				$viz_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
-				$data_tip  = $viz_value === '' ?
-				'Product is synced but not marked as published (visible)
-          on Facebook.' :
-				'Product is synced and published (visible) on Facebook.';
+				$data_tip  = $viz_value === '' ? 'Product is synced but not marked as published (visible) on Facebook.' : 'Product is synced and published (visible) on Facebook.';
 
 				?>
 					<span class="tips"
@@ -681,14 +687,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						</a>
 					<?php
 				}
+
 			}
 		}
 	}
 
+
 	public function fb_product_metabox() {
 		$ajax_data = array(
-      'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),
-    );
+			'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),
+		);
 		wp_enqueue_script(
 			'wc_facebook_metabox_jsx',
 			plugins_url(
@@ -697,10 +705,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 		wp_localize_script(
-      'wc_facebook_metabox_jsx',
-      'wc_facebook_metabox_jsx',
-      $ajax_data
-    );
+			'wc_facebook_metabox_jsx',
+			'wc_facebook_metabox_jsx',
+			$ajax_data
+		);
 
 		add_meta_box(
 			'facebook_metabox', // Meta box ID
