@@ -127,18 +127,18 @@ class Admin {
 
 				$query_vars['meta_query']['relation'] = 'OR';
 				$query_vars['meta_query'][]           = [
-					'key'   => '_wc_facebook_sync',
+					'key'   => Products::SYNC_ENABLED_META_KEY,
 					'value' => 'yes',
 				];
 				$query_vars['meta_query'][]           = [
-					'key'     => '_wc_facebook_sync',
+					'key'     => Products::SYNC_ENABLED_META_KEY,
 					'compare' => 'NOT EXISTS',
 				];
 
 			} else {
 
 				$query_vars['meta_query'][] = [
-					'key'   => '_wc_facebook_sync',
+					'key'   => Products::SYNC_ENABLED_META_KEY,
 					'value' => 'no',
 				];
 			}
