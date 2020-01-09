@@ -213,6 +213,8 @@ class Admin {
 	 *
 	 * @internal
 	 *
+	 * TODO: update this method to use the notice handler once we framework the plugin {CW 2020-01-09}
+	 *
 	 * @since x.y.z
 	 */
 	public function validate_cart_url() {
