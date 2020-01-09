@@ -21,7 +21,7 @@ class Products {
 
 
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
-	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync';
+	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 
 	/**
