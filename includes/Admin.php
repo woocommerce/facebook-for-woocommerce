@@ -23,6 +23,9 @@ class Admin {
 	 */
 	public function __construct() {
 
+		// add admin notification in case of site URL change
+		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
+
 		// add column for displaying Facebook sync enabled/disabled
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
@@ -204,6 +207,42 @@ class Admin {
 		}
 
 		return $redirect;
+	}
+
+
+	/**
+	 * Prints a notice on products page in case the current cart URL is not the original sync URL.
+	 *
+	 * @internal
+	 *
+	 * TODO: update this method to use the notice handler once we framework the plugin {CW 2020-01-09}
+	 *
+	 * @since x.y.z
+	 */
+	public function validate_cart_url() {
+		global $current_screen;
+
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) :
+
+			$cart_url = get_option( \WC_Facebookcommerce_Integration::FB_CART_URL, '' );
+
+			if ( ! empty( $cart_url ) && $cart_url !== wc_get_cart_url() ) :
+
+				?>
+				<div class="notice notice-warning">
+					<?php printf(
+						/* translators: Placeholders: %1$s - Facebook for Woocommerce, %2$s - opening HTML <a> link tag, %3$s - closing HTML </a> link tag */
+						'<p>' . esc_html__( '%1$s: One or more of your products is using a checkout URL that may be different than your shop checkout URL. %2$sRe-sync your products to update checkout URLs on Facebook%3$s.', 'facebook-for-woocommerce' ) . '</p>',
+						'<strong>' . esc_html__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ) . '</strong>',
+						'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
+						'</a>'
+					); ?>
+				</div>
+				<?php
+
+			endif;
+
+		endif;
 	}
 
 
