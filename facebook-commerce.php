@@ -599,6 +599,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	public function fb_product_metabox() {
+		$ajax_data = array(
+			'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),
+		);
+		wp_enqueue_script(
+			'wc_facebook_metabox_jsx',
+			plugins_url(
+				'/assets/js/facebook-metabox.js?ts=' . time(),
+				__FILE__
+			)
+		);
+		wp_localize_script(
+			'wc_facebook_metabox_jsx',
+			'wc_facebook_metabox_jsx',
+			$ajax_data
+		);
+
+		add_meta_box(
+			'facebook_metabox', // Meta box ID
+			'Facebook', // Meta box Title
+			array( $this, 'fb_product_meta_box_html' ), // Callback
+			'product', // Screen to which to add the meta box
+			'side' // Context
+		);
+	}
+
 	public function fb_product_meta_box_html() {
 		global $post;
 		$woo_product         = new WC_Facebook_Product( $post->ID );
