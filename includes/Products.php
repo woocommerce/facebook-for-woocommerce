@@ -44,7 +44,7 @@ class Products {
 	/**
 	 * Enables sync for given products.
 	 *
-	 * @param \WC_Products[] $products an array of product objects
+	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
 
