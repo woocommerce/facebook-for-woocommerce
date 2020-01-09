@@ -50,7 +50,7 @@ class Products {
 	 *
 	 * @since x.y.z
 	 *
-	 * @param \WC_Products[] $products an array of product objects
+	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
 
@@ -61,9 +61,10 @@ class Products {
 	/**
 	 * Disables sync for given products.
 	 *
+<<<<<<< HEAD
 	 * @since x.y.z
 	 *
-	 * @param \WC_Products[] $products an array of product objects
+	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function disable_sync_for_products( array $products ) {
 
