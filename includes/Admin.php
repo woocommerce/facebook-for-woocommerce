@@ -26,7 +26,7 @@ class Admin {
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
-		// add column for displaying Facebook sync enabled/disabled
+		// add columns for displaying Facebook sync enabled/disabled and shop visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
 
@@ -41,7 +41,7 @@ class Admin {
 
 
 	/**
-	 * Adds a column for Facebook Sync in the products edit screen.
+	 * Adds Facebook-related columns in the products edit screen.
 	 *
 	 * @internal
 	 *
@@ -50,7 +50,8 @@ class Admin {
 	 */
 	public function add_product_list_table_column( $columns ) {
 
-		$columns['facebook_sync_enabled'] = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_sync_enabled']    = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_shop_visibility'] = __( 'FB Shop Visibility', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}

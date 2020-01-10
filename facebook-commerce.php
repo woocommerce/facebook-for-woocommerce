@@ -317,12 +317,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1
 				);
 
-				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
+				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
-				add_filter(
-					'manage_product_posts_columns',
-					array( $this, 'fb_product_columns' )
-				);
 				add_action(
 					'manage_product_posts_custom_column',
 					array( $this, 'fb_render_product_columns' ),
@@ -583,19 +579,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Filters the product columns in the admin edit screen.
 	 *
 	 * @internal
-	 * @deprecated
+	 * @deprecated since x.y.z
 	 *
 	 * @param array $existing_columns array of columns and labels
 	 * @return array
 	 */
 	public function fb_product_columns( $existing_columns ) {
-		if ( empty( $existing_columns ) && ! is_array( $existing_columns ) ) {
-			$existing_columns = array();
-		}
 
-		$columns = [ 'facebook_shop_visibility' => __( 'FB Shop Visibility', 'facebook-for-woocommerce' ) ];
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_column()' );
 
-		return array_merge( $columns, $existing_columns );
+		return $existing_columns;
 	}
 
 
