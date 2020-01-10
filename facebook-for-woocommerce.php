@@ -99,7 +99,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Adds a new integration to WooCommerce.
+		 * Adds a Facebook integration to WooCommerce.
+		 *
+		 * @internal
 		 *
 		 * @since 1.0.0
 		 *
@@ -166,8 +168,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 
-
-
 		/**
 		 * Gets the plugin singleton instance.
 		 *
@@ -188,6 +188,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 	}
+
 
 	/**
 	 * Instantiates Facebook for WooCommerce.
