@@ -50,7 +50,8 @@ class Admin {
 	 */
 	public function add_product_list_table_column( $columns ) {
 
-		$columns['facebook_sync_enabled'] = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_sync_enabled']    = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_shop_visibility'] = __( 'FB Shop Visibility', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
