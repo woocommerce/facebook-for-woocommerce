@@ -2427,6 +2427,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
 	/**
 	 * Initializes the settings form fields.
 	 *
@@ -2435,6 +2436,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 */
 	public function init_form_fields() {
+
+		parent::init_form_fields();
+
+		$term_query = new \WP_Term_Query( [
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => false,
+			'fields'     => 'id=>name',
+		] );
+
+		$product_categories = $term_query->get_terms();
+
+		$term_query = new \WP_Term_Query( [
+			'taxonomy'     => 'product_tag',
+			'hide_empty'   => false,
+			'hierarchical' => false,
+			'fields'       => 'id=>name',
+		] );
+
+		$product_tags = $term_query->get_terms();
 
 		$this->form_fields = [
 			'fb_settings_heading'              => [
@@ -2490,10 +2510,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
 				'css'               => 'min-width: 300px;',
-				'default'           => '',
+				'default'           => [],
+				'options'           => is_array( $product_categories ) ? $product_categories : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
-					'data-action'      => 'facebook_for_woocommerce_search_product_cat',
 				],
 			],
 			'fb_sync_exclude_tags'             => [
@@ -2501,10 +2521,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
 				'css'               => 'min-width: 300px;',
-				'default'           => '',
+				'default'           => [],
+				'options'           => is_array( $product_tags ) ? $product_tags : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
-					'data-action'      => 'facebook_for_woocommerce_search_product_tag',
 				],
 			],
 		];
