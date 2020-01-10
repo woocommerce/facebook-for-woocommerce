@@ -46,7 +46,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Construct the plugin.
+		 * Constructs the plugin.
+		 *
+		 * @since 1.0.0
 		 */
 		public function __construct() {
 
@@ -191,7 +193,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 	/**
-	 * Instantiates Facebook for WooCommerce.
+	 * Gets the Facebook for WooCommerce plugin instance.
 	 *
 	 * @since x.y.z
 	 *
@@ -203,7 +205,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 	}
 
 
-	$WC_Facebookcommerce = facebook_for_woocommerce();
+	// Loads and instantiates the plugin the first time is called here.
+	// Subsequent calls to this function will return the plugin's current thread instance (singleton).
+	facebook_for_woocommerce();
 
 
 endif;
