@@ -23,6 +23,9 @@ class Admin {
 	 */
 	public function __construct() {
 
+		// enqueue admin scripts
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
@@ -41,6 +44,22 @@ class Admin {
 		// add Product data tab
 		add_filter( 'woocommerce_product_data_tabs', [ $this, 'fb_new_product_tab' ] );
 		add_action( 'woocommerce_product_data_panels', [ $this, 'fb_new_product_tab_content' ] );
+	}
+
+
+	/**
+	 * Enqueues admin scripts.
+	 *
+	 * @since x.y.z
+	 */
+	public function enqueue_scripts() {
+
+		$screen = get_current_screen();
+
+		if ( 'product' === $screen->id ) {
+
+			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-product-settings.js' ), [ 'jquery' ] );
+		}
 	}
 
 
