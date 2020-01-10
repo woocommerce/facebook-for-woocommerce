@@ -2475,9 +2475,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => sprintf(
-					__( 'A non-expiring Page Token with %1$smanage_pages%2$s permissions.', 'facebook-for-woocommerce' ),
-					'<code>',
-					'</code>'
+					/* translators: Placeholders: %s - WordPress capability */
+					__( 'A non-expiring Page Token with %s permissions.', 'facebook-for-woocommerce' ),
+					'<code>manage_pages</code>'
 				),
 				'default'     => '',
 			],
