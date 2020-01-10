@@ -24,6 +24,10 @@ class Products {
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 
+	/** @var array memoized array of sync enabled status for products */
+	private static $products_sync_enabled = [];
+
+
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
 	 *
@@ -33,6 +37,8 @@ class Products {
 	 * @param bool $enabled whether sync should be enabled for $products
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
+
+		self::$products_sync_enabled = [];
 
 		foreach ( $products as $product ) {
 
@@ -77,8 +83,6 @@ class Products {
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled. This applies to products that
 	 * may not have the meta value set.
 	 *
-	 * TODO: update this method to check for the product's taxonomies when the taxonomy exclusions are implemented {CW 2020-01-09}
-	 *
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
@@ -86,7 +90,34 @@ class Products {
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
 
-		return 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
+		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
+
+			$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
+
+			if ( $enabled )	 {
+
+				$excluded_categories = facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids();
+
+				if ( $excluded_categories ) {
+					$product_categories = wc_get_product_terms( $product->get_id(), 'product_cat', [ 'fields' => 'ids' ] );
+					$enabled            = ! $product_categories || ! array_intersect( $product_categories, $excluded_categories );
+				}
+
+				if ( $enabled ) {
+
+					$excluded_tags = facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids();
+
+					if ( $excluded_tags ) {
+						$product_tags  = wc_get_product_terms( $product->get_id(), 'product_tag', [ 'fields' => 'ids' ] );
+						$enabled       = ! $product_tags || ! array_intersect( $product_tags, $excluded_tags );
+					}
+				}
+			}
+
+			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
+		}
+
+		return self::$products_sync_enabled[ $product->get_id() ];
 	}
 
 
