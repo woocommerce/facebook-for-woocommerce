@@ -37,6 +37,10 @@ class Admin {
 		// add bulk actions to manage products sync
 		add_filter( 'bulk_actions-edit-product',        [ $this, 'add_products_sync_bulk_actions' ], 40 );
 		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
+
+		// add Product data tab
+		add_filter( 'woocommerce_product_data_tabs', [ $this, 'fb_new_product_tab' ] );
+		add_action( 'woocommerce_product_data_panels', [ $this, 'fb_new_product_tab_content' ] );
 	}
 
 
@@ -243,6 +247,125 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	public function fb_new_product_tab( $tabs ) {
+		$tabs['fb_commerce_tab'] = array(
+			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
+			'target' => 'facebook_options',
+			'class'  => array( 'show_if_simple', 'show_if_variable' ),
+		);
+		return $tabs;
+	}
+
+
+	public function fb_new_product_tab_content() {
+		global $post;
+		$woo_product = new WC_Facebook_Product( $post->ID );
+		$description = get_post_meta(
+			$post->ID,
+			self::FB_PRODUCT_DESCRIPTION,
+			true
+		);
+
+		$price = get_post_meta(
+			$post->ID,
+			WC_Facebook_Product::FB_PRODUCT_PRICE,
+			true
+		);
+
+		$image = get_post_meta(
+			$post->ID,
+			WC_Facebook_Product::FB_PRODUCT_IMAGE,
+			true
+		);
+
+		$image_setting = null;
+		if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
+			$image_setting = $woo_product->get_use_parent_image();
+		}
+
+		// 'id' attribute needs to match the 'target' parameter set above
+		?><div id='facebook_options' class='panel woocommerce_options_panel'><div class='options_group'>
+			<?php
+			woocommerce_wp_textarea_input(
+				array(
+					'id'          => self::FB_PRODUCT_DESCRIPTION,
+					'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+					'desc_tip'    => 'true',
+					'description' => __(
+						'Custom (plain-text only) description for product on Facebook. ' .
+						'If blank, product description will be used. ' .
+						'If product description is blank, shortname will be used.',
+						'facebook-for-woocommerce'
+					),
+					'cols'        => 40,
+					'rows'        => 20,
+					'value'       => $description,
+				)
+			);
+			woocommerce_wp_textarea_input(
+				array(
+					'id'          => WC_Facebook_Product::FB_PRODUCT_IMAGE,
+					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'desc_tip'    => 'true',
+					'description' => __(
+						'Image URL for product on Facebook. Must be an absolute URL ' .
+						'e.g. https://...' .
+						'This can be used to override the primary image that will be ' .
+						'used on Facebook for this product. If blank, the primary ' .
+						'product image in Woo will be used as the primary image on FB.',
+						'facebook-for-woocommerce'
+					),
+					'cols'        => 40,
+					'rows'        => 10,
+					'value'       => $image,
+				)
+			);
+			woocommerce_wp_text_input(
+				array(
+					'id'          => WC_Facebook_Product::FB_PRODUCT_PRICE,
+					'label'       => __(
+						'Facebook Price (' .
+						get_woocommerce_currency_symbol() . ')',
+						'facebook-for-woocommerce'
+					),
+					'desc_tip'    => 'true',
+					'description' => __(
+						'Custom price for product on Facebook. ' .
+						'Please enter in monetary decimal (.) format without thousand ' .
+						'separators and currency symbols. ' .
+						'If blank, product price will be used. ',
+						'facebook-for-woocommerce'
+					),
+					'cols'        => 40,
+					'rows'        => 60,
+					'value'       => $price,
+				)
+			);
+			if ( $image_setting !== null ) {
+				woocommerce_wp_checkbox(
+					array(
+						'id'          => self::FB_VARIANT_IMAGE,
+						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
+						'required'    => false,
+						'desc_tip'    => 'true',
+						'description' => __(
+							' By default, the primary image uploaded to Facebook is the image' .
+							' specified in each variant, if provided. ' .
+							' However, if you enable this setting, the ' .
+							' image of the parent will be used as the primary image' .
+							' for this product and all its variants instead.'
+						),
+						'value'       => $image_setting ? 'yes' : 'no',
+					)
+				);
+			}
+			?>
+		</div>
+		</div>
+		<?php
 	}
 
 
