@@ -1,0 +1,136 @@
+<?php
+
+class ProductSyncEnabledFilterCest {
+
+
+	/** @var \WC_Product|null product objects created for the test */
+	private $sync_enabled_product;
+	private $sync_disabled_product;
+
+
+	/**
+	 * Runs before each test.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function _before( AcceptanceTester $I ) {
+
+		// save two generic products
+		$this->sync_enabled_product  = $I->haveProductInDatabase();
+		$this->sync_disabled_product = $I->haveProductInDatabase();
+
+		// enable/disable sync for the products
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->sync_enabled_product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->sync_disabled_product ] );
+
+		// always log in
+		$I->loginAsAdmin();
+	}
+
+
+	/**
+	 * Test that the filter is present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_filter_present( AcceptanceTester $I ) {
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the filter is present' );
+
+		$I->see( 'Filter by Facebook sync setting', 'div.actions' );
+	}
+
+
+	/**
+	 * Test that the filter shows all products by default.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_filter_default( AcceptanceTester $I ) {
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the column displays both sync enabled and sync disabled products' );
+
+		$this->seeColumnHasValue( $I, 'Enabled' );
+		$this->seeColumnHasValue( $I, 'Disabled' );
+	}
+
+
+	/**
+	 * Test that the filter shows only the sync enabled product when filtering for that.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_filter_enabled( AcceptanceTester $I ) {
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the filter shows only the sync enabled product when filtering for that' );
+
+		$this->selectFilterOption( $I, 'Facebook sync enabled' );
+
+		$this->seeColumnHasValue( $I, 'Enabled' );
+		$this->seeColumnDoesNotHaveValue( $I, 'Disabled' );
+	}
+
+
+	/**
+	 * Test that the filter shows only the sync disabled product when filtering for that.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_filter_disabled( AcceptanceTester $I ) {
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the filter shows only the sync disabled product when filtering for that' );
+
+		$this->selectFilterOption( $I, 'Facebook sync disabled' );
+
+		$this->seeColumnHasValue( $I, 'Disabled' );
+		$this->seeColumnDoesNotHaveValue( $I, 'Enabled' );
+	}
+
+
+	/**
+	 * See that the column has a specific value.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param string $value value to check
+	 */
+	private function seeColumnHasValue( AcceptanceTester $I, string $value ) {
+
+		$I->see( $value, 'table.wp-list-table td' );
+	}
+
+
+	/**
+	 * See that the column does not have a specific value.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param string $value value to check
+	 */
+	private function seeColumnDoesNotHaveValue( AcceptanceTester $I, string $value ) {
+
+		$I->dontSee( $value, 'table.wp-list-table td' );
+	}
+
+
+	/**
+	 * Select an option on the filter.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param string $option_label label of the option to select
+	 */
+	private function selectFilterOption( AcceptanceTester $I, string $option_label ) {
+
+		$I->selectOption( 'form select[name=fb_sync_enabled]', $option_label );
+
+		$I->click( 'Filter', 'input[name=filter_action]' );
+	}
+
+
+}
