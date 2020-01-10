@@ -329,6 +329,7 @@ class Admin {
 					'cols'        => 40,
 					'rows'        => 20,
 					'value'       => $description,
+					'class'       => 'enable-if-sync-enabled',
 				] );
 
 				woocommerce_wp_textarea_input( [
@@ -342,6 +343,7 @@ class Admin {
 					'cols'        => 40,
 					'rows'        => 10,
 					'value'       => $image,
+					'class'       => 'enable-if-sync-enabled',
 				] );
 
 				woocommerce_wp_text_input( [
@@ -359,6 +361,7 @@ class Admin {
 					'cols'        => 40,
 					'rows'        => 60,
 					'value'       => $price,
+					'class'       => 'enable-if-sync-enabled',
 				] );
 
 				if ( $image_setting !== null ) {
@@ -373,6 +376,7 @@ class Admin {
 							'facebook-for-woocommerce'
 						),
 						'value'       => $image_setting ? 'yes' : 'no',
+						'class'       => 'checkbox enable-if-sync-enabled',
 					] );
 				}
 
