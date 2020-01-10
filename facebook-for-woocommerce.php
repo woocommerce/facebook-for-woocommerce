@@ -28,13 +28,30 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		// Change it above as well
 		const PLUGIN_VERSION = WC_Facebookcommerce_Utils::PLUGIN_VERSION;
 
+		/** @var string the plugin ID */
+		const PLUGIN_ID = 'facebook_for_woocommerce';
+
+		/** @var string the integration ID */
+		const INTEGRATION_ID = 'facebookcommerce';
+
+		/** @var string the integration class name (including namespaces) */
+		const INTEGRATION_CLASS = '\\WC_Facebookcommerce_Integration';
+
+
+		/** @var \WC_Facebookcommerce singleton instance */
+		private static $instance;
+
+		/** @var \WC_Facebookcommerce_Integration instance */
+		private $integration;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
 		private $admin;
 
 
 		/**
-		 * Construct the plugin.
+		 * Constructs the plugin.
+		 *
+		 * @since 1.0.0
 		 */
 		public function __construct() {
 
@@ -87,12 +104,26 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Add a new integration to WooCommerce.
+		 * Adds a Facebook integration to WooCommerce.
+		 *
+		 * @internal
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string[] $integrations class names
+		 * @return string[]
 		 */
-		public function add_woocommerce_integration( $integrations ) {
-			$integrations[] = 'WC_Facebookcommerce_Integration';
+		public function add_woocommerce_integration( $integrations = [] ) {
+
+			if ( ! class_exists( self::INTEGRATION_CLASS ) ) {
+				include_once __DIR__ . '/facebook-commerce.php';
+			}
+
+			$integrations[ self::INTEGRATION_ID ] = self::INTEGRATION_CLASS;
+
 			return $integrations;
 		}
+
 
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
@@ -102,6 +133,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the admin handler instance.
 		 *
+		 * @since x.y.z
+		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Admin|null
 		 */
 		public function get_admin_handler() {
@@ -110,8 +143,74 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 
+		/**
+		 * Gets the integration instance.
+		 *
+		 * @since x.y.z
+		 *
+		 * @return \WC_Facebookcommerce_Integration instance
+		 */
+		public function get_integration() {
+
+			if ( null === $this->integration ) {
+
+				$integrations = null === WC()->integrations ? [] : WC()->integrations->get_integrations();
+				$integration  = self::INTEGRATION_CLASS;
+
+				if ( isset( $integrations[ self::INTEGRATION_ID ] ) && $integrations[ self::INTEGRATION_ID ] instanceof $integration ) {
+
+					$this->integration = $integrations[ self::INTEGRATION_ID ];
+
+				} else {
+
+					$this->add_woocommerce_integration();
+
+					$this->integration = new $integration();
+				}
+			}
+
+			return $this->integration;
+		}
+
+
+		/**
+		 * Gets the plugin singleton instance.
+		 *
+		 * @see \facebook_for_woocommerce()
+		 *
+		 * @since x.y.z
+		 *
+		 * @return \WC_Facebookcommerce the plugin singleton instance
+		 */
+		public static function instance() {
+
+			if ( null === self::$instance ) {
+				self::$instance = new self();
+			}
+
+			return self::$instance;
+		}
+
+
 	}
 
-	$WC_Facebookcommerce = new WC_Facebookcommerce( __FILE__ );
+
+	/**
+	 * Gets the Facebook for WooCommerce plugin instance.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return \WC_Facebookcommerce instance of the plugin
+	 */
+	function facebook_for_woocommerce() {
+
+		return \WC_Facebookcommerce::instance();
+	}
+
+
+	// Loads and instantiates the plugin the first time is called here.
+	// Subsequent calls to this function will return the plugin's current thread instance (singleton).
+	facebook_for_woocommerce();
+
 
 endif;
