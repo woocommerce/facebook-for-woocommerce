@@ -276,8 +276,8 @@ class Admin {
 
 		$woo_product = new \WC_Facebook_Product( $post->ID );
 		$description = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
-		$price = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
-		$image = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+		$price       = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
+		$image       = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
 
 		$image_setting = null;
 		if ( \WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
