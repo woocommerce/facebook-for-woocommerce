@@ -244,54 +244,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->api_key && $this->product_catalog_id ) {
-				add_action(
-					'woocommerce_process_product_meta_simple',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
 
-				add_action(
-					'woocommerce_process_product_meta_variable',
-					array( $this, 'on_variable_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_booking',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_external',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_subscription',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_variable-subscription',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_bundle',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
+				add_action( 'woocommerce_process_product_meta_simple', [ $this, 'on_simple_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_variable', [ $this, 'on_variable_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_booking', [ $this, 'on_simple_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_external', [ $this, 'on_simple_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_subscription', [ $this, 'on_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_variable-subscription', [ $this, 'on_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta_bundle', [ $this, 'on_product_publish' ] );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
