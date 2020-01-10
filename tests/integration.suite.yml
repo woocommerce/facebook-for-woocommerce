@@ -17,6 +17,6 @@ modules:
             tablePrefix: "%INTEGRATION_TABLE_PREFIX%"
             domain: "%WP_DOMAIN%"
             adminEmail: "%WP_ADMIN_EMAIL%"
-            title: "WooCommerce Tests"        
-            plugins: ['facebook-for-woocommerce/facebook-for-woocommerce.php', 'woocommerce/woocommerce.php']
-            activatePlugins: ['facebook-for-woocommerce/facebook-for-woocommerce.php', 'woocommerce/woocommerce.php']
+            title: "Facebook for WooCommerce Tests"
+            plugins: ['woocommerce/woocommerce.php','facebook-for-woocommerce/facebook-for-woocommerce.php']
+            activatePlugins: ['woocommerce/woocommerce.php','facebook-for-woocommerce/facebook-for-woocommerce.php']
