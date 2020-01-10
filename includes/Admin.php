@@ -274,10 +274,12 @@ class Admin {
 	public function fb_new_product_tab_content() {
 		global $post;
 
-		$woo_product = new \WC_Facebook_Product( $post->ID );
-		$description = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
-		$price       = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
-		$image       = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+		$woo_product  = new \WC_Facebook_Product( $post->ID );
+		// all products have sync enabled unless explicitly disabled
+		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
+		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
+		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
+		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
 
 		$image_setting = null;
 		if ( \WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
@@ -289,6 +291,13 @@ class Admin {
 		<div id='facebook_options' class='panel woocommerce_options_panel'>
 			<div class='options_group'>
 				<?php
+
+				woocommerce_wp_checkbox( [
+					'id'          => 'fb_sync_enabled',
+					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+					'required'    => false,
+					'value'       => $sync_enabled ? 'yes' : 'no',
+				] );
 
 				woocommerce_wp_textarea_input( [
 					'id'          => \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION,
