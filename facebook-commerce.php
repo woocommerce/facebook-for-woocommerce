@@ -2437,12 +2437,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function init_form_fields() {
 
 		$this->form_fields = [
-
 			'fb_settings_heading'              => [
 				'title' => __( 'Debug Mode', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
 			],
-
 			'fb_page_id'                       => [
 				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
@@ -2486,6 +2484,28 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'fb_sync_options'                  => [
 				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
+			],
+			'fb_sync_exclude_categories'       => [
+				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
+				'type'              => 'multiselect',
+				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
+				'css'               => 'min-width: 300px;',
+				'default'           => '',
+				'custom_attributes' => [
+					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
+					'data-action'      => 'facebook_for_woocommerce_search_product_cat',
+				],
+			],
+			'fb_sync_exclude_tags'             => [
+				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
+				'type'              => 'multiselect',
+				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
+				'css'               => 'min-width: 300px;',
+				'default'           => '',
+				'custom_attributes' => [
+					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
+					'data-action'      => 'facebook_for_woocommerce_search_product_tag',
+				],
 			],
 		];
 
