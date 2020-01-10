@@ -245,13 +245,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->api_key && $this->product_catalog_id ) {
 
-				add_action( 'woocommerce_process_product_meta_simple', [ $this, 'on_simple_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_variable', [ $this, 'on_variable_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_booking', [ $this, 'on_simple_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_external', [ $this, 'on_simple_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_subscription', [ $this, 'on_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_variable-subscription', [ $this, 'on_product_publish' ] );
-				add_action( 'woocommerce_process_product_meta_bundle', [ $this, 'on_product_publish' ] );
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ] );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -769,6 +763,39 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 	}
+
+
+	/**
+	 * Checks the product type and calls the corresponding on publish method.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $wp_id post ID
+	 */
+	function on_product_save( $wp_id ) {
+
+		$product = wc_get_product( $wp_id );
+
+		switch ( $product->get_type() ) {
+
+			case 'simple':
+			case 'booking':
+			case 'external':
+				$this->on_simple_product_publish( $wp_id );
+			break;
+
+			case 'variable':
+				$this->on_variable_product_publish( $wp_id );
+			break;
+
+			case 'subscription':
+			case 'variable-subscription':
+			case 'bundle':
+				$this->on_product_publish( $wp_id );
+			break;
+		}
+	}
+
 
 	function on_product_delete( $wp_id ) {
 		$woo_product = new WC_Facebook_Product( $wp_id );
