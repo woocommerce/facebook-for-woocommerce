@@ -42,9 +42,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	private $test_mode = false;
 
-	public function init_settings() {
-		parent::init_settings();
-	}
 
 	public function init_pixel() {
 		WC_Facebookcommerce_Pixel::initialize();
@@ -2437,8 +2434,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 
-		parent::init_form_fields();
-
 		$term_query = new \WP_Term_Query( [
 			'taxonomy'   => 'product_cat',
 			'hide_empty' => false,
@@ -2508,7 +2503,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'fb_sync_exclude_categories'       => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
+				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
 				'default'           => [],
 				'options'           => is_array( $product_categories ) ? $product_categories : [],
@@ -2519,7 +2514,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'fb_sync_exclude_tags'             => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select facebook-for-woocommerce-search-terms',
+				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
 				'default'           => [],
 				'options'           => is_array( $product_tags ) ? $product_tags : [],
