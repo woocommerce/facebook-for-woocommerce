@@ -1,0 +1,32 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @package FacebookCommerce
+ */
+/**
+ * Toggles (enables/disables) Facebook setting fields.
+ *
+ * @since x.y.z
+ *
+ * @param enabled
+ */
+function toggleFacebookSettings( enabled ) {
+
+	jQuery( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
+}
+
+jQuery( document ).ready( function() {
+
+	const syncEnabledCheckbox = jQuery( '#fb_sync_enabled' );
+
+	syncEnabledCheckbox.on( 'click', function() {
+		toggleFacebookSettings( this.checked );
+	} );
+
+	toggleFacebookSettings( syncEnabledCheckbox.checked );
+} );
+
+
