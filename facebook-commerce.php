@@ -2531,6 +2531,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the IDs of the categories to be excluded from sync.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_product_category_ids() {
+
+		return $this->get_option( 'fb_sync_exclude_categories', [] );
+	}
+
+
+	/**
+	 * Gets the IDs of the tags to be excluded from sync.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_product_tag_ids() {
+
+		return $this->get_option( 'fb_sync_exclude_tags', [] );
+	}
+
+
+	/**
 	 * Gets message HTML.
 	 *
 	 * @return string
