@@ -2539,7 +2539,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_category_ids() {
 
-		return $this->get_option( 'fb_sync_exclude_categories', [] );
+		return (array) $this->get_option( 'fb_sync_exclude_categories', [] );
 	}
 
 
@@ -2552,7 +2552,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_tag_ids() {
 
-		return $this->get_option( 'fb_sync_exclude_tags', [] );
+		return (array) $this->get_option( 'fb_sync_exclude_tags', [] );
 	}
 
 
