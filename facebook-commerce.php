@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -776,23 +778,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product = wc_get_product( $wp_id );
 
-		switch ( $product->get_type() ) {
+		if ( empty( $_POST['fb_sync_enabled'] ) ) {
 
-			case 'simple':
-			case 'booking':
-			case 'external':
-				$this->on_simple_product_publish( $wp_id );
-			break;
+			Products::disable_sync_for_products( [ $product ] );
 
-			case 'variable':
-				$this->on_variable_product_publish( $wp_id );
-			break;
+		} else {
 
-			case 'subscription':
-			case 'variable-subscription':
-			case 'bundle':
-				$this->on_product_publish( $wp_id );
-			break;
+			Products::enable_sync_for_products( [ $product ] );
+
+			switch ( $product->get_type() ) {
+
+				case 'simple':
+				case 'booking':
+				case 'external':
+					$this->on_simple_product_publish( $wp_id );
+				break;
+
+				case 'variable':
+					$this->on_variable_product_publish( $wp_id );
+				break;
+
+				case 'subscription':
+				case 'variable-subscription':
+				case 'bundle':
+					$this->on_product_publish( $wp_id );
+				break;
+			}
 		}
 	}
 
