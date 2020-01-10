@@ -23,10 +23,10 @@ jQuery( document ).ready( function() {
 	const syncEnabledCheckbox = jQuery( '#fb_sync_enabled' );
 
 	syncEnabledCheckbox.on( 'click', function() {
-		toggleFacebookSettings( this.checked );
+		toggleFacebookSettings( jQuery( this ).prop( 'checked' ) );
 	} );
 
-	toggleFacebookSettings( syncEnabledCheckbox.checked );
+	toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ) );
 } );
 
 
