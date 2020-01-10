@@ -31,6 +31,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var string the plugin ID */
 		const PLUGIN_ID = 'facebook_for_woocommerce';
 
+		/** @var string the integration ID */
+		const INTEGRATION_ID = 'facebookcommerce';
+
 		/** @var string the integration class name (including namespaces) */
 		const INTEGRATION_CLASS = '\\WC_Facebookcommerce_Integration';
 
@@ -116,7 +119,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				include_once __DIR__ . '/facebook-commerce.php';
 			}
 
-			$integrations[] = self::INTEGRATION_CLASS;
+			$integrations[ self::INTEGRATION_ID ] = self::INTEGRATION_CLASS;
 
 			return $integrations;
 		}
@@ -154,9 +157,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$integrations = null === WC()->integrations ? [] : WC()->integrations->get_integrations();
 				$integration  = self::INTEGRATION_CLASS;
 
-				if ( isset( $integrations[ self::PLUGIN_ID ] ) && $integrations[ self::PLUGIN_ID ] instanceof $integration ) {
+				if ( isset( $integrations[ self::INTEGRATION_ID ] ) && $integrations[ self::INTEGRATION_ID ] instanceof $integration ) {
 
-					$this->integration = $integrations[ self::PLUGIN_ID ];
+					$this->integration = $integrations[ self::INTEGRATION_ID ];
 
 				} else {
 

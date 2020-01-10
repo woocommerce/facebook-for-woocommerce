@@ -75,7 +75,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			include_once 'facebook-commerce-events-tracker.php';
 		}
 
-		$this->id                 = 'facebookcommerce';
+		$this->id                 = WC_Facebookcommerce::INTEGRATION_ID;
 		$this->method_title       = __(
 			'Facebook for WooCommerce',
 			'facebook-for-commerce'
