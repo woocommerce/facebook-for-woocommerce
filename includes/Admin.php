@@ -250,16 +250,27 @@ class Admin {
 	}
 
 
+	/**
+	 * Adds a new tab to the Product edit page.
+	 *
+	 * @param $tabs
+	 * @return mixed
+	 */
 	public function fb_new_product_tab( $tabs ) {
-		$tabs['fb_commerce_tab'] = array(
+
+		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => array( 'show_if_simple', 'show_if_variable' ),
-		);
+			'class'  => [ 'show_if_simple', 'show_if_variable' ],
+		];
+
 		return $tabs;
 	}
 
 
+	/**
+	 * Adds content to the new Facebook tab on the Product edit page.
+	 */
 	public function fb_new_product_tab_content() {
 		global $post;
 		$woo_product = new WC_Facebook_Product( $post->ID );
