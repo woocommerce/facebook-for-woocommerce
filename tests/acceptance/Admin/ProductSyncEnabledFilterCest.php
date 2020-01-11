@@ -129,7 +129,7 @@ class ProductSyncEnabledFilterCest {
 
 		$I->selectOption( 'form select[name=fb_sync_enabled]', $option_label );
 
-		$I->click( 'Filter', 'input[name=filter_action]' );
+		$I->click( 'Filter' );
 	}
 
 

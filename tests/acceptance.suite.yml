@@ -9,7 +9,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WPDb
-        - WPBrowser
+        - WPWebDriver
         - WPLoader
         - \Helper\Acceptance
     config:
@@ -19,21 +19,23 @@ modules:
             password: '%ACCEPTANCE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true 
+            populate: true
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true 
+            cleanup: true
             waitlock: 0
             url: '%WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%ACCEPTANCE_TABLE_PREFIX%'
-        WPBrowser:
+        WPWebDriver:
             url: '%WP_URL%'
             adminUsername: '%WP_ADMIN_USERNAME%'
             adminPassword: '%WP_ADMIN_PASSWORD%'
             adminPath: '%WP_ADMIN_PATH%'
-            headers:
-                X_TEST_REQUEST: 1
-                X_WPBROWSER_REQUEST: 1
+            browser: 'chrome'
+            capabilities:
+              "chromeOptions":
+                "w3c": false
+                "binary": ""
         WPLoader:
           loadOnly: true
           wpRootFolder: '%WP_ROOT_FOLDER%'
