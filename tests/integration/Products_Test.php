@@ -47,8 +47,6 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		// repeat for variable products
 		$variable_product = $this->get_variable_product();
-
-		// get a fresh product object to ensure the status is stored
 		$variable_product = wc_get_product( $variable_product->get_id() );
 
 		$this->assertTrue( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
@@ -74,15 +72,20 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertFalse( Facebook\Products::is_sync_enabled_for_product( $product ) );
 
 		// repeat for variable products
-		$variable_product = $this->get_product();
+		$variable_product = $this->get_variable_product();
 
 		Facebook\Products::enable_sync_for_products( [ $variable_product ] );
 		Facebook\Products::disable_sync_for_products( [ $variable_product ] );
 
-		// get a fresh product object to ensure the status is stored
 		$variable_product = wc_get_product( $variable_product->get_id() );
 
-		$this->assertFalse( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
+		// this is true because we only check for the parent and no taxonomies are affected
+		$this->assertTrue( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
+
+		// however it is not the case for the children
+		foreach ( $variable_product->get_children() as $child_product_id ) {
+			$this->assertFalse( Facebook\Products::is_sync_enabled_for_product( wc_get_product( $child_product_id ) ) );
+		}
 	}
 
 
