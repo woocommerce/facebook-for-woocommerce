@@ -111,25 +111,26 @@ class Products {
 
 		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
 
-			$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
+			$enabled = true;
 
-			if ( $enabled )	 {
+			if ( $product->is_type( 'variation' ) ) {
+				$product = wc_get_product( $product->get_parent_id() );
+			}
 
-				$excluded_categories = facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids();
+			if ( $product instanceof \WC_Product ) {
 
-				if ( $excluded_categories ) {
-					$product_categories = wc_get_product_terms( $product->get_id(), 'product_cat', [ 'fields' => 'ids' ] );
-					$enabled            = ! $product_categories || ! array_intersect( $product_categories, $excluded_categories );
+				if ( $integration = facebook_for_woocommerce()->get_integration() ) {
+					$excluded_categories = $integration->get_excluded_product_category_ids();
+					$excluded_tags       = $integration->get_excluded_product_tag_ids();
+				} else {
+					$excluded_categories = $excluded_tags = [];
 				}
 
-				if ( $enabled ) {
+				if ( $product->is_type( 'variable' ) || 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY ) ) {
 
-					$excluded_tags = facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids();
-
-					if ( $excluded_tags ) {
-						$product_tags  = wc_get_product_terms( $product->get_id(), 'product_tag', [ 'fields' => 'ids' ] );
-						$enabled       = ! $product_tags || ! array_intersect( $product_tags, $excluded_tags );
-					}
+					$categories = $product->get_category_ids();
+					$tags       = $product->get_tag_ids();
+					$enabled    = ( ! $categories && ! $tags ) || ( array_intersect( $categories, $excluded_categories ) && ! array_intersect( $tags, $excluded_tags ) );
 				}
 			}
 
