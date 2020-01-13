@@ -14,12 +14,16 @@ defined( 'ABSPATH' ) or exit;
 
 /**
  * Admin handler.
+ *
+ * @since x.y.z
  */
 class Admin {
 
 
 	/**
 	 * Admin constructor.
+	 *
+	 * @since x.y.z
 	 */
 	public function __construct() {
 
@@ -29,9 +33,9 @@ class Admin {
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
-		// add column for displaying Facebook sync enabled/disabled
-		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
-		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
+		// add columns for displaying Facebook sync enabled/disabled and shop visibility status
+		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
+		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_columns_content' ] );
 
 		// add input to filter products by Facebook sync enabled
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_enabled_input_filter' ], 40 );
@@ -64,16 +68,17 @@ class Admin {
 
 
 	/**
-	 * Adds a column for Facebook Sync in the products edit screen.
+	 * Adds Facebook-related columns in the products edit screen.
 	 *
 	 * @internal
 	 *
 	 * @param array $columns array of keys and labels
 	 * @return array
 	 */
-	public function add_product_list_table_column( $columns ) {
+	public function add_product_list_table_columns( $columns ) {
 
-		$columns['facebook_sync_enabled'] = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_sync_enabled']    = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
+		$columns['facebook_shop_visibility'] = __( 'FB Shop Visibility', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
@@ -86,19 +91,90 @@ class Admin {
 	 *
 	 * @param string $column the current column in the posts table
 	 */
-	public function add_product_list_table_column_content( $column ) {
+	public function add_product_list_table_columns_content( $column ) {
 		global $post;
 
-		if ( 'facebook_sync_enabled' === $column ) {
+		if ( 'facebook_sync_enabled' === $column ) :
 
 			$product = wc_get_product( $post );
 
-			if ( $product && Products::is_sync_enabled_for_product( $product ) ) {
+			if ( $product && Products::is_sync_enabled_for_product( $product ) ) :
 				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
-			} else {
+			else :
 				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
-			}
-		}
+			endif;
+
+		elseif ( 'facebook_shop_visibility' === $column ) :
+
+			// TODO this script is re-enqueued on each row by design or it won't work, perhaps a refactor is in order later on {FN 2020-01-13}
+			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ) );
+			wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
+				'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' )
+			] );
+
+			$integration         = facebook_for_woocommerce()->get_integration();
+			$product             = wc_get_product( $post );
+			$fb_product          = new \WC_Facebook_Product( $post );
+			$fb_product_group_id = $integration && $product && $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product );
+
+			if ( ! $fb_product_group_id ) :
+
+				?><span>&ndash;</span><?php
+
+			else :
+
+				$visibility = $product->get_meta( \WC_Facebookcommerce_Integration::FB_VISIBILITY );
+
+				// TODO: current JS code will change the button text and tooltip content without considering localization here {FN 2020-01-13}
+
+				if ( ! $visibility ) {
+					$data_tip_content = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
+				} else {
+					$data_tip_content = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
+				}
+
+				// TODO be mindful of classes and IDs for HTML below as it may have to be refactored if JS script changes for handling visibility {FN 2020-01-13}
+
+				?>
+				<span
+					class="tips"
+					id="tip_<?php echo esc_attr( $post->ID ); ?>"
+					data-tip="<?php echo esc_attr( $data_tip_content ); ?>">
+					<?php
+
+					if ( ! $visibility ) :
+
+						?>
+						<a
+							id="viz_<?php echo esc_attr( $post->ID ); ?>"
+							class="button button-primary button-large"
+							href="javascript:;"
+							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+							<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
+						</a>
+						<?php
+
+					else :
+
+						?>
+						<a
+							id="viz_<?php echo esc_attr( $post->ID ); ?>"
+							class="button button-large"
+							href="javascript:;"
+							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+							<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
+						</a>
+						<?php
+
+					endif;
+
+					?>
+				</span>
+				<?php
+
+			endif;
+
+		endif;
 	}
 
 
