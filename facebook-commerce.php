@@ -42,9 +42,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	private $test_mode = false;
 
-	public function init_settings() {
-		parent::init_settings();
-	}
 
 	public function init_pixel() {
 		WC_Facebookcommerce_Pixel::initialize();
@@ -78,7 +75,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			include_once 'facebook-commerce-events-tracker.php';
 		}
 
-		$this->id                 = 'facebookcommerce';
+		$this->id                 = WC_Facebookcommerce::INTEGRATION_ID;
 		$this->method_title       = __(
 			'Facebook for WooCommerce',
 			'facebook-for-commerce'
@@ -2420,94 +2417,136 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
 	/**
-	 * Initialize Settings Form Fields
+	 * Initializes the settings form fields.
 	 *
-	 * @access public
-	 * @return void
+	 * @since 1.0.0
+	 *
+	 * @internal
 	 */
-	function init_form_fields() {
-		$this->form_fields = array(
-			'fb_settings_heading'              => array(
-				'title'       => __( 'Debug Mode', 'facebook-for-woocommerce' ),
-				'type'        => 'title',
-				'description' => '',
-				'default'     => '',
-			),
-			'fb_page_id'                       => array(
+	public function init_form_fields() {
+
+		$term_query = new \WP_Term_Query( [
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => false,
+			'fields'     => 'id=>name',
+		] );
+
+		$product_categories = $term_query->get_terms();
+
+		$term_query = new \WP_Term_Query( [
+			'taxonomy'     => 'product_tag',
+			'hide_empty'   => false,
+			'hierarchical' => false,
+			'fields'       => 'id=>name',
+		] );
+
+		$product_tags = $term_query->get_terms();
+
+		$this->form_fields = [
+			'fb_settings_heading'              => [
+				'title' => __( 'Debug Mode', 'facebook-for-woocommerce' ),
+				'type'  => 'title',
+			],
+			'fb_page_id'                       => [
 				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __(
-					'The unique identifier for your Facebook page.',
-					'facebook-for-woocommerce'
-				),
+				'description' => __( 'The unique identifier for your Facebook page.', 'facebook-for-woocommerce' ),
 				'default'     => '',
-			),
-			'fb_product_catalog_id'            => array(
+			],
+			'fb_product_catalog_id'            => [
 				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __(
-					'The unique identifier for your product catalog,
-          on Facebook.',
-					'facebook-for-woocommerce'
-				),
+				'description' => __( 'The unique identifier for your product catalog, on Facebook.', 'facebook-for-woocommerce' ),
 				'default'     => '',
-			),
-			'fb_pixel_id'                      => array(
+			],
+			'fb_pixel_id'                      => [
 				'title'       => __( 'Pixel ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __(
-					'The unique identifier for your Facebook pixel',
-					'facebook-for-woocommerce'
-				),
+				'description' => __( 'The unique identifier for your Facebook pixel', 'facebook-for-woocommerce' ),
 				'default'     => '',
-			),
-			'fb_pixel_use_pii'                 => array(
-				'title'       => __(
-					'Use Advanced Matching on pixel?',
-					'facebook-for-woocommerce'
-				),
+			],
+			'fb_pixel_use_pii'                 => [
+				'title'       => __( 'Use Advanced Matching on pixel?', 'facebook-for-woocommerce' ),
 				'type'        => 'checkbox',
-				'description' => __(
-					'Enabling Advanced Matching
-          improves audience building.',
-					'facebook-for-woocommerce'
-				),
+				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
 				'default'     => 'yes',
-			),
-			'fb_external_merchant_settings_id' => array(
-				'title'       => __(
-					'External Merchant Settings ID',
-					'facebook-for-woocommerce'
-				),
+			],
+			'fb_external_merchant_settings_id' => [
+				'title'       => __( 'External Merchant Settings ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __(
-					'The unique identifier for your external merchant
-          settings, on Facebook.',
-					'facebook-for-woocommerce'
-				),
+				'description' => __( 'The unique identifier for your external merchant settings, on Facebook.', 'facebook-for-woocommerce' ),
 				'default'     => '',
-			),
-			'fb_api_key'                       => array(
+			],
+			'fb_api_key'                       => [
 				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => sprintf(
-					__(
-						'A non-expiring Page Token with
-          %1$smanage_pages%2$s permissions.',
-						'facebook-for-woocommerce'
-					),
-					'<code>',
-					'</code>'
+					/* translators: Placeholders: %s - Facebook Login permissions */
+					__( 'A non-expiring Page Token with %s permissions.', 'facebook-for-woocommerce' ),
+					'<code>manage_pages</code>'
 				),
 				'default'     => '',
-			),
-		);
+			],
+			'fb_sync_options'                  => [
+				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
+				'type'  => 'title'
+			],
+			'fb_sync_exclude_categories'       => [
+				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
+				'type'              => 'multiselect',
+				'class'             => 'wc-enhanced-select',
+				'css'               => 'min-width: 300px;',
+				'default'           => [],
+				'options'           => is_array( $product_categories ) ? $product_categories : [],
+				'custom_attributes' => [
+					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
+				],
+			],
+			'fb_sync_exclude_tags'             => [
+				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
+				'type'              => 'multiselect',
+				'class'             => 'wc-enhanced-select',
+				'css'               => 'min-width: 300px;',
+				'default'           => [],
+				'options'           => is_array( $product_tags ) ? $product_tags : [],
+				'custom_attributes' => [
+					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
+				],
+			],
+		];
 
 		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
 			include_once 'includes/fbutils.php';
 		}
-	} // End init_form_fields()
+	}
+
+
+	/**
+	 * Gets the IDs of the categories to be excluded from sync.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_product_category_ids() {
+
+		return (array) $this->get_option( 'fb_sync_exclude_categories', [] );
+	}
+
+
+	/**
+	 * Gets the IDs of the tags to be excluded from sync.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int[]
+	 */
+	public function get_excluded_product_tag_ids() {
+
+		return (array) $this->get_option( 'fb_sync_exclude_tags', [] );
+	}
 
 
 	/**
