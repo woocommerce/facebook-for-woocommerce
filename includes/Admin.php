@@ -73,9 +73,9 @@ class Admin {
 
 		if ( 'facebook_sync_enabled' === $column ) :
 
-			$fb_product = wc_get_product( $post );
+			$product = wc_get_product( $post );
 
-			if ( $fb_product && Products::is_sync_enabled_for_product( $fb_product ) ) :
+			if ( $product && Products::is_sync_enabled_for_product( $product ) ) :
 				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
 			else :
 				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
