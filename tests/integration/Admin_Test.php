@@ -58,9 +58,9 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Facebook\Admin::add_product_list_table_column_content() */
-	public function test_add_product_list_table_column_content() {
+	public function test_add_product_list_table_columns_content() {
 
-		$this->assertTrue( (bool) has_action( 'manage_product_posts_custom_column', [ $this->admin, 'add_product_list_table_column_content' ] ) );
+		$this->assertTrue( (bool) has_action( 'manage_product_posts_custom_column', [ $this->admin, 'add_product_list_table_columns_content' ] ) );
 	}
 
 
