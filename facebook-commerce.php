@@ -315,7 +315,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1
 				);
 
-				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
+				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
 				add_action(
 					'transition_post_status',
