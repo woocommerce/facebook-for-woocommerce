@@ -80,4 +80,74 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * Test that the field value is saved correctly when enabling sync.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_field_enable( AcceptanceTester $I ) {
+
+		/**
+		 * Set these in the database so that the product processing hooks are properly set
+		 * @see WC_Facebookcommerce_Integration::__construct
+		 */
+		$plugin_settings = [
+			'fb_api_key'            => 'fake-key',
+			'fb_product_catalog_id' => '1111',
+		];
+		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
+
+		$I->amEditingPostWithId( $this->sync_disabled_product->get_id() );
+
+		$I->wantTo( 'Test that the field value is saved correctly when enabling sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar").remove();' );
+		$I->checkOption( '#fb_sync_enabled' );
+		$I->click( 'Update' );
+		$I->waitForText( 'Product updated' );
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->seeCheckboxIsChecked( '#fb_sync_enabled' );
+	}
+
+
+	/**
+	 * Test that the field value is saved correctly when disabling sync.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_field_disable( AcceptanceTester $I ) {
+
+		/**
+		 * Set these in the database so that the product processing hooks are properly set
+		 * @see WC_Facebookcommerce_Integration::__construct
+		 */
+		$plugin_settings = [
+			'fb_api_key'            => 'fake-key',
+			'fb_product_catalog_id' => '1111',
+		];
+		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the field value is saved correctly when disabling sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar").remove();' );
+		$I->uncheckOption( '#fb_sync_enabled' );
+		$I->click( 'Update' );
+		$I->waitForText( 'Product updated' );
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+	}
+
+
 }
