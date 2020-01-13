@@ -489,7 +489,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_cart_num_items() {
 
-			return WC()->cart->get_cart_contents_count();
+			return WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 		}
 
 
@@ -504,9 +504,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$product_ids = [ [] ];
 
-			foreach ( WC()->cart->get_cart() as $item ) {
-				if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
-					$product_ids[] = \WC_Facebookcommerce_Utils::get_fb_content_ids( $item['data'] );
+			if ( $cart = WC()->cart ) {
+
+				foreach ( $cart->get_cart() as $item ) {
+
+					if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
+
+						$product_ids[] = \WC_Facebookcommerce_Utils::get_fb_content_ids( $item['data'] );
+					}
 				}
 			}
 
@@ -525,18 +530,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$cart_contents = [];
 
-			foreach ( WC()->cart->get_cart() as $item ) {
+			if ( $cart = WC()->cart ) {
 
-				if ( ! isset( $item['data'], $item['quantity'] ) || ! $item['data'] instanceof \WC_Product ) {
-					continue;
+				foreach ( $cart->get_cart() as $item ) {
+
+					if ( ! isset( $item['data'], $item['quantity'] ) || ! $item['data'] instanceof \WC_Product ) {
+						continue;
+					}
+
+					$content = new \stdClass();
+
+					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $item['data'] );
+					$content->quantity = $item['quantity'];
+
+					$cart_contents[] = $content;
 				}
-
-				$content = new \stdClass();
-
-				$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $item['data'] );
-				$content->quantity = $item['quantity'];
-
-				$cart_contents[] = $content;
 			}
 
 			return wp_json_encode( $cart_contents );
@@ -550,7 +558,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_cart_total() {
 
-			return WC()->cart->total;
+			return WC()->cart ? WC()->cart->total : 0;
 		}
 
 
