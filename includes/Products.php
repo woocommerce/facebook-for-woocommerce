@@ -38,14 +38,32 @@ class Products {
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 
+		$enabled = wc_bool_to_string( $enabled );
+
 		self::$products_sync_enabled = [];
 
 		foreach ( $products as $product ) {
 
 			if ( $product instanceof \WC_Product ) {
 
-				$product->update_meta_data( self::SYNC_ENABLED_META_KEY, wc_bool_to_string( $enabled ) );
-				$product->save_meta_data();
+				if ( $product->is_type( 'variable' ) ) {
+
+					foreach ( $product->get_children() as $variation ) {
+
+						$product = wc_get_product( $variation );
+
+						if ( $product instanceof \WC_Product ) {
+
+							$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
+							$product->save_meta_data();
+						}
+					}
+
+				} else {
+
+					$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
+					$product->save_meta_data();
+				}
 			}
 		}
 	}
