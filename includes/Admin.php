@@ -27,8 +27,8 @@ class Admin {
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
 		// add columns for displaying Facebook sync enabled/disabled and shop visibility status
-		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_column' ] );
-		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_column_content' ] );
+		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
+		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_columns_content' ] );
 
 		// add input to filter products by Facebook sync enabled
 		add_action( 'restrict_manage_posts', [ $this, 'add_products_by_sync_enabled_input_filter' ], 40 );
@@ -48,7 +48,7 @@ class Admin {
 	 * @param array $columns array of keys and labels
 	 * @return array
 	 */
-	public function add_product_list_table_column( $columns ) {
+	public function add_product_list_table_columns( $columns ) {
 
 		$columns['facebook_sync_enabled']    = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
 		$columns['facebook_shop_visibility'] = __( 'FB Shop Visibility', 'facebook-for-woocommerce' );
@@ -64,7 +64,7 @@ class Admin {
 	 *
 	 * @param string $column the current column in the posts table
 	 */
-	public function add_product_list_table_column_content( $column ) {
+	public function add_product_list_table_columns_content( $column ) {
 		global $post;
 
 		if ( 'facebook_sync_enabled' === $column ) {
