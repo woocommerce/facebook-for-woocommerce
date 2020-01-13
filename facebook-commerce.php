@@ -317,12 +317,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
 				add_action(
-					'manage_product_posts_custom_column',
-					array( $this, 'fb_render_product_columns' ),
-					2
-				);
-
-				add_action(
 					'transition_post_status',
 					array( $this, 'fb_change_product_published_status' ),
 					10,
