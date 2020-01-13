@@ -14,12 +14,16 @@ defined( 'ABSPATH' ) or exit;
 
 /**
  * Admin handler.
+ *
+ * @since x.y.z
  */
 class Admin {
 
 
 	/**
 	 * Admin constructor.
+	 *
+	 * @since x.y.z
 	 */
 	public function __construct() {
 
@@ -67,16 +71,83 @@ class Admin {
 	public function add_product_list_table_columns_content( $column ) {
 		global $post;
 
-		if ( 'facebook_sync_enabled' === $column ) {
+		if ( 'facebook_sync_enabled' === $column ) :
 
-			$product = wc_get_product( $post );
+			$fb_product = wc_get_product( $post );
 
-			if ( $product && Products::is_sync_enabled_for_product( $product ) ) {
+			if ( $fb_product && Products::is_sync_enabled_for_product( $fb_product ) ) :
 				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
-			} else {
+			else :
 				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
-			}
-		}
+			endif;
+
+		elseif ( 'facebook_shop_visibility' === $column ) :
+
+			// TODO this script is re-enqueued on each row by design or it won't work, perhaps a refactor is in order later on {FN 2020-01-13}
+			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ) );
+			wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
+				'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' )
+			] );
+
+			$integration         = facebook_for_woocommerce()->get_integration();
+			$product             = wc_get_product( $post );
+			$fb_product          = new \WC_Facebook_Product( $post );
+			$fb_product_group_id = $integration && $product && $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product );
+
+			if ( ! $fb_product_group_id ) :
+
+				?><span>&ndash;</span><?php
+
+			else :
+
+				$visibility = $product->get_meta( \WC_Facebookcommerce_Integration::FB_VISIBILITY );
+
+				// TODO the tooltip below does not appear to be displaying, JS does not handle l10n correctly {FN 2020-01-13}
+				?>
+				<span
+					class="tips"
+					id="tip_<?php echo esc_attr( $post->ID ); ?>"
+					<?php
+					if ( ! $visibility ) :
+						?>data-tip="<?php esc_attr_e( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' ); ?>" <?php
+					else :
+						?>data-tip="<?php esc_attr_e( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' ); ?>" <?php
+					endif;
+					?> >
+				</span>
+				<?php
+
+				// TODO be mindful of classes and IDs for HTML below as it may have to be refactored if JS script changes for handling visibility {FN 2020-01-13}
+
+				if ( ! $visibility ) :
+
+					?>
+					<a
+						id="viz_<?php echo esc_attr( $post->ID ); ?>"
+						class="button button-primary button-large"
+						href="javascript:;"
+						onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+						<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
+					</a>
+					<?php
+
+				else :
+
+					?>
+					<a
+						id="viz_<?php echo esc_attr( $post->ID ); ?>"
+						class="button button-large"
+						href="javascript:;"
+						onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+						<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
+					</a>
+					<?php
+
+				endif;
+
+			endif;
+
+		endif;
 	}
 
 
