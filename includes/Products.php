@@ -38,9 +38,9 @@ class Products {
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 
-		$enabled = wc_bool_to_string( $enabled );
-
 		self::$products_sync_enabled = [];
+
+		$enabled = wc_bool_to_string( $enabled );
 
 		foreach ( $products as $product ) {
 
@@ -111,7 +111,7 @@ class Products {
 
 		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
 
-			$enabled = true;
+			$enabled = false;
 
 			if ( $product->is_type( 'variation' ) ) {
 				$product = wc_get_product( $product->get_parent_id() );
@@ -130,7 +130,8 @@ class Products {
 
 					$categories = $product->get_category_ids();
 					$tags       = $product->get_tag_ids();
-					$enabled    = ( ! $categories && ! $tags ) || ( array_intersect( $categories, $excluded_categories ) && ! array_intersect( $tags, $excluded_tags ) );
+					$enabled    =    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
+					              && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
 				}
 			}
 
