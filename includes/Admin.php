@@ -102,48 +102,52 @@ class Admin {
 
 				$visibility = $product->get_meta( \WC_Facebookcommerce_Integration::FB_VISIBILITY );
 
-				// TODO the tooltip below does not appear to be displaying, JS does not handle l10n correctly {FN 2020-01-13}
+				// TODO: current JS code will change the button text and tooltip content without considering localization here {FN 2020-01-13}
+
+				if ( ! $visibility ) {
+					$data_tip_content = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
+				} else {
+					$data_tip_content = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
+				}
+
+				// TODO be mindful of classes and IDs for HTML below as it may have to be refactored if JS script changes for handling visibility {FN 2020-01-13}
+
 				?>
 				<span
 					class="tips"
 					id="tip_<?php echo esc_attr( $post->ID ); ?>"
+					data-tip="<?php echo esc_attr( $data_tip_content ); ?>">
 					<?php
+
 					if ( ! $visibility ) :
-						?>data-tip="<?php esc_attr_e( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' ); ?>" <?php
+
+						?>
+						<a
+							id="viz_<?php echo esc_attr( $post->ID ); ?>"
+							class="button button-primary button-large"
+							href="javascript:;"
+							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+							<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
+						</a>
+						<?php
+
 					else :
-						?>data-tip="<?php esc_attr_e( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' ); ?>" <?php
+
+						?>
+						<a
+							id="viz_<?php echo esc_attr( $post->ID ); ?>"
+							class="button button-large"
+							href="javascript:;"
+							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+							<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
+						</a>
+						<?php
+
 					endif;
-					?> >
+
+					?>
 				</span>
 				<?php
-
-				// TODO be mindful of classes and IDs for HTML below as it may have to be refactored if JS script changes for handling visibility {FN 2020-01-13}
-
-				if ( ! $visibility ) :
-
-					?>
-					<a
-						id="viz_<?php echo esc_attr( $post->ID ); ?>"
-						class="button button-primary button-large"
-						href="javascript:;"
-						onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
-						<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
-					</a>
-					<?php
-
-				else :
-
-					?>
-					<a
-						id="viz_<?php echo esc_attr( $post->ID ); ?>"
-						class="button button-large"
-						href="javascript:;"
-						onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
-						<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
-					</a>
-					<?php
-
-				endif;
 
 			endif;
 
