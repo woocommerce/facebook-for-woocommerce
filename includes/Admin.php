@@ -94,8 +94,6 @@ class Admin {
 				'set_product_sync_bulk_action_nonce' => wp_create_nonce( 'set-product-sync-bulk-action' ),
 			] );
 
-
-
 			$integration         = facebook_for_woocommerce()->get_integration();
 			$product             = wc_get_product( $post );
 			$fb_product          = new \WC_Facebook_Product( $post );
@@ -133,7 +131,8 @@ class Admin {
 							id="viz_<?php echo esc_attr( $post->ID ); ?>"
 							class="button button-primary button-large"
 							href="javascript:;"
-							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )"
+							data-product-visibility="hidden">
 							<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
 						</a>
 						<?php
@@ -145,7 +144,8 @@ class Admin {
 							id="viz_<?php echo esc_attr( $post->ID ); ?>"
 							class="button button-large"
 							href="javascript:;"
-							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)"
+							data-product-visibility="visible">
 							<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
 						</a>
 						<?php

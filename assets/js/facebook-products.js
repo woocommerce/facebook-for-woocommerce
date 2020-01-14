@@ -127,25 +127,17 @@ jQuery( document ).ready( function( $ ) {
 					// exclude from sync: offer to handle product visibility
 					$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
 
-						let $promptButton = $( this );
+						if ( $( this ).hasClass( 'hide-products' ) ) {
 
-						$.each( products, function() {
+							$.each( products, function() {
 
-							let $toggle = $( '#post-' + this ).find( 'td.facebook_shop_visibility a' );
+								let $toggle = $( '#post-' + this ).find( 'td.facebook_shop_visibility a' );
 
-							switch ( $toggle.data( 'product-visibility' ) ) {
-								case 'visible' :
-									if ( $promptButton.hasClass( 'hide-products' ) ) {
-										$toggle.trigger( 'click' );
-									}
-								break;
-								case 'hidden' :
-									if ( $promptButton.hasClass( 'show-products' ) ) {
-										$toggle.trigger( 'click' );
-									}
-								break;
-							}
-						} );
+								if ( 'visible' === $toggle.data( 'product-visibility' ) ) {
+									$toggle.trigger( 'click' );
+								}
+							} );
+						}
 
 						// submit form after modal prompt action
 						submitBulkAction = true;
