@@ -201,18 +201,7 @@ class Admin {
 			// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
 			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
 
-				$query_vars['meta_query']['relation'] = 'OR';
-				$query_vars['meta_query'][]           = [
-					'key'   => Products::SYNC_ENABLED_META_KEY,
-					'value' => 'yes',
-				];
-				$query_vars['meta_query'][]           = [
-					'key'     => Products::SYNC_ENABLED_META_KEY,
-					'compare' => 'NOT EXISTS',
-				];
-
-				// check whether the product belongs to an excluded product category or tag
-				$query_vars = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars );
+				$query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $query_vars );
 
 			} else {
 
