@@ -214,6 +214,7 @@ class Admin {
 	 */
 	public function filter_products_by_sync_enabled( $query_vars ) {
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['fb_sync_enabled'] ) && in_array( $_REQUEST['fb_sync_enabled'], [ 'yes', 'no' ], true ) ) {
 
 			// by default use an "AND" clause if multiple conditions exist for a meta query
