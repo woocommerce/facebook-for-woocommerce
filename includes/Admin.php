@@ -59,10 +59,9 @@ class Admin {
 	 * @since x.y.z
 	 */
 	public function enqueue_scripts() {
+		global $current_screen;
 
-		$screen = get_current_screen();
-
-		if ( 'product' === $screen->id ) {
+		if ( 'product' === $current_screen->id ) {
 
 			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 		}
