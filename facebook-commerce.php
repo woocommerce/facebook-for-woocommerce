@@ -727,6 +727,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function on_product_save( $wp_id ) {
 
 		$product = wc_get_product( $wp_id );
+		
+		if ( ! $product ) {
+			return;
+		}
 
 		if ( empty( $_POST['fb_sync_enabled'] ) ) {
 
