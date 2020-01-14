@@ -54,6 +54,8 @@ class Admin {
 	/**
 	 * Enqueues admin scripts.
 	 *
+	 * @internal
+	 *
 	 * @since x.y.z
 	 */
 	public function enqueue_scripts() {
