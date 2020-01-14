@@ -192,7 +192,7 @@ class Admin {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$choice = isset( $_GET['fb_sync_enabled'] ) ? (string) $_GET['fb_sync_enabled'] : '';
+		$choice = isset( $_GET['fb_sync_enabled'] ) ? (string) sanitize_text_field( wp_unslash( $_GET['fb_sync_enabled'] ) ) : '';
 
 		?>
 		<select name="fb_sync_enabled">
