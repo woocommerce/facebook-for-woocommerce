@@ -148,6 +148,18 @@ class ProductSyncEnabledFilterCest {
 
 
 	/**
+	 * Sees that a product row with id equal to post-{id} is not present or visible.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param int $product_id the ID of the product
+	 */
+	private function dontSeeProductRow( AcceptanceTester $I, int $product_id ) {
+
+		$I->dontSeeElement( 'tr', [ 'id' => "post-{$product_id}" ] );
+	}
+
+
+	/**
 	 * Select an option on the filter.
 	 *
 	 * @param AcceptanceTester $I tester instance
