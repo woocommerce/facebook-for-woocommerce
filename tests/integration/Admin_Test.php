@@ -14,6 +14,9 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 	/** @var \SkyVerge\WooCommerce\Facebook\Admin */
 	protected $admin;
 
+	/** @var \WC_Facebookcommerce_Integration */
+	protected $integration;
+
 
 	/**
 	 * Runs before each test.
