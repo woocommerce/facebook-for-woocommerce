@@ -228,6 +228,33 @@ class Admin {
 
 
 	/**
+	 * Adds query vars to limit the results to products that have sync enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param array $query_vars
+	 * @return array
+	 */
+	private function add_query_vars_to_find_products_with_sync_enabled( array $query_vars ) {
+
+		$query_vars['meta_query']['relation'] = 'OR';
+		$query_vars['meta_query'][]           = [
+			'key'   => Products::SYNC_ENABLED_META_KEY,
+			'value' => 'yes',
+		];
+		$query_vars['meta_query'][]           = [
+			'key'     => Products::SYNC_ENABLED_META_KEY,
+			'compare' => 'NOT EXISTS',
+		];
+
+		// check whether the product belongs to an excluded product category or tag
+		$query_vars = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars );
+
+		return $query_vars;
+	}
+
+
+	/**
 	 * Adds a tax query to filter out products in excluded product categories and product tags.
 	 *
 	 * @since x.y.z
