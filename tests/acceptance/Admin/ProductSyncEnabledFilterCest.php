@@ -15,9 +15,11 @@ class ProductSyncEnabledFilterCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
-		// save two generic products
-		$this->sync_enabled_product  = $I->haveProductInDatabase();
-		$this->sync_disabled_product = $I->haveProductInDatabase();
+		// save four generic products
+		$this->sync_enabled_product         = $I->haveProductInDatabase();
+		$this->sync_disabled_product        = $I->haveProductInDatabase();
+		$this->product_in_excluded_category = $I->haveProductInDatabase();
+		$this->product_in_excluded_tag      = $I->haveProductInDatabase();
 
 		// enable/disable sync for the products
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->sync_enabled_product ] );
