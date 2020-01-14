@@ -441,7 +441,7 @@ class Admin {
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
-				if ( $image_setting !== null ) {
+				if ( null !== $image_setting ) {
 
 					woocommerce_wp_checkbox( [
 						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
