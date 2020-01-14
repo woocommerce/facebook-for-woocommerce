@@ -284,13 +284,16 @@ class Admin {
 
 		// secondary dropdown at the bottom of the list table
 		if ( ! $action ) {
+
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? $_REQUEST['action2'] : null;
 		}
 
 		if ( $action && in_array( $action, [ 'facebook_include', 'facebook_exclude' ], true ) ) {
 
-			$products    = [];
+			$products = [];
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$product_ids = isset( $_REQUEST['post'] ) && is_array( $_REQUEST['post'] ) ? array_map( 'absint', $_REQUEST['post'] ) : [];
 
 			if ( ! empty( $product_ids ) ) {
