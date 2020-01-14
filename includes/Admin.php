@@ -225,6 +225,7 @@ class Admin {
 			}
 
 			// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
 
 				$query_vars['meta_query']['relation'] = 'OR';
