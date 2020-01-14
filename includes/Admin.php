@@ -211,6 +211,9 @@ class Admin {
 					'compare' => 'NOT EXISTS',
 				];
 
+				// check whether the product belongs to a excluded product category or tag
+				$query_vars = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars );
+
 			} else {
 
 				$query_vars['meta_query'][] = [
