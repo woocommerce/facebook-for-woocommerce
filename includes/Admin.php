@@ -87,7 +87,7 @@ class Admin {
 		elseif ( 'facebook_shop_visibility' === $column ) :
 
 			// TODO this script is re-enqueued on each row by design or it won't work, perhaps a refactor is in order later on {FN 2020-01-13}
-			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ) );
+			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ), [ 'wc-backbone-modal' ] );
 			wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
 				'admin_url'                          => admin_url( 'admin-ajax.php' ),
 				'nonce'                              => wp_create_nonce( 'wc_facebook_product_jsx' ),
