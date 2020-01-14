@@ -47,7 +47,7 @@ class Admin {
 
 		// add Product data tab
 		add_filter( 'woocommerce_product_data_tabs', [ $this, 'add_product_settings_tab' ] );
-		add_action( 'woocommerce_product_data_panels', [ $this, 'fb_new_product_tab_content' ] );
+		add_action( 'woocommerce_product_data_panels', [ $this, 'add_product_settings_tab_content' ] );
 	}
 
 
@@ -372,7 +372,7 @@ class Admin {
 	/**
 	 * Adds content to the new Facebook tab on the Product edit page.
 	 */
-	public function fb_new_product_tab_content() {
+	public function add_product_settings_tab_content() {
 		global $post;
 
 		$woo_product  = new \WC_Facebook_Product( $post->ID );
