@@ -151,6 +151,12 @@ jQuery( document ).ready( function( $ ) {
 					$submitButton.trigger( 'click' );
 				}
 			} );
+
+		} else {
+
+			// no modal displayed: submit form as normal
+			submitBulkAction = true;
+			$submitButton.trigger( 'click' );
 		}
 	} );
 
