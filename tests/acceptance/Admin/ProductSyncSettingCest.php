@@ -91,7 +91,7 @@ class ProductSyncSettingCest {
 
 		/**
 		 * Set these in the database so that the product processing hooks are properly set
-		 * @see WC_Facebookcommerce_Integration::__construct
+		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
 		$plugin_settings = [
 			'fb_api_key'            => 'fake-key',
@@ -126,7 +126,7 @@ class ProductSyncSettingCest {
 
 		/**
 		 * Set these in the database so that the product processing hooks are properly set
-		 * @see WC_Facebookcommerce_Integration::__construct
+		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
 		$plugin_settings = [
 			'fb_api_key'            => 'fake-key',
