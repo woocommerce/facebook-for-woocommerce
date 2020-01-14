@@ -108,6 +108,10 @@ class ProductSyncEnabledFilterCest {
 
 		$this->seeColumnHasValue( $I, 'Disabled' );
 		$this->seeColumnDoesNotHaveValue( $I, 'Enabled' );
+
+		$this->seeProductRow( $I, $this->product_in_excluded_category->get_id() );
+		$this->seeProductRow( $I, $this->product_in_excluded_tag->get_id() );
+		$this->dontSeeProductRow( $I, $this->sync_enabled_product->get_id() );
 	}
 
 
