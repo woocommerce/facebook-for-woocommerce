@@ -717,6 +717,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Checks the product type and calls the corresponding on publish method.
 	 *
+	 *
+	 * @internal
+	 *
 	 * @since x.y.z
 	 *
 	 * @param int $wp_id post ID
