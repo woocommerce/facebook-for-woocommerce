@@ -406,7 +406,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function fb_new_product_tab( $tabs ) {
 
-		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::fb_new_product_tab()' );
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab()' );
 
 		return $tabs;
 	}

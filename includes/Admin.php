@@ -46,7 +46,7 @@ class Admin {
 		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
 
 		// add Product data tab
-		add_filter( 'woocommerce_product_data_tabs', [ $this, 'fb_new_product_tab' ] );
+		add_filter( 'woocommerce_product_data_tabs', [ $this, 'add_product_settings_tab' ] );
 		add_action( 'woocommerce_product_data_panels', [ $this, 'fb_new_product_tab_content' ] );
 	}
 
@@ -357,7 +357,7 @@ class Admin {
 	 * @param $tabs
 	 * @return array
 	 */
-	public function fb_new_product_tab( $tabs ) {
+	public function add_product_settings_tab( $tabs ) {
 
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
