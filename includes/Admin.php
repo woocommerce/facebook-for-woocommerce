@@ -400,7 +400,7 @@ class Admin {
 				woocommerce_wp_checkbox( [
 					'id'          => 'fb_sync_enabled',
 					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-					'value'       => $sync_enabled ? 'yes' : 'no',
+					'value'       => wc_bool_to_string( (bool) $sync_enabled ),
 				] );
 
 				woocommerce_wp_textarea_input( [
