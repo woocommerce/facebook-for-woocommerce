@@ -6,7 +6,7 @@
  *
  * @package FacebookCommerce
  */
-jQuery( document ).ready( function() {
+jQuery( document ).ready( function( $ ) {
 
 
 	/**
@@ -18,14 +18,14 @@ jQuery( document ).ready( function() {
 	 */
 	function toggleFacebookSettings( enabled ) {
 
-		jQuery( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
+		$( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
 	}
 
 
-	const syncEnabledCheckbox = jQuery( '#fb_sync_enabled' );
+	const syncEnabledCheckbox = $( '#fb_sync_enabled' );
 
 	syncEnabledCheckbox.on( 'click', function() {
-		toggleFacebookSettings( jQuery( this ).prop( 'checked' ) );
+		toggleFacebookSettings( $( this ).prop( 'checked' ) );
 	} );
 
 	toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ) );
