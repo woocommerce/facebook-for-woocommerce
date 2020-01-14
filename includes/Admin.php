@@ -355,7 +355,7 @@ class Admin {
 	 * @since x.y.z
 	 *
 	 * @param $tabs
-	 * @return mixed
+	 * @return array
 	 */
 	public function fb_new_product_tab( $tabs ) {
 
