@@ -350,6 +350,10 @@ class Admin {
 	/**
 	 * Adds a new tab to the Product edit page.
 	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
 	 * @param $tabs
 	 * @return mixed
 	 */
