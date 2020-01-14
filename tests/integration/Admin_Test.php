@@ -25,7 +25,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 
 		require_once 'includes/Admin.php';
 
-		$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+		$this->admin       = new \SkyVerge\WooCommerce\Facebook\Admin();
+		$this->integration = facebook_for_woocommerce()->get_integration();
 	}
 
 
@@ -95,6 +96,40 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'meta_query', $vars );
 		$this->assertIsArray( $vars['meta_query'] );
 		$this->assertArrayNotHasKey( 'relation', $vars );
+	}
+
+
+	/** @see Facebook\Admin::filter_products_by_sync_enabled */
+	public function test_filter_products_by_sync_enabled_checks_taxonomies() {
+
+		$_REQUEST['fb_sync_enabled'] = 'yes';
+
+		$excluded_categories = [ 1, 2, 3 ];
+		$excluded_tags       = [ 4, 5, 6 ];
+
+		$options = [
+			'fb_sync_exclude_categories' => $excluded_categories,
+			'fb_sync_exclude_tags'       => $excluded_tags,
+		];
+
+		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );
+
+		// force integration to load settings from the database
+		$this->integration->init_settings();
+
+		$vars = $this->admin->filter_products_by_sync_enabled( [] );
+
+		$this->assertArrayHasKey( 'tax_query', $vars );
+
+		$this->assertEquals( 'product_cat', $vars['tax_query'][0]['taxonomy'] );
+		$this->assertEquals( 'term_id', $vars['tax_query'][0]['field'] );
+		$this->assertEquals( 'NOT IN', $vars['tax_query'][0]['operator'] );
+		$this->assertSame( $excluded_categories, $vars['tax_query'][0]['terms'] );
+
+		$this->assertEquals( 'product_tag', $vars['tax_query'][1]['taxonomy'] );
+		$this->assertEquals( 'term_id', $vars['tax_query'][1]['field'] );
+		$this->assertEquals( 'NOT IN', $vars['tax_query'][1]['operator'] );
+		$this->assertSame( $excluded_tags, $vars['tax_query'][1]['terms'] );
 	}
 
 
