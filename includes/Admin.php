@@ -64,7 +64,7 @@ class Admin {
 
 		if ( 'product' === $screen->id ) {
 
-			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ] );
+			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 		}
 	}
 
