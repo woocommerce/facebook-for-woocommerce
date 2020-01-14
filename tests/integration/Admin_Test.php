@@ -133,6 +133,35 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Admin::filter_products_by_sync_enabled */
+	public function test_filter_products_by_sync_disabled_checks_taxonomies() {
+
+		$_REQUEST['fb_sync_enabled'] = 'no';
+
+		$excluded_categories = [ 1, 2, 3 ];
+		$excluded_tags       = [ 4, 5, 6 ];
+
+		$options = [
+			'fb_sync_exclude_categories' => $excluded_categories,
+			'fb_sync_exclude_tags'       => $excluded_tags,
+		];
+
+		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );
+
+		// force integration to load settings from the database
+		$this->integration->init_settings();
+
+		$vars = $this->admin->filter_products_by_sync_enabled( [] );
+
+		// if terms are excluded, products are filtered using post__not_in, that way
+		// we overcome the limitation of not being able to use the same query to
+		// retrieve products that have a meta key OR belong to a particular taxonmy
+		$this->assertArrayNotHasKey( 'tax_query', $vars );
+		$this->assertEmpty( $vars['meta_query'] );
+		$this->assertArrayHasKey( 'post__not_in', $vars );
+	}
+
+
 	/** @see Facebook\Admin::add_products_sync_bulk_actions() */
 	public function test_add_products_sync_bulk_actions() {
 
