@@ -23,6 +23,9 @@ class Admin {
 	 */
 	public function __construct() {
 
+		// add a modal in admin product pages
+		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
+
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
@@ -243,6 +246,45 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	/**
+	 * Outputs a modal template in admin product pages.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function render_modal_template() {
+		global $current_screen;
+
+		// bail if not on the product screens
+		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
+			return;
+		}
+
+		?>
+		<script type="text/template" id="tmpl-facebook-for-woocommerce-modal">
+			<div class="wc-backbone-modal facebook-for-woocommerce-modal">
+				<div class="wc-backbone-modal-content">
+					<section class="wc-backbone-modal-main" role="main">
+						<header class="wc-backbone-modal-header">
+							<h1><?php esc_html_e( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ); ?></h1>
+							<button class="modal-close modal-close-link dashicons dashicons-no-alt">
+								<span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'facebook-for-woocommerce' ); ?></span>
+							</button>
+						</header>
+						<article>{{{data.message}}}</article>
+						<footer>
+							<div class="inner">{{{data.buttons}}}</div>
+						</footer>
+					</section>
+				</div>
+			</div>
+			<div class="wc-backbone-modal-backdrop modal-close"></div>
+		</script>
+		<?php
 	}
 
 
