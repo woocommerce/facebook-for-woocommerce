@@ -406,7 +406,7 @@ class Admin {
 				woocommerce_wp_textarea_input( [
 					'id'          => \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION,
 					'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
-					'desc_tip'    => 'true',
+					'desc_tip'    => true,
 					'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
 					'cols'        => 40,
 					'rows'        => 20,
@@ -417,7 +417,7 @@ class Admin {
 				woocommerce_wp_textarea_input( [
 					'id'          => \WC_Facebook_Product::FB_PRODUCT_IMAGE,
 					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-					'desc_tip'    => 'true',
+					'desc_tip'    => true,
 					'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
 					'cols'        => 40,
 					'rows'        => 10,
@@ -432,7 +432,7 @@ class Admin {
 						__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
 						get_woocommerce_currency_symbol()
 					),
-					'desc_tip'    => 'true',
+					'desc_tip'    => true,
 					'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
 					'cols'        => 40,
 					'rows'        => 60,
@@ -445,7 +445,7 @@ class Admin {
 					woocommerce_wp_checkbox( [
 						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
 						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
-						'desc_tip'    => 'true',
+						'desc_tip'    => true,
 						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
 						'value'       => wc_bool_to_string( (bool) $image_setting ),
 						'class'       => 'checkbox enable-if-sync-enabled',
