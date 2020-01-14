@@ -225,6 +225,54 @@ class Admin {
 
 
 	/**
+	 * Adds a tax query to filter out products in excluded product categories and product tags.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param array $query_vars product query vars for the edit screen
+	 * @return array
+	 */
+	private function maybe_add_tax_query_for_excluded_taxonomies( $query_vars ) {
+
+		$integration = facebook_for_woocommerce()->get_integration();
+		$tax_query   = [];
+
+		if ( $integration ) {
+
+			$excluded_categories_ids = $integration->get_excluded_product_category_ids();
+
+			if ( $excluded_categories_ids ) {
+				$tax_query[] = [
+					'taxonomy' => 'product_cat',
+					'terms'    => $excluded_categories_ids,
+					'field'    => 'term_id',
+					'operator' => 'NOT IN',
+				];
+			}
+
+			$exlcuded_tags_ids = $integration->get_excluded_product_tag_ids();
+
+			if ( $exlcuded_tags_ids ) {
+				$tax_query[] = [
+					'taxonomy' => 'product_tag',
+					'terms'    => $exlcuded_tags_ids,
+					'field'    => 'term_id',
+					'operator' => 'NOT IN',
+				];
+			}
+		}
+
+		if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
+			$query_vars['tax_query'] = $tax_query;
+		} elseif ( $tax_query && is_array( $query_vars ) ) {
+			array_push( $query_vars['tax_query'], $tax_query );
+		}
+
+		return $query_vars;
+	}
+
+
+	/**
 	 * Adds bulk actions in the products edit screen.
 	 *
 	 * @internal
