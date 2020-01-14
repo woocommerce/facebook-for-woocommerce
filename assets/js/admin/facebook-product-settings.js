@@ -6,19 +6,21 @@
  *
  * @package FacebookCommerce
  */
-/**
- * Toggles (enables/disables) Facebook setting fields.
- *
- * @since x.y.z
- *
- * @param enabled
- */
-function toggleFacebookSettings( enabled ) {
-
-	jQuery( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
-}
-
 jQuery( document ).ready( function() {
+
+
+	/**
+	 * Toggles (enables/disables) Facebook setting fields.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param enabled
+	 */
+	function toggleFacebookSettings( enabled ) {
+
+		jQuery( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
+	}
+
 
 	const syncEnabledCheckbox = jQuery( '#fb_sync_enabled' );
 
