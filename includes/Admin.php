@@ -428,7 +428,7 @@ class Admin {
 				woocommerce_wp_text_input( [
 					'id'          => \WC_Facebook_Product::FB_PRODUCT_PRICE,
 					'label'       => sprintf(
-					/* translators: Placeholders %1$s - WC currency symbol */
+						/* translators: Placeholders %1$s - WC currency symbol */
 						__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
 						get_woocommerce_currency_symbol()
 					),
