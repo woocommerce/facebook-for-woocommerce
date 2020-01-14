@@ -279,10 +279,12 @@ class Admin {
 	public function handle_products_sync_bulk_actions( $redirect ) {
 
 		// primary dropdown at the top of the list table
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$action = isset( $_REQUEST['action'] ) && -1 !== (int) $_REQUEST['action'] ? $_REQUEST['action'] : null;
 
 		// secondary dropdown at the bottom of the list table
 		if ( ! $action ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? $_REQUEST['action2'] : null;
 		}
 
