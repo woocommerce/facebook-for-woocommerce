@@ -205,10 +205,36 @@ class Admin {
 
 			} else {
 
-				$query_vars['meta_query'][] = [
-					'key'   => Products::SYNC_ENABLED_META_KEY,
-					'value' => 'no',
-				];
+				$integration             = facebook_for_woocommerce()->get_integration();
+				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
+				$exlcuded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
+
+				if ( $excluded_categories_ids || $exlcuded_tags_ids ) {
+
+					// find the IDs of products that have sync enabled
+					$products_query_vars = [
+						'post_type'              => 'product',
+						'no_found_rows'          => true,
+						'update_post_meta_cache' => false,
+						'update_post_term_cache' => false,
+						'fields'                 => 'ids',
+						'posts_per_page'         => 1000, // a bit better than using -1
+					];
+
+					$products_query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $products_query_vars );
+
+					$products_query = new \WP_Query( $products_query_vars );
+
+					// exclude products that have sync enabled from the current query
+					$query_vars['post__not_in'] = $products_query->get_posts();
+
+				} else {
+
+					$query_vars['meta_query'][] = [
+						'key'   => Products::SYNC_ENABLED_META_KEY,
+						'value' => 'no',
+					];
+				}
 			}
 		}
 
