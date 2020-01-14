@@ -606,23 +606,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function fb_render_product_columns( $column ) {
 		global $post, $the_product;
 
-		$ajax_data = [
-			'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
-		];
+		wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __FILE__ ), [ 'wc-backbone-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
-		wp_enqueue_script(
-			'wc_facebook_product_jsx',
-			plugins_url(
-				'/assets/js/facebook-products.js?ts=' . time(),
-				__FILE__
-			)
-		);
-
-		wp_localize_script(
-			'wc_facebook_product_jsx',
-			'wc_facebook_product_jsx',
-			$ajax_data
-		);
+		wp_localize_script( 'wc_facebook_product_jsx','wc_facebook_product_jsx', [
+			'admin_url'                          => admin_url( 'admin-ajax.php' ),
+			'nonce'                              => wp_create_nonce( 'wc_facebook_product_jsx' ),
+			'set_product_sync_bulk_action_nonce' => wp_create_nonce( 'set-product-sync-bulk-action' ),
+		] );
 
 		if ( empty( $the_product ) || $the_product->get_id() != $post->ID ) {
 			$the_product = new WC_Facebook_Product( $post );
@@ -650,6 +640,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					<span class="tips"
 					id="tip_<?php echo esc_attr( $post->ID ); ?>"
 					data-tip="<?php echo esc_attr( $data_tip ); ?>">
+
 				<?php
 
 				if ( $viz_value === '' ) {
@@ -657,6 +648,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					?>
 						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
 						class="button button-primary button-large"
+						data-product-visibility="hidden"
 						href="javascript:;"
 						onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
 							Show
@@ -668,6 +660,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					?>
 						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
 						class="button"
+						data-product-visibility="visible"
 						href="javascript:;"
 						onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
 							Hide

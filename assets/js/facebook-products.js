@@ -82,3 +82,84 @@ function fb_toggle_visibility(wp_id, published) {
 		}
 	);
 }
+
+jQuery( document ).ready( function( $ ) {
+
+	let submitBulkAction = false;
+
+	$( 'input#doaction, input#doaction2' ).on( 'click', function( e ) {
+
+		if ( ! submitBulkAction ) {
+			e.preventDefault();
+		} else {
+			return true;
+		}
+
+		let $submitButton    = $( this ),
+			chosenBulkAction = $submitButton.prev( 'select' ).val();
+
+		if ( 'facebook_exclude' === chosenBulkAction || 'facebook_include' === chosenBulkAction ) {
+
+			let products = [];
+
+			$.each( $( 'input[name="post[]"]:checked' ), function() {
+				products.push( parseInt( $( this ).val(), 10 ) );
+			} );
+
+			$.post( wc_facebook_product_jsx.admin_url, {
+				action:   'facebook_for_woocommerce_set_product_sync_bulk_action',
+				security: wc_facebook_product_jsx.set_product_sync_bulk_action_nonce,
+				toggle:   chosenBulkAction,
+				products: products
+			}, function( response ) {
+
+				if ( response && ! response.success ) {
+
+					// close existing modals
+					$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+					// open new modal, populate template with AJAX response data
+					new $.WCBackboneModal.View( {
+						target: 'facebook-for-woocommerce-modal',
+						string: response.data
+					} );
+
+					// exclude from sync: offer to handle product visibility
+					$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
+
+						let $promptButton = $( this );
+
+						$.each( products, function() {
+
+							let $toggle = $( '#post-' + this ).find( 'td.facebook_shop_visibility a' );
+
+							switch ( $toggle.data( 'product-visibility' ) ) {
+								case 'visible' :
+									if ( $promptButton.hasClass( 'hide-products' ) ) {
+										$toggle.trigger( 'click' );
+									}
+								break;
+								case 'hidden' :
+									if ( $promptButton.hasClass( 'show-products' ) ) {
+										$toggle.trigger( 'click' );
+									}
+								break;
+							}
+						} );
+
+						// submit form after modal prompt action
+						submitBulkAction = true;
+						$submitButton.trigger( 'click' );
+					} );
+
+				} else {
+
+					// no modal displayed: submit form as normal
+					submitBulkAction = true;
+					$submitButton.trigger( 'click' );
+				}
+			} );
+		}
+	} );
+
+} );
