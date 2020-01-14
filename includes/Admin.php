@@ -371,6 +371,10 @@ class Admin {
 
 	/**
 	 * Adds content to the new Facebook tab on the Product edit page.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
 	 */
 	public function add_product_settings_tab_content() {
 		global $post;
