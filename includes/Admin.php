@@ -400,7 +400,6 @@ class Admin {
 				woocommerce_wp_checkbox( [
 					'id'          => 'fb_sync_enabled',
 					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-					'required'    => false,
 					'value'       => $sync_enabled ? 'yes' : 'no',
 				] );
 
@@ -446,7 +445,6 @@ class Admin {
 					woocommerce_wp_checkbox( [
 						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
 						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
-						'required'    => false,
 						'desc_tip'    => 'true',
 						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
 						'value'       => wc_bool_to_string( (bool) $image_setting ),
