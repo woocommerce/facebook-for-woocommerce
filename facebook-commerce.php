@@ -727,11 +727,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function on_product_save( $wp_id ) {
 
 		$product = wc_get_product( $wp_id );
-		
+
 		if ( ! $product ) {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( empty( $_POST['fb_sync_enabled'] ) ) {
 
 			Products::disable_sync_for_products( [ $product ] );
