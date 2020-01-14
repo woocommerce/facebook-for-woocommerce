@@ -449,7 +449,7 @@ class Admin {
 						'required'    => false,
 						'desc_tip'    => 'true',
 						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
-						'value'       => $image_setting ? 'yes' : 'no',
+						'value'       => wc_bool_to_string( (bool) $image_setting ),
 						'class'       => 'checkbox enable-if-sync-enabled',
 					] );
 				}
