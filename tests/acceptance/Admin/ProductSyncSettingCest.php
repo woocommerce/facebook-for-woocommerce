@@ -84,7 +84,6 @@ class ProductSyncSettingCest {
 	 * Test that the field value is saved correctly when enabling sync.
 	 *
 	 * @param AcceptanceTester $I tester instance
-	 *
 	 * @throws Exception
 	 */
 	public function try_field_enable( AcceptanceTester $I ) {
@@ -119,7 +118,6 @@ class ProductSyncSettingCest {
 	 * Test that the field value is saved correctly when disabling sync.
 	 *
 	 * @param AcceptanceTester $I tester instance
-	 *
 	 * @throws Exception
 	 */
 	public function try_field_disable( AcceptanceTester $I ) {
