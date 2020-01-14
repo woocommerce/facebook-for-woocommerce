@@ -25,6 +25,20 @@ class ProductSyncEnabledFilterCest {
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->sync_enabled_product ] );
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->sync_disabled_product ] );
 
+		// save a product category and a product tag to exclude from facebook sync
+		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
+		list( $excluded_tag_id, $excluded_tag_taxonomy_id )           = $I->haveTermInDatabase( 'Excluded Tag', 'product_tag' );
+
+		// configured category and tag as excluded from facebook sync
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			'fb_sync_exclude_categories' => [ $excluded_category_id ],
+			'fb_sync_exclude_tags'       => [ $excluded_tag_id ],
+		] );
+
+		// associate products with excluded terms
+		$I->haveTermRelationshipInDatabase( $this->product_in_excluded_category->get_id(), $excluded_category_taxonomy_id );
+		$I->haveTermRelationshipInDatabase( $this->product_in_excluded_tag->get_id(), $excluded_tag_taxonomy_id );
+
 		// always log in
 		$I->loginAsAdmin();
 	}
