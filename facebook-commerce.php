@@ -396,6 +396,35 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Adds a new tab to the Product edit page.
+	 *
+	 * @internal
+	 * @deprecated since x.y.z
+	 *
+	 * @param array $tabs array of tabs
+	 * @return array
+	 */
+	public function fb_new_product_tab( $tabs ) {
+
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::fb_new_product_tab()' );
+
+		return $tabs;
+	}
+
+
+	/**
+	 * Adds content to the new Facebook tab on the Product edit page.
+	 *
+	 * @internal
+	 * @deprecated since x.y.z
+	 */
+	public function fb_new_product_tab_content() {
+
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::fb_new_product_tab_content()' );
+	}
+
+
+	/**
 	 * Filters the product columns in the admin edit screen.
 	 *
 	 * @internal
