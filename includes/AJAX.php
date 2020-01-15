@@ -47,8 +47,12 @@ class AJAX {
 
 		check_ajax_referer( 'set-product-sync-prompt', 'security' );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$force        = isset( $_POST['force_open'] )   ? (bool)   $_POST['force_open']   : false;
 
 		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
 
@@ -78,7 +82,7 @@ class AJAX {
 						'buttons' => $buttons,
 					] );
 
-				} elseif ( 'enabled' === $sync_enabled && Products::is_sync_excluded_for_product_terms( $product ) ) {
+				} elseif ( 'enabled' === $sync_enabled && ( true === $force || Products::is_sync_excluded_for_product_terms( $product ) ) ) {
 
 					ob_start();
 
