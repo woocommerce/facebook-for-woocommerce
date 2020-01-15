@@ -2209,44 +2209,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Toggles product visibility via AJAX (checks current viz and flips it)
+	 * Toggles product visibility via AJAX.
+	 *
+	 * @internal
+	 * @deprecated since x.y.z
 	 **/
-	function ajax_fb_toggle_visibility() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'toggle visibility', true );
-		check_ajax_referer( 'wc_facebook_product_jsx' );
-		if ( ! isset( $_POST['wp_id'] ) || ! isset( $_POST['published'] ) ) {
-			wp_die();
-		}
+	public function ajax_fb_toggle_visibility() {
 
-		$wp_id     = sanitize_text_field( wp_unslash( $_POST['wp_id'] ) );
-		$published = ( sanitize_text_field( wp_unslash( $_POST['published'] ) ) === 'true' );
-
-		$woo_product = new WC_Facebook_Product( $wp_id );
-		$products    = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
-
-		// Loop through product items and flip visibility
-		foreach ( $products as $item_id ) {
-			$fb_product_item_id = $this->get_product_fbid(
-				self::FB_PRODUCT_ITEM_ID,
-				$item_id
-			);
-			$data               = array(
-				'visibility' => $published ? 'published' : 'staging',
-			);
-
-			$result = $this->check_api_result(
-				$this->fbgraph->update_product_item(
-					$fb_product_item_id,
-					$data
-				)
-			);
-
-			if ( $result ) {
-				update_post_meta( $item_id, self::FB_VISIBILITY, $published );
-				update_post_meta( $wp_id, self::FB_VISIBILITY, $published );
-			}
-		}
-		wp_die();
+		wc_deprecated_function( __METHOD__, 'x.y.z' );
 	}
 
 

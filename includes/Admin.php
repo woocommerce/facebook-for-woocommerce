@@ -66,18 +66,13 @@ class Admin {
 
 		if ( isset( $current_screen->id ) ) {
 
-			if ( 'product' === $current_screen->id ) {
-
-				wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-			}
-
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
-				// TODO this script should be probably renamed or moved into another {FN 2020-01-15}
-				wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ), [ 'wc-backbone-modal' ] );
-				wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
-					'admin_url'                                 => admin_url( 'admin-ajax.php' ),
-					'nonce'                                     => wp_create_nonce( 'wc_facebook_product_jsx' ),
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
+					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
+					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
 				] );

@@ -7,16 +7,18 @@
  * @package FacebookCommerce
  */
 
+// TODO the following code needs to be wrapped into document ready but it's currently used from inline HTML {FN 2020-01-15}
+
 /*
  *  Ajax helper function.
  *  Takes optional payload for POST and optional callback.
  */
 function ajax(action, payload = null, cb = null, failcb = null) {
 	var data = Object.assign( {},
-			{
-				'action': action,
-			}, payload
-		);
+		{
+			'action': action,
+		}, payload
+	);
 
 	// Since  Wordpress 2.8 ajaxurl is always defined in admin header and
 	// points to admin-ajax.php
@@ -37,16 +39,16 @@ function ajax(action, payload = null, cb = null, failcb = null) {
 	);
 }
 
-function fb_toggle_visibility(wp_id, published) {
-	var buttonId = document.querySelector( "#viz_" + wp_id );
-	var tooltip  = document.querySelector( "#tip_" + wp_id );
+function fb_toggle_visibility( productID, published ) {
+	var buttonId = document.querySelector( "#viz_" + productID );
+	var tooltip  = document.querySelector( "#tip_" + productID );
 
 	if (published) {
 		tooltip.setAttribute(
 			'data-tip',
 			'Product is synced and published (visible) on Facebook.'
 		);
-		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + wp_id + ', false)' );
+		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + productID + ', false)' );
 		buttonId.innerHTML = 'Hide';
 		buttonId.setAttribute( 'class', 'button' );
 	} else {
@@ -54,7 +56,7 @@ function fb_toggle_visibility(wp_id, published) {
 			'data-tip',
 			'Product is synced but not marked as published (visible) on Facebook.'
 		);
-		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + wp_id + ', true)' );
+		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + productID + ', true)' );
 		buttonId.innerHTML = 'Show';
 		buttonId.setAttribute( 'class', 'button button-primary button-large' );
 	}
@@ -73,21 +75,25 @@ function fb_toggle_visibility(wp_id, published) {
 		}
 	);
 
-	return ajax(
-		'ajax_fb_toggle_visibility',
-		{
-			'wp_id': wp_id,
-			'published': published,
-			"_ajax_nonce": wc_facebook_product_jsx.nonce
-		}
-	);
+	return jQuery.post( ajaxurl, {
+		action:   'facebook_for_woocommerce_set_products_visibility',
+		security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
+		products: [
+			{
+				product_id: productID,
+				visibility: published ? 'published' : 'staging'
+			}
+		]
+	} );
 }
 
 jQuery( document ).ready( function( $ ) {
 
 	const pagenow = window.pagenow.length ? window.pagenow : '',
-		  typenow = window.typenow.length ? window.typenow : '';
+	      typenow = window.typenow.length ? window.typenow : '';
 
+
+	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
 		let submitProductBulkAction = false;
@@ -111,9 +117,9 @@ jQuery( document ).ready( function( $ ) {
 					products.push( parseInt( $( this ).val(), 10 ) );
 				} );
 
-				$.post( wc_facebook_product_jsx.admin_url, {
+				$.post( facebook_for_woocommerce_products_admin.ajax_url, {
 					action:   'facebook_for_woocommerce_set_product_sync_bulk_action_prompt',
-					security: wc_facebook_product_jsx.set_product_sync_bulk_action_prompt_nonce,
+					security: facebook_for_woocommerce_products_admin.set_product_sync_bulk_action_prompt_nonce,
 					toggle:   chosenBulkAction,
 					products: products
 				}, function( response ) {
@@ -167,7 +173,28 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	// individual product edit screen
 	if ( 'product' === pagenow ) {
+
+		/**
+		 * Toggles (enables/disables) Facebook setting fields.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param {boolean} enabled
+		 */
+		function toggleFacebookSettings( enabled ) {
+
+			$( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
+		}
+
+		const syncEnabledCheckbox = $( '#fb_sync_enabled' );
+
+		syncEnabledCheckbox.on( 'click', function() {
+			toggleFacebookSettings( $( this ).prop( 'checked' ) );
+		} );
+
+		toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ) );
 
 		let submitProductSave = false;
 
@@ -185,9 +212,9 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( productID > 0 ) {
 
-				$.post( wc_facebook_product_jsx.admin_url, {
+				$.post( facebook_for_woocommerce_products_admin.ajax_url, {
 					action:      'facebook_for_woocommerce_set_product_sync_prompt',
-					security:     wc_facebook_product_jsx.set_product_sync_prompt_nonce,
+					security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
 					sync_enabled: syncEnabled ? 'enabled' : 'disabled',
 					product:      productID
 				}, function( response ) {
@@ -208,11 +235,15 @@ jQuery( document ).ready( function( $ ) {
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
 
-								$.post( wc_facebook_product_jsx.admin_url, {
-									action:     'facebook_for_woocommerce_set_product_visibility',
-									security:   wc_facebook_product_jsx.set_product_visibility_nonce,
-									products:   [ productID ],
-									visibility: 'hide'
+								$.post( facebook_for_woocommerce_products_admin.ajax_url, {
+									action:   'facebook_for_woocommerce_set_products_visibility',
+									security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
+									products: [
+										{
+											product_id: productID,
+											visibility: 'staging'
+										}
+									]
 								} );
 							}
 
@@ -238,6 +269,5 @@ jQuery( document ).ready( function( $ ) {
 
 		} );
 	}
-
 
 } );

@@ -30,6 +30,9 @@ class AJAX {
 		// maybe output a modal prompt when toggling product sync in bulk or individual product actions
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_prompt',             [ $this, 'handle_set_product_sync_prompt' ] );
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_bulk_action_prompt', [ $this, 'handle_set_product_sync_bulk_action_prompt' ] );
+
+		// set product visibility in Facebook
+		add_action( 'wp_ajax_facebook_for_woocommerce_set_products_visibility', [ $this, 'set_products_visibility' ] );
 	}
 
 
@@ -169,6 +172,89 @@ class AJAX {
 		}
 
 		wp_send_json_success();
+	}
+
+
+	/**
+	 * Sets products visibility in Facebook.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function set_products_visibility() {
+
+		check_ajax_referer( 'set-products-visibility', 'security' );
+
+		$integration = facebook_for_woocommerce()->get_integration();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+
+		if ( $integration && ! empty( $products )  ) {
+
+			$update_products = [];
+
+			foreach ( $products as $product_data ) {
+
+				$visibility = isset( $product_data['visibility'] ) ? (string) $product_data['visibility'] : '';
+				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
+				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
+
+				if ( $product && in_array( $visibility, [ 'published', 'staging' ], true ) ) {
+
+					// use variations for the products loop instead of the parent, if any
+					if ( $product->is_type( 'variable' ) ) {
+
+						foreach ( $product->get_children() as $variation_id ) {
+
+							if ( $product = wc_get_product( $variation_id ) ) {
+
+								$update_products[] = [
+									'product'    => $product,
+									'visibility' => $visibility,
+								];
+							}
+						}
+
+					} else {
+
+						$update_products[] = [
+							'product'    => $product,
+							'visibility' => $visibility,
+						];
+					}
+				}
+			}
+
+			foreach ( $update_products as $data ) {
+
+				/** @var \WC_Product $product */
+				$product    = $data['product'];
+				$visibility = $data['visibility'];
+				$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+				$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+					'visibility' => $visibility,
+				] );
+
+				if ( $integration->check_api_result( $fb_request ) ) {
+
+					$meta_value = 'published' === $visibility;
+
+					$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
+					$product->save_meta_data();
+
+					if ( $parent = wc_get_product( $product->get_parent_id() ) ) {
+
+						$parent->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
+						$parent->save_meta_data();
+					}
+				}
+			}
+
+			wp_send_json_success();
+		}
+
+		wp_send_json_error();
 	}
 
 
