@@ -27,20 +27,71 @@ class AJAX {
 	 */
 	public function __construct() {
 
-		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_bulk_action', [ $this, 'set_product_sync_bulk_action' ] );
+		// maybe output a modal prompt when toggling product sync in bulk or individual product actions
+		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_prompt',             [ $this, 'handle_set_product_sync_prompt' ] );
+		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_bulk_action_prompt', [ $this, 'handle_set_product_sync_bulk_action_prompt' ] );
 	}
 
 
 	/**
-	 * Triggers a modal warning when the merchant toggles sync enabled status in bulk.
+	 * Maybe triggers a modal warning when the merchant toggles sync enabled status on a product.
 	 *
 	 * @internal
 	 *
 	 * @since x.y.z
 	 */
-	public function set_product_sync_bulk_action() {
+	public function handle_set_product_sync_prompt() {
 
-		check_ajax_referer( 'set-product-sync-bulk-action', 'security' );
+		check_ajax_referer( 'set-product-sync-prompt', 'security' );
+
+		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
+		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+
+		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
+
+			$product = wc_get_product( $product_id );
+
+			if ( $product instanceof \WC_Product ) {
+
+				if ( 'disabled' === $sync_enabled && Products::is_sync_enabled_for_product( $product ) ) {
+
+					ob_start();
+
+					?>
+					<button
+						id="facebook-for-woocommerce-hide-products"
+						class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility hide-products"
+					><?php esc_html_e( 'Hide Product', 'facebook-for-woocommerce' ); ?></button>
+					<button
+						id="facebook-for-woocommerce-do-not-hide-products"
+						class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility show-products"
+					><?php esc_html_e( 'Do Not Hide Product', 'facebook-for-woocommerce' ); ?></button>
+					<?php
+
+					$buttons = ob_get_clean();
+
+					wp_send_json_error( [
+						'message' => __( 'This product will no longer be updated in your Facebook catalog. Would you like to hide this product from your Facebook shop?', 'facebook-for-woocommerce' ),
+						'buttons' => $buttons,
+					] );
+				}
+			}
+		}
+
+		wp_send_json_success();
+	}
+
+
+	/**
+	 * Maybe triggers a modal warning when the merchant toggles sync enabled status in bulk.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_set_product_sync_bulk_action_prompt() {
+
+		check_ajax_referer( 'set-product-sync-bulk-action-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$product_ids = isset( $_POST['products'] ) ? (array)  $_POST['products'] : [];
