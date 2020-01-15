@@ -77,7 +77,7 @@ class AJAX {
 				$excluded_tags       = $integration->get_excluded_product_tag_ids();
 
 				// bother to check only if there are excluded terms to begin with, before looping products
-				//if ( ! empty( $excluded_categories ) && ! empty( $excluded_tags ) ) {
+				if ( ! empty( $excluded_categories ) && ! empty( $excluded_tags ) ) {
 
 					$has_excluded_term = false;
 
@@ -94,7 +94,7 @@ class AJAX {
 							}
 						}
 					}
-				$has_excluded_term = true;
+
 					// show modal if there's at least one product that belongs to an excluded term
 					if ( $has_excluded_term )  {
 
@@ -122,7 +122,7 @@ class AJAX {
 					}
 				}
 			}
-		//}
+		}
 
 		wp_send_json_success();
 	}
