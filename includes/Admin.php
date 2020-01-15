@@ -48,6 +48,9 @@ class Admin {
 		// add Product data tab
 		add_filter( 'woocommerce_product_data_tabs', [ $this, 'add_product_settings_tab' ] );
 		add_action( 'woocommerce_product_data_panels', [ $this, 'add_product_settings_tab_content' ] );
+
+		// add Variation edit fields
+		add_action( 'woocommerce_product_after_variable_attributes', [ $this, 'add_product_variation_edit_fields' ], 10, 3 );
 	}
 
 
