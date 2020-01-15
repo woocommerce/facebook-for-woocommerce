@@ -511,46 +511,6 @@ class Admin {
 			<div class="wc-backbone-modal-backdrop modal-close"></div>
 		</script>
 		<?php
-
-		// forces the modal to open for cases where the product is set to be enabled to sync,
-		// but has one or more terms that have been excluded from sync in plugin settings
-		if ( 'product' === $current_screen->id ) {
-
-			$product = wc_get_product( $post->ID );
-
-			if (
-				 $product instanceof \WC_Product
-				 && 'yes' === $product->get_meta( Products::SYNC_ENABLED_META_KEY )
-				 && Products::is_sync_excluded_for_product_terms( $product )
-			) {
-
-				wc_enqueue_js( "
-					jQuery( document ).ready( function( $ ) {
-
-						$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-							action:      'facebook_for_woocommerce_set_product_sync_prompt',
-							security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
-							sync_enabled: 'enabled',
-							product:      " . (int) esc_js( $product->get_id() ) . ",
-							force:        true
-						}, function( response ) {
-
-							if ( response && ! response.success ) {
-
-								// close existing modals
-								$('#wc-backbone-modal-dialog .modal-close').trigger( 'click' );
-
-								// open new modal, populate template with AJAX response data
-								new $.WCBackboneModal.View( {
-									target: 'facebook-for-woocommerce-modal',
-									string: response.data
-								} );
-							}
-						} );
-					} );
-				" );
-			}
-		}
 	}
 
 
