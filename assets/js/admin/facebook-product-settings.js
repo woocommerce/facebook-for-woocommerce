@@ -14,7 +14,7 @@ jQuery( document ).ready( function( $ ) {
 	 *
 	 * @since x.y.z
 	 *
-	 * @param enabled
+	 * @param {boolean} enabled
 	 */
 	function toggleFacebookSettings( enabled ) {
 
