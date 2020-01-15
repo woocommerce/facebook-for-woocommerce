@@ -55,12 +55,12 @@ class AJAX {
 				?>
 				<button
 					id="facebook-for-woocommerce-hide-products"
-					class="button button-large facebook-for-woocommerce-toggle-product-visibility hide-products"
-				><?php esc_html_e( 'Hide products', 'facebook-for-woocommerce' ); ?></button>
+					class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility hide-products"
+				><?php esc_html_e( 'Hide Products', 'facebook-for-woocommerce' ); ?></button>
 				<button
 					id="facebook-for-woocommerce-do-not-hide-products"
-					class="button button-large facebook-for-woocommerce-toggle-product-visibility show-products"
-				><?php esc_html_e( 'Do not hide products', 'facebook-for-woocommerce' ); ?></button>
+					class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility show-products"
+				><?php esc_html_e( 'Do Not Hide Products', 'facebook-for-woocommerce' ); ?></button>
 				<?php
 
 				$buttons = ob_get_clean();
@@ -77,7 +77,7 @@ class AJAX {
 				$excluded_tags       = $integration->get_excluded_product_tag_ids();
 
 				// bother to check only if there are excluded terms to begin with, before looping products
-				if ( ! empty( $excluded_categories ) && ! empty( $excluded_tags ) ) {
+				//if ( ! empty( $excluded_categories ) && ! empty( $excluded_tags ) ) {
 
 					$has_excluded_term = false;
 
@@ -94,23 +94,23 @@ class AJAX {
 							}
 						}
 					}
-
+				$has_excluded_term = true;
 					// show modal if there's at least one product that belongs to an excluded term
 					if ( $has_excluded_term )  {
 
 						ob_start();
 
 						?>
-						<button
-							id="facebook-for-woocommerce-cancel-sync"
-							class="button button-large"
-							onclick="jQuery( '.modal-close' ).trigger( 'click' )"
-						><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
 						<a
 							id="facebook-for-woocommerce-go-to-settings"
 							class="button button-large"
 							href="<?php echo esc_url( add_query_arg( 'section', \WC_Facebookcommerce::INTEGRATION_ID, admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) ); ?>"
-						><?php esc_html_e( 'Go to settings', 'facebook-for-woocommerce' ); ?></a>
+						><?php esc_html_e( 'Go to Settings', 'facebook-for-woocommerce' ); ?></a>
+						<button
+							id="facebook-for-woocommerce-cancel-sync"
+							class="button button-large button-primary"
+							onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+						><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
 						<?php
 
 						$buttons = ob_get_clean();
@@ -122,7 +122,7 @@ class AJAX {
 					}
 				}
 			}
-		}
+		//}
 
 		wp_send_json_success();
 	}
