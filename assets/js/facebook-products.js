@@ -96,7 +96,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		let $submitButton    = $( this ),
-			chosenBulkAction = $submitButton.prev( 'select' ).val();
+		    chosenBulkAction = $submitButton.prev( 'select' ).val();
 
 		if ( 'facebook_exclude' === chosenBulkAction || 'facebook_include' === chosenBulkAction ) {
 
