@@ -575,6 +575,69 @@ class Admin {
 	 */
 	public function add_product_variation_edit_fields( $loop, $variation_data, $post ) {
 
+		$variation = wc_get_product( $post );
+
+		if ( ! $variation instanceof \WC_Product_Variation ) {
+			return;
+		}
+
+		$parent = wc_get_product( $variation->get_parent_id() );
+
+		if ( ! $parent instanceof \WC_Product ) {
+			return;
+		}
+
+		$sync_enabled = $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
+		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
+		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
+
+		woocommerce_wp_checkbox( [
+			'id'          => "variable_fb_sync_enabled$loop",
+			'name'        => "variable_fb_sync_enabled[$loop]",
+			'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+			'value'       => wc_bool_to_string( 'no' !== $sync_enabled ),
+			'class'       => 'checkbox js-variable-fb-sync-toggle',
+		] );
+
+		woocommerce_wp_textarea_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $loop ),
+			'name'        => sprintf( "variable_%s[$loop]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
+			'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+			'desc_tip'    => true,
+			'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
+			'cols'        => 40,
+			'rows'        => 5,
+			'value'       => $description,
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $loop ),
+			'name'        => sprintf( "variable_%s[$loop]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
+			'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+			'desc_tip'    => true,
+			'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
+			'value'       => $image_url,
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $loop ),
+			'name'        => sprintf( "variable_%s[$loop]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
+			'label'       => sprintf(
+				/* translators: Placeholders %1$s - WC currency symbol */
+				__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
+				get_woocommerce_currency_symbol()
+			),
+			'desc_tip'    => true,
+			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
+			'value'       => $price,
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
 	}
 
 
