@@ -95,7 +95,7 @@ class AJAX {
 						}
 					}
 
-					// show modal if there's at least one excluded term
+					// show modal if there's at least one product that belongs to an excluded term
 					if ( $has_excluded_term )  {
 
 						ob_start();
