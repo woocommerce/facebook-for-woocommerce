@@ -214,6 +214,7 @@ class Admin {
 					// find the IDs of products that have sync enabled
 					$products_query_vars = [
 						'post_type'              => 'product',
+						'post_status'            => ! empty( $query_vars['post_status'] ) ? $query_vars['post_status'] : 'any',
 						'no_found_rows'          => true,
 						'update_post_meta_cache' => false,
 						'update_post_term_cache' => false,
@@ -223,10 +224,8 @@ class Admin {
 
 					$products_query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $products_query_vars );
 
-					$products_query = new \WP_Query( $products_query_vars );
-
 					// exclude products that have sync enabled from the current query
-					$query_vars['post__not_in'] = $products_query->get_posts();
+					$query_vars['post__not_in'] = get_posts( $products_query_vars );
 
 				} else {
 
