@@ -155,7 +155,7 @@ class Products {
 		$matches =    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
 		           && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
 
-		return $matches;
+		return ! $matches;
 	}
 
 
