@@ -665,4 +665,49 @@ class Admin {
 	}
 
 
+	/**
+	 * Saves the submitted Facebook settings for each variation.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $variation_id the ID of the product variation being edited
+	 * @param int $index the index of the current variation
+	 */
+	public function save_product_variation_edit_fields( $variation_id, $index ) {
+
+		$variation = wc_get_product( $variation_id );
+
+		if ( ! $variation instanceof \WC_Product_Variation ) {
+			return;
+		}
+
+		if ( isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
+
+			Products::enable_sync_for_products( [ $variation_id ] );
+
+			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
+			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
+
+			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
+			$image_url    = isset( $_POST[ $posted_param ][ $index ] ) ? esc_url_raw( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
+
+			// TODO: use wc_add_number_precision() when WC 3.2.0 is the required version {WV 2020-01-15}
+			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
+			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? round( (float) $_POST[ $posted_param ][ $index ] * 100 ) : null;
+
+			$variation->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $description );
+			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_IMAGE, $image_url );
+			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_PRICE, $price );
+			$variation->save_meta_data();
+
+		} else {
+
+			Products::disable_sync_for_products( [ $variation_id ] );
+
+		}
+	}
+
+
 }
