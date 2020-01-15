@@ -559,4 +559,20 @@ class Admin {
 	}
 
 
+	/**
+	 * Outputs the Facebook settings fields for a single variation.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $loop variation counter
+	 * @param array $variation_data unused
+	 * @param \WC_Post $post the post type for the current variation
+	 */
+	public function add_product_variation_edit_fields( $loop, $variation_data, $post ) {
+
+	}
+
+
 }
