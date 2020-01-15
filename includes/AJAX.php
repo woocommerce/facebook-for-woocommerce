@@ -54,12 +54,12 @@ class AJAX {
 				?>
 				<button
 					id="facebook-for-woocommerce-hide-products"
-					class="button button-large facebook-for-woocommerce-toggle-product-visibility hide-products"
-				><?php esc_html_e( 'Hide products', 'facebook-for-woocommerce' ); ?></button>
+					class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility hide-products"
+				><?php esc_html_e( 'Hide Products', 'facebook-for-woocommerce' ); ?></button>
 				<button
 					id="facebook-for-woocommerce-do-not-hide-products"
-					class="button button-large facebook-for-woocommerce-toggle-product-visibility show-products"
-				><?php esc_html_e( 'Do not hide products', 'facebook-for-woocommerce' ); ?></button>
+					class="button button-large button-primary facebook-for-woocommerce-toggle-product-visibility show-products"
+				><?php esc_html_e( 'Do Not Hide Products', 'facebook-for-woocommerce' ); ?></button>
 				<?php
 
 				$buttons = ob_get_clean();
