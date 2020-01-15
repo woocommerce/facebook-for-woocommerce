@@ -42,7 +42,9 @@ class AJAX {
 
 		check_ajax_referer( 'set-product-sync-bulk-action', 'security' );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$product_ids = isset( $_POST['products'] ) ? $_POST['products'] : [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$toggle      = isset( $_POST['toggle'] )   ? $_POST['toggle']   : '';
 
 		if ( ! empty( $product_ids ) && ! empty( $toggle ) ) {

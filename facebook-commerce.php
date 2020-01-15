@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -245,54 +247,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->api_key && $this->product_catalog_id ) {
-				add_action(
-					'woocommerce_process_product_meta_simple',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
 
-				add_action(
-					'woocommerce_process_product_meta_variable',
-					array( $this, 'on_variable_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_booking',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_external',
-					array( $this, 'on_simple_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_subscription',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_variable-subscription',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
-
-				add_action(
-					'woocommerce_process_product_meta_bundle',
-					array( $this, 'on_product_publish' ),
-					10,  // Action priority
-					1    // Args passed to on_product_publish (should be 'id')
-				);
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ] );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -322,17 +278,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					array( $this, 'fb_change_product_published_status' ),
 					10,
 					3
-				);
-
-				  // Product data tab
-				add_filter(
-					'woocommerce_product_data_tabs',
-					array( $this, 'fb_new_product_tab' )
-				);
-
-				add_action(
-					'woocommerce_product_data_panels',
-					array( $this, 'fb_new_product_tab_content' )
 				);
 
 				add_action(
@@ -449,121 +394,33 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
+	/**
+	 * Adds a new tab to the Product edit page.
+	 *
+	 * @internal
+	 * @deprecated since x.y.z
+	 *
+	 * @param array $tabs array of tabs
+	 * @return array
+	 */
 	public function fb_new_product_tab( $tabs ) {
-		$tabs['fb_commerce_tab'] = array(
-			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
-			'target' => 'facebook_options',
-			'class'  => array( 'show_if_simple', 'show_if_variable' ),
-		);
+
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab()' );
+
 		return $tabs;
 	}
 
+
+	/**
+	 * Adds content to the new Facebook tab on the Product edit page.
+	 *
+	 * @internal
+	 * @deprecated since x.y.z
+	 */
 	public function fb_new_product_tab_content() {
-		global $post;
-		$woo_product = new WC_Facebook_Product( $post->ID );
-		$description = get_post_meta(
-			$post->ID,
-			self::FB_PRODUCT_DESCRIPTION,
-			true
-		);
 
-		$price = get_post_meta(
-			$post->ID,
-			WC_Facebook_Product::FB_PRODUCT_PRICE,
-			true
-		);
-
-		$image = get_post_meta(
-			$post->ID,
-			WC_Facebook_Product::FB_PRODUCT_IMAGE,
-			true
-		);
-
-		$image_setting = null;
-		if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
-			$image_setting = $woo_product->get_use_parent_image();
-		}
-
-		// 'id' attribute needs to match the 'target' parameter set above
-		?><div id='facebook_options' class='panel woocommerce_options_panel'><div class='options_group'>
-		<?php
-		woocommerce_wp_textarea_input(
-			array(
-				'id'          => self::FB_PRODUCT_DESCRIPTION,
-				'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
-				'desc_tip'    => 'true',
-				'description' => __(
-					'Custom (plain-text only) description for product on Facebook. ' .
-					'If blank, product description will be used. ' .
-					'If product description is blank, shortname will be used.',
-					'facebook-for-woocommerce'
-				),
-				'cols'        => 40,
-				'rows'        => 20,
-				'value'       => $description,
-			)
-		);
-		woocommerce_wp_textarea_input(
-			array(
-				'id'          => WC_Facebook_Product::FB_PRODUCT_IMAGE,
-				'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-				'desc_tip'    => 'true',
-				'description' => __(
-					'Image URL for product on Facebook. Must be an absolute URL ' .
-					'e.g. https://...' .
-					'This can be used to override the primary image that will be ' .
-					'used on Facebook for this product. If blank, the primary ' .
-					'product image in Woo will be used as the primary image on FB.',
-					'facebook-for-woocommerce'
-				),
-				'cols'        => 40,
-				'rows'        => 10,
-				'value'       => $image,
-			)
-		);
-		woocommerce_wp_text_input(
-			array(
-				'id'          => WC_Facebook_Product::FB_PRODUCT_PRICE,
-				'label'       => __(
-					'Facebook Price (' .
-					get_woocommerce_currency_symbol() . ')',
-					'facebook-for-woocommerce'
-				),
-				'desc_tip'    => 'true',
-				'description' => __(
-					'Custom price for product on Facebook. ' .
-					'Please enter in monetary decimal (.) format without thousand ' .
-					'separators and currency symbols. ' .
-					'If blank, product price will be used. ',
-					'facebook-for-woocommerce'
-				),
-				'cols'        => 40,
-				'rows'        => 60,
-				'value'       => $price,
-			)
-		);
-		if ( $image_setting !== null ) {
-							woocommerce_wp_checkbox(
-								array(
-									'id'          => self::FB_VARIANT_IMAGE,
-									'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
-									'required'    => false,
-									'desc_tip'    => 'true',
-									'description' => __(
-										' By default, the primary image uploaded to Facebook is the image' .
-										' specified in each variant, if provided. ' .
-										' However, if you enable this setting, the ' .
-										' image of the parent will be used as the primary image' .
-										' for this product and all its variants instead.'
-									),
-									'value'       => $image_setting ? 'yes' : 'no',
-								)
-							);
-		}
-		?>
-	  </div>
-	</div>
-		<?php
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab_content()' );
 	}
 
 
@@ -855,6 +712,56 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 	}
+
+
+	/**
+	 * Checks the product type and calls the corresponding on publish method.
+	 *
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $wp_id post ID
+	 */
+	function on_product_save( $wp_id ) {
+
+		$product = wc_get_product( $wp_id );
+
+		if ( ! $product ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( empty( $_POST['fb_sync_enabled'] ) ) {
+
+			Products::disable_sync_for_products( [ $product ] );
+
+		} else {
+
+			Products::enable_sync_for_products( [ $product ] );
+
+			switch ( $product->get_type() ) {
+
+				case 'simple':
+				case 'booking':
+				case 'external':
+					$this->on_simple_product_publish( $wp_id );
+				break;
+
+				case 'variable':
+					$this->on_variable_product_publish( $wp_id );
+				break;
+
+				case 'subscription':
+				case 'variable-subscription':
+				case 'bundle':
+					$this->on_product_publish( $wp_id );
+				break;
+			}
+		}
+	}
+
 
 	function on_product_delete( $wp_id ) {
 		$woo_product = new WC_Facebook_Product( $wp_id );
