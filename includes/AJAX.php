@@ -77,6 +77,30 @@ class AJAX {
 						'message' => __( 'This product will no longer be updated in your Facebook catalog. Would you like to hide this product from your Facebook shop?', 'facebook-for-woocommerce' ),
 						'buttons' => $buttons,
 					] );
+
+				} elseif ( 'enabled' === $sync_enabled && Products::is_sync_excluded_for_product_terms( $product ) ) {
+
+					ob_start();
+
+					?>
+					<a
+						id="facebook-for-woocommerce-go-to-settings"
+						class="button button-large"
+						href="<?php echo esc_url( add_query_arg( 'section', \WC_Facebookcommerce::INTEGRATION_ID, admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) ); ?>"
+					><?php esc_html_e( 'Go to Settings', 'facebook-for-woocommerce' ); ?></a>
+					<button
+						id="facebook-for-woocommerce-cancel-sync"
+						class="button button-large button-primary"
+						onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+					><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+					<?php
+
+					$buttons = ob_get_clean();
+
+					wp_send_json_error( [
+						'message' => __( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync. To sync this product to Facebook, please remove the category or tag exclusion from the plugin settings.', 'facebook-for-woocommerce' ),
+						'buttons' => $buttons,
+					] );
 				}
 			}
 		}
