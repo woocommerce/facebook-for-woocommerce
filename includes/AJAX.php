@@ -109,7 +109,7 @@ class AJAX {
 						<a
 							id="facebook-for-woocommerce-go-to-settings"
 							class="button button-large"
-							href="<?php echo esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ); ?>"
+							href="<?php echo esc_url( add_query_arg( 'section', \WC_Facebookcommerce::INTEGRATION_ID, admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) ); ?>"
 						><?php esc_html_e( 'Go to settings', 'facebook-for-woocommerce' ); ?></a>
 						<?php
 
