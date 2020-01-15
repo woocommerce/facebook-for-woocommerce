@@ -23,6 +23,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	// toggle Facebook settings fields for simple products
 	const syncEnabledCheckbox   = $( '#fb_sync_enabled' );
 	const facebookSettingsPanel = syncEnabledCheckbox.closest( '.woocommerce_options_panel' );
 
@@ -31,6 +32,14 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ), facebookSettingsPanel );
+
+	// toggle Facebook settings fields for variations
+	$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+
+		toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+	} );
+
+	$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
 } );
 
 
