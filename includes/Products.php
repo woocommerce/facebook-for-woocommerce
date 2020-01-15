@@ -100,7 +100,9 @@ class Products {
 	 *
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
-	 * If a product is enabled for sync, but belongs to an excluded term, it will return as disabled from sync.
+	 *
+	 * If a product is enabled for sync, but belongs to an excluded term, it will return as disabled from sync:
+	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
 	 * @since x.y.z
 	 *
@@ -114,11 +116,11 @@ class Products {
 			// if a variation, check if the parent variable isn't excluded by terms, then check for the product meta on the variation
 			if ( $product->is_type( 'variation' ) ) {
 				$parent  = wc_get_product( $product->get_parent_id() );
-				$enabled = ( ! $parent || self::is_sync_enabled_for_product( $parent ) )
-				           && 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
+				$enabled = ! $parent || self::is_sync_enabled_for_product( $parent );
+				$enabled = $enabled && 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
 			// for all other products, just check the exclusion by terms, then the product meta
 			} else {
-				$enabled = self::is_sync_enabled_for_product_terms( $product );
+				$enabled = ! self::is_sync_excluded_for_product_terms( $product );
 				$enabled = $enabled && ( $product->is_type( 'variable' ) || 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY ) );
 			}
 
@@ -130,17 +132,14 @@ class Products {
 
 
 	/**
-	 * Determines whether the product's terms would make it set to be synced in Facebook.
-	 *
-	 * This depends on settings, in case some terms (categories, tags) are excluded from sync.
-	 * Private helper method, use: {@see Products::is_sync_enabled_for_product()}
+	 * Determines whether the product's terms would make it excluded to be synced from Facebook.
 	 *
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
-	 * @return bool
+	 * @return bool if true, product should be excluded from sync, if false, product can be included in sync (unless manually excluded by individual product meta)
 	 */
-	private static function is_sync_enabled_for_product_terms( \WC_Product $product ) {
+	public static function is_sync_excluded_for_product_terms( \WC_Product $product ) {
 
 		if ( $integration = facebook_for_woocommerce()->get_integration() ) {
 			$excluded_categories = $integration->get_excluded_product_category_ids();
@@ -153,8 +152,10 @@ class Products {
 		$tags       = $product->get_tag_ids();
 
 		// returns true if no terms on the product, or no terms excluded, or if the product does not contain any of the excluded terms
-		return    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
-		       && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
+		$matches =    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
+		           && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
+
+		return ! $matches;
 	}
 
 
