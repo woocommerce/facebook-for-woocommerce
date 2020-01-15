@@ -27,6 +27,9 @@ class Admin {
 	 */
 	public function __construct() {
 
+		// enqueue admin scripts
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
 
@@ -44,6 +47,27 @@ class Admin {
 		// add bulk actions to manage products sync
 		add_filter( 'bulk_actions-edit-product',        [ $this, 'add_products_sync_bulk_actions' ], 40 );
 		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
+
+		// add Product data tab
+		add_filter( 'woocommerce_product_data_tabs', [ $this, 'add_product_settings_tab' ] );
+		add_action( 'woocommerce_product_data_panels', [ $this, 'add_product_settings_tab_content' ] );
+	}
+
+
+	/**
+	 * Enqueues admin scripts.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function enqueue_scripts() {
+		global $current_screen;
+
+		if ( isset( $current_screen->id ) && 'product' === $current_screen->id ) {
+
+			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		}
 	}
 
 
@@ -174,7 +198,8 @@ class Admin {
 			return;
 		}
 
-		$choice = isset( $_GET['fb_sync_enabled'] ) ? (string) $_GET['fb_sync_enabled'] : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$choice = isset( $_GET['fb_sync_enabled'] ) ? (string) sanitize_text_field( wp_unslash( $_GET['fb_sync_enabled'] ) ) : '';
 
 		?>
 		<select name="fb_sync_enabled">
@@ -196,6 +221,7 @@ class Admin {
 	 */
 	public function filter_products_by_sync_enabled( $query_vars ) {
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['fb_sync_enabled'] ) && in_array( $_REQUEST['fb_sync_enabled'], [ 'yes', 'no' ], true ) ) {
 
 			// by default use an "AND" clause if multiple conditions exist for a meta query
@@ -206,6 +232,7 @@ class Admin {
 			}
 
 			// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
 
 				$query_vars['meta_query']['relation'] = 'OR';
@@ -259,16 +286,20 @@ class Admin {
 	public function handle_products_sync_bulk_actions( $redirect ) {
 
 		// primary dropdown at the top of the list table
-		$action = isset( $_REQUEST['action'] ) && -1 !== (int) $_REQUEST['action'] ? $_REQUEST['action'] : null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$action = isset( $_REQUEST['action'] ) && -1 !== (int) $_REQUEST['action'] ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : null;
 
 		// secondary dropdown at the bottom of the list table
 		if ( ! $action ) {
-			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? $_REQUEST['action2'] : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? sanitize_text_field( wp_unslash( $_REQUEST['action2'] ) ) : null;
 		}
 
 		if ( $action && in_array( $action, [ 'facebook_include', 'facebook_exclude' ], true ) ) {
 
-			$products    = [];
+			$products = [];
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$product_ids = isset( $_REQUEST['post'] ) && is_array( $_REQUEST['post'] ) ? array_map( 'absint', $_REQUEST['post'] ) : [];
 
 			if ( ! empty( $product_ids ) ) {
@@ -326,6 +357,119 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	/**
+	 * Adds a new tab to the Product edit page.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param array $tabs product tabs
+	 * @return array
+	 */
+	public function add_product_settings_tab( $tabs ) {
+
+		$tabs['fb_commerce_tab'] = [
+			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
+			'target' => 'facebook_options',
+			'class'  => [ 'show_if_simple', 'show_if_variable' ],
+		];
+
+		return $tabs;
+	}
+
+
+	/**
+	 * Adds content to the new Facebook tab on the Product edit page.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function add_product_settings_tab_content() {
+		global $post;
+
+		$woo_product  = new \WC_Facebook_Product( $post->ID );
+		// all products have sync enabled unless explicitly disabled
+		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
+		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
+		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
+		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+
+		if ( $woo_product->is_type( 'variable' ) ) {
+			$image_setting = $woo_product->get_use_parent_image();
+		} else {
+			$image_setting = null;
+		}
+
+		// 'id' attribute needs to match the 'target' parameter set above
+		?>
+		<div id='facebook_options' class='panel woocommerce_options_panel'>
+			<div class='options_group'>
+				<?php
+
+				woocommerce_wp_checkbox( [
+					'id'          => 'fb_sync_enabled',
+					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+					'value'       => wc_bool_to_string( (bool) $sync_enabled ),
+				] );
+
+				woocommerce_wp_textarea_input( [
+					'id'          => \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION,
+					'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+					'desc_tip'    => true,
+					'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
+					'cols'        => 40,
+					'rows'        => 20,
+					'value'       => $description,
+					'class'       => 'enable-if-sync-enabled',
+				] );
+
+				woocommerce_wp_textarea_input( [
+					'id'          => \WC_Facebook_Product::FB_PRODUCT_IMAGE,
+					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'desc_tip'    => true,
+					'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
+					'cols'        => 40,
+					'rows'        => 10,
+					'value'       => $image,
+					'class'       => 'enable-if-sync-enabled',
+				] );
+
+				woocommerce_wp_text_input( [
+					'id'          => \WC_Facebook_Product::FB_PRODUCT_PRICE,
+					'label'       => sprintf(
+						/* translators: Placeholders %1$s - WC currency symbol */
+						__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
+						get_woocommerce_currency_symbol()
+					),
+					'desc_tip'    => true,
+					'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
+					'cols'        => 40,
+					'rows'        => 60,
+					'value'       => $price,
+					'class'       => 'enable-if-sync-enabled',
+				] );
+
+				if ( null !== $image_setting ) {
+
+					woocommerce_wp_checkbox( [
+						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
+						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
+						'desc_tip'    => true,
+						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
+						'value'       => wc_bool_to_string( (bool) $image_setting ),
+						'class'       => 'checkbox enable-if-sync-enabled',
+					] );
+				}
+
+				?>
+			</div>
+		</div>
+		<?php
 	}
 
 
