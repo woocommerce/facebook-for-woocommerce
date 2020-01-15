@@ -79,7 +79,7 @@ class AJAX {
 				// bother to check only if there are excluded terms to begin with, before looping products
 				if ( ! empty( $excluded_categories ) && ! empty( $excluded_tags ) ) {
 
-					$has_excluded_term   = false;
+					$has_excluded_term = false;
 
 					foreach ( $product_ids as $product_id ) {
 
