@@ -159,4 +159,52 @@ class Products {
 	}
 
 
+	/**
+	 * Sets a product's visibility in the Facebook shop.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product product object
+	 * @param string $visibility 'published' or 'staging'
+	 * @return bool success
+	 */
+	public static function set_product_visibility( \WC_Product $product, $visibility ) {
+
+		$success     = false;
+		$integration = facebook_for_woocommerce()->get_integration();
+
+		if ( ! $integration || ! in_array( $visibility, [ 'published', 'staging' ], true ) ) {
+			return $success;
+		}
+
+		$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+		$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+			'visibility' => $visibility,
+		] );
+
+		// if the request to Facebook is successful, update the corresponding product meta in WooCommerce
+		if ( $integration->check_api_result( $fb_request ) ) {
+
+			// visibility is stored as a bool in product meta
+			$meta_value = 'published' === $visibility;
+
+			$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
+			$product->save_meta_data();
+
+			$parent_id = $product->get_parent_id();
+
+			// if a variation, update the product meta of the parent as well
+			if ( $parent_id > 0 && ( $parent = wc_get_product( $parent_id ) ) ) {
+
+				$parent->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
+				$parent->save_meta_data();
+			}
+
+			$success = true;
+		}
+
+		return $success;
+	}
+
+
 }

@@ -192,15 +192,13 @@ class AJAX {
 
 		if ( $integration && ! empty( $products )  ) {
 
-			$update_products = [];
-
 			foreach ( $products as $product_data ) {
 
-				$visibility = isset( $product_data['visibility'] ) ? (string) $product_data['visibility'] : '';
+				$visibility = isset( $product_data['visibility'] ) ? (string) $product_data['visibility']  : '';
 				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
 				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
 
-				if ( $product && in_array( $visibility, [ 'published', 'staging' ], true ) ) {
+				if ( $product instanceof \WC_Product ) {
 
 					// use variations for the products loop instead of the parent, if any
 					if ( $product->is_type( 'variable' ) ) {
@@ -209,44 +207,13 @@ class AJAX {
 
 							if ( $product = wc_get_product( $variation_id ) ) {
 
-								$update_products[] = [
-									'product'    => $product,
-									'visibility' => $visibility,
-								];
+								Products::set_product_visibility( $product, $visibility );
 							}
 						}
 
 					} else {
 
-						$update_products[] = [
-							'product'    => $product,
-							'visibility' => $visibility,
-						];
-					}
-				}
-			}
-
-			foreach ( $update_products as $data ) {
-
-				/** @var \WC_Product $product */
-				$product    = $data['product'];
-				$visibility = $data['visibility'];
-				$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
-				$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
-					'visibility' => $visibility,
-				] );
-
-				if ( $integration->check_api_result( $fb_request ) ) {
-
-					$meta_value = 'published' === $visibility;
-
-					$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-					$product->save_meta_data();
-
-					if ( $parent = wc_get_product( $product->get_parent_id() ) ) {
-
-						$parent->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-						$parent->save_meta_data();
+						Products::set_product_visibility( $product, $visibility );
 					}
 				}
 			}
