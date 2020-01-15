@@ -83,15 +83,13 @@ class AJAX {
 
 					foreach ( $product_ids as $product_id ) {
 
-						if ( $product = wc_get_product( $product_id ) ) {
+						$product = wc_get_product( $product_id );
 
-							// product belongs to at least one excluded term
-							if (    ( $excluded_categories && array_intersect( $product->get_category_ids(), $excluded_categories ) )
-							     || ( $excluded_tags       && array_intersect( $product->get_tag_ids(),      $excluded_tags       ) ) ) {
+						// product belongs to at least one excluded term: break the loop
+						if ( $product instanceof \WC_Product && Products::is_sync_excluded_for_product_terms( $product ) ) {
 
-								$has_excluded_term = true;
-								break;
-							}
+							$has_excluded_term = true;
+							break;
 						}
 					}
 
