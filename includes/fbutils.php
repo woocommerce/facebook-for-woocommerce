@@ -91,8 +91,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 			// Call $woo_product->get_id() instead of ->id to account for Variable
 			// products, which have their own variant_ids.
-			return $woo_product->get_sku() ? $woo_product->get_sku() . '_' .
-			$woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
+			return apply_filters( 'facebook_woocommerce_fb_retailer_id', $woo_product->get_sku() ? $woo_product->get_sku() . '_' . $woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id, $woo_product);
 		}
 
 		/**
