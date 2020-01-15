@@ -51,6 +51,7 @@ class Admin {
 
 		// add Variation edit fields
 		add_action( 'woocommerce_product_after_variable_attributes', [ $this, 'add_product_variation_edit_fields' ], 10, 3 );
+		add_action( 'woocommerce_save_product_variation', [ $this, 'save_product_variation_edit_fields' ], 10, 2 );
 	}
 
 
