@@ -295,12 +295,12 @@ class Admin {
 				];
 			}
 
-			$exlcuded_tags_ids = $integration->get_excluded_product_tag_ids();
+			$excluded_tags_ids = $integration->get_excluded_product_tag_ids();
 
-			if ( $exlcuded_tags_ids ) {
+			if ( $excluded_tags_ids ) {
 				$tax_query[] = [
 					'taxonomy' => 'product_tag',
-					'terms'    => $exlcuded_tags_ids,
+					'terms'    => $excluded_tags_ids,
 					'field'    => 'term_id',
 					'operator' => 'NOT IN',
 				];
