@@ -578,4 +578,28 @@ class Admin {
 	}
 
 
+	/**
+	 * Gets the stored value for the given meta of a product variation.
+	 *
+	 * If no value is found, we try to use the value stored in the parent product.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product_Variation $variation the product variation
+	 * @param string $key the name of the meta to retrieve
+	 * @param \WC_Product $parent the parent product
+	 * @return mixed
+	 */
+	private function get_product_variation_meta( $variation, $key, $parent ) {
+
+		$value = $variation->get_meta( $key );
+
+		if ( '' === $value && $parent instanceof \WC_Product ) {
+			$value = $parent->get_meta( $key );
+		}
+
+		return $value;
+	}
+
+
 }
