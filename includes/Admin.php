@@ -279,10 +279,10 @@ class Admin {
 	private function maybe_add_tax_query_for_excluded_taxonomies( $query_vars ) {
 
 		$integration = facebook_for_woocommerce()->get_integration();
-		$tax_query   = [];
 
 		if ( $integration ) {
 
+			$tax_query               = [];
 			$excluded_categories_ids = $integration->get_excluded_product_category_ids();
 
 			if ( $excluded_categories_ids ) {
@@ -304,12 +304,12 @@ class Admin {
 					'operator' => 'NOT IN',
 				];
 			}
-		}
 
-		if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
-			$query_vars['tax_query'] = $tax_query;
-		} elseif ( $tax_query && is_array( $query_vars ) ) {
-			$query_vars['tax_query'][] = $tax_query;
+			if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
+				$query_vars['tax_query'] = $tax_query;
+			} elseif ( $tax_query && is_array( $query_vars ) ) {
+				$query_vars['tax_query'][] = $tax_query;
+			}
 		}
 
 		return $query_vars;
