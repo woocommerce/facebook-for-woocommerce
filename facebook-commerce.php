@@ -18,11 +18,12 @@ require_once 'facebook-commerce-pixel-event.php';
 
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
+
+	// TODO probably some of these meta keys need to be moved to Facebook\Products {FN 2020-01-13}
 	const FB_PRODUCT_GROUP_ID    = 'fb_product_group_id';
 	const FB_PRODUCT_ITEM_ID     = 'fb_product_item_id';
 	const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
-
-	const FB_VISIBILITY = 'fb_visibility';
+	const FB_VISIBILITY          = 'fb_visibility';
 
 	const FB_CART_URL = 'fb_cart_url';
 
@@ -316,16 +317,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
-				add_filter(
-					'manage_product_posts_columns',
-					array( $this, 'fb_product_columns' )
-				);
-				add_action(
-					'manage_product_posts_custom_column',
-					array( $this, 'fb_render_product_columns' ),
-					2
-				);
-
 				add_action(
 					'transition_post_status',
 					array( $this, 'fb_change_product_published_status' ),
@@ -580,19 +571,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Filters the product columns in the admin edit screen.
 	 *
 	 * @internal
-	 * @deprecated
+	 * @deprecated since x.y.z
 	 *
 	 * @param array $existing_columns array of columns and labels
 	 * @return array
 	 */
 	public function fb_product_columns( $existing_columns ) {
-		if ( empty( $existing_columns ) && ! is_array( $existing_columns ) ) {
-			$existing_columns = array();
-		}
 
-		$columns = [ 'facebook_shop_visibility' => __( 'FB Shop Visibility', 'facebook-for-woocommerce' ) ];
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_column()' );
 
-		return array_merge( $columns, $existing_columns );
+		return $existing_columns;
 	}
 
 
@@ -600,83 +588,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Outputs content for the FB Shop column in the edit screen.
 	 *
 	 * @internal
+	 * @deprecated since x.y.z
 	 *
 	 * @param string $column name of the column to display
 	 */
 	public function fb_render_product_columns( $column ) {
-		global $post, $the_product;
 
-		$ajax_data = [
-			'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' ),
-		];
-
-		wp_enqueue_script(
-			'wc_facebook_product_jsx',
-			plugins_url(
-				'/assets/js/facebook-products.js?ts=' . time(),
-				__FILE__
-			)
-		);
-
-		wp_localize_script(
-			'wc_facebook_product_jsx',
-			'wc_facebook_product_jsx',
-			$ajax_data
-		);
-
-		if ( empty( $the_product ) || $the_product->get_id() != $post->ID ) {
-			$the_product = new WC_Facebook_Product( $post );
-		}
-
-		if ( $column === 'facebook_shop_visibility' ) {
-			$fb_product_group_id = $this->get_product_fbid(
-				self::FB_PRODUCT_GROUP_ID,
-				$post->ID,
-				$the_product
-			);
-
-			if ( ! $fb_product_group_id ) {
-
-				?>
-					<span>Not Synced</span>
-				<?php
-
-			} else {
-
-				$viz_value = get_post_meta( $post->ID, self::FB_VISIBILITY, true );
-				$data_tip  = $viz_value === '' ? 'Product is synced but not marked as published (visible) on Facebook.' : 'Product is synced and published (visible) on Facebook.';
-
-				?>
-					<span class="tips"
-					id="tip_<?php echo esc_attr( $post->ID ); ?>"
-					data-tip="<?php echo esc_attr( $data_tip ); ?>">
-				<?php
-
-				if ( $viz_value === '' ) {
-
-					?>
-						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
-						class="button button-primary button-large"
-						href="javascript:;"
-						onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
-							Show
-						</a>
-					<?php
-
-				} else {
-
-					?>
-						<a id="viz_<?php echo esc_attr( $post->ID ); ?>"
-						class="button"
-						href="javascript:;"
-						onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
-							Hide
-						</a>
-					<?php
-				}
-
-			}
-		}
+		wc_deprecated_function( __METHOD__, 'x.y.z', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
 	}
 
 
@@ -3088,7 +3006,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param WC_Facebook_Product|null $woo_product product
 	 * @return mixed|void|null
 	 */
-	private function get_product_fbid( $fbid_type, $wp_id, $woo_product = null ) {
+	public function get_product_fbid( $fbid_type, $wp_id, $woo_product = null ) {
 
 		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta(
 			$wp_id,
