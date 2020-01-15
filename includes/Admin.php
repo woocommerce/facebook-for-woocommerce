@@ -228,22 +228,114 @@ class Admin {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
 
-				$query_vars['meta_query']['relation'] = 'OR';
-				$query_vars['meta_query'][]           = [
-					'key'   => Products::SYNC_ENABLED_META_KEY,
-					'value' => 'yes',
-				];
-				$query_vars['meta_query'][]           = [
-					'key'     => Products::SYNC_ENABLED_META_KEY,
-					'compare' => 'NOT EXISTS',
-				];
+				$query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $query_vars );
 
 			} else {
 
-				$query_vars['meta_query'][] = [
-					'key'   => Products::SYNC_ENABLED_META_KEY,
-					'value' => 'no',
+				$integration             = facebook_for_woocommerce()->get_integration();
+				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
+				$exlcuded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
+
+				if ( $excluded_categories_ids || $exlcuded_tags_ids ) {
+
+					// find the IDs of products that have sync enabled
+					$products_query_vars = [
+						'post_type'              => 'product',
+						'post_status'            => ! empty( $query_vars['post_status'] ) ? $query_vars['post_status'] : 'any',
+						'no_found_rows'          => true,
+						'update_post_meta_cache' => false,
+						'update_post_term_cache' => false,
+						'fields'                 => 'ids',
+						'nopaging'               => true,
+					];
+
+					$products_query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $products_query_vars );
+
+					// exclude products that have sync enabled from the current query
+					$query_vars['post__not_in'] = get_posts( $products_query_vars );
+
+				} else {
+
+					$query_vars['meta_query'][] = [
+						'key'   => Products::SYNC_ENABLED_META_KEY,
+						'value' => 'no',
+					];
+				}
+			}
+		}
+
+		return $query_vars;
+	}
+
+
+	/**
+	 * Adds query vars to limit the results to products that have sync enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param array $query_vars
+	 * @return array
+	 */
+	private function add_query_vars_to_find_products_with_sync_enabled( array $query_vars ) {
+
+		$query_vars['meta_query']['relation'] = 'OR';
+		$query_vars['meta_query'][]           = [
+			'key'   => Products::SYNC_ENABLED_META_KEY,
+			'value' => 'yes',
+		];
+		$query_vars['meta_query'][]           = [
+			'key'     => Products::SYNC_ENABLED_META_KEY,
+			'compare' => 'NOT EXISTS',
+		];
+
+		// check whether the product belongs to an excluded product category or tag
+		$query_vars = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars );
+
+		return $query_vars;
+	}
+
+
+	/**
+	 * Adds a tax query to filter out products in excluded product categories and product tags.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param array $query_vars product query vars for the edit screen
+	 * @return array
+	 */
+	private function maybe_add_tax_query_for_excluded_taxonomies( $query_vars ) {
+
+		$integration = facebook_for_woocommerce()->get_integration();
+
+		if ( $integration ) {
+
+			$tax_query               = [];
+			$excluded_categories_ids = $integration->get_excluded_product_category_ids();
+
+			if ( $excluded_categories_ids ) {
+				$tax_query[] = [
+					'taxonomy' => 'product_cat',
+					'terms'    => $excluded_categories_ids,
+					'field'    => 'term_id',
+					'operator' => 'NOT IN',
 				];
+			}
+
+			$excluded_tags_ids = $integration->get_excluded_product_tag_ids();
+
+			if ( $excluded_tags_ids ) {
+				$tax_query[] = [
+					'taxonomy' => 'product_tag',
+					'terms'    => $excluded_tags_ids,
+					'field'    => 'term_id',
+					'operator' => 'NOT IN',
+				];
+			}
+
+			if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
+				$query_vars['tax_query'] = $tax_query;
+			} elseif ( $tax_query && is_array( $query_vars ) ) {
+				$query_vars['tax_query'][] = $tax_query;
 			}
 		}
 
