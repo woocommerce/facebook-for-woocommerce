@@ -310,7 +310,7 @@ class Admin {
 		if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
 			$query_vars['tax_query'] = $tax_query;
 		} elseif ( $tax_query && is_array( $query_vars ) ) {
-			array_push( $query_vars['tax_query'], $tax_query );
+			$query_vars['tax_query'][] = $tax_query;
 		}
 
 		return $query_vars;
