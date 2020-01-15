@@ -393,9 +393,10 @@ class Admin {
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
 
-		$image_setting = null;
-		if ( \WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
+		if ( $woo_product->is_type( 'variable' ) ) {
 			$image_setting = $woo_product->get_use_parent_image();
+		} else {
+			$image_setting = null;
 		}
 
 		// 'id' attribute needs to match the 'target' parameter set above
