@@ -218,7 +218,7 @@ class Admin {
 						'update_post_meta_cache' => false,
 						'update_post_term_cache' => false,
 						'fields'                 => 'ids',
-						'posts_per_page'         => 1000, // a bit better than using -1
+						'nopaging'               => true,
 					];
 
 					$products_query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $products_query_vars );
