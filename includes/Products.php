@@ -138,12 +138,12 @@ class Products {
 
 				foreach ( $product->get_children() as $child_id ) {
 
-					if ( $child_product = wc_get_product( $child_id ) ) {
+					$child_product = wc_get_product( $child_id );
 
-						if ( self::is_sync_enabled_for_product( $child_product ) ) {
-							$enabled = true;
-							break;
-						}
+					if ( $child_product && self::is_sync_enabled_for_product( $child_product ) ) {
+
+						$enabled = true;
+						break;
 					}
 				}
 
