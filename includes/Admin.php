@@ -685,6 +685,7 @@ class Admin {
 			return;
 		}
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
 
 			Products::enable_sync_for_products( [ $variation_id ] );
@@ -709,6 +710,7 @@ class Admin {
 			Products::disable_sync_for_products( [ $variation_id ] );
 
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 
