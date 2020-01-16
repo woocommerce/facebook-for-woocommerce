@@ -30,6 +30,9 @@ class Admin {
 		// enqueue admin scripts
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
+		// add a modal in admin product pages
+		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
+
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
@@ -108,9 +111,11 @@ class Admin {
 		elseif ( 'facebook_shop_visibility' === $column ) :
 
 			// TODO this script is re-enqueued on each row by design or it won't work, perhaps a refactor is in order later on {FN 2020-01-13}
-			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ) );
+			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ), [ 'wc-backbone-modal' ] );
 			wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
-				'nonce' => wp_create_nonce( 'wc_facebook_product_jsx' )
+				'admin_url'                          => admin_url( 'admin-ajax.php' ),
+				'nonce'                              => wp_create_nonce( 'wc_facebook_product_jsx' ),
+				'set_product_sync_bulk_action_nonce' => wp_create_nonce( 'set-product-sync-bulk-action' ),
 			] );
 
 			$integration         = facebook_for_woocommerce()->get_integration();
@@ -150,7 +155,8 @@ class Admin {
 							id="viz_<?php echo esc_attr( $post->ID ); ?>"
 							class="button button-primary button-large"
 							href="javascript:;"
-							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )">
+							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )"
+							data-product-visibility="hidden">
 							<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
 						</a>
 						<?php
@@ -162,7 +168,8 @@ class Admin {
 							id="viz_<?php echo esc_attr( $post->ID ); ?>"
 							class="button button-large"
 							href="javascript:;"
-							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)">
+							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)"
+							data-product-visibility="visible">
 							<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
 						</a>
 						<?php
@@ -376,7 +383,6 @@ class Admin {
 
 		// secondary dropdown at the bottom of the list table
 		if ( ! $action ) {
-
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$action = isset( $_REQUEST['action2'] ) && -1 !== (int) $_REQUEST['action2'] ? sanitize_text_field( wp_unslash( $_REQUEST['action2'] ) ) : null;
 		}
@@ -461,7 +467,7 @@ class Admin {
 	 *
 	 * @since x.y.z
 	 *
-	 * @param $tabs
+	 * @param array $tabs product tabs
 	 * @return array
 	 */
 	public function add_product_settings_tab( $tabs ) {
@@ -563,6 +569,45 @@ class Admin {
 				?>
 			</div>
 		</div>
+		<?php
+	}
+
+
+	/**
+	 * Outputs a modal template in admin product pages.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function render_modal_template() {
+		global $current_screen;
+
+		// bail if not on the product screens
+		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
+			return;
+		}
+
+		?>
+		<script type="text/template" id="tmpl-facebook-for-woocommerce-modal">
+			<div class="wc-backbone-modal facebook-for-woocommerce-modal">
+				<div class="wc-backbone-modal-content">
+					<section class="wc-backbone-modal-main" role="main">
+						<header class="wc-backbone-modal-header">
+							<h1><?php esc_html_e( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ); ?></h1>
+							<button class="modal-close modal-close-link dashicons dashicons-no-alt">
+								<span class="screen-reader-text"><?php esc_html_e( 'Close modal panel', 'facebook-for-woocommerce' ); ?></span>
+							</button>
+						</header>
+						<article>{{{data.message}}}</article>
+						<footer>
+							<div class="inner">{{{data.buttons}}}</div>
+						</footer>
+					</section>
+				</div>
+			</div>
+			<div class="wc-backbone-modal-backdrop modal-close"></div>
+		</script>
 		<?php
 	}
 
