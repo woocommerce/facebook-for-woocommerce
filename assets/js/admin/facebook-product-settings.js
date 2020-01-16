@@ -35,11 +35,12 @@ jQuery( document ).ready( function( $ ) {
 
 	// toggle Facebook settings fields for variations
 	$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
-
 		toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
 	} );
 
-	$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+	$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+		$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+	} );
 } );
 
 
