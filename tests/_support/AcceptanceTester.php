@@ -79,6 +79,69 @@ class AcceptanceTester extends \Codeception\Actor {
 
 
 	/**
+	 * Creates a variable product in the database.
+	 *
+	 * Use the keys in $args['variations'] to easily retrieve the product variation objects from the returned array.
+	 *
+	 * @see AcceptanceTester::haveProductInDatabase() for additional keys supported in $args
+	 *
+	 * @param array $args {
+	 *     @type array $attributes key value pairs of attribute names and attribute options
+	 *     @type array $variations key value pairs of variation identifiers and variation attributes
+	 * }
+	 * @return array
+	 */
+	public function haveVariableProductInDatabase( array $args = [] ) {
+
+		$args = wp_parse_args( $args, [
+			'type'       => 'variable',
+			'attributes' => [
+				'size' => [ 's' ]
+			],
+			'variations' => [
+				'product_variation' => [ 'size' => 's' ],
+			],
+		] );
+
+		$variable_product = $this->haveProductInDatabase( $args );
+
+		$attributes = [];
+		$variations = [];
+
+		foreach ( $args['attributes'] as $name => $options ) {
+
+			$attribute = new WC_Product_Attribute();
+
+			$attribute->set_name( $name );
+			$attribute->set_options( $options );
+			$attribute->set_visible( true );
+			$attribute->set_variation( true );
+
+			$attributes[] = $attribute;
+		}
+
+		$variable_product->set_attributes( $attributes );
+		$variable_product->save();
+
+		foreach ( $args['variations'] as $key => $attributes ) {
+
+			$product_variation = new WC_Product_Variation();
+
+			$product_variation->set_parent_id( $variable_product->get_id() );
+			$product_variation->set_attributes( [ 'size' => 'm' ] );
+			$product_variation->save();
+
+			$variations[ $key ] = $product_variation;
+		}
+
+		return [
+			'product'    => $variable_product,
+			'variations' => $variations,
+		];
+	}
+
+
+	/**
 	 * Go to the Products screen.
 	 */
 	public function amOnProductsPage() {
