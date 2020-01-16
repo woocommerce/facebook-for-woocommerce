@@ -248,7 +248,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->api_key && $this->product_catalog_id ) {
 
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ] );
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
