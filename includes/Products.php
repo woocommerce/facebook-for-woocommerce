@@ -96,13 +96,31 @@ class Products {
 
 
 	/**
-	 * Determines whether a product is set to be synced in Facebook.
+	 * Determines whether the given product should be synced.
+	 *
+	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
+	 * @see Products::is_sync_enabled_for_product()
+	 * @see Products::is_sync_excluded_for_product_terms()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function product_should_be_synced( \WC_Product $product ) {
+
+		// define the product to check terms on
+		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
+
+		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+	}
+
+
+	/**
+	 * Determines whether a product is enabled to be synced in Facebook.
 	 *
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
-	 *
-	 * If a product is enabled for sync, but belongs to an excluded term, it will return as disabled from sync:
-	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
 	 * @since x.y.z
 	 *
@@ -113,15 +131,25 @@ class Products {
 
 		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
 
-			// if a variation, check if the parent variable isn't excluded by terms, then check for the product meta on the variation
-			if ( $product->is_type( 'variation' ) ) {
-				$parent  = wc_get_product( $product->get_parent_id() );
-				$enabled = ! $parent || self::is_sync_enabled_for_product( $parent );
-				$enabled = $enabled && 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
-			// for all other products, just check the exclusion by terms, then the product meta
+			if ( $product->is_type( 'variable' ) ) {
+
+				// assume variable products are not synced until a synced child is found
+				$enabled = false;
+
+				foreach ( $product->get_children() as $child_id ) {
+
+					$child_product = wc_get_product( $child_id );
+
+					if ( $child_product && self::is_sync_enabled_for_product( $child_product ) ) {
+
+						$enabled = true;
+						break;
+					}
+				}
+
 			} else {
-				$enabled = ! self::is_sync_excluded_for_product_terms( $product );
-				$enabled = $enabled && ( $product->is_type( 'variable' ) || 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY ) );
+
+				$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
 			}
 
 			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
