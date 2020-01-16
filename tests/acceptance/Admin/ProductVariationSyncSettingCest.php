@@ -97,4 +97,48 @@ class ProductVariationSyncSettingCest {
 	}
 
 
+	/**
+	 * Tests that the settings fields are disabled if sync is disabled for this variation.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_settings_fields_are_disabled_if_sync_is_disabled( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->variable_product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the settings fields are disabled if sync is disabled for this variation' );
+
+		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
+
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
+	}
+
+
+	/**
+	 * Tests that the settings fields are enabled if sync is enabled for this variation.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_settings_fields_are_enabled_if_sync_is_enabled( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->variable_product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the settings fields are enabled if sync is enabled for this variation' );
+
+		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
+
+		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
+	}
+
+
 }
