@@ -763,13 +763,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	function on_product_delete( $wp_id ) {
+	/**
+	 * Deletes a product from Facebook.
+	 *
+	 * @param int $wp_id product ID
+	 */
+	public function on_product_delete( $wp_id ) {
+
 		$woo_product = new WC_Facebook_Product( $wp_id );
+
 		if ( ! $woo_product->exists() ) {
 			// This happens when the wp_id is not a product or it's already
 			// been deleted.
 			return;
 		}
+
+		// skip if not enabled for sync
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			return;
+		}
+
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
 			$wp_id,
