@@ -104,7 +104,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		// get a fresh product object to ensure the status is stored
 		$variable_product = wc_get_product( $variable_product->get_id() );
 
-		$this->assertTrue( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
+		$this->assertFalse( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
 	}
 
 
@@ -167,7 +167,10 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_variable_product( $children = [] ) {
 
-		$product    = new \WC_Product_Variable();
+		$product = new \WC_Product_Variable();
+
+		$product->save();
+
 		$variations = [];
 
 		if ( empty( $children ) || is_numeric( $children ) ) {
@@ -178,6 +181,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 			for ( $i = 0; $i < $total_variations; $i++ ) {
 
 				$variation = new \WC_Product_Variation();
+				$variation->set_parent_id( $product->get_id() );
 				$variation->save();
 
 				$variations[] = $variation->get_id();

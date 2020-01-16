@@ -99,7 +99,7 @@ class Admin {
 
 			$product = wc_get_product( $post );
 
-			if ( $product && Products::is_sync_enabled_for_product( $product ) ) :
+			if ( $product && Products::product_should_be_synced( $product ) ) :
 				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
 			else :
 				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
