@@ -61,4 +61,40 @@ class ProductVariationSyncSettingCest {
 	}
 
 
+	/**
+	 * Tests that the field is unchecked when sync is disabled.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_field_is_unchecked( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->variable_product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the field is unchecked when sync is disabled' );
+
+		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+	}
+
+
+	/**
+	 * Tests that the field is checked when sync is enabled.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_field_is_checked( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->variable_product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the field is checked when sync is enabled' );
+
+		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+	}
+
+
 }
