@@ -150,4 +150,36 @@ class AcceptanceTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Go to the Edit Product screen and expand the settings fields for the given product variation.
+	 *
+	 * Returns the index of the variation in the list of variations.
+	 *
+	 * @param \WC_Product_Variation $variation the product variation
+	 * @return int
+	 */
+	public function amEditingProductVariation( \WC_Product_Variation $variation ) {
+
+		$this->amEditingPostWithId( $variation->get_parent_id() );
+
+		$this->click( 'Variations', '.variations_tab' );
+
+		// matches a hidden input field with value equal to the ID of the variation
+		$variaton_id_xpath = "input[starts-with(@name, 'variable_post_id') and @value = {$variation->get_id()}]";
+
+		// matches each variation metabox container
+		$variation_container_xpath  = "//div[contains(concat(' ', normalize-space(@class), ' '), ' woocommerce_variation ')]";
+		// matches elements that contain a hidden input field with value equal to the ID of the variation
+		$variation_container_xpath .= "[descendant::{$variaton_id_xpath}]";
+
+		$this->waitForElementVisible( $variation_container_xpath, 5 );
+		$this->waitForElementNotVisible( '.blockOverlay', 5 );
+
+		$this->click( $variation_container_xpath );
+
+		// return the index of the variation
+		return (int) trim( str_replace( 'variable_post_id', '', $this->grabAttributeFrom( "//{$variaton_id_xpath}", 'name' ) ), '[]' );
+	}
+
+
 }
