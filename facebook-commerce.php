@@ -733,13 +733,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( empty( $_POST['fb_sync_enabled'] ) ) {
+		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
 
-			Products::disable_sync_for_products( [ $product ] );
+		if ( ! $product->is_type( 'variable' ) ) {
 
-		} else {
+			if ( $sync_enabled ) {
 
-			Products::enable_sync_for_products( [ $product ] );
+				Products::enable_sync_for_products( [ $product ] );
+
+				$this->save_product_settings( $product );
+
+			} else {
+
+				Products::disable_sync_for_products( [ $product ] );
+			}
+		}
+
+		if ( $sync_enabled ) {
 
 			switch ( $product->get_type() ) {
 
@@ -760,6 +770,33 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				break;
 			}
 		}
+	}
+
+
+	/**
+	 * Saves the submitted Facebook settings for a product.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product the product object
+	 */
+	private function save_product_settings( \WC_Product $product ) {
+
+		$woo_product = new WC_Facebook_Product( $product );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
+			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
+		}
+
+		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
+			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
+		}
+
+		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
+			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 
@@ -894,27 +931,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
-		}
-
 		$woo_product->set_use_parent_image(
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			( isset( $_POST[ self::FB_VARIANT_IMAGE ] ) ) ?
@@ -990,27 +1006,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
 			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
-
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 
 		// Check if this product has already been published to FB.
