@@ -68,7 +68,7 @@ class Admin {
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
 					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
