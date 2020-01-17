@@ -51,6 +51,10 @@ class AJAX {
 		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_cats = isset( $_POST['categories'] )   ? (array)  $_POST['categories']   : [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_tags = isset( $_POST['tags'] )         ? (array)  $_POST['tags']         : [];
 
 		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
 
@@ -80,29 +84,56 @@ class AJAX {
 						'buttons' => $buttons,
 					] );
 
-				} elseif ( 'enabled' === $sync_enabled && Products::is_sync_excluded_for_product_terms( $product ) ) {
+				} elseif ( 'enabled' === $sync_enabled ) {
 
-					ob_start();
+					$has_excluded_terms = false;
 
-					?>
-					<a
-						id="facebook-for-woocommerce-go-to-settings"
-						class="button button-large"
-						href="<?php echo esc_url( add_query_arg( 'section', \WC_Facebookcommerce::INTEGRATION_ID, admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) ); ?>"
-					><?php esc_html_e( 'Go to Settings', 'facebook-for-woocommerce' ); ?></a>
-					<button
-						id="facebook-for-woocommerce-cancel-sync"
-						class="button button-large button-primary"
-						onclick="jQuery( '.modal-close' ).trigger( 'click' )"
-					><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
-					<?php
+					if ( $integration = facebook_for_woocommerce()->get_integration() ) {
 
-					$buttons = ob_get_clean();
+						// try with categories first, since we have already IDs
+						$has_excluded_terms = ! empty( $product_cats ) && array_intersect( $product_cats, $integration->get_excluded_product_category_ids() );
 
-					wp_send_json_error( [
-						'message' => __( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync. To sync this product to Facebook, please remove the category or tag exclusion from the plugin settings.', 'facebook-for-woocommerce' ),
-						'buttons' => $buttons,
-					] );
+						// try next with tags, but WordPress only gives us tag names
+						if ( ! $has_excluded_terms && ! empty( $product_tags ) ) {
+
+							$product_tag_ids = [];
+
+							foreach ( $product_tags as $product_tag_name ) {
+
+								if ( $term = get_term_by( 'name', $product_tag_name, 'product_tag' ) ) {
+
+									$product_tag_ids[] = $term->term_id;
+								}
+							}
+
+							$has_excluded_terms = ! empty( $product_tag_ids ) && array_intersect( $product_tag_ids, $integration->get_excluded_product_tag_ids() );
+						}
+					}
+
+					if ( $has_excluded_terms ) {
+
+						ob_start();
+
+						?>
+						<a
+							id="facebook-for-woocommerce-go-to-settings"
+							class="button button-large"
+							href="<?php echo esc_url( add_query_arg( 'section', \WC_Facebookcommerce::INTEGRATION_ID, admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) ); ?>"
+						><?php esc_html_e( 'Go to Settings', 'facebook-for-woocommerce' ); ?></a>
+						<button
+							id="facebook-for-woocommerce-cancel-sync"
+							class="button button-large button-primary"
+							onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+						><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+						<?php
+
+						$buttons = ob_get_clean();
+
+						wp_send_json_error( [
+							'message' => __( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync. To sync this product to Facebook, please remove the category or tag exclusion from the plugin settings.', 'facebook-for-woocommerce' ),
+							'buttons' => $buttons,
+						] );
+					}
 				}
 			}
 		}

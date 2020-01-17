@@ -243,9 +243,15 @@ jQuery( document ).ready( function( $ ) {
 				return true;
 			}
 
-			let $submitButton = $( this ),
-				productID     = parseInt( $( 'input#post_ID' ).val(), 10 ),
-				syncEnabled   = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+			let $submitButton  = $( this ),
+				productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
+				productCat     = [],
+				productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
+				syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+
+			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
+				productCat.push( parseInt( $( this ).val(), 10 ) );
+			} );
 
 			if ( productID > 0 ) {
 
@@ -253,13 +259,15 @@ jQuery( document ).ready( function( $ ) {
 					action:      'facebook_for_woocommerce_set_product_sync_prompt',
 					security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
 					sync_enabled: syncEnabled ? 'enabled' : 'disabled',
-					product:      productID
+					product:      productID,
+					categories:   productCat,
+					tags:         productTag
 				}, function( response ) {
 
-					let $setToVisibile = $( 'input[name="_wc_facebook_visibility"]' );
+					let $setToVisible = $( 'input[name="_wc_facebook_visibility"]' );
 
-					// open modal if visibility checkbox is checked
-					if ( response && ! response.success && $setToVisibile.length && $setToVisibile.is( ':checked' ) ) {
+					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
+					if ( response && ! response.success && ( syncEnabled || ( ! syncEnabled && $setToVisible.length && $setToVisible.is( ':checked' ) ) ) ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -276,7 +284,7 @@ jQuery( document ).ready( function( $ ) {
 							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
-								$setToVisibile.prop( 'checked', false );
+								$setToVisible.prop( 'checked', false );
 							}
 
 							// submit form after modal prompt action

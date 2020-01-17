@@ -575,7 +575,7 @@ class Admin {
 	 * @since x.y.z
 	 */
 	public function render_modal_template() {
-		global $current_screen;
+		global $current_screen, $post;
 
 		// bail if not on the product screens
 		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
@@ -603,6 +603,58 @@ class Admin {
 			<div class="wc-backbone-modal-backdrop modal-close"></div>
 		</script>
 		<?php
+
+		if ( $post && $current_screen->id === 'product' ) :
+
+			$product = wc_get_product( $post );
+
+			if ( $product instanceof \WC_Product
+			     && Products::is_sync_enabled_for_product( $product )
+			     && Products::is_sync_excluded_for_product_terms( $product )
+			) :
+
+				?>
+				<script type="text/javascript">
+					jQuery( document ).ready( function( $ ) {
+
+						var productID   = parseInt( $( 'input#post_ID' ).val(), 10 ),
+							productTag  = $( 'textarea[name=\"tax_input[product_tag]\"]' ).val().split( ',' ),
+							productCat  = [];
+
+						$( '#taxonomy-product_cat input[name=\"tax_input[product_cat][]\"]:checked' ).each( function() {
+							productCat.push( parseInt( $( this ).val(), 10 ) );
+						} );
+
+						console.log( 'mammt' );
+
+						$.post( facebook_for_woocommerce_products_admin.ajax_url, {
+							action:      'facebook_for_woocommerce_set_product_sync_prompt',
+							security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
+							sync_enabled: 'enabled',
+							product:      productID,
+							categories:   productCat,
+							tags:         productTag
+						}, function( response ) {
+
+							console.log( response );
+
+							if ( response && ! response.success ) {
+
+								$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+								new $.WCBackboneModal.View( {
+									target: 'facebook-for-woocommerce-modal',
+									string: response.data
+								} );
+							}
+						} );
+					} );
+				</script>
+				<?php
+
+			endif;
+
+		endif;
 	}
 
 
