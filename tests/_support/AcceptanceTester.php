@@ -161,6 +161,8 @@ class AcceptanceTester extends \Codeception\Actor {
 	 *
 	 * Returns the index of the variation in the list of variations.
 	 *
+	 * @see AcceptanceTester::openVariationMetabox()
+	 *
 	 * @param \WC_Product_Variation $variation the product variation
 	 * @return int
 	 */
@@ -169,6 +171,20 @@ class AcceptanceTester extends \Codeception\Actor {
 		$this->amEditingPostWithId( $variation->get_parent_id() );
 
 		$this->click( 'Variations', '.variations_tab' );
+
+		return $this->openVariationMetabox( $variation );
+	}
+
+
+	/**
+	 * Open the metabox that contains the edit fields for the given variation.
+	 *
+	 * Returns the index of the variation in the list of variations.
+	 *
+	 * @param \WC_Product_Variation $variation
+	 * @return void
+	 */
+	public function openVariationMetabox( \WC_Product_Variation $variation ) {
 
 		// matches a hidden input field with value equal to the ID of the variation
 		$variaton_id_xpath = "input[starts-with(@name, 'variable_post_id') and @value = {$variation->get_id()}]";
