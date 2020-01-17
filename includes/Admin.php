@@ -49,7 +49,7 @@ class Admin {
 		add_action( 'handle_bulk_actions-edit-product', [ $this, 'handle_products_sync_bulk_actions' ] );
 
 		// add Product data tab
-		add_filter( 'woocommerce_product_data_tabs', [ $this, 'add_product_settings_tab' ] );
+		add_filter( 'woocommerce_product_data_tabs',   [ $this, 'add_product_settings_tab' ] );
 		add_action( 'woocommerce_product_data_panels', [ $this, 'add_product_settings_tab_content' ] );
 
 		// add Variation edit fields
@@ -68,9 +68,19 @@ class Admin {
 	public function enqueue_scripts() {
 		global $current_screen;
 
-		if ( isset( $current_screen->id ) && 'product' === $current_screen->id ) {
+		if ( isset( $current_screen->id ) ) {
 
-			wp_enqueue_script( 'wc_facebook_product_settings_js', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-product-settings.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
+
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
+					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
+					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
+					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
+					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+				] );
+			}
 		}
 	}
 
@@ -118,14 +128,6 @@ class Admin {
 
 		elseif ( 'facebook_shop_visibility' === $column ) :
 
-			// TODO this script is re-enqueued on each row by design or it won't work, perhaps a refactor is in order later on {FN 2020-01-13}
-			wp_enqueue_script( 'wc_facebook_product_jsx', plugins_url( '/assets/js/facebook-products.js?ts=' . time(), __DIR__ ), [ 'wc-backbone-modal' ] );
-			wp_localize_script( 'wc_facebook_product_jsx', 'wc_facebook_product_jsx', [
-				'admin_url'                          => admin_url( 'admin-ajax.php' ),
-				'nonce'                              => wp_create_nonce( 'wc_facebook_product_jsx' ),
-				'set_product_sync_bulk_action_nonce' => wp_create_nonce( 'set-product-sync-bulk-action' ),
-			] );
-
 			$integration         = facebook_for_woocommerce()->get_integration();
 			$product             = wc_get_product( $post );
 			$fb_product          = new \WC_Facebook_Product( $post );
@@ -137,7 +139,7 @@ class Admin {
 
 			else :
 
-				$visibility = $product->get_meta( \WC_Facebookcommerce_Integration::FB_VISIBILITY );
+				$visibility = Products::is_product_visible( $product );
 
 				// TODO: current JS code will change the button text and tooltip content without considering localization here {FN 2020-01-13}
 

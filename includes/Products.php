@@ -23,9 +23,16 @@ class Products {
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
+	// TODO probably we'll want to run some upgrade routine or somehow move meta keys to follow the same patter e.g. _wc_facebook_visibility {FN 2020-01-17}
+	/** @var string the meta key used to flag whether a product should be visible in Facebook */
+	const VISIBILITY_META_KEY = 'fb_visibility';
+
 
 	/** @var array memoized array of sync enabled status for products */
 	private static $products_sync_enabled = [];
+
+	/** @var array memoized array of visibility status for products */
+	private static $products_visibility = [];
 
 
 	/**
@@ -184,6 +191,51 @@ class Products {
 		           && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
 
 		return ! $matches;
+	}
+
+
+	/**
+	 * Sets a product's visibility in the Facebook shop.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product product object
+	 * @param bool $visibility true for 'published' or false for 'staging'
+	 * @return bool success
+	 */
+	public static function set_product_visibility( \WC_Product $product, $visibility ) {
+
+		unset( self::$products_visibility[ $product->get_id() ] );
+
+		if ( ! is_bool( $visibility ) ) {
+			return false;
+		}
+
+		$product->update_meta_data( self::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
+		$product->save_meta_data();
+
+		self::$products_visibility[ $product->get_id() ] = $visibility;
+
+		return true;
+	}
+
+
+	/**
+	 * Checks whether a product should be visible on Facebook.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function is_product_visible( \WC_Product $product ) {
+
+		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
+		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
+			self::$products_visibility[ $product->get_id() ] = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+		}
+
+		return self::$products_visibility[ $product->get_id() ];
 	}
 
 

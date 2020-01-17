@@ -178,6 +178,44 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \SkyVerge\WooCommerce\Facebook\Products::set_product_visibility() */
+	public function test_set_product_visibility() {
+
+		$product = $this->get_product();
+
+		$visibility = $product->get_meta( Facebook\Products::VISIBILITY_META_KEY );
+
+		$this->assertEmpty( $visibility );
+
+		Facebook\Products::set_product_visibility( $product, true );
+
+		$visibility = $product->get_meta( Facebook\Products::VISIBILITY_META_KEY );
+
+		$this->assertEquals( 'yes', $visibility );
+
+		Facebook\Products::set_product_visibility( $product, false );
+
+		$visibility = $product->get_meta( Facebook\Products::VISIBILITY_META_KEY );
+
+		$this->assertEquals( 'no', $visibility );
+	}
+
+
+	/** @see \SkyVerge\WooCommerce\Facebook\Products::is_product_visible() */
+	public function test_is_product_visible() {
+
+		$product = $this->get_product();
+
+		Facebook\Products::set_product_visibility( $product, false );
+
+		$this->assertFalse( Facebook\Products::is_product_visible( $product ) );
+
+		Facebook\Products::set_product_visibility( $product, true );
+
+		$this->assertTrue( Facebook\Products::is_product_visible( $product ) );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
