@@ -599,6 +599,7 @@ class Admin {
 			'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
 			'value'       => wc_bool_to_string( 'no' !== $sync_enabled ),
 			'class'       => 'checkbox js-variable-fb-sync-toggle',
+			'style'       => 'margin-right: 5px !important',
 		] );
 
 		woocommerce_wp_textarea_input( [
