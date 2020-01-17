@@ -23,6 +23,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
 		const FB_PRODUCT_GROUP_ID            = 'fb_product_group_id';
+		const FB_VISIBILITY                  = 'fb_visibility';
 
 		private $has_default_product_count = 0;
 		private $no_default_product_count  = 0;

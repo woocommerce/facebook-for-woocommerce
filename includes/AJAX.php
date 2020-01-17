@@ -212,8 +212,6 @@ class AJAX {
 					// also extend toggle to child variations
 					if ( $product->is_type( 'variable' ) ) {
 
-						$set_for_variation = false;
-
 						foreach ( $product->get_children() as $variation_id ) {
 
 							if ( $variation_product = wc_get_product( $variation_id ) ) {
@@ -225,14 +223,11 @@ class AJAX {
 
 								if ( $integration->check_api_result( $fb_request ) ) {
 									Products::set_product_visibility( $variation_product, $visibility_meta_value );
-									$set_for_variation = true;
 								}
 							}
 						}
 
-						if ( $set_for_variation ) {
-							Products::set_product_visibility( $product, $visibility_meta_value );
-						}
+						Products::set_product_visibility( $product, $visibility_meta_value );
 
 					} else {
 

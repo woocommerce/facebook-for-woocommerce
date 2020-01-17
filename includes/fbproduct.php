@@ -29,6 +29,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		const FB_PRODUCT_PRICE       = 'fb_product_price';
 		const FB_PRODUCT_IMAGE       = 'fb_product_image';
 		const FB_VARIANT_IMAGE       = 'fb_image';
+		const FB_VISIBILITY          = 'fb_visibility';
 
 		const MIN_DATE_1 = '1970-01-29';
 		const MIN_DATE_2 = '1970-01-30';
@@ -46,8 +47,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		$wpid, $parent_product = null ) {
 			$this->id                     = $wpid;
 			$this->fb_description         = '';
+			$this->fb_visibility          = get_post_meta( $wpid, self::FB_VISIBILITY, true );
 			$this->woo_product            = wc_get_product( $wpid );
-			$this->fb_visibility          = $this->woo_product instanceof \WC_Product && \SkyVerge\WooCommerce\Facebook\Products::is_product_visible( $this->woo_product );
 			$this->gallery_urls           = null;
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
@@ -425,7 +426,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		public function update_visibility( $is_product_page, $visible_box_checked ) {
-			$visibility = $this->woo_product instanceof \WC_Product && \SkyVerge\WooCommerce\Facebook\Products::is_product_visible( $this->woo_product );
+			$visibility = get_post_meta( $this->id, self::FB_VISIBILITY, true );
 			if ( $visibility && ! $is_product_page ) {
 				// If the product was previously set to visible, keep it as visible
 				// (unless we're on the product page)
@@ -434,7 +435,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				// If the product is not visible OR we're on the product page,
 				// then update the visibility as needed.
 				$this->fb_visibility = $visible_box_checked ? true : false;
-				update_post_meta( $this->id, \SkyVerge\WooCommerce\Facebook\Products::VISIBILITY_META_KEY, wc_bool_to_string( $this->fb_visibility ) );
+				update_post_meta( $this->id, self::FB_VISIBILITY, $this->fb_visibility );
 			}
 		}
 
