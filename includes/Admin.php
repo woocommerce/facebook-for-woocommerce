@@ -32,6 +32,8 @@ class Admin {
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
+		// may trigger the modal to open to warn the merchant about a conflict with the current product terms
+		add_action( 'admin_footer', [ $this, 'validate_product_excluded_terms' ] );
 
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
@@ -603,8 +605,22 @@ class Admin {
 			<div class="wc-backbone-modal-backdrop modal-close"></div>
 		</script>
 		<?php
+	}
 
-		if ( $post && $current_screen->id === 'product' ) :
+
+	/**
+	 * Maybe triggers the modal to open on the product edit screen on page load.
+	 *
+	 * If the product is set to be synced in Facebook, but belongs to a term that is set to be excluded, the modal prompts the merchant for action.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function validate_product_excluded_terms() {
+		global $current_screen, $post;
+
+		if ( $post && $current_screen && $current_screen->id === 'product' ) :
 
 			$product = wc_get_product( $post );
 
@@ -646,7 +662,7 @@ class Admin {
 						} );
 					} );
 				</script>
-				<?php
+			<?php
 
 			endif;
 
