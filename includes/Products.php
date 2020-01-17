@@ -23,6 +23,9 @@ class Products {
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
+	/** @var string the meta key used to flag whether a product should be visible in Facebook */
+	const VISIBILITY_META_KEY = 'fb_visibility';
+
 
 	/** @var array memoized array of sync enabled status for products */
 	private static $products_sync_enabled = [];
@@ -165,45 +168,34 @@ class Products {
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
-	 * @param string $visibility 'published' or 'staging'
+	 * @param bool $visibility true for 'published' or false for 'staging'
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {
 
-		$success     = false;
-		$integration = facebook_for_woocommerce()->get_integration();
-
-		if ( ! $integration || ! in_array( $visibility, [ 'published', 'staging' ], true ) ) {
-			return $success;
+		if ( ! is_bool( $visibility ) ) {
+			return false;
 		}
 
-		$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
-		$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
-			'visibility' => $visibility,
-		] );
+		$product->update_meta_data( self::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
+		$product->save_meta_data();
 
-		// if the request to Facebook is successful, update the corresponding product meta in WooCommerce
-		if ( $integration->check_api_result( $fb_request ) ) {
+		return true;
+	}
 
-			// visibility is stored as a bool in product meta
-			$meta_value = 'published' === $visibility;
 
-			$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-			$product->save_meta_data();
+	/**
+	 * Checks whether a product should be visible on Facebook.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function is_product_visible( \WC_Product $product ) {
 
-			$parent_id = $product->get_parent_id();
-
-			// if a variation, update the product meta of the parent as well
-			if ( $parent_id > 0 && ( $parent = wc_get_product( $parent_id ) ) ) {
-
-				$parent->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-				$parent->save_meta_data();
-			}
-
-			$success = true;
-		}
-
-		return $success;
+		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
+		return in_array( $product->get_meta( self::VISIBILITY_META_KEY ), [ 'yes', true ], true );
 	}
 
 

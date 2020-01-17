@@ -188,32 +188,47 @@ class AJAX {
 
 		$integration = facebook_for_woocommerce()->get_integration();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+		$products   = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$visibility = isset( $_POST['visibility'] ) ? wc_string_to_bool( $_POST['visibility'] ) : null;
 
-		if ( $integration && ! empty( $products )  ) {
+		if ( $integration && ! empty( $products ) && is_bool( $visibility ) ) {
+
+			$visibility = $visibility ? $integration::FB_SHOP_PRODUCT_VISIBLE : $integration::FB_SHOP_PRODUCT_HIDDEN;
 
 			foreach ( $products as $product_data ) {
 
-				$visibility = isset( $product_data['visibility'] ) ? (string) $product_data['visibility']  : '';
 				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
 				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
 
 				if ( $product instanceof \WC_Product ) {
 
-					// use variations for the products loop instead of the parent, if any
+					// also extend toggle to child variations
 					if ( $product->is_type( 'variable' ) ) {
 
 						foreach ( $product->get_children() as $variation_id ) {
 
-							if ( $product = wc_get_product( $variation_id ) ) {
+							if ( $variation_product = wc_get_product( $variation_id ) ) {
 
-								Products::set_product_visibility( $product, $visibility );
+								$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+								$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+									'visibility' => $visibility,
+								] );
+
+								if ( $integration->check_api_result( $fb_request ) ) {
+									Products::set_product_visibility( $variation_product, $integration::FB_SHOP_PRODUCT_VISIBLE === $visibility );
+								}
 							}
 						}
+					}
 
-					} else {
+					$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+					$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+						'visibility' => $visibility,
+					] );
 
-						Products::set_product_visibility( $product, $visibility );
+					if ( $integration->check_api_result( $fb_request ) ) {
+						Products::set_product_visibility( $product, $integration::FB_SHOP_PRODUCT_VISIBLE === $visibility );
 					}
 				}
 			}

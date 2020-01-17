@@ -131,7 +131,7 @@ class Admin {
 
 			else :
 
-				$visibility = $product->get_meta( \WC_Facebookcommerce_Integration::FB_VISIBILITY );
+				$visibility = Products::is_product_visible( $product );
 
 				// TODO: current JS code will change the button text and tooltip content without considering localization here {FN 2020-01-13}
 
