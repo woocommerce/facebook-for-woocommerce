@@ -190,7 +190,7 @@ class AcceptanceTester extends \Codeception\Actor {
 		$variaton_id_xpath = "input[starts-with(@name, 'variable_post_id') and @value = {$variation->get_id()}]";
 
 		// matches each variation metabox container
-		$variation_container_xpath  = "//div[contains(concat(' ', normalize-space(@class), ' '), ' woocommerce_variation ')]";
+		$variation_container_xpath  = "//div[contains(concat(' ', normalize-space(@class), ' '), ' woocommerce_variation wc-metabox closed ')]";
 		// matches elements that contain a hidden input field with value equal to the ID of the variation
 		$variation_container_xpath .= "[descendant::{$variaton_id_xpath}]";
 
