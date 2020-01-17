@@ -763,6 +763,33 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Saves the submitted Facebook settings for a product.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product the product object
+	 */
+	private function save_product_settings( \WC_Product $product ) {
+
+		$woo_product = new WC_Facebook_Product( $product );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
+			$woo_product->set_description( sanitize_text_field( wp_unslash( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) );
+		}
+
+		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
+			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
+		}
+
+		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
+			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+
 	function on_product_delete( $wp_id ) {
 		$woo_product = new WC_Facebook_Product( $wp_id );
 		if ( ! $woo_product->exists() ) {
