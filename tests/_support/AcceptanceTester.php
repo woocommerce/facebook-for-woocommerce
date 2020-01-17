@@ -196,6 +196,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
 		$this->waitForElementVisible( $variation_container_xpath, 5 );
 		$this->waitForElementNotVisible( '.blockOverlay', 5 );
+		$this->scrollTo( $variation_container_xpath, 0, -200 );
 
 		$this->click( $variation_container_xpath );
 
