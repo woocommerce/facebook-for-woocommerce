@@ -81,7 +81,7 @@ function fb_toggle_visibility( productID, published ) {
 		products: [
 			{
 				product_id: productID,
-				visibility: published ? 'published' : 'staging'
+				visibility: published ? 'yes' : 'no'
 			}
 		]
 	} );
@@ -91,6 +91,41 @@ jQuery( document ).ready( function( $ ) {
 
 	const pagenow = window.pagenow.length ? window.pagenow : '',
 	      typenow = window.typenow.length ? window.typenow : '';
+
+
+	/**
+	 * Determines if the current modal is blocked.
+	 *
+	 * @returns {boolean}
+	 */
+	function isModalBlocked() {
+		let $modal = $( '.wc-backbone-modal-content' );
+		return $modal.is( '.processing') || $modal.parents( '.processing' ).length;
+	}
+
+
+	/**
+	 * Blocks the current modal.
+	 */
+	function blockModal() {
+		if ( ! isModalBlocked() ) {
+			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			} );
+		}
+	}
+
+
+	/**
+	 * Unblocks the current modal.
+	 */
+	function unBlockModal() {
+		$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
+	}
 
 
 	// products list edit screen
@@ -137,6 +172,8 @@ jQuery( document ).ready( function( $ ) {
 
 						// exclude from sync: offer to handle product visibility
 						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
+
+							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
 
@@ -219,7 +256,10 @@ jQuery( document ).ready( function( $ ) {
 					product:      productID
 				}, function( response ) {
 
-					if ( response && ! response.success ) {
+					let $setToVisibile = $( 'input[name="_wc_facebook_visibility"]' );
+
+					// open modal if visibility checkbox is checked
+					if ( response && ! response.success && $setToVisibile.length && $setToVisibile.is( ':checked' ) ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -233,21 +273,13 @@ jQuery( document ).ready( function( $ ) {
 						// exclude from sync: offer to handle product visibility
 						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
 
-							if ( $( this ).hasClass( 'hide-products' ) ) {
+							blockModal();
 
-								$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-									action:   'facebook_for_woocommerce_set_products_visibility',
-									security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-									products: [
-										{
-											product_id: productID,
-											visibility: 'staging'
-										}
-									]
-								} );
+							if ( $( this ).hasClass( 'hide-products' ) ) {
+								$setToVisibile.prop( 'checked', false );
 							}
 
-							// no modal displayed: submit form as normal
+							// submit form after modal prompt action
 							submitProductSave = true;
 							$submitButton.trigger( 'click' );
 						} );

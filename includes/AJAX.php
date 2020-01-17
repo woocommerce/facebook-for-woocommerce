@@ -214,32 +214,60 @@ class AJAX {
 
 		$integration = facebook_for_woocommerce()->get_integration();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+		$products   = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
 
-		if ( $integration && ! empty( $products )  ) {
+		if ( $integration && ! empty( $products ) ) {
 
 			foreach ( $products as $product_data ) {
 
-				$visibility = isset( $product_data['visibility'] ) ? (string) $product_data['visibility']  : '';
+				$visibility_meta_value = isset( $product_data['visibility'] ) ? wc_string_to_bool( $product_data['visibility'] ) : null;
+
+				if ( ! is_bool( $visibility_meta_value ) ) {
+					continue;
+				}
+
+				$visibility_api_value = $visibility_meta_value ? $integration::FB_SHOP_PRODUCT_VISIBLE : $integration::FB_SHOP_PRODUCT_HIDDEN;
+
 				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
 				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
 
 				if ( $product instanceof \WC_Product ) {
 
-					// use variations for the products loop instead of the parent, if any
+					// also extend toggle to child variations
 					if ( $product->is_type( 'variable' ) ) {
+
+						$set_for_variation = false;
 
 						foreach ( $product->get_children() as $variation_id ) {
 
-							if ( $product = wc_get_product( $variation_id ) ) {
+							if ( $variation_product = wc_get_product( $variation_id ) ) {
 
-								Products::set_product_visibility( $product, $visibility );
+								$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $variation_product->get_id() );
+								$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+									'visibility' => $visibility_api_value,
+								] );
+
+								if ( $integration->check_api_result( $fb_request ) ) {
+									Products::set_product_visibility( $variation_product, $visibility_meta_value );
+									$set_for_variation = true;
+								}
 							}
+						}
+
+						if ( $set_for_variation ) {
+							Products::set_product_visibility( $product, $visibility_meta_value );
 						}
 
 					} else {
 
-						Products::set_product_visibility( $product, $visibility );
+						$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+						$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
+							'visibility' => $visibility_api_value,
+						] );
+
+						if ( $integration->check_api_result( $fb_request ) ) {
+							Products::set_product_visibility( $product, $visibility_meta_value );
+						}
 					}
 				}
 			}

@@ -23,9 +23,15 @@ class Products {
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
+	/** @var string the meta key used to flag whether a product should be visible in Facebook */
+	const VISIBILITY_META_KEY = '_wc_facebook_visibility';
+
 
 	/** @var array memoized array of sync enabled status for products */
 	private static $products_sync_enabled = [];
+
+	/** @var array memoized array of visibility status for products */
+	private static $products_visibility = [];
 
 
 	/**
@@ -96,13 +102,31 @@ class Products {
 
 
 	/**
-	 * Determines whether a product is set to be synced in Facebook.
+	 * Determines whether the given product should be synced.
+	 *
+	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
+	 * @see Products::is_sync_enabled_for_product()
+	 * @see Products::is_sync_excluded_for_product_terms()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function product_should_be_synced( \WC_Product $product ) {
+
+		// define the product to check terms on
+		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
+
+		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+	}
+
+
+	/**
+	 * Determines whether a product is enabled to be synced in Facebook.
 	 *
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
-	 *
-	 * If a product is enabled for sync, but belongs to an excluded term, it will return as disabled from sync:
-	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
 	 * @since x.y.z
 	 *
@@ -113,15 +137,25 @@ class Products {
 
 		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
 
-			// if a variation, check if the parent variable isn't excluded by terms, then check for the product meta on the variation
-			if ( $product->is_type( 'variation' ) ) {
-				$parent  = wc_get_product( $product->get_parent_id() );
-				$enabled = ! $parent || self::is_sync_enabled_for_product( $parent );
-				$enabled = $enabled && 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
-			// for all other products, just check the exclusion by terms, then the product meta
+			if ( $product->is_type( 'variable' ) ) {
+
+				// assume variable products are not synced until a synced child is found
+				$enabled = false;
+
+				foreach ( $product->get_children() as $child_id ) {
+
+					$child_product = wc_get_product( $child_id );
+
+					if ( $child_product && self::is_sync_enabled_for_product( $child_product ) ) {
+
+						$enabled = true;
+						break;
+					}
+				}
+
 			} else {
-				$enabled = ! self::is_sync_excluded_for_product_terms( $product );
-				$enabled = $enabled && ( $product->is_type( 'variable' ) || 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY ) );
+
+				$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
 			}
 
 			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
@@ -165,45 +199,58 @@ class Products {
 	 * @since x.y.z
 	 *
 	 * @param \WC_Product $product product object
-	 * @param string $visibility 'published' or 'staging'
+	 * @param bool $visibility true for 'published' or false for 'staging'
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {
 
-		$success     = false;
-		$integration = facebook_for_woocommerce()->get_integration();
+		unset( self::$products_visibility[ $product->get_id() ] );
 
-		if ( ! $integration || ! in_array( $visibility, [ 'published', 'staging' ], true ) ) {
-			return $success;
+		if ( ! is_bool( $visibility ) ) {
+			return false;
 		}
 
-		$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
-		$fb_request = $integration->fbgraph->update_product_item( $fb_item_id, [
-			'visibility' => $visibility,
-		] );
+		$product->update_meta_data( self::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
+		$product->save_meta_data();
 
-		// if the request to Facebook is successful, update the corresponding product meta in WooCommerce
-		if ( $integration->check_api_result( $fb_request ) ) {
+		self::$products_visibility[ $product->get_id() ] = $visibility;
 
-			// visibility is stored as a bool in product meta
-			$meta_value = 'published' === $visibility;
+		return true;
+	}
 
-			$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-			$product->save_meta_data();
 
-			$parent_id = $product->get_parent_id();
+	/**
+	 * Checks whether a product should be visible on Facebook.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function is_product_visible( \WC_Product $product ) {
 
-			// if a variation, update the product meta of the parent as well
-			if ( $parent_id > 0 && ( $parent = wc_get_product( $parent_id ) ) ) {
+		// accounts for a legacy truthy value, current should be (string) 'yes' or (string) 'no'
+		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
 
-				$parent->update_meta_data( \WC_Facebookcommerce_Integration::FB_VISIBILITY, $meta_value );
-				$parent->save_meta_data();
+			$legacy_visibility = $product->get_meta( 'fb_visibility' );
+
+			if ( ! empty( $legacy_visibility ) ) {
+
+				$visibility = wc_string_to_bool( $legacy_visibility );
+
+				$product->delete_meta_data( 'fb_visibility' );
+
+				self::set_product_visibility( $product, $visibility );
+
+			} else {
+
+				$visibility = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
 			}
 
-			$success = true;
+			self::$products_visibility[ $product->get_id() ] = $visibility;
 		}
 
-		return $success;
+		return self::$products_visibility[ $product->get_id() ];
 	}
 
 
