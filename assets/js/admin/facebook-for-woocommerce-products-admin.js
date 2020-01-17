@@ -241,7 +241,7 @@ jQuery( document ).ready( function( $ ) {
 									products: [
 										{
 											product_id: productID,
-											visibility: 'staging'
+											visibility: 'no'
 										}
 									]
 								} );
