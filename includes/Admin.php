@@ -53,6 +53,10 @@ class Admin {
 		// add Product data tab
 		add_filter( 'woocommerce_product_data_tabs',   [ $this, 'add_product_settings_tab' ] );
 		add_action( 'woocommerce_product_data_panels', [ $this, 'add_product_settings_tab_content' ] );
+
+		// add Variation edit fields
+		add_action( 'woocommerce_product_after_variable_attributes', [ $this, 'add_product_variation_edit_fields' ], 10, 3 );
+		add_action( 'woocommerce_save_product_variation', [ $this, 'save_product_variation_edit_fields' ], 10, 2 );
 	}
 
 
@@ -88,6 +92,8 @@ class Admin {
 	 *
 	 * @internal
 	 *
+	 * @since x.y.z
+	 *
 	 * @param array $columns array of keys and labels
 	 * @return array
 	 */
@@ -104,6 +110,8 @@ class Admin {
 	 * Outputs sync information for products in the edit screen.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param string $column the current column in the posts table
 	 */
@@ -194,6 +202,8 @@ class Admin {
 	 * Adds a dropdown input to let shop managers filter products by sync setting.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 */
 	public function add_products_by_sync_enabled_input_filter() {
 		global $typenow;
@@ -219,6 +229,8 @@ class Admin {
 	 * Filters products by Facebook sync setting.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
@@ -359,6 +371,8 @@ class Admin {
 	 *
 	 * @internal
 	 *
+	 * @since x.y.z
+	 *
 	 * @param array $bulk_actions array of bulk action keys and labels
 	 * @return array
 	 */
@@ -375,6 +389,8 @@ class Admin {
 	 * Handles a Facebook product sync bulk action.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param string $redirect admin URL used by WordPress to redirect after performing the bulk action
 	 * @return string
@@ -409,8 +425,16 @@ class Admin {
 				}
 
 				if ( 'facebook_include' === $action ) {
+
 					Products::enable_sync_for_products( $products );
+
+					// re-sync each product
+					foreach ( $products as $product ) {
+						facebook_for_woocommerce()->get_integration()->on_product_publish( $product->get_id() );
+					}
+
 				} elseif ( 'facebook_exclude' === $action ) {
+
 					Products::disable_sync_for_products( $products );
 				}
 			}
@@ -471,7 +495,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => [ 'show_if_simple', 'show_if_variable' ],
+			'class'  => [ 'show_if_simple' ],
 		];
 
 		return $tabs;
@@ -566,6 +590,156 @@ class Admin {
 			</div>
 		</div>
 		<?php
+	}
+
+
+	/**
+	 * Outputs the Facebook settings fields for a single variation.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $index the index of the current variation
+	 * @param array $variation_data unused
+	 * @param \WC_Post $post the post type for the current variation
+	 */
+	public function add_product_variation_edit_fields( $index, $variation_data, $post ) {
+
+		$variation = wc_get_product( $post );
+
+		if ( ! $variation instanceof \WC_Product_Variation ) {
+			return;
+		}
+
+		$parent = wc_get_product( $variation->get_parent_id() );
+
+		if ( ! $parent instanceof \WC_Product ) {
+			return;
+		}
+
+		$sync_enabled = $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
+		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
+		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
+
+		woocommerce_wp_checkbox( [
+			'id'          => "variable_fb_sync_enabled$index",
+			'name'        => "variable_fb_sync_enabled[$index]",
+			'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+			'value'       => wc_bool_to_string( 'no' !== $sync_enabled ),
+			'class'       => 'checkbox js-variable-fb-sync-toggle',
+			'style'       => 'margin-right: 5px !important',
+		] );
+
+		woocommerce_wp_textarea_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ),
+			'name'        => sprintf( "variable_%s[$index]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
+			'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+			'desc_tip'    => true,
+			'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
+			'cols'        => 40,
+			'rows'        => 5,
+			'value'       => $description,
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ),
+			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
+			'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+			'desc_tip'    => true,
+			'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
+			'value'       => $image_url,
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
+			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
+			'label'       => sprintf(
+				/* translators: Placeholders %1$s - WC currency symbol */
+				__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
+				get_woocommerce_currency_symbol()
+			),
+			'desc_tip'    => true,
+			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
+			'value'       => wc_format_decimal( $price ),
+			'class'       => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row form-full',
+		] );
+	}
+
+
+	/**
+	 * Gets the stored value for the given meta of a product variation.
+	 *
+	 * If no value is found, we try to use the value stored in the parent product.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param \WC_Product_Variation $variation the product variation
+	 * @param string $key the name of the meta to retrieve
+	 * @param \WC_Product $parent the parent product
+	 * @return mixed
+	 */
+	private function get_product_variation_meta( $variation, $key, $parent ) {
+
+		$value = $variation->get_meta( $key );
+
+		if ( '' === $value && $parent instanceof \WC_Product ) {
+			$value = $parent->get_meta( $key );
+		}
+
+		return $value;
+	}
+
+
+	/**
+	 * Saves the submitted Facebook settings for each variation.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $variation_id the ID of the product variation being edited
+	 * @param int $index the index of the current variation
+	 */
+	public function save_product_variation_edit_fields( $variation_id, $index ) {
+
+		$variation = wc_get_product( $variation_id );
+
+		if ( ! $variation instanceof \WC_Product_Variation ) {
+			return;
+		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
+
+			Products::enable_sync_for_products( [ $variation ] );
+
+			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
+			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
+
+			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
+			$image_url    = isset( $_POST[ $posted_param ][ $index ] ) ? esc_url_raw( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
+
+			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
+			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( $_POST[ $posted_param ][ $index ] ) : '';
+
+			$variation->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $description );
+			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_IMAGE, $image_url );
+			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_PRICE, $price );
+			$variation->save_meta_data();
+
+		} else {
+
+			Products::disable_sync_for_products( [ $variation ] );
+
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 

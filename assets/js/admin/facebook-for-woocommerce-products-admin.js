@@ -218,20 +218,34 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * @since x.y.z
 		 *
-		 * @param {boolean} enabled
+		 * @param {boolean} enabled whether the settings fields should be enabled or not
+		 * @param {jQuery} $container a common ancestor of all the elements that can be enabled/disabled
 		 */
-		function toggleFacebookSettings( enabled ) {
+		function toggleFacebookSettings( enabled, $container ) {
 
-			$( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
+			$container.find( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
 		}
 
-		const syncEnabledCheckbox = $( '#fb_sync_enabled' );
+
+		// toggle Facebook settings fields for simple products
+		const syncEnabledCheckbox   = $( '#fb_sync_enabled' );
+		const facebookSettingsPanel = syncEnabledCheckbox.closest( '.woocommerce_options_panel' );
 
 		syncEnabledCheckbox.on( 'click', function() {
-			toggleFacebookSettings( $( this ).prop( 'checked' ) );
+			toggleFacebookSettings( $( this ).prop( 'checked' ), facebookSettingsPanel );
 		} );
 
-		toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ) );
+		toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ), facebookSettingsPanel );
+
+		// toggle Facebook settings fields for variations
+		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+		} );
+
+		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+		} );
+
 
 		let submitProductSave = false;
 
@@ -244,10 +258,11 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			let $submitButton  = $( this ),
-				productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
-				productCat     = [],
-				productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
-				syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+          $visibleCheckbox = $( 'input[name="fb_visibility"]' ),
+			    productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
+			    productCat     = [],
+			    productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
+			    syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
@@ -264,10 +279,8 @@ jQuery( document ).ready( function( $ ) {
 					tags:         productTag
 				}, function( response ) {
 
-					let $setToVisible = $( 'input[name="_wc_facebook_visibility"]' );
-
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
-					if ( response && ! response.success && ( syncEnabled || ( ! syncEnabled && $setToVisible.length && $setToVisible.is( ':checked' ) ) ) ) {
+					if ( response && ! response.success && ( syncEnabled || ( ! syncEnabled && $visibleCheckbox.length && $visibleCheckbox.is( ':checked' ) ) ) ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -284,10 +297,10 @@ jQuery( document ).ready( function( $ ) {
 							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
-								$setToVisible.prop( 'checked', false );
+								$visibleCheckbox.prop( 'checked', false );
 							}
 
-							// submit form after modal prompt action
+							// no modal displayed: submit form as normal
 							submitProductSave = true;
 							$submitButton.trigger( 'click' );
 						} );

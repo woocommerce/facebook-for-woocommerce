@@ -23,6 +23,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
 		const FB_PRODUCT_GROUP_ID            = 'fb_product_group_id';
+		const FB_VISIBILITY                  = 'fb_visibility';
 
 		private $has_default_product_count = 0;
 		private $no_default_product_count  = 0;
@@ -110,21 +111,34 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		}
 
 		public function write_product_feed_file( $wp_ids ) {
+
 			$local_feed_path = $this->get_local_product_feed_file_path();
+
 			try {
-				$feed_file = fopen($local_feed_path, 'w');
+
+				$feed_file = fopen( $local_feed_path, 'w' );
+
 				fwrite( $feed_file, $this->get_product_feed_header_row() );
 
 				$product_group_attribute_variants = array();
+
 				foreach ( $wp_ids as $wp_id ) {
+
 					$woo_product = new WC_Facebook_Product( $wp_id );
+
 					if ( $woo_product->is_hidden() ) {
 						continue;
 					}
-					if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' &&
-					! $woo_product->is_in_stock() ) {
+
+					if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' && ! $woo_product->is_in_stock() ) {
 						continue;
 					}
+
+					// skip if not enabled for sync
+					if ( $woo_product->woo_product instanceof \WC_Product && ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+						continue;
+					}
+
 					$product_data_as_feed_row = $this->prepare_product_for_feed(
 						$woo_product,
 						$product_group_attribute_variants
