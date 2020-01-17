@@ -257,11 +257,12 @@ jQuery( document ).ready( function( $ ) {
 				return true;
 			}
 
-			let $submitButton = $( this ),
-				productID     = parseInt( $( 'input#post_ID' ).val(), 10 ),
-				syncEnabled   = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+			let $submitButton    = $( this ),
+				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
+				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
+				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' );
 
-			if ( productID > 0 ) {
+			if ( productID > 0 && ( syncEnabled || ( $visibleCheckbox.length && $visibleCheckbox.is( ':checked' ) ) ) ) {
 
 				$.post( facebook_for_woocommerce_products_admin.ajax_url, {
 					action:      'facebook_for_woocommerce_set_product_sync_prompt',
@@ -287,17 +288,7 @@ jQuery( document ).ready( function( $ ) {
 							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
-
-								$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-									action:   'facebook_for_woocommerce_set_products_visibility',
-									security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-									products: [
-										{
-											product_id: productID,
-											visibility: 'no'
-										}
-									]
-								} );
+								$visibleCheckbox.prop( 'checked', false );
 							}
 
 							// no modal displayed: submit form as normal

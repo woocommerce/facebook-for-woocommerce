@@ -47,7 +47,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		$wpid, $parent_product = null ) {
 			$this->id                     = $wpid;
 			$this->fb_description         = '';
-			$this->fb_visibility          = get_post_meta( $wpid, self::FB_VISIBILITY, true );
+			$this->fb_visibility          = wc_string_to_bool( get_post_meta( $wpid, self::FB_VISIBILITY, true ) );
 			$this->woo_product            = wc_get_product( $wpid );
 			$this->gallery_urls           = null;
 			$this->fb_use_parent_image    = null;

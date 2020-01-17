@@ -232,7 +232,7 @@ class Products {
 
 		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
-			self::$products_visibility[ $product->get_id() ] = in_array( $product->get_meta( self::VISIBILITY_META_KEY ), [ 'yes', true ], true );
+			self::$products_visibility[ $product->get_id() ] = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
 		}
 
 		return self::$products_visibility[ $product->get_id() ];

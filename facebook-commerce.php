@@ -544,14 +544,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<?php
 			}
 
-			$checkbox_value = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true );
-
 			?>
 				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
 				type="checkbox"
 				value="1"
-				<?php echo checked( $checkbox_value ); ?>/>
+				<?php echo checked( ! $woo_product->woo_product instanceof \WC_Product || Products::is_product_visible( $woo_product->woo_product ) ); ?>/>
 
 				<p/>
 				<input name="is_product_page" type="hidden" value="1"/>
@@ -739,6 +737,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
+		$is_visible   = ! empty( $_POST['fb_visibility'] );
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
@@ -753,6 +752,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				Products::disable_sync_for_products( [ $product ] );
 			}
 		}
+
+		$this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
 		if ( $sync_enabled ) {
 
@@ -857,7 +858,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function fb_change_product_published_status( $new_status, $old_status, $post ) {
 		global $post;
+
 		$visibility = $new_status === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
+
+		$product = wc_get_product( $post->ID );
+
+		// bail if this product isn't enabled for sync
+		if ( ! $product instanceof \WC_Product || ! Products::is_sync_enabled_for_product( $product ) ) {
+			return;
+		}
 
 		// change from publish status -> unpublish status, e.g. trash, draft, etc.
 		// change from trash status -> publish status
@@ -952,14 +961,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $fb_product_group_id ) {
 
-			$woo_product->update_visibility(
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				isset( $_POST['is_product_page'] ),
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				isset( $_POST[ Products::VISIBILITY_META_KEY ] )
-			);
+			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
 
 			$this->update_product_group( $woo_product );
+
 			$child_products = $woo_product->get_children();
 			$variation_id   = $woo_product->find_matching_product_variation();
 
@@ -1019,12 +1024,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $fb_product_item_id ) {
 
-			$woo_product->update_visibility(
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				isset( $_POST['is_product_page'] ),
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				isset( $_POST[ Products::VISIBILITY_META_KEY ] )
-			);
+			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
 
 			$this->update_product_item( $woo_product, $fb_product_item_id );
 
@@ -2858,11 +2858,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
-			return;
-		}
-
 		$products = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
 		foreach ( $products as $item_id ) {
 			$fb_product_item_id = $this->get_product_fbid(
@@ -2885,13 +2880,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 			if ( $result ) {
-				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, $visibility );
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, $visibility );
+
+				$is_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
+
+				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
+				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
 			}
 		}
 	}
 
 	function on_quick_and_bulk_edit_save( $product ) {
+
+		// bail if not a product or product is not enabled for sync
+		if ( ! $product instanceof \WC_Product || ! Products::is_sync_enabled_for_product( $product ) ) {
+			return;
+		}
+
 		$wp_id      = $product->get_id();
 		$visibility = get_post_status( $wp_id ) === 'publish'
 		? self::FB_SHOP_PRODUCT_VISIBLE
