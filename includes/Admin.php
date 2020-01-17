@@ -577,7 +577,7 @@ class Admin {
 	 * @since x.y.z
 	 */
 	public function render_modal_template() {
-		global $current_screen, $post;
+		global $current_screen;
 
 		// bail if not on the product screens
 		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
