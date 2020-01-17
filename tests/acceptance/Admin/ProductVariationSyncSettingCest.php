@@ -208,4 +208,23 @@ class ProductVariationSyncSettingCest {
 	}
 
 
+	/**
+	 * Tests that settings fields are empty by default.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_fields_are_empty_by_default( AcceptanceTester $I ) {
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that settings fields are empty by default' );
+
+		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
+
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), '' );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), '' );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '',  );
+	}
+
+
 }
