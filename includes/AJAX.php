@@ -47,7 +47,9 @@ class AJAX {
 
 		check_ajax_referer( 'set-product-sync-prompt', 'security' );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
 
 		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
