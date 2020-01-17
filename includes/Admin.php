@@ -717,7 +717,7 @@ class Admin {
 
 			// TODO: use wc_add_number_precision() when WC 3.2.0 is the required version {WV 2020-01-15}
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
-			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? round( (float) $_POST[ $posted_param ][ $index ] * 100 ) : null;
+			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( $_POST[ $posted_param ][ $index ] ) : '';
 
 			$variation->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $description );
 			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_IMAGE, $image_url );
