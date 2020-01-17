@@ -859,6 +859,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function fb_change_product_published_status( $new_status, $old_status, $post ) {
 		global $post;
 
+		if ( ! $post ) {
+			return;
+		}
+
 		$visibility = $new_status === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
 
 		$product = wc_get_product( $post->ID );
