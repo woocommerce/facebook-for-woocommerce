@@ -123,16 +123,22 @@ class AcceptanceTester extends \Codeception\Actor {
 		$variable_product->set_attributes( $attributes );
 		$variable_product->save();
 
+		$variations_ids = [];
+
 		foreach ( $args['variations'] as $key => $attributes ) {
 
 			$product_variation = new WC_Product_Variation();
 
 			$product_variation->set_parent_id( $variable_product->get_id() );
-			$product_variation->set_attributes( [ 'size' => 'm' ] );
-			$product_variation->save();
+			$product_variation->set_attributes( $attributes );
+
+			$variations_ids[] = $product_variation->save();
 
 			$variations[ $key ] = $product_variation;
 		}
+
+		$variable_product->set_children( $variations_ids );
+		$variable_product->save();
 
 		return [
 			'product'    => $variable_product,
