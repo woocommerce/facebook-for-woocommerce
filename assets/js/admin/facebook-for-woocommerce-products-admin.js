@@ -256,7 +256,10 @@ jQuery( document ).ready( function( $ ) {
 					product:      productID
 				}, function( response ) {
 
-					if ( response && ! response.success ) {
+					let $setToVisibile = $( 'input[name="_wc_facebook_visibility"]' );
+
+					// open modal if visibility checkbox is checked
+					if ( response && ! response.success && $setToVisibile.length && $setToVisibile.is( ':checked' ) ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -273,20 +276,10 @@ jQuery( document ).ready( function( $ ) {
 							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
-
-								$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-									action:   'facebook_for_woocommerce_set_products_visibility',
-									security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-									products: [
-										{
-											product_id: productID,
-											visibility: 'no'
-										}
-									]
-								} );
+								$setToVisibile.prop( 'checked', false );
 							}
 
-							// no modal displayed: submit form as normal
+							// submit form after modal prompt action
 							submitProductSave = true;
 							$submitButton.trigger( 'click' );
 						} );

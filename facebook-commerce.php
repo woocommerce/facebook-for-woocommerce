@@ -544,14 +544,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<?php
 			}
 
-			$checkbox_value = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true );
+			woocommerce_wp_checkbox( [
+				'id'    => Products::VISIBILITY_META_KEY,
+				'label' => __( 'Visible:', 'facebook-for-woocommerce' ),
+				'value' => wc_bool_to_string( $woo_product->woo_product instanceof \WC_Product && Products::is_product_visible( $woo_product->woo_product ) ),
+			] );
 
 			?>
-				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
-				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
-				type="checkbox"
-				value="1"
-				<?php echo checked( $checkbox_value ); ?>/>
 
 				<p/>
 				<input name="is_product_page" type="hidden" value="1"/>
@@ -741,6 +740,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( empty( $_POST['fb_sync_enabled'] ) ) {
 
 			Products::disable_sync_for_products( [ $product ] );
+
+			if ( ! isset( $_POST[ Products::VISIBILITY_META_KEY ] ) ) {
+				Products::set_product_visibility( $product, false );
+			} else {
+				Products::set_product_visibility( $product, wc_string_to_bool( $_POST[ Products::VISIBILITY_META_KEY ] ) );
+			}
 
 		} else {
 
@@ -1100,7 +1105,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Default visibility on create = published
 		$woo_product->fb_visibility = true;
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
+		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, 'yes' );
 
 		if ( $variants ) {
 			$product_group_data['variants'] =
@@ -1145,7 +1150,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return 0;
 		}
 
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
+		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, 'yes' );
 
 		$product_result = $this->check_api_result(
 			$this->fbgraph->create_product_item(
@@ -2858,8 +2863,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 			if ( $result ) {
-				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, $visibility );
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, $visibility );
+				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
+				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
 			}
 		}
 	}
@@ -2956,7 +2961,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					$fb_id
 				);
 
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, true );
+				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, 'yes' );
 
 				return $fb_id;
 			}

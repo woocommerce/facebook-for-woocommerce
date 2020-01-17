@@ -23,9 +23,8 @@ class Products {
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
-	// TODO probably we'll want to run some upgrade routine or somehow move meta keys to follow the same patter e.g. _wc_facebook_visibility {FN 2020-01-17}
 	/** @var string the meta key used to flag whether a product should be visible in Facebook */
-	const VISIBILITY_META_KEY = 'fb_visibility';
+	const VISIBILITY_META_KEY = '_wc_facebook_visibility';
 
 
 	/** @var array memoized array of sync enabled status for products */
@@ -230,9 +229,25 @@ class Products {
 	 */
 	public static function is_product_visible( \WC_Product $product ) {
 
-		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
+		// accounts for a legacy truthy value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
-			self::$products_visibility[ $product->get_id() ] = in_array( $product->get_meta( self::VISIBILITY_META_KEY ), [ 'yes', true ], true );
+
+			$legacy_visibility = $product->get_meta( 'fb_visibility' );
+
+			if ( ! empty( $legacy_visibility ) ) {
+
+				$visibility = wc_string_to_bool( $legacy_visibility );
+
+				$product->delete_meta_data( 'fb_visibility' );
+
+				self::set_product_visibility( $product, $visibility );
+
+			} else {
+
+				$visibility = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+			}
+
+			self::$products_visibility[ $product->get_id() ] = $visibility;
 		}
 
 		return self::$products_visibility[ $product->get_id() ];
