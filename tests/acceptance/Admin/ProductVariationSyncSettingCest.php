@@ -34,7 +34,10 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_field_is_unchecked_if_sync_disabled_in_parent( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->variable_product ] );
+		// \SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products() won't set a meta for variable products, only for the variations
+		// This tests the behavior for variable products modified using an older version that can still have the meta set
+		$this->variable_product->update_meta_data( \SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY, 'no' );
+		$this->variable_product->save();
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
@@ -51,7 +54,10 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_field_is_checked_if_sync_enabled_in_parent( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->variable_product ] );
+		// \SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products() won't set a meta for variable products, only for the variations
+		// This tests the behavior for variable products modified using an older version that can still have the meta set
+		$this->variable_product->update_meta_data( \SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY, 'yes' );
+		$this->variable_product->save();
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
@@ -68,7 +74,6 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_field_is_unchecked( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->variable_product ] );
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
@@ -86,7 +91,6 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_field_is_checked( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->variable_product ] );
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
@@ -104,7 +108,6 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_settings_fields_are_disabled_if_sync_is_disabled( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->variable_product ] );
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
@@ -126,7 +129,6 @@ class ProductVariationSyncSettingCest {
 	 */
 	public function try_settings_fields_are_enabled_if_sync_is_enabled( AcceptanceTester $I ) {
 
-		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->variable_product ] );
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
