@@ -625,8 +625,6 @@ class Admin {
 							productCat.push( parseInt( $( this ).val(), 10 ) );
 						} );
 
-						console.log( 'mammt' );
-
 						$.post( facebook_for_woocommerce_products_admin.ajax_url, {
 							action:      'facebook_for_woocommerce_set_product_sync_prompt',
 							security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
@@ -635,8 +633,6 @@ class Admin {
 							categories:   productCat,
 							tags:         productTag
 						}, function( response ) {
-
-							console.log( response );
 
 							if ( response && ! response.success ) {
 
