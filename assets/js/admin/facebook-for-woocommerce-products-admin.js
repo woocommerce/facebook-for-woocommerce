@@ -258,11 +258,11 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			let $submitButton  = $( this ),
-          $visibleCheckbox = $( 'input[name="fb_visibility"]' ),
-			    productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
-			    productCat     = [],
-			    productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
-			    syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
+				productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
+				productCat     = [],
+				productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
+				syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
