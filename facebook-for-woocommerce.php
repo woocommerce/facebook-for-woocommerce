@@ -47,6 +47,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
 		private $admin;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
+		private $ajax;
+
 
 		/**
 		 * Constructs the plugin.
@@ -83,6 +86,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin.php';
 
 					$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+				}
+
+				if ( is_ajax() ) {
+
+					require_once __DIR__ . '/includes/AJAX.php';
+
+					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
 				// register the WooCommerce integration
@@ -140,6 +150,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_admin_handler() {
 
 			return $this->admin;
+		}
+
+
+		/**
+		 * Gets the AJAX handler instance.
+		 *
+		 * @sinxe x.y.z
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\AJAX|null
+		 */
+		public function get_ajax_handler() {
+
+			return $this->ajax;
 		}
 
 
