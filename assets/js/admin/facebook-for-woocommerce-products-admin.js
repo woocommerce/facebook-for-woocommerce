@@ -93,6 +93,41 @@ jQuery( document ).ready( function( $ ) {
 	      typenow = window.typenow.length ? window.typenow : '';
 
 
+	/**
+	 * Determines if the current modal is blocked.
+	 *
+	 * @returns {boolean}
+	 */
+	function isModalBlocked() {
+		let $modal = $( '.wc-backbone-modal-content' );
+		return $modal.is( '.processing') || $modal.parents( '.processing' ).length;
+	}
+
+
+	/**
+	 * Blocks the current modal.
+	 */
+	function blockModal() {
+		if ( ! isModalBlocked() ) {
+			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			} );
+		}
+	}
+
+
+	/**
+	 * Unblocks the current modal.
+	 */
+	function unBlockModal() {
+		$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
+	}
+
+
 	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
@@ -137,6 +172,8 @@ jQuery( document ).ready( function( $ ) {
 
 						// exclude from sync: offer to handle product visibility
 						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
+
+							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
 
@@ -232,6 +269,8 @@ jQuery( document ).ready( function( $ ) {
 
 						// exclude from sync: offer to handle product visibility
 						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
+
+							blockModal();
 
 							if ( $( this ).hasClass( 'hide-products' ) ) {
 
