@@ -76,6 +76,8 @@ class Admin {
 	 *
 	 * @internal
 	 *
+	 * @since x.y.z
+	 *
 	 * @param array $columns array of keys and labels
 	 * @return array
 	 */
@@ -92,6 +94,8 @@ class Admin {
 	 * Outputs sync information for products in the edit screen.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param string $column the current column in the posts table
 	 */
@@ -190,6 +194,8 @@ class Admin {
 	 * Adds a dropdown input to let shop managers filter products by sync setting.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 */
 	public function add_products_by_sync_enabled_input_filter() {
 		global $typenow;
@@ -215,6 +221,8 @@ class Admin {
 	 * Filters products by Facebook sync setting.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
@@ -355,6 +363,8 @@ class Admin {
 	 *
 	 * @internal
 	 *
+	 * @since x.y.z
+	 *
 	 * @param array $bulk_actions array of bulk action keys and labels
 	 * @return array
 	 */
@@ -371,6 +381,8 @@ class Admin {
 	 * Handles a Facebook product sync bulk action.
 	 *
 	 * @internal
+	 *
+	 * @since x.y.z
 	 *
 	 * @param string $redirect admin URL used by WordPress to redirect after performing the bulk action
 	 * @return string
