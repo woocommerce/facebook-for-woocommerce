@@ -654,7 +654,6 @@ class Admin {
 			),
 			'desc_tip'    => true,
 			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
-			 // TODO: use wc_remove_number_precision() when WC 3.2.0 is the required version {WV 2020-01-15}
 			'value'       => wc_format_decimal( $price ),
 			'class'       => 'enable-if-sync-enabled',
 			'wrapper_class' => 'form-row form-row form-full',
@@ -715,7 +714,6 @@ class Admin {
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
 			$image_url    = isset( $_POST[ $posted_param ][ $index ] ) ? esc_url_raw( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
 
-			// TODO: use wc_add_number_precision() when WC 3.2.0 is the required version {WV 2020-01-15}
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
 			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( $_POST[ $posted_param ][ $index ] ) : '';
 
