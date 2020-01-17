@@ -741,6 +741,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				Products::enable_sync_for_products( [ $product ] );
 
+				$this->save_product_settings( $product );
+
 			} else {
 
 				Products::disable_sync_for_products( [ $product ] );
