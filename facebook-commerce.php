@@ -807,7 +807,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function fb_change_product_published_status( $new_status, $old_status, $post ) {
 		global $post;
-		$visibility = $new_status == 'publish' ? 'published' : 'staging';
+		$visibility = $new_status === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
 
 		// change from publish status -> unpublish status, e.g. trash, draft, etc.
 		// change from trash status -> publish status
@@ -2866,11 +2866,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function on_quick_and_bulk_edit_save( $product ) {
 		$wp_id      = $product->get_id();
-		$visibility = get_post_status( $wp_id ) == 'publish'
-		? 'published'
-		: 'staging';
+		$visibility = get_post_status( $wp_id ) === 'publish'
+		? self::FB_SHOP_PRODUCT_VISIBLE
+		: self::FB_SHOP_PRODUCT_HIDDEN;
 		// case 1: new status is 'publish' regardless of old status, sync to FB
-		if ( $visibility == 'published' ) {
+		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
 			$this->on_product_publish( $wp_id );
 		} else {
 			// case 2: product never publish to FB, new status is not publish

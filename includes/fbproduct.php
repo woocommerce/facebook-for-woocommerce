@@ -553,8 +553,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'availability'          => $this->is_in_stock() ? 'in stock' :
 				'out of stock',
 				'visibility'            => ! $this->is_hidden()
-				? 'published'
-				: 'staging',
+				? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
+				: \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
 			// Only use checkout URLs if they exist.
@@ -568,14 +568,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// default language. WPML >= 3.2 Supported.
 			if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 				if ( class_exists( 'WC_Facebook_WPML_Injector' ) && WC_Facebook_WPML_Injector::should_hide( $id ) ) {
-					$product_data['visibility'] = 'staging';
+					$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 				}
 			}
 
 			// Exclude variations that are "virtual" products from export to Facebook &&
 			// No Visibility Option for Variations
 			if ( true === $this->get_virtual() ) {
-				  $product_data['visibility'] = 'staging';
+				  $product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 
 			if ( ! $prepare_for_product_feed ) {
