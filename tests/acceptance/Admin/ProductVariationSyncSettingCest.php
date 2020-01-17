@@ -141,4 +141,71 @@ class ProductVariationSyncSettingCest {
 	}
 
 
+	/**
+	 * Tests that the sync can be enabled for a variation.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_sync_can_be_enabled_for_a_variation( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that sync can be enabled for a variation' );
+
+		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+
+		$I->click( "#variable_fb_sync_enabled{$index}" );
+		$I->fillField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
+		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
+
+		$I->click( [ 'css' => '.save-variation-changes' ] );
+
+		$I->wait( 4 );
+
+		$index = $I->openVariationMetabox( $this->product_variation );
+
+		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+
+		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34',  );
+	}
+
+
+	/**
+	 * Tests that the sync can be disabled for a variation.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_sync_can_be_disabled_for_a_variation( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that sync can be disabled for a variation' );
+
+		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+
+		$I->click( "#variable_fb_sync_enabled{$index}" );
+
+		$I->click( [ 'css' => '.save-variation-changes' ] );
+
+		$I->wait( 4 );
+
+		$index = $I->openVariationMetabox( $this->product_variation );
+
+		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+
+		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
+	}
+
+
 }
