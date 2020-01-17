@@ -11,12 +11,16 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
+	/** @var int excluded product category ID */
+	private $excluded_category;
+
 
 	/**
 	 * Runs before each test.
 	 */
 	protected function _before() {
 
+		$this->add_excluded_category();
 	}
 
 
@@ -29,6 +33,38 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_simple() {
+
+		$product = $this->get_product();
+
+		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
+	}
+
+
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_simple_in_excluded_category() {
+
+		$product = $this->get_product();
+		$product->set_category_ids( [ $this->excluded_category ] );
+
+		$this->assertFalse( Facebook\Products::product_should_be_synced( $product ) );
+	}
+
+
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_variation_in_excluded_category() {
+
+		$product = $this->get_variable_product();
+		$product->set_category_ids( [ $this->excluded_category ] );
+		$product->save();
+
+		foreach ( $product->get_children() as $child_id ) {
+			$this->assertFalse( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
+		}
+	}
 
 
 	/** @see Facebook\Products::enable_sync_for_products() */
@@ -104,7 +140,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		// get a fresh product object to ensure the status is stored
 		$variable_product = wc_get_product( $variable_product->get_id() );
 
-		$this->assertTrue( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
+		$this->assertFalse( Facebook\Products::is_sync_enabled_for_product( $variable_product ) );
 	}
 
 
@@ -205,7 +241,10 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_variable_product( $children = [] ) {
 
-		$product    = new \WC_Product_Variable();
+		$product = new \WC_Product_Variable();
+
+		$product->save();
+
 		$variations = [];
 
 		if ( empty( $children ) || is_numeric( $children ) ) {
@@ -216,6 +255,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 			for ( $i = 0; $i < $total_variations; $i++ ) {
 
 				$variation = new \WC_Product_Variation();
+				$variation->set_parent_id( $product->get_id() );
 				$variation->save();
 
 				$variations[] = $variation->get_id();
@@ -226,6 +266,26 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product->save();
 
 		return $product;
+	}
+
+
+	/**
+	 * Adds and excluded category.
+	 */
+	private function add_excluded_category() {
+
+		$category = wp_insert_term( 'Excluded category', 'product_cat' );
+
+		$this->excluded_category = $category['term_id'];
+
+		$settings = [
+			'fb_sync_exclude_categories' => [ $this->excluded_category ]
+		];
+
+		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
+
+		// ensure the settings are reloaded before tests
+		facebook_for_woocommerce()->get_integration()->init_settings();
 	}
 
 
