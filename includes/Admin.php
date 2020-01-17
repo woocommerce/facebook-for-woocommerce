@@ -636,7 +636,7 @@ class Admin {
 			'desc_tip'    => true,
 			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
 			 // TODO: use wc_remove_number_precision() when WC 3.2.0 is the required version {WV 2020-01-15}
-			'value'       => wc_format_localized_price( (int) $price / 100 ),
+			'value'       => $price ? wc_format_localized_price( (int) $price / 100 ) : '',
 			'class'       => 'enable-if-sync-enabled',
 			'wrapper_class' => 'form-row form-row form-full',
 		] );
