@@ -733,13 +733,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( empty( $_POST['fb_sync_enabled'] ) ) {
+		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
 
-			Products::disable_sync_for_products( [ $product ] );
+		if ( ! $product->is_type( 'variable' ) ) {
 
-		} else {
+			if ( $sync_enabled ) {
 
-			Products::enable_sync_for_products( [ $product ] );
+				Products::enable_sync_for_products( [ $product ] );
+
+			} else {
+
+				Products::disable_sync_for_products( [ $product ] );
+			}
+		}
+
+		if ( $sync_enabled ) {
 
 			switch ( $product->get_type() ) {
 
