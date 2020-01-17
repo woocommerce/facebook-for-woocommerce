@@ -103,8 +103,8 @@ class ProductSyncSettingCest {
 		$I->wantTo( 'Test that the field value is saved correctly when enabling sync' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
-		// remove WP admin bar to fix "Element is not clickable" issue
-		$I->executeJS( 'jQuery("#wpadminbar").remove();' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->checkOption( '#fb_sync_enabled' );
 		$I->click( 'Update' );
 		$I->waitForText( 'Product updated' );
@@ -137,8 +137,8 @@ class ProductSyncSettingCest {
 		$I->wantTo( 'Test that the field value is saved correctly when disabling sync' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
-		// remove WP admin bar to fix "Element is not clickable" issue
-		$I->executeJS( 'jQuery("#wpadminbar").remove();' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->uncheckOption( '#fb_sync_enabled' );
 		$I->click( 'Update' );
 		$I->waitForText( 'Product updated' );
