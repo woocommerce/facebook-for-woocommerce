@@ -81,7 +81,7 @@ function fb_toggle_visibility( productID, published ) {
 		products: [
 			{
 				product_id: productID,
-				visibility: published ? 'published' : 'staging'
+				visibility: published ? 'yes' : 'no'
 			}
 		]
 	} );
