@@ -688,7 +688,7 @@ class Admin {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
 
-			Products::enable_sync_for_products( [ $variation_id ] );
+			Products::enable_sync_for_products( [ $variation ] );
 
 			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
 			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
@@ -707,7 +707,7 @@ class Admin {
 
 		} else {
 
-			Products::disable_sync_for_products( [ $variation_id ] );
+			Products::disable_sync_for_products( [ $variation ] );
 
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
