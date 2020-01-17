@@ -417,8 +417,16 @@ class Admin {
 				}
 
 				if ( 'facebook_include' === $action ) {
+
 					Products::enable_sync_for_products( $products );
+
+					// re-sync each product
+					foreach ( $products as $product ) {
+						facebook_for_woocommerce()->get_integration()->on_product_publish( $product->get_id() );
+					}
+
 				} elseif ( 'facebook_exclude' === $action ) {
+
 					Products::disable_sync_for_products( $products );
 				}
 			}

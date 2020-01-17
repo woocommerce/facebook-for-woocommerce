@@ -248,7 +248,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->api_key && $this->product_catalog_id ) {
 
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ] );
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -763,13 +763,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	function on_product_delete( $wp_id ) {
+	/**
+	 * Deletes a product from Facebook.
+	 *
+	 * @param int $wp_id product ID
+	 */
+	public function on_product_delete( $wp_id ) {
+
 		$woo_product = new WC_Facebook_Product( $wp_id );
+
 		if ( ! $woo_product->exists() ) {
 			// This happens when the wp_id is not a product or it's already
 			// been deleted.
 			return;
 		}
+
+		// skip if not enabled for sync
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			return;
+		}
+
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
 			$wp_id,
@@ -815,17 +828,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Generic function for use with any product publishing.
+	 *
 	 * Will determine product type (simple or variable) and delegate to
 	 * appropriate handler.
+	 *
+	 * @param int $wp_id product ID
 	 */
-	function on_product_publish( $wp_id ) {
+	public function on_product_publish( $wp_id ) {
+
 		if ( get_post_status( $wp_id ) != 'publish' ) {
 			return;
 		}
 
 		$woo_product  = new WC_Facebook_Product( $wp_id );
-		$product_type = $woo_product->get_type();
-		if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
+
+		// skip if not enabled for sync
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			return;
+		}
+
+		if ( $woo_product->woo_product->is_type( 'variable' ) ) {
 			$this->on_variable_product_publish( $wp_id, $woo_product );
 		} else {
 			$this->on_simple_product_publish( $wp_id, $woo_product );
@@ -959,6 +981,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $woo_product ) {
 			$woo_product = new WC_Facebook_Product( $wp_id, $parent_product );
+		}
+
+		// skip if not enabled for sync
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			return;
 		}
 
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
@@ -2858,6 +2885,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$woo_product = new WC_Facebook_Product( $wp_id );
 		if ( ! $woo_product->exists() ) {
 			// This function can be called for non-woo products.
+			return;
+		}
+
+		// skip if not enabled for sync
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
