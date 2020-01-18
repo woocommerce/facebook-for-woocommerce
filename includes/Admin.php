@@ -30,6 +30,13 @@ class Admin {
 		// enqueue admin scripts
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
+		$integration = facebook_for_woocommerce()->get_integration();
+
+		// only alter the admin UI if the plugin is connected to Facebook and ready to sync products
+		if ( ! $integration->api_key || ! $integration->product_catalog_id ) {
+			return;
+		}
+
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
 		// may trigger the modal to open to warn the merchant about a conflict with the current product terms

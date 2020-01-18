@@ -69,8 +69,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function init() {
 
-			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'add_settings_link' ] );
-
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
@@ -81,13 +79,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				require_once __DIR__ . '/includes/Products.php';
 
-				if ( is_admin() ) {
-
-					require_once __DIR__ . '/includes/Admin.php';
-
-					$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
-				}
-
 				if ( is_ajax() ) {
 
 					require_once __DIR__ . '/includes/AJAX.php';
@@ -95,9 +86,27 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
+				// initialize the admin handling
+				add_action( 'admin_init', [ $this, 'init_admin'] );
+
 				// register the WooCommerce integration
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
 			}
+		}
+
+
+		/**
+		 * Initializes the admin handling.
+		 *
+		 * @since x.y.z
+		 */
+		public function init_admin() {
+
+			require_once __DIR__ . '/includes/Admin.php';
+
+			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+
+			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'add_settings_link' ] );
 		}
 
 
