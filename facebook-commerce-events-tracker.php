@@ -54,7 +54,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// AddToCart
 			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 40, 4 );
 			// AddToCart while AJAX is enabled
-			add_action( 'wc_ajax_fb_inject_add_to_cart_event', [ $this, 'inject_ajax_add_to_cart_event' ] );
+			add_action( 'woocommerce_ajax_added_to_cart', [ $this, 'add_filter_for_add_to_cart_fragments' ] );
 			// AddToCart while using redirect to cart page
 			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
 				add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'set_last_product_added_to_cart_upon_redirect' ], 10, 2 );
