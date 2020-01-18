@@ -293,6 +293,35 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Adds an add to cart fragment to trigger an AddToCart event.
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 *
+		 * @param array $fragments add to cart fragments
+		 * @return array
+		 */
+		public function add_add_to_cart_event_fragment( $fragments ) {
+
+			if ( self::$isEnabled ) {
+
+				$script = $this->pixel->get_event_script( 'AddToCart', [
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				] );
+
+				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
+			}
+
+			return $fragments;
+		}
+
+
+		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
 		 * When a product is added to cart from the shop page or archives and the page does not reload,
