@@ -276,6 +276,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Setups a filter to add an add to cart fragment whenever a product is added to the cart through Ajax.
+		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::add_add_to_cart_event_fragment
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 */
+		public function add_filter_for_add_to_cart_fragments() {
+
+			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+				add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'add_add_to_cart_event_fragment' ] );
+			}
+		}
+
+
+		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
 		 * When a product is added to cart from the shop page or archives and the page does not reload,
