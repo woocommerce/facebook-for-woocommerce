@@ -147,6 +147,31 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
 
 		/**
+		 * Gets the JavaScript code to track an event wrapped in <script> tag.
+		 *
+		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $method name of the pixel's fbq() function to call
+		 */
+		public function get_event_script( $event_name, $params, $method = 'track' ) {
+
+			$output = '
+<!-- Facebook Pixel Event Code -->
+<script>
+%s
+</script>
+<!-- End Facebook Pixel Event Code -->
+';
+
+			return sprintf( $output, $this->get_event_code( $event_name, $params, $method ) );
+		}
+
+
+		/**
 		 * Prints or enqueues the JavaScript code to track an event.
 		 *
 		 * Preferred method to inject events in a page.
