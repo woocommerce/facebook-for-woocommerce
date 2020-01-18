@@ -32,6 +32,8 @@ class Admin {
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
+		// may trigger the modal to open to warn the merchant about a conflict with the current product terms
+		add_action( 'admin_footer', [ $this, 'validate_product_excluded_terms' ] );
 
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
@@ -777,6 +779,68 @@ class Admin {
 			<div class="wc-backbone-modal-backdrop modal-close"></div>
 		</script>
 		<?php
+	}
+
+
+	/**
+	 * Maybe triggers the modal to open on the product edit screen on page load.
+	 *
+	 * If the product is set to be synced in Facebook, but belongs to a term that is set to be excluded, the modal prompts the merchant for action.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function validate_product_excluded_terms() {
+		global $current_screen, $post;
+
+		if ( $post && $current_screen && $current_screen->id === 'product' ) :
+
+			$product = wc_get_product( $post );
+
+			if ( $product instanceof \WC_Product
+			     && Products::is_sync_enabled_for_product( $product )
+			     && Products::is_sync_excluded_for_product_terms( $product )
+			) :
+
+				?>
+				<script type="text/javascript">
+					jQuery( document ).ready( function( $ ) {
+
+						var productID   = parseInt( $( 'input#post_ID' ).val(), 10 ),
+							productTag  = $( 'textarea[name=\"tax_input[product_tag]\"]' ).val().split( ',' ),
+							productCat  = [];
+
+						$( '#taxonomy-product_cat input[name=\"tax_input[product_cat][]\"]:checked' ).each( function() {
+							productCat.push( parseInt( $( this ).val(), 10 ) );
+						} );
+
+						$.post( facebook_for_woocommerce_products_admin.ajax_url, {
+							action:      'facebook_for_woocommerce_set_product_sync_prompt',
+							security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
+							sync_enabled: 'enabled',
+							product:      productID,
+							categories:   productCat,
+							tags:         productTag
+						}, function( response ) {
+
+							if ( response && ! response.success ) {
+
+								$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+								new $.WCBackboneModal.View( {
+									target: 'facebook-for-woocommerce-modal',
+									string: response.data
+								} );
+							}
+						} );
+					} );
+				</script>
+			<?php
+
+			endif;
+
+		endif;
 	}
 
 
