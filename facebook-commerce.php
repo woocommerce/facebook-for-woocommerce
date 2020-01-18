@@ -788,7 +788,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function save_product_settings( \WC_Product $product ) {
 
-		$woo_product = new WC_Facebook_Product( $product );
+		$woo_product = new WC_Facebook_Product( $product->get_id() );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ self::FB_PRODUCT_DESCRIPTION ] ) ) {
