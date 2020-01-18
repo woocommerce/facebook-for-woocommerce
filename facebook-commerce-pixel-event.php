@@ -184,25 +184,14 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
 
-			$code             = self::build_event( $event_name, $params, $method );
-			$this->last_event = $event_name;
-
 			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				WC_Facebookcommerce_Utils::wc_enqueue_js( $code );
+				WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, $params, $method ) );
 
 			} else {
 
-				$output = '
-<!-- Facebook Pixel Event Code -->
-<script>
-%s
-</script>
-<!-- End Facebook Pixel Event Code -->
-';
-
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $output, $code );
+				printf( $this->get_event_script( $event_name, $params, $method ) );
 			}
 		}
 
