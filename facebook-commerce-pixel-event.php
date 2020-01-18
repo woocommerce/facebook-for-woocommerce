@@ -97,11 +97,9 @@ fbq( 'track', 'PageView', %s );
 
 document.addEventListener( 'DOMContentLoaded', function() {
 	jQuery && jQuery( function( $ ) {
-		$( '.add_to_cart_button' ).on( 'click', function( e ) {
-			$.get( '?wc-ajax=fb_inject_add_to_cart_event&product_id=' + $( this ).data( 'product_id' ), function( script ) {
-				$( 'head' ).append( script );
-			} );
-		} );
+
+		// insert placeholder for events injected when a product is added to the cart through Ajax
+		$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
 	} );
 }, false );
 
