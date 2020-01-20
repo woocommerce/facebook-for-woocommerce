@@ -17,6 +17,11 @@ class ProductVariationSyncSettingCest {
 	 */
     public function _before( AcceptanceTester $I ) {
 
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			'fb_api_key'            => '1234',
+			'fb_product_catalog_id' => '1234',
+		] );
+
 		$product_objects = $I->haveVariableProductInDatabase();
 
 		$this->variable_product  = $product_objects['product'];
@@ -174,7 +179,7 @@ class ProductVariationSyncSettingCest {
 		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34',  );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
 	}
 
 
@@ -225,7 +230,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), '' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), '' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '',  );
+		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '' );
 	}
 
 
