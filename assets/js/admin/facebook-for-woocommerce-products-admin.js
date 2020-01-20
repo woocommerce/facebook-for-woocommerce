@@ -179,7 +179,7 @@ jQuery( document ).ready( function( $ ) {
 
 								$.each( products, function() {
 
-									let $toggle = $( '#post-' + this ).find( 'td.facebook_shop_visibility a' );
+									let $toggle = $( '#post-' + this ).find( 'td.facebook_catalog_visibility a' );
 
 									if ( 'visible' === $toggle.data( 'product-visibility' ) ) {
 										$toggle.trigger( 'click' );
