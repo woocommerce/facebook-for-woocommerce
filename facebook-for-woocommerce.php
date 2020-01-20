@@ -98,6 +98,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Initializes the admin handling.
 		 *
+		 * @internal
+		 *
 		 * @since x.y.z
 		 */
 		public function init_admin() {
