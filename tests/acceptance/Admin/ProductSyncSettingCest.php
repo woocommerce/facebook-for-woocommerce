@@ -16,6 +16,11 @@ class ProductSyncSettingCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			'fb_api_key'            => '1234',
+			'fb_product_catalog_id' => '1234',
+		] );
+
 		// save two generic products
 		$this->sync_enabled_product  = $I->haveProductInDatabase();
 		$this->sync_disabled_product = $I->haveProductInDatabase();

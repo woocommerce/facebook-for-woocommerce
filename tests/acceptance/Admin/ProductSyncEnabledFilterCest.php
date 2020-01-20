@@ -31,6 +31,8 @@ class ProductSyncEnabledFilterCest {
 
 		// configure the category and tag as excluded from facebook sync
 		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			'fb_api_key'                 => '1234',
+			'fb_product_catalog_id'      => '1234',
 			'fb_sync_exclude_categories' => [ $excluded_category_id ],
 			'fb_sync_exclude_tags'       => [ $excluded_tag_id ],
 		] );
