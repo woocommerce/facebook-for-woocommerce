@@ -390,8 +390,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers an AddToCart event when redirecting to the cart page.
 		 *
 		 * @internal
-		 *
-		 * @deprecated since x.y.z
 		 */
 		public function inject_add_to_cart_redirect_event() {
 
