@@ -559,6 +559,8 @@ class Admin {
 				woocommerce_wp_select( [
 					'id'          => 'fb_product_image_source',
 					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'desc_tip'    => true,
+					'description' => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
 					'options'     => [
 						Products::PRODUCT_IMAGE_SOURCE_PRODUCT => __( 'Use WooCommerce image', 'facebook-for-woocommerce' ),
 						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
