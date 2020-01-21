@@ -799,6 +799,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
 		}
 
+		if ( isset( $_POST[ 'fb_product_image_source' ] ) ) {
+			$product->update_meta_data( Products::PRODUCT_IMAGE_SOURCE_META_KEY, sanitize_key( wp_unslash( $_POST[ 'fb_product_image_source' ] ) ) );
+			$product->save_meta_data();
+		}
+
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
