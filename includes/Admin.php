@@ -524,6 +524,7 @@ class Admin {
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
+		$image_soruce = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
 
 		if ( $woo_product->is_type( 'variable' ) ) {
@@ -552,6 +553,17 @@ class Admin {
 					'cols'        => 40,
 					'rows'        => 20,
 					'value'       => $description,
+					'class'       => 'enable-if-sync-enabled',
+				] );
+
+				woocommerce_wp_select( [
+					'id'          => 'fb_product_image_source',
+					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'options'     => [
+						Products::PRODUCT_IMAGE_SOURCE_PRODUCT => __( 'Use WooCommerce image', 'facebook-for-woocommerce' ),
+						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
+					],
+					'value'       => $image_soruce ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
