@@ -532,6 +532,28 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::is_messenger_enabled() */
+	public function test_is_messenger_enabled() {
+
+		$this->assertTrue( $this->integration->is_messenger_enabled() );
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'no' );
+
+		$this->assertFalse( $this->integration->is_messenger_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_messenger_enabled() */
+	public function test_is_messenger_enabled_filter() {
+
+		add_filter( 'wc_facebook_is_messenger_enabled', function() {
+			return false;
+		} );
+
+		$this->assertFalse( $this->integration->is_messenger_enabled() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -554,6 +576,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * Adds the integration settings.
+	 */
 	private function add_settings() {
 
 		$settings = [
@@ -568,6 +593,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING      => 'yes',
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC           => 'yes',
+			\WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER              => 'yes',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );

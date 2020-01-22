@@ -2975,6 +2975,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Determines whether the Facebook messenger is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_messenger_enabled() {
+
+		/**
+		 * Filters whether the Facebook messenger is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether the Facebook messenger is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_messenger_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_MESSENGER ), $this );
+	}
+
+
+	/**
 	 * Gets message HTML.
 	 *
 	 * @return string
