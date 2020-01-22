@@ -152,6 +152,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_product_catalog_id()
+	 *
+	 * @param string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_product_catalog_id
+	 */
+	public function test_update_product_catalog_id( $value, $expected ) {
+
+		$this->integration->update_product_catalog_id( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_product_catalog_id() );
+		$this->assertEquals( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ) );
+	}
+
+
+	/** @see test_update_product_catalog_id() */
+	public function provider_update_product_catalog_id() {
+
+		return [
+			[ 'new-id', 'new-id' ],
+			[ [ 1, 2 ], '' ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 

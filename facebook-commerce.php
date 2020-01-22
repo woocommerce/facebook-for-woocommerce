@@ -2624,6 +2624,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook product catalog ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value product catalog ID value
+	 */
+	public function update_product_catalog_id( $value ) {
+
+		$this->product_catalog_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_PRODUCT_CATALOG_ID, $this->product_catalog_id );
+	}
+
+
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since x.y.z
