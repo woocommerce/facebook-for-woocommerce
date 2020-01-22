@@ -1,5 +1,7 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 class ProductSyncSettingCest {
 
 
@@ -166,6 +168,40 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+	}
+
+
+	/**
+	 * Tests that you can configure the product to use the WooCommerce image for Facebook sync
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_use_woocommerce_image_in_facebook( AcceptanceTester $I ) {
+
+		$description = 'Test description.';
+		$price       = '12.34';
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that you can configure the product to use the WooCommerce image for Facebook sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->fillField( self::FIELD_DESCRIPTION, $description );
+		$I->selectOption( self::FIELD_IMAGE_SOURCE, Products::PRODUCT_IMAGE_SOURCE_PRODUCT );
+		$I->fillField( self::FIELD_PRICE, $price );
+
+		// scroll to and click the Update button
+		$I->scrollTo( '#publish', 0, -200 );
+		$I->click( '#publish' );
+
+		$I->waitForText( 'Product updated' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->seeInField( self::FIELD_DESCRIPTION, $description );
+		$I->seeOptionIsSelected( self::FIELD_IMAGE_SOURCE, 'Use WooCommerce image' );
+		$I->seeInField( self::FIELD_PRICE, $price );
 	}
 
 
