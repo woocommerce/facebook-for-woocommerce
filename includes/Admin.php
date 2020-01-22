@@ -549,17 +549,18 @@ class Admin {
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
-				woocommerce_wp_select( [
-					'id'          => 'fb_product_image_source',
-					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-					'desc_tip'    => true,
-					'description' => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
-					'options'     => [
+				woocommerce_wp_radio( [
+					'id'            => 'fb_product_image_source',
+					'label'         => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'desc_tip'      => true,
+					'description'   => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
+					'options'       => [
 						Products::PRODUCT_IMAGE_SOURCE_PRODUCT => __( 'Use WooCommerce image', 'facebook-for-woocommerce' ),
 						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
 					],
-					'value'       => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
-					'class'       => 'short enable-if-sync-enabled js-fb-product-image-source',
+					'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
+					'class'         => 'short enable-if-sync-enabled js-fb-product-image-source',
+					'wrapper_class' => 'fb-product-image-source-field',
 				] );
 
 				woocommerce_wp_text_input( [
@@ -644,7 +645,7 @@ class Admin {
 			'wrapper_class' => 'form-row form-row-full',
 		] );
 
-		woocommerce_wp_select( [
+		woocommerce_wp_radio( [
 			'id'            => "variable_fb_product_image_source$index",
 			'name'          => "variable_fb_product_image_source[$index]",
 			'label'         => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
@@ -657,7 +658,7 @@ class Admin {
 			],
 			'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
 			'class'         => 'enable-if-sync-enabled js-fb-product-image-source',
-			'wrapper_class' => 'form-row form-row-full'
+			'wrapper_class' => 'fb-product-image-source-field',
 		] );
 
 		woocommerce_wp_text_input( [
