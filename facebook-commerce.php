@@ -2524,6 +2524,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the feed ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_feed_id() {
+
+		if ( ! is_string( $this->feed_id ) ) {
+
+			$value = get_option( self::OPTION_FEED_ID, '' );
+
+			$this->feed_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook feed ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $feed_id Facebook feed ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_feed_id', $this->feed_id, $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z
