@@ -9,7 +9,7 @@ class ProductSyncSettingCest {
 	const FIELD_DESCRIPTION = '#' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
 
 	/** @var string selector for the Facebook image source field */
-	const FIELD_IMAGE_SOURCE = '#fb_product_image_source';
+	const FIELD_IMAGE_SOURCE = '[name="fb_product_image_source"]';
 
 	/** @var string selector for the Facebook custom image URL field */
 	const FIELD_CUSTOM_IMAGE_URL = '#' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
