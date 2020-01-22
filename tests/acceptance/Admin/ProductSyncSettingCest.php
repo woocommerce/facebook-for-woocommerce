@@ -3,6 +3,19 @@
 class ProductSyncSettingCest {
 
 
+	/** @var string selector for the Facebook description field */
+	const FIELD_DESCRIPTION = '#' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
+
+	/** @var string selector for the Facebook image source field */
+	const FIELD_IMAGE_SOURCE = '#fb_product_image_source';
+
+	/** @var string selector for the Facebook custom image URL field */
+	const FIELD_CUSTOM_IMAGE_URL = '#' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
+
+	/** @var string selector for the Facebook price field */
+	const FIELD_PRICE = '#' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
+
+
 	/** @var \WC_Product|null product object created for the test */
 	private $sync_enabled_product;
 	/** @var \WC_Product|null product object created for the test */
