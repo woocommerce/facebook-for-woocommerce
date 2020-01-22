@@ -2468,6 +2468,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the product catalog ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_product_catalog_id() {
+
+		if ( ! is_string( $this->product_catalog_id ) ) {
+
+			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
+
+			$this->product_catalog_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook product catalog ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $page_access_token Facebook product catalog ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z
