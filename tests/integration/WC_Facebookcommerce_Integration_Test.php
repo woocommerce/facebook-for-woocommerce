@@ -21,6 +21,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->integration = facebook_for_woocommerce()->get_integration();
 
 		$this->add_options();
+		$this->add_settings();
+
+		$this->integration->init_settings();
 	}
 
 
@@ -261,6 +264,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_facebook_page_id() */
+	public function test_get_facebook_page_id() {
+
+		$this->assertEquals( 'facebook-page-id', $this->integration->get_facebook_page_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_facebook_page_id() */
+	public function test_get_facebook_page_id_filter() {
+
+		add_filter( 'wc_facebook_page_id', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_facebook_page_id() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -280,6 +301,16 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->integration->external_merchant_settings_id = null;
 		$this->integration->feed_id                       = null;
 		$this->integration->pixel_install_time            = null;
+	}
+
+
+	private function add_settings() {
+
+		$settings = [
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => 'facebook-page-id',
+		];
+
+		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
 	}
 
 
