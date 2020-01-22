@@ -275,7 +275,30 @@ class AJAX {
 
 		if ( ! empty( $products ) ) {
 
+			ob_start();
 
+			?>
+			<button
+				id="facebook-for-woocommerce-confirm-settings-change"
+				class="button button-large button-primary"
+			><?php esc_html_e( 'Exclude Products', 'facebook-for-woocommerce' ); ?></button>
+			<button
+				id="facebook-for-woocommerce-cancel-settings-change"
+				class="button button-large button-primary"
+				onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+			><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+			<?php
+
+			$buttons = ob_get_clean();
+
+			wp_send_json_error( [
+				'message' => sprintf(
+					/* translators: Placeholder %s - <br/> tags */
+					__( 'The categories and/or tags that you have selected to exclude from sync contain products that are currently synced to Facebook.$sTo exclude these products from the Facebook sync, click Exclude Products. To review the category / tag exclusion settings, click Cancel.', 'facebook-for-woocommerce' ),
+					'<br/><br/>'
+				),
+				'buttons' => $buttons,
+			] );
 		}
 	}
 
