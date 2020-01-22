@@ -1,0 +1,32 @@
+/* added #woocommerce-product-data to increase selector specificity */
+#woocommerce-product-data .fb-product-image-source-field .wc-radios li {
+	margin-bottom: 0;
+}
+#woocommerce-product-data .fb-product-image-source-field .wc-radios li:last-child {
+	padding-bottom: 0;
+}
+
+/* add padding-top for first radio button in variation fields */
+#woocommerce-product-data .woocommerce_variation .fb-product-image-source-field .wc-radios li:first-child {
+	padding-top: 10px;
+}
+
+.woocommerce_variation .fb-product-image-source-field {
+	margin: 1em 0;
+}
+
+.woocommerce_variation .fb-product-image-source-field legend {
+	float: left;
+	padding-inline-start: 0;
+	padding-inline-end: 0;
+}
+
+.woocommerce_variation .fb-product-image-source-field .woocommerce-help-tip {
+	float: left;
+	margin-left: 4px;
+	vertical-align: top;
+}
+
+.woocommerce_variation .fb-product-image-source-field .wc-radios {
+	clear: both;
+}
