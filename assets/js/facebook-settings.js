@@ -1024,24 +1024,6 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
-	/**
-	 * Blocks the current modal.
-	 *
-	 * TODO: move this to a separate file, to avoid duplicated code {DM 2020-01-22}
-	 */
-	function blockModal() {
-		if ( ! isModalBlocked() ) {
-			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
-				message: null,
-				overlayCSS: {
-					background: '#fff',
-					opacity: 0.6
-				}
-			} );
-		}
-	}
-
-
 	const pagenow = window.pagenow.length ? window.pagenow : '';
 
 	// WooCommerce settings page
@@ -1051,13 +1033,9 @@ jQuery( document ).ready( function( $ ) {
 
 		$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
 
-			console.log('button clicked');
-
 			if ( ! submitSettingsSave ) {
-				console.log('preventing');
 				e.preventDefault();
 			} else {
-				console.log('submitting');
 				return true;
 			}
 
