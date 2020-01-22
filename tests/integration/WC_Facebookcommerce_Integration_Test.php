@@ -233,6 +233,34 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_pixel_install_time()
+	 *
+	 * @param int|string|null|array $value value to set
+	 * @param int|null $expected expected return value
+	 * @param int|string $expected_option expected stored value
+	 *
+	 * @dataProvider provider_update_pixel_install_time
+	 */
+	public function test_update_pixel_install_time( $value, $expected, $expected_option ) {
+
+		$this->integration->update_pixel_install_time( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_pixel_install_time() );
+		$this->assertEquals( $expected_option, get_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ) );
+	}
+
+
+	/** @see test_update_pixel_install_time() */
+	public function provider_update_pixel_install_time() {
+
+		return [
+			[ 1234, 1234, 1234 ],
+			[ 'non-int', null, '' ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 

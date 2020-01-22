@@ -2669,6 +2669,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook pixel install time.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $value pixel install time, in UTC seconds
+	 */
+	public function update_pixel_install_time( $value ) {
+
+		$value = (int) $value;
+
+		$this->pixel_install_time = $value ?: null;
+
+		update_option( self::OPTION_PIXEL_INSTALL_TIME, $value ?: '' );
+	}
+
+
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since x.y.z
