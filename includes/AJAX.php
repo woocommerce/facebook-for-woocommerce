@@ -246,8 +246,25 @@ class AJAX {
 
 		check_ajax_referer( 'set-excluded-terms-prompt', 'security' );
 
-		$new_category_ids = isset( $_POST['categories'] ) ? (array) $_POST['categories'] : [];
-		$new_tag_ids      = isset( $_POST['tags'] ) ? (array) $_POST['tags'] : [];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$posted_categories = isset( $_POST['categories'] ) ? wp_unslash( $_POST['categories'] ) : [];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$posted_tags = isset( $_POST['tags'] ) ? wp_unslash( $_POST['tags'] ) : [];
+
+		$new_category_ids = [];
+		$new_tag_ids      = [];
+
+		if ( ! empty( $posted_categories ) ) {
+			foreach ( $posted_categories as $posted_category_id ) {
+				$new_category_ids[] = sanitize_text_field( $posted_category_id );
+			}
+		}
+
+		if ( ! empty( $posted_tags ) ) {
+			foreach ( $posted_tags as $posted_tag_id ) {
+				$new_tag_ids[] = sanitize_text_field( $posted_tag_id );
+			}
+		}
 
 		// query for products with sync enabled, belonging to the added term IDs and not belonging to the term IDs that are already stored in the setting
 		$products = $this->get_products_to_be_excluded( $new_category_ids, $new_tag_ids );
