@@ -21,6 +21,25 @@ require_once 'facebook-commerce-pixel-event.php';
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
+	/** @var string the WordPress option name where the page access token is stored */
+	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
+
+	/** @var string the WordPress option name where the product catalog ID is stored */
+	const OPTION_PRODUCT_CATALOG_ID = 'wc_facebook_product_catalog_id';
+
+	/** @var string the WordPress option name where the external merchant settings ID is stored */
+	const OPTION_EXTERNAL_MERCHANT_SETTINGS_ID = 'wc_facebook_external_merchant_settings_id';
+
+	/** @var string the WordPress option name where the feed ID is stored */
+	const OPTION_FEED_ID = 'wc_facebook_feed_id';
+
+	/** @var string the WordPress option name where the latest pixel install time is stored */
+	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
+
+
+	/** Legacy properties *********************************************************************************************/
+
+
 	// TODO probably some of these meta keys need to be moved to Facebook\Products {FN 2020-01-13}
 	const FB_PRODUCT_GROUP_ID    = 'fb_product_group_id';
 	const FB_PRODUCT_ITEM_ID     = 'fb_product_item_id';
