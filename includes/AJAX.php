@@ -130,7 +130,11 @@ class AJAX {
 						$buttons = ob_get_clean();
 
 						wp_send_json_error( [
-							'message' => __( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync. To sync this product to Facebook, please remove the category or tag exclusion from the plugin settings.', 'facebook-for-woocommerce' ),
+							'message' => sprintf(
+								/* translators: Placeholder %s - <br/> tag */
+								__( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync. It will not sync to Facebook. %sTo sync this product to Facebook, click Go to Settings and remove the category or tag exclusion or click Cancel and update the product\'s category / tag assignments.', 'facebook-for-woocommerce' ),
+								'<br/><br/>'
+							),
 							'buttons' => $buttons,
 						] );
 					}
