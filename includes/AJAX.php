@@ -404,7 +404,7 @@ class AJAX {
 
 			} else {
 
-				$products_query_vars = [
+				$products_query_vars['tax_query'] = [
 					'relation' => 'OR',
 					$products_query_vars,
 					$tags_tax_query,
