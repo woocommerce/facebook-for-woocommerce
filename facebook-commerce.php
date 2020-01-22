@@ -704,7 +704,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			plugins_url(
 				'/assets/js/facebook-settings.js?ts=' . time(),
 				__FILE__
-			)
+			),
+			[ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_localize_script(
 			'wc_facebook_settings_jsx',
