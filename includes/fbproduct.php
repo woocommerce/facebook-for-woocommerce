@@ -545,7 +545,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => array_filter( $image_urls ),
+				'additional_image_urls' => array_slice( $image_urls, 1 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
 				'brand'                 => $brand,
