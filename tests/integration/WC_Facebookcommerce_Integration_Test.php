@@ -107,6 +107,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_pixel_install_time() */
+	public function test_get_pixel_install_time() {
+
+		$this->assertEquals( 123, $this->integration->get_pixel_install_time() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_pixel_install_time() */
+	public function test_get_pixel_install_time_filter() {
+
+		add_filter( 'wc_facebook_pixel_install_time', function() {
+			return 321;
+		} );
+
+		$this->assertEquals( 321, $this->integration->get_pixel_install_time() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -119,11 +137,13 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'def456' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, 'ghi789' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, 'jkl012' );
+		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
 
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->product_catalog_id            = null;
 		$this->integration->external_merchant_settings_id = null;
 		$this->integration->feed_id                       = null;
+		$this->integration->pixel_install_time            = null;
 	}
 
 

@@ -2552,6 +2552,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the Facebook pixel install time in UTC seconds.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int|null
+	 */
+	public function get_pixel_install_time() {
+
+		if ( ! (int) $this->pixel_install_time ) {
+
+			$value = (int) get_option( self::OPTION_PIXEL_INSTALL_TIME, 0 );
+
+			$this->pixel_install_time = $value ?: null;
+		}
+
+		/**
+		 * Filters the Facebook pixel install time.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $pixel_install_time Facebook pixel install time in UTC seconds, or null if none set
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (int) apply_filters( 'wc_facebook_pixel_install_time', $this->pixel_install_time, $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z
