@@ -680,6 +680,15 @@ class Admin {
 		] );
 
 		woocommerce_wp_text_input( [
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
+			'label'         => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
+			'value'         => $image_url,
+			'class'         => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
+			'wrapper_class' => 'form-row form-row-full'
+		] );
+
+		woocommerce_wp_text_input( [
 			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
 			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
 			'label'       => sprintf(
