@@ -26,8 +26,8 @@ class AcceptanceTester extends \Codeception\Actor {
 	 * Updates the settings of the Facebook for WooCommerce plugin.
 	 *
 	 * @param array $args {
-	 *     @type int[] $fb_sync_exclude_categories product categories IDs to exclude from facebook sync
-	 *     @type int[] $fb_sync_exclude_tags product tags IDS to exclude from facebook sync
+	 *     @type int[] $excluded_product_category_ids product categories IDs to exclude from facebook sync
+	 *     @type int[] $excluded_product_tag_ids tags IDS to exclude from facebook sync
 	 * }
 	 */
 	public function haveFacebookForWooCommerceSettingsInDatabase( array $args = [] ) {

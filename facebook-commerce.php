@@ -21,6 +21,86 @@ require_once 'facebook-commerce-pixel-event.php';
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
+	/** @var string the WordPress option name where the page access token is stored */
+	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
+
+	/** @var string the WordPress option name where the product catalog ID is stored */
+	const OPTION_PRODUCT_CATALOG_ID = 'wc_facebook_product_catalog_id';
+
+	/** @var string the WordPress option name where the external merchant settings ID is stored */
+	const OPTION_EXTERNAL_MERCHANT_SETTINGS_ID = 'wc_facebook_external_merchant_settings_id';
+
+	/** @var string the WordPress option name where the feed ID is stored */
+	const OPTION_FEED_ID = 'wc_facebook_feed_id';
+
+	/** @var string the WordPress option name where the latest pixel install time is stored */
+	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
+
+	/** @var string the facebook page ID setting ID */
+	const SETTING_FACEBOOK_PAGE_ID = 'facebook_page_id';
+
+	/** @var string the facebook pixel ID setting ID */
+	const SETTING_FACEBOOK_PIXEL_ID = 'facebook_pixel_id';
+
+	/** @var string the "enable advanced matching" setting ID */
+	const SETTING_ENABLE_ADVANCED_MATCHING = 'enable_advanced_matching';
+
+	/** @var string the "enable product sync" setting ID */
+	const SETTING_ENABLE_PRODUCT_SYNC = 'enable_product_sync';
+
+	/** @var string the excluded product category IDs setting ID */
+	const SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS = 'excluded_product_category_ids';
+
+	/** @var string the excluded product tag IDs setting ID */
+	const SETTING_EXCLUDED_PRODUCT_TAG_IDS = 'excluded_product_tag_ids';
+
+	/** @var string the product description mode setting ID */
+	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
+
+	/** @var string the "enable scheduled resync" setting ID */
+	const SETTING_ENABLE_SCHEDULED_RESYNC = 'enable_scheduled_resync';
+
+	/** @var string the scheduled resync offset setting ID */
+	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
+
+	/** @var string the "enable messenger" setting ID */
+	const SETTING_ENABLE_MESSENGER = 'enable_messenger';
+
+	/** @var string the messenger locale setting ID */
+	const SETTING_MESSENGER_LOCALE = 'messenger_locale';
+
+	/** @var string the messenger greeting setting ID */
+	const SETTING_MESSENGER_GREETING = 'messenger_greeting';
+
+	/** @var string the messenger color HEX setting ID */
+	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
+
+	/** @var string the standard product description mode name */
+	const PRODUCT_DESCRIPTION_MODE_STANDARD = 'standard';
+
+	/** @var string the short product description mode name */
+	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
+
+
+	/** @var string|null the configured page access token */
+	private $page_access_token;
+
+	/** @var string|null the configured product catalog ID */
+	public $product_catalog_id;
+
+	/** @var string|null the configured external merchant settings ID */
+	public $external_merchant_settings_id;
+
+	/** @var string|null the configured feed ID */
+	public $feed_id;
+
+	/** @var string|null the configured pixel install time */
+	public $pixel_install_time;
+
+
+	/** Legacy properties *********************************************************************************************/
+
+
 	// TODO probably some of these meta keys need to be moved to Facebook\Products {FN 2020-01-13}
 	const FB_PRODUCT_GROUP_ID    = 'fb_product_group_id';
 	const FB_PRODUCT_ITEM_ID     = 'fb_product_item_id';
@@ -2326,7 +2406,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
 			],
-			'fb_sync_exclude_categories'       => [
+			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
@@ -2337,7 +2417,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
-			'fb_sync_exclude_tags'             => [
+			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
@@ -2365,7 +2445,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_category_ids() {
 
-		return (array) $this->get_option( 'fb_sync_exclude_categories', [] );
+		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] );
 	}
 
 
@@ -2378,7 +2458,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_tag_ids() {
 
-		return (array) $this->get_option( 'fb_sync_exclude_tags', [] );
+		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] );
 	}
 
 
