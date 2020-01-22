@@ -1036,6 +1036,8 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
+				const $submitButton = $( this );
+
 				e.preventDefault();
 
 				$.post( wc_facebook_settings_jsx.ajax_url, {
@@ -1043,6 +1045,29 @@ jQuery( document ).ready( function( $ ) {
 					security: wc_facebook_settings_jsx.set_excluded_terms_prompt_nonce,
 					categories: categoriesAdded,
 					tags: tagsAdded,
+				}, function( response ) {
+
+					if ( response && ! response.success ) {
+
+						// close existing modals
+						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+						// open new modal, populate template with AJAX response data
+						new $.WCBackboneModal.View( {
+							target: 'facebook-for-woocommerce-modal',
+							string: response.data,
+						} );
+
+						// exclude products: submit form as normal
+						$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
+							$submitButton.trigger( 'click' );
+						} );
+
+					} else {
+
+						// no modal displayed: submit form as normal
+						$submitButton.trigger( 'click' );
+					}
 				} );
 			}
 		} );
