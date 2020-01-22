@@ -694,9 +694,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	</script>
 
 		<?php
-		$ajax_data = array(
-			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
-		);
+		$ajax_data = [
+			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
+			'nonce'                           => wp_create_nonce( 'wc_facebook_settings_jsx' ),
+			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+		];
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
