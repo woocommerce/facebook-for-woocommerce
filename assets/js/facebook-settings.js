@@ -982,3 +982,16 @@ function syncShortDescription() {
 	}
 	);
 }
+
+jQuery( document ).ready( function( $ ) {
+
+	const pagenow = window.pagenow.length ? window.pagenow : '';
+
+	// WooCommerce settings page
+	if ( 'woocommerce_page_wc-settings' === pagenow ) {
+
+		$( '.woocommerce-save-button' ).on( 'click', function () {
+
+		} );
+	}
+} );
