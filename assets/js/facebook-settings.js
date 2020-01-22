@@ -1029,7 +1029,7 @@ jQuery( document ).ready( function( $ ) {
 	// WooCommerce settings page
 	if ( 'woocommerce_page_wc-settings' === pagenow ) {
 
-		$( '.woocommerce-save-button' ).on( 'click', function () {
+		$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
 
 			const categoriesAdded = getExcludedCategoriesAdded();
 			const tagsAdded       = getExcludedTagsAdded();
