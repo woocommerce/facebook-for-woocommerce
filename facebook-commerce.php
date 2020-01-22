@@ -2724,6 +2724,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Gets the configured Facebook messenger locale.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_locale() {
+
+		/**
+		 * Filters the configured Facebook messenger locale.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $locale the configured Facebook messenger locale
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_messenger_locale', $this->get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
+	}
+
+
 	/** Setter methods ************************************************************************************************/
 
 
