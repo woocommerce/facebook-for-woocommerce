@@ -57,9 +57,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the product description mode setting ID */
 	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
 
-	/** @var string the "enable scheduled resync setting ID */
-	const SETTING_ENABLE_SCHEDULED_RESYNC = 'enable_scheduled_resync';
-
 	/** @var string the scheduled resync offset setting ID */
 	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
 
@@ -2953,6 +2950,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_PRODUCT_SYNC ), $this );
+	}
+
+
+	/**
+	 * Determines whether the scheduled re-sync is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_scheduled_resync_enabled() {
+
+		/**
+		 * Filters whether the scheduled re-sync is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether the scheduled re-sync is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_scheduled_resync_enabled', $this->get_scheduled_resync_offset(), $this );
 	}
 
 

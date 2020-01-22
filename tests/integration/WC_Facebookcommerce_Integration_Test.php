@@ -510,6 +510,28 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
+	public function test_is_scheduled_resync_enabled() {
+
+		$this->assertTrue( $this->integration->is_scheduled_resync_enabled() );
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
+
+		$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
+	public function test_is_scheduled_resync_enabled_filter() {
+
+		add_filter( 'wc_facebook_is_scheduled_resync_enabled', function() {
+			return false;
+		} );
+
+		$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
