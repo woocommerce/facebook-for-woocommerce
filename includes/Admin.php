@@ -566,18 +566,14 @@ class Admin {
 						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
 					],
 					'value'       => $image_soruce ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
-					'class'       => 'enable-if-sync-enabled',
+					'class'       => 'enable-if-sync-enabled js-fb-product-image-source',
 				] );
 
-				woocommerce_wp_textarea_input( [
+				woocommerce_wp_text_input( [
 					'id'          => \WC_Facebook_Product::FB_PRODUCT_IMAGE,
-					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-					'desc_tip'    => true,
-					'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
-					'cols'        => 40,
-					'rows'        => 10,
+					'label'       => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
 					'value'       => $image,
-					'class'       => 'enable-if-sync-enabled',
+					'class'       => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
 				] );
 
 				woocommerce_wp_text_input( [

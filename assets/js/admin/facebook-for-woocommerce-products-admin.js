@@ -246,6 +246,17 @@ jQuery( document ).ready( function( $ ) {
 			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
 		} );
 
+		// show/hide Custom Image URL setting
+		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
+
+			let $container  = $( this ).closest( '.woocommerce_options_panel, .wc-metabox-content' );
+			let imageSource = $( this ).val();
+
+			$container.find( '.product-image-source-field' ).closest( '.form-field' ).hide();
+			$container.find( `.show-if-product-image-source-${imageSource}` ).closest( '.form-field' ).show();
+		} );
+
+		$( '.js-fb-product-image-source' ).trigger( 'change' );
 
 		let submitProductSave = false;
 
