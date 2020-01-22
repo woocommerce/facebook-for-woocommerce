@@ -1024,28 +1024,56 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	/**
+	 * Blocks the current modal.
+	 *
+	 * TODO: move this to a separate file, to avoid duplicated code {DM 2020-01-22}
+	 */
+	function blockModal() {
+		if ( ! isModalBlocked() ) {
+			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			} );
+		}
+	}
+
+
 	const pagenow = window.pagenow.length ? window.pagenow : '';
 
 	// WooCommerce settings page
 	if ( 'woocommerce_page_wc-settings' === pagenow ) {
 
+		let submitSettingsSave = false;
+
 		$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
+
+			console.log('button clicked');
+
+			if ( ! submitSettingsSave ) {
+				console.log('preventing');
+				e.preventDefault();
+			} else {
+				console.log('submitting');
+				return true;
+			}
+
+			const $submitButton = $( this );
 
 			const categoriesAdded = getExcludedCategoriesAdded();
 			const tagsAdded       = getExcludedTagsAdded();
 
 			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
-				const $submitButton = $( this );
-
-				e.preventDefault();
-
 				$.post( wc_facebook_settings_jsx.ajax_url, {
 					action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
 					security: wc_facebook_settings_jsx.set_excluded_terms_prompt_nonce,
 					categories: categoriesAdded,
 					tags: tagsAdded,
-				}, function( response ) {
+				}, function ( response ) {
 
 					if ( response && ! response.success ) {
 
@@ -1060,15 +1088,26 @@ jQuery( document ).ready( function( $ ) {
 
 						// exclude products: submit form as normal
 						$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
+
+							blockModal();
+
+							submitSettingsSave = true;
 							$submitButton.trigger( 'click' );
 						} );
 
 					} else {
 
 						// no modal displayed: submit form as normal
+						submitSettingsSave = true;
 						$submitButton.trigger( 'click' );
 					}
 				} );
+
+			} else {
+
+				// no terms added: submit form as normal
+				submitSettingsSave = true;
+				$submitButton.trigger( 'click' );
 			}
 		} );
 	}
