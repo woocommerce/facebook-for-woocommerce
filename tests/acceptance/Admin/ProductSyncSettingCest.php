@@ -205,4 +205,41 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * Tests that you can configure the product to use a custom image for Facebook sync
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_use_custom_image_in_facebook( AcceptanceTester $I ) {
+
+		$description = 'Test description.';
+		$image_url   = 'https://example.com/image.png';
+		$price       = '12.34';
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that you can configure the product to use a custom image for Facebook sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->fillField( self::FIELD_DESCRIPTION, $description );
+		$I->selectOption( self::FIELD_IMAGE_SOURCE, Products::PRODUCT_IMAGE_SOURCE_CUSTOM );
+		$I->fillField( self::FIELD_CUSTOM_IMAGE_URL, $image_url );
+		$I->fillField( self::FIELD_PRICE, $price );
+
+		// scroll to and click the Update button
+		$I->scrollTo( '#publish', 0, -200 );
+		$I->click( '#publish' );
+
+		$I->waitForText( 'Product updated' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->seeInField( self::FIELD_DESCRIPTION, $description );
+		$I->seeOptionIsSelected( self::FIELD_IMAGE_SOURCE, 'Use custom image' );
+		$I->seeInField( self::FIELD_CUSTOM_IMAGE_URL, $image_url );
+		$I->seeInField( self::FIELD_PRICE, $price );
+	}
+
+
 }
