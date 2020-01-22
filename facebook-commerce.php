@@ -2654,6 +2654,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook feed ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value feed ID value
+	 */
+	public function update_feed_id( $value ) {
+
+		$this->feed_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_FEED_ID, $this->feed_id );
+	}
+
+
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since x.y.z

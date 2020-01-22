@@ -206,6 +206,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_feed_id()
+	 *
+	 * @param string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_feed_id
+	 */
+	public function test_update_feed_id( $value, $expected ) {
+
+		$this->integration->update_feed_id( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_feed_id() );
+		$this->assertEquals( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_FEED_ID ) );
+	}
+
+
+	/** @see test_update_feed_id() */
+	public function provider_update_feed_id() {
+
+		return [
+			[ 'new-id', 'new-id' ],
+			[ [ 1, 2 ], '' ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
