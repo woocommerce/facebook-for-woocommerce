@@ -39,6 +39,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	// Number of days to query tip.
 	const FB_TIP_QUERY = 1;
 
+	// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}
 	const FB_VARIANT_IMAGE = 'fb_image';
 
 	const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
