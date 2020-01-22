@@ -1035,6 +1035,10 @@ jQuery( document ).ready( function( $ ) {
 
 		$( '.woocommerce-save-button' ).on( 'click', function () {
 
+			if ( excludedCategoriesAdded() || excludedTagsAdded() ) {
+
+				e.preventDefault();
+			}
 		} );
 	}
 } );
