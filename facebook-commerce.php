@@ -2496,6 +2496,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the external merchant settings ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_external_merchant_settings_id() {
+
+		if ( ! is_string( $this->external_merchant_settings_id ) ) {
+
+			$value = get_option( self::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '' );
+
+			$this->external_merchant_settings_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook external merchant settings ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $page_access_token Facebook external merchant settings ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_external_merchant_settings_id', $this->external_merchant_settings_id, $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z

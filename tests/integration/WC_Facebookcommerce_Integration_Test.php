@@ -71,6 +71,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_external_merchant_settings_id() */
+	public function test_get_external_merchant_settings_id() {
+
+		$this->assertEquals( 'ghi789', $this->integration->get_external_merchant_settings_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_external_merchant_settings_id() */
+	public function test_get_external_merchant_settings_id_filter() {
+
+		add_filter( 'wc_facebook_external_merchant_settings_id', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_external_merchant_settings_id() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -81,8 +99,11 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		update_option( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, 'abc123' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'def456' );
+		update_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, 'ghi789' );
 
-		$this->integration->product_catalog_id = null; // TODO: remove once the property is no longer set directly in the constructor
+		// TODO: remove once these properties are no longer set directly in the constructor
+		$this->integration->product_catalog_id            = null;
+		$this->integration->external_merchant_settings_id = null;
 	}
 
 
