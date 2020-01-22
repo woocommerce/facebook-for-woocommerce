@@ -488,6 +488,28 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::is_product_sync_enabled() */
+	public function test_is_product_sync_enabled() {
+
+		$this->assertTrue( $this->integration->is_product_sync_enabled() );
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC, 'no' );
+
+		$this->assertFalse( $this->integration->is_product_sync_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_product_sync_enabled() */
+	public function test_is_product_sync_enabled_filter() {
+
+		add_filter( 'wc_facebook_is_product_sync_enabled', function() {
+			return false;
+		} );
+
+		$this->assertFalse( $this->integration->is_product_sync_enabled() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -523,6 +545,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING      => 'yes',
+			\WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC           => 'yes',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
