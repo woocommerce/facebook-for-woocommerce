@@ -36,6 +36,44 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the latest pixel install time is stored */
 	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
 
+	/** @var string the facebook page ID setting ID */
+	const SETTING_FACEBOOK_PAGE_ID = 'facebook_page_id';
+
+	/** @var string the facebook pixel ID setting ID */
+	const SETTING_FACEBOOK_PIXEL_ID = 'facebook_pixel_id';
+
+	/** @var string the "enable advanced matching" setting ID */
+	const SETTING_ENABLE_ADVANCED_MATCHING = 'enable_advanced_matching';
+
+	/** @var string the "enable product sync" setting ID */
+	const SETTING_ENABLE_PRODUCT_SYNC = 'enable_product_sync';
+
+	/** @var string the excluded product category IDs setting ID */
+	const SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS = 'excluded_product_category_ids';
+
+	/** @var string the excluded product tag IDs setting ID */
+	const SETTING_EXCLUDED_PRODUCT_TAG_IDS = 'excluded_product_tag_ids';
+
+	/** @var string the product description mode setting ID */
+	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
+
+	/** @var string the "enable scheduled resync setting ID */
+	const SETTING_ENABLE_SCHEDULED_RESYNC = 'enable_scheduled_resync';
+
+	/** @var string the scheduled resync offset setting ID */
+	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
+
+	/** @var string the "enable messenger" setting ID */
+	const SETTING_ENABLE_MESSENGER = 'enable_messenger';
+
+	/** @var string the messenger locale setting ID */
+	const SETTING_MESSENGER_LOCALE = 'messenger_locale';
+
+	/** @var string the messenger greeting setting ID */
+	const SETTING_MESSENGER_GREETING = 'messenger_greeting';
+
+	/** @var string the messenger color HEX setting ID */
+	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
 
 	/** Legacy properties *********************************************************************************************/
 
