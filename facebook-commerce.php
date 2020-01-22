@@ -2605,6 +2605,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/** Setter methods ************************************************************************************************/
+
+
+	/**
+	 * Updates the Facebook page access token.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value page access token value
+	 */
+	public function update_page_access_token( $value ) {
+
+		$this->page_access_token = wc_clean( is_string( $value ) ? $value : '' );
+
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $this->page_access_token );
+	}
+
+
 	/**
 	 * Gets message HTML.
 	 *

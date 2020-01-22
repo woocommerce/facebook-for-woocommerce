@@ -125,6 +125,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_page_access_token()
+	 *
+	 * @param string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_page_access_token
+	 */
+	public function test_update_page_access_token( $value, $expected ) {
+
+		$this->integration->update_page_access_token( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_page_access_token() );
+		$this->assertEquals( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN ) );
+	}
+
+
+	/** @see test_update_page_access_token() */
+	public function provider_update_page_access_token() {
+
+		return [
+			[ 'new-token', 'new-token' ],
+			[ [ 1, 2 ], '' ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
