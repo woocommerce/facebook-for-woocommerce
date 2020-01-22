@@ -2653,7 +2653,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 *
 		 * @since x.y.z
 		 *
-		 * @param int[] $tag_ids the configured excluded product category IDs
+		 * @param int[] $tag_ids the configured excluded product tag IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] ), $this );
