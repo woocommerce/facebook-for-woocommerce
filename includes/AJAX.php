@@ -299,6 +299,11 @@ class AJAX {
 				),
 				'buttons' => $buttons,
 			] );
+
+		} else {
+
+			// the modal should not be displayed
+			wp_send_json_success();
 		}
 	}
 
