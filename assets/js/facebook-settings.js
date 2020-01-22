@@ -1037,6 +1037,13 @@ jQuery( document ).ready( function( $ ) {
 			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
 				e.preventDefault();
+
+				$.post( wc_facebook_settings_jsx.ajax_url, {
+					action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
+					security: wc_facebook_settings_jsx.set_excluded_terms_prompt_nonce,
+					categories: categoriesAdded,
+					tags: tagsAdded,
+				} );
 			}
 		} );
 	}
