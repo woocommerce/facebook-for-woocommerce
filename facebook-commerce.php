@@ -2601,6 +2601,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the configured Facebook pixel ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_facebook_pixel_id() {
+
+		/**
+		 * Filters the configured Facebook pixel ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $pixel_id the configured Facebook pixel ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_pixel_id', $this->get_option( self::SETTING_FACEBOOK_PIXEL_ID, '' ), $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z

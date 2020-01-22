@@ -282,6 +282,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_facebook_pixel_id() */
+	public function test_get_facebook_pixel_id() {
+
+		$this->assertEquals( 'facebook-pixel-id', $this->integration->get_facebook_pixel_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_facebook_pixel_id() */
+	public function test_get_facebook_pixel_id_filter() {
+
+		add_filter( 'wc_facebook_pixel_id', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_facebook_pixel_id() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -307,7 +325,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	private function add_settings() {
 
 		$settings = [
-			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => 'facebook-page-id',
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID  => 'facebook-page-id',
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID => 'facebook-pixel-id',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
