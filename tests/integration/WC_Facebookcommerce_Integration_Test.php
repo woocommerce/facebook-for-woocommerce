@@ -53,6 +53,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_product_catalog_id() */
+	public function test_get_product_catalog_id() {
+
+		$this->assertEquals( 'def456', $this->integration->get_product_catalog_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_product_catalog_id() */
+	public function test_get_product_catalog_id_filter() {
+
+		add_filter( 'wc_facebook_product_catalog_id', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_product_catalog_id() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -62,6 +80,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	private function add_options() {
 
 		update_option( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, 'abc123' );
+		update_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'def456' );
+
+		$this->integration->product_catalog_id = null; // TODO: remove once the property is no longer set directly in the constructor
 	}
 
 
