@@ -985,6 +985,49 @@ function syncShortDescription() {
 
 jQuery( document ).ready( function( $ ) {
 
+
+	/**
+	 * Checks if new excluded categories are being added.
+	 *
+	 * @return boolean
+	 */
+	function excludedCategoriesAdded() {
+
+		const newCategoryIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_categories' ).val();
+		let oldCategoryIDs   = [];
+
+		if ( window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
+			oldCategoryIDs = window.facebookAdsToolboxConfig.excludedCategoryIDs;
+		}
+
+		// get IDs that are in the new value that were not in the saved value
+		const addedCategoryIDs = $( newCategoryIDs ).not( oldCategoryIDs ).get();
+
+		return addedCategoryIDs.length > 0;
+	}
+
+
+	/**
+	 * Checks if new excluded categories are being added.
+	 *
+	 * @return boolean
+	 */
+	function excludedTagsAdded() {
+
+		const newTagIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_tags' ).val();
+		let oldTagIDs   = [];
+
+		if ( window.facebookAdsToolboxConfig.excludedTagIDs ) {
+			oldTagIDs = window.facebookAdsToolboxConfig.excludedTagIDs;
+		}
+
+		// get IDs that are in the new value that were not in the saved value
+		const addedTagIDs = $( newTagIDs ).not( oldTagIDs ).get();
+
+		return addedTagIDs.length > 0;
+	}
+
+
 	const pagenow = window.pagenow.length ? window.pagenow : '';
 
 	// WooCommerce settings page
