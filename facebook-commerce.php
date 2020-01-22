@@ -57,7 +57,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the product description mode setting ID */
 	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
 
-	/** @var string the "enable scheduled resync setting ID */
+	/** @var string the "enable scheduled resync" setting ID */
 	const SETTING_ENABLE_SCHEDULED_RESYNC = 'enable_scheduled_resync';
 
 	/** @var string the scheduled resync offset setting ID */
