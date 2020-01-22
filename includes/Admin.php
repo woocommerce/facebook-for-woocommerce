@@ -639,6 +639,7 @@ class Admin {
 		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
 		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
 		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
+		$image_source = $variation->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY );
 
 		woocommerce_wp_checkbox( [
 			'id'          => "variable_fb_sync_enabled$index",
@@ -662,15 +663,20 @@ class Admin {
 			'wrapper_class' => 'form-row form-row form-full',
 		] );
 
-		woocommerce_wp_text_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
-			'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-			'desc_tip'    => true,
-			'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
-			'value'       => $image_url,
-			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+		woocommerce_wp_select( [
+			'id'            => "variable_fb_product_image_source$index",
+			'name'          => "variable_fb_product_image_source[$index]",
+			'label'         => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
+			'options'       => [
+				Products::PRODUCT_IMAGE_SOURCE_PRODUCT        => __( 'Use variation image', 'facebook-for-woocommerce' ),
+				Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT => __( 'Use parent image', 'facebook-for-woocommerce' ),
+				Products::PRODUCT_IMAGE_SOURCE_CUSTOM         => __( 'Use custom image', 'facebook-for-woocommerce' ),
+			],
+			'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
+			'class'         => 'enable-if-sync-enabled js-fb-product-image-source',
+			'wrapper_class' => 'form-row form-row-full'
 		] );
 
 		woocommerce_wp_text_input( [
