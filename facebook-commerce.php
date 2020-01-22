@@ -57,9 +57,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the product description mode setting ID */
 	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
 
-	/** @var string the "enable scheduled resync" setting ID */
-	const SETTING_ENABLE_SCHEDULED_RESYNC = 'enable_scheduled_resync';
-
 	/** @var string the scheduled resync offset setting ID */
 	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
 
@@ -2580,6 +2577,48 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the configured Facebook page ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_facebook_page_id() {
+
+		/**
+		 * Filters the configured Facebook page ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $page_id the configured Facebook page ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_page_id', $this->get_option( self::SETTING_FACEBOOK_PAGE_ID, '' ), $this );
+	}
+
+
+	/**
+	 * Gets the configured Facebook pixel ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_facebook_pixel_id() {
+
+		/**
+		 * Filters the configured Facebook pixel ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $pixel_id the configured Facebook pixel ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_pixel_id', $this->get_option( self::SETTING_FACEBOOK_PIXEL_ID, '' ), $this );
+	}
+
+
+	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since x.y.z
@@ -2588,7 +2627,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_category_ids() {
 
-		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] );
+		/**
+		 * Filters the configured excluded product category IDs.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param int[] $category_ids the configured excluded product category IDs
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (array) apply_filters( 'wc_facebook_excluded_product_category_ids', $this->get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] ), $this );
 	}
 
 
@@ -2601,7 +2648,169 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_tag_ids() {
 
-		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] );
+		/**
+		 * Filters the configured excluded product tag IDs.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param int[] $tag_ids the configured excluded product tag IDs
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] ), $this );
+	}
+
+
+	/**
+	 * Gets the configured product description mode.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_product_description_mode() {
+
+		/**
+		 * Filters the configured product description mode.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $mode the configured product description mode
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$mode = (string) apply_filters( 'wc_facebook_product_description_mode', $this->get_option( self::SETTING_PRODUCT_DESCRIPTION_MODE, self::PRODUCT_DESCRIPTION_MODE_STANDARD ), $this );
+
+		$valid_modes = [
+			self::PRODUCT_DESCRIPTION_MODE_STANDARD,
+			self::PRODUCT_DESCRIPTION_MODE_SHORT,
+		];
+
+		if ( ! in_array( $mode, $valid_modes, true ) ) {
+			$mode = self::PRODUCT_DESCRIPTION_MODE_STANDARD;
+		}
+
+		return $mode;
+	}
+
+
+	/**
+	 * Gets the configured scheduled re-sync offset in seconds.
+	 *
+	 * Returns null if no offset is configured.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int|null
+	 */
+	public function get_scheduled_resync_offset() {
+
+		/**
+		 * Filters the configured scheduled re-sync offset.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param int|null $offset the configured scheduled re-sync offset in seconds
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$offset = (int) apply_filters( 'wc_facebook_scheduled_resync_offset', $this->get_option( self::SETTING_SCHEDULED_RESYNC_OFFSET, null ), $this );
+
+		if ( ! $offset ) {
+			$offset = null;
+		}
+
+		return $offset;
+	}
+
+
+	/**
+	 * Gets the configured Facebook messenger locale.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_locale() {
+
+		/**
+		 * Filters the configured Facebook messenger locale.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $locale the configured Facebook messenger locale
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_messenger_locale', $this->get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
+	}
+
+
+	/**
+	 * Gets the configured Facebook messenger greeting.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_greeting() {
+
+		/**
+		 * Filters the configured Facebook messenger greeting.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $greeting the configured Facebook messenger greeting
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', $this->get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
+
+		// TODO: update to SV_WC_Helper::str_truncate() when frameworked {CW 2020-01-22}
+		return substr( $greeting, 0, $this->get_messenger_greeting_max_characters() );
+	}
+
+
+	/**
+	 * Gets the maximum number of characters allowed in the messenger greeting.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int
+	 */
+	public function get_messenger_greeting_max_characters() {
+
+		$default = 80;
+
+		/**
+		 * Filters the maximum number of characters allowed in the messenger greeting.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param int $max the maximum number of characters allowed in the messenger greeting
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$max = (int) apply_filters( 'wc_facebook_messenger_greeting_max_characters', $default, $this );
+
+		return $max < 1 ? $default : $max;
+	}
+
+
+	/**
+	 * Gets the configured Facebook messenger color hex.
+	 *
+	 * This is used to style the messenger UI.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_color_hex() {
+
+		/**
+		 * Filters the configured Facebook messenger color hex.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $hex the configured Facebook messenger color hex
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_messenger_color_hex', $this->get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
 	}
 
 
@@ -2696,6 +2905,93 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function sanitize_facebook_credential( $value ) {
 
 		return wc_clean( is_string( $value ) ? $value : '' );
+	}
+
+
+	/** Conditional methods *******************************************************************************************/
+
+
+	/**
+	 * Determines whether advanced matching is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_advanced_matching_enabled() {
+
+		/**
+		 * Filters whether advanced matching is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether advanced matching is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_advanced_matching_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_ADVANCED_MATCHING ), $this );
+	}
+
+
+	/**
+	 * Determines whether product sync is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_product_sync_enabled() {
+
+		/**
+		 * Filters whether product sync is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether product sync is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_PRODUCT_SYNC ), $this );
+	}
+
+
+	/**
+	 * Determines whether the scheduled re-sync is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_scheduled_resync_enabled() {
+
+		/**
+		 * Filters whether the scheduled re-sync is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether the scheduled re-sync is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_scheduled_resync_enabled', $this->get_scheduled_resync_offset(), $this );
+	}
+
+
+	/**
+	 * Determines whether the Facebook messenger is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_messenger_enabled() {
+
+		/**
+		 * Filters whether the Facebook messenger is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether the Facebook messenger is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_messenger_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_MESSENGER ), $this );
 	}
 
 
