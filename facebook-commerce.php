@@ -2436,6 +2436,149 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/** Getter methods ************************************************************************************************/
+
+
+	/**
+	 * Gets the page access token.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_page_access_token() {
+
+		if ( ! is_string( $this->page_access_token ) ) {
+
+			$value = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
+
+			$this->page_access_token = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook page access token.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $page_access_token Facebook page access token
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_page_access_token', $this->page_access_token, $this );
+	}
+
+
+	/**
+	 * Gets the product catalog ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_product_catalog_id() {
+
+		if ( ! is_string( $this->product_catalog_id ) ) {
+
+			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
+
+			$this->product_catalog_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook product catalog ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $product_catalog_id Facebook product catalog ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
+	}
+
+
+	/**
+	 * Gets the external merchant settings ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_external_merchant_settings_id() {
+
+		if ( ! is_string( $this->external_merchant_settings_id ) ) {
+
+			$value = get_option( self::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '' );
+
+			$this->external_merchant_settings_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook external merchant settings ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $external_merchant_settings_id Facebook external merchant settings ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_external_merchant_settings_id', $this->external_merchant_settings_id, $this );
+	}
+
+
+	/**
+	 * Gets the feed ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_feed_id() {
+
+		if ( ! is_string( $this->feed_id ) ) {
+
+			$value = get_option( self::OPTION_FEED_ID, '' );
+
+			$this->feed_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook feed ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $feed_id Facebook feed ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_feed_id', $this->feed_id, $this );
+	}
+
+
+	/**
+	 * Gets the Facebook pixel install time in UTC seconds.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int|null
+	 */
+	public function get_pixel_install_time() {
+
+		if ( ! (int) $this->pixel_install_time ) {
+
+			$value = (int) get_option( self::OPTION_PIXEL_INSTALL_TIME, 0 );
+
+			$this->pixel_install_time = $value ?: null;
+		}
+
+		/**
+		 * Filters the Facebook pixel install time.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $pixel_install_time Facebook pixel install time in UTC seconds, or null if none set
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (int) apply_filters( 'wc_facebook_pixel_install_time', $this->pixel_install_time, $this );
+	}
+
+
 	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
@@ -2459,6 +2602,100 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function get_excluded_product_tag_ids() {
 
 		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] );
+	}
+
+
+	/** Setter methods ************************************************************************************************/
+
+
+	/**
+	 * Updates the Facebook page access token.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value page access token value
+	 */
+	public function update_page_access_token( $value ) {
+
+		$this->page_access_token = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $this->page_access_token );
+	}
+
+
+	/**
+	 * Updates the Facebook product catalog ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value product catalog ID value
+	 */
+	public function update_product_catalog_id( $value ) {
+
+		$this->product_catalog_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_PRODUCT_CATALOG_ID, $this->product_catalog_id );
+	}
+
+
+	/**
+	 * Updates the Facebook external merchant settings ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value external merchant settings ID value
+	 */
+	public function update_external_merchant_settings_id( $value ) {
+
+		$this->external_merchant_settings_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, $this->external_merchant_settings_id );
+	}
+
+
+	/**
+	 * Updates the Facebook feed ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value feed ID value
+	 */
+	public function update_feed_id( $value ) {
+
+		$this->feed_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_FEED_ID, $this->feed_id );
+	}
+
+
+	/**
+	 * Updates the Facebook pixel install time.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $value pixel install time, in UTC seconds
+	 */
+	public function update_pixel_install_time( $value ) {
+
+		$value = (int) $value;
+
+		$this->pixel_install_time = $value ?: null;
+
+		update_option( self::OPTION_PIXEL_INSTALL_TIME, $value ?: '' );
+	}
+
+
+	/**
+	 * Sanitizes a value that's a Facebook credential.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value value to sanitize
+	 * @return string
+	 */
+	private function sanitize_facebook_credential( $value ) {
+
+		return wc_clean( is_string( $value ) ? $value : '' );
 	}
 
 
