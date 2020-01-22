@@ -309,7 +309,7 @@ class AJAX {
 
 
 	/**
-	 * Get the products that would be excluded with the new settings.
+	 * Get the IDs of the products that would be excluded with the new settings.
 	 *
 	 * Queries products with sync enabled, belonging to the added term IDs
 	 * and not belonging to the term IDs that are already stored in the setting.
@@ -318,9 +318,9 @@ class AJAX {
 	 *
 	 * @param string[] $new_excluded_categories
 	 * @param string[] $new_excluded_tags
-	 * @return \WC_Product[]
+	 * @return int[]
 	 */
-	private function get_products_to_be_excluded( $new_excluded_categories, $new_excluded_tags ) {
+	private function get_products_to_be_excluded( $new_excluded_categories = [], $new_excluded_tags = [] ) {
 
 		// products with sync enabled
 		$sync_enabled_meta_query = [
