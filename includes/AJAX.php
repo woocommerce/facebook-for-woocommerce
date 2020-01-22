@@ -294,7 +294,7 @@ class AJAX {
 			wp_send_json_error( [
 				'message' => sprintf(
 					/* translators: Placeholder %s - <br/> tags */
-					__( 'The categories and/or tags that you have selected to exclude from sync contain products that are currently synced to Facebook.$sTo exclude these products from the Facebook sync, click Exclude Products. To review the category / tag exclusion settings, click Cancel.', 'facebook-for-woocommerce' ),
+					__( 'The categories and/or tags that you have selected to exclude from sync contain products that are currently synced to Facebook.%sTo exclude these products from the Facebook sync, click Exclude Products. To review the category / tag exclusion settings, click Cancel.', 'facebook-for-woocommerce' ),
 					'<br/><br/>'
 				),
 				'buttons' => $buttons,
