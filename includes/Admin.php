@@ -660,7 +660,7 @@ class Admin {
 			'rows'        => 5,
 			'value'       => $description,
 			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+			'wrapper_class' => 'form-row form-row-full',
 		] );
 
 		woocommerce_wp_select( [
@@ -700,7 +700,7 @@ class Admin {
 			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
 			'value'       => wc_format_decimal( $price ),
 			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+			'wrapper_class' => 'form-row form-full',
 		] );
 	}
 
