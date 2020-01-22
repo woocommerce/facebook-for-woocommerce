@@ -47,7 +47,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$this->integration->api_key            = '1234';
 		$this->integration->product_catalog_id = '1234';
 
-		$this->get_products_to_be_excluded = self::getMethod( 'get_products_to_be_excluded' );
+		$this->get_products_to_be_excluded = self::getMethod( AJAX::class, 'get_products_to_be_excluded' );
 
 		$this->ajax = new AJAX();
 
@@ -251,14 +251,15 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Use reflection to make a method public so we can test it.
 	 *
-	 * @param string $name method name
+	 * @param string $class_name class name
+	 * @param string $method_name method name
 	 * @return ReflectionMethod
 	 * @throws ReflectionException
 	 */
-	protected static function getMethod( $name ) {
+	protected static function getMethod( $class_name, $method_name ) {
 
-		$class  = new ReflectionClass( AJAX::class );
-		$method = $class->getMethod( $name );
+		$class  = new ReflectionClass( $class_name );
+		$method = $class->getMethod( $method_name );
 		$method->setAccessible( true );
 
 		return $method;
