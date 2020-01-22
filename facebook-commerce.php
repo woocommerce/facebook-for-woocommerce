@@ -2745,6 +2745,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Gets the configured Facebook messenger greeting.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_greeting() {
+
+		/**
+		 * Filters the configured Facebook messenger greeting.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $greeting the configured Facebook messenger greeting
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_messenger_greeting', $this->get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
+	}
+
+
 	/** Setter methods ************************************************************************************************/
 
 

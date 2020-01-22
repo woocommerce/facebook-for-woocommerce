@@ -405,6 +405,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_greeting() */
+	public function test_get_messenger_greeting() {
+
+		$this->assertEquals( 'How can we help you?', $this->integration->get_messenger_greeting() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_greeting() */
+	public function test_get_messenger_greeting_filter() {
+
+		add_filter( 'wc_facebook_messenger_greeting', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_messenger_greeting() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -437,6 +455,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE      => \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD,
 			\WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET       => HOUR_IN_SECONDS,
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE              => 'locale',
+			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
