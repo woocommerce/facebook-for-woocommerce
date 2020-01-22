@@ -2488,7 +2488,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 *
 		 * @since x.y.z
 		 *
-		 * @param string $page_access_token Facebook product catalog ID
+		 * @param string $product_catalog_id Facebook product catalog ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
@@ -2516,7 +2516,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 *
 		 * @since x.y.z
 		 *
-		 * @param string $page_access_token Facebook external merchant settings ID
+		 * @param string $external_merchant_settings_id Facebook external merchant settings ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (string) apply_filters( 'wc_facebook_external_merchant_settings_id', $this->external_merchant_settings_id, $this );
