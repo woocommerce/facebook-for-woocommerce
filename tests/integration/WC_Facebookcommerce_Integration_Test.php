@@ -300,6 +300,48 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_excluded_product_category_ids() */
+	public function test_get_excluded_product_category_ids() {
+
+		$ids = $this->integration->get_excluded_product_category_ids();
+
+		$this->assertIsArray( $ids );
+		$this->assertNotEmpty( $ids );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_excluded_product_category_ids() */
+	public function test_get_excluded_product_category_ids_filter() {
+
+		add_filter( 'wc_facebook_excluded_product_category_ids', function() {
+			return [];
+		} );
+
+		$this->assertEmpty( $this->integration->get_excluded_product_category_ids() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_excluded_product_tag_ids() */
+	public function test_get_excluded_product_tag_ids() {
+
+		$ids = $this->integration->get_excluded_product_tag_ids();
+
+		$this->assertIsArray( $ids );
+		$this->assertNotEmpty( $ids );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_excluded_product_tag_ids() */
+	public function test_get_excluded_product_tag_ids_filter() {
+
+		add_filter( 'wc_facebook_excluded_product_tag_ids', function() {
+			return [];
+		} );
+
+		$this->assertEmpty( $this->integration->get_excluded_product_tag_ids() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -325,8 +367,10 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	private function add_settings() {
 
 		$settings = [
-			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID  => 'facebook-page-id',
-			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID => 'facebook-pixel-id',
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID              => 'facebook-page-id',
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID             => 'facebook-pixel-id',
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ 1, 2 ],
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => [ 3, 4 ],
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
