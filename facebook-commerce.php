@@ -2436,6 +2436,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/** Getter methods ************************************************************************************************/
+
+
+	/**
+	 * Gets the page access token.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_page_access_token() {
+
+		if ( ! is_string( $this->page_access_token ) ) {
+
+			$value = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
+
+			$this->page_access_token = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook page access token.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $page_access_token Facebook page access token
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_page_access_token', $this->page_access_token, $this );
+	}
+
+
 	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
