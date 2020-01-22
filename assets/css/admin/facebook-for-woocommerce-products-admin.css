@@ -11,6 +11,11 @@
 	padding-top: 10px;
 }
 
+.woocommerce_variation .fb-sync-enabled-field .checkbox {
+	margin-top: 2px !important;
+	margin-right: 5px !important;
+}
+
 .woocommerce_variation .fb-product-image-source-field {
 	margin: 1em 0;
 }

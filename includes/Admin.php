@@ -626,12 +626,12 @@ class Admin {
 		$image_source = $variation->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY );
 
 		woocommerce_wp_checkbox( [
-			'id'          => "variable_fb_sync_enabled$index",
-			'name'        => "variable_fb_sync_enabled[$index]",
-			'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-			'value'       => wc_bool_to_string( 'no' !== $sync_enabled ),
-			'class'       => 'checkbox js-variable-fb-sync-toggle',
-			'style'       => 'margin-right: 5px !important',
+			'id'            => "variable_fb_sync_enabled$index",
+			'name'          => "variable_fb_sync_enabled[$index]",
+			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
+			'class'         => 'checkbox js-variable-fb-sync-toggle',
+			'wrapper_class' => 'fb-sync-enabled-field'
 		] );
 
 		woocommerce_wp_textarea_input( [
