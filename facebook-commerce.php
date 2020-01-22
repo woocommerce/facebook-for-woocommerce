@@ -2617,9 +2617,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function update_page_access_token( $value ) {
 
-		$this->page_access_token = wc_clean( is_string( $value ) ? $value : '' );
+		$this->page_access_token = $this->sanitize_facebook_credential( $value );
 
 		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $this->page_access_token );
+	}
+
+
+	/**
+	 * Sanitizes a value that's a Facebook credential.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value value to sanitize
+	 * @return string
+	 */
+	private function sanitize_facebook_credential( $value ) {
+
+		return wc_clean( is_string( $value ) ? $value : '' );
 	}
 
 
