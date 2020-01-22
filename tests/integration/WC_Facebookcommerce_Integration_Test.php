@@ -35,6 +35,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_page_access_token() */
+	public function test_get_page_access_token() {
+
+		$this->assertEquals( 'abc123', $this->integration->get_page_access_token() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_page_access_token() */
+	public function test_get_page_access_token_filter() {
+
+		add_filter( 'wc_facebook_page_access_token', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_page_access_token() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -43,6 +61,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 */
 	private function add_options() {
 
+		update_option( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, 'abc123' );
 	}
 
 
