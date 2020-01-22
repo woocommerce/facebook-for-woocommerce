@@ -2406,7 +2406,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
 			],
-			'fb_sync_exclude_categories'       => [
+			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
@@ -2417,7 +2417,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
-			'fb_sync_exclude_tags'             => [
+			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
@@ -2445,7 +2445,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_category_ids() {
 
-		return (array) $this->get_option( 'fb_sync_exclude_categories', [] );
+		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] );
 	}
 
 
@@ -2458,7 +2458,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_excluded_product_tag_ids() {
 
-		return (array) $this->get_option( 'fb_sync_exclude_tags', [] );
+		return (array) $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] );
 	}
 
 
