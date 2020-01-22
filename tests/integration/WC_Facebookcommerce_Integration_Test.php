@@ -466,6 +466,28 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::is_advanced_matching_enabled() */
+	public function test_is_advanced_matching_enabled() {
+
+		$this->assertTrue( $this->integration->is_advanced_matching_enabled() );
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'no' );
+
+		$this->assertFalse( $this->integration->is_advanced_matching_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_advanced_matching_enabled() */
+	public function test_is_advanced_matching_enabled_filter() {
+
+		add_filter( 'wc_facebook_is_advanced_matching_enabled', function() {
+			return false;
+		} );
+
+		$this->assertFalse( $this->integration->is_advanced_matching_enabled() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -500,6 +522,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE              => 'locale',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
+			\WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING      => 'yes',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );

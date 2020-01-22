@@ -2911,6 +2911,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/** Conditional methods *******************************************************************************************/
+
+
+	/**
+	 * Determines whether advanced matching is enabled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_advanced_matching_enabled() {
+
+		/**
+		 * Filters whether advanced matching is enabled.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param bool $is_enabled whether advanced matching is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_advanced_matching_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_ADVANCED_MATCHING ), $this );
+	}
+
+
 	/**
 	 * Gets message HTML.
 	 *
