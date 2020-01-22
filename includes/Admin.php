@@ -761,7 +761,7 @@ class Admin {
 		global $current_screen;
 
 		// bail if not on the product screens
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-settings' ], true ) ) {
 			return;
 		}
 
