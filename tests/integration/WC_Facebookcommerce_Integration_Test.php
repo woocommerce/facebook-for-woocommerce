@@ -342,6 +342,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_product_description_mode() */
+	public function test_get_product_description_mode() {
+
+		$this->assertEquals( \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD, $this->integration->get_product_description_mode() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_product_description_mode() */
+	public function test_get_product_description_mode_filter() {
+
+		add_filter( 'wc_facebook_product_description_mode', function() {
+			return \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT;
+		} );
+
+		$this->assertEquals( \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT, $this->integration->get_product_description_mode() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -371,6 +389,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID             => 'facebook-pixel-id',
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ 1, 2 ],
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => [ 3, 4 ],
+			\WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE      => \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD,
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );

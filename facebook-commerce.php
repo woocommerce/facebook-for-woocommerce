@@ -2663,6 +2663,38 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Gets the configured product description mode.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_product_description_mode() {
+
+		/**
+		 * Filters the configured product description mode.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $mode the configured product description mode
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$mode = (string) apply_filters( 'wc_facebook_product_description_mode', $this->get_option( self::SETTING_PRODUCT_DESCRIPTION_MODE, self::PRODUCT_DESCRIPTION_MODE_STANDARD ), $this );
+
+		$valid_modes = [
+			self::PRODUCT_DESCRIPTION_MODE_STANDARD,
+			self::PRODUCT_DESCRIPTION_MODE_SHORT,
+		];
+
+		if ( ! in_array( $mode, $valid_modes, true ) ) {
+			$mode = self::PRODUCT_DESCRIPTION_MODE_STANDARD;
+		}
+
+		return $mode;
+	}
+
+
 	/** Setter methods ************************************************************************************************/
 
 
