@@ -31,6 +31,9 @@ class AJAX {
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_prompt',             [ $this, 'handle_set_product_sync_prompt' ] );
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_bulk_action_prompt', [ $this, 'handle_set_product_sync_bulk_action_prompt' ] );
 
+		// maybe output a modal prompt when setting excluded terms
+		add_action( 'wp_ajax_facebook_for_woocommerce_set_excluded_terms_prompt', [ $this, 'handle_set_excluded_terms_prompt' ] );
+
 		// set product visibility in Facebook
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_products_visibility', [ $this, 'set_products_visibility' ] );
 	}
@@ -229,6 +232,18 @@ class AJAX {
 		}
 
 		wp_send_json_success();
+	}
+
+
+	/**
+	 * Maybe triggers a modal warning when the merchant adds terms to the excluded terms.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_set_excluded_terms_prompt() {
+
 	}
 
 
