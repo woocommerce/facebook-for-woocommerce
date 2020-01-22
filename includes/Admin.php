@@ -651,15 +651,15 @@ class Admin {
 		] );
 
 		woocommerce_wp_textarea_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
-			'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
-			'desc_tip'    => true,
-			'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
-			'cols'        => 40,
-			'rows'        => 5,
-			'value'       => $description,
-			'class'       => 'enable-if-sync-enabled',
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
+			'label'         => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
+			'cols'          => 40,
+			'rows'          => 5,
+			'value'         => $description,
+			'class'         => 'enable-if-sync-enabled',
 			'wrapper_class' => 'form-row form-row-full',
 		] );
 
@@ -689,17 +689,17 @@ class Admin {
 		] );
 
 		woocommerce_wp_text_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
-			'label'       => sprintf(
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
+			'label'         => sprintf(
 				/* translators: Placeholders %1$s - WC currency symbol */
 				__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
 				get_woocommerce_currency_symbol()
 			),
-			'desc_tip'    => true,
-			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
-			'value'       => wc_format_decimal( $price ),
-			'class'       => 'enable-if-sync-enabled',
+			'desc_tip'      => true,
+			'description'   => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
+			'value'         => wc_format_decimal( $price ),
+			'class'         => 'enable-if-sync-enabled',
 			'wrapper_class' => 'form-row form-full',
 		] );
 	}
