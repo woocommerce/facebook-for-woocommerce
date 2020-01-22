@@ -519,19 +519,12 @@ class Admin {
 	public function add_product_settings_tab_content() {
 		global $post;
 
-		$woo_product  = new \WC_Facebook_Product( $post->ID );
 		// all products have sync enabled unless explicitly disabled
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
 		$image_source = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
-
-		if ( $woo_product->is_type( 'variable' ) ) {
-			$image_setting = $woo_product->get_use_parent_image();
-		} else {
-			$image_setting = null;
-		}
 
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
@@ -590,18 +583,6 @@ class Admin {
 					'value'       => $price,
 					'class'       => 'enable-if-sync-enabled',
 				] );
-
-				if ( null !== $image_setting ) {
-
-					woocommerce_wp_checkbox( [
-						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
-						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
-						'desc_tip'    => true,
-						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
-						'value'       => wc_bool_to_string( (bool) $image_setting ),
-						'class'       => 'checkbox enable-if-sync-enabled',
-					] );
-				}
 
 				?>
 			</div>
