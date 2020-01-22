@@ -2695,6 +2695,35 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Gets the configured scheduled re-sync offset in seconds.
+	 *
+	 * Returns null if no offset is configured.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return int|null
+	 */
+	public function get_scheduled_resync_offset() {
+
+		/**
+		 * Filters the configured scheduled re-sync offset.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param int|null $offset the configured scheduled re-sync offset in seconds
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		$offset = (int) apply_filters( 'wc_facebook_scheduled_resync_offset', $this->get_option( self::SETTING_SCHEDULED_RESYNC_OFFSET, null ), $this );
+
+		if ( ! $offset ) {
+			$offset = null;
+		}
+
+		return $offset;
+	}
+
+
 	/** Setter methods ************************************************************************************************/
 
 

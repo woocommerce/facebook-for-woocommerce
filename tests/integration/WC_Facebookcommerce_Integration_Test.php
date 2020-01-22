@@ -360,6 +360,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
+	public function test_get_scheduled_resync_offset() {
+
+		$this->assertEquals( HOUR_IN_SECONDS, $this->integration->get_scheduled_resync_offset() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
+	public function test_get_scheduled_resync_offset_not_set() {
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
+
+		$this->assertNull( $this->integration->get_scheduled_resync_offset() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_product_description_mode() */
+	public function test_get_scheduled_resync_offset_filter() {
+
+		add_filter( 'wc_facebook_scheduled_resync_offset', function() {
+			return HOUR_IN_SECONDS * 2;
+		} );
+
+		$this->assertEquals( HOUR_IN_SECONDS * 2, $this->integration->get_scheduled_resync_offset() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -390,6 +417,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ 1, 2 ],
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => [ 3, 4 ],
 			\WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE      => \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD,
+			\WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET       => HOUR_IN_SECONDS,
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
