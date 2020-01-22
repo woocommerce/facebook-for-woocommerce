@@ -423,6 +423,31 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_greeting_max_characters() */
+	public function test_get_messenger_greeting_max_characters() {
+
+		$this->assertEquals( 80, $this->integration->get_messenger_greeting_max_characters() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_greeting_max_characters() */
+	public function test_get_messenger_greeting_max_characters_filter() {
+
+		add_filter( 'wc_facebook_messenger_greeting_max_characters', function() {
+			return 20;
+		} );
+
+		$this->assertEquals( 20, $this->integration->get_messenger_greeting_max_characters() );
+
+		// ensure the value is never corrupted
+		add_filter( 'wc_facebook_messenger_greeting_max_characters', function() {
+			return 'bad value';
+		} );
+
+		$this->assertEquals( 80, $this->integration->get_messenger_greeting_max_characters() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
