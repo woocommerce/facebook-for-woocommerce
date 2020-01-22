@@ -954,14 +954,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$woo_product->set_use_parent_image(
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			( isset( $_POST[ self::FB_VARIANT_IMAGE ] ) ) ?
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			sanitize_text_field( wp_unslash( $_POST[ self::FB_VARIANT_IMAGE ] ) ) :
-			null
-		);
-
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
 			$wp_id,
