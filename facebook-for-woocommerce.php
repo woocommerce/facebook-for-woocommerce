@@ -21,6 +21,7 @@
 
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
+
 	include_once 'includes/fbutils.php';
 
 	class WC_Facebookcommerce {
