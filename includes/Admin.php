@@ -559,7 +559,7 @@ class Admin {
 						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
 					],
 					'value'       => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
-					'class'       => 'enable-if-sync-enabled js-fb-product-image-source',
+					'class'       => 'short enable-if-sync-enabled js-fb-product-image-source',
 				] );
 
 				woocommerce_wp_text_input( [
