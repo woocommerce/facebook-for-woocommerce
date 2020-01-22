@@ -2794,6 +2794,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Gets the configured Facebook messenger color hex.
+	 *
+	 * This is used to style the messenger UI.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_messenger_color_hex() {
+
+		/**
+		 * Filters the configured Facebook messenger color hex.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $hex the configured Facebook messenger color hex
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_messenger_color_hex', $this->get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
+	}
+
+
 	/** Setter methods ************************************************************************************************/
 
 

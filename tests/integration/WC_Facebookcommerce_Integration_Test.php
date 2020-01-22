@@ -448,6 +448,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_color_hex() */
+	public function test_get_messenger_color_hex() {
+
+		$this->assertEquals( '#123', $this->integration->get_messenger_color_hex() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_messenger_color_hex() */
+	public function test_get_messenger_color_hex_filter() {
+
+		add_filter( 'wc_facebook_messenger_color_hex', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_messenger_color_hex() );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
@@ -481,6 +499,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET       => HOUR_IN_SECONDS,
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE              => 'locale',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
+			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
