@@ -80,6 +80,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
+
+
+	/** @var string|null the configured page access token */
+	private $page_access_token;
+
+	/** @var string|null the configured product catalog ID */
+	public $product_catalog_id;
+
+	/** @var string|null the configured external merchant settings ID */
+	public $external_merchant_settings_id;
+
+	/** @var string|null the configured feed ID */
+	public $feed_id;
+
+	/** @var string|null the configured pixel install time */
+	public $pixel_install_time;
+
+
 	/** Legacy properties *********************************************************************************************/
 
 
