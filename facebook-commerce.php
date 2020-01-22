@@ -2639,6 +2639,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook external merchant settings ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value external merchant settings ID value
+	 */
+	public function update_external_merchant_settings_id( $value ) {
+
+		$this->external_merchant_settings_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, $this->external_merchant_settings_id );
+	}
+
+
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since x.y.z

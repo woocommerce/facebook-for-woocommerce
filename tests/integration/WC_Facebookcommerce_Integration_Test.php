@@ -179,6 +179,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_external_merchant_settings_id()
+	 *
+	 * @param string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_external_merchant_settings_id
+	 */
+	public function test_update_external_merchant_settings_id( $value, $expected ) {
+
+		$this->integration->update_external_merchant_settings_id( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_external_merchant_settings_id() );
+		$this->assertEquals( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID ) );
+	}
+
+
+	/** @see test_update_external_merchant_settings_id() */
+	public function provider_update_external_merchant_settings_id() {
+
+		return [
+			[ 'new-id', 'new-id' ],
+			[ [ 1, 2 ], '' ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
