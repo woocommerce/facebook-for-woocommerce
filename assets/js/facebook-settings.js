@@ -987,11 +987,11 @@ jQuery( document ).ready( function( $ ) {
 
 
 	/**
-	 * Checks if new excluded categories are being added.
+	 * Gets any new excluded categories being added.
 	 *
-	 * @return boolean
+	 * @return string[]
 	 */
-	function excludedCategoriesAdded() {
+	function getExcludedCategoriesAdded() {
 
 		const newCategoryIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_categories' ).val();
 		let oldCategoryIDs   = [];
@@ -1000,19 +1000,17 @@ jQuery( document ).ready( function( $ ) {
 			oldCategoryIDs = window.facebookAdsToolboxConfig.excludedCategoryIDs;
 		}
 
-		// get IDs that are in the new value that were not in the saved value
-		const addedCategoryIDs = $( newCategoryIDs ).not( oldCategoryIDs ).get();
-
-		return addedCategoryIDs.length > 0;
+		// return IDs that are in the new value that were not in the saved value
+		return $( newCategoryIDs ).not( oldCategoryIDs ).get();
 	}
 
 
 	/**
-	 * Checks if new excluded categories are being added.
+	 * Gets any new excluded tags being added.
 	 *
-	 * @return boolean
+	 * @return string[]
 	 */
-	function excludedTagsAdded() {
+	function getExcludedTagsAdded() {
 
 		const newTagIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_tags' ).val();
 		let oldTagIDs   = [];
@@ -1021,10 +1019,8 @@ jQuery( document ).ready( function( $ ) {
 			oldTagIDs = window.facebookAdsToolboxConfig.excludedTagIDs;
 		}
 
-		// get IDs that are in the new value that were not in the saved value
-		const addedTagIDs = $( newTagIDs ).not( oldTagIDs ).get();
-
-		return addedTagIDs.length > 0;
+		// return IDs that are in the new value that were not in the saved value
+		return $( newTagIDs ).not( oldTagIDs ).get();
 	}
 
 
@@ -1035,7 +1031,10 @@ jQuery( document ).ready( function( $ ) {
 
 		$( '.woocommerce-save-button' ).on( 'click', function () {
 
-			if ( excludedCategoriesAdded() || excludedTagsAdded() ) {
+			const categoriesAdded = getExcludedCategoriesAdded();
+			const tagsAdded       = getExcludedTagsAdded();
+
+			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
 				e.preventDefault();
 			}
