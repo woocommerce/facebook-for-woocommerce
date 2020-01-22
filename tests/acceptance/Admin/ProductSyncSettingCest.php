@@ -48,19 +48,22 @@ class ProductSyncSettingCest {
 
 
 	/**
-	 * Test that the field is present.
+	 * Test that the fields are present.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
-	public function try_field_present( AcceptanceTester $I ) {
+	public function try_fields_present( AcceptanceTester $I ) {
 
 		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
 
-		$I->wantTo( 'Test that the field is present' );
+		$I->wantTo( 'Test that the fields are present' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook Description', '.form-field' );
+		$I->see( 'Facebook Product Image', '.form-field' );
+		$I->see( 'Facebook Price', '.form-field' );
 	}
 
 
