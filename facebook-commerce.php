@@ -2453,8 +2453,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			],
 
 			self::SETTING_MESSENGER_GREETING => [
-				'title' => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'  => 'text',
+				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
 			],
 
 		];
