@@ -226,8 +226,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Hooks
 		if ( is_admin() ) {
+
 			$this->init_pixel();
+
 			$this->init_form_fields();
+
+			if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
+				include_once 'includes/fbutils.php';
+			}
+
 			// Display an info banner for eligible pixel and user.
 			if ( $this->external_merchant_settings_id
 			&& $this->pixel_id
@@ -2471,10 +2478,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
-
-		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
-			include_once 'includes/fbutils.php';
-		}
 	}
 
 
