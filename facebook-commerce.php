@@ -2465,7 +2465,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'    => 'color',
 				'default' => '#0084ff',
-				'css'     => 'width: 100px',
+				'css'     => 'width: 6em;',
 			],
 
 		];
