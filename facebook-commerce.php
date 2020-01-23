@@ -2367,12 +2367,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => '',
 			],
 
-			'fb_pixel_id'                      => [
-				'title'       => __( 'Pixel ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook pixel', 'facebook-for-woocommerce' ),
-				'default'     => '',
+			self::SETTING_FACEBOOK_PIXEL_ID => [
+				'title'   => __( 'Pixel', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => '',
 			],
+
 			'fb_pixel_use_pii'                 => [
 				'title'       => __( 'Use Advanced Matching on pixel?', 'facebook-for-woocommerce' ),
 				'type'        => 'checkbox',
