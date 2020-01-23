@@ -2373,12 +2373,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => '',
 			],
 
-			'fb_pixel_use_pii'                 => [
-				'title'       => __( 'Use Advanced Matching on pixel?', 'facebook-for-woocommerce' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
-				'default'     => 'yes',
+			self::SETTING_ENABLE_ADVANCED_MATCHING => [
+				'title'    => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => ' ',
+				'desc_tip' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
+				'default'  => 'yes',
 			],
+
 			'fb_sync_options'                  => [
 				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
