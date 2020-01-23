@@ -1378,7 +1378,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						$this->reset_all_products();
 					}
 
-					$this->settings['fb_product_catalog_id'] = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
+					$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
 				}
 			}
 
@@ -1510,7 +1510,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->init_settings();
 			$this->update_page_access_token( '' );
-			$this->settings['fb_product_catalog_id'] = '';
+			$this->update_product_catalog_id( '' );
 
 			$this->settings['fb_pixel_id']      = '';
 			$this->settings['fb_pixel_use_pii'] = 'no';
