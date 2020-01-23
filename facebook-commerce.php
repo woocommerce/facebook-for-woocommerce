@@ -2462,7 +2462,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_product_catalog_id() {
 
-		if ( ! is_string( $this->get_product_catalog_id() ) ) {
+		if ( ! is_string( $this->product_catalog_id ) ) {
 
 			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
 
@@ -2477,7 +2477,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $product_catalog_id Facebook product catalog ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->get_product_catalog_id(), $this );
+		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
 	}
 
 
