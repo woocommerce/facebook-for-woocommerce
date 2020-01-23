@@ -2461,6 +2461,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
 			],
 
+			self::SETTING_MESSENGER_COLOR_HEX => [
+				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
+				'type'    => 'color',
+				'default' => '#0084ff',
+				'css'     => 'width: 100px',
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
