@@ -16,8 +16,9 @@ class ProductSyncSettingCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+
 		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			'fb_api_key'            => '1234',
 			'fb_product_catalog_id' => '1234',
 		] );
 
@@ -97,9 +98,9 @@ class ProductSyncSettingCest {
 		 * Set these in the database so that the product processing hooks are properly set
 		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
 		$plugin_settings = [
-			'fb_api_key'            => 'fake-key',
-			'fb_product_catalog_id' => '1111',
+			'fb_product_catalog_id' => '1234',
 		];
 		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
 
@@ -131,9 +132,9 @@ class ProductSyncSettingCest {
 		 * Set these in the database so that the product processing hooks are properly set
 		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
 		$plugin_settings = [
-			'fb_api_key'            => 'fake-key',
-			'fb_product_catalog_id' => '1111',
+			'fb_product_catalog_id' => '1234',
 		];
 		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
 

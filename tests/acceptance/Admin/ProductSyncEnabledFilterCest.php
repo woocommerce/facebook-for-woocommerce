@@ -29,9 +29,10 @@ class ProductSyncEnabledFilterCest {
 		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
 		list( $excluded_tag_id, $excluded_tag_taxonomy_id )           = $I->haveTermInDatabase( 'Excluded Tag', 'product_tag' );
 
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+
 		// configure the category and tag as excluded from facebook sync
 		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			'fb_api_key'                 => '1234',
 			'fb_product_catalog_id'      => '1234',
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $excluded_category_id ],
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => [ $excluded_tag_id ],

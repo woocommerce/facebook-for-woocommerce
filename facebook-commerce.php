@@ -177,10 +177,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		? $this->settings['fb_page_id']
 		: '';
 
-		$this->api_key = isset( $this->settings['fb_api_key'] )
-		? $this->settings['fb_api_key']
-		: '';
-
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 		if ( ! $pixel_id ) {
 			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
@@ -212,7 +208,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
 			include_once 'includes/fbgraph.php';
-			$this->fbgraph = new WC_Facebookcommerce_Graph_API( $this->api_key );
+			$this->fbgraph = new WC_Facebookcommerce_Graph_API( $this->get_page_access_token() );
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
@@ -324,7 +320,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 
 			// Only load product processing hooks if we have completed setup.
-			if ( $this->api_key && $this->product_catalog_id ) {
+			if ( $this->get_page_access_token() && $this->product_catalog_id ) {
 
 				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
 
@@ -445,7 +441,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( isset( $_POST['request_time'] ) ) {
 			$request_time = esc_js( sanitize_text_field( wp_unslash( $_POST['request_time'] ) ) );
 		}
-		if ( $this->settings['fb_api_key'] ) {
+		if ( $this->get_page_access_token() ) {
 			if ( isset( $this->background_processor ) ) {
 				$is_processing = $this->background_processor->handle_cron_healthcheck();
 				$remaining     = $this->background_processor->get_item_count();
@@ -1368,7 +1364,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
 
 				if ( ctype_alnum( $api_key ) ) {
-					$this->settings['fb_api_key'] = $api_key;
+					$this->update_page_access_token( $api_key );
 				}
 			}
 
@@ -1394,7 +1390,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					// To prevent race conditions with pixel-only settings,
 					// only save a pixel if we already have an API key.
-					if ( $this->settings['fb_api_key'] ) {
+					if ( $this->get_page_access_token() ) {
 
 						$this->settings['fb_pixel_id'] = $pixel_id;
 
@@ -1513,7 +1509,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 
 			$this->init_settings();
-			$this->settings['fb_api_key']            = '';
+			$this->update_page_access_token( '' );
 			$this->settings['fb_product_catalog_id'] = '';
 
 			$this->settings['fb_pixel_id']      = '';
@@ -1559,7 +1555,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function ajax_check_feed_upload_status() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( $this->settings['fb_api_key'] ) {
+		if ( $this->get_page_access_token() ) {
 			$response = array(
 				'connected' => true,
 				'status'    => 'in progress',
@@ -1837,7 +1833,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function checks() {
 
 		// check required fields
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
@@ -1856,7 +1852,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// WooCommerce 2.x upgrade nag
-		if ( $this->api_key && ( ! isset( $this->background_processor ) ) ) {
+		if ( $this->get_page_access_token() && ( ! isset( $this->background_processor ) ) ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - WooCommerce version */
@@ -2049,10 +2045,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 			WC_Facebookcommerce_Utils::log(
 				'No API key or catalog ID: ' .
-				$this->api_key . ' and ' . $this->product_catalog_id
+				$this->get_page_access_token() . ' and ' . $this->product_catalog_id
 			);
 			wp_die();
 			return;
@@ -2111,9 +2107,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			update_option( self::FB_CART_URL, wc_get_cart_url() );
 		}
 
-		$sanitized_settings = $this->settings;
-		unset( $sanitized_settings['fb_api_key'] );
-
 		// Get all published posts. First unsynced then already-synced.
 		$post_ids_new = WC_Facebookcommerce_Utils::get_wp_posts(
 			self::FB_PRODUCT_GROUP_ID,
@@ -2132,7 +2125,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		WC_Facebookcommerce_Utils::fblog(
 			'Attempting to sync ' . $total . ' ( ' .
 			$total_new . ' new) products with settings: ',
-			$sanitized_settings,
+			$this->settings,
 			false
 		);
 
@@ -2234,9 +2227,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return false;
 		}
 
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 			self::log(
-				'No API key or catalog ID: ' . $this->api_key .
+				'No API key or catalog ID: ' . $this->get_page_access_token() .
 				' and ' . $this->product_catalog_id
 			);
 			$this->fb_wp_die();
@@ -3088,12 +3081,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function get_page_name() {
 		$page_name = '';
 		if ( ! empty( $this->settings['fb_page_id'] ) &&
-		! empty( $this->settings['fb_api_key'] ) ) {
+		! empty( $this->get_page_access_token() ) ) {
 
-			$page_name = $this->fbgraph->get_page_name(
-				$this->settings['fb_page_id'],
-				$this->settings['fb_api_key']
-			);
+			$page_name = $this->fbgraph->get_page_name( $this->settings['fb_page_id'], $this->get_page_access_token() );
 		}
 		return $page_name;
 	}
@@ -3157,8 +3147,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$page_name       = $this->get_page_name();
 
 		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->settings['fb_page_id'] ) || empty( $this->settings['fb_api_key'] );
-		$apikey_invalid = ! $pre_setup && $this->settings['fb_api_key'] && ! $page_name;
+		$pre_setup      = empty( $this->settings['fb_page_id'] ) || empty( $this->get_page_access_token() );
+		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
 		$redirect_uri           = '';
 		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
