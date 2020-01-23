@@ -2435,6 +2435,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'text',
 			],
 
+			[
+				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
+				'type'  => 'title'
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
