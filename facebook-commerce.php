@@ -199,10 +199,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		? true
 		: false;
 
-		$this->product_catalog_id = isset( $this->settings['fb_product_catalog_id'] )
-		? $this->settings['fb_product_catalog_id']
-		: '';
-
 		$this->external_merchant_settings_id =
 		isset( $this->settings['fb_external_merchant_settings_id'] )
 		? $this->settings['fb_external_merchant_settings_id']
