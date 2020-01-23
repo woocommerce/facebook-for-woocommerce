@@ -61,6 +61,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_product_catalog_id() */
 	public function test_get_product_catalog_id() {
 
+		// we have to call the setter here because although the option is set, the getter reads from the property first
+		$this->integration->update_product_catalog_id( 'def456' );
 		$this->assertEquals( 'def456', $this->integration->get_product_catalog_id() );
 	}
 
