@@ -17,8 +17,9 @@ class ProductVariationSyncSettingCest {
 	 */
     public function _before( AcceptanceTester $I ) {
 
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			'fb_api_key'            => '1234',
+	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+
+	    $I->haveFacebookForWooCommerceSettingsInDatabase( [
 			'fb_product_catalog_id' => '1234',
 		] );
 
