@@ -2379,16 +2379,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
 				'default'     => 'yes',
 			],
-			'fb_api_key'                       => [
-				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => sprintf(
-					/* translators: Placeholders: %s - Facebook Login permissions */
-					__( 'A non-expiring Page Token with %s permissions.', 'facebook-for-woocommerce' ),
-					'<code>manage_pages</code>'
-				),
-				'default'     => '',
-			],
 			'fb_sync_options'                  => [
 				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
