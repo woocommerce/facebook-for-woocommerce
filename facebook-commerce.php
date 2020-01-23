@@ -2354,11 +2354,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product_tags = $term_query->get_terms();
 
-		$this->form_fields = [
-			'fb_settings_heading'              => [
-				'title' => __( 'Debug Mode', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
+		$form_fields = [
+
+			[
+				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
+				'type' => 'title',
 			],
+
 			'fb_page_id'                       => [
 				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
@@ -2426,6 +2428,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				],
 			],
 		];
+
+		$this->form_fields = $form_fields;
 
 		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
 			include_once 'includes/fbutils.php';
