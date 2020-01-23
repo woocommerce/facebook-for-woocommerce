@@ -2452,6 +2452,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'options' => \WC_Facebookcommerce_MessengerChat::get_supported_locales(),
 			],
 
+			self::SETTING_MESSENGER_GREETING => [
+				'title' => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'  => 'text',
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
