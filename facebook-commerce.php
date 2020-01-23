@@ -2361,12 +2361,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title',
 			],
 
-			'fb_page_id'                       => [
-				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
+			self::SETTING_FACEBOOK_PAGE_ID => [
+				'title'       => __( 'Facebook page', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook page.', 'facebook-for-woocommerce' ),
 				'default'     => '',
 			],
+
 			'fb_pixel_id'                      => [
 				'title'       => __( 'Pixel ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
