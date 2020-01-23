@@ -2358,19 +2358,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			[
 				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
-				'type' => 'title',
+				'type'  => 'title',
 			],
 
 			'fb_page_id'                       => [
 				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'The unique identifier for your Facebook page.', 'facebook-for-woocommerce' ),
-				'default'     => '',
-			],
-			'fb_product_catalog_id'            => [
-				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your product catalog, on Facebook.', 'facebook-for-woocommerce' ),
 				'default'     => '',
 			],
 			'fb_pixel_id'                      => [
