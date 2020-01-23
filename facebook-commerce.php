@@ -1429,7 +1429,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
 
 				if ( ctype_digit( $external_merchant_settings_id ) ) {
-					$this->settings['fb_external_merchant_settings_id'] = $external_merchant_settings_id;
+					$this->update_external_merchant_settings_id( $external_merchant_settings_id );
 				}
 			}
 
@@ -1501,7 +1501,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_REQUEST ) ) {
-			$ems = $this->settings['fb_external_merchant_settings_id'];
+			$ems = $this->get_external_merchant_settings_id();
 			if ( $ems ) {
 				WC_Facebookcommerce_Utils::fblog(
 					'Deleted all settings!',
@@ -1519,7 +1519,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['fb_pixel_use_pii'] = 'no';
 
 			$this->settings['fb_page_id']                       = '';
-			$this->settings['fb_external_merchant_settings_id'] = '';
+			$this->update_external_merchant_settings_id( '' );
 			$this->settings['pixel_install_time']               = '';
 			$this->settings['fb_feed_id']                       = '';
 			$this->settings['fb_upload_id']                     = '';
