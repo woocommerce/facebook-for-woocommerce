@@ -212,7 +212,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
 			include_once 'includes/fbgraph.php';
-			$this->fbgraph = new WC_Facebookcommerce_Graph_API( $this->api_key );
+			$this->fbgraph = new WC_Facebookcommerce_Graph_API( $this->get_page_access_token() );
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
@@ -324,7 +324,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 
 			// Only load product processing hooks if we have completed setup.
-			if ( $this->api_key && $this->product_catalog_id ) {
+			if ( $this->get_page_access_token() && $this->product_catalog_id ) {
 
 				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
 
@@ -1837,7 +1837,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function checks() {
 
 		// check required fields
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
@@ -1856,7 +1856,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// WooCommerce 2.x upgrade nag
-		if ( $this->api_key && ( ! isset( $this->background_processor ) ) ) {
+		if ( $this->get_page_access_token() && ( ! isset( $this->background_processor ) ) ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - WooCommerce version */
@@ -2049,10 +2049,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 			WC_Facebookcommerce_Utils::log(
 				'No API key or catalog ID: ' .
-				$this->api_key . ' and ' . $this->product_catalog_id
+				$this->get_page_access_token() . ' and ' . $this->product_catalog_id
 			);
 			wp_die();
 			return;
@@ -2234,9 +2234,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return false;
 		}
 
-		if ( ! $this->api_key || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
 			self::log(
-				'No API key or catalog ID: ' . $this->api_key .
+				'No API key or catalog ID: ' . $this->get_page_access_token() .
 				' and ' . $this->product_catalog_id
 			);
 			$this->fb_wp_die();
