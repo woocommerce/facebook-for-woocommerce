@@ -2398,12 +2398,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_categories ) ? $product_categories : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
