@@ -41,6 +41,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_page_access_token() */
 	public function test_get_page_access_token() {
 
+		// we have to call the setter here because although the option is set, the getter reads from the property first
+		$this->integration->update_page_access_token( 'abc123' );
 		$this->assertEquals( 'abc123', $this->integration->get_page_access_token() );
 	}
 
