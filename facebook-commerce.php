@@ -2386,6 +2386,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title'
 			],
 
+			self::SETTING_ENABLE_PRODUCT_SYNC => [
+				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
+			],
+
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
