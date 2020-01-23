@@ -320,7 +320,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 
 			// Only load product processing hooks if we have completed setup.
-			if ( $this->get_page_access_token() && $this->product_catalog_id ) {
+			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
 
 				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
 
@@ -1204,7 +1204,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$create_product_group_result = $this->check_api_result(
 			$this->fbgraph->create_product_group(
-				$this->product_catalog_id,
+				$this->get_product_catalog_id(),
 				$product_group_data
 			),
 			$product_group_data,
@@ -1374,7 +1374,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				if ( ctype_digit( $product_catalog_id ) ) {
 
-					if ( $this->product_catalog_id != '' && $this->product_catalog_id != $_REQUEST['product_catalog_id'] ) {
+					if ( empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
 						$this->reset_all_products();
 					}
 
@@ -1566,7 +1566,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						include_once 'includes/fbproductfeed.php';
 					}
 					$this->fbproductfeed = new WC_Facebook_Product_Feed(
-						$this->product_catalog_id,
+						$this->get_product_catalog_id(),
 						$this->fbgraph
 					);
 				}
@@ -1833,7 +1833,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function checks() {
 
 		// check required fields
-		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
@@ -2045,10 +2045,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
 			WC_Facebookcommerce_Utils::log(
 				'No API key or catalog ID: ' .
-				$this->get_page_access_token() . ' and ' . $this->product_catalog_id
+				$this->get_page_access_token() . ' and ' . $this->get_product_catalog_id()
 			);
 			wp_die();
 			return;
@@ -2080,7 +2080,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$is_valid_product_catalog =
-		$this->fbgraph->validate_product_catalog( $this->product_catalog_id );
+		$this->fbgraph->validate_product_catalog( $this->get_product_catalog_id() );
 
 		if ( ! $is_valid_product_catalog ) {
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
@@ -2227,17 +2227,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return false;
 		}
 
-		if ( ! $this->get_page_access_token() || ! $this->product_catalog_id ) {
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
 			self::log(
 				'No API key or catalog ID: ' . $this->get_page_access_token() .
-				' and ' . $this->product_catalog_id
+				' and ' . $this->get_product_catalog_id()
 			);
 			$this->fb_wp_die();
 			return false;
 		}
 		$this->remove_resync_message();
 		$is_valid_product_catalog =
-		$this->fbgraph->validate_product_catalog( $this->product_catalog_id );
+		$this->fbgraph->validate_product_catalog( $this->get_product_catalog_id() );
 
 		if ( ! $is_valid_product_catalog ) {
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
@@ -2269,13 +2269,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 		if ( $this->test_mode ) {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
-				$this->product_catalog_id,
+				$this->get_product_catalog_id(),
 				$this->fbgraph,
 				$this->feed_id
 			);
 		} else {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed(
-				$this->product_catalog_id,
+				$this->get_product_catalog_id(),
 				$this->fbgraph,
 				$this->feed_id
 			);
@@ -2462,11 +2462,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_product_catalog_id() {
 
-		if ( ! is_string( $this->product_catalog_id ) ) {
+		if ( ! is_string( $this->get_product_catalog_id() ) ) {
 
 			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
 
-			$this->product_catalog_id = is_string( $value ) ? $value : '';
+			$this->update_product_catalog_id( is_string( $value ) ? $value : '' );
 		}
 
 		/**
@@ -2477,7 +2477,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $product_catalog_id Facebook product catalog ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
+		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->get_product_catalog_id(), $this );
 	}
 
 
@@ -3553,7 +3553,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
 		$product_fbid_result = $this->fbgraph->get_facebook_id(
-			$this->product_catalog_id,
+			$this->get_product_catalog_id(),
 			$fb_retailer_id
 		);
 
