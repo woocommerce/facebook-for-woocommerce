@@ -2351,6 +2351,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product_tags = $term_query->get_terms();
 
+		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
 		$form_fields = [
 
 			[
@@ -2448,8 +2451,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
-				'default' => 'en_US',
-				'options' => \WC_Facebookcommerce_MessengerChat::get_supported_locales(),
+				'default' => $default_locale,
+				'options' => $messenger_locales,
 			],
 
 			self::SETTING_MESSENGER_GREETING => [
