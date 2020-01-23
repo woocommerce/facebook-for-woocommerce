@@ -2411,6 +2411,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_tags ) ? $product_tags : [],
 				'custom_attributes' => [
