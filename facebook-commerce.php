@@ -2379,12 +2379,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
 				'default'     => 'yes',
 			],
-			'fb_external_merchant_settings_id' => [
-				'title'       => __( 'External Merchant Settings ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your external merchant settings, on Facebook.', 'facebook-for-woocommerce' ),
-				'default'     => '',
-			],
 			'fb_api_key'                       => [
 				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
