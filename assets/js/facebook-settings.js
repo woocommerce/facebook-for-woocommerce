@@ -989,7 +989,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Gets any new excluded categories being added.
 	 *
-	 * @return string[]
+	 * @return {string[]}
 	 */
 	function getExcludedCategoriesAdded() {
 
