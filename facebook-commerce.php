@@ -2418,6 +2418,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
+			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
+				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
+				'type'     => 'select',
+				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
+				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
+				'options'  => [
+					self::PRODUCT_DESCRIPTION_MODE_STANDARD => __( 'Standard description', 'facebook-for-woocommerce' ),
+					self::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
+				],
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
