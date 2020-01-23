@@ -207,7 +207,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			include_once 'includes/fbutils.php';
 		}
 
-		WC_Facebookcommerce_Utils::$ems = $this->external_merchant_settings_id;
+		WC_Facebookcommerce_Utils::$ems = $this->get_external_merchant_settings_id();
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
 			include_once 'includes/fbgraph.php';
@@ -224,7 +224,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->init_pixel();
 			$this->init_form_fields();
 			// Display an info banner for eligible pixel and user.
-			if ( $this->external_merchant_settings_id
+			if ( $this->get_external_merchant_settings_id()
 			&& $this->pixel_id
 			&& $this->pixel_install_time ) {
 				$should_query_tip =
@@ -239,7 +239,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						include_once 'includes/fbinfobanner.php';
 					}
 					WC_Facebookcommerce_Info_Banner::get_instance(
-						$this->external_merchant_settings_id,
+						$this->get_external_merchant_settings_id(),
 						$this->fbgraph,
 						$should_query_tip
 					);
@@ -740,7 +740,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			pixelId: '<?php echo $this->pixel_id ? esc_js( $this->pixel_id ) : ''; ?>',
 			advanced_matching_supported: true
 		},
-		diaSettingId: '<?php echo $this->external_merchant_settings_id ? esc_js( $this->external_merchant_settings_id ) : ''; ?>',
+		diaSettingId: '<?php echo $this->get_external_merchant_settings_id() ? esc_js( $this->get_external_merchant_settings_id() ) : ''; ?>',
 		store: {
 			baseUrl: window.location.protocol + '//' + window.location.host,
 			baseCurrency:'<?php echo esc_js( WC_Admin_Settings::get_option( 'woocommerce_currency' ) ); ?>',
@@ -3174,7 +3174,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$cta_button_text = __( 'Create Ad', $domain );
 			$redirect_uri    = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
-				. $this->external_merchant_settings_id . '&version=2'
+				. $this->get_external_merchant_settings_id() . '&version=2'
 				. '&entry_point=admin_panel';
 		}
 
@@ -3244,7 +3244,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						</li>
 					</ul>
 
-					<span <?php echo ( ! $can_manage || $apikey_invalid || ! isset( $this->external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
+					<span
+						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
+						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
 						<?php if ( $pre_setup ) : ?>
 
