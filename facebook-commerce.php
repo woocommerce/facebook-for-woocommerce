@@ -420,9 +420,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
 		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
-			if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) {
-				include_once 'facebook-commerce-messenger-chat.php';
-			}
 			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
 		}
 	}
