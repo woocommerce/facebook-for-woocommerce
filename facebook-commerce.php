@@ -695,22 +695,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		<?php
 		$ajax_data = [
-			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
-			'nonce'                           => wp_create_nonce( 'wc_facebook_settings_jsx' ),
-			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
 		];
-
-		// enqueue modal functions
-		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
 				'/assets/js/facebook-settings.js?ts=' . time(),
 				__FILE__
-			),
-			[ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ],
-			\WC_Facebookcommerce::PLUGIN_VERSION
+			)
 		);
 		wp_localize_script(
 			'wc_facebook_settings_jsx',

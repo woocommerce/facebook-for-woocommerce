@@ -77,12 +77,21 @@ class Admin {
 	public function enqueue_scripts() {
 		global $current_screen;
 
+		$modal_screens = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-settings',
+		];
+
 		if ( isset( $current_screen->id ) ) {
 
-			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
+			if ( in_array( $current_screen->id, $modal_screens ) ) {
 
 				// enqueue modal functions
 				wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+			}
+
+			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
 				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
@@ -91,6 +100,16 @@ class Admin {
 					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+				] );
+			}
+
+			if ( 'woocommerce_page_wc-settings' === $current_screen->id ) {
+
+				wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+				wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
+					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
+					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 				] );
 			}
 		}
