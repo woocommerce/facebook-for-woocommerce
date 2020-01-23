@@ -2440,6 +2440,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title'
 			],
 
+			self::SETTING_ENABLE_MESSENGER => [
+				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => ' ',
+				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
+				'default'  => 'yes',
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
