@@ -70,9 +70,9 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
-				$.post( wc_facebook_settings_jsx.ajax_url, {
+				$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
 					action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
-					security: wc_facebook_settings_jsx.set_excluded_terms_prompt_nonce,
+					security: facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
 					categories: categoriesAdded,
 					tags: tagsAdded,
 				}, function ( response ) {
