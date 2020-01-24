@@ -3246,7 +3246,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					<span
 						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
-						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
+						<?php echo ( ! $can_manage || $apikey_invalid || empty( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
 						<?php if ( $pre_setup ) : ?>
 
