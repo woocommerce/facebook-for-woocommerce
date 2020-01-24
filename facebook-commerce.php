@@ -241,16 +241,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test::$fbgraph = $this->fbgraph;
 
 			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
-				$this->pixel_install_time             = current_time( 'mysql' );
-				$this->settings['pixel_install_time'] = $this->pixel_install_time;
-				update_option(
-					$this->get_option_key(),
-					apply_filters(
-						'woocommerce_settings_api_sanitized_fields_' . $this->id,
-						$this->settings
-					)
-				);
+				$this->update_pixel_install_time( time() );
 			}
+
 			add_action( 'admin_notices', array( $this, 'checks' ) );
 			add_action(
 				'woocommerce_update_options_integration_facebookcommerce',
@@ -1386,7 +1379,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						$this->settings['fb_pixel_id'] = $pixel_id;
 
 						if ( $this->pixel_id != $pixel_id ) {
-							$this->settings['pixel_install_time'] = current_time( 'mysql' );
+							$this->update_pixel_install_time( time() );
 						}
 
 					} else {
@@ -1508,7 +1501,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->settings['fb_page_id']                       = '';
 			$this->update_external_merchant_settings_id( '' );
-			$this->settings['pixel_install_time']               = '';
+			$this->update_pixel_install_time( 0 );
 			$this->settings['fb_feed_id']                       = '';
 			$this->settings['fb_upload_id']                     = '';
 			$this->settings['upload_end_time']                  = '';
