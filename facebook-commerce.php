@@ -182,11 +182,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		? $pixel_id
 		: '';
 
-		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
-		&& $this->settings['fb_pixel_use_pii'] === 'yes'
-		? true
-		: false;
-
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
 		}
