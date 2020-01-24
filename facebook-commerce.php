@@ -1506,7 +1506,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['fb_pixel_id']      = '';
 			$this->settings['fb_pixel_use_pii'] = 'no';
 
-			$this->settings['fb_page_id']                       = '';
+			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+
 			$this->update_external_merchant_settings_id( '' );
 			$this->settings['pixel_install_time']               = '';
 			$this->settings['fb_feed_id']                       = '';
