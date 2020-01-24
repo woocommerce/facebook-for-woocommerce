@@ -3069,12 +3069,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	function get_page_name() {
+	/**
+	 * Gets the name of the configured Facebook page.
+	 *
+	 * @return string
+	 */
+	public function get_page_name() {
+
 		$page_name = '';
 
 		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		}
+
 		return $page_name;
 	}
 
