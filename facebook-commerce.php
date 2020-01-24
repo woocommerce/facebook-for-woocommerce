@@ -173,10 +173,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Load the settings.
 		$this->init_settings();
 
-		$this->page_id = isset( $this->settings['fb_page_id'] )
-		? $this->settings['fb_page_id']
-		: '';
-
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 		if ( ! $pixel_id ) {
 			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
@@ -184,10 +180,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 		$this->pixel_id = isset( $pixel_id )
 		? $pixel_id
-		: '';
-
-		$this->pixel_install_time = isset( $this->settings['pixel_install_time'] )
-		? $this->settings['pixel_install_time']
 		: '';
 
 		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
@@ -210,12 +202,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Hooks
 		if ( is_admin() ) {
+
 			$this->init_pixel();
+
 			$this->init_form_fields();
+
+			if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
+				include_once 'includes/fbutils.php';
+			}
+
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
 			&& $this->pixel_id
-			&& $this->pixel_install_time ) {
+			&& $this->get_pixel_install_time() ) {
 				$should_query_tip =
 				WC_Facebookcommerce_Utils::check_time_cap(
 					get_option( 'fb_info_banner_last_query_time', '' ),
@@ -241,17 +240,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
 			$integration_test::$fbgraph = $this->fbgraph;
 
-			if ( ! $this->pixel_install_time && $this->pixel_id ) {
-				$this->pixel_install_time             = current_time( 'mysql' );
-				$this->settings['pixel_install_time'] = $this->pixel_install_time;
-				update_option(
-					$this->get_option_key(),
-					apply_filters(
-						'woocommerce_settings_api_sanitized_fields_' . $this->id,
-						$this->settings
-					)
-				);
+			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
+				$this->update_pixel_install_time( time() );
 			}
+
 			add_action( 'admin_notices', array( $this, 'checks' ) );
 			add_action(
 				'woocommerce_update_options_integration_facebookcommerce',
@@ -404,9 +396,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
 		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
-			if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) {
-				include_once 'facebook-commerce-messenger-chat.php';
-			}
 			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
 		}
 	}
@@ -1336,136 +1325,116 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Saves settings via AJAX (to preserve window context for onboarding).
+	 *
+	 * @internal
 	 */
-	function ajax_save_fb_settings() {
+	public function ajax_save_fb_settings() {
 
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'save settings', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
-		if ( isset( $_REQUEST ) ) {
-
-			if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {
-				// This is not a request from our plugin,
-				// some other handler or plugin probably
-				// wants to handle it and wp_die() after.
-				return;
-			}
-
-			if ( isset( $_REQUEST['api_key'] ) ) {
-
-				$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
-
-				if ( ctype_alnum( $api_key ) ) {
-					$this->update_page_access_token( $api_key );
-				}
-			}
-
-			if ( isset( $_REQUEST['product_catalog_id'] ) ) {
-
-				$product_catalog_id = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
-
-				if ( ctype_digit( $product_catalog_id ) ) {
-
-					if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
-						$this->reset_all_products();
-					}
-
-					$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
-				}
-			}
-
-			if ( isset( $_REQUEST['pixel_id'] ) ) {
-
-				$pixel_id = sanitize_text_field ( wp_unslash( $_REQUEST['pixel_id'] ) );
-
-				if ( ctype_digit( $pixel_id ) ) {
-
-					// To prevent race conditions with pixel-only settings,
-					// only save a pixel if we already have an API key.
-					if ( $this->get_page_access_token() ) {
-
-						$this->settings['fb_pixel_id'] = $pixel_id;
-
-						if ( $this->pixel_id != $pixel_id ) {
-							$this->settings['pixel_install_time'] = current_time( 'mysql' );
-						}
-
-					} else {
-
-						WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-						echo 'Not saving pixel-only settings';
-
-						wp_die();
-					}
-				}
-			}
-
-			if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
-				$this->settings['fb_pixel_use_pii'] = ( $_REQUEST['pixel_use_pii'] === 'true' || $_REQUEST['pixel_use_pii'] === true ) ? 'yes' : 'no';
-			}
-
-			if ( isset( $_REQUEST['page_id'] ) ) {
-
-				$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
-
-				if ( ctype_digit( $page_id ) ) {
-					$this->settings['fb_page_id'] = $page_id;
-				}
-			}
-
-			if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
-
-				$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
-
-				if ( ctype_digit( $external_merchant_settings_id ) ) {
-					$this->update_external_merchant_settings_id( $external_merchant_settings_id );
-				}
-			}
-
-			if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
-				$this->settings['is_messenger_chat_plugin_enabled'] = ( $_REQUEST['is_messenger_chat_plugin_enabled'] === 'true' || $_REQUEST['is_messenger_chat_plugin_enabled'] === true ) ? 'yes' : 'no';
-			}
-
-			if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-				$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
-
-				$greeting_text_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
-
-				if ( ctype_digit( $greeting_text_code ) ) {
-					$this->settings['msger_chat_customization_greeting_text_code'] = $greeting_text_code;
-				}
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
-				$this->settings['msger_chat_customization_locale'] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
-
-				$theme_color_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
-
-				if ( ctype_digit( $theme_color_code ) ) {
-					$this->settings['msger_chat_customization_theme_color_code'] = $theme_color_code;
-				}
-			}
-
-			update_option(
-				$this->get_option_key(),
-				apply_filters(
-					'woocommerce_settings_api_sanitized_fields_' . $this->id,
-					$this->settings
-				)
-			);
-
-			WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-			echo 'settings_saved';
-
-		} else {
-			echo 'No Request';
+		if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {
+			// This is not a request from our plugin,
+			// some other handler or plugin probably
+			// wants to handle it and wp_die() after.
+			return;
 		}
+
+		if ( isset( $_REQUEST['api_key'] ) ) {
+
+			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
+
+			if ( ctype_alnum( $api_key ) ) {
+				$this->update_page_access_token( $api_key );
+			}
+		}
+
+		if ( isset( $_REQUEST['product_catalog_id'] ) ) {
+
+			$product_catalog_id = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
+
+			if ( ctype_digit( $product_catalog_id ) ) {
+
+				if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
+					$this->reset_all_products();
+				}
+
+				$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
+			}
+		}
+
+		if ( isset( $_REQUEST['pixel_id'] ) ) {
+
+			$pixel_id = sanitize_text_field( wp_unslash( $_REQUEST['pixel_id'] ) );
+
+			if ( ctype_digit( $pixel_id ) ) {
+
+				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
+				if ( $this->get_page_access_token() ) {
+
+					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
+
+					if ( $this->pixel_id != $pixel_id ) {
+						$this->update_pixel_install_time( time() );
+					}
+
+				} else {
+
+					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
+					echo 'Not saving pixel-only settings';
+
+					wp_die();
+				}
+			}
+		}
+
+		if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['pixel_use_pii'] ) ) );
+		}
+
+		if ( isset( $_REQUEST['page_id'] ) ) {
+
+			$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
+
+			if ( ctype_digit( $page_id ) ) {
+				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
+			}
+		}
+
+		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
+
+			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
+
+			if ( ctype_digit( $external_merchant_settings_id ) ) {
+				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
+			}
+		}
+
+		if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
+			$this->settings[ self::SETTING_ENABLE_MESSENGER ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) );
+		}
+
+		if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
+			$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
+		}
+
+		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_GREETING ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
+		}
+
+		if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_LOCALE ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
+		}
+
+		if ( ! empty( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] = sanitize_hex_color( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
+		}
+
+		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
+		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
+
+		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
+		echo 'settings_saved';
 
 		wp_die();
 	}
@@ -1507,12 +1476,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['fb_pixel_id']      = '';
 			$this->settings['fb_pixel_use_pii'] = 'no';
 
-			$this->settings['fb_page_id']                       = '';
+			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+
 			$this->update_external_merchant_settings_id( '' );
-			$this->settings['pixel_install_time']               = '';
+			$this->update_pixel_install_time( 0 );
 			$this->update_feed_id( '' );
-			$this->settings['fb_upload_id']                     = '';
-			$this->settings['upload_end_time']                  = '';
+			$this->settings['fb_upload_id']    = '';
+			$this->settings['upload_end_time'] = '';
 
 			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
 
@@ -2335,82 +2305,125 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product_tags = $term_query->get_terms();
 
-		$this->form_fields = [
-			'fb_settings_heading'              => [
-				'title' => __( 'Debug Mode', 'facebook-for-woocommerce' ),
+		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		$form_fields = [
+
+			[
+				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
 			],
-			'fb_page_id'                       => [
-				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook page.', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_FACEBOOK_PAGE_ID => [
+				'title'   => __( 'Facebook page', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => '',
 			],
-			'fb_product_catalog_id'            => [
-				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your product catalog, on Facebook.', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_FACEBOOK_PIXEL_ID => [
+				'title'   => __( 'Pixel', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => '',
 			],
-			'fb_pixel_id'                      => [
-				'title'       => __( 'Pixel ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook pixel', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_ENABLE_ADVANCED_MATCHING => [
+				'title'   => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
 			],
-			'fb_pixel_use_pii'                 => [
-				'title'       => __( 'Use Advanced Matching on pixel?', 'facebook-for-woocommerce' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
-				'default'     => 'yes',
-			],
-			'fb_external_merchant_settings_id' => [
-				'title'       => __( 'External Merchant Settings ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your external merchant settings, on Facebook.', 'facebook-for-woocommerce' ),
-				'default'     => '',
-			],
-			'fb_api_key'                       => [
-				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => sprintf(
-					/* translators: Placeholders: %s - Facebook Login permissions */
-					__( 'A non-expiring Page Token with %s permissions.', 'facebook-for-woocommerce' ),
-					'<code>manage_pages</code>'
-				),
-				'default'     => '',
-			],
-			'fb_sync_options'                  => [
-				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
+
+			[
+				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
 			],
+
+			self::SETTING_ENABLE_PRODUCT_SYNC => [
+				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
+			],
+
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_categories ) ? $product_categories : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_tags ) ? $product_tags : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
+			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
+				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
+				'type'     => 'select',
+				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
+				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
+				'options'  => [
+					self::PRODUCT_DESCRIPTION_MODE_STANDARD => __( 'Standard description', 'facebook-for-woocommerce' ),
+					self::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
+				],
+			],
+
+			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
+				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+				'type'  => 'text',
+			],
+
+			[
+				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
+				'type'  => 'title'
+			],
+
+			self::SETTING_ENABLE_MESSENGER => [
+				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => ' ',
+				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
+				'default'  => 'yes',
+			],
+
+			self::SETTING_MESSENGER_LOCALE => [
+				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
+				'type'    => 'select',
+				'default' => $default_locale,
+				'options' => $messenger_locales,
+			],
+
+			self::SETTING_MESSENGER_GREETING => [
+				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
+			],
+
+			self::SETTING_MESSENGER_COLOR_HEX => [
+				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
+				'type'    => 'color',
+				'default' => '#0084ff',
+				'css'     => 'width: 6em;',
+			],
+
 		];
 
-		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
-			include_once 'includes/fbutils.php';
-		}
+		$this->form_fields = $form_fields;
 	}
 
 
@@ -2534,7 +2547,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since x.y.z
 	 *
-	 * @return int|null
+	 * @return int
 	 */
 	public function get_pixel_install_time() {
 
@@ -3070,13 +3083,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	function get_page_name() {
-		$page_name = '';
-		if ( ! empty( $this->settings['fb_page_id'] ) &&
-		! empty( $this->get_page_access_token() ) ) {
+	/**
+	 * Gets the name of the configured Facebook page.
+	 *
+	 * @return string
+	 */
+	public function get_page_name() {
 
-			$page_name = $this->fbgraph->get_page_name( $this->settings['fb_page_id'], $this->get_page_access_token() );
+		$page_name = '';
+
+		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		}
+
 		return $page_name;
 	}
 
@@ -3139,7 +3158,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$page_name       = $this->get_page_name();
 
 		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->settings['fb_page_id'] ) || empty( $this->get_page_access_token() );
+		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
 		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
 		$redirect_uri           = '';
@@ -3300,13 +3319,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ),
+													esc_html( $this->get_facebook_page_id() ),
 													esc_html( $page_name ) ); ?>
 											<?php else : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ) ); ?>
+													esc_html( $this->get_facebook_page_id() ) ); ?>
 											<?php endif; ?>
 
 											<span id="sync_complete" style="margin-left: 5px; <?php echo ( ! $connected || $currently_syncing ) ? ' display: none;' : ''; ?>">
