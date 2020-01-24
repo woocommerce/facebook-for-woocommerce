@@ -558,6 +558,59 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::ajax_save_fb_settings()
+	 *
+	 * @param string $setting the ID of the setting being tested
+	 * @param string $param the name of the submitted param
+	 * @param string $submitted the value submitted
+	 * @param string $expected the value that should be stored
+	 *
+	 * @dataProvider provider_ajax_save_fb_settings();
+	 */
+	public function test_ajax_save_fb_settings( $setting, $param, $submitted, $expected = null ) {
+
+		// disable wp_die()
+		add_filter( 'wp_die_handler', function() { return '__return_false'; } );
+
+		// login as administrator
+		$user = new WP_User( wp_insert_user( [ 'user_login' => 'admin_' . wp_rand(), 'user_pass' => 'password' ] ) );
+		$user->add_role( 'administrator' );
+
+		wp_set_current_user( $user->ID );
+
+		// bypass nonce verification, setup plugin flag, and add submitted param
+		$_REQUEST[ '_wpnonce' ]               = wp_create_nonce( 'wc_facebook_settings_jsx' );
+		$_REQUEST['facebook_for_woocommerce'] = true;
+		$_REQUEST[ $param ]                   = $submitted;
+
+		// some settings won't be set unless an access is already stored
+		$this->integration->update_page_access_token( 'abc123' );
+
+		$this->integration->ajax_save_fb_settings();
+
+		$this->assertEquals( null === $expected ? $submitted : $expected, $this->integration->get_option( $setting ) );
+	}
+
+
+	/** @see test_ajax_save_fb_settings() */
+	public function provider_ajax_save_fb_settings() {
+
+		return [
+			[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,        'pixel_id',                                    '9876'               ],
+			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'pixel_use_pii',                               'true'       , 'yes' ],
+			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'pixel_use_pii',                               'not-bool'   , 'no'  ],
+			[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,         'page_id',                                     '8765'               ],
+			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,         'is_messenger_chat_plugin_enabled',            'true'       , 'yes' ],
+			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,         'is_messenger_chat_plugin_enabled',            'not-bool'   , 'no'  ],
+			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,       'msger_chat_customization_greeting_text_code', 'Hello!'             ],
+			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,         'msger_chat_customization_locale',             'de_DE'              ],
+			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,      'msger_chat_customization_theme_color_code',   '#ee23fc'            ],
+			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,      'msger_chat_customization_theme_color_code',   'not-a-color', ''    ],
+		];
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::init_form_fields() */
 	public function test_init_form_fields() {
 

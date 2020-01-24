@@ -1328,136 +1328,116 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Saves settings via AJAX (to preserve window context for onboarding).
+	 *
+	 * @internal
 	 */
-	function ajax_save_fb_settings() {
+	public function ajax_save_fb_settings() {
 
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'save settings', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
-		if ( isset( $_REQUEST ) ) {
-
-			if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {
-				// This is not a request from our plugin,
-				// some other handler or plugin probably
-				// wants to handle it and wp_die() after.
-				return;
-			}
-
-			if ( isset( $_REQUEST['api_key'] ) ) {
-
-				$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
-
-				if ( ctype_alnum( $api_key ) ) {
-					$this->update_page_access_token( $api_key );
-				}
-			}
-
-			if ( isset( $_REQUEST['product_catalog_id'] ) ) {
-
-				$product_catalog_id = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
-
-				if ( ctype_digit( $product_catalog_id ) ) {
-
-					if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
-						$this->reset_all_products();
-					}
-
-					$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
-				}
-			}
-
-			if ( isset( $_REQUEST['pixel_id'] ) ) {
-
-				$pixel_id = sanitize_text_field ( wp_unslash( $_REQUEST['pixel_id'] ) );
-
-				if ( ctype_digit( $pixel_id ) ) {
-
-					// To prevent race conditions with pixel-only settings,
-					// only save a pixel if we already have an API key.
-					if ( $this->get_page_access_token() ) {
-
-						$this->settings['fb_pixel_id'] = $pixel_id;
-
-						if ( $this->pixel_id != $pixel_id ) {
-							$this->update_pixel_install_time( time() );
-						}
-
-					} else {
-
-						WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-						echo 'Not saving pixel-only settings';
-
-						wp_die();
-					}
-				}
-			}
-
-			if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
-				$this->settings['fb_pixel_use_pii'] = ( $_REQUEST['pixel_use_pii'] === 'true' || $_REQUEST['pixel_use_pii'] === true ) ? 'yes' : 'no';
-			}
-
-			if ( isset( $_REQUEST['page_id'] ) ) {
-
-				$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
-
-				if ( ctype_digit( $page_id ) ) {
-					$this->settings['fb_page_id'] = $page_id;
-				}
-			}
-
-			if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
-
-				$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
-
-				if ( ctype_digit( $external_merchant_settings_id ) ) {
-					$this->update_external_merchant_settings_id( $external_merchant_settings_id );
-				}
-			}
-
-			if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
-				$this->settings['is_messenger_chat_plugin_enabled'] = ( $_REQUEST['is_messenger_chat_plugin_enabled'] === 'true' || $_REQUEST['is_messenger_chat_plugin_enabled'] === true ) ? 'yes' : 'no';
-			}
-
-			if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-				$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
-
-				$greeting_text_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
-
-				if ( ctype_digit( $greeting_text_code ) ) {
-					$this->settings['msger_chat_customization_greeting_text_code'] = $greeting_text_code;
-				}
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
-				$this->settings['msger_chat_customization_locale'] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
-			}
-
-			if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
-
-				$theme_color_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
-
-				if ( ctype_digit( $theme_color_code ) ) {
-					$this->settings['msger_chat_customization_theme_color_code'] = $theme_color_code;
-				}
-			}
-
-			update_option(
-				$this->get_option_key(),
-				apply_filters(
-					'woocommerce_settings_api_sanitized_fields_' . $this->id,
-					$this->settings
-				)
-			);
-
-			WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-			echo 'settings_saved';
-
-		} else {
-			echo 'No Request';
+		if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {
+			// This is not a request from our plugin,
+			// some other handler or plugin probably
+			// wants to handle it and wp_die() after.
+			return;
 		}
+
+		if ( isset( $_REQUEST['api_key'] ) ) {
+
+			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
+
+			if ( ctype_alnum( $api_key ) ) {
+				$this->update_page_access_token( $api_key );
+			}
+		}
+
+		if ( isset( $_REQUEST['product_catalog_id'] ) ) {
+
+			$product_catalog_id = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
+
+			if ( ctype_digit( $product_catalog_id ) ) {
+
+				if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
+					$this->reset_all_products();
+				}
+
+				$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
+			}
+		}
+
+		if ( isset( $_REQUEST['pixel_id'] ) ) {
+
+			$pixel_id = sanitize_text_field( wp_unslash( $_REQUEST['pixel_id'] ) );
+
+			if ( ctype_digit( $pixel_id ) ) {
+
+				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
+				if ( $this->get_page_access_token() ) {
+
+					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
+
+					if ( $this->pixel_id != $pixel_id ) {
+						$this->update_pixel_install_time( time() );
+					}
+
+				} else {
+
+					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
+					echo 'Not saving pixel-only settings';
+
+					wp_die();
+				}
+			}
+		}
+
+		if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['pixel_use_pii'] ) ) );
+		}
+
+		if ( isset( $_REQUEST['page_id'] ) ) {
+
+			$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
+
+			if ( ctype_digit( $page_id ) ) {
+				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
+			}
+		}
+
+		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
+
+			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
+
+			if ( ctype_digit( $external_merchant_settings_id ) ) {
+				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
+			}
+		}
+
+		if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
+			$this->settings[ self::SETTING_ENABLE_MESSENGER ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) );
+		}
+
+		if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
+			$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
+		}
+
+		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_GREETING ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
+		}
+
+		if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_LOCALE ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
+		}
+
+		if ( ! empty( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] = sanitize_hex_color( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
+		}
+
+		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
+		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
+
+		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
+		echo 'settings_saved';
 
 		wp_die();
 	}
