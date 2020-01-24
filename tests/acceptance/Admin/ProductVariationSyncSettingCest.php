@@ -3,10 +3,10 @@
 class ProductVariationSyncSettingCest {
 
 
-	/** @var WC_Product|null product object created for the test */
+	// product objects created for the tests */
+	/** @var WC_Product */
 	private $variable_product;
-
-	/** @var WC_Product_Variation|null product variation object created for the test */
+	/** @var WC_Product_Variation */
 	private $product_variation;
 
 
@@ -14,6 +14,7 @@ class ProductVariationSyncSettingCest {
 	 * Runs before each test.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws \Exception
 	 */
     public function _before( AcceptanceTester $I ) {
 
@@ -36,6 +37,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is unchecked if sync is disabled in parent.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_unchecked_if_sync_disabled_in_parent( AcceptanceTester $I ) {
 
@@ -56,6 +58,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is checked if sync is enabled in parent.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_checked_if_sync_enabled_in_parent( AcceptanceTester $I ) {
 
@@ -76,6 +79,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is unchecked when sync is disabled.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_unchecked( AcceptanceTester $I ) {
 
@@ -93,6 +97,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is checked when sync is enabled.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_checked( AcceptanceTester $I ) {
 
@@ -110,6 +115,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the settings fields are disabled if sync is disabled for this variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_settings_fields_are_disabled_if_sync_is_disabled( AcceptanceTester $I ) {
 
@@ -131,6 +137,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the settings fields are enabled if sync is enabled for this variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_settings_fields_are_enabled_if_sync_is_enabled( AcceptanceTester $I ) {
 
@@ -152,6 +159,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the sync can be enabled for a variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_sync_can_be_enabled_for_a_variation( AcceptanceTester $I ) {
 
@@ -187,6 +195,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the sync can be disabled for a variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_sync_can_be_disabled_for_a_variation( AcceptanceTester $I ) {
 
@@ -219,6 +228,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that settings fields are empty by default.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_fields_are_empty_by_default( AcceptanceTester $I ) {
 
