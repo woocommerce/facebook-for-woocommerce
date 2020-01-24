@@ -174,9 +174,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->init_settings();
 
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
-		if ( ! $pixel_id ) {
-			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
-				  $this->settings['fb_pixel_id'] : '';
+
+		// if there is a pixel option saved and no integration setting saved, inherit the pixel option
+		if ( $pixel_id && ! $this->get_facebook_pixel_id() ) {
+			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 		$this->pixel_id = isset( $pixel_id )
 		? $pixel_id
