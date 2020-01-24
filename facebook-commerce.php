@@ -135,9 +135,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// This is part of a larger effort to consolidate all the FB-specific
 		// settings for all plugin integrations.
 		if ( is_admin() ) {
+
 			$pixel_id          = WC_Facebookcommerce_Pixel::get_pixel_id();
-			$settings_pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
-			(string) $this->settings['fb_pixel_id'] : null;
+			$settings_pixel_id = $this->get_facebook_pixel_id();
+
 			if (
 			WC_Facebookcommerce_Utils::is_valid_id( $settings_pixel_id ) &&
 			( ! WC_Facebookcommerce_Utils::is_valid_id( $pixel_id ) ||
@@ -214,7 +215,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
-			&& $this->pixel_id
+			&& $this->get_facebook_pixel_id()
 			&& $this->get_pixel_install_time() ) {
 				$should_query_tip =
 				WC_Facebookcommerce_Utils::check_time_cap(
@@ -241,7 +242,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
 			$integration_test::$fbgraph = $this->fbgraph;
 
-			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
+			if ( ! $this->get_pixel_install_time() && $this->get_facebook_pixel_id() ) {
 				$this->update_pixel_install_time( time() );
 			}
 
@@ -390,7 +391,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::FB_PRIORITY_MID
 		);
 
-		if ( $this->pixel_id ) {
+		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
@@ -716,7 +717,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedWasDisabled: 'true',
 		platform: 'WooCommerce',
 		pixel: {
-			pixelId: '<?php echo $this->pixel_id ? esc_js( $this->pixel_id ) : ''; ?>',
+			pixelId: '<?php echo $this->get_facebook_pixel_id() ? esc_js( $this->get_facebook_pixel_id() ) : ''; ?>',
 			advanced_matching_supported: true
 		},
 		diaSettingId: '<?php echo $this->get_external_merchant_settings_id() ? esc_js( $this->get_external_merchant_settings_id() ) : ''; ?>',
@@ -1375,7 +1376,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 
-					if ( $this->pixel_id != $pixel_id ) {
+					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
 						$this->update_pixel_install_time( time() );
 					}
 
