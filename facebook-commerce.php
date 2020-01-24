@@ -1403,7 +1403,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
-			$this->settings['fb_pixel_use_pii'] = ( $_REQUEST['pixel_use_pii'] === 'true' || $_REQUEST['pixel_use_pii'] === true ) ? 'yes' : 'no';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['pixel_use_pii'] ) ) );
 		}
 
 		if ( isset( $_REQUEST['page_id'] ) ) {
