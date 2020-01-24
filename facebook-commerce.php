@@ -1432,13 +1432,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
 		}
 
-		if ( isset( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
-
-			$greeting_text_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
-
-			if ( ctype_digit( $greeting_text_code ) ) {
-				$this->settings['msger_chat_customization_greeting_text_code'] = $greeting_text_code;
-			}
+		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_GREETING ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
 		}
 
 		if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
