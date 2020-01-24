@@ -2381,11 +2381,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			],
 
 			self::SETTING_ENABLE_ADVANCED_MATCHING => [
-				'title'    => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
-				'type'     => 'checkbox',
-				'label'    => ' ',
-				'desc_tip' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
-				'default'  => 'yes',
+				'title'   => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
 			],
 
 			[
