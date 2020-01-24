@@ -3071,10 +3071,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function get_page_name() {
 		$page_name = '';
-		if ( ! empty( $this->settings['fb_page_id'] ) &&
-		! empty( $this->get_page_access_token() ) ) {
 
-			$page_name = $this->fbgraph->get_page_name( $this->settings['fb_page_id'], $this->get_page_access_token() );
+		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		}
 		return $page_name;
 	}
@@ -3138,7 +3137,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$page_name       = $this->get_page_name();
 
 		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->settings['fb_page_id'] ) || empty( $this->get_page_access_token() );
+		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
 		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
 		$redirect_uri           = '';
@@ -3299,13 +3298,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ),
+													esc_html( $this->get_facebook_page_id() ),
 													esc_html( $page_name ) ); ?>
 											<?php else : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ) ); ?>
+													esc_html( $this->get_facebook_page_id() ) ); ?>
 											<?php endif; ?>
 
 											<span id="sync_complete" style="margin-left: 5px; <?php echo ( ! $connected || $currently_syncing ) ? ' display: none;' : ''; ?>">
