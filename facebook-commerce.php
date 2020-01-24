@@ -1442,7 +1442,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
-			$this->settings['msger_chat_customization_locale'] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
+			$this->settings[ self::SETTING_MESSENGER_LOCALE ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
 		}
 
 		if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
