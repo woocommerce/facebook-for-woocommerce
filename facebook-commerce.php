@@ -1374,11 +1374,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
 				if ( $this->get_page_access_token() ) {
 
-					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
-
 					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
 						$this->update_pixel_install_time( time() );
 					}
+
+					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 
 				} else {
 
