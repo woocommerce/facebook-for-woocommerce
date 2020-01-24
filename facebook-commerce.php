@@ -1339,8 +1339,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Saves settings via AJAX (to preserve window context for onboarding).
+	 *
+	 * @internal
 	 */
-	function ajax_save_fb_settings() {
+	public function ajax_save_fb_settings() {
 
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'save settings', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
