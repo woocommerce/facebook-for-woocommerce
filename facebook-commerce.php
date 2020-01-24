@@ -2364,9 +2364,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$form_fields = [
 
 			[
-				'title'       => __( 'Connection', 'facebook-for-woocommerce' ),
-				'type'        => 'title',
-				'description' => __( 'Update connection settings between your store and Facebook.', 'facebook-for-woocommerce' ),
+				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
+				'type'  => 'title',
 			],
 
 			self::SETTING_FACEBOOK_PAGE_ID => [
@@ -2390,9 +2389,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			],
 
 			[
-				'title'       => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'        => 'title',
-				'description' => __( 'Determine if / how products are synced from your store to Facebook.', 'facebook-for-woocommerce' ),
+				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
+				'type'  => 'title'
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
