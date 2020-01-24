@@ -173,10 +173,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Load the settings.
 		$this->init_settings();
 
-		$this->page_id = isset( $this->settings['fb_page_id'] )
-		? $this->settings['fb_page_id']
-		: '';
-
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 		if ( ! $pixel_id ) {
 			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
