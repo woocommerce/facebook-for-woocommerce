@@ -1411,7 +1411,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
 
 			if ( ctype_digit( $page_id ) ) {
-				$this->settings['fb_page_id'] = $page_id;
+				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
 			}
 		}
 
