@@ -1374,7 +1374,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				if ( ctype_digit( $product_catalog_id ) ) {
 
-					if ( empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
+					if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
 						$this->reset_all_products();
 					}
 
