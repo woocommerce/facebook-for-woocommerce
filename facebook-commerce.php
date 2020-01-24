@@ -1440,13 +1440,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_MESSENGER_LOCALE ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
 		}
 
-		if ( isset( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
-
-			$theme_color_code = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
-
-			if ( ctype_digit( $theme_color_code ) ) {
-				$this->settings['msger_chat_customization_theme_color_code'] = $theme_color_code;
-			}
+		if ( ! empty( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
+			$this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] = sanitize_hex_color( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
 		}
 
 		update_option(
