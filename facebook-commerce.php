@@ -214,7 +214,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
 			&& $this->pixel_id
-			&& $this->pixel_install_time ) {
+			&& $this->get_pixel_install_time() ) {
 				$should_query_tip =
 				WC_Facebookcommerce_Utils::check_time_cap(
 					get_option( 'fb_info_banner_last_query_time', '' ),
@@ -240,7 +240,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
 			$integration_test::$fbgraph = $this->fbgraph;
 
-			if ( ! $this->pixel_install_time && $this->pixel_id ) {
+			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
 				$this->pixel_install_time             = current_time( 'mysql' );
 				$this->settings['pixel_install_time'] = $this->pixel_install_time;
 				update_option(
