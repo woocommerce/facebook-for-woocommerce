@@ -1471,10 +1471,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_page_access_token( '' );
 			$this->update_product_catalog_id( '' );
 
-			$this->settings['fb_pixel_id']      = '';
-			$this->settings['fb_pixel_use_pii'] = 'no';
-
-			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+			$this->settings['fb_pixel_id']                            = '';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
+			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
