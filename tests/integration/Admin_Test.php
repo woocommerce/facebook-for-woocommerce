@@ -29,7 +29,7 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 
 		// simulate a complete plugin configuration so that actions and filters callbacks are setup
 		$this->integration->update_page_access_token( '1234' );
-		$this->integration->product_catalog_id = '1234';
+		$this->integration->update_product_catalog_id( '1234' );
 
 		$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
 	}

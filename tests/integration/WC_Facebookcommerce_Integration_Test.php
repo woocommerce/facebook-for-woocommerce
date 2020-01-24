@@ -61,6 +61,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_product_catalog_id() */
 	public function test_get_product_catalog_id() {
 
+		// we have to call the setter here because although the option is set, the getter reads from the property first
+		$this->integration->update_product_catalog_id( 'def456' );
 		$this->assertEquals( 'def456', $this->integration->get_product_catalog_id() );
 	}
 
@@ -571,7 +573,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
 
 		// TODO: remove once these properties are no longer set directly in the constructor
-		$this->integration->product_catalog_id            = null;
 		$this->integration->external_merchant_settings_id = null;
 		$this->integration->feed_id                       = null;
 		$this->integration->pixel_install_time            = null;

@@ -17,10 +17,7 @@ class ProductSyncSettingCest {
 	public function _before( AcceptanceTester $I ) {
 
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			'fb_product_catalog_id' => '1234',
-		] );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		// save two generic products
 		$this->sync_enabled_product  = $I->haveProductInDatabase();
@@ -99,10 +96,7 @@ class ProductSyncSettingCest {
 		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$plugin_settings = [
-			'fb_product_catalog_id' => '1234',
-		];
-		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		$I->amEditingPostWithId( $this->sync_disabled_product->get_id() );
 
@@ -133,10 +127,7 @@ class ProductSyncSettingCest {
 		 * @see \WC_Facebookcommerce_Integration::__construct()
 		 */
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$plugin_settings = [
-			'fb_product_catalog_id' => '1234',
-		];
-		$I->haveOptionInDatabase( 'woocommerce_facebookcommerce_settings', $plugin_settings );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
 
