@@ -117,7 +117,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_pixel_install_time() */
 	public function test_get_pixel_install_time() {
 
-		$this->assertEquals( 123, $this->integration->get_pixel_install_time() );
+		$this->assertSame( 123, $this->integration->get_pixel_install_time() );
 	}
 
 
@@ -128,7 +128,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			return 321;
 		} );
 
-		$this->assertEquals( 321, $this->integration->get_pixel_install_time() );
+		$this->assertSame( 321, $this->integration->get_pixel_install_time() );
 	}
 
 
@@ -244,7 +244,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 * @see \WC_Facebookcommerce_Integration::update_pixel_install_time()
 	 *
 	 * @param int|string|null|array $value value to set
-	 * @param int|null $expected expected return value
+	 * @param int $expected expected return value
 	 * @param int|string $expected_option expected stored value
 	 *
 	 * @dataProvider provider_update_pixel_install_time
@@ -253,7 +253,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$this->integration->update_pixel_install_time( $value );
 
-		$this->assertEquals( $expected, $this->integration->get_pixel_install_time() );
+		$this->assertSame( $expected, $this->integration->get_pixel_install_time() );
 		$this->assertEquals( $expected_option, get_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ) );
 	}
 
@@ -263,7 +263,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		return [
 			[ 1234, 1234, 1234 ],
-			[ 'non-int', null, '' ],
+			[ 'non-int', 0, '' ],
 		];
 	}
 
@@ -628,7 +628,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->external_merchant_settings_id = null;
 		$this->integration->feed_id                       = null;
-		$this->integration->pixel_install_time            = null;
 	}
 
 

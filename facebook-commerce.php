@@ -173,10 +173,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Load the settings.
 		$this->init_settings();
 
-		$this->page_id = isset( $this->settings['fb_page_id'] )
-		? $this->settings['fb_page_id']
-		: '';
-
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 		if ( ! $pixel_id ) {
 			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
@@ -184,10 +180,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 		$this->pixel_id = isset( $pixel_id )
 		? $pixel_id
-		: '';
-
-		$this->pixel_install_time = isset( $this->settings['pixel_install_time'] )
-		? $this->settings['pixel_install_time']
 		: '';
 
 		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
@@ -218,7 +210,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
 			&& $this->pixel_id
-			&& $this->pixel_install_time ) {
+			&& $this->get_pixel_install_time() ) {
 				$should_query_tip =
 				WC_Facebookcommerce_Utils::check_time_cap(
 					get_option( 'fb_info_banner_last_query_time', '' ),
@@ -244,17 +236,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
 			$integration_test::$fbgraph = $this->fbgraph;
 
-			if ( ! $this->pixel_install_time && $this->pixel_id ) {
-				$this->pixel_install_time             = current_time( 'mysql' );
-				$this->settings['pixel_install_time'] = $this->pixel_install_time;
-				update_option(
-					$this->get_option_key(),
-					apply_filters(
-						'woocommerce_settings_api_sanitized_fields_' . $this->id,
-						$this->settings
-					)
-				);
+			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
+				$this->update_pixel_install_time( time() );
 			}
+
 			add_action( 'admin_notices', array( $this, 'checks' ) );
 			add_action(
 				'woocommerce_update_options_integration_facebookcommerce',
@@ -1389,7 +1374,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 
 					if ( $this->pixel_id != $pixel_id ) {
-						$this->settings['pixel_install_time'] = current_time( 'mysql' );
+						$this->update_pixel_install_time( time() );
 					}
 
 				} else {
@@ -1490,9 +1475,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['fb_pixel_id']      = '';
 			$this->settings['fb_pixel_use_pii'] = 'no';
 
-			$this->settings['fb_page_id']                       = '';
+			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+
 			$this->update_external_merchant_settings_id( '' );
-			$this->settings['pixel_install_time']               = '';
+			$this->update_pixel_install_time( 0 );
 			$this->settings['fb_feed_id']                       = '';
 			$this->settings['fb_upload_id']                     = '';
 			$this->settings['upload_end_time']                  = '';
@@ -2517,7 +2503,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since x.y.z
 	 *
-	 * @return int|null
+	 * @return int
 	 */
 	public function get_pixel_install_time() {
 
@@ -3053,13 +3039,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	function get_page_name() {
-		$page_name = '';
-		if ( ! empty( $this->settings['fb_page_id'] ) &&
-		! empty( $this->get_page_access_token() ) ) {
+	/**
+	 * Gets the name of the configured Facebook page.
+	 *
+	 * @return string
+	 */
+	public function get_page_name() {
 
-			$page_name = $this->fbgraph->get_page_name( $this->settings['fb_page_id'], $this->get_page_access_token() );
+		$page_name = '';
+
+		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		}
+
 		return $page_name;
 	}
 
@@ -3122,7 +3114,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$page_name       = $this->get_page_name();
 
 		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->settings['fb_page_id'] ) || empty( $this->get_page_access_token() );
+		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
 		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
 		$redirect_uri           = '';
@@ -3283,13 +3275,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ),
+													esc_html( $this->get_facebook_page_id() ),
 													esc_html( $page_name ) ); ?>
 											<?php else : ?>
 												<?php echo sprintf(
 													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
-													esc_html( $this->settings['fb_page_id'] ) ); ?>
+													esc_html( $this->get_facebook_page_id() ) ); ?>
 											<?php endif; ?>
 
 											<span id="sync_complete" style="margin-left: 5px; <?php echo ( ! $connected || $currently_syncing ) ? ' display: none;' : ''; ?>">
