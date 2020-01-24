@@ -1510,7 +1510,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings['fb_page_id']                       = '';
 			$this->update_external_merchant_settings_id( '' );
 			$this->settings['pixel_install_time']               = '';
-			$this->settings['fb_feed_id']                       = '';
+			$this->update_feed_id( '' );
 			$this->settings['fb_upload_id']                     = '';
 			$this->settings['upload_end_time']                  = '';
 
@@ -2275,7 +2275,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$upload_success = $this->fbproductfeed->sync_all_products_using_feed();
 		if ( $upload_success ) {
-			$this->settings['fb_feed_id']   = $this->fbproductfeed->feed_id;
+			$this->update_feed_id( $this->fbproductfeed->feed_id );
 			$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
 			update_option(
 				$this->get_option_key(),
