@@ -199,9 +199,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
-		$this->feed_id                      = isset( $this->settings['fb_feed_id'] )
-		? $this->settings['fb_feed_id']
-		: '';
 
 		// Hooks
 		if ( is_admin() ) {
@@ -733,7 +730,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->feed_id ); ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
 		},
 		feedPrepared: {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
@@ -1483,9 +1480,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
-			$this->settings['fb_feed_id']                       = '';
-			$this->settings['fb_upload_id']                     = '';
-			$this->settings['upload_end_time']                  = '';
+			$this->update_feed_id( '' );
+			$this->settings['fb_upload_id']    = '';
+			$this->settings['upload_end_time'] = '';
 
 			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
 
@@ -2236,19 +2233,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		} else {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		}
 
 		$upload_success = $this->fbproductfeed->sync_all_products_using_feed();
 		if ( $upload_success ) {
-			$this->settings['fb_feed_id']   = $this->fbproductfeed->feed_id;
+			$this->update_feed_id( $this->fbproductfeed->feed_id );
 			$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
 			update_option(
 				$this->get_option_key(),
