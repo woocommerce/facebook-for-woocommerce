@@ -36,7 +36,7 @@ modules:
             acceptInsecureCerts: true
             enableVerboseLogging: true
             "chromeOptions":
-              args: ["disable-dev-shm-usage", "no-sandbox", "disable-infobars", "headless", "disable-gpu"]
+              args: ["disable-dev-shm-usage", "no-sandbox", "disable-infobars", "disable-gpu"]
         WPLoader:
           loadOnly: true
           wpRootFolder: '%WP_ROOT_FOLDER%'
