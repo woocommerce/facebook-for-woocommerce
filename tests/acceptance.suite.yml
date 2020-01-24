@@ -14,18 +14,18 @@ modules:
         - \Helper\Acceptance
     config:
         WPDb:
-            dsn: 'mysql:host=%ACCEPTANCE_DB_HOST%;dbname=%ACCEPTANCE_DB_NAME%'
-            user: '%ACCEPTANCE_DB_USER%'
-            password: '%ACCEPTANCE_DB_PASSWORD%'
-            dump: 'tests/_data/dump.sql'
-            #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true
-            # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true
-            waitlock: 0
-            url: '%WP_URL%'
-            urlReplacement: true #replace the hardcoded dump URL with the one above
-            tablePrefix: '%ACCEPTANCE_TABLE_PREFIX%'
+          dsn: 'mysql:host=%ACCEPTANCE_DB_HOST%;dbname=%ACCEPTANCE_DB_NAME%'
+          user: '%ACCEPTANCE_DB_USER%'
+          password: '%ACCEPTANCE_DB_PASSWORD%'
+          dump: 'tests/_data/dump.sql'
+          #import the dump before the tests; this means the test site database will be repopulated before the tests.
+          populate: true
+          # re-import the dump between tests; this means the test site database will be repopulated between the tests.
+          cleanup: true
+          waitlock: 0
+          url: '%WP_URL%'
+          urlReplacement: true #replace the hardcoded dump URL with the one above
+          tablePrefix: '%ACCEPTANCE_TABLE_PREFIX%'
         WPWebDriver:
           url: '%WP_URL%'
           adminUsername: '%WP_ADMIN_USERNAME%'
