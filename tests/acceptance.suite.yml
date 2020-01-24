@@ -27,15 +27,16 @@ modules:
             urlReplacement: true #replace the hardcoded dump URL with the one above
             tablePrefix: '%ACCEPTANCE_TABLE_PREFIX%'
         WPWebDriver:
-            url: '%WP_URL%'
-            adminUsername: '%WP_ADMIN_USERNAME%'
-            adminPassword: '%WP_ADMIN_PASSWORD%'
-            adminPath: '%WP_ADMIN_PATH%'
-            browser: 'chrome'
-            capabilities:
-              "chromeOptions":
-                "w3c": false
-                "binary": ""
+          url: '%WP_URL%'
+          adminUsername: '%WP_ADMIN_USERNAME%'
+          adminPassword: '%WP_ADMIN_PASSWORD%'
+          adminPath: '%WP_ADMIN_PATH%'
+          browser: 'chrome'
+          capabilities:
+            acceptInsecureCerts: true
+            enableVerboseLogging: true
+            "chromeOptions":
+              args: ["disable-dev-shm-usage", "no-sandbox", "disable-infobars", "headless", "disable-gpu"]
         WPLoader:
           loadOnly: true
           wpRootFolder: '%WP_ROOT_FOLDER%'
