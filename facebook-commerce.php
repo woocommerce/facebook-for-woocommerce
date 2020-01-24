@@ -388,7 +388,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $this->pixel_id ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
