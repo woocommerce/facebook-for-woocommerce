@@ -1379,15 +1379,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $_REQUEST['pixel_id'] ) ) {
 
-			$pixel_id = sanitize_text_field ( wp_unslash( $_REQUEST['pixel_id'] ) );
+			$pixel_id = sanitize_text_field( wp_unslash( $_REQUEST['pixel_id'] ) );
 
 			if ( ctype_digit( $pixel_id ) ) {
 
-				// To prevent race conditions with pixel-only settings,
-				// only save a pixel if we already have an API key.
+				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
 				if ( $this->get_page_access_token() ) {
 
-					$this->settings['fb_pixel_id'] = $pixel_id;
+					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 
 					if ( $this->pixel_id != $pixel_id ) {
 						$this->settings['pixel_install_time'] = current_time( 'mysql' );
