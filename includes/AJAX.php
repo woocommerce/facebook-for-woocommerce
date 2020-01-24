@@ -31,6 +31,9 @@ class AJAX {
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_prompt',             [ $this, 'handle_set_product_sync_prompt' ] );
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_product_sync_bulk_action_prompt', [ $this, 'handle_set_product_sync_bulk_action_prompt' ] );
 
+		// maybe output a modal prompt when setting excluded terms
+		add_action( 'wp_ajax_facebook_for_woocommerce_set_excluded_terms_prompt', [ $this, 'handle_set_excluded_terms_prompt' ] );
+
 		// set product visibility in Facebook
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_products_visibility', [ $this, 'set_products_visibility' ] );
 	}
@@ -233,6 +236,185 @@ class AJAX {
 		}
 
 		wp_send_json_success();
+	}
+
+
+	/**
+	 * Maybe triggers a modal warning when the merchant adds terms to the excluded terms.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_set_excluded_terms_prompt() {
+
+		check_ajax_referer( 'set-excluded-terms-prompt', 'security' );
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$posted_categories = isset( $_POST['categories'] ) ? wp_unslash( $_POST['categories'] ) : [];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$posted_tags = isset( $_POST['tags'] ) ? wp_unslash( $_POST['tags'] ) : [];
+
+		$new_category_ids = [];
+		$new_tag_ids      = [];
+
+		if ( ! empty( $posted_categories ) ) {
+			foreach ( $posted_categories as $posted_category_id ) {
+				$new_category_ids[] = sanitize_text_field( $posted_category_id );
+			}
+		}
+
+		if ( ! empty( $posted_tags ) ) {
+			foreach ( $posted_tags as $posted_tag_id ) {
+				$new_tag_ids[] = sanitize_text_field( $posted_tag_id );
+			}
+		}
+
+		// query for products with sync enabled, belonging to the added term IDs and not belonging to the term IDs that are already stored in the setting
+		$products = $this->get_products_to_be_excluded( $new_category_ids, $new_tag_ids );
+
+		if ( ! empty( $products ) ) {
+
+			ob_start();
+
+			?>
+			<button
+				id="facebook-for-woocommerce-confirm-settings-change"
+				class="button button-large button-primary"
+			><?php esc_html_e( 'Exclude Products', 'facebook-for-woocommerce' ); ?></button>
+			<button
+				id="facebook-for-woocommerce-cancel-settings-change"
+				class="button button-large button-primary"
+				onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+			><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+			<?php
+
+			$buttons = ob_get_clean();
+
+			wp_send_json_error( [
+				'message' => sprintf(
+					/* translators: Placeholder %s - <br/> tags */
+					__( 'The categories and/or tags that you have selected to exclude from sync contain products that are currently synced to Facebook.%sTo exclude these products from the Facebook sync, click Exclude Products. To review the category / tag exclusion settings, click Cancel.', 'facebook-for-woocommerce' ),
+					'<br/><br/>'
+				),
+				'buttons' => $buttons,
+			] );
+
+		} else {
+
+			// the modal should not be displayed
+			wp_send_json_success();
+		}
+	}
+
+
+	/**
+	 * Get the IDs of the products that would be excluded with the new settings.
+	 *
+	 * Queries products with sync enabled, belonging to the added term IDs
+	 * and not belonging to the term IDs that are already stored in the setting.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string[] $new_excluded_categories
+	 * @param string[] $new_excluded_tags
+	 * @return int[]
+	 */
+	private function get_products_to_be_excluded( $new_excluded_categories = [], $new_excluded_tags = [] ) {
+
+		// products with sync enabled
+		$sync_enabled_meta_query = [
+			'relation' => 'OR',
+			[
+				'key'   => Products::SYNC_ENABLED_META_KEY,
+				'value' => 'yes',
+			],
+			[
+				'key'     => Products::SYNC_ENABLED_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		$products_query_vars = [
+			'post_type'  => 'product',
+			'fields'     => 'ids',
+			'meta_query' => $sync_enabled_meta_query,
+		];
+
+		if ( ! empty( $new_excluded_categories ) ) {
+
+			// products that belong to the new excluded categories
+			$categories_tax_query = [
+				'taxonomy' => 'product_cat',
+				'terms'    => $new_excluded_categories,
+			];
+
+			if ( $integration = facebook_for_woocommerce()->get_integration() ) {
+
+				// products that do not belong to the saved excluded categories
+				$saved_excluded_categories = $integration->get_excluded_product_category_ids();
+
+				if ( ! empty( $saved_excluded_categories ) ) {
+
+					$categories_tax_query = [
+						'relation' => 'AND',
+						$categories_tax_query,
+						[
+							'taxonomy' => 'product_cat',
+							'terms'    => $saved_excluded_categories,
+							'operator' => 'NOT IN',
+						],
+					];
+				}
+			}
+
+			$products_query_vars['tax_query'] = $categories_tax_query;
+		}
+
+		if ( ! empty( $new_excluded_tags ) ) {
+
+			// products that belong to the new excluded tags
+			$tags_tax_query = [
+				'taxonomy' => 'product_tag',
+				'terms'    => $new_excluded_tags,
+			];
+
+			if ( $integration = facebook_for_woocommerce()->get_integration() ) {
+
+				$save_excluded_tags = $integration->get_excluded_product_tag_ids();
+
+				if ( ! empty( $save_excluded_tags ) ) {
+
+					// products that do not belong to the saved excluded tags
+					$tags_tax_query = [
+						'relation' => 'AND',
+						$tags_tax_query,
+						[
+							'taxonomy' => 'product_tag',
+							'terms'    => $save_excluded_tags,
+							'operator' => 'NOT IN',
+						],
+					];
+				}
+			}
+
+			if ( empty( $products_query_vars['tax_query'] ) ) {
+
+				$products_query_vars['tax_query'] = $tags_tax_query;
+
+			} else {
+
+				$products_query_vars['tax_query'] = [
+					'relation' => 'OR',
+					$products_query_vars,
+					$tags_tax_query,
+				];
+			}
+		}
+
+		$products_query = new \WP_Query( $products_query_vars );
+
+		return $products_query->posts;
 	}
 
 
