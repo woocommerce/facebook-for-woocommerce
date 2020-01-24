@@ -179,9 +179,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $pixel_id && ! $this->get_facebook_pixel_id() ) {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
-		$this->pixel_id = isset( $pixel_id )
-		? $pixel_id
-		: '';
 
 		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
 		&& $this->settings['fb_pixel_use_pii'] === 'yes'
