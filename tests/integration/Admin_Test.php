@@ -28,8 +28,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$this->integration = facebook_for_woocommerce()->get_integration();
 
 		// simulate a complete plugin configuration so that actions and filters callbacks are setup
-		$this->integration->api_key            = '1234';
-		$this->integration->product_catalog_id = '1234';
+		$this->integration->update_page_access_token( '1234' );
+		$this->integration->update_product_catalog_id( '1234' );
 
 		$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
 	}

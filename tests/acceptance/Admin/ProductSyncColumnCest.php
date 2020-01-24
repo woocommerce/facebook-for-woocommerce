@@ -17,10 +17,8 @@ class ProductSyncColumnCest {
 		// save a generic product
 		$this->product = $I->haveProductInDatabase();
 
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			'fb_api_key'            => '1234',
-			'fb_product_catalog_id' => '1234',
-		] );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		// always log in
 		$I->loginAsAdmin();

@@ -38,7 +38,8 @@ if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 		/** Class Instance */
 		private static $instance;
 
-		public static $commerce  = null; // Full WC_Facebookcommerce_Integration obj
+		/** @var WC_Facebookcommerce_Integration full integration object */
+		public static $commerce  = null;
 		public static $fbgraph   = null;
 		public static $test_mode = false;
 
@@ -257,7 +258,7 @@ if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 
 		function check_fbid_api( $fbid_type, $fb_retailer_id ) {
 			$product_fbid_result = self::$fbgraph->get_facebook_id(
-				self::$commerce->product_catalog_id,
+				self::$commerce->get_product_catalog_id(),
 				$fb_retailer_id,
 				true
 			);
@@ -297,7 +298,7 @@ if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 
 		function check_product_info( $retailer_id, $has_variant, $data ) {
 			$prod_info_result = self::$fbgraph->check_product_info(
-				self::$commerce->product_catalog_id,
+				self::$commerce->get_product_catalog_id(),
 				$retailer_id,
 				$has_variant
 			);
