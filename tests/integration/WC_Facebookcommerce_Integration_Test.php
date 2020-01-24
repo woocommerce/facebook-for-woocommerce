@@ -558,6 +558,28 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::init_form_fields() */
+	public function test_init_form_fields() {
+
+		$this->integration->init_form_fields();
+
+		$fields = $this->integration->get_form_fields();
+
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX, $fields );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 

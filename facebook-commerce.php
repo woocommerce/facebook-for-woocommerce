@@ -205,8 +205,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Hooks
 		if ( is_admin() ) {
+
 			$this->init_pixel();
+
 			$this->init_form_fields();
+
+			if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
+				include_once 'includes/fbutils.php';
+			}
+
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
 			&& $this->pixel_id
@@ -392,9 +399,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
 		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
-			if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) {
-				include_once 'facebook-commerce-messenger-chat.php';
-			}
 			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
 		}
 	}
@@ -2324,82 +2328,125 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product_tags = $term_query->get_terms();
 
-		$this->form_fields = [
-			'fb_settings_heading'              => [
-				'title' => __( 'Debug Mode', 'facebook-for-woocommerce' ),
+		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		$form_fields = [
+
+			[
+				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
 			],
-			'fb_page_id'                       => [
-				'title'       => __( 'Facebook Page ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook page.', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_FACEBOOK_PAGE_ID => [
+				'title'   => __( 'Facebook page', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => '',
 			],
-			'fb_product_catalog_id'            => [
-				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your product catalog, on Facebook.', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_FACEBOOK_PIXEL_ID => [
+				'title'   => __( 'Pixel', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => '',
 			],
-			'fb_pixel_id'                      => [
-				'title'       => __( 'Pixel ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your Facebook pixel', 'facebook-for-woocommerce' ),
-				'default'     => '',
+
+			self::SETTING_ENABLE_ADVANCED_MATCHING => [
+				'title'   => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
 			],
-			'fb_pixel_use_pii'                 => [
-				'title'       => __( 'Use Advanced Matching on pixel?', 'facebook-for-woocommerce' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Enabling Advanced Matching improves audience building.', 'facebook-for-woocommerce' ),
-				'default'     => 'yes',
-			],
-			'fb_external_merchant_settings_id' => [
-				'title'       => __( 'External Merchant Settings ID', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => __( 'The unique identifier for your external merchant settings, on Facebook.', 'facebook-for-woocommerce' ),
-				'default'     => '',
-			],
-			'fb_api_key'                       => [
-				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
-				'type'        => 'text',
-				'description' => sprintf(
-					/* translators: Placeholders: %s - Facebook Login permissions */
-					__( 'A non-expiring Page Token with %s permissions.', 'facebook-for-woocommerce' ),
-					'<code>manage_pages</code>'
-				),
-				'default'     => '',
-			],
-			'fb_sync_options'                  => [
-				'title' => __( 'Sync', 'facebook-for-woocommerce' ),
+
+			[
+				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
 			],
+
+			self::SETTING_ENABLE_PRODUCT_SYNC => [
+				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
+			],
+
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_categories ) ? $product_categories : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select',
 				'css'               => 'min-width: 300px;',
+				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
 				'options'           => is_array( $product_tags ) ? $product_tags : [],
 				'custom_attributes' => [
 					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
 				],
 			],
+
+			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
+				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
+				'type'     => 'select',
+				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
+				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
+				'options'  => [
+					self::PRODUCT_DESCRIPTION_MODE_STANDARD => __( 'Standard description', 'facebook-for-woocommerce' ),
+					self::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
+				],
+			],
+
+			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
+				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+				'type'  => 'text',
+			],
+
+			[
+				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
+				'type'  => 'title'
+			],
+
+			self::SETTING_ENABLE_MESSENGER => [
+				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => ' ',
+				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
+				'default'  => 'yes',
+			],
+
+			self::SETTING_MESSENGER_LOCALE => [
+				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
+				'type'    => 'select',
+				'default' => $default_locale,
+				'options' => $messenger_locales,
+			],
+
+			self::SETTING_MESSENGER_GREETING => [
+				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'    => 'text',
+				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
+			],
+
+			self::SETTING_MESSENGER_COLOR_HEX => [
+				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
+				'type'    => 'color',
+				'default' => '#0084ff',
+				'css'     => 'width: 6em;',
+			],
+
 		];
 
-		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
-			include_once 'includes/fbutils.php';
-		}
+		$this->form_fields = $form_fields;
 	}
 
 
