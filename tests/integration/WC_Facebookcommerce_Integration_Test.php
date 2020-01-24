@@ -575,7 +575,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->external_merchant_settings_id = null;
 		$this->integration->feed_id                       = null;
-		$this->integration->pixel_install_time            = null;
 	}
 
 

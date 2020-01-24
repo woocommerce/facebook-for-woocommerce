@@ -186,10 +186,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		? $pixel_id
 		: '';
 
-		$this->pixel_install_time = isset( $this->settings['pixel_install_time'] )
-		? $this->settings['pixel_install_time']
-		: '';
-
 		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
 		&& $this->settings['fb_pixel_use_pii'] === 'yes'
 		? true
