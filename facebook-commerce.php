@@ -2526,7 +2526,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since x.y.z
 	 *
-	 * @return int|null
+	 * @return int
 	 */
 	public function get_pixel_install_time() {
 
