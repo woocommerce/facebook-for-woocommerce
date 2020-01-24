@@ -741,7 +741,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->feed_id ); ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
 		},
 		feedPrepared: {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
@@ -2263,13 +2263,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		} else {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		}
 
