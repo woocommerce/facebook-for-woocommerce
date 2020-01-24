@@ -2466,7 +2466,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
 
-			$this->update_product_catalog_id( is_string( $value ) ? $value : '' );
+			$this->product_catalog_id = is_string( $value ) ? $value : '';
 		}
 
 		/**
