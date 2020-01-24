@@ -207,9 +207,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
-		$this->feed_id                      = isset( $this->settings['fb_feed_id'] )
-		? $this->settings['fb_feed_id']
-		: '';
 
 		// Hooks
 		if ( is_admin() ) {
