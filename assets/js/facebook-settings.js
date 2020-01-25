@@ -62,9 +62,19 @@ function prepend_protocol(url) {
 function get_product_catalog_id_box() {
 	return document.querySelector( '#woocommerce_facebookcommerce_fb_product_catalog_id' ) || null;
 }
+
+
+/**
+ * Gets the input Element that holds the value for the Pixel ID setting.
+ *
+ * @returns {(Element|null)}
+ */
 function get_pixel_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_pixel_id' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_facebook_pixel_id' );
 }
+
+
 function get_pixel_use_pii_id_box() {
 	return document.querySelector( '#woocommerce_facebookcommerce_fb_pixel_use_pii' ) || null;
 }
