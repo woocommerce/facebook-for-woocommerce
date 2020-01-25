@@ -93,10 +93,6 @@ function get_page_id_box() {
 }
 
 
-function get_ems_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_external_merchant_settings_id' ) || null;
-}
-
 /*
  *  Ajax helper function.
  *  Takes optional payload for POST and optional callback.
@@ -221,9 +217,6 @@ function delete_all_settings(callback = null, failcallback = null) {
 
 	if (get_page_id_box()) {
 		get_page_id_box().value = '';
-	}
-	if (get_ems_id_box()) {
-		get_ems_id_box().value = '';
 	}
 
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
@@ -470,9 +463,6 @@ function setMerchantSettings(message) {
 		console.error( 'Facebook Extension Error: got no setting_id', message.params );
 		window.sendToFacebook( 'fail set merchant settings', message.params );
 		return;
-	}
-	if (get_ems_id_box()) {
-		get_ems_id_box().value = message.params.setting_id;
 	}
 
 	settings.external_merchant_settings_id = message.params.setting_id;
