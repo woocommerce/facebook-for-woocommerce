@@ -56,11 +56,10 @@ class AcceptanceTester extends \Codeception\Actor {
 			'sync_enabled' => false,
 		] );
 
-		switch ( $args['type'] ) {
-
-			case 'variable': $class = \WC_Product_Variable::class; break;
-
-			default: $class = \WC_Product_Simple::class; break;
+		if ( 'variable' === $args['type'] ) {
+			$class = \WC_Product_Variable::class;
+		} else {
+			$class = \WC_Product_Simple::class;
 		}
 
 		/** @var \WC_Product $product */
@@ -165,6 +164,7 @@ class AcceptanceTester extends \Codeception\Actor {
 	 *
 	 * @param \WC_Product_Variation $variation the product variation
 	 * @return int
+	 * @throws \Exception
 	 */
 	public function amEditingProductVariation( \WC_Product_Variation $variation ) {
 
@@ -177,22 +177,23 @@ class AcceptanceTester extends \Codeception\Actor {
 
 
 	/**
-	 * Open the metabox that contains the edit fields for the given variation.
+	 * Opens the metabox that contains the edit fields for the given variation.
 	 *
 	 * Returns the index of the variation in the list of variations.
 	 *
 	 * @param \WC_Product_Variation $variation
-	 * @return void
+	 * @return int
+	 * @throws \Exception
 	 */
 	public function openVariationMetabox( \WC_Product_Variation $variation ) {
 
 		// matches a hidden input field with value equal to the ID of the variation
-		$variaton_id_xpath = "input[starts-with(@name, 'variable_post_id') and @value = {$variation->get_id()}]";
+		$variation_id_xpath = "input[starts-with(@name, 'variable_post_id') and @value = {$variation->get_id()}]";
 
 		// matches each variation metabox container
 		$variation_container_xpath  = "//div[contains(concat(' ', normalize-space(@class), ' '), ' woocommerce_variation wc-metabox closed ')]";
 		// matches elements that contain a hidden input field with value equal to the ID of the variation
-		$variation_container_xpath .= "[descendant::{$variaton_id_xpath}]";
+		$variation_container_xpath .= "[descendant::{$variation_id_xpath}]";
 
 		$this->waitForElementVisible( $variation_container_xpath, 5 );
 		$this->waitForElementNotVisible( '.blockOverlay', 5 );
@@ -201,7 +202,7 @@ class AcceptanceTester extends \Codeception\Actor {
 		$this->click( $variation_container_xpath );
 
 		// return the index of the variation
-		return (int) trim( str_replace( 'variable_post_id', '', $this->grabAttributeFrom( "//{$variaton_id_xpath}", 'name' ) ), '[]' );
+		return (int) trim( str_replace( 'variable_post_id', '', $this->grabAttributeFrom( "//{$variation_id_xpath}", 'name' ) ), '[]' );
 	}
 
 

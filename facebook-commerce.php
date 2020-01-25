@@ -687,15 +687,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
 			feedPingUrl: '',
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		}
+		},
+		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
 	};
 
 	</script>
 
 		<?php
-		$ajax_data = array(
+		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
-		);
+		];
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(

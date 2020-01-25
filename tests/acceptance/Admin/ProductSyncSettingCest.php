@@ -20,6 +20,7 @@ class ProductSyncSettingCest {
 
 	/** @var \WC_Product|null product object created for the test */
 	private $sync_enabled_product;
+
 	/** @var \WC_Product|null product object created for the test */
 	private $sync_disabled_product;
 
@@ -28,6 +29,7 @@ class ProductSyncSettingCest {
 	 * Runs before each test.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws \Exception
 	 */
 	public function _before( AcceptanceTester $I ) {
 
