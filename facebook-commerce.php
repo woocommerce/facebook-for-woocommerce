@@ -2922,6 +2922,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook JS SDK version.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value JS SDK version
+	 */
+	public function update_js_sdk_version( $value ) {
+
+		$this->js_sdk_version = is_string( $value ) && is_numeric( $value ) ? wc_clean( $value ) : '';
+
+		update_option( self::OPTION_JS_SDK_VERSION, $this->js_sdk_version );
+	}
+
+
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since x.y.z
