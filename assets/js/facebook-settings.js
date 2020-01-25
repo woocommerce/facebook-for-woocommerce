@@ -75,9 +75,17 @@ function get_pixel_id_box() {
 }
 
 
+/**
+ * Gets the input Element that holds the value for the Use Advanced Matching setting.
+ *
+ * @returns {(Element|null)}
+ */
 function get_pixel_use_pii_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_pixel_use_pii' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_enable_advanced_matching' );
 }
+
+
 function get_api_key_box() {
 	return document.querySelector( '#woocommerce_facebookcommerce_fb_api_key' ) || null;
 }
