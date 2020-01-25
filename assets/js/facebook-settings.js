@@ -82,11 +82,6 @@ function get_pixel_use_pii_id_box() {
 }
 
 
-function get_api_key_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_api_key' ) || null;
-}
-
-
 /**
  * Gets the input Element that holds the value for the Facebook page setting.
  *
@@ -191,10 +186,6 @@ if (window.location.href.includes( "fb_force_resync" )) {
 
 function sync_all_products($using_feed = false, $is_test = false) {
 
-	if (get_api_key_box() && ! get_api_key_box().value) {
-		return;
-	}
-	console.log( 'Syncing all products!' );
 	window.fb_connected = true;
 	sync_in_progress();
 	if ($using_feed) {
@@ -227,9 +218,7 @@ function delete_all_settings(callback = null, failcallback = null) {
 	if (get_pixel_use_pii_id_box()) {
 		get_pixel_use_pii_id_box().checked = false;
 	}
-	if (get_api_key_box()) {
-		get_api_key_box().value = '';
-	}
+
 	if (get_page_id_box()) {
 		get_page_id_box().value = '';
 	}
@@ -554,13 +543,6 @@ function setAccessTokenAndPageId(message) {
 		);
 		window.sendToFacebook( 'fail set page access token', message.params );
 		return;
-	}
-	/*
-	Set page_token here
-	*/
-
-	if (get_api_key_box()) {
-		get_api_key_box().value = message.params.page_token;
 	}
 
 	if (get_page_id_box()) {
