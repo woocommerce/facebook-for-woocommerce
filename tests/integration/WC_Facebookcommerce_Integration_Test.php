@@ -286,6 +286,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_js_sdk_version()
+	 *
+	 * @param int|string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_js_sdk_version
+	 */
+	public function test_update_js_sdk_version( $value, $expected ) {
+
+		$this->integration->update_js_sdk_version( $value );
+
+		$this->assertSame( $expected, $this->integration->get_js_sdk_version() );
+		$this->assertSame( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION ) );
+	}
+
+
+	/** @see test_update_js_sdk_version */
+	public function provider_update_js_sdk_version() {
+
+		return [
+			[ 'v3.2', 'v3.2' ],
+			[ 3.2, '' ],
+		];
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::get_facebook_page_id() */
 	public function test_get_facebook_page_id() {
 
