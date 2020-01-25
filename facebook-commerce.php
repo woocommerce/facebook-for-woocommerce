@@ -1420,7 +1420,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-			$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
+			$this->update_js_sdk_version( sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) ) );
 		}
 
 		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
@@ -2930,7 +2930,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function update_js_sdk_version( $value ) {
 
-		$this->js_sdk_version = is_string( $value ) && is_numeric( $value ) ? wc_clean( $value ) : '';
+		$this->js_sdk_version = $this->sanitize_facebook_credential( $value );
 
 		update_option( self::OPTION_JS_SDK_VERSION, $this->js_sdk_version );
 	}
