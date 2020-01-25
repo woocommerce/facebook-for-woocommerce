@@ -207,10 +207,23 @@ jQuery( document ).ready( function( $ ) {
 			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
-			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+		// show/hide Custom Image URL setting
+		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
+
+			let $container  = $( this ).closest( '.woocommerce_options_panel, .wc-metabox-content' );
+			let imageSource = $( this ).val();
+
+			$container.find( '.product-image-source-field' ).closest( '.form-field' ).hide();
+			$container.find( `.show-if-product-image-source-${imageSource}` ).closest( '.form-field' ).show();
 		} );
 
+		$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+
+		// trigger settings fields modifiers when variations are loaded
+		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+			$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+		} );
 
 		let submitProductSave = false;
 

@@ -1,12 +1,18 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 class ProductVariationSyncSettingCest {
 
 
-	// product objects created for the tests */
-	/** @var WC_Product */
+	/** @var string base selector for the Facebook image source field */
+	const FIELD_IMAGE_SOURCE = '.variable_fb_product_image_source%d_field input';
+
+
+	/** @var WC_Product|null product object created for the test */
 	private $variable_product;
-	/** @var WC_Product_Variation */
+
+	/** @var WC_Product_Variation|null product variation object created for the test */
 	private $product_variation;
 
 
@@ -128,7 +134,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':disabled', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -150,7 +156,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':not(:disabled)', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -173,7 +179,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->click( "#variable_fb_sync_enabled{$index}" );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
-		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->selectOption( sprintf( self::FIELD_IMAGE_SOURCE, $index ), Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
 
 		$I->click( [ 'css' => '.save-variation-changes' ] );
@@ -186,7 +192,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->seeOptionIsSelected( sprintf( self::FIELD_IMAGE_SOURCE, $index ), 'Use parent image' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
 	}
 
@@ -219,7 +225,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':disabled', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -239,7 +245,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), '' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), '' );
+		$I->seeOptionIsSelected( sprintf( self::FIELD_IMAGE_SOURCE, $index ), 'Use variation image' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '' );
 	}
 

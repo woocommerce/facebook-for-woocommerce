@@ -93,6 +93,8 @@ class Admin {
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
+				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/css/admin/facebook-for-woocommerce-products-admin.css' ), [], \WC_Facebookcommerce::PLUGIN_VERSION );
+
 				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
@@ -541,18 +543,12 @@ class Admin {
 	public function add_product_settings_tab_content() {
 		global $post;
 
-		$woo_product  = new \WC_Facebook_Product( $post->ID );
 		// all products have sync enabled unless explicitly disabled
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
+		$image_source = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
-
-		if ( $woo_product->is_type( 'variable' ) ) {
-			$image_setting = $woo_product->get_use_parent_image();
-		} else {
-			$image_setting = null;
-		}
 
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
@@ -577,15 +573,25 @@ class Admin {
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
-				woocommerce_wp_textarea_input( [
+				woocommerce_wp_radio( [
+					'id'            => 'fb_product_image_source',
+					'label'         => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+					'desc_tip'      => true,
+					'description'   => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
+					'options'       => [
+						Products::PRODUCT_IMAGE_SOURCE_PRODUCT => __( 'Use WooCommerce image', 'facebook-for-woocommerce' ),
+						Products::PRODUCT_IMAGE_SOURCE_CUSTOM  => __( 'Use custom image', 'facebook-for-woocommerce' ),
+					],
+					'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
+					'class'         => 'short enable-if-sync-enabled js-fb-product-image-source',
+					'wrapper_class' => 'fb-product-image-source-field',
+				] );
+
+				woocommerce_wp_text_input( [
 					'id'          => \WC_Facebook_Product::FB_PRODUCT_IMAGE,
-					'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-					'desc_tip'    => true,
-					'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
-					'cols'        => 40,
-					'rows'        => 10,
+					'label'       => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
 					'value'       => $image,
-					'class'       => 'enable-if-sync-enabled',
+					'class'       => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
 				] );
 
 				woocommerce_wp_text_input( [
@@ -602,18 +608,6 @@ class Admin {
 					'value'       => $price,
 					'class'       => 'enable-if-sync-enabled',
 				] );
-
-				if ( null !== $image_setting ) {
-
-					woocommerce_wp_checkbox( [
-						'id'          => \WC_Facebookcommerce_Integration::FB_VARIANT_IMAGE,
-						'label'       => __( 'Use Parent Image', 'facebook-for-woocommerce' ),
-						'desc_tip'    => true,
-						'description' => __( 'By default, the primary image uploaded to Facebook is the image specified in each variant, if provided. However, if you enable this setting, the image of the parent will be used as the primary image for this product and all its variants instead.', 'facebook-for-woocommerce' ),
-						'value'       => wc_bool_to_string( (bool) $image_setting ),
-						'class'       => 'checkbox enable-if-sync-enabled',
-					] );
-				}
 
 				?>
 			</div>
@@ -651,53 +645,68 @@ class Admin {
 		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
 		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
 		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
+		$image_source = $variation->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY );
 
 		woocommerce_wp_checkbox( [
-			'id'          => "variable_fb_sync_enabled$index",
-			'name'        => "variable_fb_sync_enabled[$index]",
-			'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-			'value'       => wc_bool_to_string( 'no' !== $sync_enabled ),
-			'class'       => 'checkbox js-variable-fb-sync-toggle',
-			'style'       => 'margin-right: 5px !important',
+			'id'            => "variable_fb_sync_enabled$index",
+			'name'          => "variable_fb_sync_enabled[$index]",
+			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
+			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
+			'class'         => 'checkbox js-variable-fb-sync-toggle',
+			'wrapper_class' => 'fb-sync-enabled-field'
 		] );
 
 		woocommerce_wp_textarea_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
-			'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
-			'desc_tip'    => true,
-			'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
-			'cols'        => 40,
-			'rows'        => 5,
-			'value'       => $description,
-			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ),
+			'label'         => __( 'Facebook Description', 'facebook-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
+			'cols'          => 40,
+			'rows'          => 5,
+			'value'         => $description,
+			'class'         => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-row-full',
+		] );
+
+		woocommerce_wp_radio( [
+			'id'            => "variable_fb_product_image_source$index",
+			'name'          => "variable_fb_product_image_source[$index]",
+			'label'         => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'Choose the product image that should be synced to the Facebook catalog for this product. If using a custom image, please enter an absolute URL (e.g. https://domain.com/image.jpg).', 'facebook-for-woocommerce' ),
+			'options'       => [
+				Products::PRODUCT_IMAGE_SOURCE_PRODUCT        => __( 'Use variation image', 'facebook-for-woocommerce' ),
+				Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT => __( 'Use parent image', 'facebook-for-woocommerce' ),
+				Products::PRODUCT_IMAGE_SOURCE_CUSTOM         => __( 'Use custom image', 'facebook-for-woocommerce' ),
+			],
+			'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
+			'class'         => 'enable-if-sync-enabled js-fb-product-image-source',
+			'wrapper_class' => 'fb-product-image-source-field',
 		] );
 
 		woocommerce_wp_text_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
-			'label'       => __( 'Facebook Product Image', 'facebook-for-woocommerce' ),
-			'desc_tip'    => true,
-			'description' => __( 'Image URL for product on Facebook. Must be an absolute URL e.g. https://... This can be used to override the primary image that will be used on Facebook for this product. If blank, the primary product image in Woo will be used as the primary image on FB.', 'facebook-for-woocommerce' ),
-			'value'       => $image_url,
-			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_IMAGE ),
+			'label'         => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
+			'value'         => $image_url,
+			'class'         => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
+			'wrapper_class' => 'form-row form-row-full'
 		] );
 
 		woocommerce_wp_text_input( [
-			'id'          => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
-			'name'        => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
-			'label'       => sprintf(
+			'id'            => sprintf( 'variable_%s%s', \WC_Facebook_Product::FB_PRODUCT_PRICE, $index ),
+			'name'          => sprintf( "variable_%s[$index]", \WC_Facebook_Product::FB_PRODUCT_PRICE ),
+			'label'         => sprintf(
 				/* translators: Placeholders %1$s - WC currency symbol */
 				__( 'Facebook Price (%1$s)', 'facebook-for-woocommerce' ),
 				get_woocommerce_currency_symbol()
 			),
-			'desc_tip'    => true,
-			'description' => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
-			'value'       => wc_format_decimal( $price ),
-			'class'       => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row form-full',
+			'desc_tip'      => true,
+			'description'   => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
+			'value'         => wc_format_decimal( $price ),
+			'class'         => 'enable-if-sync-enabled',
+			'wrapper_class' => 'form-row form-full',
 		] );
 	}
 
@@ -752,6 +761,9 @@ class Admin {
 			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
 			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
 
+			$posted_param = 'variable_fb_product_image_source';
+			$image_source = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_key( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : '';
+
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
 			$image_url    = isset( $_POST[ $posted_param ][ $index ] ) ? esc_url_raw( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
 
@@ -759,6 +771,7 @@ class Admin {
 			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( $_POST[ $posted_param ][ $index ] ) : '';
 
 			$variation->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $description );
+			$variation->update_meta_data( Products::PRODUCT_IMAGE_SOURCE_META_KEY, $image_source );
 			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_IMAGE, $image_url );
 			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_PRICE, $price );
 			$variation->save_meta_data();

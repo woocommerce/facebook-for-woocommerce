@@ -1,12 +1,27 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 class ProductSyncSettingCest {
 
 
-	// product objects created for the tests */
-	/** @var \WC_Product */
+	/** @var string selector for the Facebook description field */
+	const FIELD_DESCRIPTION = '#' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
+
+	/** @var string selector for the Facebook image source field */
+	const FIELD_IMAGE_SOURCE = '[name="fb_product_image_source"]';
+
+	/** @var string selector for the Facebook custom image URL field */
+	const FIELD_CUSTOM_IMAGE_URL = '#' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
+
+	/** @var string selector for the Facebook price field */
+	const FIELD_PRICE = '#' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
+
+
+	/** @var \WC_Product|null product object created for the test */
 	private $sync_enabled_product;
-	/** @var \WC_Product */
+
+	/** @var \WC_Product|null product object created for the test */
 	private $sync_disabled_product;
 
 
@@ -37,19 +52,22 @@ class ProductSyncSettingCest {
 
 
 	/**
-	 * Test that the field is present.
+	 * Test that the fields are present.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
-	public function try_field_present( AcceptanceTester $I ) {
+	public function try_fields_present( AcceptanceTester $I ) {
 
 		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
 
-		$I->wantTo( 'Test that the field is present' );
+		$I->wantTo( 'Test that the fields are present' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook Description', '.form-field' );
+		$I->see( 'Facebook Product Image', '.form-field' );
+		$I->see( 'Facebook Price', '.form-field' );
 	}
 
 
@@ -152,6 +170,77 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+	}
+
+
+	/**
+	 * Tests that you can configure the product to use the WooCommerce image for Facebook sync
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_use_woocommerce_image_in_facebook( AcceptanceTester $I ) {
+
+		$description = 'Test description.';
+		$price       = '12.34';
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that you can configure the product to use the WooCommerce image for Facebook sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->fillField( self::FIELD_DESCRIPTION, $description );
+		$I->selectOption( self::FIELD_IMAGE_SOURCE, Products::PRODUCT_IMAGE_SOURCE_PRODUCT );
+		$I->fillField( self::FIELD_PRICE, $price );
+
+		// scroll to and click the Update button
+		$I->scrollTo( '#publish', 0, -200 );
+		$I->click( '#publish' );
+
+		$I->waitForText( 'Product updated' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->seeInField( self::FIELD_DESCRIPTION, $description );
+		$I->seeOptionIsSelected( self::FIELD_IMAGE_SOURCE, 'Use WooCommerce image' );
+		$I->seeInField( self::FIELD_PRICE, $price );
+	}
+
+
+	/**
+	 * Tests that you can configure the product to use a custom image for Facebook sync
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_use_custom_image_in_facebook( AcceptanceTester $I ) {
+
+		$description = 'Test description.';
+		$image_url   = 'https://example.com/image.png';
+		$price       = '12.34';
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that you can configure the product to use a custom image for Facebook sync' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->fillField( self::FIELD_DESCRIPTION, $description );
+		$I->selectOption( self::FIELD_IMAGE_SOURCE, Products::PRODUCT_IMAGE_SOURCE_CUSTOM );
+		$I->fillField( self::FIELD_CUSTOM_IMAGE_URL, $image_url );
+		$I->fillField( self::FIELD_PRICE, $price );
+
+		// scroll to and click the Update button
+		$I->scrollTo( '#publish', 0, -200 );
+		$I->click( '#publish' );
+
+		$I->waitForText( 'Product updated' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->seeInField( self::FIELD_DESCRIPTION, $description );
+		$I->seeOptionIsSelected( self::FIELD_IMAGE_SOURCE, 'Use custom image' );
+		$I->seeInField( self::FIELD_CUSTOM_IMAGE_URL, $image_url );
+		$I->seeInField( self::FIELD_PRICE, $price );
 	}
 
 

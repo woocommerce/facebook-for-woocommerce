@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -161,49 +163,50 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $this->fb_price;
 		}
 
+
+		/**
+		 * Gets a list of image URLs to use for this product in Facebook sync.
+		 *
+		 * @return array
+		 */
 		public function get_all_image_urls() {
-			$image_urls      = array();
-			$parent_image_id = $this->get_parent_image_id();
-			$image_url       = wp_get_attachment_url(
-				( $parent_image_id ) ?: $this->woo_product->get_image_id()
-			);
 
-			if ( $image_url ) {
-				$image_url = WC_Facebookcommerce_Utils::make_url( $image_url );
-				array_push( $image_urls, $image_url );
-			}
+			$image_urls = [];
 
-			// For variable products, add the variation specific image.
-			if ( $parent_image_id ) {
-				$image_url2 = wp_get_attachment_url( $this->woo_product->get_image_id() );
-				$image_url2 = WC_Facebookcommerce_Utils::make_url( $image_url2 );
-				if ( $image_url != $image_url2 ) {
-					// A Checkbox toggles which image is primary.
-					// Default to variant specific image as primary.
-					if ( $this->fb_use_parent_image ) {
-						array_push( $image_urls, $image_url2 );
-					} else {
-						array_unshift( $image_urls, $image_url2 );
-					}
+			$product_image_url        = wp_get_attachment_url( $this->woo_product->get_image_id() );
+			$parent_product_image_url = null;
+			$custom_image_url         = $this->woo_product->get_meta( self::FB_PRODUCT_IMAGE );
+
+			if ( $this->woo_product->is_type( 'variation' ) ) {
+
+				if ( $parent_product = wc_get_product( $this->woo_product->get_parent_id() ) ) {
+
+					$parent_product_image_url = wp_get_attachment_url( $parent_product->get_image_id() );
 				}
 			}
 
-			$gallery_urls = $this->get_gallery_urls();
-			$image_urls   = array_merge( $image_urls, $gallery_urls );
-			$image_urls   = array_filter( $image_urls );
+			switch ( $this->woo_product->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY ) ) {
 
-			// If there are no images, create a placeholder image.
-			if ( empty( $image_urls ) ) {
-				$name          = urlencode( strip_tags( $this->woo_product->get_title() ) );
-					$image_url = 'https://placeholdit.imgix.net/~text?txtsize=33&txt='
-					  . $name . '&w=530&h=530'; // TODO: BETTER PLACEHOLDER
-				return array( $image_url );
+				case Products::PRODUCT_IMAGE_SOURCE_CUSTOM:
+					$image_urls = [ $custom_image_url, $product_image_url, $parent_product_image_url ];
+				break;
+
+				case Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT:
+					$image_urls = [ $parent_product_image_url, $product_image_url ];
+				break;
+
+				case Products::PRODUCT_IMAGE_SOURCE_PRODUCT:
+				default:
+					$image_urls = [ $product_image_url, $parent_product_image_url ];
+				break;
 			}
 
-			$image_override = get_post_meta( $this->id, self::FB_PRODUCT_IMAGE, true );
-			if ( $image_override ) {
-				array_unshift( $image_urls, $image_override );
-				$image_urls = array_unique( $image_urls );
+			$image_urls = array_merge( $image_urls, $this->get_gallery_urls() );
+			$image_urls = array_filter( array_unique( $image_urls ) );
+
+			if ( empty( $image_urls ) ) {
+				// TODO: replace or remove this placeholder - placeholdit.imgix.net is no longer available {WV 2020-01-21}
+				$image_urls[] = sprintf( 'https://placeholdit.imgix.net/~text?txtsize=33&name=%s&w=530&h=530', rawurlencode( strip_tags( $this->woo_product->get_title() ) ) );
 			}
 
 			return $image_urls;
@@ -543,7 +546,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => array_filter( $image_urls ),
+				'additional_image_urls' => array_slice( $image_urls, 1 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
 				'brand'                 => $brand,
