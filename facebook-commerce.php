@@ -33,6 +33,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the feed ID is stored */
 	const OPTION_FEED_ID = 'wc_facebook_feed_id';
 
+	/** @var string the WordPress option name where the JS SDK version is stored */
+	const OPTION_JS_SDK_VERSION = 'wc_facebook_js_sdk_version';
+
 	/** @var string the WordPress option name where the latest pixel install time is stored */
 	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
 
