@@ -59,10 +59,6 @@ function prepend_protocol(url) {
 	return url;
 }
 
-function get_product_catalog_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_product_catalog_id' ) || null;
-}
-
 
 /**
  * Gets the input Element that holds the value for the Pixel ID setting.
@@ -194,9 +190,7 @@ if (window.location.href.includes( "fb_force_resync" )) {
 }
 
 function sync_all_products($using_feed = false, $is_test = false) {
-	if (get_product_catalog_id_box() && ! get_product_catalog_id_box().value) {
-		return;
-	}
+
 	if (get_api_key_box() && ! get_api_key_box().value) {
 		return;
 	}
@@ -226,9 +220,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 // Reset all state
 function delete_all_settings(callback = null, failcallback = null) {
-	if (get_product_catalog_id_box()) {
-		get_product_catalog_id_box().value = '';
-	}
+
 	if (get_pixel_id_box()) {
 		get_pixel_id_box().value = '';
 	}
@@ -506,9 +498,6 @@ function setCatalog(message) {
 		console.error( 'Facebook Extension Error: got no catalog_id', message.params );
 		window.sendToFacebook( 'fail set catalog', message.params );
 		return;
-	}
-	if (get_api_key_box()) {
-		get_product_catalog_id_box().value = message.params.catalog_id;
 	}
 
 	settings.product_catalog_id = message.params.catalog_id;
