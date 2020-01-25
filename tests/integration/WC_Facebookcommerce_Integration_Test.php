@@ -135,7 +135,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_js_sdk_version() */
 	public function test_get_js_sdk_version() {
 
-		$this->assertSame( '2.9', $this->integration->get_js_sdk_version() );
+		$this->assertSame( 'v2.9', $this->integration->get_js_sdk_version() );
 	}
 
 
@@ -143,10 +143,10 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	public function test_get_js_sdk_version_filter() {
 
 		add_filter( 'wc_facebook_js_sdk_version', function() {
-			return '4.0';
+			return 'v4.0';
 		} );
 
-		$this->assertSame( '4.0', $this->integration->get_js_sdk_version() );
+		$this->assertSame( 'v4.0', $this->integration->get_js_sdk_version() );
 	}
 
 
@@ -691,7 +691,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, 'ghi789' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, 'jkl012' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
-		update_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, '2.9' );
+		update_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, 'v2.9' );
 
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->external_merchant_settings_id = null;
