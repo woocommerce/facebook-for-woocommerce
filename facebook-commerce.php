@@ -97,6 +97,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string|null the configured pixel install time */
 	public $pixel_install_time;
 
+	/** @var string|null the configured JS SDK version */
+	private $js_sdk_version;
+
 
 	/** Legacy properties *********************************************************************************************/
 
