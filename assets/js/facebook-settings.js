@@ -89,9 +89,19 @@ function get_pixel_use_pii_id_box() {
 function get_api_key_box() {
 	return document.querySelector( '#woocommerce_facebookcommerce_fb_api_key' ) || null;
 }
+
+
+/**
+ * Gets the input Element that holds the value for the Facebook page setting.
+ *
+ * @return {(Element|null)}
+ */
 function get_page_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_page_id' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_facebook_page_id' );
 }
+
+
 function get_ems_id_box() {
 	return document.querySelector( '#woocommerce_facebookcommerce_fb_external_merchant_settings_id' ) || null;
 }
