@@ -2576,6 +2576,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the configured JS SDK version.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_js_sdk_version() {
+
+		if ( ! is_string( $this->js_sdk_version ) ) {
+
+			$value = get_option( self::OPTION_JS_SDK_VERSION, '' );
+
+			$this->js_sdk_version = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook JS SDK version.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $js_sdk_version Facebook JS SDK version
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_js_sdk_version', $this->js_sdk_version, $this );
+	}
+
+
+	/**
 	 * Gets the configured Facebook page ID.
 	 *
 	 * @since x.y.z
