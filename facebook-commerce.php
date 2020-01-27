@@ -150,12 +150,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
 			// so that it works the same way the pixel ID does
-			$advanced_matching_enabled          = WC_Facebookcommerce_Pixel::get_use_pii_key();
 			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
-
-			if ( $settings_advanced_matching_enabled && ! $advanced_matching_enabled ) {
-				WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
-			}
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 		}
 	}
 
