@@ -33,6 +33,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the feed ID is stored */
 	const OPTION_FEED_ID = 'wc_facebook_feed_id';
 
+	/** @var string the WordPress option name where the JS SDK version is stored */
+	const OPTION_JS_SDK_VERSION = 'wc_facebook_js_sdk_version';
+
 	/** @var string the WordPress option name where the latest pixel install time is stored */
 	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
 
@@ -93,6 +96,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/** @var string|null the configured pixel install time */
 	public $pixel_install_time;
+
+	/** @var string|null the configured JS SDK version */
+	private $js_sdk_version;
 
 
 	/** Legacy properties *********************************************************************************************/
@@ -1414,7 +1420,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-			$this->settings['facebook_jssdk_version'] = sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) );
+			$this->update_js_sdk_version( sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) ) );
 		}
 
 		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
@@ -2570,6 +2576,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the configured JS SDK version.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_js_sdk_version() {
+
+		if ( ! is_string( $this->js_sdk_version ) ) {
+
+			$value = get_option( self::OPTION_JS_SDK_VERSION, '' );
+
+			$this->js_sdk_version = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook JS SDK version.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $js_sdk_version Facebook JS SDK version
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_js_sdk_version', $this->js_sdk_version, $this );
+	}
+
+
+	/**
 	 * Gets the configured Facebook page ID.
 	 *
 	 * @since x.y.z
@@ -2884,6 +2918,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->pixel_install_time = $value ?: null;
 
 		update_option( self::OPTION_PIXEL_INSTALL_TIME, $value ?: '' );
+	}
+
+
+	/**
+	 * Updates the Facebook JS SDK version.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value JS SDK version
+	 */
+	public function update_js_sdk_version( $value ) {
+
+		$this->js_sdk_version = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_JS_SDK_VERSION, $this->js_sdk_version );
 	}
 
 

@@ -132,6 +132,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_js_sdk_version() */
+	public function test_get_js_sdk_version() {
+
+		$this->assertSame( 'v2.9', $this->integration->get_js_sdk_version() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_js_sdk_version() */
+	public function test_get_js_sdk_version_filter() {
+
+		add_filter( 'wc_facebook_js_sdk_version', function() {
+			return 'v4.0';
+		} );
+
+		$this->assertSame( 'v4.0', $this->integration->get_js_sdk_version() );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::update_page_access_token()
 	 *
@@ -264,6 +282,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		return [
 			[ 1234, 1234, 1234 ],
 			[ 'non-int', 0, '' ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_js_sdk_version()
+	 *
+	 * @param int|string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_js_sdk_version
+	 */
+	public function test_update_js_sdk_version( $value, $expected ) {
+
+		$this->integration->update_js_sdk_version( $value );
+
+		$this->assertSame( $expected, $this->integration->get_js_sdk_version() );
+		$this->assertSame( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION ) );
+	}
+
+
+	/** @see test_update_js_sdk_version */
+	public function provider_update_js_sdk_version() {
+
+		return [
+			[ 'v3.2', 'v3.2' ],
+			[ 3.2, '' ],
 		];
 	}
 
@@ -646,6 +691,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, 'ghi789' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, 'jkl012' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
+		update_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, 'v2.9' );
 
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->external_merchant_settings_id = null;
