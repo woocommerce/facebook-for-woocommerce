@@ -3214,14 +3214,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function admin_options() {
 
-		$domain          = 'facebook-for-woocommerce';
-		$page_name       = $this->get_page_name();
-
+		$page_name      = $this->get_page_name();
 		$can_manage     = current_user_can( 'manage_woocommerce' );
 		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
 		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
-		$redirect_uri           = '';
 		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
 		$https_will_be_stripped = $remove_http_active && ! get_option( 'factmaven_rhttp' )['external'];
 
@@ -3231,10 +3228,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				__( 'You\'re using Remove HTTP which has incompatibilities with our extension. Please disable it, or select the "Ignore external links" option on the Remove HTTP settings page.' )
 			);
 		}
-
-		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
-		$connected         = ( $page_name != '' );
-		$hide_test         = ( $connected && $currently_syncing ) || ! defined( 'WP_DEBUG' ) || WP_DEBUG !== true;
 
 		?>
 
