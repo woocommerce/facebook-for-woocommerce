@@ -2390,7 +2390,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'type'  => 'text',
+				'type'  => 'resync_schedule',
 			],
 
 			[
