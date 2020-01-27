@@ -3289,45 +3289,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						echo $this->get_nux_message_ifexist();
 					?>
 
-					<div>
-						<div id='fbAdvancedOptionsText' onclick="toggleAdvancedOptions();">
-							Show Advanced Settings
-						</div>
-						<div id='fbAdvancedOptions'>
-							<div class='autosync' title="This experimental feature will call force resync at the specified time using WordPress cron scheduling.">
-								<input type="checkbox"
-									onclick="saveAutoSyncSchedule()"
-									class="autosyncCheck"
-									<?php echo get_option( 'woocommerce_fb_autosync_time', false ) ? 'checked' : 'unchecked'; ?>>
-								Automatically Force Resync of Products At
-
-								<input
-									type="time"
-									value="<?php echo esc_attr( get_option( 'woocommerce_fb_autosync_time', '23:00' ) ); ?>"
-									class="autosyncTime"
-									onfocusout="saveAutoSyncSchedule()"
-									<?php echo get_option( 'woocommerce_fb_autosync_time', 0 ) ? '' : 'disabled'; ?> />
-								Every Day.
-								<span class="autosyncSavedNotice" disabled> Saved </span>
-							</div>
-
-							<div title="This option is meant for development and testing environments.">
-								<input type="checkbox"
-									onclick="onSetDisableSyncOnDevEnvironment()"
-									class="disableOnDevEnvironment"
-									<?php echo get_option( 'fb_disable_sync_on_dev_environment', false ) ? 'checked' : 'unchecked'; ?>/>
-								Disable Product Sync with FB
-							</div>
-
-							<div class='shortdescr' title="This experimental feature will import short description instead of description for all products.">
-								<input type="checkbox"
-									onclick="syncShortDescription()"
-									class="syncShortDescription"
-									<?php echo get_option( 'fb_sync_short_description', false ) ? 'checked' : 'unchecked'; ?>/>
-								Sync Short Description Instead of Description
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 
