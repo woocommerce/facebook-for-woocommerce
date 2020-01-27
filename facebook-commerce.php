@@ -3237,14 +3237,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$hide_test         = ( $connected && $currently_syncing ) || ! defined( 'WP_DEBUG' ) || WP_DEBUG !== true;
 
 		?>
-		<h2><?php esc_html_e( 'Facebook', $domain ); ?></h2>
+
+		<h2><?php esc_html_e( 'Facebook', 'facebook-for-woocommerce' ); ?></h2>
+
 		<p>
-			<?php
-			esc_html_e(
-				'Control how WooCommerce integrates with your Facebook store.',
-				$domain
-			);
-			?>
+			<?php esc_html_e( 'Control how WooCommerce integrates with your Facebook store.', 'facebook-for-woocommerce' ); ?>
 		</p>
 
 		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
@@ -3259,12 +3256,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					<h1 id="setup_h1"><?php esc_html_e( 'Grow your business on Facebook', 'facebook-for-woocommerce' ); ?></h1>
 
 					<h2>
-						<?php
-							esc_html_e(
-								'Use this WooCommerce and Facebook integration to:',
-								$domain
-							);
-						?>
+						<?php esc_html_e( 'Use this WooCommerce and Facebook integration to:', 'facebook-for-woocommerce' ); ?>
 					</h2>
 
 					<ul>
