@@ -53,7 +53,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
-			$this->sync_short_description = get_option( 'fb_sync_short_description', false );
+			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
 			// Variable products should use some data from the parent_product
 			// For performance reasons, that data shouldn't be regenerated every time.
