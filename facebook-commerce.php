@@ -147,6 +147,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
+
+			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			// so that it works the same way the pixel ID does
+			$advanced_matching_enabled          = WC_Facebookcommerce_Pixel::get_use_pii_key();
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+
+			if ( $settings_advanced_matching_enabled && ! $advanced_matching_enabled ) {
+				WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
+			}
 		}
 	}
 
@@ -179,6 +188,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// if there is a pixel option saved and no integration setting saved, inherit the pixel option
 		if ( $pixel_id && ! $this->get_facebook_pixel_id() ) {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
+		}
+
+		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
+
+		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
+		// inherit the pixel option
+		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
 		}
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
