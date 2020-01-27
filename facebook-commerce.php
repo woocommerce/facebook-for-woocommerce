@@ -3292,18 +3292,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				</div>
 			</div>
 
-			<div <?php echo ( $hide_test ) ? ' style="display:none;" ' : ''; ?> >
-				<p class="tooltip" id="test_product_sync">
-					<?php // WP_DEBUG mode: button to launch test ?>
-					<a href="<?php echo esc_attr( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ); ?>&fb_test_product_sync=true">
-						<?php echo esc_html__( 'Launch Test', $domain ); ?>
-						<span class='tooltiptext'>
-							<?php esc_html_e( 'This button will run an integration test suite verifying the extension. Note that this will reset your products and resync them to Facebook. Not recommended to use unless you are changing the extension code and want to test your changes.', $domain ); ?>
-						</span>
-					</a>
-				</p>
-				<p id="stack_trace"></p>
-			</div>
 			<br/><hr/><br/>
 
 			<?php $GLOBALS['hide_save_button'] = true; ?>
