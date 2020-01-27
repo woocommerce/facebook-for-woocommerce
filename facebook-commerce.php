@@ -3755,4 +3755,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		wp_die();
 	}
+
+
+	/**
+	 * Generates the force resync fieldset HTML.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $field_key field key
+	 * @param array $data field data
+	 * @return string HTML
+	 */
+	protected function generate_resync_schedule_html( $field_key, array $data ) {
+
+		ob_start();
+
+		?>
+
+		<?php
+
+		return ob_get_clean();
+	}
 }
