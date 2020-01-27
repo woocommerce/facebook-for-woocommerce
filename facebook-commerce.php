@@ -3294,9 +3294,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<br/><hr/><br/>
 
+			<div id="integration-settings">
 				<table class="form-table">
 					<?php $this->generate_settings_html(); ?>
-				</table><!--/.form-table-->
+				</table>
+			</div>
 		<?php
 	}
 
