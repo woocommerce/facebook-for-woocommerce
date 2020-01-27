@@ -3294,13 +3294,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<br/><hr/><br/>
 
-			<?php $GLOBALS['hide_save_button'] = true; ?>
-			<?php if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ): ?>
-				<?php $GLOBALS['hide_save_button'] = false; ?>
 				<table class="form-table">
 					<?php $this->generate_settings_html(); ?>
 				</table><!--/.form-table-->
-			<?php endif; ?>
 		<?php
 	}
 
