@@ -3215,7 +3215,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function admin_options() {
 
 		$domain          = 'facebook-for-woocommerce';
-		$cta_button_text = __( 'Get Started', $domain );
 		$page_name       = $this->get_page_name();
 
 		$can_manage     = current_user_can( 'manage_woocommerce' );
@@ -3231,14 +3230,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->display_sticky_message(
 				__( 'You\'re using Remove HTTP which has incompatibilities with our extension. Please disable it, or select the "Ignore external links" option on the Remove HTTP settings page.' )
 			);
-		}
-
-		if ( ! $pre_setup ) {
-
-			$cta_button_text = __( 'Create Ad', $domain );
-			$redirect_uri    = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
-				. $this->get_external_merchant_settings_id() . '&version=2'
-				. '&entry_point=admin_panel';
 		}
 
 		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
@@ -3266,13 +3257,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				</header>
 
 				<div class="content">
-					<h1 id="setup_h1">
-						<?php
-							$pre_setup
-								? esc_html_e( 'Grow your business on Facebook', $domain )
-								: esc_html_e( 'Reach The Right People and Sell More Online', $domain );
-						?>
-					</h1>
+					<h1 id="setup_h1"><?php esc_html_e( 'Grow your business on Facebook', 'facebook-for-woocommerce' ); ?></h1>
 
 					<h2>
 						<?php
@@ -3284,50 +3269,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					</h2>
 
 					<ul>
-						<li id="setup_l1">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Easily install a tracking pixel', $domain )
-									: esc_html_e( 'Create an ad in a few steps', $domain );
-							?>
-						</li>
-						<li id="setup_l2">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Upload your products and create a shop', $domain )
-									: esc_html_e( 'Use built-in best practices for online sales', $domain );
-							?>
-						</li>
-						<li id="setup_l3">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Create dynamic ads with your products and pixel', $domain )
-									: esc_html_e( 'Get reporting on sales and revenue', $domain );
-							?>
-						</li>
+						<li id="setup_l1"><?php esc_html_e( 'Easily install a tracking pixel', 'facebook-for-woocommerce' ); ?></li>
+						<li id="setup_l2"><?php esc_html_e( 'Upload your products and create a shop', 'facebook-for-woocommerce' ); ?></li>
+						<li id="setup_l3"><?php esc_html_e( 'Create dynamic ads with your products and pixel', 'facebook-for-woocommerce' ); ?></li>
 					</ul>
 
 					<span
 						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
 						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<?php if ( $pre_setup ) : ?>
-
-							<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
-								<?php echo esc_html( $cta_button_text ); ?>
-							</a>
-
-						<?php else : ?>
-
-							<a href='<?php esc_attr( $redirect_uri ); ?>' class="btn" id="cta_button">
-								<?php echo esc_html( $cta_button_text ); ?>
-							</a>
-							<a href="https://www.facebook.com/business/m/drive-more-online-sales"
-								class="btn grey" id="learnmore_button">
-								<?php echo esc_html__('Learn More' ); ?>
-							</a>
-
-						<?php endif; ?>
+						<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
+							<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
+						</a>
 
 					</span>
 
