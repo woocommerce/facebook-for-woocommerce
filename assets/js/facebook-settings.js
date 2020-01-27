@@ -59,24 +59,39 @@ function prepend_protocol(url) {
 	return url;
 }
 
-function get_product_catalog_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_product_catalog_id' ) || null;
-}
+
+/**
+ * Gets the input Element that holds the value for the Pixel ID setting.
+ *
+ * @returns {(Element|null)}
+ */
 function get_pixel_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_pixel_id' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_facebook_pixel_id' );
 }
+
+
+/**
+ * Gets the input Element that holds the value for the Use Advanced Matching setting.
+ *
+ * @returns {(Element|null)}
+ */
 function get_pixel_use_pii_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_pixel_use_pii' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_enable_advanced_matching' );
 }
-function get_api_key_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_api_key' ) || null;
-}
+
+
+/**
+ * Gets the input Element that holds the value for the Facebook page setting.
+ *
+ * @return {(Element|null)}
+ */
 function get_page_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_page_id' ) || null;
+
+	return document.querySelector( '#woocommerce_facebookcommerce_facebook_page_id' );
 }
-function get_ems_id_box() {
-	return document.querySelector( '#woocommerce_facebookcommerce_fb_external_merchant_settings_id' ) || null;
-}
+
 
 /*
  *  Ajax helper function.
@@ -166,13 +181,7 @@ if (window.location.href.includes( "fb_force_resync" )) {
 }
 
 function sync_all_products($using_feed = false, $is_test = false) {
-	if (get_product_catalog_id_box() && ! get_product_catalog_id_box().value) {
-		return;
-	}
-	if (get_api_key_box() && ! get_api_key_box().value) {
-		return;
-	}
-	console.log( 'Syncing all products!' );
+
 	window.fb_connected = true;
 	sync_in_progress();
 	if ($using_feed) {
@@ -198,23 +207,16 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 // Reset all state
 function delete_all_settings(callback = null, failcallback = null) {
-	if (get_product_catalog_id_box()) {
-		get_product_catalog_id_box().value = '';
-	}
+
 	if (get_pixel_id_box()) {
 		get_pixel_id_box().value = '';
 	}
 	if (get_pixel_use_pii_id_box()) {
 		get_pixel_use_pii_id_box().checked = false;
 	}
-	if (get_api_key_box()) {
-		get_api_key_box().value = '';
-	}
+
 	if (get_page_id_box()) {
 		get_page_id_box().value = '';
-	}
-	if (get_ems_id_box()) {
-		get_ems_id_box().value = '';
 	}
 
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
@@ -462,9 +464,6 @@ function setMerchantSettings(message) {
 		window.sendToFacebook( 'fail set merchant settings', message.params );
 		return;
 	}
-	if (get_ems_id_box()) {
-		get_ems_id_box().value = message.params.setting_id;
-	}
 
 	settings.external_merchant_settings_id = message.params.setting_id;
 
@@ -478,9 +477,6 @@ function setCatalog(message) {
 		console.error( 'Facebook Extension Error: got no catalog_id', message.params );
 		window.sendToFacebook( 'fail set catalog', message.params );
 		return;
-	}
-	if (get_api_key_box()) {
-		get_product_catalog_id_box().value = message.params.catalog_id;
 	}
 
 	settings.product_catalog_id = message.params.catalog_id;
@@ -537,13 +533,6 @@ function setAccessTokenAndPageId(message) {
 		);
 		window.sendToFacebook( 'fail set page access token', message.params );
 		return;
-	}
-	/*
-	Set page_token here
-	*/
-
-	if (get_api_key_box()) {
-		get_api_key_box().value = message.params.page_token;
 	}
 
 	if (get_page_id_box()) {
