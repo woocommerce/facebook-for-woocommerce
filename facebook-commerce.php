@@ -3277,9 +3277,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			</div>
 		</div>
 
-			<div id="integration-settings" <?php echo ! $this->is_configured() ? 'style="display: none"' : ''; ?>>
-				<table class="form-table"><?php $this->generate_settings_html( $this->get_form_fields() ); ?></table>
-			</div>
+		<div id="integration-settings" <?php echo ! $this->is_configured() ? 'style="display: none"' : ''; ?>>
+			<table class="form-table"><?php $this->generate_settings_html( $this->get_form_fields() ); ?></table>
+		</div>
+
 		<?php
 	}
 
