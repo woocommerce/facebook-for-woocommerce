@@ -3246,7 +3246,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 			?>
 		</p>
-		<hr/>
 
 		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
 			<div class="wrapper">
