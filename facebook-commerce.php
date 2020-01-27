@@ -135,9 +135,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// This is part of a larger effort to consolidate all the FB-specific
 		// settings for all plugin integrations.
 		if ( is_admin() ) {
+
 			$pixel_id          = WC_Facebookcommerce_Pixel::get_pixel_id();
-			$settings_pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
-			(string) $this->settings['fb_pixel_id'] : null;
+			$settings_pixel_id = $this->get_facebook_pixel_id();
+
 			if (
 			WC_Facebookcommerce_Utils::is_valid_id( $settings_pixel_id ) &&
 			( ! WC_Facebookcommerce_Utils::is_valid_id( $pixel_id ) ||
@@ -174,13 +175,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->init_settings();
 
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
-		if ( ! $pixel_id ) {
-			$pixel_id = isset( $this->settings['fb_pixel_id'] ) ?
-				  $this->settings['fb_pixel_id'] : '';
+
+		// if there is a pixel option saved and no integration setting saved, inherit the pixel option
+		if ( $pixel_id && ! $this->get_facebook_pixel_id() ) {
+			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
-		$this->pixel_id = isset( $pixel_id )
-		? $pixel_id
-		: '';
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -194,9 +193,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
-		$this->feed_id                      = isset( $this->settings['fb_feed_id'] )
-		? $this->settings['fb_feed_id']
-		: '';
 
 		// Hooks
 		if ( is_admin() ) {
@@ -211,7 +207,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// Display an info banner for eligible pixel and user.
 			if ( $this->get_external_merchant_settings_id()
-			&& $this->pixel_id
+			&& $this->get_facebook_pixel_id()
 			&& $this->get_pixel_install_time() ) {
 				$should_query_tip =
 				WC_Facebookcommerce_Utils::check_time_cap(
@@ -238,7 +234,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
 			$integration_test::$fbgraph = $this->fbgraph;
 
-			if ( ! $this->get_pixel_install_time() && $this->pixel_id ) {
+			if ( ! $this->get_pixel_install_time() && $this->get_facebook_pixel_id() ) {
 				$this->update_pixel_install_time( time() );
 			}
 
@@ -387,7 +383,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::FB_PRIORITY_MID
 		);
 
-		if ( $this->pixel_id ) {
+		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
@@ -713,7 +709,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedWasDisabled: 'true',
 		platform: 'WooCommerce',
 		pixel: {
-			pixelId: '<?php echo $this->pixel_id ? esc_js( $this->pixel_id ) : ''; ?>',
+			pixelId: '<?php echo $this->get_facebook_pixel_id() ? esc_js( $this->get_facebook_pixel_id() ) : ''; ?>',
 			advanced_matching_supported: true
 		},
 		diaSettingId: '<?php echo $this->get_external_merchant_settings_id() ? esc_js( $this->get_external_merchant_settings_id() ) : ''; ?>',
@@ -728,7 +724,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->feed_id ); ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
 		},
 		feedPrepared: {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
@@ -1370,11 +1366,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
 				if ( $this->get_page_access_token() ) {
 
-					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
-
-					if ( $this->pixel_id != $pixel_id ) {
+					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
 						$this->update_pixel_install_time( time() );
 					}
+
+					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 
 				} else {
 
@@ -1471,15 +1467,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_page_access_token( '' );
 			$this->update_product_catalog_id( '' );
 
-			$this->settings['fb_pixel_id']                            = '';
+			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
 			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
-			$this->settings['fb_feed_id']                       = '';
-			$this->settings['fb_upload_id']                     = '';
-			$this->settings['upload_end_time']                  = '';
+			$this->update_feed_id( '' );
+			$this->settings['fb_upload_id']    = '';
+			$this->settings['upload_end_time'] = '';
 
 			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
 
@@ -2230,19 +2226,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		} else {
 			$this->fbproductfeed = new WC_Facebook_Product_Feed(
 				$this->get_product_catalog_id(),
 				$this->fbgraph,
-				$this->feed_id
+				$this->get_feed_id()
 			);
 		}
 
 		$upload_success = $this->fbproductfeed->sync_all_products_using_feed();
 		if ( $upload_success ) {
-			$this->settings['fb_feed_id']   = $this->fbproductfeed->feed_id;
+			$this->update_feed_id( $this->fbproductfeed->feed_id );
 			$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
 			update_option(
 				$this->get_option_key(),
