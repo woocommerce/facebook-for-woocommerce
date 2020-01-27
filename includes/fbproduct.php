@@ -292,9 +292,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->woo_product->get_type() ) ) {
-				$description = WC_Facebookcommerce_Utils::clean_string(
-					$this->get_description()
-				);
+
+				$description = WC_Facebookcommerce_Utils::clean_string( $this->woo_product->get_description() );
+
 				if ( $description ) {
 					return $description;
 				}
