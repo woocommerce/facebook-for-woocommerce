@@ -2954,6 +2954,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Determines whether Facebook for WooCommerce is configured.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_configured() {
+
+		return $this->get_page_access_token() && $this->get_facebook_page_id();
+	}
+
+
+	/**
 	 * Determines whether advanced matching is enabled.
 	 *
 	 * @since x.y.z
