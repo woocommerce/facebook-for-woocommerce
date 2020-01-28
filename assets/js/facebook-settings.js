@@ -431,23 +431,16 @@ function sync_not_in_progress(){
 	}
 }
 
-function not_connected(){
-	if (document.querySelector( '#connection_status' )) {
-		document.querySelector( '#connection_status' ).style.display = 'none';
-	}
 
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'auto';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = 'none';
-	}
-	if (document.querySelector( '#sync_progress' )) {
-		document.querySelector( '#sync_progress' ).innerHTML = '';
-	}
+/**
+ * Shows Facebook fancy box if the store is still not connected to Facebook.
+ *
+ * Also hides the integration settings fields.
+ */
+function not_connected() {
+
+	jQuery( '#fbsetup' ).show();
+	jQuery( '#integration-settings' ).hide();
 }
 
 function addAnEventListener(obj,evt,func) {
