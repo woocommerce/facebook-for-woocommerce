@@ -221,9 +221,9 @@ function delete_all_settings(callback = null, failcallback = null) {
 
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
-
-	reset_buttons();
 	window.fb_connected = false;
+
+	not_connected();
 
 	console.log( 'Deleting all settings and removing all FBIDs!' );
 	return ajax(
@@ -310,39 +310,6 @@ function save_settings_and_sync(message) {
 	}
 }
 
-// Reset buttons to brand new setup state
-function reset_buttons(){
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = 'none';
-	}
-	if (document.querySelector( '#cta_button' )) {
-		var cta_element                = document.querySelector( '#cta_button' );
-		cta_element.innerHTML          = 'Get Started';
-		cta_element.style['font-size'] = '13px';
-		cta_element.style.width        = '80px';
-		cta_element.href               = '#';
-		cta_element.onclick            = function() { facebookConfig(); };
-	}
-	if (document.querySelector( '#learnmore_button' )) {
-		document.querySelector( '#learnmore_button' ).style.display = 'none';
-	}
-	if (document.querySelector( '#setup_h1' )) {
-		document.querySelector( '#setup_h1' ).innerHTML =
-		'Grow your business on Facebook';
-	}
-	if (document.querySelector( '#setup_l1' )) {
-		document.querySelector( '#setup_l1' ).innerHTML =
-		'Easily install a tracking pixel';
-	}
-	if (document.querySelector( '#setup_l2' )) {
-		document.querySelector( '#setup_l2' ).innerHTML =
-		'Upload your products and create a shop';
-	}
-	if (document.querySelector( '#setup_l3' )) {
-		document.querySelector( '#setup_l3' ).innerHTML =
-		'Create dynamic ads with your products and pixel';
-	}
-}
 
 // Remove reset/settings buttons during product sync
 function sync_in_progress(){
@@ -431,23 +398,16 @@ function sync_not_in_progress(){
 	}
 }
 
-function not_connected(){
-	if (document.querySelector( '#connection_status' )) {
-		document.querySelector( '#connection_status' ).style.display = 'none';
-	}
 
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'auto';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = 'none';
-	}
-	if (document.querySelector( '#sync_progress' )) {
-		document.querySelector( '#sync_progress' ).innerHTML = '';
-	}
+/**
+ * Shows Facebook fancy box if the store is still not connected to Facebook.
+ *
+ * Also hides the integration settings fields.
+ */
+function not_connected() {
+
+	jQuery( '#fbsetup' ).show();
+	jQuery( '#integration-settings' ).hide();
 }
 
 function addAnEventListener(obj,evt,func) {
@@ -625,11 +585,17 @@ function iFrameListener(event) {
 		case 'gen feed':
 			genFeed();
 		break;
+
 		case 'set page access token':
-			// Should be last message received
+			// should be last message received
 			setAccessTokenAndPageId( event.data );
 			save_settings_and_sync( event.data );
+
+			// hide Facebook fancy box and show integration settings
+			jQuery( '#fbsetup' ).hide();
+			jQuery( '#integration-settings' ).show();
 		break;
+
 		case 'set msger chat':
 			setMsgerChatSetup( event.data.params );
 			save_settings_for_plugin(
@@ -798,9 +764,12 @@ function check_feed_upload_queue(check_num) {
 						}
 						ping_feed_status_queue( check_num + 1 );
 					  break;
+
 					default:
-						sync_progress_element.innerHTML =
-						'<strong>Something wrong when uploading, please try again.</strong>';
+						if ( sync_progress_element ) {
+							sync_progress_element.innerHTML = '<strong>Something wrong when uploading, please try again.</strong>';
+						}
+
 						window.feed_upload              = false;
 						if (window.is_test) {
 							display_test_result();
