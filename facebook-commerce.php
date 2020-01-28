@@ -2344,6 +2344,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title'
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
+			[
+				'type' => 'product_sync_title_button',
+			],
+
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
@@ -2429,6 +2434,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Create ad" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( '#woocommerce_facebookcommerce_1' );
+			} );
+		" );
+
+		ob_start(); ?>
+		<a
+			id="woocommerce-facebook-settings-sync-products"
+			class="button"
+			href="#"
+			style="vertical-align: middle; margin-left: 20px;"
+		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
+
+		return ob_get_clean();
 	}
 
 
