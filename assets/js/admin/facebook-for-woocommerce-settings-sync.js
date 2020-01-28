@@ -53,7 +53,6 @@ jQuery( document ).ready( function( $ ) {
 	// WooCommerce settings page
 	if ( 'woocommerce_page_wc-settings' === pagenow ) {
 
-		// toggle visibility of settings groups
 		$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
 			if ( $( this ).hasClass( 'product-sync-field' ) ) {
 				if ( $( this ).is( ':checked' ) ) {
