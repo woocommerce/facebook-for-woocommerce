@@ -221,9 +221,10 @@ function delete_all_settings(callback = null, failcallback = null) {
 
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
+	window.fb_connected = false;
 
 	reset_buttons();
-	window.fb_connected = false;
+	not_connected();
 
 	console.log( 'Deleting all settings and removing all FBIDs!' );
 	return ajax(
