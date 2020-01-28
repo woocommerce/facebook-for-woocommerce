@@ -2339,6 +2339,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => 'yes',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
+			[
+				'type'  => 'create_ad',
+			],
+
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title'
@@ -2429,6 +2434,40 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Create ad" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_create_ad_html( $key, array $args = [] ) {
+
+		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"></th>
+			<td class="forminp">
+				<a
+					class="button button-primary"
+					target="_blank"
+					href="<?php echo esc_url( $create_ad_url ); ?>"
+				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
