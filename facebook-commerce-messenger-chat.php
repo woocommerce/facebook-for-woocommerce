@@ -85,9 +85,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					<div></div>
 					",
 					esc_attr( $this->page_id ),
-					esc_html( $this->theme_color_code   ? sprintf( 'theme_color="%s"', esc_attr( $this->theme_color_code ) ) : '' ),
-					esc_html( $this->greeting_text_code ? sprintf( 'logged_in_greeting="%s"', esc_attr( $this->greeting_text_code ) ) : '' ),
-					esc_html( $this->greeting_text_code ? sprintf( 'logged_out_greeting="%s"', esc_attr( $this->greeting_text_code ) ) : '' ),
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$this->theme_color_code ? 'theme_color="' . esc_attr( $this->theme_color_code ) . '"' : '',
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$this->greeting_text_code ? 'logged_in_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$this->greeting_text_code ? 'logged_out_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
 					esc_js( $this->jssdk_version ),
 					esc_js( $this->locale ?: 'en_US' )
 				);
