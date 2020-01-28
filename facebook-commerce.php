@@ -3802,6 +3802,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						value="1"
 						<?php checked( null !== $this->get_scheduled_resync_offset() ); ?>
 					/>
+					<input
+						class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>"
+						type="text"
+						name="<?php echo esc_attr( $text_input_field_key ); ?>"
+						id="<?php echo esc_attr( $text_input_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo esc_attr( $this->get_scheduled_resync_offset() ); ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
 					<br/>
 				</fieldset>
 			</td>
