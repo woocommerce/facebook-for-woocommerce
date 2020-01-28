@@ -3800,7 +3800,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						id="<?php echo esc_attr( $checkbox_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
 						value="1"
-						<?php checked( null !== $this->get_scheduled_resync_offset() ); ?>
+						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
 					/>
 					<input
 						class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>"
@@ -3811,6 +3811,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						value="<?php echo esc_attr( $this->get_scheduled_resync_offset() ); ?>"
 						<?php disabled( $data['disabled'], true ); ?>
 					/>
+					<select
+						class="select <?php echo esc_attr( $data['class'] ); ?>"
+						name="<?php echo esc_attr( $select_field_key ); ?>"
+						id="<?php echo esc_attr( $select_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					>
+						<option
+							<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
+							value="am">
+							<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
+						</option>
+						<option
+							<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+							value="pm">
+							<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
+						</option>
+					</select>
 					<br/>
 				</fieldset>
 			</td>
