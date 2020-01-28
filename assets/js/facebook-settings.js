@@ -223,7 +223,6 @@ function delete_all_settings(callback = null, failcallback = null) {
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
 	window.fb_connected = false;
 
-	reset_buttons();
 	not_connected();
 
 	console.log( 'Deleting all settings and removing all FBIDs!' );
@@ -311,39 +310,6 @@ function save_settings_and_sync(message) {
 	}
 }
 
-// Reset buttons to brand new setup state
-function reset_buttons(){
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = 'none';
-	}
-	if (document.querySelector( '#cta_button' )) {
-		var cta_element                = document.querySelector( '#cta_button' );
-		cta_element.innerHTML          = 'Get Started';
-		cta_element.style['font-size'] = '13px';
-		cta_element.style.width        = '80px';
-		cta_element.href               = '#';
-		cta_element.onclick            = function() { facebookConfig(); };
-	}
-	if (document.querySelector( '#learnmore_button' )) {
-		document.querySelector( '#learnmore_button' ).style.display = 'none';
-	}
-	if (document.querySelector( '#setup_h1' )) {
-		document.querySelector( '#setup_h1' ).innerHTML =
-		'Grow your business on Facebook';
-	}
-	if (document.querySelector( '#setup_l1' )) {
-		document.querySelector( '#setup_l1' ).innerHTML =
-		'Easily install a tracking pixel';
-	}
-	if (document.querySelector( '#setup_l2' )) {
-		document.querySelector( '#setup_l2' ).innerHTML =
-		'Upload your products and create a shop';
-	}
-	if (document.querySelector( '#setup_l3' )) {
-		document.querySelector( '#setup_l3' ).innerHTML =
-		'Create dynamic ads with your products and pixel';
-	}
-}
 
 // Remove reset/settings buttons during product sync
 function sync_in_progress(){
