@@ -2398,7 +2398,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
 			],
 
 			self::SETTING_ENABLE_MESSENGER => [
