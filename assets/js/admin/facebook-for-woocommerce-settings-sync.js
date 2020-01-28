@@ -32,7 +32,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Gets any new excluded tags being added.
 	 *
-	 * @return string[]
+	 * @return {string[]}
 	 */
 	function getExcludedTagsAdded() {
 
