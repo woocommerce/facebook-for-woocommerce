@@ -108,22 +108,6 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see \WC_Facebook_Product::get_fb_description() */
-	public function test_get_fb_description_variation_custom_parent_description() {
-
-		$variable_product  = $this->get_variable_product();
-		$product_variation = wc_get_product( current( $variable_product->get_children() ) );
-
-		$variable_product->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_DESCRIPTION, 'Custom Parent Description.' );
-		$variable_product->save_meta_data();
-
-		$parent_product = new WC_Facebook_Product( $variable_product->get_id() );
-		$fb_product     = new WC_Facebook_Product( $product_variation->get_id(), $parent_product );
-
-		$this->assertEquals( 'Custom Parent Description.', $fb_product->get_fb_description() );
-	}
-
-
-	/** @see \WC_Facebook_Product::get_fb_description() */
 	public function test_get_fb_description_variation_description() {
 
 		$variable_product  = $this->get_variable_product();
