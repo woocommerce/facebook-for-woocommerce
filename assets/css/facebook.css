@@ -272,3 +272,8 @@
   font-size: 12px;
   height: 18px;
 }
+
+/* hide Save changes button if integration settings are hidden */
+#integration-settings[style="display: none"] + p.submit {
+	display: none;
+}

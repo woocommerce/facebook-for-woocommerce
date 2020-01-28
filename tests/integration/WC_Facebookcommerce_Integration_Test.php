@@ -515,6 +515,38 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::is_configured()
+	 *
+	 * @param string $access_token Facebook access token
+	 * @param string $page_id Facebok page ID
+	 * @param bool $expected whether Facebook for WooCommerce is configured or not
+	 *
+	 * @dataProvider provider_is_configured()
+	 */
+	public function test_is_configured( $access_token, $page_id, $expected ) {
+
+		$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
+
+		$this->integration->update_page_access_token( $access_token );
+		$this->integration->init_settings();
+
+		$this->assertSame( $expected, $this->integration->is_configured() );
+	}
+
+
+	/** @see test_is_configured() */
+	public function provider_is_configured() {
+
+		return [
+			[ 'abc123', 'facebook-page-id', true ],
+			[ '',       'facebook-page-id', false ],
+			[ 'abc123', '',                 false ],
+			[ '',       '',                 false ],
+		];
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::is_advanced_matching_enabled() */
 	public function test_is_advanced_matching_enabled() {
 
@@ -701,9 +733,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/**
 	 * Adds the integration settings.
 	 */
-	private function add_settings() {
+	private function add_settings( $settings = [] ) {
 
-		$settings = [
+		$defaults = [
 			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID              => 'facebook-page-id',
 			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID             => 'facebook-pixel-id',
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ 1, 2 ],
@@ -718,7 +750,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER              => 'yes',
 		];
 
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
+		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', array_merge( $defaults, $settings ) );
 	}
 
 
