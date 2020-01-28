@@ -2358,7 +2358,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
+				'class' => 'product-sync-heading'
+			],
+
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
+			[
+				'type' => 'product_sync_title_button',
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
@@ -2478,6 +2484,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			</td>
 		</tr>
 		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the "Sync products" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
+			} );
+		" );
+
+		ob_start(); ?>
+		<a
+			id="woocommerce-facebook-settings-sync-products"
+			class="button"
+			href="#"
+			style="vertical-align: middle; margin-left: 20px;"
+		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
 
 		return ob_get_clean();
 	}
