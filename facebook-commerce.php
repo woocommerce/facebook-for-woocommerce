@@ -3768,17 +3768,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_resync_schedule_html( $key, array $data ) {
 
-		$field_key = $this->get_field_key( $key );
+		$fieldset_key         = $this->get_field_key( $key );
+		$checkbox_field_key   = $this->get_field_key( 'scheduled_resync_enabled' );
+		$text_input_field_key = $this->get_field_key( 'scheduled_resync_time' );
+		$select_field_key     = $this->get_field_key( 'scheduled_resync_meridiem' );
+
 		$defaults  = [
-			'title'             => '',
-			'disabled'          => false,
-			'class'             => '',
-			'css'               => '',
-			'placeholder'       => '',
-			'type'              => 'text',
-			'desc_tip'          => false,
-			'description'       => '',
-			'custom_attributes' => [],
+			'title'    => '',
+			'disabled' => false,
+			'class'    => '',
+			'css'      => '',
+			'desc_tip' => false,
 		];
 
 		$data = wp_parse_args( $data, $defaults );
@@ -3787,11 +3787,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
+				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
 			</th>
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<input
+						<?php disabled( $data['disabled'], true ); ?>
+						class="<?php echo esc_attr( $data['class'] ); ?>"
+						type="checkbox"
+						name="<?php echo esc_attr( $checkbox_field_key ); ?>"
+						id="<?php echo esc_attr( $checkbox_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="1"
+						<?php checked( null !== $this->get_scheduled_resync_offset() ); ?>
+					/>
+					<br/>
 				</fieldset>
 			</td>
 		</tr>
