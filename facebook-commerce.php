@@ -3244,7 +3244,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			<?php esc_html_e( 'Control how WooCommerce integrates with your Facebook store.', 'facebook-for-woocommerce' ); ?>
 		</p>
 
-		<div><input type="hidden" name="section" value="<?php esc_attr( $this->id ); ?>" /></div>
+		<div><input type="hidden" name="section" value="<?php echo esc_attr( $this->id ); ?>" /></div>
 
 		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
 			<div class="wrapper">
