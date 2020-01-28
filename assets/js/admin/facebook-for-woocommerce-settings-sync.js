@@ -53,6 +53,23 @@ jQuery( document ).ready( function( $ ) {
 	// WooCommerce settings page
 	if ( 'woocommerce_page_wc-settings' === pagenow ) {
 
+		// toggle visibility of settings groups
+		$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
+			if ( $( this ).hasClass( 'product-sync-field' ) ) {
+				if ( $( this ).is( ':checked' ) ) {
+					$( '.product-sync-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).show();
+				} else {
+					$( '.product-sync-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).hide();
+				}
+			} else if ( $( this ).hasClass( 'messenger-field' ) ) {
+				if ( $( this ).is( ':checked' ) ) {
+					$( '.messenger-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).show();
+				} else {
+					$( '.messenger-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).hide();
+				}
+			}
+		} ).trigger( 'change' );
+
 		let submitSettingsSave = false;
 
 		$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
@@ -112,5 +129,7 @@ jQuery( document ).ready( function( $ ) {
 				$submitButton.trigger( 'click' );
 			}
 		} );
+
 	}
+
 } );

@@ -2347,7 +2347,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
-				'class'   => 'product-sync-field toggle-field-group',
+				'class'   => 'product-sync-field toggle-fields-group',
 				'label'   => ' ',
 				'default' => 'yes',
 			],
@@ -2404,7 +2404,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_ENABLE_MESSENGER => [
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
-				'class'    => 'messenger-field',
+				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
 				'default'  => 'yes',
@@ -2413,7 +2413,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
-				'class'   => 'messenger-field toggle-field-group',
+				'class'   => 'messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
 			],
