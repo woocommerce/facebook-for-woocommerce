@@ -2404,6 +2404,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_ENABLE_MESSENGER => [
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
+				'class'    => 'messenger-field',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
 				'default'  => 'yes',
@@ -2412,6 +2413,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
+				'class'   => 'messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
 			],
@@ -2419,12 +2421,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_GREETING => [
 				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'    => 'text',
+				'class'   => 'messenger-field',
 				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
 				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'    => 'color',
+				'class'   => 'messenger-field',
 				'default' => '#0084ff',
 				'css'     => 'width: 6em;',
 			],
