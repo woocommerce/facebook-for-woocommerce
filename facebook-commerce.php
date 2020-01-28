@@ -2311,7 +2311,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_tags = $term_query->get_terms();
 
 		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		// tries matching with WordPress locale, otherwise English, otherwise first available language
+		if ( isset( $messenger_locales[ get_locale() ] ) ) {
+			$default_locale = get_locale();
+		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
+			$default_locale = 'en_US';
+		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
+			$default_locale = key( $messenger_locales );
+		} else {
+			// fallback to English in case of invalid/empty filtered list of languages
+			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
+			$default_locale    = 'en_US';
+		}
 
 		$form_fields = [
 
