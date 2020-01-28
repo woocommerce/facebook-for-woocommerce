@@ -618,11 +618,17 @@ function iFrameListener(event) {
 		case 'gen feed':
 			genFeed();
 		break;
+
 		case 'set page access token':
-			// Should be last message received
+			// should be last message received
 			setAccessTokenAndPageId( event.data );
 			save_settings_and_sync( event.data );
+
+			// hide Facebook fancy box and show integration settings
+			jQuery( '#fbsetup' ).hide();
+			jQuery( '#integration-settings' ).show();
 		break;
+
 		case 'set msger chat':
 			setMsgerChatSetup( event.data.params );
 			save_settings_for_plugin(
