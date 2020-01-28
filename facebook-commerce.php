@@ -2450,7 +2450,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_create_ad_html( $key, array $args = [] ) {
 
-		$create_ad_url = "https://www.facebook.com/ads/dia/redirect/?settings_id={$this->external_merchant_settings_id}&version=2&entry_point=admin_panel";
+		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
 
 		ob_start();
 
