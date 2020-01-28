@@ -57,15 +57,15 @@ jQuery( document ).ready( function( $ ) {
 		$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
 			if ( $( this ).hasClass( 'product-sync-field' ) ) {
 				if ( $( this ).is( ':checked' ) ) {
-					$( '.product-sync-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).show();
+					$( '.product-sync-field' ).not( '.toggle-fields-group' ).prop( 'disabled', false );
 				} else {
-					$( '.product-sync-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).hide();
+					$( '.product-sync-field' ).not( '.toggle-fields-group' ).prop( 'disabled', true );
 				}
 			} else if ( $( this ).hasClass( 'messenger-field' ) ) {
 				if ( $( this ).is( ':checked' ) ) {
-					$( '.messenger-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).show();
+					$( '.messenger-field' ).not( '.toggle-fields-group' ).prop( 'disabled', false );
 				} else {
-					$( '.messenger-field' ).not( '.toggle-fields-group' ).closest( 'tr' ).hide();
+					$( '.messenger-field' ).not( '.toggle-fields-group' ).prop( 'disabled', true );
 				}
 			}
 		} ).trigger( 'change' );
