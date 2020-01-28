@@ -764,9 +764,12 @@ function check_feed_upload_queue(check_num) {
 						}
 						ping_feed_status_queue( check_num + 1 );
 					  break;
+
 					default:
-						sync_progress_element.innerHTML =
-						'<strong>Something wrong when uploading, please try again.</strong>';
+						if ( sync_progress_element ) {
+							sync_progress_element.innerHTML = '<strong>Something wrong when uploading, please try again.</strong>';
+						}
+
 						window.feed_upload              = false;
 						if (window.is_test) {
 							display_test_result();
