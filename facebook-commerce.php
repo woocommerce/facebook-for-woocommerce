@@ -2439,7 +2439,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Gets the "Create ad" field HTML.
+	 * Gets the "Sync products" field HTML.
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
 	 *
