@@ -2311,7 +2311,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_tags = $term_query->get_terms();
 
 		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		// tries matching with WordPress locale, otherwise English, otherwise first available language
+		if ( isset( $messenger_locales[ get_locale() ] ) ) {
+			$default_locale = get_locale();
+		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
+			$default_locale = 'en_US';
+		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
+			$default_locale = key( $messenger_locales );
+		} else {
+			// fallback to English in case of invalid/empty filtered list of languages
+			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
+			$default_locale    = 'en_US';
+		}
 
 		$form_fields = [
 
@@ -2337,6 +2349,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'    => 'checkbox',
 				'label'   => ' ',
 				'default' => 'yes',
+			],
+
+			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
+			[
+				'type'  => 'create_ad',
 			],
 
 			[
@@ -2435,6 +2452,40 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Create ad" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_create_ad_html( $key, array $args = [] ) {
+
+		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"></th>
+			<td class="forminp">
+				<a
+					class="button button-primary"
+					target="_blank"
+					href="<?php echo esc_url( $create_ad_url ); ?>"
+				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
@@ -3274,7 +3325,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			<?php esc_html_e( 'Control how WooCommerce integrates with your Facebook store.', 'facebook-for-woocommerce' ); ?>
 		</p>
 
-		<div><input type="hidden" name="section" value="<?php esc_attr( $this->id ); ?>" /></div>
+		<div><input type="hidden" name="section" value="<?php echo esc_attr( $this->id ); ?>" /></div>
 
 		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
 			<div class="wrapper">
