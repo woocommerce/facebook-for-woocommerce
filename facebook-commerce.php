@@ -2341,7 +2341,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
+				'class' => 'product-sync-heading'
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
@@ -2452,7 +2453,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		wc_enqueue_js( "
 			jQuery( document ).ready( function( $ ) {
-				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( '#woocommerce_facebookcommerce_1' );
+				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
 			} );
 		" );
 
