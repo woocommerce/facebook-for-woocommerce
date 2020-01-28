@@ -93,41 +93,6 @@ jQuery( document ).ready( function( $ ) {
 	      typenow = window.typenow.length ? window.typenow : '';
 
 
-	/**
-	 * Determines if the current modal is blocked.
-	 *
-	 * @returns {boolean}
-	 */
-	function isModalBlocked() {
-		let $modal = $( '.wc-backbone-modal-content' );
-		return $modal.is( '.processing') || $modal.parents( '.processing' ).length;
-	}
-
-
-	/**
-	 * Blocks the current modal.
-	 */
-	function blockModal() {
-		if ( ! isModalBlocked() ) {
-			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
-				message: null,
-				overlayCSS: {
-					background: '#fff',
-					opacity: 0.6
-				}
-			} );
-		}
-	}
-
-
-	/**
-	 * Unblocks the current modal.
-	 */
-	function unBlockModal() {
-		$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
-	}
-
-
 	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
@@ -242,10 +207,23 @@ jQuery( document ).ready( function( $ ) {
 			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
-			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+		// show/hide Custom Image URL setting
+		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
+
+			let $container  = $( this ).closest( '.woocommerce_options_panel, .wc-metabox-content' );
+			let imageSource = $( this ).val();
+
+			$container.find( '.product-image-source-field' ).closest( '.form-field' ).hide();
+			$container.find( `.show-if-product-image-source-${imageSource}` ).closest( '.form-field' ).show();
 		} );
 
+		$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+
+		// trigger settings fields modifiers when variations are loaded
+		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
+			$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+		} );
 
 		let submitProductSave = false;
 

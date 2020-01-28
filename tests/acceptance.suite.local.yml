@@ -1,0 +1,9 @@
+# Local Codeception Test Suite Configuration
+#
+# To use, copy this file as acceptance.suite.yml
+modules:
+    config:
+        WPWebDriver:
+          capabilities:
+            "chromeOptions":
+              args: ["headless"]

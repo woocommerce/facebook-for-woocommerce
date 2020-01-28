@@ -122,6 +122,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	// Number of days to query tip.
 	const FB_TIP_QUERY = 1;
 
+	// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}
 	const FB_VARIANT_IMAGE = 'fb_image';
 
 	const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -741,15 +742,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
 			feedPingUrl: '',
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		}
+		},
+		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
 	};
 
 	</script>
 
 		<?php
-		$ajax_data = array(
+		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
-		);
+		];
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
@@ -852,6 +855,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
 			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
+		}
+
+		if ( isset( $_POST[ 'fb_product_image_source' ] ) ) {
+			$product->update_meta_data( Products::PRODUCT_IMAGE_SOURCE_META_KEY, sanitize_key( wp_unslash( $_POST[ 'fb_product_image_source' ] ) ) );
+			$product->save_meta_data();
 		}
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
@@ -1003,14 +1011,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
 			return;
 		}
-
-		$woo_product->set_use_parent_image(
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			( isset( $_POST[ self::FB_VARIANT_IMAGE ] ) ) ?
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			sanitize_text_field( wp_unslash( $_POST[ self::FB_VARIANT_IMAGE ] ) ) :
-			null
-		);
 
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,

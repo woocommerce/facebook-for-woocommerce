@@ -1,6 +1,12 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 class ProductVariationSyncSettingCest {
+
+
+	/** @var string base selector for the Facebook image source field */
+	const FIELD_IMAGE_SOURCE = '.variable_fb_product_image_source%d_field input';
 
 
 	/** @var WC_Product|null product object created for the test */
@@ -14,6 +20,7 @@ class ProductVariationSyncSettingCest {
 	 * Runs before each test.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws \Exception
 	 */
     public function _before( AcceptanceTester $I ) {
 
@@ -34,6 +41,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is unchecked if sync is disabled in parent.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_unchecked_if_sync_disabled_in_parent( AcceptanceTester $I ) {
 
@@ -54,6 +62,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is checked if sync is enabled in parent.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_checked_if_sync_enabled_in_parent( AcceptanceTester $I ) {
 
@@ -74,6 +83,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is unchecked when sync is disabled.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_unchecked( AcceptanceTester $I ) {
 
@@ -91,6 +101,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the field is checked when sync is enabled.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_field_is_checked( AcceptanceTester $I ) {
 
@@ -108,6 +119,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the settings fields are disabled if sync is disabled for this variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_settings_fields_are_disabled_if_sync_is_disabled( AcceptanceTester $I ) {
 
@@ -120,7 +132,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':disabled', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -129,6 +141,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the settings fields are enabled if sync is enabled for this variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_settings_fields_are_enabled_if_sync_is_enabled( AcceptanceTester $I ) {
 
@@ -141,7 +154,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':not(:disabled)', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:not(:disabled)', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -150,6 +163,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the sync can be enabled for a variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_sync_can_be_enabled_for_a_variation( AcceptanceTester $I ) {
 
@@ -163,7 +177,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->click( "#variable_fb_sync_enabled{$index}" );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
-		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->selectOption( sprintf( self::FIELD_IMAGE_SOURCE, $index ), Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
 
 		$I->click( [ 'css' => '.save-variation-changes' ] );
@@ -176,7 +190,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), 'https://example.com/logo.png' );
+		$I->seeOptionIsSelected( sprintf( self::FIELD_IMAGE_SOURCE, $index ), 'Use parent image' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
 	}
 
@@ -185,6 +199,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that the sync can be disabled for a variation.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_sync_can_be_disabled_for_a_variation( AcceptanceTester $I ) {
 
@@ -208,7 +223,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
-		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ) );
+		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':disabled', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
 	}
 
@@ -217,6 +232,7 @@ class ProductVariationSyncSettingCest {
 	 * Tests that settings fields are empty by default.
 	 *
 	 * @param AcceptanceTester $I
+	 * @throws \Exception
 	 */
 	public function try_fields_are_empty_by_default( AcceptanceTester $I ) {
 
@@ -227,7 +243,7 @@ class ProductVariationSyncSettingCest {
 		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
 
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), '' );
-		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_IMAGE, $index ), '' );
+		$I->seeOptionIsSelected( sprintf( self::FIELD_IMAGE_SOURCE, $index ), 'Use variation image' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '' );
 	}
 

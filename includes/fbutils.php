@@ -22,6 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		const FB_RETAILER_ID_PREFIX = 'wc_post_id_';
 		const PLUGIN_VERSION        = '1.9.15';  // Change it in `facebook-for-*.php` also
 
+		// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}
 		const FB_VARIANT_IMAGE   = 'fb_image';
 		const FB_VARIANT_SIZE    = 'size';
 		const FB_VARIANT_COLOR   = 'color';

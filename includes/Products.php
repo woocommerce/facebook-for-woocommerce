@@ -27,6 +27,18 @@ class Products {
 	/** @var string the meta key used to flag whether a product should be visible in Facebook */
 	const VISIBILITY_META_KEY = 'fb_visibility';
 
+	/** @var string the meta key used to the source of the product  in Facebook */
+	const PRODUCT_IMAGE_SOURCE_META_KEY = '_wc_facebook_product_image_source';
+
+	/** @var string product image source option to use the product image of simple products or the variation image of variations in Facebook */
+	const PRODUCT_IMAGE_SOURCE_PRODUCT = 'product';
+
+	/** @var string product image source option to use the parent product image in Facebook */
+	const PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT = 'parent_product';
+
+	/** @var string product image source option to use the parent product image in Facebook */
+	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
+
 
 	/** @var array memoized array of sync enabled status for products */
 	private static $products_sync_enabled = [];
