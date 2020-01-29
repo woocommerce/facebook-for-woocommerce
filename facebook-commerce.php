@@ -3893,7 +3893,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			throw new Exception( "Invalid resync schedule time: $posted_time" );
 		}
 
-		return $posted_time;
+		$midnight = ( clone $parsed_time )->setTime( 0,0,0 );
+
+		return $parsed_time->getTimestamp() - $midnight->getTimestamp();
 	}
 
 
