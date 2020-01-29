@@ -100,8 +100,8 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		const $submitButton   = $( this ),
-			  categoriesAdded = getExcludedCategoriesAdded(),
-			  tagsAdded       = getExcludedTagsAdded();
+		      categoriesAdded = getExcludedCategoriesAdded(),
+		      tagsAdded       = getExcludedTagsAdded();
 
 
 		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
