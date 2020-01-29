@@ -3810,6 +3810,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						style="<?php echo esc_attr( $data['css'] ); ?>"
 						value="<?php echo esc_attr( $this->get_scheduled_resync_offset() ); ?>"
 						<?php disabled( $data['disabled'], true ); ?>
+						placeholder="<?php esc_attr_e( 'HH:MM', 'facebook-for-woocommerce' ); ?>"
 					/>
 					<select
 						class="select <?php echo esc_attr( $data['class'] ); ?>"
