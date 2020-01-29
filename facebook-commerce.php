@@ -744,7 +744,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
-		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
+		messengerGreetingMaxCharacters: <?php echo $this->get_messenger_greeting_max_characters(); ?>
 	};
 
 	</script>
