@@ -67,7 +67,7 @@ jQuery( document ).ready( function( $ ) {
 			if ( enable ) {
 				$input.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
 			} else {
-				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.5' );
+				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
 			}
 		} );
 	}
