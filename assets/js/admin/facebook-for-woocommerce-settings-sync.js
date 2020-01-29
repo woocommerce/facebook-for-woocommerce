@@ -54,6 +54,20 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	// adds a character counter on the Messenger greeting textarea
+	$( 'textarea#woocommerce_facebookcommerce_messenger_greeting' ).on( 'focus change keyup keydown keypress', function() {
+
+		const maxChars = parseInt( window.facebookAdsToolboxConfig.messengerGreetingMaxCharacters, 10 );
+		let chars      = $( this ).val().length;
+
+		$( 'span.characters-counter' )
+			.html( chars + ' / ' + maxChars )
+			.css( 'display', 'block' )
+			.css( 'color', chars > maxChars ? '#DC3232' : '#999999' );
+
+	} ).trigger( 'change' );
+
+
 	let submitSettingsSave = false;
 
 	$( '.woocommerce-save-button' ).on( 'click', function ( e ) {

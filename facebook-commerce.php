@@ -2443,7 +2443,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'              => 'messenger_greeting',
 				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
-				'css'               => 'max-width: 400px;',
+				'css'               => 'max-width: 400px; margin-bottom: 10px',
 				'custom_attributes' => [
 					'maxlength' => $this->get_messenger_greeting_max_characters(),
 				],
@@ -2540,7 +2540,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
 
-		return $this->generate_textarea_html( $key, $args );
+		$chars         = max( 0, strlen( $this->get_messenger_greeting() ) );
+		$max_chars     = max( 0, $this->get_messenger_greeting_max_characters() );
+		$field_id      = $this->get_field_key( $key );
+		$counter_class = $field_id . '-characters-count';
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( 'span." . esc_js( $counter_class ) . "' ).insertAfter( 'textarea#" . esc_js( $field_id ) . "' );
+			} );
+		" );
+
+		$counter = ' <span style="display:none;font-family:monospace;font-size:0.9em;" class="' . sanitize_html_class( $counter_class ) . ' characters-counter">' . $chars . ' / ' . $max_chars . '</span>';
+
+		return $this->generate_textarea_html( $key, $args ) . $counter;
 	}
 
 
@@ -2560,7 +2573,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
-		// TODO `strlen()` here should be replaced by SkyVerge Framework helper to compute string length {FN 2020-01-29}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
 
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
