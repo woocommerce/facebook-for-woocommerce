@@ -3642,6 +3642,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Adds an recurring action to sync products.
+	 *
+	 * The action is scheduled using a cron schedule instead of a recurring interval (see https://en.wikipedia.org/wiki/Cron#Overview).
+	 * A cron schedule should allow for the action to run roughly at the same time every day regardless of the duration of the task.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $offset number of seconds since the beginning of the daay
+	 */
+	private function schedule_resync( $offset ) {
+
+		try {
+			$scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+		} catch ( \Exception $e ) {
+			// TODO: log an error indicating that it was not possible to schedule a recurring action to sync products {WV 2020-01-28}
+			return;
+		}
+
+		// unschedule previously scheduled resync actions
+		$this->unschedule_resync();
+
+		// cron schedule should use UTC hours and minutes
+		$timestamp = $scheduled_time->getTimestamp();
+		$schedule  = sprintf( '%d %d * * *', date( 'i', $timestamp ), date( 'H', $timestamp ) );
+
+		/** @see \ActionScheduler_CronSchedule will use the next available date that matches the schedule as the next scheduled date */
+		as_schedule_cron_action( time(), $schedule, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
 	 * Removes the recurring action that syncs products.
 	 *
 	 * @since x.y.z
