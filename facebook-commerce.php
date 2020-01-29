@@ -2436,6 +2436,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'options' => $messenger_locales,
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field() */
 			self::SETTING_MESSENGER_GREETING => [
 				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'    => 'textarea',
@@ -2518,6 +2519,36 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Validates the Messenger greeting field.
+	 *
+	 * @see \WC_Settings_API::validate_textarea_field()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param string $value field submitted value
+	 * @throws \Exception on validation errors
+	 * @return string some HTML allowed
+	 */
+	public function validate_messenger_greeting_field( $key, $value ) {
+
+		$max_chars = $this->get_messenger_greeting_max_characters();
+
+		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
+
+			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
+			throw new \Exception( sprintf(
+				/* translators: Placeholder: %d - maximum number of allowed characters */
+				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
+				$max_chars
+			) );
+		}
+
+		return $this->validate_textarea_field( $key, $value );
 	}
 
 
