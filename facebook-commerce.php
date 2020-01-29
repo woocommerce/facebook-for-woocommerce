@@ -3849,10 +3849,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param  string $key field key
 	 * @param  string $value posted value
+	 *
 	 * @return string
+	 * @throws Exception
 	 */
 	public function validate_resync_schedule_field( $key, $value ) {
 
+		$checkbox_field_key   = $this->get_field_key( 'scheduled_resync_enabled' );
+		$text_input_field_key = $this->get_field_key( 'scheduled_resync_time' );
+		$select_field_key     = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// if not enabled or time is empty, return a blank string
+		if ( empty( $_POST[ $checkbox_field_key ] ) || empty( $_POST[ $text_input_field_key ] ) ) {
+			return '';
+		}
+
+		$posted_time     = sanitize_text_field( wp_unslash( $_POST[ $text_input_field_key ] ) );
+		$posted_meridiem = sanitize_text_field( wp_unslash( $_POST[ $select_field_key ] ) );
+
+		// attempts to parse the time
+		$time_formats = [
+			'h:i a',
+			'g:i a',
+			'H:i a',
+			'G:i a',
+			'h a',
+			'g a',
+			'H a',
+			'G a',
+		];
+
+		$parsed_time = false;
+
+		foreach ( $time_formats as $format ) {
+
+			$parsed_time = date_create_from_format ( $format , $posted_time . ' ' . $posted_meridiem );
+			if ( false !== $parsed_time ) {
+				break;
+			}
+		}
+
+		if ( false === $parsed_time ) {
+			throw new Exception( "Invalid resync schedule time: $posted_time" );
+		}
+
+		return $posted_time;
 	}
 
 
