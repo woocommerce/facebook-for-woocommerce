@@ -3617,33 +3617,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
 	/**
-	 * Schedule Force Resync
+	 * Schedules a recurring event to sync products.
+	 *
+	 * @deprecated x.y.z
 	 */
 	function ajax_schedule_force_resync() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'resync schedule', true );
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( isset( $_POST ) && isset( $_POST['enabled'] ) ) {
-			if ( isset( $_POST['time'] ) && ! empty( $_POST['enabled'] ) ) { // Enabled
-				$time = sanitize_text_field( wp_unslash( $_POST['time'] ) );
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				wp_schedule_event(
-					strtotime( $time ),
-					'daily',
-					'sync_all_fb_products_using_feed'
-				);
-				WC_Facebookcommerce_Utils::fblog( 'Scheduled autosync for ' . $time );
-				update_option( 'woocommerce_fb_autosync_time', $time );
-			} elseif ( empty( $_POST['enabled'] ) ) { // Disabled
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				WC_Facebookcommerce_Utils::fblog( 'Autosync disabled' );
-				delete_option( 'woocommerce_fb_autosync_time' );
-			}
-		} else {
-			WC_Facebookcommerce_Utils::fblog( 'Autosync AJAX Problem', $_POST, true );
-		}
-		wp_die();
+
+		wc_deprecated_function( __METHOD__, 'x.y.z' );
+		die;
 	}
+
 
 	function ajax_update_fb_option() {
 
