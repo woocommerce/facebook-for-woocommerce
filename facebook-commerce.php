@@ -3838,4 +3838,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		return ob_get_clean();
 	}
+
+
+	/**
+	 * Validates force resync field.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param  string $key field key
+	 * @param  string $value posted value
+	 * @return string
+	 */
+	public function validate_resync_schedule_field( $key, $value ) {
+
+	}
+
+
 }
