@@ -81,6 +81,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
+	/** @var string the hook for the recurreing action that syncs products */
+	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
+
 
 	/** @var string|null the configured page access token */
 	private $page_access_token;
