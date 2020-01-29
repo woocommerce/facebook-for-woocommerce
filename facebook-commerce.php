@@ -2578,7 +2578,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @throws \Exception on validation errors
 	 * @return string some HTML allowed
 	 */
-	public function validate_messenger_greeting_field( $key, $value ) {
+	protected function validate_messenger_greeting_field( $key, $value ) {
 
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
