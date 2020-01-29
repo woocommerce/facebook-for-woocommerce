@@ -2551,7 +2551,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			} );
 		" );
 
-		$counter = ' <span style="display:none;font-family:monospace;font-size:0.9em;" class="' . sanitize_html_class( $counter_class ) . ' characters-counter">' . $chars . ' / ' . $max_chars . '</span>';
+		ob_start();
+
+		?>
+		<span
+			style="display:none;font-family:monospace;font-size:0.9em;"
+			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
+		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
+		<?php
+
+		$counter = ob_get_clean();
 
 		return $this->generate_textarea_html( $key, $args ) . $counter;
 	}
