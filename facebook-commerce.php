@@ -2311,7 +2311,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_tags = $term_query->get_terms();
 
 		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		// tries matching with WordPress locale, otherwise English, otherwise first available language
+		if ( isset( $messenger_locales[ get_locale() ] ) ) {
+			$default_locale = get_locale();
+		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
+			$default_locale = 'en_US';
+		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
+			$default_locale = key( $messenger_locales );
+		} else {
+			// fallback to English in case of invalid/empty filtered list of languages
+			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
+			$default_locale    = 'en_US';
+		}
 
 		$form_fields = [
 
@@ -2339,9 +2351,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => 'yes',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
+			[
+				'type'  => 'create_ad',
+			],
+
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
+				'class' => 'product-sync-heading',
+			],
+
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
+			[
+				'type' => 'product_sync_title_button',
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
@@ -2436,6 +2459,71 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Create ad" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_create_ad_html( $key, array $args = [] ) {
+
+		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"></th>
+			<td class="forminp">
+				<a
+					class="button button-primary"
+					target="_blank"
+					href="<?php echo esc_url( $create_ad_url ); ?>"
+				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the "Sync products" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
+			} );
+		" );
+
+		ob_start(); ?>
+		<a
+			id="woocommerce-facebook-settings-sync-products"
+			class="button"
+			href="#"
+			style="vertical-align: middle; margin-left: 20px;"
+		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
+
+		return ob_get_clean();
 	}
 
 
