@@ -150,7 +150,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			} elseif ( 200 === (int) $response['response']['code'] ) {
 
 				$response_body = wp_remote_retrieve_body( $response );
-				$page_url      = json_decode( $response_body )->name;
+				$page_url      = json_decode( $response_body )->link;
 			}
 
 			return $page_url;

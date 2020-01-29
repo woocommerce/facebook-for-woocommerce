@@ -2468,12 +2468,43 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
 
+		$page_name = $this->get_page_name();
+		$page_url  = $this->fbgraph->get_page_url( $this->get_facebook_page_id(), $this->get_page_access_token() );
+
 		ob_start();
 
 		?>
 		<tr valign="top">
-			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
-			<td class="forminp" style="font-family: monospace;"><?php echo esc_html( $this->get_page_name() ); ?></td>
+			<th scope="row" class="titledesc">
+				<?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?>
+			</th>
+			<td class="forminp">
+				<?php if ( $page_name ) : ?>
+
+					<?php if ( $page_url ) : ?>
+
+						<a
+							href="<?php echo esc_url( $page_url ); ?>"
+							target="_blank"
+							style="text-decoration: none;">
+							<span
+								class="dashicons dashicons-external"
+								style="margin-right: 8px; vertical-align: bottom;"
+							></span><?php echo esc_html( $page_name ); ?>
+						</a>
+
+					<?php else : ?>
+
+						<?php echo esc_html( $page_name ); ?>
+
+					<?php endif; ?>
+
+				<?php else : ?>
+
+					&mdash;
+
+				<?php endif; ?>
+			</td>
 		</tr>
 		<?php
 
@@ -3261,6 +3292,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the name of the configured Facebook page.
 	 *
+	 * @since x.y.z
+	 *
 	 * @return string
 	 */
 	public function get_page_name() {
@@ -3271,7 +3304,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		}
 
-		return $page_name;
+		return is_string( $page_name ) ? $page_name : '';
 	}
 
 
