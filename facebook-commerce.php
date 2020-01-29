@@ -2334,7 +2334,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			/** @see \WC_Facebookcommerce_Integration::generate_facebook_page_name_html() */
 			self::SETTING_FACEBOOK_PAGE_ID => [
-				'type'  => 'facebook_page_name',
+				'type'    => 'facebook_page_name',
+				'default' => '',
 			],
 
 			self::SETTING_FACEBOOK_PIXEL_ID => [
