@@ -10,6 +10,12 @@
 jQuery( document ).ready( function( $ ) {
 
 
+	// run script only on Facebook Settings page
+	if ( 'woocommerce_page_wc-settings' === window.pagenow.length ? window.pagenow : '' ) {
+		return;
+	}
+
+
 	/**
 	 * Gets any new excluded categories being added.
 	 *
@@ -48,69 +54,63 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
-	const pagenow = window.pagenow.length ? window.pagenow : '';
+	let submitSettingsSave = false;
 
-	// WooCommerce settings page
-	if ( 'woocommerce_page_wc-settings' === pagenow ) {
+	$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
 
-		let submitSettingsSave = false;
+		if ( ! submitSettingsSave ) {
+			e.preventDefault();
+		} else {
+			return true;
+		}
 
-		$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
+		const $submitButton   = $( this ),
+		      categoriesAdded = getExcludedCategoriesAdded(),
+		      tagsAdded       = getExcludedTagsAdded();
 
-			if ( ! submitSettingsSave ) {
-				e.preventDefault();
-			} else {
-				return true;
-			}
+		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
-			const $submitButton = $( this );
+			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+				action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
+				security: facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
+				categories: categoriesAdded,
+				tags: tagsAdded,
+			}, function ( response ) {
 
-			const categoriesAdded = getExcludedCategoriesAdded(),
-				  tagsAdded       = getExcludedTagsAdded();
+				if ( response && ! response.success ) {
 
-			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
+					// close existing modals
+					$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
 
-				$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
-					action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
-					security: facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
-					categories: categoriesAdded,
-					tags: tagsAdded,
-				}, function ( response ) {
+					// open new modal, populate template with AJAX response data
+					new $.WCBackboneModal.View( {
+						target: 'facebook-for-woocommerce-modal',
+						string: response.data,
+					} );
 
-					if ( response && ! response.success ) {
+					// exclude products: submit form as normal
+					$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
 
-						// close existing modals
-						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+						blockModal();
 
-						// open new modal, populate template with AJAX response data
-						new $.WCBackboneModal.View( {
-							target: 'facebook-for-woocommerce-modal',
-							string: response.data,
-						} );
-
-						// exclude products: submit form as normal
-						$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
-
-							blockModal();
-
-							submitSettingsSave = true;
-							$submitButton.trigger( 'click' );
-						} );
-
-					} else {
-
-						// no modal displayed: submit form as normal
 						submitSettingsSave = true;
 						$submitButton.trigger( 'click' );
-					}
-				} );
+					} );
 
-			} else {
+				} else {
 
-				// no terms added: submit form as normal
-				submitSettingsSave = true;
-				$submitButton.trigger( 'click' );
-			}
-		} );
-	}
+					// no modal displayed: submit form as normal
+					submitSettingsSave = true;
+					$submitButton.trigger( 'click' );
+				}
+			} );
+
+		} else {
+
+			// no terms added: submit form as normal
+			submitSettingsSave = true;
+			$submitButton.trigger( 'click' );
+		}
+	} );
+
 } );
