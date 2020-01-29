@@ -3773,6 +3773,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$text_input_field_key = $this->get_field_key( 'scheduled_resync_time' );
 		$select_field_key     = $this->get_field_key( 'scheduled_resync_meridiem' );
 
+		if ( $this->is_scheduled_resync_enabled() ) {
+
+			$offset         = $this->get_scheduled_resync_offset();
+			$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
+			$formatted_time = $resync_time->format( 'h:i' );
+		}
+
 		$defaults  = [
 			'title'    => '',
 			'disabled' => false,
@@ -3808,7 +3815,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						name="<?php echo esc_attr( $text_input_field_key ); ?>"
 						id="<?php echo esc_attr( $text_input_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
-						value="<?php echo esc_attr( $this->get_scheduled_resync_offset() ); ?>"
+						value="<?php echo ! empty( $formatted_time ) ? esc_attr( $formatted_time ) : ''; ?>"
 						<?php disabled( $data['disabled'], true ); ?>
 						placeholder="<?php esc_attr_e( 'HH:MM', 'facebook-for-woocommerce' ); ?>"
 					/>
