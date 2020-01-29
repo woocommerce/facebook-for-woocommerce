@@ -3642,6 +3642,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Removes the recurring action that syncs products.
+	 *
+	 * @since x.y.z
+	 */
+	private function unschedule_resync() {
+
+		as_unschedule_all_actions( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
 	 * Determines whether a recurring action to sync products is scheduled.
 	 *
 	 * @since x.y.z
