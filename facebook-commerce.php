@@ -2538,7 +2538,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$saved_resync_offset = $this->get_scheduled_resync_offset();
 
-		if ( null === $saved_resync_offset ) {
+		if ( ! $this->is_product_sync_enabled() || null === $saved_resync_offset ) {
 			$this->unschedule_resync();
 		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
 			$this->schedule_resync( $saved_resync_offset );
