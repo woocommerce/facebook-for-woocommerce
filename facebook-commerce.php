@@ -2330,6 +2330,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			[
 				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
+				'class' => 'connection-heading',
+			],
+
+			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_button_html() */
+			[
+				'type' => 'manage_connection_title_button',
 			],
 
 			self::SETTING_FACEBOOK_PAGE_ID => [
@@ -2452,6 +2458,38 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Manage connection" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_manage_connection_title_button_html( $key, array $args = [] ) {
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( '#woocommerce-facebook-settings-manage-connection' ).appendTo( 'h3.connection-heading' );
+			} );
+		" );
+
+		ob_start(); ?>
+		<a
+			id="woocommerce-facebook-settings-manage-connection"
+			class="button"
+			href="#"
+			style="vertical-align: middle; margin-left: 20px;"
+			onclick="facebookConfig();"
+		><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a><?php
+
+		return ob_get_clean();
 	}
 
 
