@@ -38,7 +38,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Gets any new excluded tags being added.
 	 *
-	 * @return string[]
+	 * @return {string[]}
 	 */
 	function getExcludedTagsAdded() {
 
@@ -54,6 +54,41 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	/**
+	 * Toggles availability of input in setting groups.
+	 *
+	 * @param {Object[]} $inputs group of jQuery input fields to toggle
+	 * @param {boolean} enable whether fields in this group should be enabled or not
+	 */
+	function toggleSettingOptions( $inputs, enable ) {
+
+		$( $inputs ).each( function() {
+
+			let $input = $( this );
+
+			if ( $( this ).hasClass( 'wc-enhanced-select' ) ) {
+				$input = $( this ).next( 'span.select2-container' );
+			}
+
+			if ( enable ) {
+				$input.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+			} else {
+				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+			}
+		} );
+	}
+
+
+	// toggle availability of options withing field groups
+	$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
+		if ( $( this ).hasClass( 'product-sync-field' ) ) {
+			toggleSettingOptions( $( '.product-sync-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
+		} else if ( $( this ).hasClass( 'messenger-field' ) ) {
+			toggleSettingOptions( $( '.messenger-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
+		}
+	} ).trigger( 'change' );
+
+
 	let submitSettingsSave = false;
 
 	$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
@@ -67,6 +102,7 @@ jQuery( document ).ready( function( $ ) {
 		const $submitButton   = $( this ),
 		      categoriesAdded = getExcludedCategoriesAdded(),
 		      tagsAdded       = getExcludedTagsAdded();
+
 
 		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
