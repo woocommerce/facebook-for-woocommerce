@@ -400,8 +400,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
-		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
-		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
+		if ( $this->is_messenger_enabled() ) {
 			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
 		}
 	}
