@@ -2436,12 +2436,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'options' => $messenger_locales,
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
 			/** @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field() */
 			self::SETTING_MESSENGER_GREETING => [
-				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'    => 'textarea',
-				'css'     => 'max-width: 400px;',
-				'default' => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'              => 'messenger_greeting',
+				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'css'               => 'max-width: 400px;',
+				'custom_attributes' => [
+					'maxlength' => $this->get_messenger_greeting_max_characters(),
+				],
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
@@ -2523,6 +2527,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the "Messenger greeting" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_textarea_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
+
+		return $this->generate_textarea_html( $key, $args );
+	}
+
+
+	/**
 	 * Validates the Messenger greeting field.
 	 *
 	 * @see \WC_Settings_API::validate_textarea_field()
@@ -2538,6 +2559,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
+		// TODO `strlen()` here should be replaced by SkyVerge Framework helper to compute string length {FN 2020-01-29}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
 
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
