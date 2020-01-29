@@ -2555,7 +2555,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 		<span
-			style="display:none;font-family:monospace;font-size:0.9em;"
+			style="display: none; font-family: monospace; font-size: 0.9em;"
 			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
 		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
 		<?php
