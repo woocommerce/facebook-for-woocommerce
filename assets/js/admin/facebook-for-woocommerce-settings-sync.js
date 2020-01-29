@@ -51,7 +51,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Toggles availability of input in setting groups.
 	 *
-	 * @param {Object} $inputs group of jQuery input fields to toggle
+	 * @param {Object[]} $inputs group of jQuery input fields to toggle
 	 * @param {boolean} enable whether fields in this group should be enabled or not
 	 */
 	function toggleSettingOptions( $inputs, enable ) {
