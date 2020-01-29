@@ -48,6 +48,31 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 
+	/**
+	 * Toggles availability of input in setting groups.
+	 *
+	 * @param {Object} $inputs group of jQuery input fields to toggle
+	 * @param {boolean} enable whether fields in this group should be enabled or not
+	 */
+	function toggleSettingOptions( $inputs, enable ) {
+
+		$( $inputs ).each( function() {
+
+			let $input = $( this );
+
+			if ( $( this ).hasClass( 'wc-enhanced-select' ) ) {
+				$input = $( this ).next( 'span.select2-container' );
+			}
+
+			if ( enable ) {
+				$input.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+			} else {
+				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.5' );
+			}
+		} );
+	}
+
+
 	const pagenow = window.pagenow.length ? window.pagenow : '';
 
 	// WooCommerce settings page
@@ -55,17 +80,9 @@ jQuery( document ).ready( function( $ ) {
 
 		$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
 			if ( $( this ).hasClass( 'product-sync-field' ) ) {
-				if ( $( this ).is( ':checked' ) ) {
-					$( '.product-sync-field' ).not( '.toggle-fields-group' ).prop( 'disabled', false );
-				} else {
-					$( '.product-sync-field' ).not( '.toggle-fields-group' ).prop( 'disabled', true );
-				}
+				toggleSettingOptions( $( '.product-sync-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 			} else if ( $( this ).hasClass( 'messenger-field' ) ) {
-				if ( $( this ).is( ':checked' ) ) {
-					$( '.messenger-field' ).not( '.toggle-fields-group' ).prop( 'disabled', false );
-				} else {
-					$( '.messenger-field' ).not( '.toggle-fields-group' ).prop( 'disabled', true );
-				}
+				toggleSettingOptions( $( '.messenger-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 			}
 		} ).trigger( 'change' );
 
@@ -79,10 +96,9 @@ jQuery( document ).ready( function( $ ) {
 				return true;
 			}
 
-			const $submitButton = $( this );
-
-			const categoriesAdded = getExcludedCategoriesAdded(),
-				  tagsAdded       = getExcludedTagsAdded();
+			const $submitButton   = $( this ),
+			      categoriesAdded = getExcludedCategoriesAdded(),
+			      tagsAdded       = getExcludedTagsAdded();
 
 			if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
