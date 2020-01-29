@@ -2523,6 +2523,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Processes and saves options.
+	 *
+	 * @see \WC_Settings_API::process_admin_options()
+	 *
+	 * @since x.y.z
+	 */
+	public function process_admin_options() {
+
+		$current_resync_offset = $this->get_scheduled_resync_offset();
+
+		parent::process_admin_options();
+
+		$saved_resync_offset = $this->get_scheduled_resync_offset();
+
+		if ( null === $saved_resync_offset ) {
+			$this->unschedule_resync();
+		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $saved_resync_offset );
+		}
+	}
+
+
 	/** Getter methods ************************************************************************************************/
 
 
