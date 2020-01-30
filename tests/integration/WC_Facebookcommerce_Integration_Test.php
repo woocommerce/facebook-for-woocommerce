@@ -678,6 +678,95 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
+	public function test_validate_resync_schedule_field_resync_disabled() {
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		];
+
+		$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
+	public function test_validate_resync_schedule_field_empty_resync_time() {
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		];
+
+		$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field()
+	 */
+	public function test_validate_resync_schedule_field_invalid_resync_time() {
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '30:00',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		];
+
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessage( 'Invalid resync schedule time: 30:00 am' );
+
+		$this->integration->validate_resync_schedule_field( '', '' );
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field()
+	 */
+	public function test_validate_resync_schedule_field_invalid_resync_meridiem() {
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '20:00',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		];
+
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessage( 'Invalid resync schedule time: 20:00 am' );
+
+		$this->integration->validate_resync_schedule_field( '', '' );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
+	public function test_validate_resync_schedule_field_valid_resync_times() {
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '10:00',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		];
+
+		$this->assertEquals( 10 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '10:00',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
+		];
+
+		$this->assertEquals( 22 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_time'     => '6',
+			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
+		];
+
+		$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
