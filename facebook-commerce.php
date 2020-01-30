@@ -2493,12 +2493,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
 
+		$key = $this->get_field_key( $key );
+
 		ob_start();
 
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
-			<td class="forminp" style="font-family: monospace;"><?php echo esc_html( $this->get_page_name() ); ?></td>
+			<td class="forminp">
+				<?php echo esc_html( $this->get_page_name() ); ?>
+				<input
+					type="hidden"
+					name="<?php echo esc_attr( $key ); ?>"
+					id="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
+				/>
+			</td>
 		</tr>
 		<?php
 
