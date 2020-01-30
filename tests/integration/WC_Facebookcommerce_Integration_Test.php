@@ -802,6 +802,14 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		];
 
 		$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+
+		$_POST = [
+			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '18',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
+		];
+
+		$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 	}
 
 
