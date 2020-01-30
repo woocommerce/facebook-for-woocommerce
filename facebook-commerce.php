@@ -3678,6 +3678,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$timestamp = $scheduled_time->getTimestamp();
 		$schedule  = sprintf( '%d %d * * *', date( 'i', $timestamp ), date( 'H', $timestamp ) );
 
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		/** @see \ActionScheduler_CronSchedule will use the next available date that matches the schedule as the next scheduled date */
 		as_schedule_cron_action( time(), $schedule, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
 	}
@@ -3690,6 +3691,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function unschedule_resync() {
 
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		as_unschedule_all_actions( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
 	}
 
@@ -3703,6 +3705,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function is_resync_scheduled() {
 
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
 	}
 
