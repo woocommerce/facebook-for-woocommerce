@@ -157,6 +157,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
+
+			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			// so that it works the same way the pixel ID does
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 		}
 	}
 
@@ -191,10 +196,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 
-		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
-		&& $this->settings['fb_pixel_use_pii'] === 'yes'
-		? true
-		: false;
+		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
+
+		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
+		// inherit the pixel option
+		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
+		}
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -399,13 +407,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
-		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
-		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
-			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
+		if ( $this->is_messenger_enabled() ) {
+
+			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( [
+				'fb_page_id'                                  => $this->get_facebook_page_id(),
+				'is_messenger_chat_plugin_enabled'            => wc_bool_to_string( $this->is_messenger_enabled() ),
+				'msger_chat_customization_greeting_text_code' => $this->get_messenger_greeting(),
+				'msger_chat_customization_locale'             => $this->get_messenger_locale(),
+				'msger_chat_customization_theme_color_code'   => $this->get_messenger_color_hex(),
+				'facebook_jssdk_version'                      => $this->get_js_sdk_version(),
+			] );
 		}
 	}
 
@@ -747,7 +762,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
-		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
+		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
 	};
 
 	</script>
@@ -1482,9 +1498,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_product_catalog_id( '' );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
-			$this->settings['fb_pixel_use_pii'] = 'no';
-
-			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
+			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
@@ -1800,7 +1815,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Checks for API key and other API errors.
 	 */
-	function checks() {
+	public function checks() {
+
+		// TODO improve this by checking the settings page with Framework method and ensure error notices are displayed under the Integration sections {FN 2020-01-30}
+		if ( isset( $_GET['page'], $_GET['section'] ) && 'wc-settings' === $_GET['page'] && \WC_Facebookcommerce::INTEGRATION_ID === $_GET['section'] ) {
+			$this->display_errors();
+		}
 
 		// check required fields
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
@@ -2335,9 +2355,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_facebook_page_name_html() */
 			self::SETTING_FACEBOOK_PAGE_ID => [
-				'title'   => __( 'Facebook page', 'facebook-for-woocommerce' ),
-				'type'    => 'text',
+				'type'    => 'facebook_page_name',
 				'default' => '',
 			],
 
@@ -2362,7 +2382,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
-				'class' => 'product-sync-heading'
+				'class' => 'product-sync-heading',
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
@@ -2373,6 +2393,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
+				'class'   => 'product-sync-field toggle-fields-group',
 				'label'   => ' ',
 				'default' => 'yes',
 			],
@@ -2380,7 +2401,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2393,7 +2414,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2406,6 +2427,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
 				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
 				'type'     => 'select',
+				'class'   => 'product-sync-field',
 				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
 				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
 				'options'  => [
@@ -2416,17 +2438,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+				'class' => 'product-sync-field',
 				'type'  => 'text',
 			],
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
 			],
 
 			self::SETTING_ENABLE_MESSENGER => [
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
+				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
 				'default'  => 'yes',
@@ -2435,19 +2459,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
+				'class'   => 'wc-enhanced-select messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
+			/** @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field() */
 			self::SETTING_MESSENGER_GREETING => [
-				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'    => 'text',
-				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
+				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'              => 'messenger_greeting',
+				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'css'               => 'max-width: 400px; margin-bottom: 10px',
+				'custom_attributes' => [
+					'maxlength' => $this->get_messenger_greeting_max_characters(),
+				],
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
 				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'    => 'color',
+				'class'   => 'messenger-field',
 				'default' => '#0084ff',
 				'css'     => 'width: 6em;',
 			],
@@ -2455,6 +2487,42 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Facebook page" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
+
+		$key = $this->get_field_key( $key );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
+			<td class="forminp">
+				<?php echo esc_html( $this->get_page_name() ); ?>
+				<input
+					type="hidden"
+					name="<?php echo esc_attr( $key ); ?>"
+					id="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
+				/>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
@@ -2543,6 +2611,78 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
 			$this->schedule_resync( $saved_resync_offset );
 		}
+	}
+
+
+    /**
+	 * Gets the "Messenger greeting" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_textarea_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
+
+		// TODO replace strlen() here with Framework helper method to account for multibyte characters {FN 2020-01-30}
+		$chars         = max( 0, strlen( $this->get_messenger_greeting() ) );
+		$max_chars     = max( 0, $this->get_messenger_greeting_max_characters() );
+		$field_id      = $this->get_field_key( $key );
+		$counter_class = $field_id . '-characters-count';
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( 'span." . esc_js( $counter_class ) . "' ).insertAfter( 'textarea#" . esc_js( $field_id ) . "' );
+			} );
+		" );
+
+		ob_start();
+
+		?>
+		<span
+			style="display: none; font-family: monospace; font-size: 0.9em;"
+			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
+		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
+		<?php
+
+		$counter = ob_get_clean();
+
+		return $this->generate_textarea_html( $key, $args ) . $counter;
+	}
+
+
+	/**
+	 * Validates the Messenger greeting field.
+	 *
+	 * @see \WC_Settings_API::validate_textarea_field()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param string $value field submitted value
+	 * @throws \Exception on validation errors
+	 * @return string some HTML allowed
+	 */
+	protected function validate_messenger_greeting_field( $key, $value ) {
+
+		$max_chars = $this->get_messenger_greeting_max_characters();
+
+		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
+		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
+
+			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
+			throw new \Exception( sprintf(
+				// TODO maybe need to output the plugin name like: "<strong><Plugin name></strong>: ...message text...", remove this todo otherwise {FN 2020-01-30}
+				/* translators: Placeholder: %d - maximum number of allowed characters */
+				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
+				$max_chars
+			) );
+		}
+
+		return $this->validate_textarea_field( $key, $value );
 	}
 
 
