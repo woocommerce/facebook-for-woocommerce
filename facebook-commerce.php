@@ -2345,9 +2345,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'title',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_facebook_page_name_html() */
 			self::SETTING_FACEBOOK_PAGE_ID => [
-				'title'   => __( 'Facebook page', 'facebook-for-woocommerce' ),
-				'type'    => 'text',
+				'type'    => 'facebook_page_name',
 				'default' => '',
 			],
 
@@ -2477,6 +2477,42 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Facebook page" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
+
+		$key = $this->get_field_key( $key );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
+			<td class="forminp">
+				<?php echo esc_html( $this->get_page_name() ); ?>
+				<input
+					type="hidden"
+					name="<?php echo esc_attr( $key ); ?>"
+					id="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
+				/>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
