@@ -154,6 +154,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
+
+			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			// so that it works the same way the pixel ID does
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 		}
 	}
 
@@ -188,10 +193,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 
-		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
-		&& $this->settings['fb_pixel_use_pii'] === 'yes'
-		? true
-		: false;
+		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
+
+		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
+		// inherit the pixel option
+		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
+		}
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -396,7 +404,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
@@ -1479,9 +1487,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_product_catalog_id( '' );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
-			$this->settings['fb_pixel_use_pii'] = 'no';
-
-			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
+			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
