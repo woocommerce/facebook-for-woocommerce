@@ -130,7 +130,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Gets a Facebook Page URL.
 		 *
-		 * Endpoint: https://graph.facebook.com/vX.X/{page-id}/?fields=name
+		 * Endpoint: https://graph.facebook.com/vX.X/{page-id}/?fields=link
 		 *
 		 * @param string|int $page_id page identifier
 		 * @param string $api_key API key
