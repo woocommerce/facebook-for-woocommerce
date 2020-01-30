@@ -2340,15 +2340,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$form_fields = [
 
+			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
 			[
-				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-				'class' => 'connection-heading',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_button_html() */
-			[
-				'type' => 'manage_connection_title_button',
+				'type'  => 'manage_connection_title',
 			],
 
 			self::SETTING_FACEBOOK_PAGE_ID => [
@@ -2375,15 +2369,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'create_ad',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_html() */
 			[
-				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-				'class' => 'product-sync-heading',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
-			[
-				'type' => 'product_sync_title_button',
+				'type'  => 'product_sync_title',
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
@@ -2489,7 +2477,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the "Manage connection" field HTML.
 	 *
-	 * @see \WC_Settings_API::generate_settings_html()
+	 * @see \WC_Settings_API::generate_title_html()
 	 *
 	 * @since x.y.z
 	 *
@@ -2497,22 +2485,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param array $args associative array of field arguments
 	 * @return string HTML
 	 */
-	protected function generate_manage_connection_title_button_html( $key, array $args = [] ) {
+	protected function generate_manage_connection_title_html( $key, array $args = [] ) {
 
-		wc_enqueue_js( "
-			jQuery( document ).ready( function( $ ) {
-				$( '#woocommerce-facebook-settings-manage-connection' ).appendTo( 'h3.connection-heading' );
-			} );
-		" );
+		$key = $this->get_field_key( $key );
 
-		ob_start(); ?>
-		<a
-			id="woocommerce-facebook-settings-manage-connection"
-			class="button"
-			href="#"
-			style="vertical-align: middle; margin-left: 20px;"
-			onclick="facebookConfig();"
-		><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a><?php
+		ob_start();
+
+		?>
+		</table>
+		<h3 class="wc-settings-sub-title " id="<?php echo esc_attr( $key ); ?>">
+			<?php esc_html_e( 'Connection', 'facebook-for-woocommerce' ); ?>
+			<a
+				id="woocommerce-facebook-settings-manage-connection"
+				class="button"
+				href="#"
+				style="vertical-align: middle; margin-left: 20px;"
+				onclick="facebookConfig();"
+			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
+		</h3>
+
+		<table class="form-table">
+		<?php
 
 		return ob_get_clean();
 	}
@@ -2537,14 +2530,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 		<tr valign="top">
-			<th scope="row" class="titledesc"></th>
-			<td class="forminp">
+			<th class="forminp" colspan="2">
 				<a
 					class="button button-primary"
 					target="_blank"
 					href="<?php echo esc_url( $create_ad_url ); ?>"
 				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
-			</td>
+			</th>
 		</tr>
 		<?php
 
@@ -2555,7 +2547,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the "Sync products" field HTML.
 	 *
-	 * @see \WC_Settings_API::generate_settings_html()
+	 * @see \WC_Settings_API::generate_title_html()
 	 *
 	 * @since x.y.z
 	 *
@@ -2563,21 +2555,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param array $args associative array of field arguments
 	 * @return string HTML
 	 */
-	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+	protected function generate_product_sync_title_html( $key, array $args = [] ) {
 
-		wc_enqueue_js( "
-			jQuery( document ).ready( function( $ ) {
-				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
-			} );
-		" );
+		$key = $this->get_field_key( $key );
 
-		ob_start(); ?>
-		<a
-			id="woocommerce-facebook-settings-sync-products"
-			class="button"
-			href="#"
-			style="vertical-align: middle; margin-left: 20px;"
-		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
+		ob_start();
+
+		?>
+		</table>
+		<h3 class="wc-settings-sub-title " id="<?php echo esc_attr( $key ); ?>">
+			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
+			<a
+				id="woocommerce-facebook-settings-sync-products"
+				class="button"
+				href="#"
+				style="vertical-align: middle; margin-left: 20px;"
+			><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+		</h3>
+		<table class="form-table">
+		<?php
 
 		return ob_get_clean();
 	}
