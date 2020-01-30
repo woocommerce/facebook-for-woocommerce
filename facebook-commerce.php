@@ -2513,10 +2513,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							href="<?php echo esc_url( $page_url ); ?>"
 							target="_blank"
 							style="text-decoration: none;">
+							<?php echo esc_html( $page_name ); ?>
 							<span
 								class="dashicons dashicons-external"
 								style="margin-right: 8px; vertical-align: bottom;"
-							></span><?php echo esc_html( $page_name ); ?>
+							></span>
 						</a>
 
 					<?php else : ?>
