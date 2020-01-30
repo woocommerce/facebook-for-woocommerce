@@ -2553,6 +2553,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
 
+		// TODO replace strlen() here with Framework helper method to account for multibyte characters {FN 2020-01-30}
 		$chars         = max( 0, strlen( $this->get_messenger_greeting() ) );
 		$max_chars     = max( 0, $this->get_messenger_greeting_max_characters() );
 		$field_id      = $this->get_field_key( $key );
@@ -2595,6 +2596,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
+		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
 
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
