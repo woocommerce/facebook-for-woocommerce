@@ -3996,7 +3996,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
 		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
-		$posted_minutes  = str_pad( $posted_minutes, 2, '0' );
+		$posted_minutes  = str_pad( $posted_minutes, 2, '0', STR_PAD_LEFT );
 		$posted_meridiem = ! empty( $_POST[ $meridiem_field_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) ) : '';
 
 		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
