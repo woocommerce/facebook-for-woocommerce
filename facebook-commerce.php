@@ -3402,10 +3402,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		$page_name = '';
-
-		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+		if ( $this->is_configured() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		} else {
+			$page_name = '';
 		}
 
 		return is_string( $page_name ) ? $page_name : '';
@@ -3427,7 +3427,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$page_url = '';
 		}
 
-		return $page_url;
+		return is_string( $page_url ) ? $page_url : '';
 	}
 
 
