@@ -199,7 +199,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					$this->greeting_text_code ? 'logged_in_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					$this->greeting_text_code ? 'logged_out_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
-					esc_js( $this->jssdk_version ),
+					esc_js( $this->jssdk_version ?: 'v5.0' ),
 					esc_js( $this->locale ?: 'en_US' )
 				);
 
@@ -234,20 +234,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
 			} else {
 
-				/** @see \wp_get_available_translations() which is not always available in all contexts */
-				$translations = get_site_transient( 'available_translations' );
+				include_once( ABSPATH . '/wp-admin/includes/translation-install.php' );
 
-				if ( ( ! is_array( $translations ) || empty( $translations ) ) && function_exists( 'translations_api' ) ) {
-
-					$api = translations_api( 'core', [ 'version' => $wp_version ] );
-
-					if ( ! is_wp_error( $api ) && ! empty( $api['translations'] ) ) {
-
-						foreach ( $api['translations'] as $translation ) {
-							$translations[ $translation['language'] ] = $translation;
-						}
-					}
-				}
+				$translations = wp_get_available_translations();
 
 				foreach ( self::$supported_locales as $locale ) {
 
