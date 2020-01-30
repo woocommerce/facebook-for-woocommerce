@@ -3396,8 +3396,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the name of the configured Facebook page.
 	 *
-	 * @since x.y.z
-	 *
 	 * @return string
 	 */
 	public function get_page_name() {
