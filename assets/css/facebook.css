@@ -277,3 +277,14 @@
 #integration-settings[style="display: none"] + p.submit {
 	display: none;
 }
+
+#sync_progress {
+	font-size: 0.9em;
+	font-weight: normal;
+	margin-left: 10px;
+}
+
+#sync_progress .spinner {
+	float: none;
+	margin-top: 0;
+}
