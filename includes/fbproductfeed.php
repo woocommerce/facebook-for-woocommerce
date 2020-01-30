@@ -29,12 +29,45 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		private $no_default_product_count  = 0;
 
 		public function __construct(
-		$facebook_catalog_id,
-		$fbgraph,
+		$facebook_catalog_id = null,
+		$fbgraph = null,
 		$feed_id = null ) {
 			$this->facebook_catalog_id = $facebook_catalog_id;
 			$this->fbgraph             = $fbgraph;
 			$this->feed_id             = $feed_id;
+		}
+
+		public function gen_feed() {
+			try {
+				$product_feed_full_file_name = $this->get_local_product_feed_file_path();
+				if (is_file($product_feed_full_file_name)) {
+					unlink($product_feed_full_file_name);
+				}
+				$this->generate_productfeed_file();
+				WC_Facebookcommerce_Utils::log( 'gen_feed success' );
+			} catch (Exception $e) {
+				WC_Facebookcommerce_Utils::log( json_encode( $e->getMessage() ) );
+			}
+			return $this->sendFileResponse($product_feed_full_file_name);
+		}
+
+		private function sendFileResponse($filename) {
+			if(!headers_sent()) {
+				header('Content-Type: text/csv; charset=utf-8');
+				header('Content-Disposition: attachment; filename="'.basename($filename.'"'));
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Pragma: public');
+				header('Content-Length:'.filesize($filename));
+
+				if(ob_get_level()){
+					ob_end_clean();
+				}
+
+				readfile($filename, 'rb');
+
+				exit();
+			}
 		}
 
 		public function sync_all_products_using_feed() {
@@ -57,13 +90,23 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->log_feed_progress( 'Sync all products using feed, feed file generated' );
 
 			if ( ! $this->feed_id ) {
+				$this->feed_id = $this->create_feed();
+				if ( ! $this->feed_id ) {
+					$this->log_feed_progress(
+						'Failure - Sync all products using feed, facebook feed not created'
+					);
+					return false;
+				}
 				$this->log_feed_progress(
-					'Failure - Sync all products using feed, facebook feed not created'
+					'Sync all products using feed, facebook feed created'
 				);
-				return false;
+			} else {
+				$this->log_feed_progress(
+					'Sync all products using feed, facebook feed already exists.'
+				);
 			}
 			$this->log_feed_progress(
-				'Sync all products using feed, facebook feed already exists.'
+				'Sync all products using feed, facebook upload created'
 			);
 
 			$total_product_count        =
@@ -265,6 +308,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$product_data['visibility'] . ',' .
 			$product_data['default_product'] . ',' .
 			$product_data['variant'] . PHP_EOL;
+		}
+
+		private function create_feed() {
+			$result = $this->fbgraph->create_feed(
+				$this->facebook_catalog_id,
+				array( 'name' => self::FEED_NAME )
+			);
+			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+				$this->log_feed_progress( json_encode( $result ) );
+				return null;
+			}
+			$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+			$feed_id       = $decode_result->id;
+			if ( ! $feed_id ) {
+				$this->log_feed_progress(
+					'Response from creating feed not return feed id!'
+				);
+				return null;
+			}
+			return $feed_id;
 		}
 
 		private function create_upload( $facebook_feed_id ) {

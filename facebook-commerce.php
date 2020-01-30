@@ -74,6 +74,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function __construct() {
+		if (!class_exists('WC_Facebookcommerce_REST_Controller')) {
+		  include_once( 'includes/fbcustomapi.php' );
+		  $this->customapi = new WC_Facebookcommerce_REST_Controller();
+		}
 		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
 			include_once 'facebook-commerce-events-tracker.php';
 		}
@@ -761,9 +765,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
 		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
 		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
-		$url = $http . $_SERVER['HTTP_HOST'] . $begin_path. WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
+		$url = $http . $_SERVER['HTTP_HOST'] . "/wordpress/index.php/wp-json/facebook/v1/feedurl";
 		return $url;
-  }
+	}
+
+	private function get_feed_ping_url() {
+		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
+		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
+		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
+		$url = $http . $_SERVER['HTTP_HOST'] . "/wordpress/index.php/wp-json/facebook/v1/feedpingurl";
+		return $url;
+	}
 
 	/**
 	 * Load DIA specific JS Data
@@ -837,7 +849,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	  }
 	  ,feedPrepared: {
 			feedUrl: '<?php echo $this->get_global_feed_url(); ?>'
-			,feedPingUrl: ''
+			,feedPingUrl: '<?php echo $this->get_feed_ping_url(); ?>'
 			,samples: <?php echo $this->get_sample_product_feed(); ?>
 	  }
 	};
