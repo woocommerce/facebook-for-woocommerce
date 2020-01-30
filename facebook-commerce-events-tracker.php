@@ -243,7 +243,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Triggers an AddToCart event when a product is added to cart.
 		 *
-		 * @see \WC_Facebookcommerce_EventsTracker::inject_ajax_add_to_cart_event() when the product is added to cart via AJAX add to cart button.
 		 * @internal
 		 *
 		 * @param string $cart_item_key the cart item key
@@ -324,44 +323,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
-		 * When a product is added to cart from the shop page or archives and the page does not reload,
-		 * the WooCommerce AJAX event alone is not sufficient to trigger an AddToCart event.
-		 * Pixel needs to output a JavaScript event on the DOM to track this.
-		 * @see \WC_Facebookcommerce_Pixel::pixel_base_code()
-		 *
 		 * @internal
+		 * @deprecated since x.y.z
 		 */
 		public function inject_ajax_add_to_cart_event() {
 
-			$product_id = isset( $_REQUEST['product_id'] ) ? (int) $_REQUEST['product_id'] : 0;
-
-			// bail if pixel tracking disabled or invalid product identifier
-			if ( ! self::$isEnabled || ! $product_id ) {
-				die();
-			}
-
-			$product = wc_get_product( $product_id );
-
-			// bail if invalid product or error
-			if ( ! $product instanceof \WC_Product ) {
-				die();
-			}
-
-			// addresses a less common occurrence where both options (redirect to cart and shop AJAX are used)
-			if ( 'yes' === get_option( 'woocommerce_enable_ajax_add_to_cart' ) && 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', 0 );
-			}
-
-			$fb_pixel       = $this->pixel;
-			$fb_pixel_event = $fb_pixel::build_event( 'AddToCart', [
-				'content_ids'  => $this->get_cart_content_ids(),
-				'content_type' => 'product',
-				'contents'     => $this->get_cart_contents(),
-				'value'        => $this->get_cart_total(),
-				'currency'     => get_woocommerce_currency(),
-			] );
-
-			wp_send_json( '<script>' . $fb_pixel_event . '</script>' );
+			wc_deprecated_function( __METHOD__, 'x.y.z' );
 		}
 
 
