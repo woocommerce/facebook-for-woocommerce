@@ -1805,7 +1805,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Checks for API key and other API errors.
 	 */
-	function checks() {
+	public function checks() {
+
+		// TODO improve this by checking the settings page with Framework method and ensure error notices are displayed under the Integration sections {FN 2020-01-30}
+		if ( isset( $_GET['page'], $_GET['section'] ) && 'wc-settings' === $_GET['page'] && \WC_Facebookcommerce::INTEGRATION_ID === $_GET['section'] ) {
+			$this->display_errors();
+		}
 
 		// check required fields
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
