@@ -392,11 +392,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->load_background_sync_process();
 		}
 		// Must be outside of admin for cron to schedule correctly.
-		add_action(
-			'sync_all_fb_products_using_feed',
-			array( $this, 'sync_all_fb_products_using_feed' ),
-			self::FB_PRIORITY_MID
-		);
+		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
@@ -3665,7 +3661,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function schedule_resync( $offset ) {
 
 		try {
-			$scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+
+			$current_time         = new DateTime( 'now', new DateTimeZone( wc_timezone_string() ) );
+			$first_scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+			$next_scheduled_time  = new DateTime( "today +1 day {$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+
 		} catch ( \Exception $e ) {
 			// TODO: log an error indicating that it was not possible to schedule a recurring action to sync products {WV 2020-01-28}
 			return;
@@ -3674,13 +3674,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// unschedule previously scheduled resync actions
 		$this->unschedule_resync();
 
-		// cron schedule should use UTC hours and minutes
-		$timestamp = $scheduled_time->getTimestamp();
-		$schedule  = sprintf( '%d %d * * *', date( 'i', $timestamp ), date( 'H', $timestamp ) );
+		$timestamp = $first_scheduled_time >= $current_time ? $first_scheduled_time->getTimestamp() : $next_scheduled_time->getTimestamp();
 
 		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
-		/** @see \ActionScheduler_CronSchedule will use the next available date that matches the schedule as the next scheduled date */
-		as_schedule_cron_action( time(), $schedule, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+		as_schedule_single_action( $timestamp, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
 	}
 
 
@@ -3707,6 +3704,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Handles the scheduled action used to sync products daily.
+	 *
+	 * It will schedule a new action if product sync is enabled and the plugin is configured to resnyc procucts daily.
+	 *
+	 * @internal
+	 *
+	 * @see \WC_Facebookcommerce_Integration::schedule_resync()
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_scheduled_resync_action() {
+
+		$this->sync_all_fb_products_using_feed();
+
+		$resync_offset = $this->get_scheduled_resync_offset();
+
+		// manually schedule the next product resync action if possible
+		if ( null !== $resync_offset && $this->is_product_sync_enabled() && ! $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $resync_offset );
+		}
 	}
 
 
