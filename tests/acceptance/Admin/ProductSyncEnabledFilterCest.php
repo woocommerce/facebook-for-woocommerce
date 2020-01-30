@@ -3,15 +3,22 @@
 class ProductSyncEnabledFilterCest {
 
 
-	/** @var \WC_Product|null product objects created for the test */
+	// product objects created for the tests */
+	/** @var \WC_Product */
 	private $sync_enabled_product;
+	/** @var \WC_Product */
 	private $sync_disabled_product;
+	/** @var \WC_Product */
+	private $product_in_excluded_category;
+	/** @var \WC_Product */
+	private $product_in_excluded_tag;
 
 
 	/**
 	 * Runs before each test.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws \Exception
 	 */
 	public function _before( AcceptanceTester $I ) {
 

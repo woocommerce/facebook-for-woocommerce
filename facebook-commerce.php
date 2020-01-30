@@ -122,6 +122,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	// Number of days to query tip.
 	const FB_TIP_QUERY = 1;
 
+	// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}
 	const FB_VARIANT_IMAGE = 'fb_image';
 
 	const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -153,6 +154,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
+
+			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			// so that it works the same way the pixel ID does
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 		}
 	}
 
@@ -187,10 +193,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 
-		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
-		&& $this->settings['fb_pixel_use_pii'] === 'yes'
-		? true
-		: false;
+		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
+
+		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
+		// inherit the pixel option
+		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
+		}
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -395,7 +404,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
@@ -741,15 +750,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
 			feedPingUrl: '',
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		}
+		},
+		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
 	};
 
 	</script>
 
 		<?php
-		$ajax_data = array(
+		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
-		);
+		];
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
@@ -852,6 +863,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) {
 			$woo_product->set_price( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ] ) ) );
+		}
+
+		if ( isset( $_POST[ 'fb_product_image_source' ] ) ) {
+			$product->update_meta_data( Products::PRODUCT_IMAGE_SOURCE_META_KEY, sanitize_key( wp_unslash( $_POST[ 'fb_product_image_source' ] ) ) );
+			$product->save_meta_data();
 		}
 
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
@@ -1003,14 +1019,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
 			return;
 		}
-
-		$woo_product->set_use_parent_image(
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			( isset( $_POST[ self::FB_VARIANT_IMAGE ] ) ) ?
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			sanitize_text_field( wp_unslash( $_POST[ self::FB_VARIANT_IMAGE ] ) ) :
-			null
-		);
 
 		$fb_product_group_id = $this->get_product_fbid(
 			self::FB_PRODUCT_GROUP_ID,
@@ -1479,9 +1487,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_product_catalog_id( '' );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
-			$this->settings['fb_pixel_use_pii'] = 'no';
-
-			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
+			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
@@ -2311,7 +2318,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_tags = $term_query->get_terms();
 
 		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-		$default_locale    = isset( $messenger_locales[ get_locale() ] ) ? get_locale() : array_key_first( $messenger_locales );
+
+		// tries matching with WordPress locale, otherwise English, otherwise first available language
+		if ( isset( $messenger_locales[ get_locale() ] ) ) {
+			$default_locale = get_locale();
+		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
+			$default_locale = 'en_US';
+		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
+			$default_locale = key( $messenger_locales );
+		} else {
+			// fallback to English in case of invalid/empty filtered list of languages
+			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
+			$default_locale    = 'en_US';
+		}
 
 		$form_fields = [
 
@@ -2339,14 +2358,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => 'yes',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
+			[
+				'type'  => 'create_ad',
+			],
+
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
+				'class' => 'product-sync-heading',
+			],
+
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
+			[
+				'type' => 'product_sync_title_button',
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
+				'class'   => 'product-sync-field toggle-fields-group',
 				'label'   => ' ',
 				'default' => 'yes',
 			],
@@ -2354,7 +2385,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2367,7 +2398,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2380,6 +2411,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
 				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
 				'type'     => 'select',
+				'class'   => 'product-sync-field',
 				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
 				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
 				'options'  => [
@@ -2390,17 +2422,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+				'class' => 'product-sync-field',
 				'type'  => 'resync_schedule',
 			],
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
 			],
 
 			self::SETTING_ENABLE_MESSENGER => [
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
+				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
 				'default'  => 'yes',
@@ -2409,6 +2443,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
+				'class'   => 'messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
 			],
@@ -2416,12 +2451,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_GREETING => [
 				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'    => 'text',
+				'class'   => 'messenger-field',
 				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
 				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'    => 'color',
+				'class'   => 'messenger-field',
 				'default' => '#0084ff',
 				'css'     => 'width: 6em;',
 			],
@@ -2429,6 +2466,71 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		];
 
 		$this->form_fields = $form_fields;
+	}
+
+
+	/**
+	 * Gets the "Create ad" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_create_ad_html( $key, array $args = [] ) {
+
+		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"></th>
+			<td class="forminp">
+				<a
+					class="button button-primary"
+					target="_blank"
+					href="<?php echo esc_url( $create_ad_url ); ?>"
+				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the "Sync products" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
+			} );
+		" );
+
+		ob_start(); ?>
+		<a
+			id="woocommerce-facebook-settings-sync-products"
+			class="button"
+			href="#"
+			style="vertical-align: middle; margin-left: 20px;"
+		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
+
+		return ob_get_clean();
 	}
 
 
@@ -2954,6 +3056,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Determines whether Facebook for WooCommerce is configured.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	public function is_configured() {
+
+		return $this->get_page_access_token() && $this->get_facebook_page_id();
+	}
+
+
+	/**
 	 * Determines whether advanced matching is enabled.
 	 *
 	 * @since x.y.z
@@ -3201,15 +3316,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function admin_options() {
 
-		$domain          = 'facebook-for-woocommerce';
-		$cta_button_text = __( 'Get Started', $domain );
-		$page_name       = $this->get_page_name();
-
+		$page_name      = $this->get_page_name();
 		$can_manage     = current_user_can( 'manage_woocommerce' );
 		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
 		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
 
-		$redirect_uri           = '';
 		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
 		$https_will_be_stripped = $remove_http_active && ! get_option( 'factmaven_rhttp' )['external'];
 
@@ -3220,31 +3331,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 		}
 
-		if ( ! $pre_setup ) {
-
-			$cta_button_text = __( 'Create Ad', $domain );
-			$redirect_uri    = 'https://www.facebook.com/ads/dia/redirect/?settings_id='
-				. $this->get_external_merchant_settings_id() . '&version=2'
-				. '&entry_point=admin_panel';
-		}
-
-		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
-		$connected         = ( $page_name != '' );
-		$hide_test         = ( $connected && $currently_syncing ) || ! defined( 'WP_DEBUG' ) || WP_DEBUG !== true;
-
 		?>
-		<h2><?php esc_html_e( 'Facebook', $domain ); ?></h2>
-		<p>
-			<?php
-			esc_html_e(
-				'Control how WooCommerce integrates with your Facebook store.',
-				$domain
-			);
-			?>
-		</p>
-		<hr/>
 
-		<div id="fbsetup">
+		<h2><?php esc_html_e( 'Facebook', 'facebook-for-woocommerce' ); ?></h2>
+
+		<p>
+			<?php esc_html_e( 'Control how WooCommerce integrates with your Facebook store.', 'facebook-for-woocommerce' ); ?>
+		</p>
+
+		<div><input type="hidden" name="section" value="<?php echo esc_attr( $this->id ); ?>" /></div>
+
+		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
 			<div class="wrapper">
 				<header>
 					<div class="help-center">
@@ -3253,243 +3350,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				</header>
 
 				<div class="content">
-					<h1 id="setup_h1">
-						<?php
-							$pre_setup
-								? esc_html_e( 'Grow your business on Facebook', $domain )
-								: esc_html_e( 'Reach The Right People and Sell More Online', $domain );
-						?>
-					</h1>
+					<h1 id="setup_h1"><?php esc_html_e( 'Grow your business on Facebook', 'facebook-for-woocommerce' ); ?></h1>
 
 					<h2>
-						<?php
-							esc_html_e(
-								'Use this WooCommerce and Facebook integration to:',
-								$domain
-							);
-						?>
+						<?php esc_html_e( 'Use this WooCommerce and Facebook integration to:', 'facebook-for-woocommerce' ); ?>
 					</h2>
 
 					<ul>
-						<li id="setup_l1">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Easily install a tracking pixel', $domain )
-									: esc_html_e( 'Create an ad in a few steps', $domain );
-							?>
-						</li>
-						<li id="setup_l2">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Upload your products and create a shop', $domain )
-									: esc_html_e( 'Use built-in best practices for online sales', $domain );
-							?>
-						</li>
-						<li id="setup_l3">
-							<?php
-								$pre_setup
-									? esc_html_e( 'Create dynamic ads with your products and pixel', $domain )
-									: esc_html_e( 'Get reporting on sales and revenue', $domain );
-							?>
-						</li>
+						<li id="setup_l1"><?php esc_html_e( 'Easily install a tracking pixel', 'facebook-for-woocommerce' ); ?></li>
+						<li id="setup_l2"><?php esc_html_e( 'Upload your products and create a shop', 'facebook-for-woocommerce' ); ?></li>
+						<li id="setup_l3"><?php esc_html_e( 'Create dynamic ads with your products and pixel', 'facebook-for-woocommerce' ); ?></li>
 					</ul>
 
 					<span
 						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
 						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<?php if ( $pre_setup ) : ?>
-
-							<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
-								<?php echo esc_html( $cta_button_text ); ?>
-							</a>
-
-						<?php else : ?>
-
-							<a href='<?php esc_attr( $redirect_uri ); ?>' class="btn" id="cta_button">
-								<?php echo esc_html( $cta_button_text ); ?>
-							</a>
-							<a href="https://www.facebook.com/business/m/drive-more-online-sales"
-								class="btn grey" id="learnmore_button">
-								<?php echo esc_html__('Learn More' ); ?>
-							</a>
-
-						<?php endif; ?>
+						<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
+							<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
+						</a>
 
 					</span>
-
-					<hr />
-
-					<div class="settings-container">
-						<div id="plugins" class="settings-section"
-							<?php echo ( $pre_setup && $can_manage ) ? ' style="display:none;"' : ''; ?>
-						>
-
-							<h1><?php esc_html_e( 'Add Ways for People to Shop' ); ?></h1>
-							<h2><?php esc_html_e( 'Connect your business with features such as Messenger and more.' ); ?></h2>
-							<a href="#" class="btn small" onclick="facebookConfig()" id="connect_button">
-								<?php esc_html_e( 'Add Features' ); ?>
-							</a>
-						</div>
-
-						<div id="settings" class="settings-section"
-							<?php echo ( $pre_setup && $can_manage ) ? ' style="display:none;"' : ''; ?>
-						>
-
-							<h1><?php echo esc_html__( 'Settings', $domain ); ?></h1>
-
-							<?php if ( $apikey_invalid ) : // API key is set, but no page name ?>
-
-								<h2 id="token_text" style="color:red;">
-									<?php esc_html_e('Your API key is no longer valid. Please click "Settings > Advanced Options > Update Token".', $domain); ?>
-								</h2>
-
-								<span>
-									<a href="#" class="btn small" onclick="facebookConfig()" id="setting_button">
-										<?php esc_html_e( 'Settings', $domain ); ?>
-									</a>
-								</span>
-
-							<?php else : ?>
-
-								<?php if ( ! $can_manage ) : ?>
-
-									<h2 style="color:red;">
-										<?php esc_html_e( 'You must have "manage_woocommerce" permissions to use this plugin.', $domain ); ?>
-									</h2>
-
-								<?php else : ?>
-
-									<h2>
-										<span id="connection_status" <?php echo ! $connected ? ' style="display: none;"' : ''; ?>>
-											<?php esc_html_e( 'Your WooCommerce store is connected to ', $domain ); ?>
-											<?php if ( $page_name != '' ) : ?>
-												<?php echo sprintf(
-													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-													__( 'the Facebook page <a target="_blank" href="https://www.facebook.com/%1$s">%2$s</a></span>', $domain ),
-													esc_html( $this->get_facebook_page_id() ),
-													esc_html( $page_name ) ); ?>
-											<?php else : ?>
-												<?php echo sprintf(
-													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-													__( '<a target="_blank" href="https://www.facebook.com/%1$s">your Facebook page</a></span>', $domain ),
-													esc_html( $this->get_facebook_page_id() ) ); ?>
-											<?php endif; ?>
-
-											<span id="sync_complete" style="margin-left: 5px; <?php echo ( ! $connected || $currently_syncing ) ? ' display: none;' : ''; ?>">
-												<?php esc_html_e( 'Status', $domain ); ?>:
-												<?php esc_html_e( 'Products are synced to Facebook.', $domain ); ?>
-											</span>
-
-											<span>
-												<a href="#" onclick="show_debug_info()" id="debug_info" style="display:none;">
-													<?php esc_html_e( 'More Info', $domain ); ?>
-												</a>
-											</span>
-										</span>
-									</h2>
-
-									<span>
-										<a href="#" class="btn small" onclick="facebookConfig()" id="setting_button"
-											<?php echo $currently_syncing ? ' style="pointer-events: none;"' : ''; ?>
-										>
-											<?php esc_html_e( 'Manage Settings', $domain ); ?>
-										</a>
-									</span>
-
-									<span>
-										<a href="#" class="btn small" onclick="sync_confirm()" id="resync_products"
-											<?php echo ( $connected && $currently_syncing ) ? ' style="pointer-events: none;" ' : ''; ?>
-										>
-											<?php esc_html_e( 'Sync Products', $domain ); ?>
-										</a>
-									</span>
-
-									<p id="sync_progress">
-										<?php if ( $connected && $currently_syncing ): ?>
-											<hr/>
-											<?php esc_html_e( 'Syncing... Keep this browser open', $domain ); ?>
-											<br/>
-											<?php esc_html_e( 'Until sync is complete', $domain ); ?>
-										<?php endif; ?>
-									</p>
-
-								<?php endif; ?>
-
-							<?php endif; ?>
-
-						</div>
-						<hr />
-					</div>
 
 					<?php
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo $this->get_nux_message_ifexist();
 					?>
 
-					<div>
-						<div id='fbAdvancedOptionsText' onclick="toggleAdvancedOptions();">
-							Show Advanced Settings
-						</div>
-						<div id='fbAdvancedOptions'>
-							<div class='autosync' title="This experimental feature will call force resync at the specified time using WordPress cron scheduling.">
-								<input type="checkbox"
-									onclick="saveAutoSyncSchedule()"
-									class="autosyncCheck"
-									<?php echo get_option( 'woocommerce_fb_autosync_time', false ) ? 'checked' : 'unchecked'; ?>>
-								Automatically Force Resync of Products At
-
-								<input
-									type="time"
-									value="<?php echo esc_attr( get_option( 'woocommerce_fb_autosync_time', '23:00' ) ); ?>"
-									class="autosyncTime"
-									onfocusout="saveAutoSyncSchedule()"
-									<?php echo get_option( 'woocommerce_fb_autosync_time', 0 ) ? '' : 'disabled'; ?> />
-								Every Day.
-								<span class="autosyncSavedNotice" disabled> Saved </span>
-							</div>
-
-							<div title="This option is meant for development and testing environments.">
-								<input type="checkbox"
-									onclick="onSetDisableSyncOnDevEnvironment()"
-									class="disableOnDevEnvironment"
-									<?php echo get_option( 'fb_disable_sync_on_dev_environment', false ) ? 'checked' : 'unchecked'; ?>/>
-								Disable Product Sync with FB
-							</div>
-
-							<div class='shortdescr' title="This experimental feature will import short description instead of description for all products.">
-								<input type="checkbox"
-									onclick="syncShortDescription()"
-									class="syncShortDescription"
-									<?php echo get_option( 'fb_sync_short_description', false ) ? 'checked' : 'unchecked'; ?>/>
-								Sync Short Description Instead of Description
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
+		</div>
 
-			<div <?php echo ( $hide_test ) ? ' style="display:none;" ' : ''; ?> >
-				<p class="tooltip" id="test_product_sync">
-					<?php // WP_DEBUG mode: button to launch test ?>
-					<a href="<?php echo esc_attr( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ); ?>&fb_test_product_sync=true">
-						<?php echo esc_html__( 'Launch Test', $domain ); ?>
-						<span class='tooltiptext'>
-							<?php esc_html_e( 'This button will run an integration test suite verifying the extension. Note that this will reset your products and resync them to Facebook. Not recommended to use unless you are changing the extension code and want to test your changes.', $domain ); ?>
-						</span>
-					</a>
-				</p>
-				<p id="stack_trace"></p>
-			</div>
-			<br/><hr/><br/>
+		<div id="integration-settings" <?php echo ! $this->is_configured() ? 'style="display: none"' : ''; ?>>
+			<table class="form-table"><?php $this->generate_settings_html( $this->get_form_fields() ); ?></table>
+		</div>
 
-			<?php $GLOBALS['hide_save_button'] = true; ?>
-			<?php if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ): ?>
-				<?php $GLOBALS['hide_save_button'] = false; ?>
-				<table class="form-table">
-					<?php $this->generate_settings_html(); ?>
-				</table><!--/.form-table-->
-			<?php endif; ?>
 		<?php
 	}
 

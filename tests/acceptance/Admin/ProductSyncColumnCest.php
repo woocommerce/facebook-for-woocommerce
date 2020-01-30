@@ -3,7 +3,8 @@
 class ProductSyncColumnCest {
 
 
-	/** @var \WC_Product|null product object created for the test */
+	// product objects created for the tests */
+	/** @var \WC_Product */
 	private $product;
 
 
@@ -11,6 +12,7 @@ class ProductSyncColumnCest {
 	 * Runs before each test.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws \Exception
 	 */
 	public function _before( AcceptanceTester $I ) {
 
