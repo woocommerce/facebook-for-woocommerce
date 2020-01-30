@@ -3978,7 +3978,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param  string $key field key
 	 * @param  string $value posted value
-	 *
 	 * @return string
 	 * @throws Exception
 	 */
