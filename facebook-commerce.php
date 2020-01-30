@@ -3874,35 +3874,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$posted_time     = sanitize_text_field( wp_unslash( $_POST[ $text_input_field_key ] ) );
 		$posted_meridiem = sanitize_text_field( wp_unslash( $_POST[ $select_field_key ] ) );
 
-		// attempts to parse the time
-		$time_formats = [
-			'h:i a',
-			'g:i a',
-			'H:i a',
-			'G:i a',
-			'h a',
-			'g a',
-			'H a',
-			'G a',
-		];
-
-		$parsed_time = false;
-
-		foreach ( $time_formats as $format ) {
-
-			$parsed_time = date_create_from_format ( $format , $posted_time . ' ' . $posted_meridiem );
-			if ( false !== $parsed_time ) {
-				break;
-			}
-		}
+		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
+		$parsed_time = strtotime( $posted_time . ' ' . $posted_meridiem );
 
 		if ( false === $parsed_time ) {
 			throw new Exception( "Invalid resync schedule time: $posted_time" );
 		}
 
-		$midnight = ( clone $parsed_time )->setTime( 0,0,0 );
+		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
 
-		return $parsed_time->getTimestamp() - $midnight->getTimestamp();
+		return $parsed_time - $midnight->getTimestamp();
 	}
 
 
