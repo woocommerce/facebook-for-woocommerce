@@ -199,7 +199,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					$this->greeting_text_code ? 'logged_in_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					$this->greeting_text_code ? 'logged_out_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
-					esc_js( $this->jssdk_version ),
+					esc_js( $this->jssdk_version ?: 'v5.0' ),
 					esc_js( $this->locale ?: 'en_US' )
 				);
 

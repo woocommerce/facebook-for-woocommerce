@@ -408,9 +408,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
-		if ( isset( $this->settings['is_messenger_chat_plugin_enabled'] ) &&
-		$this->settings['is_messenger_chat_plugin_enabled'] === 'yes' ) {
-			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( $this->settings );
+		if ( $this->is_messenger_enabled() ) {
+
+			$this->messenger_chat = new WC_Facebookcommerce_MessengerChat( [
+				'fb_page_id'                                  => $this->get_facebook_page_id(),
+				'is_messenger_chat_plugin_enabled'            => wc_bool_to_string( $this->is_messenger_enabled() ),
+				'msger_chat_customization_greeting_text_code' => $this->get_messenger_greeting(),
+				'msger_chat_customization_locale'             => $this->get_messenger_locale(),
+				'msger_chat_customization_theme_color_code'   => $this->get_messenger_color_hex(),
+				'facebook_jssdk_version'                      => $this->get_js_sdk_version(),
+			] );
 		}
 	}
 
