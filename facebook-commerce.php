@@ -2205,8 +2205,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $this->sync_all_fb_products_using_feed();
 	}
 
-	// Separate entry point that bypasses permission check for use in cron.
-	function sync_all_fb_products_using_feed() {
+
+	/**
+	 * Syncs Facebook products using a Feed.
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
+	 *
+	 * @return bool
+	 */
+	public function sync_all_fb_products_using_feed() {
 
 		if ( ! $this->is_product_sync_enabled() ) {
 			WC_Facebookcommerce_Utils::log(
@@ -2293,6 +2300,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 		return false;
 	}
+
 
 	/**
 	 * Toggles product visibility via AJAX.
