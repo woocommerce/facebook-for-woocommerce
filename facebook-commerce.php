@@ -2530,15 +2530,44 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
 
-		$key = $this->get_field_key( $key );
+		$key       = $this->get_field_key( $key );
+		$page_name = $this->get_page_name();
+		$page_url  = $this->get_page_url();
 
 		ob_start();
 
 		?>
 		<tr valign="top">
-			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
+			<th scope="row" class="titledesc">
+				<?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?>
+			</th>
 			<td class="forminp">
-				<?php echo esc_html( $this->get_page_name() ); ?>
+				<?php if ( $page_name ) : ?>
+
+					<?php if ( $page_url ) : ?>
+
+						<a
+							href="<?php echo esc_url( $page_url ); ?>"
+							target="_blank"
+							style="text-decoration: none;">
+							<?php echo esc_html( $page_name ); ?>
+							<span
+								class="dashicons dashicons-external"
+								style="margin-right: 8px; vertical-align: bottom;"
+							></span>
+						</a>
+
+					<?php else : ?>
+
+						<?php echo esc_html( $page_name ); ?>
+
+					<?php endif; ?>
+
+				<?php else : ?>
+
+					&mdash;
+
+				<?php endif; ?>
 				<input
 					type="hidden"
 					name="<?php echo esc_attr( $key ); ?>"
@@ -3412,13 +3441,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		$page_name = '';
-
-		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+		if ( $this->is_configured() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		} else {
+			$page_name = '';
 		}
 
-		return $page_name;
+		return is_string( $page_name ) ? $page_name : '';
+	}
+
+
+	/**
+	 * Gets the Facebook page URL.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_page_url() {
+
+		if ( $this->is_configured() ) {
+			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		} else {
+			$page_url = '';
+		}
+
+		return is_string( $page_url ) ? $page_url : '';
 	}
 
 

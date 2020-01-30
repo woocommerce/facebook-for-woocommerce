@@ -126,6 +126,37 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return json_decode( $response_body )->name;
 		}
 
+
+		/**
+		 * Gets a Facebook Page URL.
+		 *
+		 * Endpoint: https://graph.facebook.com/vX.X/{page-id}/?fields=link
+		 *
+		 * @param string|int $page_id page identifier
+		 * @param string $api_key API key
+		 * @return string URL
+		 */
+		public function get_page_url( $page_id, $api_key = '' ) {
+
+			$api_key  = $api_key ?: $this->api_key;
+			$request  = $this->build_url( $page_id, '/?fields=link' );
+			$response = $this->_get( $request, $api_key );
+			$page_url = '';
+
+			if ( is_wp_error( $response ) ) {
+
+				\WC_Facebookcommerce_Utils::log( $response->get_error_message() );
+
+			} elseif ( 200 === (int) $response['response']['code'] ) {
+
+				$response_body = wp_remote_retrieve_body( $response );
+				$page_url      = json_decode( $response_body )->link;
+			}
+
+			return $page_url;
+		}
+
+
 		public function validate_product_catalog( $product_catalog_id ) {
 			$url      = $this->build_url( $product_catalog_id );
 			$response = self::_get( $url );
