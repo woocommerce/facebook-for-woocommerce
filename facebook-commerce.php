@@ -3876,11 +3876,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
 		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
 
+		// check if the sites uses 12-hours or 24-hours time format
+		$time_format = wc_time_format();
+		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
+
 		if ( $this->is_scheduled_resync_enabled() ) {
 
 			$offset         = $this->get_scheduled_resync_offset();
 			$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
-			$resync_hours   = $resync_time->format( 'g' );
+			$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
 			$resync_minutes = $resync_time->format( 'i' );
 		}
 
@@ -3917,7 +3921,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						class="input-number regular-input <?php echo esc_attr( $data['class'] ); ?>"
 						type="number"
 						min="0"
-						max="12"
+						max="<?php echo $is_24_hours ? 24 : 12; ?>"
 						name="<?php echo esc_attr( $hours_field_key ); ?>"
 						id="<?php echo esc_attr( $hours_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
@@ -3935,6 +3939,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
 						<?php disabled( $data['disabled'], true ); ?>
 					/>
+					<?php if ( ! $is_24_hours ) : ?>
 					<select
 						class="select <?php echo esc_attr( $data['class'] ); ?>"
 						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
@@ -3953,6 +3958,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
 						</option>
 					</select>
+					<?php endif; ?>
 					<br/>
 				</fieldset>
 			</td>
