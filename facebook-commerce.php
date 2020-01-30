@@ -2528,6 +2528,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::process_admin_options()
 	 *
+	 * @internal
+	 *
+	 *
 	 * @since x.y.z
 	 */
 	public function process_admin_options() {
