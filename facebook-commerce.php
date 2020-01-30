@@ -2606,6 +2606,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
 			throw new \Exception( sprintf(
+				// TODO maybe need to output the plugin name like: "<strong><Plugin name></strong>: ...message text...", remove this todo otherwise {FN 2020-01-30}
 				/* translators: Placeholder: %d - maximum number of allowed characters */
 				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
 				$max_chars
