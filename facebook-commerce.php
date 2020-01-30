@@ -154,6 +154,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
+
+			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			// so that it works the same way the pixel ID does
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 		}
 	}
 
@@ -188,10 +193,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 
-		$this->use_pii = isset( $this->settings['fb_pixel_use_pii'] )
-		&& $this->settings['fb_pixel_use_pii'] === 'yes'
-		? true
-		: false;
+		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
+
+		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
+		// inherit the pixel option
+		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
+		}
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -396,7 +404,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->use_pii );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
 		}
 
@@ -1480,9 +1488,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_product_catalog_id( '' );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
-			$this->settings['fb_pixel_use_pii'] = 'no';
-
-			$this->settings[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = '';
+			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
+			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
@@ -2360,7 +2367,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			[
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
-				'class' => 'product-sync-heading'
+				'class' => 'product-sync-heading',
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
@@ -2371,6 +2378,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
+				'class'   => 'product-sync-field toggle-fields-group',
 				'label'   => ' ',
 				'default' => 'yes',
 			],
@@ -2378,7 +2386,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2391,7 +2399,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select',
+				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
 				'default'           => [],
@@ -2404,6 +2412,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
 				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
 				'type'     => 'select',
+				'class'   => 'product-sync-field',
 				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
 				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
 				'options'  => [
@@ -2414,17 +2423,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+				'class' => 'product-sync-field',
 				'type'  => 'text',
 			],
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'type'  => 'title'
+				'type'  => 'title',
 			],
 
 			self::SETTING_ENABLE_MESSENGER => [
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
+				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
 				'default'  => 'yes',
@@ -2433,6 +2444,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_LOCALE => [
 				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'    => 'select',
+				'class'   => 'messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
 			],
@@ -2452,6 +2464,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			self::SETTING_MESSENGER_COLOR_HEX => [
 				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'    => 'color',
+				'class'   => 'messenger-field',
 				'default' => '#0084ff',
 				'css'     => 'width: 6em;',
 			],
