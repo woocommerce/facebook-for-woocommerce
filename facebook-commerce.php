@@ -2493,7 +2493,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 		</table>
-		<h3 class="wc-settings-sub-title " id="<?php echo esc_attr( $key ); ?>">
+		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
 			<?php esc_html_e( 'Connection', 'facebook-for-woocommerce' ); ?>
 			<a
 				id="woocommerce-facebook-settings-manage-connection"
@@ -2598,7 +2598,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 		</table>
-		<h3 class="wc-settings-sub-title " id="<?php echo esc_attr( $key ); ?>">
+		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
 			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
 			<a
 				id="woocommerce-facebook-settings-sync-products"
