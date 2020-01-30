@@ -3870,16 +3870,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_resync_schedule_html( $key, array $data ) {
 
-		$fieldset_key         = $this->get_field_key( $key );
-		$checkbox_field_key   = $this->get_field_key( 'scheduled_resync_enabled' );
-		$text_input_field_key = $this->get_field_key( 'scheduled_resync_time' );
-		$select_field_key     = $this->get_field_key( 'scheduled_resync_meridiem' );
+		$fieldset_key       = $this->get_field_key( $key );
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
 
 		if ( $this->is_scheduled_resync_enabled() ) {
 
 			$offset         = $this->get_scheduled_resync_offset();
 			$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
-			$formatted_time = $resync_time->format( 'h:i' );
+			$resync_hours   = $resync_time->format( 'g' );
+			$resync_minutes = $resync_time->format( 'i' );
 		}
 
 		$defaults  = [
@@ -3905,26 +3907,38 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php disabled( $data['disabled'], true ); ?>
 						class="<?php echo esc_attr( $data['class'] ); ?>"
 						type="checkbox"
-						name="<?php echo esc_attr( $checkbox_field_key ); ?>"
-						id="<?php echo esc_attr( $checkbox_field_key ); ?>"
+						name="<?php echo esc_attr( $enabled_field_key ); ?>"
+						id="<?php echo esc_attr( $enabled_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
 						value="1"
 						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
 					/>
 					<input
-						class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>"
-						type="text"
-						name="<?php echo esc_attr( $text_input_field_key ); ?>"
-						id="<?php echo esc_attr( $text_input_field_key ); ?>"
+						class="input-number regular-input <?php echo esc_attr( $data['class'] ); ?>"
+						type="number"
+						min="0"
+						max="12"
+						name="<?php echo esc_attr( $hours_field_key ); ?>"
+						id="<?php echo esc_attr( $hours_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
-						value="<?php echo ! empty( $formatted_time ) ? esc_attr( $formatted_time ) : ''; ?>"
+						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
 						<?php disabled( $data['disabled'], true ); ?>
-						placeholder="<?php esc_attr_e( 'HH:MM', 'facebook-for-woocommerce' ); ?>"
+					/>:
+					<input
+						class="input-number regular-input <?php echo esc_attr( $data['class'] ); ?>"
+						type="number"
+						min="0"
+						max="59"
+						name="<?php echo esc_attr( $minutes_field_key ); ?>"
+						id="<?php echo esc_attr( $minutes_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
 					/>
 					<select
 						class="select <?php echo esc_attr( $data['class'] ); ?>"
-						name="<?php echo esc_attr( $select_field_key ); ?>"
-						id="<?php echo esc_attr( $select_field_key ); ?>"
+						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
+						id="<?php echo esc_attr( $meridiem_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
 						<?php disabled( $data['disabled'], true ); ?>
 					>
@@ -3964,23 +3978,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function validate_resync_schedule_field( $key, $value ) {
 
-		$checkbox_field_key   = $this->get_field_key( 'scheduled_resync_enabled' );
-		$text_input_field_key = $this->get_field_key( 'scheduled_resync_time' );
-		$select_field_key     = $this->get_field_key( 'scheduled_resync_meridiem' );
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
 
 		// if not enabled or time is empty, return a blank string
-		if ( empty( $_POST[ $checkbox_field_key ] ) || empty( $_POST[ $text_input_field_key ] ) ) {
+		if ( empty( $_POST[ $enabled_field_key ] ) || empty( $_POST[ $hours_field_key ] ) ) {
 			return '';
 		}
 
-		$posted_time     = sanitize_text_field( wp_unslash( $_POST[ $text_input_field_key ] ) );
-		$posted_meridiem = sanitize_text_field( wp_unslash( $_POST[ $select_field_key ] ) );
+		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
+		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
+		$posted_minutes  = str_pad( $posted_minutes, 2, '0' );
+		$posted_meridiem = sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) );
 
 		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
-		$parsed_time = strtotime( $posted_time . ' ' . $posted_meridiem );
+		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
 
 		if ( false === $parsed_time ) {
-			throw new Exception( "Invalid resync schedule time: $posted_time $posted_meridiem" );
+			throw new Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
 		}
 
 		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
