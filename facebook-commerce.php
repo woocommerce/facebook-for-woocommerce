@@ -752,7 +752,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
-		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>
+		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
+		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
 	};
 
 	</script>
@@ -2453,11 +2454,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'options' => $messenger_locales,
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
+			/** @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field() */
 			self::SETTING_MESSENGER_GREETING => [
-				'title'   => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'    => 'text',
-				'class'   => 'messenger-field',
-				'default' => __( 'Hi! We\'re here to answer any questions you may have.', 'facebook-for-woocommerce' ),
+				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
+				'type'              => 'messenger_greeting',
+				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'css'               => 'max-width: 400px; margin-bottom: 10px',
+				'custom_attributes' => [
+					'maxlength' => $this->get_messenger_greeting_max_characters(),
+				],
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
@@ -2536,6 +2542,78 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the "Messenger greeting" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_textarea_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
+
+		// TODO replace strlen() here with Framework helper method to account for multibyte characters {FN 2020-01-30}
+		$chars         = max( 0, strlen( $this->get_messenger_greeting() ) );
+		$max_chars     = max( 0, $this->get_messenger_greeting_max_characters() );
+		$field_id      = $this->get_field_key( $key );
+		$counter_class = $field_id . '-characters-count';
+
+		wc_enqueue_js( "
+			jQuery( document ).ready( function( $ ) {
+				$( 'span." . esc_js( $counter_class ) . "' ).insertAfter( 'textarea#" . esc_js( $field_id ) . "' );
+			} );
+		" );
+
+		ob_start();
+
+		?>
+		<span
+			style="display: none; font-family: monospace; font-size: 0.9em;"
+			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
+		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
+		<?php
+
+		$counter = ob_get_clean();
+
+		return $this->generate_textarea_html( $key, $args ) . $counter;
+	}
+
+
+	/**
+	 * Validates the Messenger greeting field.
+	 *
+	 * @see \WC_Settings_API::validate_textarea_field()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param string $value field submitted value
+	 * @throws \Exception on validation errors
+	 * @return string some HTML allowed
+	 */
+	protected function validate_messenger_greeting_field( $key, $value ) {
+
+		$max_chars = $this->get_messenger_greeting_max_characters();
+
+		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
+		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
+
+			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
+			throw new \Exception( sprintf(
+				// TODO maybe need to output the plugin name like: "<strong><Plugin name></strong>: ...message text...", remove this todo otherwise {FN 2020-01-30}
+				/* translators: Placeholder: %d - maximum number of allowed characters */
+				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
+				$max_chars
+			) );
+		}
+
+		return $this->validate_textarea_field( $key, $value );
 	}
 
 
