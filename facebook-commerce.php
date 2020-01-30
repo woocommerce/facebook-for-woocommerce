@@ -2429,7 +2429,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field resync-schedule-field',
+				'class' => 'product-sync-field resync-schedule-fieldset',
 				'type'  => 'resync_schedule',
 			],
 
@@ -3908,6 +3908,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
 					<input
+						class="toggle-fields-group resync-schedule-field"
 						<?php disabled( $data['disabled'], true ); ?>
 						type="checkbox"
 						name="<?php echo esc_attr( $enabled_field_key ); ?>"
@@ -3917,7 +3918,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
 					/>
 					<input
-						class="input-number regular-input"
+						class="input-number regular-input resync-schedule-field"
 						type="number"
 						min="0"
 						max="<?php echo $is_24_hours ? 24 : 12; ?>"
@@ -3929,7 +3930,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					/>
 					<strong>:</strong>
 					<input
-						class="input-number regular-input"
+						class="input-number regular-input resync-schedule-field"
 						type="number"
 						min="0"
 						max="59"
@@ -3941,6 +3942,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					/>
 					<?php if ( ! $is_24_hours ) : ?>
 					<select
+						class="resync-schedule-field"
 						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
 						id="<?php echo esc_attr( $meridiem_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"
