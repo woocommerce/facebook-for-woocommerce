@@ -55,16 +55,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
-			$this->sync_short_description = get_option( 'fb_sync_short_description', false );
+			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
 			// Variable products should use some data from the parent_product
 			// For performance reasons, that data shouldn't be regenerated every time.
 			if ( $parent_product ) {
 				$this->gallery_urls        = $parent_product->get_gallery_urls();
 				$this->fb_use_parent_image = $parent_product->get_use_parent_image();
-				$this->main_description    = WC_Facebookcommerce_Utils::clean_string(
-					$parent_product->get_description()
-				);
+				$this->main_description    = $parent_product->get_fb_description();
 			}
 		}
 
@@ -295,9 +293,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->woo_product->get_type() ) ) {
-				$description = WC_Facebookcommerce_Utils::clean_string(
-					$this->get_description()
-				);
+
+				$description = WC_Facebookcommerce_Utils::clean_string( $this->woo_product->get_description() );
+
 				if ( $description ) {
 					return $description;
 				}
