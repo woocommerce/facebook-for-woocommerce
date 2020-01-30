@@ -2429,7 +2429,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field',
+				'class' => 'product-sync-field resync-schedule-field',
 				'type'  => 'resync_schedule',
 			],
 
@@ -3905,11 +3905,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
 			</th>
 			<td class="forminp">
-				<fieldset>
+				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
 					<input
 						<?php disabled( $data['disabled'], true ); ?>
-						class="<?php echo esc_attr( $data['class'] ); ?>"
 						type="checkbox"
 						name="<?php echo esc_attr( $enabled_field_key ); ?>"
 						id="<?php echo esc_attr( $enabled_field_key ); ?>"
@@ -3918,7 +3917,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
 					/>
 					<input
-						class="input-number regular-input <?php echo esc_attr( $data['class'] ); ?>"
+						class="input-number regular-input"
 						type="number"
 						min="0"
 						max="<?php echo $is_24_hours ? 24 : 12; ?>"
@@ -3927,9 +3926,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						style="<?php echo esc_attr( $data['css'] ); ?>"
 						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
 						<?php disabled( $data['disabled'], true ); ?>
-					/>:
+					/>
+					<strong>:</strong>
 					<input
-						class="input-number regular-input <?php echo esc_attr( $data['class'] ); ?>"
+						class="input-number regular-input"
 						type="number"
 						min="0"
 						max="59"
@@ -3941,7 +3941,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					/>
 					<?php if ( ! $is_24_hours ) : ?>
 					<select
-						class="select <?php echo esc_attr( $data['class'] ); ?>"
 						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
 						id="<?php echo esc_attr( $meridiem_field_key ); ?>"
 						style="<?php echo esc_attr( $data['css'] ); ?>"

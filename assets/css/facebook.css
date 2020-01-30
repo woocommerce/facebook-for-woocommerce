@@ -277,3 +277,23 @@
 #integration-settings[style="display: none"] + p.submit {
 	display: none;
 }
+
+#integration-settings .resync-schedule-field {
+	display: inline-block;
+	vertical-align: middle !important;
+}
+
+#integration-settings .resync-schedule-field input {
+	vertical-align: middle !important;
+}
+
+#integration-settings .resync-schedule-field input[type="number"] {
+	max-width: 50px;
+	margin: 5px;
+}
+
+#integration-settings .resync-schedule-field select {
+	max-width: 75px !important;
+	vertical-align: middle !important;
+	line-height: 28px !important;
+}
