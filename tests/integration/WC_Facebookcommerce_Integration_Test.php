@@ -726,7 +726,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
@@ -741,7 +742,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '30:00',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '30',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
@@ -759,7 +761,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '20:00',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '20',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
@@ -775,7 +778,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '10:00',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
@@ -783,7 +787,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '10:00',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
 		];
 
@@ -791,7 +796,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$_POST = [
 			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_time'     => '6',
+			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '6',
+			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
 		];
 
