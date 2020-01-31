@@ -2871,7 +2871,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<span
 			style="display: none; font-family: monospace; font-size: 0.9em;"
 			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
-		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
+		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?> <span style="display:none;"><?php echo esc_html( $this->get_messenger_greeting_long_warning_text() ); ?></span></span>
 		<?php
 
 		$counter = ob_get_clean();
@@ -2898,17 +2898,28 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
-
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
-			throw new \Exception( sprintf(
-				// TODO maybe need to output the plugin name like: "<strong><Plugin name></strong>: ...message text...", remove this todo otherwise {FN 2020-01-30}
-				/* translators: Placeholder: %d - maximum number of allowed characters */
-				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-				$max_chars
-			) );
+			throw new \Exception( $this->get_messenger_greeting_long_warning_text()  );
 		}
 
 		return $this->validate_textarea_field( $key, $value );
+	}
+
+
+	/**
+	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	private function get_messenger_greeting_long_warning_text() {
+
+		return sprintf(
+			/* translators: Placeholder: %d - maximum number of allowed characters */
+			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
+			$this->get_messenger_greeting_max_characters()
+		);
 	}
 
 

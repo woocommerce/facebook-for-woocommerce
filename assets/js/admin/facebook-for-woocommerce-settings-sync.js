@@ -95,12 +95,17 @@ jQuery( document ).ready( function( $ ) {
 	$( 'textarea#woocommerce_facebookcommerce_messenger_greeting' ).on( 'focus change keyup keydown keypress', function() {
 
 		const maxChars = parseInt( window.facebookAdsToolboxConfig.messengerGreetingMaxCharacters, 10 );
-		let chars      = $( this ).val().length;
+		let chars      = $( this ).val().length,
+		    $counter   = $( 'span.characters-counter' ),
+			$warning   = $counter.find( 'span' );
 
-		$( 'span.characters-counter' )
-			.html( chars + ' / ' + maxChars )
-			.css( 'display', 'block' )
-			.css( 'color', chars > maxChars ? '#DC3232' : '#999999' );
+		$counter.html( chars + ' / ' + maxChars + '<br/>' ).append( $warning ).css( 'display', 'block' );
+
+		if ( chars > maxChars ) {
+			$counter.css( 'color', '#DC3232' ).find( 'span' ).show();
+		} else {
+			$counter.css( 'color', '#999999' ).find( 'span' ).hide();
+		}
 	} );
 
 
