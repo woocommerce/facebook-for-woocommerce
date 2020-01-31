@@ -99,6 +99,8 @@ class IntegrationSettingsCest {
 
 		$I->see( 'Use Advanced Matching', 'th.titledesc' );
 		$I->seeElement( self::FIELD_ADVANCED_MATCHING );
+
+		$I->see( 'Create ad', 'a.button' );
 	}
 
 
