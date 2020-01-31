@@ -273,11 +273,6 @@
   height: 18px;
 }
 
-/* hide Save changes button if integration settings are hidden */
-#integration-settings[style="display: none"] + p.submit {
-	display: none;
-}
-
 #sync_progress {
 	font-size: 0.9em;
 	font-weight: normal;
@@ -287,4 +282,29 @@
 #sync_progress .spinner {
 	float: none;
 	margin-top: 0;
+}
+
+/* hide Save changes button if integration settings are hidden */
+#integration-settings[style="display: none"] + p.submit {
+	display: none;
+}
+
+#integration-settings .resync-schedule-fieldset {
+	display: inline-block;
+	vertical-align: middle !important;
+}
+
+#integration-settings .resync-schedule-fieldset input {
+	vertical-align: middle !important;
+}
+
+#integration-settings .resync-schedule-fieldset input[type="number"] {
+	max-width: 50px;
+	margin: 5px;
+}
+
+#integration-settings .resync-schedule-fieldset select {
+	max-width: 75px !important;
+	vertical-align: middle !important;
+	line-height: 28px !important;
 }
