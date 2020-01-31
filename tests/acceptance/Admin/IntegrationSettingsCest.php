@@ -190,18 +190,22 @@ class IntegrationSettingsCest {
 	 */
 	public function try_product_sync_fields_saved( AcceptanceTester $I ) {
 
-		$I->amOnIntegrationSettingsPage();
-
-		$I->wantTo( 'Test that the Product sync fields are saved correctly' );
-
 		// save a product category and a product tag to exclude from facebook sync
 		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
 		list( $excluded_tag_id, $excluded_tag_taxonomy_id )           = $I->haveTermInDatabase( 'Excluded Tag', 'product_tag' );
 
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Product sync fields are saved correctly' );
+
+		// select excluded categories/tags because submitForm can't set hidden elements
+		$I->selectOption( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_category_taxonomy_id );
+		$I->selectOption( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tag_taxonomy_id );
+
 		$form = [
 			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC => true,
-//			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_category_id ],
-//			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_tag_id ],
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_category_taxonomy_id ],
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS . '[]' => [ (string) $excluded_tag_taxonomy_id ],
 			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE => WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT,
 			'woocommerce_' . self::SECTION . '_scheduled_resync_enabled' => true,
 			'woocommerce_' . self::SECTION . '_scheduled_resync_hours' => '10',
