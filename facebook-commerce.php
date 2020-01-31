@@ -3978,9 +3978,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since x.y.z
 	 *
-	 * @param  string $key field key
-	 * @param  string $value posted value
-	 * @return string
+	 * @param string $key field key
+	 * @param string $value posted value
+	 * @return int
 	 * @throws \Exception
 	 */
 	public function validate_resync_schedule_field( $key, $value ) {
