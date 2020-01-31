@@ -159,4 +159,85 @@ class IntegrationSettingsCest {
 	}
 
 
+	/**
+	 * Test that the Connection fields are saved correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_connection_fields_saved( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Connection fields are saved correctly' );
+
+		$form = [
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID => '1234',
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING => true,
+        ];
+		$I->submitForm( '#mainform', $form, 'save' );
+		$I->waitForText( 'Your settings have been saved.' );
+
+        $I->seeInFormFields( '#mainform', $form );
+	}
+
+
+	/**
+	 * Test that the Product sync fields are saved correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_product_sync_fields_saved( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Product sync fields are saved correctly' );
+
+		// save a product category and a product tag to exclude from facebook sync
+		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
+		list( $excluded_tag_id, $excluded_tag_taxonomy_id )           = $I->haveTermInDatabase( 'Excluded Tag', 'product_tag' );
+
+		$form = [
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC => true,
+//			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_category_id ],
+//			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_tag_id ],
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE => WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT,
+			'woocommerce_' . self::SECTION . '_scheduled_resync_enabled' => true,
+			'woocommerce_' . self::SECTION . '_scheduled_resync_hours' => '10',
+			'woocommerce_' . self::SECTION . '_scheduled_resync_minutes' => '30',
+			'woocommerce_' . self::SECTION . '_scheduled_resync_meridiem' => 'pm',
+		];
+		$I->submitForm( '#mainform', $form, 'save' );
+		$I->waitForText( 'Your settings have been saved.' );
+
+		$I->seeInFormFields( '#mainform', $form );
+	}
+
+
+	/**
+	 * Test that the Messenger fields are saved correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_messenger_fields_saved( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Messenger fields are saved correctly' );
+
+		$form = [
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER => true,
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE =>'ja_JP',
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING => 'Hello darkness my old friend',
+			'woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX => '#000000',
+		];
+		$I->submitForm( '#mainform', $form, 'save' );
+		$I->waitForText( 'Your settings have been saved.' );
+
+		$I->seeInFormFields( '#mainform', $form );
+	}
+
+
 }
