@@ -369,13 +369,10 @@ function sync_not_in_progress(){
 		'Get reporting on sales and revenue';
 	}
 
-	// Enable buttons.
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'auto';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style ['pointer-events'] = 'auto';
-	}
+	// enable Manage connection and Sync products buttons when sync is complete
+	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
 	// Remove sync progress.
 	if (document.querySelector( '#sync_progress' )) {
 		document.querySelector( '#sync_progress' ).innerHTML = '';
