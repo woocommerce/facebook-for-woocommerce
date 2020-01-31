@@ -156,6 +156,15 @@ class AcceptanceTester extends \Codeception\Actor {
 
 
 	/**
+	 * Go to the Integration settings screen.
+	 */
+	public function amOnIntegrationSettingsPage() {
+
+		$this->amOnAdminPage('admin.php?page=wc-settings&tab=integration&section=facebookcommerce' );
+	}
+
+
+	/**
 	 * Go to the Edit Product screen and expand the settings fields for the given product variation.
 	 *
 	 * Returns the index of the variation in the list of variations.
