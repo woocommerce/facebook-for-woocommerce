@@ -311,14 +311,17 @@ function save_settings_and_sync(message) {
 }
 
 
-// Remove reset/settings buttons during product sync
-function sync_in_progress(){
+/**
+ * Prepares UI for product sync.
+ */
+function sync_in_progress() {
 
 	// set products sync status
 	if ( document.querySelector( '#sync_progress' ) ) {
 		document.querySelector( '#sync_progress' ).innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
 	}
 }
+
 
 function sync_not_in_progress(){
 	// Reset to pre-setup state.
