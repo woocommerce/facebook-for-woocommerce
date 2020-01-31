@@ -134,4 +134,30 @@ class IntegrationSettingsCest {
 	}
 
 
+	/**
+	 * Test that the Messenger fields are present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_messenger_fields_present( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Messenger fields are present' );
+
+		$I->see( 'Enable Messenger', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER );
+
+		$I->see( 'Language', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE );
+
+		$I->see( 'Greeting', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING );
+
+		$I->see( 'Colors', 'th.titledesc' );
+		$I->seeElement( '.colorpick.messenger-field' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX );
+	}
+
+
 }
