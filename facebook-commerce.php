@@ -2672,11 +2672,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
 
 		if ( $this->is_scheduled_resync_enabled() ) {
-
-			$offset         = $this->get_scheduled_resync_offset();
-			$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
-			$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
-			$resync_minutes = $resync_time->format( 'i' );
+			try {
+				$offset         = $this->get_scheduled_resync_offset();
+				$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
+				$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
+				$resync_minutes = $resync_time->format( 'i' );
+			} catch ( \Exception $e ) {}
 		}
 
 		$defaults  = [
