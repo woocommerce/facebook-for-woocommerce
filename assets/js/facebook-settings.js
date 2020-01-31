@@ -940,3 +940,14 @@ function syncShortDescription() {
 	}
 	);
 }
+
+
+jQuery( document ).ready( function( $ ) {
+
+	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
+
+		event.preventDefault();
+
+		sync_confirm();
+	} );
+} );
