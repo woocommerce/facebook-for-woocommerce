@@ -622,6 +622,23 @@ setInterval(
 	10000
 );
 
+/**
+ * Setups an interval to check the status a product sync being executed in the background.
+ *
+ * @since x.y.z
+ */
+function check_background_processor_status() {
+
+	if ( ! window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload ) {
+
+		window.fb_pings = setInterval( function() {
+			console.log( "Pinging queue..." );
+			check_queues();
+		}, 10000 );
+	}
+}
+
+
 function ping_feed_status_queue(count = 0) {
 	window.fb_feed_pings = setInterval(
 		function() {
