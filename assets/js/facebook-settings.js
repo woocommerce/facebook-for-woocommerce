@@ -623,6 +623,9 @@ function check_background_processor_status() {
 
 	if ( ! window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload ) {
 
+		// sanity check to remove any running intervals
+		clearInterval( window.fb_pings );
+
 		window.fb_pings = setInterval( function() {
 			console.log( "Pinging queue..." );
 			check_queues();
@@ -632,6 +635,10 @@ function check_background_processor_status() {
 
 
 function ping_feed_status_queue(count = 0) {
+
+	// sanity check to remove any running intervals
+	clearInterval( window.fb_feed_pings );
+
 	window.fb_feed_pings = setInterval(
 		function() {
 			console.log( 'Pinging feed uploading queue...' );
