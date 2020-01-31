@@ -658,6 +658,10 @@ function product_sync_complete(sync_progress_element) {
 	clearInterval( window.fb_pings );
 }
 
+
+/**
+ * Checks the status a product sync being executed in the background.
+ */
 function check_queues() {
 	ajax(
 		'ajax_fb_background_check_queue',
