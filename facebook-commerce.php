@@ -81,6 +81,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
+	/** @var string the hook for the recurreing action that syncs products */
+	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
+
 
 	/** @var string|null the configured page access token */
 	private $page_access_token;
@@ -397,11 +400,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->load_background_sync_process();
 		}
 		// Must be outside of admin for cron to schedule correctly.
-		add_action(
-			'sync_all_fb_products_using_feed',
-			array( $this, 'sync_all_fb_products_using_feed' ),
-			self::FB_PRIORITY_MID
-		);
+		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
@@ -2653,6 +2652,31 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Processes and saves options.
+	 *
+	 * @see \WC_Settings_API::process_admin_options()
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function process_admin_options() {
+
+		$current_resync_offset = $this->get_scheduled_resync_offset();
+
+		parent::process_admin_options();
+
+		$saved_resync_offset = $this->get_scheduled_resync_offset();
+
+		if ( null === $saved_resync_offset || ! $this->is_product_sync_enabled()  ) {
+			$this->unschedule_resync();
+		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $saved_resync_offset );
+		}
+	}
+
+
+    /**
 	 * Generates the force resync fieldset HTML.
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
@@ -3972,33 +3996,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
 	/**
-	 * Schedule Force Resync
+	 * Schedules a recurring event to sync products.
+	 *
+	 * @deprecated x.y.z
 	 */
 	function ajax_schedule_force_resync() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'resync schedule', true );
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( isset( $_POST ) && isset( $_POST['enabled'] ) ) {
-			if ( isset( $_POST['time'] ) && ! empty( $_POST['enabled'] ) ) { // Enabled
-				$time = sanitize_text_field( wp_unslash( $_POST['time'] ) );
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				wp_schedule_event(
-					strtotime( $time ),
-					'daily',
-					'sync_all_fb_products_using_feed'
-				);
-				WC_Facebookcommerce_Utils::fblog( 'Scheduled autosync for ' . $time );
-				update_option( 'woocommerce_fb_autosync_time', $time );
-			} elseif ( empty( $_POST['enabled'] ) ) { // Disabled
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				WC_Facebookcommerce_Utils::fblog( 'Autosync disabled' );
-				delete_option( 'woocommerce_fb_autosync_time' );
-			}
-		} else {
-			WC_Facebookcommerce_Utils::fblog( 'Autosync AJAX Problem', $_POST, true );
-		}
-		wp_die();
+
+		wc_deprecated_function( __METHOD__, 'x.y.z' );
+		die;
 	}
+
 
 	function ajax_update_fb_option() {
 
@@ -4016,6 +4025,89 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		wp_die();
+	}
+
+
+	/**
+	 * Adds an recurring action to sync products.
+	 *
+	 * The action is scheduled using a cron schedule instead of a recurring interval (see https://en.wikipedia.org/wiki/Cron#Overview).
+	 * A cron schedule should allow for the action to run roughly at the same time every day regardless of the duration of the task.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $offset number of seconds since the beginning of the daay
+	 */
+	private function schedule_resync( $offset ) {
+
+		try {
+
+			$current_time         = new DateTime( 'now', new DateTimeZone( wc_timezone_string() ) );
+			$first_scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+			$next_scheduled_time  = new DateTime( "today +1 day {$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+
+		} catch ( \Exception $e ) {
+			// TODO: log an error indicating that it was not possible to schedule a recurring action to sync products {WV 2020-01-28}
+			return;
+		}
+
+		// unschedule previously scheduled resync actions
+		$this->unschedule_resync();
+
+		$timestamp = $first_scheduled_time >= $current_time ? $first_scheduled_time->getTimestamp() : $next_scheduled_time->getTimestamp();
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		as_schedule_single_action( $timestamp, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Removes the recurring action that syncs products.
+	 *
+	 * @since x.y.z
+	 */
+	private function unschedule_resync() {
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		as_unschedule_all_actions( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Determines whether a recurring action to sync products is scheduled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	private function is_resync_scheduled() {
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Handles the scheduled action used to sync products daily.
+	 *
+	 * It will schedule a new action if product sync is enabled and the plugin is configured to resnyc procucts daily.
+	 *
+	 * @internal
+	 *
+	 * @see \WC_Facebookcommerce_Integration::schedule_resync()
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_scheduled_resync_action() {
+
+		$this->sync_all_fb_products_using_feed();
+
+		$resync_offset = $this->get_scheduled_resync_offset();
+
+		// manually schedule the next product resync action if possible
+		if ( null !== $resync_offset && $this->is_product_sync_enabled() && ! $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $resync_offset );
+		}
 	}
 
 
