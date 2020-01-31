@@ -2427,6 +2427,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				],
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_resync_schedule_html() */
+			/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
 				'class' => 'product-sync-field resync-schedule-fieldset',
@@ -2653,6 +2655,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Generates the force resync fieldset HTML.
 	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
 	 * @since x.y.z
 	 *
 	 * @param string $key field key
@@ -2773,7 +2777,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param string $key field key
 	 * @param string $value posted value
-	 * @return int
+	 * @return int|string timestamp or empty string
 	 * @throws \Exception
 	 */
 	public function validate_resync_schedule_field( $key, $value ) {
