@@ -3,6 +3,16 @@
 class IntegrationSettingsCest {
 
 
+	/** @var string selector for the Pixel field */
+	const SECTION = 'facebookcommerce';
+
+	/** @var string selector for the Pixel field */
+	const FIELD_PIXEL = '#woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID;
+
+	/** @var string selector for the Use Advanced Matching field */
+	const FIELD_ADVANCED_MATCHING = '#woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING;
+
+
 	/**
 	 * Runs before each test.
 	 *
@@ -65,6 +75,30 @@ class IntegrationSettingsCest {
 		$I->wantTo( 'Test that the Messenger sync section is present' );
 
 		$I->see( 'Messenger', 'h3.wc-settings-sub-title' );
+	}
+
+
+	/**
+	 * Test that the Connection fields are present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_connection_fields_present( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Connection fields are present' );
+
+		$I->see( 'Manage connection', 'a.button' );
+
+		$I->see( 'Facebook page', 'th.titledesc' );
+		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
+
+		$I->see( 'Pixel', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PIXEL );
+
+		$I->see( 'Use Advanced Matching', 'th.titledesc' );
+		$I->seeElement( self::FIELD_ADVANCED_MATCHING );
 	}
 
 
