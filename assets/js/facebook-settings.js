@@ -610,17 +610,6 @@ function parseURL(url) {
 	return parser;
 }
 
-// Only do pings for supporting older (pre 1.8) setups.
-window.fb_pings =
-(window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload) ?
-null :
-setInterval(
-	function(){
-		console.log( "Pinging queue..." );
-		check_queues();
-	},
-	10000
-);
 
 /**
  * Setups an interval to check the status a product sync being executed in the background.
@@ -938,6 +927,9 @@ function syncShortDescription() {
 
 
 jQuery( document ).ready( function( $ ) {
+
+	// check background processor status in case products are being synced in the background when the page loads
+	check_background_processor_status();
 
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 
