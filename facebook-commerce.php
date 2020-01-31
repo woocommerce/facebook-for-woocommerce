@@ -3941,24 +3941,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php disabled( $data['disabled'], true ); ?>
 					/>
 					<?php if ( ! $is_24_hours ) : ?>
-					<select
-						class="resync-schedule-field"
-						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
-						id="<?php echo esc_attr( $meridiem_field_key ); ?>"
-						style="<?php echo esc_attr( $data['css'] ); ?>"
-						<?php disabled( $data['disabled'], true ); ?>
-					>
-						<option
-							<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
-							value="am">
-							<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
-						</option>
-						<option
-							<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
-							value="pm">
-							<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
-						</option>
-					</select>
+
+						<select
+							class="resync-schedule-field"
+							name="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							id="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							style="<?php echo esc_attr( $data['css'] ); ?>"
+							<?php disabled( $data['disabled'], true ); ?>>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
+								value="am">
+								<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
+							</option>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+								value="pm">
+								<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
+							</option>
+						</select>
+
 					<?php endif; ?>
 					<br/>
 				</fieldset>
