@@ -2026,11 +2026,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
 		if ( ! $this->is_product_sync_enabled() ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			wp_die();
-			return;
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
@@ -2216,9 +2213,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function sync_all_fb_products_using_feed() {
 
 		if ( ! $this->is_product_sync_enabled() ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			$this->fb_wp_die();
 			return false;
 		}
