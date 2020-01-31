@@ -2346,9 +2346,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$form_fields = [
 
+			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
 			[
-				'title' => __( 'Connection', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
+				'type'  => 'manage_connection_title',
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_facebook_page_name_html() */
@@ -2375,15 +2375,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'type'  => 'create_ad',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_html() */
 			[
-				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-				'class' => 'product-sync-heading',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_button_html() */
-			[
-				'type' => 'product_sync_title_button',
+				'type'  => 'product_sync_title',
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
@@ -2432,10 +2426,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				],
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_resync_schedule_html() */
+			/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field',
-				'type'  => 'text',
+				'class' => 'product-sync-field resync-schedule-fieldset',
+				'type'  => 'resync_schedule',
 			],
 
 			[
@@ -2487,6 +2483,42 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the "Manage connection" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_title_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_manage_connection_title_html( $key, array $args = [] ) {
+
+		$key = $this->get_field_key( $key );
+
+		ob_start();
+
+		?>
+		</table>
+		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
+			<?php esc_html_e( 'Connection', 'facebook-for-woocommerce' ); ?>
+			<a
+				id="woocommerce-facebook-settings-manage-connection"
+				class="button"
+				href="#"
+				style="vertical-align: middle; margin-left: 20px;"
+				onclick="facebookConfig();"
+			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
+		</h3>
+		<table class="form-table">
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
 	 * Gets the "Facebook page" field HTML.
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
@@ -2499,15 +2531,44 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
 
-		$key = $this->get_field_key( $key );
+		$key       = $this->get_field_key( $key );
+		$page_name = $this->get_page_name();
+		$page_url  = $this->get_page_url();
 
 		ob_start();
 
 		?>
 		<tr valign="top">
-			<th scope="row" class="titledesc"><?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?></th>
+			<th scope="row" class="titledesc">
+				<?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?>
+			</th>
 			<td class="forminp">
-				<?php echo esc_html( $this->get_page_name() ); ?>
+				<?php if ( $page_name ) : ?>
+
+					<?php if ( $page_url ) : ?>
+
+						<a
+							href="<?php echo esc_url( $page_url ); ?>"
+							target="_blank"
+							style="text-decoration: none;">
+							<?php echo esc_html( $page_name ); ?>
+							<span
+								class="dashicons dashicons-external"
+								style="margin-right: 8px; vertical-align: bottom;"
+							></span>
+						</a>
+
+					<?php else : ?>
+
+						<?php echo esc_html( $page_name ); ?>
+
+					<?php endif; ?>
+
+				<?php else : ?>
+
+					&mdash;
+
+				<?php endif; ?>
 				<input
 					type="hidden"
 					name="<?php echo esc_attr( $key ); ?>"
@@ -2541,14 +2602,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		?>
 		<tr valign="top">
-			<th scope="row" class="titledesc"></th>
-			<td class="forminp">
+			<th class="forminp" colspan="2">
 				<a
 					class="button button-primary"
 					target="_blank"
 					href="<?php echo esc_url( $create_ad_url ); ?>"
 				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
-			</td>
+			</th>
 		</tr>
 		<?php
 
@@ -2559,7 +2619,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the "Sync products" field HTML.
 	 *
-	 * @see \WC_Settings_API::generate_settings_html()
+	 * @see \WC_Settings_API::generate_title_html()
 	 *
 	 * @since x.y.z
 	 *
@@ -2567,21 +2627,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param array $args associative array of field arguments
 	 * @return string HTML
 	 */
-	protected function generate_product_sync_title_button_html( $key, array $args = [] ) {
+	protected function generate_product_sync_title_html( $key, array $args = [] ) {
 
-		wc_enqueue_js( "
-			jQuery( document ).ready( function( $ ) {
-				$( '#woocommerce-facebook-settings-sync-products' ).appendTo( 'h3.product-sync-heading' );
-			} );
-		" );
+		$key = $this->get_field_key( $key );
 
-		ob_start(); ?>
-		<a
-			id="woocommerce-facebook-settings-sync-products"
-			class="button"
-			href="#"
-			style="vertical-align: middle; margin-left: 20px;"
-		><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a><?php
+		ob_start();
+
+		?>
+		</table>
+		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
+			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
+			<a
+				id="woocommerce-facebook-settings-sync-products"
+				class="button"
+				href="#"
+				style="vertical-align: middle; margin-left: 20px;"
+			><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+		</h3>
+		<table class="form-table">
+		<?php
 
 		return ob_get_clean();
 	}
@@ -2593,7 +2657,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @see \WC_Settings_API::process_admin_options()
 	 *
 	 * @internal
-	 *
 	 *
 	 * @since x.y.z
 	 */
@@ -2614,6 +2677,164 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
     /**
+	 * Generates the force resync fieldset HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $key field key
+	 * @param array $data field data
+	 * @return string HTML
+	 */
+	protected function generate_resync_schedule_html( $key, array $data ) {
+
+		$fieldset_key       = $this->get_field_key( $key );
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// check if the sites uses 12-hours or 24-hours time format
+		$time_format = wc_time_format();
+		// TODO replace these string search functions with Framework string helpers {FN 2020-01-31}
+		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
+
+		if ( $this->is_scheduled_resync_enabled() ) {
+			try {
+				$offset         = $this->get_scheduled_resync_offset();
+				$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
+				$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
+				$resync_minutes = $resync_time->format( 'i' );
+			} catch ( \Exception $e ) {}
+		}
+
+		$defaults  = [
+			'title'    => '',
+			'disabled' => false,
+			'class'    => '',
+			'css'      => '',
+			'desc_tip' => false,
+		];
+
+		$data = wp_parse_args( $data, $defaults );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
+			</th>
+			<td class="forminp">
+				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<input
+						class="toggle-fields-group resync-schedule-field"
+						<?php disabled( $data['disabled'], true ); ?>
+						type="checkbox"
+						name="<?php echo esc_attr( $enabled_field_key ); ?>"
+						id="<?php echo esc_attr( $enabled_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="1"
+						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
+					/>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="<?php echo $is_24_hours ? 24 : 12; ?>"
+						name="<?php echo esc_attr( $hours_field_key ); ?>"
+						id="<?php echo esc_attr( $hours_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<strong>:</strong>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="59"
+						name="<?php echo esc_attr( $minutes_field_key ); ?>"
+						id="<?php echo esc_attr( $minutes_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<?php if ( ! $is_24_hours ) : ?>
+
+						<select
+							class="resync-schedule-field"
+							name="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							id="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							style="<?php echo esc_attr( $data['css'] ); ?>"
+							<?php disabled( $data['disabled'], true ); ?>>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
+								value="am">
+								<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
+							</option>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+								value="pm">
+								<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
+							</option>
+						</select>
+
+					<?php endif; ?>
+					<br/>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Validates force resync field.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $key field key
+	 * @param string $value posted value
+	 * @return int|string timestamp or empty string
+	 * @throws \Exception
+	 */
+	public function validate_resync_schedule_field( $key, $value ) {
+
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// if not enabled or time is empty, return a blank string
+		if ( empty( $_POST[ $enabled_field_key ] ) || empty( $_POST[ $hours_field_key ] ) ) {
+			return '';
+		}
+
+		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
+		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
+		$posted_minutes  = str_pad( $posted_minutes, 2, '0', STR_PAD_LEFT );
+		$posted_meridiem = ! empty( $_POST[ $meridiem_field_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) ) : '';
+
+		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
+		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
+
+		if ( false === $parsed_time ) {
+			throw new \Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
+		}
+
+		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
+
+		return $parsed_time - $midnight->getTimestamp();
+	}
+
+
+	/**
 	 * Gets the "Messenger greeting" field HTML.
 	 *
 	 * @see \WC_Settings_API::generate_textarea_html()
@@ -3404,13 +3625,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		$page_name = '';
-
-		if ( ! empty( $this->get_facebook_page_id() ) && ! empty( $this->get_page_access_token() ) ) {
+		if ( $this->is_configured() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		} else {
+			$page_name = '';
 		}
 
-		return $page_name;
+		return is_string( $page_name ) ? $page_name : '';
+	}
+
+
+	/**
+	 * Gets the Facebook page URL.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_page_url() {
+
+		if ( $this->is_configured() ) {
+			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		} else {
+			$page_url = '';
+		}
+
+		return is_string( $page_url ) ? $page_url : '';
 	}
 
 

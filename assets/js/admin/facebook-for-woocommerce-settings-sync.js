@@ -85,6 +85,8 @@ jQuery( document ).ready( function( $ ) {
 			toggleSettingOptions( $( '.product-sync-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 		} else if ( $( this ).hasClass( 'messenger-field' ) ) {
 			toggleSettingOptions( $( '.messenger-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
+		} else if ( $( this ).hasClass( 'resync-schedule-field' ) ) {
+			toggleSettingOptions( $( '.resync-schedule-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 		}
 	} ).trigger( 'change' );
 
