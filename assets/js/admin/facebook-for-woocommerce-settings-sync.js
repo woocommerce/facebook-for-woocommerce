@@ -57,23 +57,23 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Toggles availability of input in setting groups.
 	 *
-	 * @param {Object[]} $inputs group of jQuery input fields to toggle
+	 * @param {Object[]} $elements group of jQuery elements (fields or buttons) to toggle
 	 * @param {boolean} enable whether fields in this group should be enabled or not
 	 */
-	function toggleSettingOptions( $inputs, enable ) {
+	function toggleSettingOptions( $elements, enable ) {
 
-		$( $inputs ).each( function() {
+		$( $elements ).each( function() {
 
-			let $input = $( this );
+			let $element = $( this );
 
 			if ( $( this ).hasClass( 'wc-enhanced-select' ) ) {
-				$input = $( this ).next( 'span.select2-container' );
+				$element = $( this ).next( 'span.select2-container' );
 			}
 
 			if ( enable ) {
-				$input.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+				$element.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
 			} else {
-				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+				$element.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
 			}
 		} );
 	}
