@@ -3,14 +3,11 @@
 class IntegrationSettingsCest {
 
 
-	/** @var string selector for the Pixel field */
+	/** @var string setting section */
 	const SECTION = 'facebookcommerce';
 
-	/** @var string selector for the Pixel field */
-	const FIELD_PIXEL = '#woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID;
-
-	/** @var string selector for the Use Advanced Matching field */
-	const FIELD_ADVANCED_MATCHING = '#woocommerce_' . self::SECTION . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING;
+	/** @var string prefix for the field selectors */
+	const FIELD_PREFIX = '#woocommerce_' . self::SECTION . '_';
 
 
 	/**
@@ -95,12 +92,45 @@ class IntegrationSettingsCest {
 		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PIXEL );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
 
 		$I->see( 'Use Advanced Matching', 'th.titledesc' );
-		$I->seeElement( self::FIELD_ADVANCED_MATCHING );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
 
 		$I->see( 'Create ad', 'a.button' );
+	}
+
+
+	/**
+	 * Test that the Product sync fields are present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_product_sync_fields_present( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Product sync fields are present' );
+
+		$I->see( 'Sync products', 'a.button' );
+
+		$I->see( 'Enable product sync', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
+
+		$I->see( 'Exclude categories from sync', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS );
+
+		$I->see( 'Exclude tags from sync', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS );
+
+		$I->see( 'Product description sync', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
+
+		$I->see( 'Force daily resync at', 'th.titledesc' );
+		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_enabled' );
+		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_hours' );
+		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_minutes' );
+		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
 	}
 
 
