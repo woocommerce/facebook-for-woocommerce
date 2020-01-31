@@ -157,7 +157,7 @@ function sync_confirm(verbose = null) {
 		break;
 		default:
 			msg = 'Facebook for WooCommerce automatically syncs your products on ' +
-			'create/update. Are you sure you want to force product resync? ' +
+			'create/update. Are you sure you want to force product resync?\n\n' +
 			'This will query all published products and may take some time. ' +
 			'You only need to do this if your products are out of sync ' +
 			'or some of your products did not sync.';
@@ -196,6 +196,9 @@ function sync_all_products($using_feed = false, $is_test = false) {
 			},
 		);
 	} else {
+
+		check_background_processor_status();
+
 		return ajax(
 			'ajax_sync_all_fb_products',
 			{
@@ -311,35 +314,21 @@ function save_settings_and_sync(message) {
 }
 
 
-// Remove reset/settings buttons during product sync
-function sync_in_progress(){
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = '';
-	}
-	if (document.querySelector( '#connection_status' )) {
-		document.querySelector( '#connection_status' ).style.display = '';
-	}
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = 'none';
-	}
-	// Get rid of all the buttons
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#test_product_sync' )) {
-		document.querySelector( '#test_product_sync' ).style.display = 'none';
-	}
-	// Set a product sync status
-	if (document.querySelector( '#sync_progress' )) {
-		document.querySelector( '#sync_progress' ).innerHTML =
-		'Syncing... Keep this browser open <br/>' +
-		'Until sync is complete<br/>' +
-		'<div class="loader"></div>';
+/**
+ * Prepares UI for product sync.
+ */
+function sync_in_progress() {
+
+	// temporarily disable Manage connection and Sync products buttons
+	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'none' );
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
+
+	// set products sync status
+	if ( document.querySelector( '#sync_progress' ) ) {
+		document.querySelector( '#sync_progress' ).innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
 	}
 }
+
 
 function sync_not_in_progress(){
 	// Reset to pre-setup state.
@@ -382,16 +371,11 @@ function sync_not_in_progress(){
 		document.querySelector( '#setup_l3' ).innerHTML =
 		'Get reporting on sales and revenue';
 	}
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = '';
-	}
-	// Enable buttons.
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'auto';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style ['pointer-events'] = 'auto';
-	}
+
+	// enable Manage connection and Sync products buttons when sync is complete
+	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
 	// Remove sync progress.
 	if (document.querySelector( '#sync_progress' )) {
 		document.querySelector( '#sync_progress' ).innerHTML = '';
@@ -629,19 +613,32 @@ function parseURL(url) {
 	return parser;
 }
 
-// Only do pings for supporting older (pre 1.8) setups.
-window.fb_pings =
-(window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload) ?
-null :
-setInterval(
-	function(){
-		console.log( "Pinging queue..." );
-		check_queues();
-	},
-	10000
-);
+
+/**
+ * Setups an interval to check the status a product sync being executed in the background.
+ *
+ * @since x.y.z
+ */
+function check_background_processor_status() {
+
+	if ( ! window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload ) {
+
+		// sanity check to remove any running intervals
+		clearInterval( window.fb_pings );
+
+		window.fb_pings = setInterval( function() {
+			console.log( "Pinging queue..." );
+			check_queues();
+		}, 10000 );
+	}
+}
+
 
 function ping_feed_status_queue(count = 0) {
+
+	// sanity check to remove any running intervals
+	clearInterval( window.fb_feed_pings );
+
 	window.fb_feed_pings = setInterval(
 		function() {
 			console.log( 'Pinging feed uploading queue...' );
@@ -652,16 +649,19 @@ function ping_feed_status_queue(count = 0) {
 }
 
 function product_sync_complete(sync_progress_element) {
+
 	sync_not_in_progress();
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = '';
-	}
+
 	if (sync_progress_element) {
 		sync_progress_element.innerHTML = '';
 	}
 	clearInterval( window.fb_pings );
 }
 
+
+/**
+ * Checks the status a product sync being executed in the background.
+ */
 function check_queues() {
 	ajax(
 		'ajax_fb_background_check_queue',
@@ -694,9 +694,7 @@ function check_queues() {
 				var remaining  = res.remaining;
 				if ( processing ) {
 					if ( sync_progress_element ) {
-						sync_progress_element.innerHTML =
-						'<strong>Progress:</strong> ' + remaining + ' item' +
-						( remaining > 1 ? 's' : '' ) + ' remaining.';
+						sync_progress_element.innerHTML = '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>';
 					}
 					if ( remaining === 0 ) {
 						product_sync_complete( sync_progress_element );
@@ -744,7 +742,9 @@ function check_feed_upload_queue(check_num) {
 		function(response) {
 			var sync_progress_element = document.querySelector( '#sync_progress' );
 			var res                   = parse_response_check_connection( response );
+
 			clearInterval( window.fb_feed_pings );
+
 			if (res) {
 				var status = res.status;
 				switch (status) {
@@ -758,9 +758,7 @@ function check_feed_upload_queue(check_num) {
 				  break;
 					case 'in progress':
 						if (sync_progress_element) {
-							sync_progress_element.innerHTML =
-							'Syncing... Keep this browser open <br/>' +
-							'Until sync is complete<br/>';
+							sync_progress_element.innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
 						}
 						ping_feed_status_queue( check_num + 1 );
 					  break;
@@ -922,3 +920,17 @@ function syncShortDescription() {
 	}
 	);
 }
+
+
+jQuery( document ).ready( function( $ ) {
+
+	// check background processor status in case products are being synced in the background when the page loads
+	check_background_processor_status();
+
+	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
+
+		event.preventDefault();
+
+		sync_confirm();
+	} );
+} );
