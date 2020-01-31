@@ -157,7 +157,7 @@ function sync_confirm(verbose = null) {
 		break;
 		default:
 			msg = 'Facebook for WooCommerce automatically syncs your products on ' +
-			'create/update. Are you sure you want to force product resync? ' +
+			'create/update. Are you sure you want to force product resync?\n\n' +
 			'This will query all published products and may take some time. ' +
 			'You only need to do this if your products are out of sync ' +
 			'or some of your products did not sync.';
