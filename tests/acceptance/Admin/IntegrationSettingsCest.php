@@ -92,10 +92,10 @@ class IntegrationSettingsCest {
 		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
+		$I->seeElement( 'input[type=text]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
 
 		$I->see( 'Use Advanced Matching', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
+		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
 
 		$I->see( 'Create ad', 'a.button' );
 	}
@@ -115,22 +115,22 @@ class IntegrationSettingsCest {
 		$I->see( 'Sync products', 'a.button' );
 
 		$I->see( 'Enable product sync', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
+		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
 
 		$I->see( 'Exclude categories from sync', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS );
+		$I->seeElement( 'select.wc-enhanced-select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS );
 
 		$I->see( 'Exclude tags from sync', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS );
+		$I->seeElement( 'select.wc-enhanced-select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS );
 
 		$I->see( 'Product description sync', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
+		$I->seeElement( 'select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
 
 		$I->see( 'Force daily resync at', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_enabled' );
-		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_hours' );
-		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_minutes' );
-		$I->seeElement( self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
+		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . 'scheduled_resync_enabled' );
+		$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_hours' );
+		$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_minutes' );
+		$I->seeElement( 'select' . self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
 	}
 
 
@@ -146,17 +146,16 @@ class IntegrationSettingsCest {
 		$I->wantTo( 'Test that the Messenger fields are present' );
 
 		$I->see( 'Enable Messenger', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER );
+		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER );
 
 		$I->see( 'Language', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE );
+		$I->seeElement( 'select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE );
 
 		$I->see( 'Greeting', 'th.titledesc' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING );
+		$I->seeElement( 'textarea' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING );
 
 		$I->see( 'Colors', 'th.titledesc' );
-		$I->seeElement( '.colorpick.messenger-field' );
-		$I->seeElement( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX );
+		$I->seeElement( 'input[type=text].colorpick.messenger-field' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX );
 	}
 
 
