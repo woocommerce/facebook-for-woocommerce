@@ -316,6 +316,10 @@ function save_settings_and_sync(message) {
  */
 function sync_in_progress() {
 
+	// temporarily disable Manage connection and Sync products buttons
+	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'none' );
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
+
 	// set products sync status
 	if ( document.querySelector( '#sync_progress' ) ) {
 		document.querySelector( '#sync_progress' ).innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
