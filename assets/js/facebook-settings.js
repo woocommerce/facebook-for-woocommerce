@@ -196,6 +196,9 @@ function sync_all_products($using_feed = false, $is_test = false) {
 			},
 		);
 	} else {
+
+		check_background_processor_status();
+
 		return ajax(
 			'ajax_sync_all_fb_products',
 			{
