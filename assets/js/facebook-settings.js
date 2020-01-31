@@ -313,25 +313,6 @@ function save_settings_and_sync(message) {
 
 // Remove reset/settings buttons during product sync
 function sync_in_progress(){
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = '';
-	}
-	if (document.querySelector( '#connection_status' )) {
-		document.querySelector( '#connection_status' ).style.display = '';
-	}
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = 'none';
-	}
-	// Get rid of all the buttons
-	if (document.querySelector( '#setting_button' )) {
-		document.querySelector( '#setting_button' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#resync_products' )) {
-		document.querySelector( '#resync_products' ).style['pointer-events'] = 'none';
-	}
-	if (document.querySelector( '#test_product_sync' )) {
-		document.querySelector( '#test_product_sync' ).style.display = 'none';
-	}
 
 	// set products sync status
 	if ( document.querySelector( '#sync_progress' ) ) {
@@ -380,9 +361,7 @@ function sync_not_in_progress(){
 		document.querySelector( '#setup_l3' ).innerHTML =
 		'Get reporting on sales and revenue';
 	}
-	if (document.querySelector( '#settings' )) {
-		document.querySelector( '#settings' ).style.display = '';
-	}
+
 	// Enable buttons.
 	if (document.querySelector( '#setting_button' )) {
 		document.querySelector( '#setting_button' ).style['pointer-events'] = 'auto';
@@ -650,10 +629,9 @@ function ping_feed_status_queue(count = 0) {
 }
 
 function product_sync_complete(sync_progress_element) {
+
 	sync_not_in_progress();
-	if (document.querySelector( '#sync_complete' )) {
-		document.querySelector( '#sync_complete' ).style.display = '';
-	}
+
 	if (sync_progress_element) {
 		sync_progress_element.innerHTML = '';
 	}
