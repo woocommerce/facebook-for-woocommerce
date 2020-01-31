@@ -1009,7 +1009,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_variable_product_publish( $wp_id, $woo_product = null ) {
 
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
+		if ( ! $this->is_product_sync_enabled() ) {
 			return;
 		}
 
@@ -1071,7 +1071,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_simple_product_publish( $wp_id, $woo_product = null, &$parent_product = null ) {
 
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
+		if ( ! $this->is_product_sync_enabled() ) {
 			return;
 		}
 
@@ -2023,12 +2023,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function ajax_sync_all_fb_products() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'syncall products', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+
+		if ( ! $this->is_product_sync_enabled() ) {
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			wp_die();
-			return;
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
@@ -2203,12 +2201,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $this->sync_all_fb_products_using_feed();
 	}
 
-	// Separate entry point that bypasses permission check for use in cron.
-	function sync_all_fb_products_using_feed() {
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+
+	/**
+	 * Syncs Facebook products using a Feed.
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
+	 *
+	 * @return bool
+	 */
+	public function sync_all_fb_products_using_feed() {
+
+		if ( ! $this->is_product_sync_enabled() ) {
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			$this->fb_wp_die();
 			return false;
 		}
@@ -2290,6 +2294,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 		return false;
 	}
+
 
 	/**
 	 * Toggles product visibility via AJAX.

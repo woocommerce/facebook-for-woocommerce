@@ -905,24 +905,6 @@ function saveAutoSyncSchedule() {
  );
 }
 
-function onSetDisableSyncOnDevEnvironment() {
-	var isChecked = document.getElementsByClassName( 'disableOnDevEnvironment' )[0].checked;
-	ajax(
-		'ajax_update_fb_option',
-		{
-			"option": "fb_disable_sync_on_dev_environment",
-			"option_value": isChecked ? 1 : 0,
-			"_ajax_nonce": wc_facebook_settings_jsx.nonce,
-		},
-		null,
-        function onSetDisableSyncOnDevEnvironmentFailCallback(error) {
-		document.getElementsByClassName(
-            'onSetDisableSyncOnDevEnvironment'
-		)[0].checked = ! isChecked;
-		console.log( 'Failed to disable sync on dev environment' );
-	}
-	);
-}
 
 function syncShortDescription() {
 	var isChecked = document.getElementsByClassName( 'syncShortDescription' )[0].checked;
