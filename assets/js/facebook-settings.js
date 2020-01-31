@@ -674,9 +674,7 @@ function check_queues() {
 				var remaining  = res.remaining;
 				if ( processing ) {
 					if ( sync_progress_element ) {
-						sync_progress_element.innerHTML =
-						'<strong>Progress:</strong> ' + remaining + ' item' +
-						( remaining > 1 ? 's' : '' ) + ' remaining.';
+						sync_progress_element.innerHTML = '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>';
 					}
 					if ( remaining === 0 ) {
 						product_sync_complete( sync_progress_element );
@@ -724,7 +722,9 @@ function check_feed_upload_queue(check_num) {
 		function(response) {
 			var sync_progress_element = document.querySelector( '#sync_progress' );
 			var res                   = parse_response_check_connection( response );
+
 			clearInterval( window.fb_feed_pings );
+
 			if (res) {
 				var status = res.status;
 				switch (status) {
@@ -738,7 +738,7 @@ function check_feed_upload_queue(check_num) {
 				  break;
 					case 'in progress':
 						if (sync_progress_element) {
-							sync_progress_element.innerHTML = 'Syncing... Keep this browser open until sync is complete.';
+							sync_progress_element.innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
 						}
 						ping_feed_status_queue( check_num + 1 );
 					  break;
