@@ -747,7 +747,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
-		$this->expectException( Exception::class );
+		$this->expectException( \Exception::class );
 		$this->expectExceptionMessage( 'Invalid resync schedule time: 30:00 am' );
 
 		$this->integration->validate_resync_schedule_field( '', '' );
@@ -766,7 +766,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
 		];
 
-		$this->expectException( Exception::class );
+		$this->expectException( \Exception::class );
 		$this->expectExceptionMessage( 'Invalid resync schedule time: 20:00 am' );
 
 		$this->integration->validate_resync_schedule_field( '', '' );

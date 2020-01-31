@@ -3980,7 +3980,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param  string $key field key
 	 * @param  string $value posted value
 	 * @return string
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function validate_resync_schedule_field( $key, $value ) {
 
@@ -4003,7 +4003,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
 
 		if ( false === $parsed_time ) {
-			throw new Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
+			throw new \Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
 		}
 
 		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
