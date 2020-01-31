@@ -81,6 +81,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
+	/** @var string the hook for the recurreing action that syncs products */
+	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
+
 
 	/** @var string|null the configured page access token */
 	private $page_access_token;
@@ -397,11 +400,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->load_background_sync_process();
 		}
 		// Must be outside of admin for cron to schedule correctly.
-		add_action(
-			'sync_all_fb_products_using_feed',
-			array( $this, 'sync_all_fb_products_using_feed' ),
-			self::FB_PRIORITY_MID
-		);
+		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
@@ -1010,7 +1009,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_variable_product_publish( $wp_id, $woo_product = null ) {
 
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
+		if ( ! $this->is_product_sync_enabled() ) {
 			return;
 		}
 
@@ -1072,7 +1071,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_simple_product_publish( $wp_id, $woo_product = null, &$parent_product = null ) {
 
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
+		if ( ! $this->is_product_sync_enabled() ) {
 			return;
 		}
 
@@ -2024,12 +2023,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function ajax_sync_all_fb_products() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'syncall products', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+
+		if ( ! $this->is_product_sync_enabled() ) {
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			wp_die();
-			return;
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
@@ -2204,12 +2201,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $this->sync_all_fb_products_using_feed();
 	}
 
-	// Separate entry point that bypasses permission check for use in cron.
-	function sync_all_fb_products_using_feed() {
-		if ( get_option( 'fb_disable_sync_on_dev_environment', false ) ) {
-			WC_Facebookcommerce_Utils::log(
-				'Sync to FB Page is not allowed in Dev Environment'
-			);
+
+	/**
+	 * Syncs Facebook products using a Feed.
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
+	 *
+	 * @return bool
+	 */
+	public function sync_all_fb_products_using_feed() {
+
+		if ( ! $this->is_product_sync_enabled() ) {
+			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 			$this->fb_wp_die();
 			return false;
 		}
@@ -2291,6 +2294,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 		return false;
 	}
+
 
 	/**
 	 * Toggles product visibility via AJAX.
@@ -2427,10 +2431,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				],
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_resync_schedule_html() */
+			/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field',
-				'type'  => 'text',
+				'class' => 'product-sync-field resync-schedule-fieldset',
+				'type'  => 'resync_schedule',
 			],
 
 			[
@@ -2638,15 +2644,199 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
 			<a
 				id="woocommerce-facebook-settings-sync-products"
-				class="button"
+				class="button product-sync-field"
 				href="#"
 				style="vertical-align: middle; margin-left: 20px;"
 			><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+			<span id="sync_progress" style="margin-left: 10px"></span>
 		</h3>
 		<table class="form-table">
 		<?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Processes and saves options.
+	 *
+	 * @see \WC_Settings_API::process_admin_options()
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function process_admin_options() {
+
+		$current_resync_offset = $this->get_scheduled_resync_offset();
+
+		parent::process_admin_options();
+
+		$saved_resync_offset = $this->get_scheduled_resync_offset();
+
+		if ( null === $saved_resync_offset || ! $this->is_product_sync_enabled()  ) {
+			$this->unschedule_resync();
+		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $saved_resync_offset );
+		}
+	}
+
+
+    /**
+	 * Generates the force resync fieldset HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $key field key
+	 * @param array $data field data
+	 * @return string HTML
+	 */
+	protected function generate_resync_schedule_html( $key, array $data ) {
+
+		$fieldset_key       = $this->get_field_key( $key );
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// check if the sites uses 12-hours or 24-hours time format
+		$time_format = wc_time_format();
+		// TODO replace these string search functions with Framework string helpers {FN 2020-01-31}
+		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
+
+		if ( $this->is_scheduled_resync_enabled() ) {
+			try {
+				$offset         = $this->get_scheduled_resync_offset();
+				$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
+				$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
+				$resync_minutes = $resync_time->format( 'i' );
+			} catch ( \Exception $e ) {}
+		}
+
+		$defaults  = [
+			'title'    => '',
+			'disabled' => false,
+			'class'    => '',
+			'css'      => '',
+			'desc_tip' => false,
+		];
+
+		$data = wp_parse_args( $data, $defaults );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
+			</th>
+			<td class="forminp">
+				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<input
+						class="toggle-fields-group resync-schedule-field"
+						<?php disabled( $data['disabled'], true ); ?>
+						type="checkbox"
+						name="<?php echo esc_attr( $enabled_field_key ); ?>"
+						id="<?php echo esc_attr( $enabled_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="1"
+						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
+					/>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="<?php echo $is_24_hours ? 24 : 12; ?>"
+						name="<?php echo esc_attr( $hours_field_key ); ?>"
+						id="<?php echo esc_attr( $hours_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<strong>:</strong>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="59"
+						name="<?php echo esc_attr( $minutes_field_key ); ?>"
+						id="<?php echo esc_attr( $minutes_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<?php if ( ! $is_24_hours ) : ?>
+
+						<select
+							class="resync-schedule-field"
+							name="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							id="<?php echo esc_attr( $meridiem_field_key ); ?>"
+							style="<?php echo esc_attr( $data['css'] ); ?>"
+							<?php disabled( $data['disabled'], true ); ?>>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
+								value="am">
+								<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
+							</option>
+							<option
+								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+								value="pm">
+								<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
+							</option>
+						</select>
+
+					<?php endif; ?>
+					<br/>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Validates force resync field.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $key field key
+	 * @param string $value posted value
+	 * @return int|string timestamp or empty string
+	 * @throws \Exception
+	 */
+	public function validate_resync_schedule_field( $key, $value ) {
+
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// if not enabled or time is empty, return a blank string
+		if ( empty( $_POST[ $enabled_field_key ] ) || empty( $_POST[ $hours_field_key ] ) ) {
+			return '';
+		}
+
+		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
+		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
+		$posted_minutes  = str_pad( $posted_minutes, 2, '0', STR_PAD_LEFT );
+		$posted_meridiem = ! empty( $_POST[ $meridiem_field_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) ) : '';
+
+		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
+		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
+
+		if ( false === $parsed_time ) {
+			throw new \Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
+		}
+
+		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
+
+		return $parsed_time - $midnight->getTimestamp();
 	}
 
 
@@ -2681,7 +2871,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<span
 			style="display: none; font-family: monospace; font-size: 0.9em;"
 			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
-		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?></span>
+		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?> <span style="display:none;"><?php echo esc_html( $this->get_messenger_greeting_long_warning_text() ); ?></span></span>
 		<?php
 
 		$counter = ob_get_clean();
@@ -2708,17 +2898,28 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
-
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
-			throw new \Exception( sprintf(
-				// TODO maybe need to output the plugin name like: "<strong><Plugin name></strong>: ...message text...", remove this todo otherwise {FN 2020-01-30}
-				/* translators: Placeholder: %d - maximum number of allowed characters */
-				__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-				$max_chars
-			) );
+			throw new \Exception( $this->get_messenger_greeting_long_warning_text()  );
 		}
 
 		return $this->validate_textarea_field( $key, $value );
+	}
+
+
+	/**
+	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	private function get_messenger_greeting_long_warning_text() {
+
+		return sprintf(
+			/* translators: Placeholder: %d - maximum number of allowed characters */
+			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
+			$this->get_messenger_greeting_max_characters()
+		);
 	}
 
 
@@ -3812,33 +4013,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+
 	/**
-	 * Schedule Force Resync
+	 * Schedules a recurring event to sync products.
+	 *
+	 * @deprecated x.y.z
 	 */
 	function ajax_schedule_force_resync() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'resync schedule', true );
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( isset( $_POST ) && isset( $_POST['enabled'] ) ) {
-			if ( isset( $_POST['time'] ) && ! empty( $_POST['enabled'] ) ) { // Enabled
-				$time = sanitize_text_field( wp_unslash( $_POST['time'] ) );
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				wp_schedule_event(
-					strtotime( $time ),
-					'daily',
-					'sync_all_fb_products_using_feed'
-				);
-				WC_Facebookcommerce_Utils::fblog( 'Scheduled autosync for ' . $time );
-				update_option( 'woocommerce_fb_autosync_time', $time );
-			} elseif ( empty( $_POST['enabled'] ) ) { // Disabled
-				wp_clear_scheduled_hook( 'sync_all_fb_products_using_feed' );
-				WC_Facebookcommerce_Utils::fblog( 'Autosync disabled' );
-				delete_option( 'woocommerce_fb_autosync_time' );
-			}
-		} else {
-			WC_Facebookcommerce_Utils::fblog( 'Autosync AJAX Problem', $_POST, true );
-		}
-		wp_die();
+
+		wc_deprecated_function( __METHOD__, 'x.y.z' );
+		die;
 	}
+
 
 	function ajax_update_fb_option() {
 
@@ -3857,4 +4043,89 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		wp_die();
 	}
+
+
+	/**
+	 * Adds an recurring action to sync products.
+	 *
+	 * The action is scheduled using a cron schedule instead of a recurring interval (see https://en.wikipedia.org/wiki/Cron#Overview).
+	 * A cron schedule should allow for the action to run roughly at the same time every day regardless of the duration of the task.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $offset number of seconds since the beginning of the daay
+	 */
+	private function schedule_resync( $offset ) {
+
+		try {
+
+			$current_time         = new DateTime( 'now', new DateTimeZone( wc_timezone_string() ) );
+			$first_scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+			$next_scheduled_time  = new DateTime( "today +1 day {$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
+
+		} catch ( \Exception $e ) {
+			// TODO: log an error indicating that it was not possible to schedule a recurring action to sync products {WV 2020-01-28}
+			return;
+		}
+
+		// unschedule previously scheduled resync actions
+		$this->unschedule_resync();
+
+		$timestamp = $first_scheduled_time >= $current_time ? $first_scheduled_time->getTimestamp() : $next_scheduled_time->getTimestamp();
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		as_schedule_single_action( $timestamp, self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Removes the recurring action that syncs products.
+	 *
+	 * @since x.y.z
+	 */
+	private function unschedule_resync() {
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		as_unschedule_all_actions( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Determines whether a recurring action to sync products is scheduled.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return bool
+	 */
+	private function is_resync_scheduled() {
+
+		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
+		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+	}
+
+
+	/**
+	 * Handles the scheduled action used to sync products daily.
+	 *
+	 * It will schedule a new action if product sync is enabled and the plugin is configured to resnyc procucts daily.
+	 *
+	 * @internal
+	 *
+	 * @see \WC_Facebookcommerce_Integration::schedule_resync()
+	 *
+	 * @since x.y.z
+	 */
+	public function handle_scheduled_resync_action() {
+
+		$this->sync_all_fb_products_using_feed();
+
+		$resync_offset = $this->get_scheduled_resync_offset();
+
+		// manually schedule the next product resync action if possible
+		if ( null !== $resync_offset && $this->is_product_sync_enabled() && ! $this->is_resync_scheduled() ) {
+			$this->schedule_resync( $resync_offset );
+		}
+	}
+
+
 }

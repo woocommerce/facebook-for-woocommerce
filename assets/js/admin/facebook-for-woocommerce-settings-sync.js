@@ -57,23 +57,23 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Toggles availability of input in setting groups.
 	 *
-	 * @param {Object[]} $inputs group of jQuery input fields to toggle
+	 * @param {Object[]} $elements group of jQuery elements (fields or buttons) to toggle
 	 * @param {boolean} enable whether fields in this group should be enabled or not
 	 */
-	function toggleSettingOptions( $inputs, enable ) {
+	function toggleSettingOptions( $elements, enable ) {
 
-		$( $inputs ).each( function() {
+		$( $elements ).each( function() {
 
-			let $input = $( this );
+			let $element = $( this );
 
 			if ( $( this ).hasClass( 'wc-enhanced-select' ) ) {
-				$input = $( this ).next( 'span.select2-container' );
+				$element = $( this ).next( 'span.select2-container' );
 			}
 
 			if ( enable ) {
-				$input.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+				$element.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
 			} else {
-				$input.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+				$element.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
 			}
 		} );
 	}
@@ -85,6 +85,8 @@ jQuery( document ).ready( function( $ ) {
 			toggleSettingOptions( $( '.product-sync-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 		} else if ( $( this ).hasClass( 'messenger-field' ) ) {
 			toggleSettingOptions( $( '.messenger-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
+		} else if ( $( this ).hasClass( 'resync-schedule-field' ) ) {
+			toggleSettingOptions( $( '.resync-schedule-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
 		}
 	} ).trigger( 'change' );
 
@@ -93,12 +95,17 @@ jQuery( document ).ready( function( $ ) {
 	$( 'textarea#woocommerce_facebookcommerce_messenger_greeting' ).on( 'focus change keyup keydown keypress', function() {
 
 		const maxChars = parseInt( window.facebookAdsToolboxConfig.messengerGreetingMaxCharacters, 10 );
-		let chars      = $( this ).val().length;
+		let chars      = $( this ).val().length,
+		    $counter   = $( 'span.characters-counter' ),
+			$warning   = $counter.find( 'span' );
 
-		$( 'span.characters-counter' )
-			.html( chars + ' / ' + maxChars )
-			.css( 'display', 'block' )
-			.css( 'color', chars > maxChars ? '#DC3232' : '#999999' );
+		$counter.html( chars + ' / ' + maxChars + '<br/>' ).append( $warning ).css( 'display', 'block' );
+
+		if ( chars > maxChars ) {
+			$counter.css( 'color', '#DC3232' ).find( 'span' ).show();
+		} else {
+			$counter.css( 'color', '#999999' ).find( 'span' ).hide();
+		}
 	} );
 
 
