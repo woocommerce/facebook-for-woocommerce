@@ -2642,6 +2642,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				href="#"
 				style="vertical-align: middle; margin-left: 20px;"
 			><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+			<span id="sync_progress" style="margin-left: 10px"></span>
 		</h3>
 		<table class="form-table">
 		<?php
