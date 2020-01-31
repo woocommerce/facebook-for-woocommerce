@@ -2429,8 +2429,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
 				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field',
-				'type'  => 'text',
+				'class' => 'product-sync-field resync-schedule-fieldset',
+				'type'  => 'resync_schedule',
 			],
 
 			[
@@ -3857,4 +3857,159 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		wp_die();
 	}
+
+
+	/**
+	 * Generates the force resync fieldset HTML.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $key field key
+	 * @param array $data field data
+	 * @return string HTML
+	 */
+	protected function generate_resync_schedule_html( $key, array $data ) {
+
+		$fieldset_key       = $this->get_field_key( $key );
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// check if the sites uses 12-hours or 24-hours time format
+		$time_format = wc_time_format();
+		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
+
+		if ( $this->is_scheduled_resync_enabled() ) {
+
+			$offset         = $this->get_scheduled_resync_offset();
+			$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
+			$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
+			$resync_minutes = $resync_time->format( 'i' );
+		}
+
+		$defaults  = [
+			'title'    => '',
+			'disabled' => false,
+			'class'    => '',
+			'css'      => '',
+			'desc_tip' => false,
+		];
+
+		$data = wp_parse_args( $data, $defaults );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
+			</th>
+			<td class="forminp">
+				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<input
+						class="toggle-fields-group resync-schedule-field"
+						<?php disabled( $data['disabled'], true ); ?>
+						type="checkbox"
+						name="<?php echo esc_attr( $enabled_field_key ); ?>"
+						id="<?php echo esc_attr( $enabled_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="1"
+						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
+					/>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="<?php echo $is_24_hours ? 24 : 12; ?>"
+						name="<?php echo esc_attr( $hours_field_key ); ?>"
+						id="<?php echo esc_attr( $hours_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<strong>:</strong>
+					<input
+						class="input-number regular-input resync-schedule-field"
+						type="number"
+						min="0"
+						max="59"
+						name="<?php echo esc_attr( $minutes_field_key ); ?>"
+						id="<?php echo esc_attr( $minutes_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					/>
+					<?php if ( ! $is_24_hours ) : ?>
+					<select
+						class="resync-schedule-field"
+						name="<?php echo esc_attr( $meridiem_field_key ); ?>"
+						id="<?php echo esc_attr( $meridiem_field_key ); ?>"
+						style="<?php echo esc_attr( $data['css'] ); ?>"
+						<?php disabled( $data['disabled'], true ); ?>
+					>
+						<option
+							<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
+							value="am">
+							<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
+						</option>
+						<option
+							<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+							value="pm">
+							<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
+						</option>
+					</select>
+					<?php endif; ?>
+					<br/>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Validates force resync field.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param  string $key field key
+	 * @param  string $value posted value
+	 * @return string
+	 * @throws Exception
+	 */
+	public function validate_resync_schedule_field( $key, $value ) {
+
+		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
+		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
+		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
+		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
+
+		// if not enabled or time is empty, return a blank string
+		if ( empty( $_POST[ $enabled_field_key ] ) || empty( $_POST[ $hours_field_key ] ) ) {
+			return '';
+		}
+
+		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
+		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
+		$posted_minutes  = str_pad( $posted_minutes, 2, '0', STR_PAD_LEFT );
+		$posted_meridiem = ! empty( $_POST[ $meridiem_field_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) ) : '';
+
+		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
+		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
+
+		if ( false === $parsed_time ) {
+			throw new Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
+		}
+
+		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
+
+		return $parsed_time - $midnight->getTimestamp();
+	}
+
+
 }
