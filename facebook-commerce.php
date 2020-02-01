@@ -2715,6 +2715,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			} catch ( \Exception $e ) {}
 		}
 
+		// default to 23:00
+		if ( empty( $resync_hours ) ) {
+			$resync_hours    = $is_24_hours ? '23' : '11';
+			$resync_minutes  = '00';
+			$resync_meridiem = $is_24_hours ? '' : 'pm';
+		}
+
 		$defaults  = [
 			'title'    => '',
 			'disabled' => false,
@@ -2781,7 +2788,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 								<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
 							</option>
 							<option
-								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS, true ); ?>
+								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS || ( ! empty( $resync_meridiem ) && 'pm' === $resync_meridiem ), true ); ?>
 								value="pm">
 								<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
 							</option>
