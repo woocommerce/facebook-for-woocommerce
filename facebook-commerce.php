@@ -2704,7 +2704,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// check if the sites uses 12-hours or 24-hours time format
 		$time_format = wc_time_format();
 		// TODO replace these string search functions with Framework string helpers {FN 2020-01-31}
-		$is_24_hours = ( false !== strpos( $time_format, 'G' ) || false !== strpos( $time_format, 'H' ) );
+		$is_12_hours = ( false !== strpos( $time_format, 'g' ) || false !== strpos( $time_format, 'h' ) );
+		// default to 24-hours format if no hour specifier is found on the string
+		$is_24_hours = ! $is_12_hours;
 
 		if ( $this->is_scheduled_resync_enabled() ) {
 			try {
