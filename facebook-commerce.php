@@ -2908,7 +2908,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
 		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
-			throw new \Exception( $this->get_messenger_greeting_long_warning_text()  );
+			throw new \Exception( sprintf(
+				$this->get_messenger_greeting_long_warning_text() . ' %s',
+				__( "The greeting hasn't been updated.", 'facebook-for-woocommerce' )
+			) );
 		}
 
 		return $this->validate_textarea_field( $key, $value );
