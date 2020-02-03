@@ -171,11 +171,11 @@ class IntegrationSettingsCest {
 		$form = [
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID        => '1234',
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING => true,
-        ];
+		];
 		$I->submitForm( '#mainform', $form, 'save' );
 		$I->waitForText( 'Your settings have been saved.' );
 
-        $I->seeInFormFields( '#mainform', $form );
+		$I->seeInFormFields( '#mainform', $form );
 	}
 
 
