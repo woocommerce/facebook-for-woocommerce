@@ -10,243 +10,372 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 1.9.15
+ * Version: 1.10.0-dev.1
  * Woo: 2127297:0ea4fe4c2d7ca6338f8a322fb3e4e187
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.0.0
- * WC tested up to: 3.3.5
+ * WC tested up to: 3.9.1
  *
  * @package FacebookCommerce
  */
 
+defined( 'ABSPATH' ) or exit;
 
-if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
-
-	include_once 'includes/fbutils.php';
-
-	class WC_Facebookcommerce {
-
-		// Change it above as well
-		const PLUGIN_VERSION = WC_Facebookcommerce_Utils::PLUGIN_VERSION;
-
-		/** @var string the plugin ID */
-		const PLUGIN_ID = 'facebook_for_woocommerce';
-
-		/** @var string the integration ID */
-		const INTEGRATION_ID = 'facebookcommerce';
-
-		/** @var string the integration class name (including namespaces) */
-		const INTEGRATION_CLASS = '\\WC_Facebookcommerce_Integration';
+/**
+ * The plugin loader class.
+ *
+ * @since 1.10.0-dev.1
+ */
+class WC_Facebook_Loader {
 
 
-		/** @var \WC_Facebookcommerce singleton instance */
-		private static $instance;
+	/** minimum PHP version required by this plugin */
+	const MINIMUM_PHP_VERSION = '5.6.0';
 
-		/** @var \WC_Facebookcommerce_Integration instance */
-		private $integration;
+	/** minimum WordPress version required by this plugin */
+	const MINIMUM_WP_VERSION = '4.4';
 
-		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
-		private $admin;
+	/** minimum WooCommerce version required by this plugin */
+	const MINIMUM_WC_VERSION = '3.0.0';
 
-		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
-		private $ajax;
+	/** SkyVerge plugin framework version used by this plugin */
+	const FRAMEWORK_VERSION = '5.5.4';
+
+	/** the plugin name, for displaying notices */
+	const PLUGIN_NAME = 'Facebook for WooCommerce';
 
 
-		/**
-		 * Constructs the plugin.
-		 *
-		 * @since 1.0.0
-		 */
-		public function __construct() {
+	/** @var \WC_Facebook_Loader single instance of this class */
+	private static $instance;
 
-			add_action( 'plugins_loaded', [ $this, 'init' ] );
+	/** @var array the admin notices to add */
+	private $notices = array();
+
+
+	/**
+	 * Constructs the class.
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	protected function __construct() {
+
+		register_activation_hook( __FILE__, array( $this, 'activation_check' ) );
+
+		add_action( 'admin_init', array( $this, 'check_environment' ) );
+		add_action( 'admin_init', array( $this, 'add_plugin_notices' ) );
+
+		add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
+
+		// if the environment check fails, initialize the plugin
+		if ( $this->is_environment_compatible() ) {
+			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
 		}
-
-
-		/**
-		 * Initializes the plugin.
-		 *
-		 * @internal
-		 */
-		public function init() {
-
-			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-
-				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
-					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', get_admin_url() . '/admin.php?page=wc-settings&tab=integration' . '&section=facebookcommerce' );
-				}
-
-				include_once 'facebook-commerce.php';
-
-				require_once __DIR__ . '/includes/Products.php';
-				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
-
-				if ( is_ajax() ) {
-
-					require_once __DIR__ . '/includes/AJAX.php';
-
-					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
-				}
-
-				// initialize the admin handling
-				add_action( 'admin_init', [ $this, 'init_admin'] );
-
-				// register the WooCommerce integration
-				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
-			}
-		}
-
-
-		/**
-		 * Initializes the admin handling.
-		 *
-		 * @internal
-		 *
-		 * @since x.y.z
-		 */
-		public function init_admin() {
-
-			require_once __DIR__ . '/includes/Admin.php';
-
-			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
-
-			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'add_settings_link' ] );
-		}
-
-
-		public function add_settings_link( $links ) {
-			$settings = array(
-				'settings' => sprintf(
-					'<a href="%s">%s</a>',
-					admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ),
-					'Settings'
-				),
-			);
-			return array_merge( $settings, $links );
-		}
-
-
-		/**
-		 * Adds a Facebook integration to WooCommerce.
-		 *
-		 * @internal
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string[] $integrations class names
-		 * @return string[]
-		 */
-		public function add_woocommerce_integration( $integrations = [] ) {
-
-			if ( ! class_exists( self::INTEGRATION_CLASS ) ) {
-				include_once __DIR__ . '/facebook-commerce.php';
-			}
-
-			$integrations[ self::INTEGRATION_ID ] = self::INTEGRATION_CLASS;
-
-			return $integrations;
-		}
-
-
-		public function add_wordpress_integration() {
-			new WP_Facebook_Integration();
-		}
-
-
-		/**
-		 * Gets the admin handler instance.
-		 *
-		 * @since x.y.z
-		 *
-		 * @return \SkyVerge\WooCommerce\Facebook\Admin|null
-		 */
-		public function get_admin_handler() {
-
-			return $this->admin;
-		}
-
-
-		/**
-		 * Gets the AJAX handler instance.
-		 *
-		 * @sinxe x.y.z
-		 *
-		 * @return \SkyVerge\WooCommerce\Facebook\AJAX|null
-		 */
-		public function get_ajax_handler() {
-
-			return $this->ajax;
-		}
-
-
-		/**
-		 * Gets the integration instance.
-		 *
-		 * @since x.y.z
-		 *
-		 * @return \WC_Facebookcommerce_Integration instance
-		 */
-		public function get_integration() {
-
-			if ( null === $this->integration ) {
-
-				$integrations = null === WC()->integrations ? [] : WC()->integrations->get_integrations();
-				$integration  = self::INTEGRATION_CLASS;
-
-				if ( isset( $integrations[ self::INTEGRATION_ID ] ) && $integrations[ self::INTEGRATION_ID ] instanceof $integration ) {
-
-					$this->integration = $integrations[ self::INTEGRATION_ID ];
-
-				} else {
-
-					$this->add_woocommerce_integration();
-
-					$this->integration = new $integration();
-				}
-			}
-
-			return $this->integration;
-		}
-
-
-		/**
-		 * Gets the plugin singleton instance.
-		 *
-		 * @see \facebook_for_woocommerce()
-		 *
-		 * @since x.y.z
-		 *
-		 * @return \WC_Facebookcommerce the plugin singleton instance
-		 */
-		public static function instance() {
-
-			if ( null === self::$instance ) {
-				self::$instance = new self();
-			}
-
-			return self::$instance;
-		}
-
-
 	}
 
 
 	/**
-	 * Gets the Facebook for WooCommerce plugin instance.
+	 * Cloning instances is forbidden due to singleton pattern.
 	 *
-	 * @since x.y.z
-	 *
-	 * @return \WC_Facebookcommerce instance of the plugin
+	 * @since 1.10.0-dev.1
 	 */
-	function facebook_for_woocommerce() {
+	public function __clone() {
 
-		return \WC_Facebookcommerce::instance();
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0-dev.1' );
 	}
 
 
-	// Loads and instantiates the plugin the first time is called here.
-	// Subsequent calls to this function will return the plugin's current thread instance (singleton).
-	facebook_for_woocommerce();
+	/**
+	 * Unserializing instances is forbidden due to singleton pattern.
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function __wakeup() {
+
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0-dev.1' );
+	}
 
 
-endif;
+	/**
+	 * Initializes the plugin.
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function init_plugin() {
+
+		if ( ! $this->plugins_compatible() ) {
+			return;
+		}
+
+		$this->load_framework();
+
+		require_once( plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php' );
+
+		// fire it up!
+		if ( function_exists( 'facebook_for_woocommerce' ) ) {
+			facebook_for_woocommerce();
+		}
+	}
+
+
+	/**
+	 * Loads the base framework classes.
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	private function load_framework() {
+
+		if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginFramework\\' . $this->get_framework_version_namespace() . '\\SV_WC_Plugin' ) ) {
+			require_once( plugin_dir_path( __FILE__ ) . 'vendor/skyverge/wc-plugin-framework/woocommerce/class-sv-wc-plugin.php' );
+		}
+	}
+
+
+	/**
+	 * Gets the framework version in namespace form.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_framework_version_namespace() {
+
+		return 'v' . str_replace( '.', '_', $this->get_framework_version() );
+	}
+
+
+	/**
+	 * Gets the framework version used by this plugin.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_framework_version() {
+
+		return self::FRAMEWORK_VERSION;
+	}
+
+
+	/**
+	 * Checks the server environment and other factors and deactivates plugins as necessary.
+	 *
+	 * Based on http://wptavern.com/how-to-prevent-wordpress-plugins-from-activating-on-sites-with-incompatible-hosting-environments
+	 *
+	 * @internal
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function activation_check() {
+
+		if ( ! $this->is_environment_compatible() ) {
+
+			$this->deactivate_plugin();
+
+			wp_die( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
+		}
+	}
+
+
+	/**
+	 * Checks the environment on loading WordPress, just in case the environment changes after activation.
+	 *
+	 * @internal
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function check_environment() {
+
+		if ( ! $this->is_environment_compatible() && is_plugin_active( plugin_basename( __FILE__ ) ) ) {
+
+			$this->deactivate_plugin();
+
+			$this->add_admin_notice( 'bad_environment', 'error', self::PLUGIN_NAME . ' has been deactivated. ' . $this->get_environment_message() );
+		}
+	}
+
+
+	/**
+	 * Adds notices for out-of-date WordPress and/or WooCommerce versions.
+	 *
+	 * @internal
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function add_plugin_notices() {
+
+		if ( ! $this->is_wp_compatible() ) {
+
+			$this->add_admin_notice( 'update_wordpress', 'error', sprintf(
+				'%s requires WordPress version %s or higher. Please %supdate WordPress &raquo;%s',
+				'<strong>' . self::PLUGIN_NAME . '</strong>',
+				self::MINIMUM_WP_VERSION,
+				'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">', '</a>'
+			) );
+		}
+
+		if ( ! $this->is_wc_compatible() ) {
+
+			$this->add_admin_notice( 'update_woocommerce', 'error', sprintf(
+				'%1$s requires WooCommerce version %2$s or higher. Please %3$supdate WooCommerce%4$s to the latest version, or %5$sdownload the minimum required version &raquo;%6$s',
+				'<strong>' . self::PLUGIN_NAME . '</strong>',
+				self::MINIMUM_WC_VERSION,
+				'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">', '</a>',
+				'<a href="' . esc_url( 'https://downloads.wordpress.org/plugin/woocommerce.' . self::MINIMUM_WC_VERSION . '.zip' ) . '">', '</a>'
+			) );
+		}
+	}
+
+
+	/**
+	 * Determines if the required plugins are compatible.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function plugins_compatible() {
+
+		return $this->is_wp_compatible() && $this->is_wc_compatible();
+	}
+
+
+	/**
+	 * Determines if the WordPress compatible.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_wp_compatible() {
+
+		if ( ! self::MINIMUM_WP_VERSION ) {
+			return true;
+		}
+
+		return version_compare( get_bloginfo( 'version' ), self::MINIMUM_WP_VERSION, '>=' );
+	}
+
+
+	/**
+	 * Determines if the WooCommerce compatible.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_wc_compatible() {
+
+		if ( ! self::MINIMUM_WC_VERSION ) {
+			return true;
+		}
+
+		return defined( 'WC_VERSION' ) && version_compare( WC_VERSION, self::MINIMUM_WC_VERSION, '>=' );
+	}
+
+
+	/**
+	 * Deactivates the plugin.
+	 *
+	 * @internal
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	protected function deactivate_plugin() {
+
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+
+		if ( isset( $_GET['activate'] ) ) {
+			unset( $_GET['activate'] );
+		}
+	}
+
+
+	/**
+	 * Adds an admin notice to be displayed.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @param string $slug the slug for the notice
+	 * @param string $class the css class for the notice
+	 * @param string $message the notice message
+	 */
+	private function add_admin_notice( $slug, $class, $message ) {
+
+		$this->notices[ $slug ] = array(
+			'class'   => $class,
+			'message' => $message
+		);
+	}
+
+
+	/**
+	 * Displays any admin notices added with \WC_Facebook_Loader::add_admin_notice()
+	 *
+	 * @internal
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	public function admin_notices() {
+
+		foreach ( (array) $this->notices as $notice_key => $notice ) {
+
+			?>
+			<div class="<?php echo esc_attr( $notice['class'] ); ?>">
+				<p><?php echo wp_kses( $notice['message'], array( 'a' => array( 'href' => array() ) ) ); ?></p>
+			</div>
+			<?php
+		}
+	}
+
+
+	/**
+	 * Determines if the server environment is compatible with this plugin.
+	 *
+	 * Override this method to add checks for more than just the PHP version.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_environment_compatible() {
+
+		return version_compare( PHP_VERSION, self::MINIMUM_PHP_VERSION, '>=' );
+	}
+
+
+	/**
+	 * Gets the message for display when the environment is incompatible with this plugin.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_environment_message() {
+
+		return sprintf( 'The minimum PHP version required for this plugin is %1$s. You are running %2$s.', self::MINIMUM_PHP_VERSION, PHP_VERSION );
+	}
+
+
+	/**
+	 * Gets the main \WC_Facebook_Loader instance.
+	 *
+	 * Ensures only one instance can be loaded.
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @return \WC_Facebook_Loader
+	 */
+	public static function instance() {
+
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+
+}
+
+// fire it up!
+WC_Facebook_Loader::instance();
