@@ -90,23 +90,13 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->log_feed_progress( 'Sync all products using feed, feed file generated' );
 
 			if ( ! $this->feed_id ) {
-				$this->feed_id = $this->create_feed();
-				if ( ! $this->feed_id ) {
-					$this->log_feed_progress(
-						'Failure - Sync all products using feed, facebook feed not created'
-					);
-					return false;
-				}
 				$this->log_feed_progress(
-					'Sync all products using feed, facebook feed created'
+					'Failure - Sync all products using feed, facebook feed not created'
 				);
-			} else {
-				$this->log_feed_progress(
-					'Sync all products using feed, facebook feed already exists.'
-				);
+				return false;
 			}
 			$this->log_feed_progress(
-				'Sync all products using feed, facebook upload created'
+				'Sync all products using feed, facebook feed already exists.'
 			);
 
 			$total_product_count        =
@@ -308,40 +298,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$product_data['visibility'] . ',' .
 			$product_data['default_product'] . ',' .
 			$product_data['variant'] . PHP_EOL;
-		}
-
-		private function create_feed() {
-			$result = $this->fbgraph->create_feed(
-				$this->facebook_catalog_id,
-				array( 'name' => self::FEED_NAME )
-			);
-			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-				$this->log_feed_progress( json_encode( $result ) );
-				return null;
-			}
-			$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-			$feed_id       = $decode_result->id;
-			if ( ! $feed_id ) {
-				$this->log_feed_progress(
-					'Response from creating feed not return feed id!'
-				);
-				return null;
-			}
-			return $feed_id;
-		}
-
-		private function create_upload( $facebook_feed_id ) {
-			$result = $this->fbgraph->create_upload(
-				$facebook_feed_id,
-				$this->get_local_product_feed_file_path()
-			);
-
-			if ( is_null( $result ) || ! isset( $result['id'] ) || ! $result['id'] ) {
-				$this->log_feed_progress( json_encode( $result ) );
-				return null;
-			}
-			$upload_id = $result['id'];
-			return $upload_id;
 		}
 
 		private static function format_additional_image_url( $product_image_urls ) {

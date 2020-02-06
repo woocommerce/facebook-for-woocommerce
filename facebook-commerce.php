@@ -99,6 +99,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		? $this->settings['fb_page_id']
 		: '';
 
+		$this->feed_migrated = isset( $this->settings['feed_migrated'] )
+		&& $this->settings['feed_migrated'];
+
 		$this->api_key = isset( $this->settings['fb_api_key'] )
 		? $this->settings['fb_api_key']
 		: '';
@@ -846,10 +849,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	  ,feed: {
 			totalVisibleProducts: '<?php echo $this->get_product_count(); ?>'
 			,hasClientSideFeedUpload: '<?php echo ! ! $this->feed_id; ?>'
+			,enabled: true
+			,format: 'csv'
 	  }
 	  ,feedPrepared: {
 			feedUrl: '<?php echo $this->get_global_feed_url(); ?>'
 			,feedPingUrl: '<?php echo $this->get_feed_ping_url(); ?>'
+			,feedMigrated: '<?php echo $this->feed_migrated; ?>' ? true : false
 			,samples: <?php echo $this->get_sample_product_feed(); ?>
 	  }
 	};
