@@ -181,7 +181,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Toggles (enables/disables) Facebook setting fields.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 *
 		 * @param {boolean} enabled whether the settings fields should be enabled or not
 		 * @param {jQuery} $container a common ancestor of all the elements that can be enabled/disabled

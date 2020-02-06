@@ -214,7 +214,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		 * @link https://developers.facebook.com/docs/messenger-platform/messenger-profile/supported-locales/
 		 * If the Locale extension is not available, will attempt to match locales to WordPress available language names.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 *
 		 * @return array associative array of locale codes and names
 		 */
@@ -261,7 +261,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 			/**
 			 * Filters the locales supported by Facebook Messenger.
 			 *
-			 * @since x.y.z
+			 * @since 1.10.0-dev.1
 			 *
 			 * @param array $locales locales supported by Facebook Messenger, in $locale => $name format
 			 */

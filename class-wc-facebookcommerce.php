@@ -101,7 +101,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 */
 		public function init_admin() {
 
@@ -144,7 +144,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the admin handler instance.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Admin|null
 		 */
@@ -157,7 +157,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the AJAX handler instance.
 		 *
-		 * @sinxe x.y.z
+		 * @sinxe 1.10.0-dev.1
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\AJAX|null
 		 */
@@ -170,7 +170,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the integration instance.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 *
 		 * @return \WC_Facebookcommerce_Integration instance
 		 */
@@ -304,7 +304,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @see \facebook_for_woocommerce()
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 *
 		 * @return \WC_Facebookcommerce the plugin singleton instance
 		 */
@@ -339,7 +339,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.0-dev.1
 		 * @deprecated 1.10.0-dev.1
 		 */
 		public function add_settings_link() {
@@ -354,7 +354,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 	/**
 	 * Gets the Facebook for WooCommerce plugin instance.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @return \WC_Facebookcommerce instance of the plugin
 	 */
