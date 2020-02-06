@@ -4103,7 +4103,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Determines whether a recurring action to sync products is scheduled.
+	 * Determines whether a recurring action to sync products is scheduled and not running.
+	 *
+	 * @see as_next_scheduled_action
 	 *
 	 * @since x.y.z
 	 *
@@ -4112,7 +4114,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function is_resync_scheduled() {
 
 		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
-		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
+		return is_integer( as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' ) );
 	}
 
 
