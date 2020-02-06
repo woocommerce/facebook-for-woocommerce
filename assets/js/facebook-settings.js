@@ -488,10 +488,13 @@ function setAccessTokenAndPageId(message) {
 	// Ack token in "save_settings_and_sync" for final ack
 
 	window.facebookAdsToolboxConfig.tokenExpired = false;
-	if (document.querySelector( '#token_text' )) {
-		document.querySelector( '#token_text' ).innerHTML =
-		` < strong > Your API key has been updated.<br / >
-		Please refresh the page.< / strong > `;
+
+	if ( document.querySelector( '#connection-message-invalid' ) ) {
+		document.querySelector( '#connection-message-invalid' ).style.display = 'none';
+	}
+
+	if ( document.querySelector( '#connection-message-refresh' ) ) {
+		document.querySelector( '#connection-message-refresh' ).style.display = 'block';
 	}
 }
 
