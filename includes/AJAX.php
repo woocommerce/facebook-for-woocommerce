@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * AJAX handler.
  *
- * @since x.y.z
+ * @since 1.10.0-dev.1
  */
 class AJAX {
 
@@ -23,7 +23,7 @@ class AJAX {
 	/**
 	 * AJAX handler constructor.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function __construct() {
 
@@ -44,7 +44,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function handle_set_product_sync_prompt() {
 
@@ -154,7 +154,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function handle_set_product_sync_bulk_action_prompt() {
 
@@ -244,7 +244,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function handle_set_excluded_terms_prompt() {
 
@@ -314,7 +314,7 @@ class AJAX {
 	 * Queries products with sync enabled, belonging to the added term IDs
 	 * and not belonging to the term IDs that are already stored in the setting.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param string[] $new_excluded_categories
 	 * @param string[] $new_excluded_tags
@@ -423,7 +423,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function set_products_visibility() {
 
