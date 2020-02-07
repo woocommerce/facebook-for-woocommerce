@@ -18,6 +18,8 @@ defined( 'ABSPATH' ) or exit;
  * The Facebook for WooCommerce plugin lifecycle handler.
  *
  * @since 1.10.0-dev.1
+ *
+ * @method \WC_Facebookcommerce get_plugin()
  */
 class Lifecycle extends Framework\Plugin\Lifecycle {
 
