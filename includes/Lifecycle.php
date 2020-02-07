@@ -66,7 +66,9 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_1_10_0() {
 
+		// preserve legacy values
 		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
+		update_option( 'woocommerce_facebookcommerce_legacy_settings', $values );
 
 		// migrate options from woocommerce_facebookcommerce_settings
 		$options = [
