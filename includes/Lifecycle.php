@@ -81,6 +81,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		];
 
 		foreach ( $options as $old_index => $new_option_name ) {
+
 			if ( isset( $values[ $old_index ] ) ) {
 				update_option( $new_option_name, $values[ $old_index ] );
 			}
