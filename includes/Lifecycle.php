@@ -54,6 +54,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'fb_product_catalog_id'            => \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID,
 			'fb_external_merchant_settings_id' => \WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID,
 			'fb_feed_id'                       => \WC_Facebookcommerce_Integration::OPTION_FEED_ID,
+			'facebook_jssdk_version'           => \WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION,
 			'pixel_install_time'               => \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME,
 		];
 
@@ -65,9 +66,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// migrate settings from woocommerce_facebookcommerce_settings
 		$settings = [
-			'fb_page_id' => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
-			'fb_pixel_id' => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
-			'fb_pixel_use_pii' => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
+			'fb_page_id'                       => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+			'fb_pixel_id'                      => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
+			'fb_pixel_use_pii'                 => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
+			'is_messenger_chat_plugin_enabled' => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+			'msger_chat_customization_locale'  => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
 		];
 
 		$new_settings = [];
