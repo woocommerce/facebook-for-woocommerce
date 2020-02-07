@@ -34,17 +34,16 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		parent::__construct( $plugin );
 
 		$this->upgrade_versions = [
-			'1.10.0',
 		];
 	}
 
 
 	/**
-	 * Updates to v1.10.0.
+	 * Migrates options from previous versions of the plugin, which did not use the Framework.
 	 *
 	 * @since 1.10.0-dev.1
 	 */
-	protected function upgrade_to_1_10_0() {
+	protected function install() {
 
 		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
 
@@ -110,7 +109,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		// schedule the next product resync action
 		if ( isset( $resync_offset ) && $product_sync_enabled ) {
 
-			$integration = facebook_for_woocommerce()->get_integration();
+			$integration = $this->get_plugin()->get_integration();
 
 			if ( ! $integration->is_resync_scheduled() ) {
 				$integration->schedule_resync( $resync_offset );
