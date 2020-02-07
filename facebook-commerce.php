@@ -4105,7 +4105,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether a recurring action to sync products is scheduled and not running.
 	 *
-	 * @see as_next_scheduled_action
+	 * @see \as_next_scheduled_action()
 	 *
 	 * @since x.y.z
 	 *
