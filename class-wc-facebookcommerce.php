@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -297,6 +298,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** Utility methods *******************************************************************************************/
+
+
+		/**
+		 * Initializes the lifecycle handler.
+		 *
+		 * @since 1.10.0-dev.1
+		 */
+		protected function init_lifecycle_handler() {
+
+			require_once __DIR__ . '/includes/Lifecycle.php';
+
+			$this->lifecycle_handler = new Lifecycle( $this );
+		}
 
 
 		/**
