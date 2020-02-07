@@ -34,6 +34,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		parent::__construct( $plugin );
 
 		$this->upgrade_versions = [
+			'1.10.0',
 		];
 	}
 
@@ -44,6 +45,24 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.0-dev.1
 	 */
 	protected function install() {
+
+		/**
+		 * Versions prior to 1.10.0 did not set a version option, so the upgrade method needs to be called manually.
+		 * We do this by checking first if an old option exists, but a new one doesn't.
+		 */
+		if ( get_option( 'fb_sync_short_description' ) && ! get_option( 'wc_facebook_page_access_token' ) ) {
+
+			$this->upgrade( '1.9.15' );
+		}
+	}
+
+
+	/**
+	 * Upgrades to version 1.10.0.
+	 *
+	 * @since 1.10.0-dev.1
+	 */
+	protected function upgrade_to_1_10_0() {
 
 		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
 
