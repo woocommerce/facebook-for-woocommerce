@@ -4110,7 +4110,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return bool
 	 */
-	private function is_resync_scheduled() {
+	public function is_resync_scheduled() {
 
 		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		return as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' );
