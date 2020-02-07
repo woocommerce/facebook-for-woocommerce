@@ -64,6 +64,8 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			}
 		}
 
+		$new_settings = [];
+
 		// migrate settings from woocommerce_facebookcommerce_settings
 		$settings = [
 			'fb_page_id'                                  => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
@@ -75,11 +77,30 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'msger_chat_customization_theme_color_code'   => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
 		];
 
-		$new_settings = [];
-
 		foreach ( $settings as $old_index => $new_index ) {
 			if ( isset( $values[ $old_index ] ) ) {
 				$new_settings[ $new_index ] = $values[ $old_index ];
+			}
+		}
+
+		// migrate settings from standalone options
+		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ]      = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
+		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE ] = ! empty( get_option( 'fb_sync_short_description', 0 ) ) ? \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT : \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD;
+
+		$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
+
+		if ( ! empty( $autosync_time ) ) {
+
+			$parsed_time = strtotime( $autosync_time );
+
+			if ( false !== $parsed_time ) {
+
+				$midnight = ( new \DateTime() )->setTimestamp( $parsed_time )->setTime( 0, 0, 0 );
+
+				$offset = $parsed_time - $midnight->getTimestamp();
+
+
+				$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $offset;
 			}
 		}
 
