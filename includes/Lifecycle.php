@@ -82,9 +82,9 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		foreach ( $options as $old_index => $new_option_name ) {
 
-			$new_value = $values[ $old_index ];
-
 			if ( isset( $values[ $old_index ] ) ) {
+
+				$new_value = $values[ $old_index ];
 
 				if ( 'pixel_install_time' === $old_index ) {
 
