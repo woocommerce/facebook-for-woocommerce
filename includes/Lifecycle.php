@@ -66,11 +66,13 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// migrate settings from woocommerce_facebookcommerce_settings
 		$settings = [
-			'fb_page_id'                       => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
-			'fb_pixel_id'                      => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
-			'fb_pixel_use_pii'                 => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
-			'is_messenger_chat_plugin_enabled' => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
-			'msger_chat_customization_locale'  => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
+			'fb_page_id'                                  => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+			'fb_pixel_id'                                 => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
+			'fb_pixel_use_pii'                            => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
+			'is_messenger_chat_plugin_enabled'            => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+			'msger_chat_customization_locale'             => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
+			'msger_chat_customization_greeting_text_code' => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
+			'msger_chat_customization_theme_color_code'   => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
 		];
 
 		$new_settings = [];
