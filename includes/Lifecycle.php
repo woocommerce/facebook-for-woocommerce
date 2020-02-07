@@ -84,7 +84,9 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		// migrate settings from standalone options
-		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ]      = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) ) ? 'yes' : 'no';
+		$product_sync_enabled = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
+
+		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ]      = $product_sync_enabled ? 'yes' : 'no';
 		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE ] = ! empty( get_option( 'fb_sync_short_description', 0 ) ) ? \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT : \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD;
 
 		$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
@@ -97,14 +99,23 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 				$midnight = ( new \DateTime() )->setTimestamp( $parsed_time )->setTime( 0, 0, 0 );
 
-				$offset = $parsed_time - $midnight->getTimestamp();
-
+				$resync_offset = $parsed_time - $midnight->getTimestamp();
 
 				$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $offset;
 			}
 		}
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
+
+		// schedule the next product resync action
+		if ( isset( $resync_offset ) && $product_sync_enabled ) {
+
+			$integration = facebook_for_woocommerce()->get_integration();
+
+			if ( ! $integration->is_resync_scheduled() ) {
+				$integration->schedule_resync( $resync_offset );
+			}
+		}
 	}
 
 
