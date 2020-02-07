@@ -46,6 +46,39 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_1_10_0() {
 
+		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
+
+		// migrate options from woocommerce_facebookcommerce_settings
+		$options = [
+			'fb_api_key'                       => \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN,
+			'fb_product_catalog_id'            => \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID,
+			'fb_external_merchant_settings_id' => \WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID,
+			'fb_feed_id'                       => \WC_Facebookcommerce_Integration::OPTION_FEED_ID,
+			'pixel_install_time'               => \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME,
+		];
+
+		foreach ( $options as $old_index => $new_option_name ) {
+			if ( isset( $values[ $old_index ] ) ) {
+				update_option( $new_option_name, $values[ $old_index ] );
+			}
+		}
+
+		// migrate settings from woocommerce_facebookcommerce_settings
+		$settings = [
+			'fb_page_id' => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+			'fb_pixel_id' => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
+			'fb_pixel_use_pii' => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
+		];
+
+		$new_settings = [];
+
+		foreach ( $settings as $old_index => $new_index ) {
+			if ( isset( $values[ $old_index ] ) ) {
+				$new_settings[ $new_index ] = $values[ $old_index ];
+			}
+		}
+
+		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
 	}
 
 
