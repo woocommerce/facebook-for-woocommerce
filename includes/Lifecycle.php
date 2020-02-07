@@ -82,8 +82,18 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		foreach ( $options as $old_index => $new_option_name ) {
 
+			$new_value = $values[ $old_index ];
+
 			if ( isset( $values[ $old_index ] ) ) {
-				update_option( $new_option_name, $values[ $old_index ] );
+
+				if ( 'pixel_install_time' === $old_index ) {
+
+					// convert to UTC timestamp
+					$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
+					$new_value          = $pixel_install_time->getTimestamp();
+				}
+
+				update_option( $new_option_name, $new_value );
 			}
 		}
 
