@@ -101,6 +101,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		];
 
 		foreach ( $settings as $old_index => $new_index ) {
+
 			if ( isset( $values[ $old_index ] ) ) {
 				$new_settings[ $new_index ] = $values[ $old_index ];
 			}
