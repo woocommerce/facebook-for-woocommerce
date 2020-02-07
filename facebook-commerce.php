@@ -4068,7 +4068,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $offset number of seconds since the beginning of the daay
 	 */
-	private function schedule_resync( $offset ) {
+	public function schedule_resync( $offset ) {
 
 		try {
 
