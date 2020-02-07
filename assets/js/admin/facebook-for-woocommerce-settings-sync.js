@@ -26,7 +26,7 @@ jQuery( document ).ready( function( $ ) {
 		const newCategoryIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_categories' ).val();
 		let oldCategoryIDs   = [];
 
-		if ( window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
+		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
 			oldCategoryIDs = window.facebookAdsToolboxConfig.excludedCategoryIDs;
 		}
 
@@ -45,7 +45,7 @@ jQuery( document ).ready( function( $ ) {
 		const newTagIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_tags' ).val();
 		let oldTagIDs   = [];
 
-		if ( window.facebookAdsToolboxConfig.excludedTagIDs ) {
+		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedTagIDs ) {
 			oldTagIDs = window.facebookAdsToolboxConfig.excludedTagIDs;
 		}
 
