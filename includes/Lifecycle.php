@@ -100,7 +100,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 				$resync_offset = $parsed_time - $midnight->getTimestamp();
 
-				$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $offset;
+				$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $resync_offset;
 			}
 		}
 
