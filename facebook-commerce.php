@@ -4068,7 +4068,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $offset number of seconds since the beginning of the daay
 	 */
-	private function schedule_resync( $offset ) {
+	public function schedule_resync( $offset ) {
 
 		try {
 
@@ -4112,7 +4112,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return bool
 	 */
-	private function is_resync_scheduled() {
+	public function is_resync_scheduled() {
 
 		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
 		return is_int( as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, [], 'facebook-for-woocommerce' ) );
