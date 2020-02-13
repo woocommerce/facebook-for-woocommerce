@@ -2517,6 +2517,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				onclick="facebookConfig();"
 			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
 		</h3>
+		<?php if ( empty( $this->get_page_name() ) ) : ?>
+			<div id="connection-message-invalid">
+				<p style="color: #DC3232;">
+					<?php esc_html_e( 'Your connection has expired.', 'facebook-for-woocommerce' ); ?>
+					<strong>
+						<?php esc_html_e( 'Please click Manage connection > Advanced Options > Update Token to refresh your connection to Facebook.', 'facebook-for-woocommerce' ); ?>
+					</strong>
+				</p>
+			</div>
+			<div id="connection-message-refresh" style="display: none;">
+				<p>
+					<?php esc_html_e( 'Your access token has been updated.', 'facebook-for-woocommerce' ); ?>
+					<strong>
+						<?php esc_html_e( 'Please refresh the page.', 'facebook-for-woocommerce' ); ?>
+					</strong>
+				</p>
+			</div>
+		<?php endif; ?>
 		<table class="form-table">
 		<?php
 
