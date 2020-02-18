@@ -3,6 +3,8 @@
 /.settings
 /.idea
 
+/node_modules
+
 # composer packages
 /vendor
 
