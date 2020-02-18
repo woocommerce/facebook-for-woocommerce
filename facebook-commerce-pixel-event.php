@@ -93,28 +93,25 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 %s
 <script>
 %s
-fbq('track', 'PageView', %s);
+fbq( 'track', 'PageView', %s );
 
-document.addEventListener('DOMContentLoaded', function() {
-  jQuery && jQuery(function($){
-    $('body').on('added_to_cart', function(event) {
-      // Ajax action.
-      $.get('?wc-ajax=fb_inject_add_to_cart_event', function(data) {
-        $('head').append(data);
-      });
-    });
-  });
-}, false);
+document.addEventListener( 'DOMContentLoaded', function() {
+	jQuery && jQuery( function( $ ) {
+
+		// insert placeholder for events injected when a product is added to the cart through Ajax
+		$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
+	} );
+}, false );
 
 </script>
 <!-- DO NOT MODIFY -->
 <!-- %s Facebook Integration end -->
     ",
-				WC_Facebookcommerce_Utils::getIntegrationName(),
+				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() ),
 				self::get_basecode(),
 				$this->pixel_init_code(),
 				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-				WC_Facebookcommerce_Utils::getIntegrationName()
+				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() )
 			);
 		}
 
@@ -125,35 +122,94 @@ document.addEventListener('DOMContentLoaded', function() {
 			return $event_name === $this->last_event;
 		}
 
+
 		/**
-		 * Preferred method to inject events in a page, normally you should use this
-		 * instead of WC_Facebookcommerce_Pixel::build_event()
+		 * Gets the JavaScript code to track an event.
+		 *
+		 * Updates the last event property and returns the code.
+		 *
+		 * Use {@see \WC_Facebookcommerce_Pixel::inject_event()} to print or enqueue the code.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $method name of the pixel's fbq() function to call
 		 */
-		public function inject_event( $event_name, $params, $method = 'track' ) {
-			$code             = self::build_event( $event_name, $params, $method );
+		public function get_event_code( $event_name, $params, $method = 'track' ) {
+
 			$this->last_event = $event_name;
 
-			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-				WC_Facebookcommerce_Utils::wc_enqueue_js( $code );
-			} else {
-				printf(
-					'
+			return self::build_event( $event_name, $params, $method );
+		}
+
+
+		/**
+		 * Gets the JavaScript code to track an event wrapped in <script> tag.
+		 *
+		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $method name of the pixel's fbq() function to call
+		 */
+		public function get_event_script( $event_name, $params, $method = 'track' ) {
+
+			$output = '
 <!-- Facebook Pixel Event Code -->
 <script>
 %s
 </script>
 <!-- End Facebook Pixel Event Code -->
-        ',
-					$code
-				);
+';
+
+			return sprintf( $output, $this->get_event_code( $event_name, $params, $method ) );
+		}
+
+
+		/**
+		 * Prints or enqueues the JavaScript code to track an event.
+		 *
+		 * Preferred method to inject events in a page.
+		 *
+		 * @see \WC_Facebookcommerce_Pixel::build_event()
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $method name of the pixel's fbq() function to call
+		 */
+		public function inject_event( $event_name, $params, $method = 'track' ) {
+
+			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+
+				WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, $params, $method ) );
+
+			} else {
+
+				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+				printf( $this->get_event_script( $event_name, $params, $method ) );
 			}
 		}
 
-		public function inject_conditional_event(
-		$event_name, $params, $listener, $jsonified_pii = '' ) {
+
+		/**
+		 * Prints the JavaScript code to track a conditional event.
+		 *
+		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 *
+		 * @param string $event_name
+		 * @param array $params custom event parameters
+		 * @param string $listener name of the JavaScript event to listen for
+		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
+		 */
+		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+
 			$code             = self::build_event( $event_name, $params, 'track' );
 			$this->last_event = $event_name;
 
+			/** TODO: use the settings stored by {@see \WC_Facebookcommerce_Integration}. The use_pii setting here is currently always disabled regardless of the value configured in the plugin settings page {WV-2020-01-02} */
 			// Prepends fbq(...) with pii information to the injected code.
 			if ( $jsonified_pii && get_option( self::SETTINGS_KEY )[ self::USE_PII_KEY ] ) {
 				$this->user_info = '%s';
@@ -161,8 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				sprintf( $this->pixel_init_code(), '" || ' . $jsonified_pii . ' || "' ) . $code;
 			}
 
-			printf(
-				"
+			$output = "
 <!-- Facebook Pixel Event Code -->
 <script>
 document.addEventListener('%s', function (event) {
@@ -170,11 +225,12 @@ document.addEventListener('%s', function (event) {
 }, false );
 </script>
 <!-- End Facebook Pixel Event Code -->
-      ",
-				$listener,
-				$code
-			);
+";
+
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			printf( $output, esc_js( $listener ), $code );
 		}
+
 
 		/**
 		 * Returns FB pixel code noscript part to avoid W3 validation error
@@ -204,7 +260,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 <!-- DO NOT MODIFY -->
 <!-- End Facebook Pixel Code -->
     ',
-				esc_js( $pixel_id )
+				esc_attr( $pixel_id )
 			);
 		}
 
@@ -218,8 +274,8 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('%s', '%s', %s);",
 				WC_Facebookcommerce_Utils::getIntegrationName(),
-				$method,
-				$event_name,
+				esc_js( $method ),
+				esc_js( $event_name ),
 				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}

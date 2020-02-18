@@ -1,0 +1,15 @@
+# IDE
+/.project
+/.settings
+/.idea
+
+# composer packages
+/vendor
+
+# Tests
+codeception.yml
+.env
+/tests/acceptance.suite.yml
+/tests/integration.suite.yml
+/tests/unit.suite.yml
+/tests/_data/dump.sql

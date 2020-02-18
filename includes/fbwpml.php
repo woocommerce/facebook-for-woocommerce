@@ -68,74 +68,92 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 			}
 		}
 
+
+		/**
+		 * Prints the content for Facebook Visibility section.
+		 *
+		 * The section is shown at the bottom of the WPML > Languages settings page.
+		 */
 		public function wpml_support() {
+			/** @var object $sitepress */
 			global $sitepress;
-			if ( strpos( $_GET['page'], 'languages.php' ) ) {
+
+			// there is no nonce to check here and the value of $_GET['page] is being compared against a known and safe string
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['page'] ) && false !== strpos( esc_url_raw( wp_unslash( $_GET['page'] ) ), 'languages.php' ) ) {
+
+				/** @var array $active_languages */
 				$active_languages = $sitepress->get_active_languages();
 				$settings         = get_option( self::OPTION );
 
 				// Default setting is only show default lang.
 				if ( ! $settings ) {
-					$settings                        = array_fill_keys(
+
+					$settings = array_fill_keys(
 						array_keys( $active_languages ),
 						FB_WPML_Language_Status::HIDDEN
 					);
-					$settings[ self::$default_lang ] = FB_WPML_Language_Status::VISIBLE;
-				}
-				$ajax_response = sprintf(
-					'Saved. You should now ' .
-					' <a href="%s&fb_force_resync=true">Re-Sync</a>' .
-					' your products with Facebook. ',
-					WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL
-				);
 
-				?><div id="lang-sec-fb" class="wpml-section wpml-section-languages">
-		  <div class="wpml-section-header">
-			  <h3><?php _e( 'Facebook Visibility', 'sitepress' ); ?></h3>
-		  </div>
-		  <div class="wpml-section-content">
-			WooCommerce Products with languages that are selected
-			here will be visible to customers who see your Facebook Shop.
-
-			<div class="wpml-section-content-inner">
-			  <form id="icl_fb_woo" name="icl_fb_woo" action="">
-				<?php
-				foreach ( $settings as $language => $set ) {
-					$is_checked = $set === FB_WPML_Language_Status::VISIBLE ?
-					'checked' : '';
-					$str        = '
-                      <p><label>
-                        <input type="checkbox" id="icl_fb_woo_chk" name="' . $language . '" ' . $is_checked . '>
-                        ' . $active_languages[ $language ]['native_name'] . '
-                      </label></p>
-                    ';
-					echo $str;
+					if ( self::$default_lang ) {
+						$settings[ self::$default_lang ] = FB_WPML_Language_Status::VISIBLE;
+					}
 				}
+
 				?>
-			  <p class="buttons-wrap">
-				<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
-				  <?php echo $ajax_response; ?>
-				</span>
-				<input class="button button-primary"
-					   name="save"
-					   value="<?php _e( 'Save', 'sitepress' ); ?>"
-					   type="submit" />
-			  </p>
-			  </form>
-			  <script type="text/javascript">
-				addLoadEvent(function(){
-				  jQuery('#icl_fb_woo').submit(iclSaveForm);
-				  jQuery('#icl_fb_woo').submit(function(){
-					jQuery('#icl_ajx_response_fb').show();
-				  });
-				});
-			  </script>
-			</div>
-		  </div>
-	  </div>
+				<div id="lang-sec-fb" class="wpml-section wpml-section-languages">
+					<div class="wpml-section-header">
+						<h3><?php esc_html_e( 'Facebook Visibility', 'facebook-for-woocommerce' ); ?></h3>
+					</div>
+					<div class="wpml-section-content">
+						<?php esc_html_e( 'WooCommerce Products with languages that are selected here will be visible to customers who see your Facebook Shop.', 'facebook-for-woocommerce' ); ?>
+
+						<div class="wpml-section-content-inner">
+							<form id="icl_fb_woo" name="icl_fb_woo" action="">
+
+								<?php foreach ( $settings as $language => $set ) : ?>
+
+									<p>
+										<label>
+											<input type="checkbox" id="icl_fb_woo_chk" name="<?php echo esc_attr( $language ); ?>" <?php checked( $set, FB_WPML_Language_Status::VISIBLE ); ?>>
+											<?php echo isset( $active_languages[ $language ]['native_name'] ) ? esc_html( $active_languages[ $language ]['native_name'] ) : esc_html( $language ); ?>
+										</label>
+									</p>
+
+								<?php endforeach; ?>
+
+								<p class="buttons-wrap">
+									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
+										<?php printf(
+											/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
+											esc_html__( 'Saved. You should now %1$sRe-Sync%2$s your products with Facebook.', 'facebook-for-woocommerce' ),
+											sprintf( '<a href="%s">', esc_url( add_query_arg( 'fb_force_resync', 'true', WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) ) ),
+											'</a>'
+										); ?>
+									</span>
+									<input
+										class="button button-primary"
+										name="save"
+										value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
+										type="submit"
+									/>
+								</p>
+							</form>
+							<script type="text/javascript">
+								addLoadEvent( function() {
+									jQuery( '#icl_fb_woo' ).submit( iclSaveForm );
+									jQuery( '#icl_fb_woo' ).submit( function() {
+										jQuery( '#icl_ajx_response_fb' ).show();
+									} );
+								} );
+							</script>
+						</div>
+					</div>
+				</div>
 				<?php
 			}
 		}
+
+
 	}
 
 endif;
