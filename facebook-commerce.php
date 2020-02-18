@@ -537,7 +537,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_metabox_jsx',
 			plugins_url(
-				'/assets/js/facebook-metabox.js?ts=' . time(),
+				'/assets/js/facebook-metabox.min.js?ts=' . time(),
 				__FILE__
 			)
 		);
@@ -692,7 +692,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_infobanner_jsx',
 			plugins_url(
-				'/assets/js/facebook-infobanner.js?ts=' . time(),
+				'/assets/js/facebook-infobanner.min.js?ts=' . time(),
 				__FILE__
 			)
 		);
@@ -771,7 +771,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
-				'/assets/js/facebook-settings.js?ts=' . time(),
+				'/assets/js/facebook-settings.min.js?ts=' . time(),
 				__FILE__
 			)
 		);
