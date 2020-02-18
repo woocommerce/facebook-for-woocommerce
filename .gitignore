@@ -3,7 +3,11 @@
 /.settings
 /.idea
 
+# npm packages
 /node_modules
+
+# sake
+/build
 
 # composer packages
 /vendor
