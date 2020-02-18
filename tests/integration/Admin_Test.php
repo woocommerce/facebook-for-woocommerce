@@ -28,8 +28,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$this->integration = facebook_for_woocommerce()->get_integration();
 
 		// simulate a complete plugin configuration so that actions and filters callbacks are setup
-		$this->integration->api_key            = '1234';
-		$this->integration->product_catalog_id = '1234';
+		$this->integration->update_page_access_token( '1234' );
+		$this->integration->update_product_catalog_id( '1234' );
 
 		$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
 	}
@@ -113,8 +113,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$excluded_tags       = [ 4, 5, 6 ];
 
 		$options = [
-			'fb_sync_exclude_categories' => $excluded_categories,
-			'fb_sync_exclude_tags'       => $excluded_tags,
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => $excluded_categories,
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => $excluded_tags,
 		];
 
 		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );
@@ -147,8 +147,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$excluded_tags       = [ 4, 5, 6 ];
 
 		$options = [
-			'fb_sync_exclude_categories' => $excluded_categories,
-			'fb_sync_exclude_tags'       => $excluded_tags,
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => $excluded_categories,
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => $excluded_tags,
 		];
 
 		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );

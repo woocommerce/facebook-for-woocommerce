@@ -217,7 +217,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 
 		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
 
-		$settings['fb_sync_exclude_categories'] = $this->excluded_categories;
+		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS ] = $this->excluded_categories;
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
 
@@ -239,7 +239,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 
 		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
 
-		$settings['fb_sync_exclude_tags'] = $this->excluded_tags;
+		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS ] = $this->excluded_tags;
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
 

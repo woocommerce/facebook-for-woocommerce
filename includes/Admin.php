@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Admin handler.
  *
- * @since x.y.z
+ * @since 1.10.0-dev.1
  */
 class Admin {
 
@@ -23,7 +23,7 @@ class Admin {
 	/**
 	 * Admin constructor.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function __construct() {
 
@@ -33,7 +33,7 @@ class Admin {
 		$integration = facebook_for_woocommerce()->get_integration();
 
 		// only alter the admin UI if the plugin is connected to Facebook and ready to sync products
-		if ( ! $integration->api_key || ! $integration->product_catalog_id ) {
+		if ( ! $integration->get_page_access_token() || ! $integration->get_product_catalog_id() ) {
 			return;
 		}
 
@@ -72,7 +72,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function enqueue_scripts() {
 		global $current_screen;
@@ -123,7 +123,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $columns array of keys and labels
 	 * @return array
@@ -142,7 +142,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param string $column the current column in the posts table
 	 */
@@ -234,7 +234,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function add_products_by_sync_enabled_input_filter() {
 		global $typenow;
@@ -261,7 +261,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
@@ -325,7 +325,7 @@ class Admin {
 	/**
 	 * Adds query vars to limit the results to products that have sync enabled.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $query_vars
 	 * @return array
@@ -352,7 +352,7 @@ class Admin {
 	/**
 	 * Adds a tax query to filter out products in excluded product categories and product tags.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
@@ -402,7 +402,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $bulk_actions array of bulk action keys and labels
 	 * @return array
@@ -421,7 +421,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param string $redirect admin URL used by WordPress to redirect after performing the bulk action
 	 * @return string
@@ -482,7 +482,7 @@ class Admin {
 	 *
 	 * TODO: update this method to use the notice handler once we framework the plugin {CW 2020-01-09}
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function validate_cart_url() {
 		global $current_screen;
@@ -516,7 +516,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param array $tabs product tabs
 	 * @return array
@@ -538,7 +538,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function add_product_settings_tab_content() {
 		global $post;
@@ -621,7 +621,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param int $index the index of the current variation
 	 * @param array $variation_data unused
@@ -716,7 +716,7 @@ class Admin {
 	 *
 	 * If no value is found, we try to use the value stored in the parent product.
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param \WC_Product_Variation $variation the product variation
 	 * @param string $key the name of the meta to retrieve
@@ -740,7 +740,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 *
 	 * @param int $variation_id the ID of the product variation being edited
 	 * @param int $index the index of the current variation
@@ -790,7 +790,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function render_modal_template() {
 		global $current_screen;
@@ -831,7 +831,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.10.0-dev.1
 	 */
 	public function validate_product_excluded_terms() {
 		global $current_screen, $post;

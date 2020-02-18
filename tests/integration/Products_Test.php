@@ -226,10 +226,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_product() {
 
-		$product = new \WC_Product();
-		$product->save();
-
-		return $product;
+		return $this->tester->get_product();
 	}
 
 
@@ -241,31 +238,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_variable_product( $children = [] ) {
 
-		$product = new \WC_Product_Variable();
-
-		$product->save();
-
-		$variations = [];
-
-		if ( empty( $children ) || is_numeric( $children ) ) {
-
-			$default_variations = 3;
-			$total_variations   = 0 !== $children && empty( $children ) ? $default_variations : max( 0, (int) $children );
-
-			for ( $i = 0; $i < $total_variations; $i++ ) {
-
-				$variation = new \WC_Product_Variation();
-				$variation->set_parent_id( $product->get_id() );
-				$variation->save();
-
-				$variations[] = $variation->get_id();
-			}
-		}
-
-		$product->set_children( $variations );
-		$product->save();
-
-		return $product;
+		return $this->tester->get_variable_product( $children );
 	}
 
 
@@ -279,7 +252,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->excluded_category = $category['term_id'];
 
 		$settings = [
-			'fb_sync_exclude_categories' => [ $this->excluded_category ]
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $this->excluded_category ]
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );

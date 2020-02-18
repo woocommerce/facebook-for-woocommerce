@@ -3,16 +3,21 @@
     "description": "Grow your business with Facebook for WooCommerce! This plugin will install a Facebook Pixel and optionally create a shop on your Facebook page.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0+",
-    "require": {
-        "composer/installers": "~1.0",
-	    "php": ">=5.6"
-    },
     "repositories": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/skyverge/wc-plugin-framework"
+        },
         {
             "type": "git",
             "url" : "git@github.com:facebookincubator/facebook-for-woocommerce.git"
         }
     ],
+    "require": {
+      "skyverge/wc-plugin-framework": "5.5.4",
+      "composer/installers": "~1.0",
+      "php": ">=5.6"
+    },
     "require-dev": {
         "wp-coding-standards/wpcs": "~2.2.0",
         "phpcompatibility/php-compatibility": "~9.3.5",
