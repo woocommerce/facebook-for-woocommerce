@@ -1,4 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
+
+2020.nn.nn - version 1.10.0-dev.1
+
 2019-06-27 - Version 1.9.15
 * CSRF handling for Ajax calls like ajax_woo_infobanner_post_click, ajax_woo_infobanner_post_xout, ajax_fb_toggle_visibility
 * use phpcs to adhere to WP coding standards
