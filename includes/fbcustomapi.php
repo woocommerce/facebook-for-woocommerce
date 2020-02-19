@@ -39,28 +39,29 @@ class WC_Facebookcommerce_REST_Controller extends WP_REST_Controller {
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => array($this, 'get_feed_url'),
       ));
-		register_rest_route('facebook/v1', '/feedpingurl' ,
+    register_rest_route('facebook/v1', '/genfeed/from=genFeedPing' ,
       array(
         'methods'             => WP_REST_Server::READABLE,
-        'callback'            => array($this, 'get_feed_ping_url'),
+        'callback'            => array($this, 'gen_feed_ping'),
       ));
   }
 
-  public function get_feed_url(WP_REST_Request $request) {
-		$feed = new WC_Facebook_Product_Feed();
-		$url = $feed->gen_feed();
-		$res = new WP_REST_Response($url);
-		$res->set_status(200);
+  public function gen_feed( WP_REST_Request $request ) {
+    $feed = new WC_Facebook_Product_Feed();
+		$url = $feed->gen_feed( false );
+		$res = new WP_REST_Response( $url );
+		$res->set_status( 200 );
 		$res->jsonSerialize();
 		return $res;
   }
 
-	public function get_feed_ping_url(WP_REST_Request $request) {
-		$value = 5;
-		$res = new WP_REST_Response($value);
-		$res->set_status(200);
-		$res->jsonSerialize();
-		return $res;
+	public function gen_feed_ping( WP_REST_Request $request ) {
+    $feed = new WC_Facebook_Product_Feed();
+	  $time = $feed->estimateFeedGenerationTime();
+	  $res = new WP_REST_Response( $time );
+	  $res->set_status( 200 );
+	  $res->jsonSerialize();
+	  return $res;
 	}
 
 }
