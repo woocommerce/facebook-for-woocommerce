@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -2962,7 +2963,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
 		$max_chars    = $this->get_messenger_greeting_max_characters();
-		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
+		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, Framework\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
 
 		if ( $value_length > $max_chars ) {
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
