@@ -2961,10 +2961,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
-		$max_chars = $this->get_messenger_greeting_max_characters();
+		$max_chars    = $this->get_messenger_greeting_max_characters();
+		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
 
-		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
-		if ( strlen( $value ) > $max_chars ) {
+		if ( $value_length > $max_chars ) {
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
 			throw new \Exception( sprintf(
 				$this->get_messenger_greeting_long_warning_text() . ' %s',
