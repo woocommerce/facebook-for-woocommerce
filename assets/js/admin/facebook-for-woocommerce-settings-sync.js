@@ -92,7 +92,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 	// adds a leading zero to time picker fields
-	$( '#woocommerce_facebookcommerce_scheduled_resync_hours, #woocommerce_facebookcommerce_scheduled_resync_minutes' ).on( 'change keyup keydown keypress click', function() {
+	$( '#woocommerce_facebookcommerce_scheduled_resync_hours, #woocommerce_facebookcommerce_scheduled_resync_minutes' ).on( 'input change keyup keydown keypress click', function() {
 
 		let value = $( this ).val();
 
