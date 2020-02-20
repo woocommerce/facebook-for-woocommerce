@@ -177,7 +177,7 @@ class Admin {
 
 			else :
 
-				$is_sync_enabled = Products::is_sync_enabled_for_product( $product );
+				$is_sync_enabled = Products::product_should_be_synced( $product );
 				$is_visible      = Products::is_product_visible( $product );
 				$is_hidden       = ! $is_visible;
 
