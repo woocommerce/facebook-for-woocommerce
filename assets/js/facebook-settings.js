@@ -392,6 +392,7 @@ function not_connected() {
 
 	jQuery( '#fbsetup' ).show();
 	jQuery( '#integration-settings' ).hide();
+	jQuery( '.woocommerce-save-button' ).hide();
 }
 
 function addAnEventListener(obj,evt,func) {
@@ -581,6 +582,7 @@ function iFrameListener(event) {
 			// hide Facebook fancy box and show integration settings
 			jQuery( '#fbsetup' ).hide();
 			jQuery( '#integration-settings' ).show();
+			jQuery( '.woocommerce-save-button' ).show();
 		break;
 
 		case 'set msger chat':
