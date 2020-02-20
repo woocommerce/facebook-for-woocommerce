@@ -6,6 +6,7 @@
  *
  * @package FacebookCommerce
  */
+
 jQuery( document ).ready( function( $ ) {
 
 	const pagenow = window.pagenow.length ? window.pagenow : '',
