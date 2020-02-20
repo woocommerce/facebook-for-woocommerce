@@ -2959,12 +2959,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function validate_messenger_greeting_field( $key, $value ) {
 
-		$value = null === $value ? '' : trim( sanitize_text_field( wp_unslash( $value ) ) );
+		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
 		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
-		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
+		if ( strlen( $value ) > $max_chars ) {
 			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
 			throw new \Exception( sprintf(
 				$this->get_messenger_greeting_long_warning_text() . ' %s',
