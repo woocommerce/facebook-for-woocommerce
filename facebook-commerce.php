@@ -2357,10 +2357,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			],
 
 			self::SETTING_ENABLE_ADVANCED_MATCHING => [
-				'title'   => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
-				'type'    => 'checkbox',
-				'label'   => ' ',
-				'default' => 'yes',
+				'title'       => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
+				'description' => sprintf(
+					/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
+					__( 'Improve the ability to match site visitors to people on Facebook by passing additional site visitor information (such as email address or phone number). %1$sLearn more%2$s.', 'facebook-for-woocommerce' ),
+					'<a href="https://developers.facebook.com/docs/facebook-pixel/pixel-with-ads/conversion-tracking#advanced_match" target="_blank">',
+					'</a>'
+				),
+				'type'        => 'checkbox',
+				'label'       => ' ',
+				'default'     => 'yes',
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
