@@ -2438,7 +2438,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
-				'default'  => 'yes',
+				'default'  => 'no',
 			],
 
 			self::SETTING_MESSENGER_LOCALE => [
