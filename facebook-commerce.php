@@ -2966,8 +2966,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, Framework\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
 
 		if ( $value_length > $max_chars ) {
-			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
-			throw new \Exception( sprintf(
+
+			throw new Framework\SV_WC_Plugin_Exception( sprintf(
 				$this->get_messenger_greeting_long_warning_text() . ' %s',
 				__( "The greeting hasn't been updated.", 'facebook-for-woocommerce' )
 			) );
