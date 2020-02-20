@@ -152,6 +152,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			$string = str_replace( array( '&amp%3B', '&amp;' ), '&', $string );
 			$string = str_replace( array( "\r", '&nbsp;', "\t" ), ' ', $string );
 			$string = wp_strip_all_tags( $string, false ); // true == remove line breaks
+
+			if(function_exists('qtranxf_getLanguage')) return apply_filters('translate_text', $string);
 			return $string;
 		}
 
@@ -371,6 +373,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			);
 			if ( $name ) {
 				self::$store_name = $name;
+
+				if(function_exists('qtranxf_getLanguage')) return apply_filters('translate_text', $name);
 				return $name;
 			}
 			// Fallback to site url
