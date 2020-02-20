@@ -168,7 +168,12 @@ class Admin {
 
 			if ( ! $fb_product_group_id ) :
 
-				?><span>&ndash;</span><?php
+				?>
+				<span
+					class="tips"
+					data-tip="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
+				>&ndash;</span>
+				<?php
 
 			else :
 
