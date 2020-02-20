@@ -670,15 +670,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $products->found_posts;
 	}
 
-	private function get_global_feed_url() {
-
-		$http       = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://";
-		$index      = ! empty( $_SERVER['REQUEST_URI'] ) ? strrpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-admin/' ) : null;
-		$begin_path = ! empty( $_SERVER['REQUEST_URI'] ) ? substr( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 0, $index ) : '';
-		$url        = $http . ( ! empty( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' ) . $begin_path . WC_Facebook_Product_Feed::FACEBOOK_CATALOG_FEED_FILEPATH;
-
-		return $url;
-	}
 
 	/**
 	 * Load DIA specific JS Data
@@ -753,10 +744,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_js( $this->get_global_feed_url() ); ?>',
+			feedUrl: '',
 			feedPingUrl: '',
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
+		tokenExpired: '<?php echo $this->get_page_access_token() && ! $this->get_page_name(); ?>',
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
 		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
 		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
@@ -4151,7 +4143,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function handle_scheduled_resync_action() {
 
 		$this->sync_all_fb_products_using_feed();
-
+wp_var_log( 'finished' );
 		$resync_offset = $this->get_scheduled_resync_offset();
 
 		// manually schedule the next product resync action if possible

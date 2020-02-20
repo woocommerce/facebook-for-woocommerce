@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	 */
 	class WC_Facebook_Product_Feed {
 
-		const FACEBOOK_CATALOG_FEED_FILEPATH = '/wp-content/uploads/fbe_product_catalog.csv';
+		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
 		const FB_PRODUCT_GROUP_ID            = 'fb_product_group_id';
@@ -57,13 +57,36 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->log_feed_progress( 'Sync all products using feed, feed file generated' );
 
 			if ( ! $this->feed_id ) {
+				$this->feed_id = $this->create_feed();
+				if ( ! $this->feed_id ) {
+					$this->log_feed_progress(
+						'Failure - Sync all products using feed, facebook feed not created'
+					);
+					return false;
+				}
 				$this->log_feed_progress(
-					'Failure - Sync all products using feed, facebook feed not created'
+					'Sync all products using feed, facebook feed created'
+				);
+			} else {
+				$this->log_feed_progress(
+					'Sync all products using feed, facebook feed already exists.'
+				);
+			}
+
+			$this->upload_id = $this->create_upload( $this->feed_id );
+			if ( ! $this->upload_id ) {
+				$this->log_feed_progress(
+					'Failure - Sync all products using feed, facebook upload not created'
 				);
 				return false;
 			}
 			$this->log_feed_progress(
-				'Sync all products using feed, facebook feed already exists.'
+				'Sync all products using feed, facebook upload created'
+			);
+
+			unlink(
+				dirname( __FILE__ ) .
+				DIRECTORY_SEPARATOR . ( self::FACEBOOK_CATALOG_FEED_FILENAME )
 			);
 
 			$total_product_count        =
@@ -87,13 +110,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			return true;
 		}
 
-		public function get_local_product_feed_file_path() {
-			$index = strrpos(dirname( __FILE__ ), '/wp-content/');
-			$prefix = substr(dirname( __FILE__ ), 0, $index);
-			$full_path = $prefix . self::FACEBOOK_CATALOG_FEED_FILEPATH;
-			return $full_path;
-		}
-
 		public function generate_productfeed_file() {
 			$this->log_feed_progress( 'Generating product feed file' );
 			$post_ids           = $this->get_product_wpid();
@@ -112,11 +128,14 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 		public function write_product_feed_file( $wp_ids ) {
 
-			$local_feed_path = $this->get_local_product_feed_file_path();
-
 			try {
 
-				$feed_file = fopen( $local_feed_path, 'w' );
+				$feed_file =
+				fopen(
+					dirname( __FILE__ ) . DIRECTORY_SEPARATOR .
+					( self::FACEBOOK_CATALOG_FEED_FILENAME ),
+					'w'
+				);
 
 				fwrite( $feed_file, $this->get_product_feed_header_row() );
 
@@ -280,12 +299,32 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$product_data['variant'] . PHP_EOL;
 		}
 
+		private function create_feed() {
+			$result = $this->fbgraph->create_feed(
+				$this->facebook_catalog_id,
+				array( 'name' => self::FEED_NAME )
+			);
+			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+				$this->log_feed_progress( json_encode( $result ) );
+				return null;
+			}
+			$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+			$feed_id       = $decode_result->id;
+			if ( ! $feed_id ) {
+				$this->log_feed_progress(
+					'Response from creating feed not return feed id!'
+				);
+				return null;
+			}
+			return $feed_id;
+		}
+
 		private function create_upload( $facebook_feed_id ) {
 			$result = $this->fbgraph->create_upload(
 				$facebook_feed_id,
-				$this->get_local_product_feed_file_path()
+				dirname( __FILE__ ) . DIRECTORY_SEPARATOR .
+				( self::FACEBOOK_CATALOG_FEED_FILENAME )
 			);
-
 			if ( is_null( $result ) || ! isset( $result['id'] ) || ! $result['id'] ) {
 				$this->log_feed_progress( json_encode( $result ) );
 				return null;
