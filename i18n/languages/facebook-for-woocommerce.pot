@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Facebook for WooCommerce 1.10.0-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-02-20 05:28:40+00:00\n"
+"POT-Creation-Date: 2020-02-20 18:15:41+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -67,10 +67,6 @@ msgstr ""
 msgid ""
 "Facebook product sync may not work correctly in WooCommerce version %1$s. "
 "Please upgrade to WooCommerce 3."
-msgstr ""
-
-#: facebook-commerce.php:2354
-msgid "Pixel"
 msgstr ""
 
 #: facebook-commerce.php:2360
@@ -183,48 +179,52 @@ msgstr ""
 msgid "Facebook page"
 msgstr ""
 
-#: facebook-commerce.php:2622
+#: facebook-commerce.php:2619
+msgid "Pixel"
+msgstr ""
+
+#: facebook-commerce.php:2665
 msgid "Create ad"
 msgstr ""
 
-#: facebook-commerce.php:2651
+#: facebook-commerce.php:2694
 msgid "Product sync"
 msgstr ""
 
-#: facebook-commerce.php:2657
+#: facebook-commerce.php:2700
 msgid "Sync products"
 msgstr ""
 
-#: facebook-commerce.php:2797
+#: facebook-commerce.php:2840
 msgid "am"
 msgstr ""
 
-#: facebook-commerce.php:2802
+#: facebook-commerce.php:2845
 msgid "pm"
 msgstr ""
 
-#: facebook-commerce.php:2920
+#: facebook-commerce.php:2963
 msgid "The greeting hasn't been updated."
 msgstr ""
 
-#: facebook-commerce.php:2939
+#: facebook-commerce.php:2982
 #. translators: Placeholder: %d - maximum number of allowed characters
 msgid "The Messenger greeting must be %d characters or less."
 msgstr ""
 
-#: facebook-commerce.php:3596
+#: facebook-commerce.php:3639
 msgid "Facebook extension error: %s "
 msgstr ""
 
-#: facebook-commerce.php:3706
+#: facebook-commerce.php:3749
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
 
-#: facebook-commerce.php:3707
+#: facebook-commerce.php:3750
 msgid "Get started with Instagram Shopping"
 msgstr ""
 
-#: facebook-commerce.php:3757
+#: facebook-commerce.php:3800
 msgid ""
 "You're using Remove HTTP which has incompatibilities with our extension. "
 "Please disable it, or select the \"Ignore external links\" option on the "
@@ -235,35 +235,35 @@ msgstr ""
 msgid "Facebook"
 msgstr ""
 
-#: facebook-commerce.php:3766
+#: facebook-commerce.php:3809
 msgid "Control how WooCommerce integrates with your Facebook store."
 msgstr ""
 
-#: facebook-commerce.php:3780
+#: facebook-commerce.php:3823
 msgid "Grow your business on Facebook"
 msgstr ""
 
-#: facebook-commerce.php:3783
+#: facebook-commerce.php:3826
 msgid "Use this WooCommerce and Facebook integration to:"
 msgstr ""
 
-#: facebook-commerce.php:3787
+#: facebook-commerce.php:3830
 msgid "Easily install a tracking pixel"
 msgstr ""
 
-#: facebook-commerce.php:3788
+#: facebook-commerce.php:3831
 msgid "Upload your products and create a shop"
 msgstr ""
 
-#: facebook-commerce.php:3789
+#: facebook-commerce.php:3832
 msgid "Create dynamic ads with your products and pixel"
 msgstr ""
 
-#: facebook-commerce.php:3797
+#: facebook-commerce.php:3840
 msgid "Get Started"
 msgstr ""
 
-#: facebook-commerce.php:3950
+#: facebook-commerce.php:3993
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""
