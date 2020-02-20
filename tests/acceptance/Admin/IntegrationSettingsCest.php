@@ -89,7 +89,6 @@ class IntegrationSettingsCest {
 		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
-		$I->seeElement( 'input[type=hidden]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
 
 		$I->see( 'Use Advanced Matching', 'th.titledesc' );
 		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
