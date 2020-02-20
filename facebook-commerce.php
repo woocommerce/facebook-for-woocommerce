@@ -2959,6 +2959,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function validate_messenger_greeting_field( $key, $value ) {
 
+		$value = null === $value ? '' : trim( sanitize_text_field( wp_unslash( $value ) ) );
+
 		$max_chars = $this->get_messenger_greeting_max_characters();
 
 		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
@@ -2970,7 +2972,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			) );
 		}
 
-		return $this->validate_textarea_field( $key, $value );
+		return $value;
 	}
 
 
