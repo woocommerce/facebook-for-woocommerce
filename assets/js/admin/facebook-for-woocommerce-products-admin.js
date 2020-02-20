@@ -6,87 +6,6 @@
  *
  * @package FacebookCommerce
  */
-
-// TODO the following code needs to be wrapped into document ready but it's currently used from inline HTML {FN 2020-01-15}
-
-/*
- *  Ajax helper function.
- *  Takes optional payload for POST and optional callback.
- */
-function ajax(action, payload = null, cb = null, failcb = null) {
-	var data = Object.assign( {},
-		{
-			'action': action,
-		}, payload
-	);
-
-	// Since  Wordpress 2.8 ajaxurl is always defined in admin header and
-	// points to admin-ajax.php
-	jQuery.post(
-		ajaxurl,
-		data,
-		function(response) {
-			if (cb) {
-				cb( response );
-			}
-		}
-	).fail(
-		function(errorResponse){
-			if (failcb) {
-				failcb( errorResponse );
-			}
-		}
-	);
-}
-
-function fb_toggle_visibility( productID, published ) {
-	var buttonId = document.querySelector( "#viz_" + productID );
-	var tooltip  = document.querySelector( "#tip_" + productID );
-
-	if (published) {
-		tooltip.setAttribute(
-			'data-tip',
-			'Product is synced and published (visible) on Facebook.'
-		);
-		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + productID + ', false)' );
-		buttonId.innerHTML = 'Hide';
-		buttonId.setAttribute( 'class', 'button' );
-	} else {
-		tooltip.setAttribute(
-			'data-tip',
-			'Product is synced but not marked as published (visible) on Facebook.'
-		);
-		buttonId.setAttribute( 'onclick','fb_toggle_visibility(' + productID + ', true)' );
-		buttonId.innerHTML = 'Show';
-		buttonId.setAttribute( 'class', 'button button-primary button-large' );
-	}
-
-	// Reset tooltip
-	jQuery(
-		function($) {
-			$( '.tips' ).tipTip(
-				{
-					'attribute': 'data-tip',
-					'fadeIn': 50,
-					'fadeOut': 50,
-					'delay': 200
-				}
-			);
-		}
-	);
-
-	return jQuery.post( ajaxurl, {
-		action:   'facebook_for_woocommerce_set_products_visibility',
-		security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-		products: [
-			{
-				product_id: productID,
-				visibility: published ? 'yes' : 'no'
-			}
-		]
-	} );
-}
-
 jQuery( document ).ready( function( $ ) {
 
 	const pagenow = window.pagenow.length ? window.pagenow : '',
@@ -96,6 +15,35 @@ jQuery( document ).ready( function( $ ) {
 	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
+
+		// handle FB Catalog Visibility buttons
+		$( '.facebook-for-woocommerce-product-visibility-toggle' ).on( 'click', function( e ) {
+			e.preventDefault();
+
+			let action     = $( this ).data( 'action' ),
+			    visibility = 'show' === action ? 'yes' : 'no',
+			    productID  = parseInt( $( this ).data( 'product-id' ), 10 );
+
+			if ( 'show' === action ) {
+				$( this ).hide().next( 'button' ).show();
+			} else if ( 'hide' === action ) {
+				$( this ).hide().prev( 'button' ).show();
+			}
+
+			$.post( facebook_for_woocommerce_products_admin.ajax_url, {
+				action:   'facebook_for_woocommerce_set_products_visibility',
+				security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
+				products: [
+					{
+						product_id: productID,
+						visibility: visibility
+					}
+				]
+			} );
+		} );
+
+
+		// handle bulk actions
 		let submitProductBulkAction = false;
 
 		$( 'input#doaction, input#doaction2' ).on( 'click', function( e ) {
@@ -144,9 +92,9 @@ jQuery( document ).ready( function( $ ) {
 
 								$.each( products, function() {
 
-									let $toggle = $( '#post-' + this ).find( 'td.facebook_catalog_visibility a' );
+									let $toggle = $( '#post-' + this ).find( 'td.facebook_catalog_visibility button.facebook-for-woocommerce-product-visibility-hide' );
 
-									if ( 'visible' === $toggle.data( 'product-visibility' ) ) {
+									if ( $toggle.is( ':visible' ) ) {
 										$toggle.trigger( 'click' );
 									}
 								} );
