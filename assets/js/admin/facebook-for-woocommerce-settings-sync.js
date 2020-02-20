@@ -91,6 +91,18 @@ jQuery( document ).ready( function( $ ) {
 	} ).trigger( 'change' );
 
 
+	// adds a leading zero to time picker fields
+	$( '#woocommerce_facebookcommerce_scheduled_resync_hours, #woocommerce_facebookcommerce_scheduled_resync_minutes' ).on( 'change keyup keydown keypress click', function() {
+
+		let value = $( this ).val();
+
+		if ( ! isNaN( value ) && 1 === value.length ) {
+			$( this ).val( value.padStart( 2, '0' ) );
+		}
+
+	} ).trigger( 'change' );
+
+
 	// adds a character counter on the Messenger greeting textarea
 	$( 'textarea#woocommerce_facebookcommerce_messenger_greeting' ).on( 'focus change keyup keydown keypress', function() {
 
