@@ -2205,7 +2205,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $this->is_product_sync_enabled() ) {
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
-			$this->fb_wp_die();
 			return false;
 		}
 
@@ -2214,7 +2213,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'No API key or catalog ID: ' . $this->get_page_access_token() .
 				' and ' . $this->get_product_catalog_id()
 			);
-			$this->fb_wp_die();
 			return false;
 		}
 		$this->remove_resync_message();
@@ -2236,7 +2234,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
         "Advanced Options > Advanced Settings > Remove"
         and try setup again'
 			);
-			$this->fb_wp_die();
 			return false;
 		}
 
@@ -2276,7 +2273,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 			wp_reset_postdata();
-			$this->fb_wp_die();
 			return true;
 		}
 		WC_Facebookcommerce_Utils::fblog(
