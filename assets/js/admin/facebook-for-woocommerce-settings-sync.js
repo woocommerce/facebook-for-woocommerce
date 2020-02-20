@@ -96,7 +96,7 @@ jQuery( document ).ready( function( $ ) {
 
 		let value = $( this ).val();
 
-		if ( ! isNaN( value ) && 1 === value.length ) {
+		if ( ! isNaN( value ) && 1 === value.length && value < 10 ) {
 			$( this ).val( value.padStart( 2, '0' ) );
 		}
 
