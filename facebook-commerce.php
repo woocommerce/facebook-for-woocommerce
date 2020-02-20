@@ -2350,9 +2350,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'default' => '',
 			],
 
+			/** @see \WC_Facebookcommerce_Integration::generate_facebook_pixel_id_html() */
 			self::SETTING_FACEBOOK_PIXEL_ID => [
-				'title'   => __( 'Pixel', 'facebook-for-woocommerce' ),
-				'type'    => 'text',
+				'type'    => 'facebook_pixel_id',
 				'default' => '',
 			],
 
@@ -2438,7 +2438,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'class'    => 'messenger-field toggle-fields-group',
 				'label'    => ' ',
 				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
-				'default'  => 'yes',
+				'default'  => 'no',
 			],
 
 			self::SETTING_MESSENGER_LOCALE => [
@@ -2586,6 +2586,49 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					name="<?php echo esc_attr( $key ); ?>"
 					id="<?php echo esc_attr( $key ); ?>"
 					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
+				/>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the "Facebook Pixel" field HTML.
+	 *
+	 * @see \WC_Settings_API::generate_settings_html()
+	 *
+	 * @since 1.10.0-dev.1
+	 *
+	 * @param string|int $key field key or index
+	 * @param array $args associative array of field arguments
+	 * @return string HTML
+	 */
+	protected function generate_facebook_pixel_id_html( $key, array $args = [] ) {
+
+		$key      = $this->get_field_key( $key );
+		$pixel_id = $this->get_facebook_pixel_id();
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<?php esc_html_e( 'Pixel', 'facebook-for-woocommerce' ); ?>
+			</th>
+			<td class="forminp">
+				<?php if ( $pixel_id ) : ?>
+					<code style="padding: 4px 8px; color: #333;"><?php echo esc_html( $pixel_id ); ?></code>
+				<?php else : ?>
+					&mdash;
+				<?php endif; ?>
+				<input
+					type="hidden"
+					name="<?php echo esc_attr( $key ); ?>"
+					id="<?php echo esc_attr( $key ); ?>"
+					value="<?php echo esc_attr( $pixel_id ); ?>"
 				/>
 			</td>
 		</tr>
