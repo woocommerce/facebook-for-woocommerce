@@ -89,7 +89,6 @@ class IntegrationSettingsCest {
 		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
-		$I->seeElement( 'input[type=text]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
 
 		$I->see( 'Use Advanced Matching', 'th.titledesc' );
 		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
@@ -169,9 +168,9 @@ class IntegrationSettingsCest {
 		$I->wantTo( 'Test that the Connection fields are saved correctly' );
 
 		$form = [
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID        => '1234',
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING => true,
 		];
+
 		$I->submitForm( '#mainform', $form, 'save' );
 		$I->waitForText( 'Your settings have been saved.' );
 
