@@ -45,17 +45,22 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			'variation' => 1,
 		);
 
-		public function __construct(
-		$wpid, $parent_product = null ) {
+		public function __construct( $wpid, $parent_product = null ) {
+
 			$this->id                     = $wpid;
 			$this->fb_description         = '';
-			$this->fb_visibility          = wc_string_to_bool( get_post_meta( $wpid, self::FB_VISIBILITY, true ) );
 			$this->woo_product            = wc_get_product( $wpid );
 			$this->gallery_urls           = null;
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
+
+			if ( $meta = get_post_meta( $wpid, self::FB_VISIBILITY, true ) ) {
+				$this->fb_visibility = wc_string_to_bool( $meta );
+			} else {
+				$this->fb_visibility = ''; // for products that haven't synced yet
+			}
 
 			// Variable products should use some data from the parent_product
 			// For performance reasons, that data shouldn't be regenerated every time.
