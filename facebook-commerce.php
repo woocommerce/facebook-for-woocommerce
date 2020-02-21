@@ -1479,9 +1479,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Check Feed Upload Status
+	 * Check Feed Upload Status (FBE v1.0)
 	 **/
 	function ajax_check_feed_upload_status() {
+		$response = array(
+			'connected' => true,
+			'status'    => 'complete',
+		);
+		printf( json_encode( $response ) );
+		wp_die();
+	}
+
+	/**
+	 * Check Feed Upload Status (FBE v2.0)
+	 * TODO: When migrating to FBE v2.0, remove above function and rename
+	 * below function to ajax_check_feed_upload_status()
+	 **/
+	function ajax_check_feed_upload_status_v2() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		if ( $this->settings['fb_api_key'] ) {
