@@ -227,9 +227,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				$facebook_feed_id,
 				'/uploads?access_token=' . $this->api_key
 			);
-			$data = array(
-				'file' => new CurlFile( $path_to_feed_file, 'text/csv' ),
-			);
+
+			$data = [
+				'file'        => new CurlFile( $path_to_feed_file, 'text/csv' ),
+				'update_only' => true,
+			];
+
 			$curl = curl_init();
 			curl_setopt_array(
 				$curl,
