@@ -17,8 +17,19 @@ jQuery( document ).ready( function( $ ) {
 	if ( 'edit-product' === pagenow ) {
 
 
+		let visibilityToggles = $( '.facebook-for-woocommerce-product-visibility-toggle' );
+
+		// init visibility toggles tooltips
+		visibilityToggles.tipTip( {
+			attribute:  'title',
+			edgeOffset: 5,
+			fadeIn:     50,
+			fadeOut:    50,
+			delay:      200
+		} );
+
 		// handle FB Catalog Visibility buttons
-		$( '.facebook-for-woocommerce-product-visibility-toggle' ).on( 'click', function( e ) {
+		visibilityToggles.on( 'click', function( e ) {
 			e.preventDefault();
 
 			let action     = $( this ).data( 'action' ),

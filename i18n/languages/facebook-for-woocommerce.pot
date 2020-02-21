@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Facebook for WooCommerce 1.10.0-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-02-21 02:34:43+00:00\n"
+"POT-Creation-Date: 2020-02-21 02:40:06+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -359,57 +359,57 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: includes/Admin.php:174
+#: includes/Admin.php:175
 msgid "Product is not synced with Facebook."
 msgstr ""
 
-#: includes/Admin.php:187
+#: includes/Admin.php:188
 msgid "Product is synced and published (visible) on Facebook."
 msgstr ""
 
-#: includes/Admin.php:189
+#: includes/Admin.php:190
 msgid "Product is synced but not marked as published (visible) on Facebook."
 msgstr ""
 
-#: includes/Admin.php:195
+#: includes/Admin.php:196
 msgid ""
 "Product is published (visible) on Facebook, but not synced, so updates "
 "won’t be reflected on Facebook."
 msgstr ""
 
-#: includes/Admin.php:197
+#: includes/Admin.php:198
 msgid "Product is not synced and not published (visible) on Facebook."
 msgstr ""
 
-#: includes/Admin.php:209
+#: includes/Admin.php:210
 msgid "Show"
 msgstr ""
 
-#: includes/Admin.php:217
+#: includes/Admin.php:218
 msgid "Hide"
 msgstr ""
 
-#: includes/Admin.php:245
+#: includes/Admin.php:246
 msgid "Filter by Facebook sync setting"
 msgstr ""
 
-#: includes/Admin.php:246
+#: includes/Admin.php:247
 msgid "Facebook sync enabled"
 msgstr ""
 
-#: includes/Admin.php:247
+#: includes/Admin.php:248
 msgid "Facebook sync disabled"
 msgstr ""
 
-#: includes/Admin.php:406 includes/Admin.php:555 includes/Admin.php:647
+#: includes/Admin.php:407 includes/Admin.php:556 includes/Admin.php:648
 msgid "Include in Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:407
+#: includes/Admin.php:408
 msgid "Exclude from Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:494
+#: includes/Admin.php:495
 #. translators: Placeholders: %1$s - Facebook for Woocommerce, %2$s - opening
 #. HTML <a> link tag, %3$s - closing HTML </a> link tag
 msgid ""
@@ -418,61 +418,61 @@ msgid ""
 "checkout URLs on Facebook%3$s."
 msgstr ""
 
-#: includes/Admin.php:561 includes/Admin.php:656
+#: includes/Admin.php:562 includes/Admin.php:657
 msgid "Facebook Description"
 msgstr ""
 
-#: includes/Admin.php:563 includes/Admin.php:658
+#: includes/Admin.php:564 includes/Admin.php:659
 msgid ""
 "Custom (plain-text only) description for product on Facebook. If blank, "
 "product description will be used. If product description is blank, "
 "shortname will be used."
 msgstr ""
 
-#: includes/Admin.php:572 includes/Admin.php:669
+#: includes/Admin.php:573 includes/Admin.php:670
 msgid "Facebook Product Image"
 msgstr ""
 
-#: includes/Admin.php:574 includes/Admin.php:671
+#: includes/Admin.php:575 includes/Admin.php:672
 msgid ""
 "Choose the product image that should be synced to the Facebook catalog for "
 "this product. If using a custom image, please enter an absolute URL (e.g. "
 "https://domain.com/image.jpg)."
 msgstr ""
 
-#: includes/Admin.php:576
+#: includes/Admin.php:577
 msgid "Use WooCommerce image"
 msgstr ""
 
-#: includes/Admin.php:577 includes/Admin.php:675
+#: includes/Admin.php:578 includes/Admin.php:676
 msgid "Use custom image"
 msgstr ""
 
-#: includes/Admin.php:586 includes/Admin.php:685
+#: includes/Admin.php:587 includes/Admin.php:686
 msgid "Custom Image URL"
 msgstr ""
 
-#: includes/Admin.php:595 includes/Admin.php:696
+#: includes/Admin.php:596 includes/Admin.php:697
 #. translators: Placeholders %1$s - WC currency symbol
 msgid "Facebook Price (%1$s)"
 msgstr ""
 
-#: includes/Admin.php:599 includes/Admin.php:700
+#: includes/Admin.php:600 includes/Admin.php:701
 msgid ""
 "Custom price for product on Facebook. Please enter in monetary decimal (.) "
 "format without thousand separators and currency symbols. If blank, product "
 "price will be used."
 msgstr ""
 
-#: includes/Admin.php:673
+#: includes/Admin.php:674
 msgid "Use variation image"
 msgstr ""
 
-#: includes/Admin.php:674
+#: includes/Admin.php:675
 msgid "Use parent image"
 msgstr ""
 
-#: includes/Admin.php:805
+#: includes/Admin.php:806
 msgid "Close modal panel"
 msgstr ""
 

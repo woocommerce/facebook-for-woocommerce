@@ -170,6 +170,7 @@ class Admin {
 
 				?>
 				<span
+					class="facebook-for-woocommerce-product-visibility-toggle"
 					style="cursor:default;"
 					title="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
 				>&ndash;</span>
