@@ -170,7 +170,7 @@ class Admin {
 
 				?>
 				<span
-					style="cursor:help;"
+					style="cursor:default;"
 					title="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
 				>&ndash;</span>
 				<?php
@@ -202,7 +202,7 @@ class Admin {
 				<button
 					id="facebook-for-woocommerce-product-visibility-show-<?php echo esc_attr( $post->ID ); ?>"
 					class="button button-primary button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-show"
-					style="cursor:help; <?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
+					style="<?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
 					data-action="show"
 					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
 					title="<?php echo esc_attr( $tooltip_text ); ?>"
@@ -210,7 +210,7 @@ class Admin {
 				<button
 					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
 					class="button button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
-					style="cursor:help; <?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
+					style="<?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
 					data-action="hide"
 					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
 					title="<?php echo esc_attr( $tooltip_text ); ?>"
