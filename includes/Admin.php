@@ -184,19 +184,13 @@ class Admin {
 
 				if ( $is_sync_enabled ) {
 
-					if ( $is_visible ) {
-						$tooltip_text = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
-					} else {
-						$tooltip_text = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
-					}
+					$visible_tooltip_text = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
+					$hidden_tooltip_text  = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
 
 				} else {
 
-					if ( $is_visible ) {
-						$tooltip_text = __( 'Product is published (visible) on Facebook, but not synced, so updates won’t be reflected on Facebook.', 'facebook-for-woocommerce' );
-					} else {
-						$tooltip_text = __( 'Product is not synced and not published (visible) on Facebook.', 'facebook-for-woocommerce' );
-					}
+					$visible_tooltip_text = __( 'Product is published (visible) on Facebook, but not synced, so updates won’t be reflected on Facebook.', 'facebook-for-woocommerce' );
+					$hidden_tooltip_text  = __( 'Product is not synced and not published (visible) on Facebook.', 'facebook-for-woocommerce' );
 				}
 
 				?>
@@ -206,7 +200,7 @@ class Admin {
 					style="<?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
 					data-action="show"
 					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $tooltip_text ); ?>"
+					title="<?php echo esc_attr( $hidden_tooltip_text ); ?>"
 				><?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?></button>
 				<button
 					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
@@ -214,7 +208,7 @@ class Admin {
 					style="<?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
 					data-action="hide"
 					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $tooltip_text ); ?>"
+					title="<?php echo esc_attr( $visible_tooltip_text ); ?>"
 				><?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?></button>
 				<?php
 
