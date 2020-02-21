@@ -170,62 +170,46 @@ class Admin {
 
 				?>
 				<span
-					class="tips"
-					data-tip="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
+					class="facebook-for-woocommerce-product-visibility-toggle"
+					style="cursor:default;"
+					title="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
 				>&ndash;</span>
 				<?php
 
 			else :
 
-				$visibility = Products::is_product_visible( $product );
+				$is_sync_enabled = Products::product_should_be_synced( $product );
+				$is_visible      = Products::is_product_visible( $product );
+				$is_hidden       = ! $is_visible;
 
-				// TODO: current JS code will change the button text and tooltip content without considering localization here {FN 2020-01-13}
+				if ( $is_sync_enabled ) {
 
-				if ( ! $visibility ) {
-					$data_tip_content = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
+					$visible_tooltip_text = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
+					$hidden_tooltip_text  = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
+
 				} else {
-					$data_tip_content = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
+
+					$visible_tooltip_text = __( 'Product is published (visible) on Facebook, but not synced, so updates won’t be reflected on Facebook.', 'facebook-for-woocommerce' );
+					$hidden_tooltip_text  = __( 'Product is not synced and not published (visible) on Facebook.', 'facebook-for-woocommerce' );
 				}
 
-				// TODO be mindful of classes and IDs for HTML below as it may have to be refactored if JS script changes for handling visibility {FN 2020-01-13}
-
 				?>
-				<span
-					class="tips"
-					id="tip_<?php echo esc_attr( $post->ID ); ?>"
-					data-tip="<?php echo esc_attr( $data_tip_content ); ?>">
-					<?php
-
-					if ( ! $visibility ) :
-
-						?>
-						<a
-							id="viz_<?php echo esc_attr( $post->ID ); ?>"
-							class="button button-primary button-large"
-							href="javascript:;"
-							onclick="fb_toggle_visibility( <?php echo esc_attr( $post->ID ); ?>, true )"
-							data-product-visibility="hidden">
-							<?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?>
-						</a>
-						<?php
-
-					else :
-
-						?>
-						<a
-							id="viz_<?php echo esc_attr( $post->ID ); ?>"
-							class="button button-large"
-							href="javascript:;"
-							onclick="fb_toggle_visibility(<?php echo esc_attr( $post->ID ); ?>, false)"
-							data-product-visibility="visible">
-							<?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?>
-						</a>
-						<?php
-
-					endif;
-
-					?>
-				</span>
+				<button
+					id="facebook-for-woocommerce-product-visibility-show-<?php echo esc_attr( $post->ID ); ?>"
+					class="button button-primary button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-show"
+					style="<?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
+					data-action="show"
+					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
+					title="<?php echo esc_attr( $hidden_tooltip_text ); ?>"
+				><?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?></button>
+				<button
+					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
+					class="button button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
+					style="<?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
+					data-action="hide"
+					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
+					title="<?php echo esc_attr( $visible_tooltip_text ); ?>"
+				><?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?></button>
 				<?php
 
 			endif;
