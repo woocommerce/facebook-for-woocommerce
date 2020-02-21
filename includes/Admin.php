@@ -209,7 +209,7 @@ class Admin {
 				><?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?></button>
 				<button
 					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
-					class="button button-primary button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
+					class="button button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
 					style="cursor:help; <?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
 					data-action="hide"
 					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
