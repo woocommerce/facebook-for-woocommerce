@@ -768,7 +768,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
 		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
 		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
-		$url = $http . $_SERVER['HTTP_HOST'] . "/wordpress/index.php/wp-json/facebook/v1/genfeed";
+		$url = $http . $_SERVER['HTTP_HOST'] . $begin_path . "/index.php/wp-json/facebook/v1/genfeed";
 		return $url;
 	}
 
@@ -776,7 +776,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
 		$index = strrpos($_SERVER['REQUEST_URI'], '/wp-admin/');
 		$begin_path = substr($_SERVER['REQUEST_URI'], 0, $index);
-		$url = $http . $_SERVER['HTTP_HOST'] . "/wordpress/index.php/wp-json/facebook/v1/genfeed/?from=genFeedPing";
+		$url = $http . $_SERVER['HTTP_HOST'] . $begin_path . "/index.php/wp-json/facebook/v1/genfeed/feedping";
 		return $url;
 	}
 
