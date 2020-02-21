@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -2959,18 +2960,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function validate_messenger_greeting_field( $key, $value ) {
 
-		$max_chars = $this->get_messenger_greeting_max_characters();
+		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
-		// TODO replace strlen() usage here with Framework helper to account for multibyte characters {FN 2020-01-30}
-		if ( is_string( $value ) && strlen( $value ) > $max_chars ) {
-			// TODO replace this generic Exception with a SkyVerge Framework Plugin Exception {FN 2020-01-29}
-			throw new \Exception( sprintf(
+		$max_chars    = $this->get_messenger_greeting_max_characters();
+		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, Framework\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
+
+		if ( $value_length > $max_chars ) {
+
+			throw new Framework\SV_WC_Plugin_Exception( sprintf(
 				$this->get_messenger_greeting_long_warning_text() . ' %s',
 				__( "The greeting hasn't been updated.", 'facebook-for-woocommerce' )
 			) );
 		}
 
-		return $this->validate_textarea_field( $key, $value );
+		return $value;
 	}
 
 

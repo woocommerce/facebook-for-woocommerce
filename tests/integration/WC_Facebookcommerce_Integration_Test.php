@@ -813,6 +813,53 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field()
+	 *
+	 * @dataProvider validate_messenger_greeting_field_provider
+	 *
+	 * @param null|string $value value to validate
+	 * @param string $expected expected result
+	 * @param bool $exception whether an exception is expected
+	 */
+	public function test_validate_messenger_greeting_field( $value, $expected, $exception = false ) {
+
+		$integration = $this->integration;
+
+		$fields = $integration->get_form_fields();
+		$key    = \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING;
+		$field  = $fields[ $key ];
+
+		if ( $exception ) {
+
+			$this->expectException( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception::class );
+
+			$integration->get_field_value( $key, $field, [ $integration->get_field_key( $key ) => $value ] );
+
+		} else {
+
+			$this->assertSame( $expected, $integration->get_field_value( $key, $field, [ $integration->get_field_key( $key ) => $value ] ) );
+		}
+	}
+
+
+	/**
+	 * Provider for test_validate_messenger_greeting_field()
+	 *
+	 * @return array
+	 */
+	public function validate_messenger_greeting_field_provider() {
+
+		return [
+			[ null, '' ],
+			[ 'This is a valid value', 'This is a valid value' ],
+			[ 'This is a valid value that is exactly the max length and should still get saved.', 'This is a valid value that is exactly the max length and should still get saved.' ],
+			[ 'This is a valid value with spèciäl characters and should still get saved okay???', 'This is a valid value with spèciäl characters and should still get saved okay???' ],
+			[ 'This is a valid value that exceeds the max length and should definitely not get saved.', '', true ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
