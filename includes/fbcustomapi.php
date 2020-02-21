@@ -37,7 +37,7 @@ class WC_Facebookcommerce_REST_Controller extends WP_REST_Controller {
     register_rest_route('facebook/v1', '/genfeed' ,
       array(
         'methods'             => WP_REST_Server::READABLE,
-        'callback'            => array($this, 'get_feed_url'),
+        'callback'            => array($this, 'gen_feed'),
       ));
     register_rest_route('facebook/v1', '/genfeed/feedping' ,
       array(
