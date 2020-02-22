@@ -1,0 +1,17 @@
+{
+  "name": "facebook-for-woocommerce",
+  "version": "1.10.0",
+  "author": "Facebook",
+  "homepage": "https://woocommerce.com/products/facebook/",
+  "license": "GPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebookincubator/facebook-for-woocommerce"
+  },
+  "bugs": {
+    "url": "https://wordpress.org/support/plugin/facebook-for-woocommerce"
+  },
+  "devDependencies": {
+    "sake": "github:skyverge/sake"
+  }
+}

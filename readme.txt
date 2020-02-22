@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.2.2
-Stable tag: 1.9.15
+Stable tag: 1.10.0-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,16 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.nn.nn - version 1.10.0-dev.1 =
+ * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
+ * Feature - Add Facebook product settings like price and description to variations
+ * Feature - Revamped settings screen with on-site control over pixel, product sync, and Messenger behavior
+ * Tweak - Use Action Scheduler for the daily forced re-sync, if enabled
+ * Fix - Improve pixel tracking accuracy for add-to-cart events
+ * Misc. - Add the SkyVerge plugin framework as the plugin base
+ * Misc. - Require WooCommerce 3.5 and above
+
 = 1.9.15 - 2019-06-27 =
 * CSRF handling for Ajax calls like ajax_woo_infobanner_post_click, ajax_woo_infobanner_post_xout, ajax_fb_toggle_visibility
 * use phpcs to adhere to WP coding standards
