@@ -172,7 +172,9 @@ class Admin {
 				<span
 					class="facebook-for-woocommerce-product-visibility-toggle"
 					style="cursor:default;"
-					title="<?php esc_attr_e( 'Product is not synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
+					title="<?php
+					/* translators: Points to a product that was never synced with Facebook */
+					esc_attr_e( 'Never synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
 				>&ndash;</span>
 				<?php
 
@@ -183,14 +185,15 @@ class Admin {
 				$is_hidden       = ! $is_visible;
 
 				if ( $is_sync_enabled ) {
-
-					$visible_tooltip_text = __( 'Product is synced and published (visible) on Facebook.', 'facebook-for-woocommerce' );
-					$hidden_tooltip_text  = __( 'Product is synced but not marked as published (visible) on Facebook.', 'facebook-for-woocommerce' );
-
+					/* translators: Action to hide a product (currently synced with Facebook) from the Facebook catalog */
+					$visible_tooltip_text = __( 'Hide from Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
+					/* translators: Action to publish a product (currently synced with Facebook) in the Facebook catalog */
+					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
 				} else {
-
-					$visible_tooltip_text = __( 'Product is published (visible) on Facebook, but not synced, so updates won’t be reflected on Facebook.', 'facebook-for-woocommerce' );
-					$hidden_tooltip_text  = __( 'Product is not synced and not published (visible) on Facebook.', 'facebook-for-woocommerce' );
+					/* translators: Action to hide a product (currently not synced with Facebook) from the Facebook catalog */
+					$visible_tooltip_text = __( 'Hide from Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
+					/* translators: Action to publish a product (currently not synced with Facebook) in the Facebook catalog */
+					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
 				}
 
 				?>
