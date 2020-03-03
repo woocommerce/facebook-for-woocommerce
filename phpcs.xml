@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<ruleset name="SkyVerge">
+	<description>WordPress Coding Standards</description>
+
+	<config name="installed_paths" value="vendor/phpcompatibility/php-compatibility/PHPCompatibility,vendor/wp-coding-standards/wpcs" />
+
+	<!-- Only sniff PHP files -->
+	<arg name="extensions" value="php"/>
+
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
+	<!-- Up the Memory limit for large plugins -->
+	<ini name="memory_limit" value="320M"/>
+
+	<!-- Include the plugin files -->
+    <file>facebook-commerce-events-tracker.php</file>
+    <file>facebook-commerce-messenger-chat.php</file>
+    <file>facebook-commerce-pixel-event.php</file>
+    <file>facebook-commerce.php</file>
+    <file>facebook-config-warmer.php</file>
+    <file>facebook-for-woocommerce.php</file>
+    <file>includes</file>
+
+	<!-- Exclude these paths -->
+	<exclude-pattern>assets</exclude-pattern>
+	<exclude-pattern>vendor</exclude-pattern>
+
+	<rule ref="WordPress-Core"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="WordPress-Extra"/>
+	<rule ref="PHPCompatibility"/>
+
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<properties>
+			<property name="customSanitizingFunctions" type="array" value="wc_clean,wc_sanitize_tooltip,wc_format_decimal,wc_stock_amount,wc_sanitize_permalink,wc_sanitize_textarea" />
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customEscapingFunctions" type="array" value="wc_help_tip,wc_sanitize_tooltip,wc_selected" />
+		</properties>
+	</rule>
+
+	<!-- really Important Sniffs -->
+	<rule ref="WordPress.Security">
+		<severity>10</severity>
+	</rule>
+
+	<rule ref="WordPress.DB.PreparedSQL">
+		<severity>10</severity>
+	</rule>
+
+	<!-- Unimportant Sniffs -->
+	<rule ref="Squiz.Commenting">
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+	</rule>
+
+</ruleset>
