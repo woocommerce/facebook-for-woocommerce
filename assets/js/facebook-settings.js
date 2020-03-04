@@ -622,7 +622,7 @@ function parseURL(url) {
 /**
  * Setups an interval to check the status a product sync being executed in the background.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  */
 function check_background_processor_status() {
 

@@ -475,14 +475,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Adds a new tab to the Product edit page.
 	 *
 	 * @internal
-	 * @deprecated since 1.10.0-dev.1
+	 * @deprecated since 1.10.0
 	 *
 	 * @param array $tabs array of tabs
 	 * @return array
 	 */
 	public function fb_new_product_tab( $tabs ) {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab()' );
+		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab()' );
 
 		return $tabs;
 	}
@@ -492,11 +492,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Adds content to the new Facebook tab on the Product edit page.
 	 *
 	 * @internal
-	 * @deprecated since 1.10.0-dev.1
+	 * @deprecated since 1.10.0
 	 */
 	public function fb_new_product_tab_content() {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab_content()' );
+		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_settings_tab_content()' );
 	}
 
 
@@ -504,14 +504,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Filters the product columns in the admin edit screen.
 	 *
 	 * @internal
-	 * @deprecated since 1.10.0-dev.1
+	 * @deprecated since 1.10.0
 	 *
 	 * @param array $existing_columns array of columns and labels
 	 * @return array
 	 */
 	public function fb_product_columns( $existing_columns ) {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_column()' );
+		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_column()' );
 
 		return $existing_columns;
 	}
@@ -521,13 +521,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Outputs content for the FB Shop column in the edit screen.
 	 *
 	 * @internal
-	 * @deprecated since 1.10.0-dev.1
+	 * @deprecated since 1.10.0
 	 *
 	 * @param string $column name of the column to display
 	 */
 	public function fb_render_product_columns( $column ) {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
+		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
 	}
 
 
@@ -789,7 +789,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param int $wp_id post ID
 	 */
@@ -848,7 +848,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Saves the submitted Facebook settings for a product.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product the product object
 	 */
@@ -2289,11 +2289,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Toggles product visibility via AJAX.
 	 *
 	 * @internal
-	 * @deprecated since 1.10.0-dev.1
+	 * @deprecated since 1.10.0
 	 **/
 	public function ajax_fb_toggle_visibility() {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '1.10.0' );
 	}
 
 
@@ -2488,7 +2488,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_title_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2542,7 +2542,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2607,7 +2607,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2650,7 +2650,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2683,7 +2683,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_title_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2721,7 +2721,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function process_admin_options() {
 
@@ -2744,7 +2744,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_settings_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $key field key
 	 * @param array $data field data
@@ -2869,7 +2869,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $key field key
 	 * @param string $value posted value
@@ -2911,7 +2911,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::generate_textarea_html()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param array $args associative array of field arguments
@@ -2951,7 +2951,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::validate_textarea_field()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string|int $key field key or index
 	 * @param string $value field submitted value
@@ -2980,7 +2980,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3000,7 +3000,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the page access token.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3016,7 +3016,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook page access token.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3028,7 +3028,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the product catalog ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3044,7 +3044,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook product catalog ID.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $product_catalog_id Facebook product catalog ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3056,7 +3056,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the external merchant settings ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3072,7 +3072,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook external merchant settings ID.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $external_merchant_settings_id Facebook external merchant settings ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3084,7 +3084,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the feed ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3100,7 +3100,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook feed ID.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $feed_id Facebook feed ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3112,7 +3112,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the Facebook pixel install time in UTC seconds.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return int
 	 */
@@ -3128,7 +3128,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook pixel install time.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $pixel_install_time Facebook pixel install time in UTC seconds, or null if none set
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3140,7 +3140,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured JS SDK version.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3156,7 +3156,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook JS SDK version.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $js_sdk_version Facebook JS SDK version
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3168,7 +3168,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured Facebook page ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3177,7 +3177,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured Facebook page ID.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $page_id the configured Facebook page ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3189,7 +3189,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured Facebook pixel ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3198,7 +3198,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured Facebook pixel ID.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $pixel_id the configured Facebook pixel ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3210,7 +3210,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return int[]
 	 */
@@ -3219,7 +3219,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured excluded product category IDs.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param int[] $category_ids the configured excluded product category IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3231,7 +3231,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the IDs of the tags to be excluded from sync.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return int[]
 	 */
@@ -3240,7 +3240,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured excluded product tag IDs.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param int[] $tag_ids the configured excluded product tag IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3252,7 +3252,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured product description mode.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3261,7 +3261,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured product description mode.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $mode the configured product description mode
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3286,7 +3286,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * Returns null if no offset is configured.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return int|null
 	 */
@@ -3295,7 +3295,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured scheduled re-sync offset.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param int|null $offset the configured scheduled re-sync offset in seconds
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3313,7 +3313,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured Facebook messenger locale.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3322,7 +3322,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured Facebook messenger locale.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $locale the configured Facebook messenger locale
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3334,7 +3334,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the configured Facebook messenger greeting.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3343,7 +3343,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured Facebook messenger greeting.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $greeting the configured Facebook messenger greeting
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3358,7 +3358,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the maximum number of characters allowed in the messenger greeting.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return int
 	 */
@@ -3369,7 +3369,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the maximum number of characters allowed in the messenger greeting.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param int $max the maximum number of characters allowed in the messenger greeting
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3385,7 +3385,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * This is used to style the messenger UI.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -3394,7 +3394,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the configured Facebook messenger color hex.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param string $hex the configured Facebook messenger color hex
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3409,7 +3409,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook page access token.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value page access token value
 	 */
@@ -3424,7 +3424,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook product catalog ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value product catalog ID value
 	 */
@@ -3439,7 +3439,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook external merchant settings ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value external merchant settings ID value
 	 */
@@ -3454,7 +3454,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook feed ID.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value feed ID value
 	 */
@@ -3469,7 +3469,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook pixel install time.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param int $value pixel install time, in UTC seconds
 	 */
@@ -3486,7 +3486,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook JS SDK version.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value JS SDK version
 	 */
@@ -3501,7 +3501,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $value value to sanitize
 	 * @return string
@@ -3518,7 +3518,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether Facebook for WooCommerce is configured.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -3531,7 +3531,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether advanced matching is enabled.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -3540,7 +3540,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters whether advanced matching is enabled.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param bool $is_enabled whether advanced matching is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3552,7 +3552,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether product sync is enabled.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -3561,7 +3561,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters whether product sync is enabled.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param bool $is_enabled whether product sync is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3573,7 +3573,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the scheduled re-sync is enabled.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -3582,7 +3582,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters whether the scheduled re-sync is enabled.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param bool $is_enabled whether the scheduled re-sync is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3594,7 +3594,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the Facebook messenger is enabled.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -3603,7 +3603,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters whether the Facebook messenger is enabled.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param bool $is_enabled whether the Facebook messenger is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3726,7 +3726,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the Facebook page URL.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -4088,11 +4088,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Schedules a recurring event to sync products.
 	 *
-	 * @deprecated 1.10.0-dev.1
+	 * @deprecated 1.10.0
 	 */
 	function ajax_schedule_force_resync() {
 
-		wc_deprecated_function( __METHOD__, '1.10.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '1.10.0' );
 		die;
 	}
 
@@ -4122,7 +4122,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * The action is scheduled using a cron schedule instead of a recurring interval (see https://en.wikipedia.org/wiki/Cron#Overview).
 	 * A cron schedule should allow for the action to run roughly at the same time every day regardless of the duration of the task.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param int $offset number of seconds since the beginning of the daay
 	 */
@@ -4152,7 +4152,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Removes the recurring action that syncs products.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	private function unschedule_resync() {
 
@@ -4166,7 +4166,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \as_next_scheduled_action()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -4186,7 +4186,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Facebookcommerce_Integration::schedule_resync()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function handle_scheduled_resync_action() {
 

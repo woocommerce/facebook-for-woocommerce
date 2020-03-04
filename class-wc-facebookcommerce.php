@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.10.0-dev.1';
+		const VERSION = '1.10.0';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -102,7 +102,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 */
 		public function init_admin() {
 
@@ -145,7 +145,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the admin handler instance.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Admin|null
 		 */
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the AJAX handler instance.
 		 *
-		 * @sinxe 1.10.0-dev.1
+		 * @sinxe 1.10.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\AJAX|null
 		 */
@@ -171,7 +171,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the integration instance.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return \WC_Facebookcommerce_Integration instance
 		 */
@@ -201,7 +201,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the settings page URL.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param null $plugin_id unused
 		 * @return string
@@ -215,7 +215,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin's documentation URL.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -228,7 +228,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin's support URL.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -241,7 +241,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin's sales page URL.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -254,7 +254,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin's reviews URL.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -267,7 +267,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin name.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -283,7 +283,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Determines if viewing the plugin settings in the admin.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return bool
 		 */
@@ -303,7 +303,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Initializes the lifecycle handler.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 */
 		protected function init_lifecycle_handler() {
 
@@ -318,7 +318,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @see \facebook_for_woocommerce()
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return \WC_Facebookcommerce the plugin singleton instance
 		 */
@@ -335,7 +335,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the plugin file.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @return string
 		 */
@@ -353,12 +353,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 1.10.0-dev.1
-		 * @deprecated 1.10.0-dev.1
+		 * @since 1.10.0
+		 * @deprecated 1.10.0
 		 */
 		public function add_settings_link() {
 
-			wc_deprecated_function( __METHOD__, '1.10.0-dev.1' );
+			wc_deprecated_function( __METHOD__, '1.10.0' );
 		}
 
 
@@ -368,7 +368,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 	/**
 	 * Gets the Facebook for WooCommerce plugin instance.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return \WC_Facebookcommerce instance of the plugin
 	 */

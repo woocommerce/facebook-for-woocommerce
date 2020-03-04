@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.2.2
-Stable tag: 1.10.0-dev.1
+Stable tag: 1.10.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 1.10.0-dev.1 =
+= 2020.03.03 - version 1.10.0 =
  * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
  * Feature - Add Facebook product settings like price and description to variations
  * Feature - Revamped settings screen with on-site control over pixel, product sync, and Messenger behavior

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The Facebook for WooCommerce plugin lifecycle handler.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  *
  * @method \WC_Facebookcommerce get_plugin()
  */
@@ -27,7 +27,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Lifecycle constructor.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param Framework\SV_WC_Plugin $plugin
 	 */
@@ -44,7 +44,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Migrates options from previous versions of the plugin, which did not use the Framework.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function install() {
 
@@ -62,7 +62,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Upgrades to version 1.10.0.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function upgrade_to_1_10_0() {
 
