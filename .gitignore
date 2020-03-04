@@ -1,0 +1,21 @@
+# IDE
+/.project
+/.settings
+/.idea
+
+# npm packages
+/node_modules
+
+# sake
+/build
+
+# composer packages
+/vendor
+
+# Tests
+codeception.yml
+.env
+/tests/acceptance.suite.yml
+/tests/integration.suite.yml
+/tests/unit.suite.yml
+/tests/_data/dump.sql
