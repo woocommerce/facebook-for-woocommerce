@@ -267,7 +267,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			// log simple product
 			if ( ! isset( $product_data['default_product'] ) ) {
 				$this->no_default_product_count++;
-				$product_data['default_product'];
+				$product_data['default_product'] = '';
 			}
 
 			return $product_data['retailer_id'] . ',' .
