@@ -1,4 +1,7 @@
 module.exports = {
+  plugin: {
+    id: 'facebook-for-woocommerce'
+  },
   deploy: {
     type: 'wp'
   },
