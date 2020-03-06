@@ -80,12 +80,11 @@ class Admin {
 		$modal_screens = [
 			'product',
 			'edit-product',
-			'woocommerce_page_wc-settings',
 		];
 
 		if ( isset( $current_screen->id ) ) {
 
-			if ( in_array( $current_screen->id, $modal_screens ) ) {
+			if ( in_array( $current_screen->id, $modal_screens ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
 				wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
@@ -105,7 +104,7 @@ class Admin {
 				] );
 			}
 
-			if ( 'woocommerce_page_wc-settings' === $current_screen->id ) {
+			if ( facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 

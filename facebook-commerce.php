@@ -676,7 +676,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Load DIA specific JS Data
 	 */
 	public function load_assets() {
-		$screen = get_current_screen();
+
 		$ajax_data = array(
       'nonce' => wp_create_nonce( 'wc_facebook_infobanner_jsx' ),
     );
@@ -702,17 +702,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
-		if ( strpos( $screen->id, 'page_wc-settings' ) == 0 ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( empty( $_GET['tab'] ) ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( 'integration' !== $_GET['tab'] ) {
+		if ( ! facebook_for_woocommerce()->is_plugin_settings() ) {
 			return;
 		}
 
