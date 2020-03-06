@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 1.10.1-dev.1
+ * Fix - Only load the admin settings JavaScript on the Facebook settings page to prevent conflicts with other scripts
+
 = 2020.03.03 - version 1.10.0 =
  * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
  * Feature - Add Facebook product settings like price and description to variations
