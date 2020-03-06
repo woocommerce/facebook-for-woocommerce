@@ -168,6 +168,13 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $resync_offset;
 		}
 
+		// maybe remove old settings entries
+		$old_indexes = array_merge( array_keys( $options ), array_keys( $settings ), [ 'fb_settings_heading', 'fb_upload_id', 'upload_end_time' ] );
+
+		foreach ( $old_indexes as $old_index ) {
+			unset( $new_settings[ $old_index ] );
+		}
+
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
 
 		// schedule the next product resync action
