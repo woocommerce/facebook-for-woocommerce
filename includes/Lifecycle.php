@@ -89,8 +89,13 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 				if ( 'pixel_install_time' === $old_index ) {
 
 					// convert to UTC timestamp
-					$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
-					$new_value          = $pixel_install_time->getTimestamp();
+					try {
+						$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
+					} catch ( \Exception $e ) {
+						$pixel_install_time = false;
+					}
+
+					$new_value = $pixel_install_time instanceof \DateTime ? $pixel_install_time->getTimestamp() : null;
 				}
 
 				update_option( $new_option_name, $new_value );
