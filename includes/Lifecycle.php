@@ -75,7 +75,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * Migrates Facebook for WooCommerce options used in version 1.9.x to the options and settings used in 1.10.x.
 	 *
 	 * Some users who upgraded from 1.9.x to 1.10.0 ended up with an incomplete upgrade and could have configured the plugin from scratch after that.
-	 * This routine will update the options and settings only if previous value exists.
+	 * This routine will update the options and settings only if a previous value does not exists.
 	 *
 	 * @since 1.10.1
 	 */
