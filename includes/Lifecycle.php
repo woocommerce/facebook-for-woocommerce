@@ -37,6 +37,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		$this->upgrade_versions = [
 			'1.10.0',
+			'1.10.1',
 		];
 	}
 
@@ -178,6 +179,17 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 				$integration->schedule_resync( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] );
 			}
 		}
+	}
+
+
+	/**
+	 * Upgrades to version 1.10.1.
+	 *
+	 * @since 1.10.1
+	 */
+	protected function upgrade_to_1_10_1() {
+
+		$this->migrate_1_9_settings();
 	}
 
 
