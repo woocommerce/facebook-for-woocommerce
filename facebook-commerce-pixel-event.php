@@ -96,7 +96,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			<script>
 				<?php echo $this->pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php json_encode( self::parse_params(), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+				fbq( 'track', 'PageView', <?php json_encode( self::parse_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -185,7 +185,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			} else {
 
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $this->get_event_script( $event_name, self::parse_params( $params ), $method ) );
+				printf( $this->get_event_script( $event_name, self::parse_params( $params, $event_name ), $method ) );
 			}
 		}
 
@@ -278,7 +278,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 				WC_Facebookcommerce_Utils::getIntegrationName(),
 				esc_js( $method ),
 				esc_js( $event_name ),
-				json_encode( self::parse_params( $params ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				json_encode( self::parse_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}
 
@@ -366,9 +366,10 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 * @since 1.10.1-dev.1
 		 *
 		 * @param array $params user defined parameters
+		 * @param string $event the event name the params are for
 		 * @return array
 		 */
-		private static function parse_params( $params = [] ) {
+		private static function parse_params( $params = [], $event = '' ) {
 
 			/**
 			 * Filters the parameters for the pixel code.
@@ -377,8 +378,9 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 			 *
 			 * @param array $parsed_params parameters
 			 * @param array $params user defined parameters
+			 * @param string $event the event name
 			 */
-			return (array) apply_filters( 'wc_facebook_pixel_params', array_replace( self::get_version_info(), $params ), $params );
+			return (array) apply_filters( 'wc_facebook_pixel_params', array_replace( self::get_version_info(), $params ), $params, $event );
 		}
 
 
