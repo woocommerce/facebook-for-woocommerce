@@ -180,7 +180,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params ), $method ) );
+				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method ) );
 
 			} else {
 
