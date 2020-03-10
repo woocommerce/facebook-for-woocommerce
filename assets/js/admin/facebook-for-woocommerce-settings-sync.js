@@ -9,9 +9,8 @@
 
 jQuery( document ).ready( function( $ ) {
 
-
 	// run script only on Facebook Settings page
-	if ( 'woocommerce_page_wc-settings' === window.pagenow.length ? window.pagenow : '' ) {
+	if ( $( 'input[name="section"][value="facebookcommerce"]' ).closest( 'form' ).length === 0 ) {
 		return;
 	}
 
