@@ -96,7 +96,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			<script>
 				<?php echo $this->pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php echo json_encode( self::parse_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -180,12 +180,12 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::parse_params( $params ), $method ) );
+				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params ), $method ) );
 
 			} else {
 
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $this->get_event_script( $event_name, self::parse_params( $params, $event_name ), $method ) );
+				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method ) );
 			}
 		}
 
@@ -278,7 +278,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 				WC_Facebookcommerce_Utils::getIntegrationName(),
 				esc_js( $method ),
 				esc_js( $event_name ),
-				json_encode( self::parse_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}
 
@@ -369,7 +369,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 * @param string $event the event name the params are for
 		 * @return array
 		 */
-		private static function parse_params( $params = [], $event = '' ) {
+		private static function build_params( $params = [], $event = '' ) {
 
 			/**
 			 * Filters the parameters for the pixel code.
