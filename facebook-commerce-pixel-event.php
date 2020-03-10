@@ -96,7 +96,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			<script>
 				<?php echo $this->pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php json_encode( self::parse_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+				fbq( 'track', 'PageView', <?php echo json_encode( self::parse_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
