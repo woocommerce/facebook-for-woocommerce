@@ -3,6 +3,7 @@
 2020.nn.nn - version 1.10.1-dev.1
  * Fix - Prevent Fatal error during the upgrade routine introduced in version 1.10.0
  * Fix - Only load the admin settings JavaScript on the Facebook settings page to prevent conflicts with other scripts
+ * Dev - Make Pixel event parameters filterable
 
 2020.03.03 - version 1.10.0
  * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
