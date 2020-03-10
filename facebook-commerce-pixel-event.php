@@ -371,16 +371,17 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 */
 		private static function build_params( $params = [], $event = '' ) {
 
+			$params = array_replace( self::get_version_info(), $params );
+
 			/**
 			 * Filters the parameters for the pixel code.
 			 *
 			 * @since 1.10.1-dev.1
 			 *
-			 * @param array $parsed_params parameters
 			 * @param array $params user defined parameters
 			 * @param string $event the event name
 			 */
-			return (array) apply_filters( 'wc_facebook_pixel_params', array_replace( self::get_version_info(), $params ), $params, $event );
+			return (array) apply_filters( 'wc_facebook_pixel_params', $params, $event );
 		}
 
 
