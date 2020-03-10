@@ -170,7 +170,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 		 * Prints or enqueues the JavaScript code to track an event.
 		 *
 		 * Preferred method to inject events in a page.
-		 *
 		 * @see \WC_Facebookcommerce_Pixel::build_event()
 		 *
 		 * @param string $event_name the name of the event to track
@@ -179,14 +178,14 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
 
-			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, $params, $method ) );
+				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::parse_params( $params ), $method ) );
 
 			} else {
 
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $this->get_event_script( $event_name, $params, $method ) );
+				printf( $this->get_event_script( $event_name, self::parse_params( $params ), $method ) );
 			}
 		}
 
@@ -262,20 +261,27 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		}
 
 		/**
-		 * You probably should use WC_Facebookcommerce_Pixel::inject_event() but
-		 * this method is available if you need to modify the JS code somehow
+		 * Builds an event.
+		 *
+		 * @see \WC_Facebookcommerce_Pixel::inject_event() for the preferred method to inject an event.
+		 *
+		 * @param string $event_name event name
+		 * @param array $params event params
+		 * @param string $method optional, defaults to 'track'
+		 * @return string
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
-			$params = self::parse_params( $params );
+
 			return sprintf(
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('%s', '%s', %s);",
 				WC_Facebookcommerce_Utils::getIntegrationName(),
 				esc_js( $method ),
 				esc_js( $event_name ),
-				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				json_encode( self::parse_params( $params ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}
+
 
 		public static function get_pixel_id() {
 			$fb_options = self::get_options();
@@ -357,13 +363,20 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 *
 		 * Parameters provided by users should not be overwritten by this function.
 		 *
-		 * @param array $params user define parameters
+		 * @param array $params user defined parameters
 		 * @return array
 		 */
 		private static function parse_params( $params = [] ) {
 
-			// if any parameter is passed in the pixel, do not overwrite it
-			return array_replace( self::get_version_info(), $params );
+			/**
+			 * Filters the parameters for the pixel code.
+			 *
+			 * @since 1.10.1-dev.1
+			 *
+			 * @param array $parsed_params parameters
+			 * @param array $params user defined parameters
+			 */
+			return (array) apply_filters( 'wc_facebook_pixel_params', array_replace( self::get_version_info(), $params ), $params );
 		}
 
 
