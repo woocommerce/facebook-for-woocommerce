@@ -363,6 +363,8 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 *
 		 * Parameters provided by users should not be overwritten by this function.
 		 *
+		 * @since 1.10.1-dev.1
+		 *
 		 * @param array $params user defined parameters
 		 * @return array
 		 */
