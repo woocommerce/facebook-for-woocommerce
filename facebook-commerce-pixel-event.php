@@ -96,7 +96,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			<script>
 				<?php echo $this->pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php json_encode( self::add_version_info(), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+				fbq( 'track', 'PageView', <?php json_encode( self::parse_params(), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -266,7 +266,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 * this method is available if you need to modify the JS code somehow
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
-			$params = self::add_version_info( $params );
+			$params = self::parse_params( $params );
 			return sprintf(
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('%s', '%s', %s);",
@@ -360,7 +360,7 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		 * @param array $params user define parameters
 		 * @return array
 		 */
-		private static function add_version_info( $params = [] ) {
+		private static function parse_params( $params = [] ) {
 
 			// if any parameter is passed in the pixel, do not overwrite it
 			return array_replace( self::get_version_info(), $params );
