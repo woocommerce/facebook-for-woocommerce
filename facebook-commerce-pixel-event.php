@@ -68,52 +68,49 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			}
 		}
 
+
 		/**
-		 * Returns FB pixel code script part
+		 * Gets the Facebook Pixel code scripts.
+		 *
+		 * @return string HTML scripts
 		 */
 		public function pixel_base_code() {
+
 			$pixel_id = self::get_pixel_id();
-			if (
-			(
-			  isset( self::$render_cache[ self::PIXEL_RENDER ] ) &&
-			  self::$render_cache[ self::PIXEL_RENDER ] === true
-			) ||
-			! isset( $pixel_id ) ||
-			$pixel_id === 0
-			) {
-				return;
+
+			// bail if no ID or already rendered
+			if ( empty( $pixel_id )|| ! empty( self::$render_cache[ self::PIXEL_RENDER ] ) ) {
+				return '';
 			}
 
+			// flag scripts as rendered
 			self::$render_cache[ self::PIXEL_RENDER ] = true;
-			$params                                   = self::add_version_info();
 
-			return sprintf(
-				"
-<!-- %s Facebook Integration Begin -->
-%s
-<script>
-%s
-fbq( 'track', 'PageView', %s );
+			ob_start();
 
-document.addEventListener( 'DOMContentLoaded', function() {
-	jQuery && jQuery( function( $ ) {
+			// injects the Facebook Pixel base script in a <script> tag
+			echo self::get_basecode();
 
-		// insert placeholder for events injected when a product is added to the cart through Ajax
-		$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
-	} );
-}, false );
+			?>
+			<!-- WooCommerce Facebook Integration Begin -->
+			<script>
+				<?php echo $this->pixel_init_code(); ?>
 
-</script>
-<!-- DO NOT MODIFY -->
-<!-- %s Facebook Integration end -->
-    ",
-				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() ),
-				self::get_basecode(),
-				$this->pixel_init_code(),
-				json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-				esc_html( WC_Facebookcommerce_Utils::getIntegrationName() )
-			);
+				fbq( 'track', 'PageView', <?php json_encode( self::add_version_info(), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+
+				document.addEventListener( 'DOMContentLoaded', function() {
+					jQuery && jQuery( function( $ ) {
+						// insert placeholder for events injected when a product is added to the cart through AJAX
+						$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
+					} );
+				}, false );
+			</script>
+			<!-- WooCommerce Facebook Integration End -->
+			<?php
+
+			return ob_get_clean();
 		}
+
 
 		/**
 		 * Prevent double-fires by checking the last event
@@ -354,14 +351,21 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 			);
 		}
 
+
 		/**
-		 * Returns an array with version_info for pixel fires. Parameters provided by
-		 * users should not be overwritten by this function
+		 * Gets an array with version_info for pixel fires.
+		 *
+		 * Parameters provided by users should not be overwritten by this function.
+		 *
+		 * @param array $params user define parameters
+		 * @return array
 		 */
-		private static function add_version_info( $params = array() ) {
+		private static function add_version_info( $params = [] ) {
+
 			// if any parameter is passed in the pixel, do not overwrite it
 			return array_replace( self::get_version_info(), $params );
 		}
+
 
 		/**
 		 * Init code might contain additional information to help matching website
