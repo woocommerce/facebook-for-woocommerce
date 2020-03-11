@@ -1639,6 +1639,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the API error message.
+	 *
+	 * @since 1.10.2-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_api_error_message() {
+
+		return get_transient( 'facebook_plugin_api_error' );
+	}
+
+
+	/**
 	 * Displays error message from API result (sugar).
 	 *
 	 * @param array $result
