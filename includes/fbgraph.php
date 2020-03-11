@@ -183,14 +183,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 
 		public function validate_product_catalog( $product_catalog_id ) {
-			$url      = $this->build_url( $product_catalog_id );
-			$response = self::_get( $url );
-			if ( is_wp_error( $response ) ) {
-				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-				return;
-			}
-			return $response['response']['code'] == '200';
+
+			$response = self::_get( $this->build_url( $product_catalog_id ) );
+
+			return 200 === (int) wp_remote_retrieve_response_code( $response );
 		}
+
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {
