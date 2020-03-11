@@ -3637,9 +3637,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function maybe_display_facebook_api_messages() {
 
-		$error_msg = get_transient( 'facebook_plugin_api_error' );
-
-		if ( $error_msg ) {
+		if ( $error_msg = $this->get_api_error_message() ) {
 
 			$message = sprintf(
 				__( 'Facebook extension error: %s ', 'facebook-for-woocommerce' ),
