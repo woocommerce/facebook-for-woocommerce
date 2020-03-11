@@ -4020,7 +4020,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
 
-			if ( $body && $body->id ) {
+			if ( ! empty( $body->id ) ) {
 
 				if ( $fbid_type == self::FB_PRODUCT_GROUP_ID ) {
 					$fb_id = $body->product_group->id;
