@@ -138,17 +138,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			$api_key  = $api_key ?: $this->api_key;
 			$url      = $this->build_url( $page_id, '/?fields=name' );
 			$response = self::_get( $url, $api_key );
+
 			if ( is_wp_error( $response ) ) {
 				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-				return;
+				return '';
 			}
+
 			if ( $response['response']['code'] != '200' ) {
-				return;
+				return '';
 			}
 
-			$response_body = wp_remote_retrieve_body( $response );
+			$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 
-			return json_decode( $response_body )->name;
+			return isset( $response_body->name ) ? $response_body->name : '';
 		}
 
 
