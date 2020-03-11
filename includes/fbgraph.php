@@ -184,6 +184,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 
+		/**
+		 * Determines whether the product catalog ID is valid.
+		 *
+		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
+		 *
+		 * @param int $product_catalog_id the ID of the product catalog
+		 * @return bool
+		 */
 		public function validate_product_catalog( $product_catalog_id ) {
 
 			$response = self::_get( $this->build_url( $product_catalog_id ) );
