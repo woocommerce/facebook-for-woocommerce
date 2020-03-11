@@ -42,12 +42,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 			$response = wp_remote_get(
 				$url,
-				array(
-					'headers' => array(
+				[
+					'headers' => [
 						'Authorization' => 'Bearer ' . $api_key,
-					),
+					],
 					'timeout' => self::CURL_TIMEOUT,
-				)
+				]
 			);
 
 			if ( is_wp_error( $response ) ) {
