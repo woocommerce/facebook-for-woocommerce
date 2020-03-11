@@ -383,9 +383,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				 return 'error';
 			}
 			$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'], true );
-			$end_time      = $decode_result['end_time'];
-			if ( isset( $end_time ) ) {
-				$settings['upload_end_time'] = $end_time;
+
+			if ( isset( $decode_result['end_time'] ) ) {
+				$settings['upload_end_time'] = $decode_result['end_time'];
 				return 'complete';
 			} else {
 				return 'in progress';
