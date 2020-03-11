@@ -322,7 +322,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * Parameters provided by users should not be overwritten by this function.
 		 *
-		 * @since 1.10.1-dev.1
+		 * @since x.y.z
 		 *
 		 * @param array $params user defined parameters
 		 * @param string $event the event name the params are for
@@ -335,7 +335,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			/**
 			 * Filters the parameters for the pixel code.
 			 *
-			 * @since 1.10.1-dev.1
+			 * @since x.y.z
 			 *
 			 * @param array $params user defined parameters
 			 * @param string $event the event name
