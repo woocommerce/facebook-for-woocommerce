@@ -22,7 +22,7 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedCategoriesAdded() {
 
-		const newCategoryIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_categories' ).val();
+		const newCategoryIDs = $( '#woocommerce_facebookcommerce_excluded_product_category_ids' ).val();
 		let oldCategoryIDs   = [];
 
 		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
@@ -41,7 +41,7 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedTagsAdded() {
 
-		const newTagIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_tags' ).val();
+		const newTagIDs = $( '#woocommerce_facebookcommerce_excluded_product_tag_ids' ).val();
 		let oldTagIDs   = [];
 
 		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedTagIDs ) {
@@ -133,7 +133,6 @@ jQuery( document ).ready( function( $ ) {
 		const $submitButton   = $( this ),
 		      categoriesAdded = getExcludedCategoriesAdded(),
 		      tagsAdded       = getExcludedTagsAdded();
-
 
 		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
