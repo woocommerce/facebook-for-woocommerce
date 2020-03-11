@@ -283,6 +283,33 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 		}
 
 
+		/**
+		 * Gets an array with version_info for pixel fires.
+		 *
+		 * Parameters provided by users should not be overwritten by this function.
+		 *
+		 * @since 1.10.1-dev.1
+		 *
+		 * @param array $params user defined parameters
+		 * @param string $event the event name the params are for
+		 * @return array
+		 */
+		private static function build_params( $params = [], $event = '' ) {
+
+			$params = array_replace( self::get_version_info(), $params );
+
+			/**
+			 * Filters the parameters for the pixel code.
+			 *
+			 * @since 1.10.1-dev.1
+			 *
+			 * @param array $params user defined parameters
+			 * @param string $event the event name
+			 */
+			return (array) apply_filters( 'wc_facebook_pixel_params', $params, $event );
+		}
+
+
 		public static function get_pixel_id() {
 			$fb_options = self::get_options();
 			if ( ! $fb_options ) {
@@ -355,33 +382,6 @@ src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
 					self::USE_PII_KEY  => 0,
 				)
 			);
-		}
-
-
-		/**
-		 * Gets an array with version_info for pixel fires.
-		 *
-		 * Parameters provided by users should not be overwritten by this function.
-		 *
-		 * @since 1.10.1-dev.1
-		 *
-		 * @param array $params user defined parameters
-		 * @param string $event the event name the params are for
-		 * @return array
-		 */
-		private static function build_params( $params = [], $event = '' ) {
-
-			$params = array_replace( self::get_version_info(), $params );
-
-			/**
-			 * Filters the parameters for the pixel code.
-			 *
-			 * @since 1.10.1-dev.1
-			 *
-			 * @param array $params user defined parameters
-			 * @param string $event the event name
-			 */
-			return (array) apply_filters( 'wc_facebook_pixel_params', $params, $event );
 		}
 
 
