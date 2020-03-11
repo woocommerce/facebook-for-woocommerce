@@ -41,9 +41,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 1.10.2-dev.1 =
 
-= 2020.03.10 - version 1.10.1
+= 2020.03.10 - version 1.10.1 =
  * Fix - Prevent Fatal error during the upgrade routine introduced in version 1.10.0
  * Fix - Only load the admin settings JavaScript on the Facebook settings page to prevent conflicts with other scripts
+ * Misc - Add support for WooCommerce 4.0
 
 = 2020.03.03 - version 1.10.0 =
  * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
@@ -51,8 +52,8 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Revamped settings screen with on-site control over pixel, product sync, and Messenger behavior
  * Tweak - Use Action Scheduler for the daily forced re-sync, if enabled
  * Fix - Improve pixel tracking accuracy for add-to-cart events
- * Misc. - Add the SkyVerge plugin framework as the plugin base
- * Misc. - Require WooCommerce 3.5 and above
+ * Misc - Add the SkyVerge plugin framework as the plugin base
+ * Misc - Require WooCommerce 3.5 and above
 
 = 1.9.15 - 2019-06-27 =
 * CSRF handling for Ajax calls like ajax_woo_infobanner_post_click, ajax_woo_infobanner_post_xout, ajax_fb_toggle_visibility
