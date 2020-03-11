@@ -188,13 +188,32 @@ function sync_all_products($using_feed = false, $is_test = false) {
 		window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
 		window.feed_upload = true;
 		ping_feed_status_queue();
-		return $is_test ? ajax( 'ajax_test_sync_products_using_feed' )
-		: ajax(
-			'ajax_sync_all_fb_products_using_feed',
-			{
-				"_ajax_nonce": wc_facebook_settings_jsx.nonce,
-			},
-		);
+
+		if ( $is_test ) {
+
+			jQuery.post( ajaxurl, { action: 'ajax_test_sync_products_using_feed' } );
+
+		} else {
+
+			jQuery.post( ajaxurl, {
+				action:      'ajax_sync_all_fb_products_using_feed',
+				_ajax_nonce: wc_facebook_settings_jsx.nonce,
+			} ).then( function( response ) {
+
+				if ( response && false === response.success && response.data && response.data.error ) {
+
+					// no need to check the upload status
+					clearInterval( window.fb_feed_pings );
+
+					// enable Manage connection and Sync products buttons when sync stops
+					jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
+					jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
+					$( '#sync_progress' ).show().html( message );
+				}
+			} );
+		}
+
 	} else {
 
 		check_background_processor_status();
