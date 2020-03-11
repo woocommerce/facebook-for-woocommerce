@@ -132,6 +132,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
 		 * @param string $method name of the pixel's fbq() function to call
+		 * @return string
 		 */
 		public function get_event_code( $event_name, $params, $method = 'track' ) {
 
@@ -151,6 +152,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
 		 * @param string $method name of the pixel's fbq() function to call
+		 * @return string
 		 */
 		public function get_event_script( $event_name, $params, $method = 'track' ) {
 
