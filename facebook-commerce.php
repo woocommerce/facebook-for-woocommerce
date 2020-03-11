@@ -2188,7 +2188,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			! $this->test_mode
 		);
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		return $this->sync_all_fb_products_using_feed();
+
+		if ( $this->sync_all_fb_products_using_feed() ) {
+
+			wp_send_json_success();
+
+		} else {
+
+			if ( $error_message = $this->get_api_error_message() ) {
+				$message = sprintf(
+					__( 'There was an error trying to sync the products to Facebook. %s', 'facebook-for-woocommerce' ),
+					$error_message
+				);
+			} else {
+				$message = __( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' );
+			}
+
+			wp_send_json_error( [ 'error' => '<span style="color: #DC3232">' . $message . '</span>' ] );
+		}
 	}
 
 
