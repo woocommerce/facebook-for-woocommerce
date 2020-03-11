@@ -23,16 +23,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		private $last_event;
 		static $render_cache = array();
 
-		static $default_pixel_basecode = "
-<script type='text/javascript'>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-</script>
-";
-
 		public function __construct( $user_info = array() ) {
 			$this->user_info  = $user_info;
 			$this->last_event = '';
@@ -70,6 +60,38 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
 
 		/**
+		 * Gets Facebook Pixel init code.
+		 *
+		 * Init code might contain additional information to help matching website users with facebook users.
+		 * Information is hashed in JS side using SHA256 before sending to Facebook.
+		 *
+		 * @return string
+		 */
+		private function get_pixel_init_code() {
+
+			$version_info = self::get_version_info();
+			$agent_string = sprintf(
+				'%s-%s-%s',
+				$version_info['source'],
+				$version_info['version'],
+				$version_info['pluginVersion']
+			);
+
+			/**
+			 * Filters Facebook Pixel init code.
+			 *
+			 * @param string $js_code
+			 */
+			return apply_filters( 'facebook_woocommerce_pixel_init', sprintf(
+				"fbq('init', '%s', %s, %s);\n",
+				esc_js( self::get_pixel_id() ),
+				json_encode( $this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
+				json_encode( [ 'agent' => $agent_string ], JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+			) );
+		}
+
+
+		/**
 		 * Gets the Facebook Pixel code scripts.
 		 *
 		 * @return string HTML scripts
@@ -87,13 +109,18 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
 			ob_start();
 
-			// injects the Facebook Pixel base script in a <script> tag
-			echo self::get_basecode();
-
 			?>
+			<script <?php echo self::get_script_attributes(); ?>>
+				!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+					n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+					n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+					t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+					document,'script','https://connect.facebook.net/en_US/fbevents.js');
+			</script>
 			<!-- WooCommerce Facebook Integration Begin -->
-			<script>
-				<?php echo $this->pixel_init_code(); ?>
+			<script <?php echo self::get_script_attributes(); ?>>
+
+				<?php echo $this->get_pixel_init_code(); ?>
 
 				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
 
@@ -103,6 +130,7 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 						$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
 					} );
 				}, false );
+
 			</script>
 			<!-- WooCommerce Facebook Integration End -->
 			<?php
@@ -139,7 +167,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 					src="https://www.facebook.com/tr?id=<?php echo esc_attr( $pixel_id ); ?>&ev=PageView&noscript=1"
 				/>
 			</noscript>
-			<!-- DO NOT MODIFY -->
 			<!-- End Facebook Pixel Code -->
 			<?php
 
@@ -191,15 +218,17 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 		 */
 		public function get_event_script( $event_name, $params, $method = 'track' ) {
 
-			$output = '
-<!-- Facebook Pixel Event Code -->
-<script>
-%s
-</script>
-<!-- End Facebook Pixel Event Code -->
-';
+			ob_start();
 
-			return sprintf( $output, $this->get_event_code( $event_name, $params, $method ) );
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script <?php echo self::get_script_attributes(); ?>>
+				<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
+
+			return ob_get_clean();
 		}
 
 
@@ -246,22 +275,22 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			// Prepends fbq(...) with pii information to the injected code.
 			if ( $jsonified_pii && get_option( self::SETTINGS_KEY )[ self::USE_PII_KEY ] ) {
 				$this->user_info = '%s';
-				$code            =
-				sprintf( $this->pixel_init_code(), '" || ' . $jsonified_pii . ' || "' ) . $code;
+				$code            = sprintf( $this->get_pixel_init_code(), '" || ' . $jsonified_pii . ' || "' ) . $code;
 			}
 
-			$output = "
-<!-- Facebook Pixel Event Code -->
-<script>
-document.addEventListener('%s', function (event) {
-  %s
-}, false );
-</script>
-<!-- End Facebook Pixel Event Code -->
-";
+			ob_start();
 
-			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-			printf( $output, esc_js( $listener ), $code );
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script <?php echo self::get_script_attributes(); ?>>
+				document.addEventListener( '<?php echo esc_js( $listener ); ?>', function (event) {
+                    <?php echo $code; ?>
+				}, false );
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
+
+			return ob_get_clean();
 		}
 
 
@@ -312,6 +341,34 @@ document.addEventListener('%s', function (event) {
 			 * @param string $event the event name
 			 */
 			return (array) apply_filters( 'wc_facebook_pixel_params', $params, $event );
+		}
+
+
+		/**
+		 * Gets script tag attributes.
+		 *
+		 * @since x.y.z
+		 *
+		 * @return string
+		 */
+		private static function get_script_attributes() {
+
+			$script_attributes = '';
+
+			/**
+			 * Filters Facebook Pixel script attributes.
+			 *
+			 * @since x.y.z
+			 *
+			 * @param array $custom_attributes
+			 */
+			$custom_attributes = (array) apply_filters( 'wc_facebook_pixel_script_attributes', [ 'type' => 'text/javascript' ] );
+
+			foreach ( $custom_attributes as $tag => $value ) {
+				$script_attributes .= ' ' . $tag . '="' . esc_attr( $value ) . '"';
+			}
+
+			return $script_attributes;
 		}
 
 
@@ -389,35 +446,6 @@ document.addEventListener('%s', function (event) {
 			);
 		}
 
-
-		/**
-		 * Init code might contain additional information to help matching website
-		 * users with facebook users. Information is hashed in JS side using SHA256
-		 * before sending to Facebook.
-		 */
-		private function pixel_init_code() {
-			$version_info = self::get_version_info();
-			$agent_string = sprintf(
-				'%s-%s-%s',
-				$version_info['source'],
-				$version_info['version'],
-				$version_info['pluginVersion']
-			);
-
-			$params = array(
-				'agent' => $agent_string,
-			);
-
-			return apply_filters(
-				'facebook_woocommerce_pixel_init',
-				sprintf(
-					"fbq('init', '%s', %s, %s);\n",
-					esc_js( self::get_pixel_id() ),
-					json_encode( $this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-					json_encode( $params, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
-				)
-			);
-		}
 
 	}
 
