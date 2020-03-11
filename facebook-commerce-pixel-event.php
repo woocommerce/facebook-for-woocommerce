@@ -83,7 +83,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 				return '';
 			}
 
-			// flag scripts as rendered
 			self::$render_cache[ self::PIXEL_RENDER ] = true;
 
 			ob_start();
@@ -106,6 +105,42 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 				}, false );
 			</script>
 			<!-- WooCommerce Facebook Integration End -->
+			<?php
+
+			return ob_get_clean();
+		}
+
+
+		/**
+		 * Gets Facebook Pixel code noscript part to avoid W3 validation errors.
+		 *
+		 * @return string
+		 */
+		public function pixel_base_code_noscript() {
+
+			$pixel_id = self::get_pixel_id();
+
+			if ( empty( $pixel_id ) || ! empty( self::$render_cache[ self::NO_SCRIPT_RENDER ] ) ) {
+				return '';
+			}
+
+			self::$render_cache[ self::NO_SCRIPT_RENDER ] = true;
+
+			ob_start();
+
+			?>
+			<!-- Facebook Pixel Code -->
+			<noscript>
+				<img
+					height="1"
+					width="1"
+					style="display:none"
+					alt="fbpx"
+					src="https://www.facebook.com/tr?id=<?php echo esc_attr( $pixel_id ); ?>&ev=PageView&noscript=1"
+				/>
+			</noscript>
+			<!-- DO NOT MODIFY -->
+			<!-- End Facebook Pixel Code -->
 			<?php
 
 			return ob_get_clean();
@@ -229,38 +264,6 @@ document.addEventListener('%s', function (event) {
 			printf( $output, esc_js( $listener ), $code );
 		}
 
-
-		/**
-		 * Returns FB pixel code noscript part to avoid W3 validation error
-		 */
-		public function pixel_base_code_noscript() {
-			$pixel_id = self::get_pixel_id();
-			if (
-			(
-			  isset( self::$render_cache[ self::NO_SCRIPT_RENDER ] ) &&
-			  self::$render_cache[ self::NO_SCRIPT_RENDER ] === true
-			) ||
-			! isset( $pixel_id ) ||
-			$pixel_id === 0
-			) {
-				return;
-			}
-
-			self::$render_cache[ self::NO_SCRIPT_RENDER ] = true;
-
-			return sprintf(
-				'
-<!-- Facebook Pixel Code -->
-<noscript>
-<img height="1" width="1" style="display:none" alt="fbpx"
-src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/>
-</noscript>
-<!-- DO NOT MODIFY -->
-<!-- End Facebook Pixel Code -->
-    ',
-				esc_attr( $pixel_id )
-			);
-		}
 
 		/**
 		 * Builds an event.
