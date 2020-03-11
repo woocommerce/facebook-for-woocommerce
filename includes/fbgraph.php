@@ -39,7 +39,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		public function _get( $url, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
-			return wp_remote_get(
+
+			$response = wp_remote_get(
 				$url,
 				array(
 					'headers' => array(
@@ -48,6 +49,30 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 					'timeout' => self::CURL_TIMEOUT,
 				)
 			);
+
+			if ( is_wp_error( $response ) ) {
+
+				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
+
+			} elseif ( 401 === (int) wp_remote_retrieve_response_code( $response ) ) {
+
+				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
+
+				if ( 190 === $response_body->error->code && 'OAuthException' === $response_body->error->type ) {
+					$error_message = __( 'Your connection has expired.', 'facebook-for-woocommerce' ) . ' <strong>' . __( 'Please click Manage connection > Advanced Options > Update Token to refresh your connection to Facebook.', 'facebook-for-woocommerce' ) . '</strong>';
+				} elseif ( isset( $response_body->error->message ) ) {
+					$error_message = $response_body->error->message;
+				} else {
+					$error_message = wp_remote_retrieve_response_code( $response ) . ' ' . wp_remote_retrieve_response_message( $response );
+				}
+
+				WC_Facebookcommerce_Utils::log( $error_message );
+				WC_Facebookcommerce_Utils::log( wp_remote_retrieve_body( $response ) );
+
+				facebook_for_woocommerce()->get_integration()->display_error_message( $error_message );
+			}
+
+			return $response;
 		}
 
 		public function _post( $url, $data, $api_key = '' ) {
