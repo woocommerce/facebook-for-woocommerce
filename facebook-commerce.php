@@ -1632,15 +1632,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function display_error_message( $msg ) {
 
-		$msg = self::FB_ADMIN_MESSAGE_PREPEND . $msg;
-
 		WC_Facebookcommerce_Utils::log( $msg );
 
-		set_transient(
-			'facebook_plugin_api_error',
-			$msg,
-			self::FB_MESSAGE_DISPLAY_TIME
-		);
+		set_transient( 'facebook_plugin_api_error', $msg, self::FB_MESSAGE_DISPLAY_TIME );
 	}
 
 
@@ -3635,11 +3629,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $error_msg ) {
 
 			$message = sprintf(
-				__(
-					'Facebook extension error: %s ',
-					'facebook-for-woocommerce'
-				),
-				$error_msg
+				__( 'Facebook extension error: %s ', 'facebook-for-woocommerce' ),
+				self::FB_ADMIN_MESSAGE_PREPEND . $error_msg
 			);
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
