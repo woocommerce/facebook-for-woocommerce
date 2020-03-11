@@ -180,6 +180,13 @@ if (window.location.href.includes( "fb_force_resync" )) {
 	window.onload  = function() { sync_confirm( "fb_test_product_sync" ); };
 }
 
+
+/**
+ * Sends Ajax request to the backend to initiate product sync.
+ *
+ * @param {boolean} feed whether products should be synced using feed or not
+ * @param {boolean} test whether this is a sync test
+ */
 function sync_all_products($using_feed = false, $is_test = false) {
 
 	window.fb_connected = true;
@@ -226,6 +233,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 		);
 	}
 }
+
 
 // Reset all state
 function delete_all_settings(callback = null, failcallback = null) {
