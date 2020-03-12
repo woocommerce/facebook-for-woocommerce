@@ -111,6 +111,9 @@ class Admin {
 				wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
 					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+					'i18n'                            => [
+						'general_error' => __( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
+					],
 				] );
 			}
 		}
