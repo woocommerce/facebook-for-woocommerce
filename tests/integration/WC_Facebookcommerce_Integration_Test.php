@@ -730,6 +730,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX, $fields );
+		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, $fields );
 	}
 
 
