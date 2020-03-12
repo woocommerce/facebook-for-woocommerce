@@ -2227,10 +2227,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return true;
 	}
 
+
 	/**
 	 * Special function to run all visible products by uploading feed.
-	 **/
-	function ajax_sync_all_fb_products_using_feed() {
+	 *
+	 * @internal
+	 */
+	public function ajax_sync_all_fb_products_using_feed() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
 			'syncall products using feed',
 			! $this->test_mode
@@ -2248,8 +2251,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since 1.10.2-dev.1
 	 *
-	 * @return bool
 	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @return bool
 	 */
 	public function sync_facebook_products_using_feed() {
 
