@@ -429,27 +429,37 @@ class AJAX {
 	 *
 	 * @since x.y.z
 	 *
-	 * @param string $tax_query_arg either category or tag
 	 * @param array $terms_data term data with product IDs and visibility
-	 * @return array
+	 * @return array product IDs and visibility data
 	 */
-	private function get_product_ids_for_visibility_from_terms( $tax_query_arg, $terms_data ) {
+	private function get_product_ids_for_visibility_from_terms( $terms_data ) {
 
 		$products  = [];
 
-		if ( ! in_array( $tax_query_arg, [ 'category', 'tag' ], true ) ) {
-			return $products;
-		}
-
 		foreach ( $terms_data as $term_data ) {
 
-			if ( ! isset( $term_data['term_id'], $term_data['visibility'] ) ) {
+			if ( ! isset( $term_data['term_id'], $term_data['taxonomy'], $term_data['visibility'] ) ) {
+				continue;
+			}
+
+			if ( 'product_cat' === $term_data['taxonomy'] ) {
+				$tax_query_arg = 'category';
+			} elseif( 'product_tag' === $term_data['taxonomy'] ) {
+				$tax_query_arg = 'tag';
+			} else {
+				continue;
+			}
+
+			$term = get_term_by( 'id', $term_data['term_id'], $term_data['taxonomy'] );
+
+			if ( ! $term instanceof \WP_Term ) {
 				continue;
 			}
 
 			$found_products = wc_get_products( [
-				$tax_query_arg => [ $term_data['term_id'] ],
+				'limit'        => -1,
 				'return'       => 'ids',
+				$tax_query_arg => [ $term->slug ],
 			] );
 
 			foreach ( $found_products as $product_id ) {
@@ -481,12 +491,12 @@ class AJAX {
 		$integration = facebook_for_woocommerce()->get_integration();
 		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
 
-		if ( ! empty( $_POST['product_categories'] ) ) {
-			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( 'category', $_POST['product_categories'] ) );
+		if ( ! empty( $_POST['product_categories'] ) && is_array( $_POST['product_categories'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_categories'] ) );
 		}
 
-		if ( ! empty( $_POST['product_tags'] ) ) {
-			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( 'tag', $_POST['product_categories'] ) );
+		if ( ! empty( $_POST['product_tags'] ) && is_array( $_POST['product_tags'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_categories'] ) );
 		}
 
 		// phpcs:enable WordPress.Security.NonceVerification.Missing

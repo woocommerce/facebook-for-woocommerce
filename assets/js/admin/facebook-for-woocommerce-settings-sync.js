@@ -167,6 +167,7 @@ jQuery( document ).ready( function( $ ) {
 							$( categoriesAdded ).each( function() {
 								product_cats.push( {
 									term_id:    this,
+									taxonomy:   'product_cat',
 									visibility: false
 								} );
 							} );
@@ -174,6 +175,7 @@ jQuery( document ).ready( function( $ ) {
 							$( tagsAdded ).each( function() {
 								product_tags.push( {
 									term_id:    this,
+									taxonomy:   'product_tag',
 									visibility: false
 								} );
 							} );
@@ -184,14 +186,20 @@ jQuery( document ).ready( function( $ ) {
 								product_categories: product_cats,
 								product_tags:       product_tags,
 							}, function ( response ) {
+
 								if ( ! response || ! response.success ) {
 									console.log( response )
 								}
-							} );
-						}
 
-						submitSettingsSave = true;
-						$submitButton.trigger( 'click' );
+								submitSettingsSave = true;
+								$submitButton.trigger( 'click' );
+							} );
+
+						} else {
+
+							submitSettingsSave = true;
+							$submitButton.trigger( 'click' );
+						}
 					} );
 
 				} else {
