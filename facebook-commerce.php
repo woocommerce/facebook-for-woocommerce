@@ -2017,17 +2017,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function sync_facebook_products_using_background_processor() {
 
 		if ( ! $this->is_product_sync_enabled() ) {
+
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
-			wp_die();
+
+			return false;
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+
 			WC_Facebookcommerce_Utils::log(
 				'No API key or catalog ID: ' .
 				$this->get_page_access_token() . ' and ' . $this->get_product_catalog_id()
 			);
-			wp_die();
-			return;
+
+			return false;
 		}
 
 		$this->remove_resync_message();
@@ -2164,9 +2167,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// https://codex.wordpress.org/Function_Reference/wp_reset_postdata
 		wp_reset_postdata();
 
-		// This is important, for some reason.
-		// See https://codex.wordpress.org/AJAX_in_Plugins
-		wp_die();
+		return true;
 	}
 
 	/**
