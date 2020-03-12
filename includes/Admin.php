@@ -112,7 +112,7 @@ class Admin {
 					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 					'i18n'                            => [
-						'general_error' => __( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
+						'general_error' => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
 					],
 				] );
 			}
