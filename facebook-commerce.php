@@ -2012,12 +2012,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Syncs Facebook products using the GraphAPI.
 	 *
 	 * It can either use a Feed upload or update each product individually based on the selecetd method.
+	 * Ends the request sending a JSON response indicating success or failure.
 	 *
 	 * @since 1.10.2-dev.1
 	 *
 	 * @param string $method either 'feed' or 'background'
-	 * @throws Framework\SV_WC_Plugin_Exception
-	 * @return bool
 	 */
 	private function sync_facebook_products( $method ) {
 
