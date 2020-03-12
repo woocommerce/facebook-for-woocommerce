@@ -423,6 +423,49 @@ class AJAX {
 
 
 	/**
+	 * Gets an array of product IDs data for handling visibility (helper method).
+	 *
+	 * @see \SkyVerge\WooCommerce\Facebook\AJAX::set_products_visibility()
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $tax_query_arg either category or tag
+	 * @param array $terms_data term data with product IDs and visibility
+	 * @return array
+	 */
+	private function get_product_ids_for_visibility_from_terms( $tax_query_arg, $terms_data ) {
+
+		$products  = [];
+
+		if ( ! in_array( $tax_query_arg, [ 'category', 'tag' ], true ) ) {
+			return $products;
+		}
+
+		foreach ( $terms_data as $term_data ) {
+
+			if ( ! isset( $term_data['term_id'], $term_data['visibility'] ) ) {
+				continue;
+			}
+
+			$found_products = wc_get_products( [
+				$tax_query_arg => [ $term_data['term_id'] ],
+				'return'       => 'ids',
+			] );
+
+			foreach ( $found_products as $product_id ) {
+
+				$products[] = [
+					'product_id' => $product_id,
+					'visibility' => $term_data['visibility']
+				];
+			}
+		}
+
+		return $products;
+	}
+
+
+	/**
 	 * Sets products visibility in Facebook.
 	 *
 	 * @internal
@@ -433,24 +476,46 @@ class AJAX {
 
 		check_ajax_referer( 'set-products-visibility', 'security' );
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 		$integration = facebook_for_woocommerce()->get_integration();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$products   = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+
+		if ( ! empty( $_POST['product_categories'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( 'category', $_POST['product_categories'] ) );
+		}
+
+		if ( ! empty( $_POST['product_tags'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( 'tag', $_POST['product_categories'] ) );
+		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$error = 'No products found to set visibility for.'; // console error message
 
 		if ( $integration && ! empty( $products ) ) {
 
+			$processed_products = [];
+
 			foreach ( $products as $product_data ) {
+
+				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
+
+				// bail if already processed
+				if ( in_array( $product_id, $processed_products, true ) ) {
+					continue;
+				}
 
 				$visibility_meta_value = isset( $product_data['visibility'] ) ? wc_string_to_bool( $product_data['visibility'] ) : null;
 
+				// bail if visibility value is not valid
 				if ( ! is_bool( $visibility_meta_value ) ) {
 					continue;
 				}
 
 				$visibility_api_value = $visibility_meta_value ? $integration::FB_SHOP_PRODUCT_VISIBLE : $integration::FB_SHOP_PRODUCT_HIDDEN;
 
-				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
-				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
+				$product = $product_id > 0 ? wc_get_product( $product_id ) : null;
 
 				if ( $product instanceof \WC_Product ) {
 
@@ -469,6 +534,8 @@ class AJAX {
 								if ( $integration->check_api_result( $fb_request ) ) {
 									Products::set_product_visibility( $variation_product, $visibility_meta_value );
 								}
+
+								$processed_products[] = $variation_id;
 							}
 						}
 
@@ -485,13 +552,15 @@ class AJAX {
 							Products::set_product_visibility( $product, $visibility_meta_value );
 						}
 					}
+
+					$processed_products[] = $product_id;
 				}
 			}
 
-			wp_send_json_success();
+			wp_send_json_success( $processed_products );
 		}
 
-		wp_send_json_error();
+		wp_send_json_error( $error );
 	}
 
 
