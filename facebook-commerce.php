@@ -2214,9 +2214,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
 	 *
+	 * @since 1.10.2-dev.1
+	 *
 	 * @return bool
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
-	public function sync_all_fb_products_using_feed() {
+	public function sync_facebook_products_using_feed() {
 
 		if ( ! $this->is_product_sync_enabled() ) {
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
@@ -2296,6 +2299,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			true
 		);
 		return false;
+	}
+
+
+	/**
+	 * Syncs Facebook products using a Feed.
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
+	 *
+	 * @return bool
+	 */
+	public function sync_all_fb_products_using_feed() {
+
+		try {
+			$sync_started = $this->sync_facebook_products_using_feed();
+		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+			$sync_started = false;
+		}
+
+		return $sync_started;
 	}
 
 
