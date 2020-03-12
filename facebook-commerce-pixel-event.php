@@ -414,10 +414,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			update_option( self::SETTINGS_KEY, $fb_options );
 		}
 
-		public static function get_basecode() {
-			return self::$default_pixel_basecode;
-		}
-
 		private static function get_version_info() {
 			global $wp_version;
 
@@ -444,6 +440,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 					self::USE_PII_KEY  => 0,
 				)
 			);
+		}
+
+
+		/**
+		 * Gets Facebook Pixel base code.
+		 *
+		 * @deprecated since x.y.z
+		 *
+		 * @return string
+		 */
+		public static function get_basecode() {
+
+			wc_deprecated_function( __METHOD__, 'x.y.z' );
+
+			return '';
 		}
 
 
