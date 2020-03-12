@@ -2231,26 +2231,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			WC_Facebookcommerce_Utils::log( sprintf( 'No API key or Catalog ID: %s and %s', $this->get_page_access_token(), $this->get_product_catalog_id() ) );
 			return false;
 		}
-		$this->remove_resync_message();
-		$is_valid_product_catalog =
-		$this->fbgraph->validate_product_catalog( $this->get_product_catalog_id() );
 
-		if ( ! $is_valid_product_catalog ) {
+		$this->remove_resync_message();
+
+		if ( ! $this->fbgraph->is_product_catalog_valid( $this->get_product_catalog_id() ) ) {
+
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
 			WC_Facebookcommerce_Utils::fblog(
 				'Tried to sync with an invalid product catalog!',
 				array(),
 				true
 			);
-			$this->display_warning_message(
-				'We\'ve detected that your
-        Facebook Product Catalog is no longer valid. This may happen if it was
-        deleted, or this may be a transient error.
-        If this error persists please remove your settings via
-        "Advanced Options > Advanced Settings > Remove"
-        and try setup again'
-			);
-			return false;
+
+			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again." ) );
 		}
 
 		// Cache the cart URL to display a warning in case it changes later
