@@ -97,15 +97,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 
 				if ( isset( $response_body->error->code, $response_body->error->message ) ) {
-
-					$exception = new Framework\SV_WC_API_Exception( $response_body->error->message, $response_body->error->code );
-
+					throw new Framework\SV_WC_API_Exception( $response_body->error->message, $response_body->error->code );
 				} else {
-
-					$exception = new Framework\SV_WC_API_Exception( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
+					throw new Framework\SV_WC_API_Exception( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
 				}
-
-				throw $exception;
 			}
 
 			return $response;
