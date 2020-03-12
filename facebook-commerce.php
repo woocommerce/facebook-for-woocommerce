@@ -1524,7 +1524,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'connected' => true,
 				'status'    => 'in progress',
 			);
-			if ( $this->settings['fb_upload_id'] ) {
+			if ( ! empty( $this->settings['fb_upload_id'] ) ) {
 				if ( ! isset( $this->fbproductfeed ) ) {
 					if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) {
 						include_once 'includes/fbproductfeed.php';
