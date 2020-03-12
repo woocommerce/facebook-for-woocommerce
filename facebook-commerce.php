@@ -2269,27 +2269,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 		}
 
-		$upload_success = $this->fbproductfeed->sync_all_products_using_feed();
-		if ( $upload_success ) {
-			$this->update_feed_id( $this->fbproductfeed->feed_id );
-			$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
-			update_option(
-				$this->get_option_key(),
-				apply_filters(
-					'woocommerce_settings_api_sanitized_fields_' .
-					$this->id,
-					$this->settings
-				)
-			);
-			wp_reset_postdata();
-			return true;
+		if ( ! $this->fbproductfeed->sync_all_products_using_feed() ) {
+
+			WC_Facebookcommerce_Utils::fblog( 'Sync all products using feed, curl failed', [], true );
+
+			throw new Framework\SV_WC_Plugin_Exception( __( "We couldn't create the feed or upload the product information." ) );
 		}
-		WC_Facebookcommerce_Utils::fblog(
-			'Sync all products using feed, curl failed',
-			array(),
-			true
+
+		$this->update_feed_id( $this->fbproductfeed->feed_id );
+
+		$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
+
+		update_option(
+			$this->get_option_key(),
+			apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings )
 		);
-		return false;
+
+		wp_reset_postdata();
+
+		return true;
 	}
 
 
