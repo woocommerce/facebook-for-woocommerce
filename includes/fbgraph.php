@@ -231,7 +231,30 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 */
 		public function validate_product_catalog( $product_catalog_id ) {
 
-			$response = self::_get( $this->build_url( $product_catalog_id ) );
+			try {
+				$is_valid = $this->is_product_catalog_valid( $product_catalog_id );
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+				$is_valid = false;
+			}
+
+			return $is_valid;
+		}
+
+
+		/**
+		 * Determines whether the product catalog ID is valid.
+		 *
+		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param int $product_catalog_id the ID of the product catalog
+		 * @return boolean
+		 * @throws Framework\SV_WC_API_Exception
+		 */
+		public function is_product_catalog_valid( $product_catalog_id ) {
+
+			$response = $this->perform_request( $this->build_url( $product_catalog_id ) );
 
 			return 200 === (int) wp_remote_retrieve_response_code( $response );
 		}
