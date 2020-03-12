@@ -2114,7 +2114,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				true
 			);
 
-			throw new Framewokr\SV_WC_Plugin_Exception( __( 'A product sync is in progress. Please wait until the sync finishes before starting a new one.', 'facebook-for-woocommerce' ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( 'A product sync is in progress. Please wait until the sync finishes before starting a new one.', 'facebook-for-woocommerce' ) );
 		}
 
 		if ( ! $this->fbgraph->is_product_catalog_valid( $this->get_product_catalog_id() ) ) {
