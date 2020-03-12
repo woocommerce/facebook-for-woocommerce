@@ -216,7 +216,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 					jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
 					jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
-					$( '#sync_progress' ).show().html( message );
+					$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + response.data.error + '</span>' );
 				}
 			} );
 		}

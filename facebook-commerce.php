@@ -2220,7 +2220,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$message = __( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' );
 			}
 
-			wp_send_json_error( [ 'error' => '<span style="color: #DC3232">' . $message . '</span>' ] );
+			wp_send_json_error( [ 'error' => $message ] );
 		}
 	}
 
