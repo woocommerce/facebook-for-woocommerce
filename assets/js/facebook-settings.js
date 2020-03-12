@@ -226,7 +226,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 	jQuery.post( ajaxurl, data ).then( function( response ) {
 
-		if ( response && false === response.success && response.data && response.data.error ) {
+		if ( ! response || false === response.success ) {
 
 			// no need to check the queue or upload status
 			clearInterval( window.fb_pings );
@@ -236,7 +236,15 @@ function sync_all_products($using_feed = false, $is_test = false) {
 			jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
 			jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
-			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + response.data.error + '</span>' );
+			let message;
+
+			if ( response && response.data && response.data.error ) {
+				message = response.data.error;
+			} else {
+				message = facebook_for_woocommerce_settings_sync.i18n.general_error;
+			}
+
+			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
 		}
 	} );
 }
