@@ -3606,6 +3606,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Determines whether debug mode is enabled.
+	 *
+	 * @since 1.10.2-dev.1
+	 *
+	 * @return bool
+	 */
+	public function is_debug_mode_enabled() {
+
+		/**
+		 * Filters whether debug mode is enabled.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param bool $is_enabled whether debug mode is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+	}
+
+
+	/**
 	 * Gets message HTML.
 	 *
 	 * @return string
