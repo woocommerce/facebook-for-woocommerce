@@ -3683,10 +3683,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $error_msg = $this->get_api_error_message() ) {
 
-			$message = sprintf(
-				__( 'Facebook extension error: %s ', 'facebook-for-woocommerce' ),
-				self::FB_ADMIN_MESSAGE_PREPEND . $error_msg
-			);
+			$message = '<strong>' . __( 'Facebook for WooCommerce error:', 'facebook-for-woocommerce' ) . '</strong></br>' . $error_msg;
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $this->get_message_html( $message );
