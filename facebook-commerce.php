@@ -2026,8 +2026,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		try {
 
 			if ( 'feed' === $method ) {
+
 				$sync_started = $this->sync_facebook_products_using_feed();
+
 			} elseif ( 'background' === $method ) {
+
+				// if syncs starts, the background processor will continue executing until the request ends and no response will be sent back to the browser
 				$sync_started = $this->sync_facebook_products_using_background_processor();
 			}
 
