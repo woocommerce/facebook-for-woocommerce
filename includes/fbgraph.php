@@ -226,6 +226,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
 		 *
+		 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+		 *
 		 * @param int $product_catalog_id the ID of the product catalog
 		 * @return bool
 		 */

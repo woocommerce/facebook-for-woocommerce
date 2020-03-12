@@ -2333,6 +2333,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Syncs Facebook products using a Feed.
 	 *
+	 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
 	 *
 	 * @return bool
