@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 	if ( ! class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
@@ -62,6 +64,53 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 			return $response;
 		}
+
+
+		/**
+		 * Performs a Graph API request to the given URL.
+		 *
+		 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param string $url
+		 * @throws Framework\SV_WC_API_Exception
+		 * @return array
+		 */
+		public function perform_request( $url ) {
+
+			$response = wp_remote_get( $url, [
+				'headers' => [
+					'Authorization' => 'Bearer ' . $this->api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+			] );
+
+			if ( is_wp_error( $response ) ) {
+
+				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
+
+				throw new Framework\SV_WC_API_Exception( $response->get_error_message(), $response->get_error_code() );
+
+			} elseif ( 401 === (int) wp_remote_retrieve_response_code( $response ) ) {
+
+				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
+
+				if ( isset( $response_body->error->code, $response_body->error->message ) ) {
+
+					$exception = new Framework\SV_WC_API_Exception( $response_body->error->message, $response_body->error->code );
+
+				} else {
+
+					$exception = new Framework\SV_WC_API_Exception( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
+				}
+
+				throw $exception;
+			}
+
+			return $response;
+		}
+
 
 		public function _post( $url, $data, $api_key = '' ) {
 			if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
