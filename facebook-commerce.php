@@ -2189,13 +2189,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
-		if ( $this->sync_all_fb_products_using_feed() ) {
+		try {
+
+			$sync_started = $this->sync_facebook_products_using_feed();
+
+		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+
+			// Access token has expired
+			if ( 190 === $e->getCode() ) {
+				$error_message = __( 'Your connection has expired.', 'facebook-for-woocommerce' ) . ' <strong>' . __( 'Please click Manage connection > Advanced Options > Update Token to refresh your connection to Facebook.', 'facebook-for-woocommerce' ) . '</strong>';
+			} else {
+				$error_message = $e->getMessage();
+			}
+
+			$sync_started = false;
+		}
+
+		if ( $sync_started ) {
 
 			wp_send_json_success();
 
 		} else {
 
-			if ( $error_message = $this->get_api_error_message() ) {
+			if ( isset( $error_message ) ) {
 				$message = sprintf(
 					__( 'There was an error trying to sync the products to Facebook. %s', 'facebook-for-woocommerce' ),
 					$error_message
