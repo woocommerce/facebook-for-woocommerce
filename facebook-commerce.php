@@ -2470,6 +2470,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'css'     => 'width: 6em;',
 			],
 
+			[
+				'title' => __( 'Debug', 'facebook-for-woocommerce' ),
+				'type'  => 'title',
+			],
+
+			self::SETTING_ENABLE_DEBUG_MODE => [
+				'title'    => __( 'Enable debug mode', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => __( 'Log plugin events for debugging', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Only enable this if you are experiencing problems with the plugin.', 'facebook-for-woocommerce' ),
+				'default'  => 'no',
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
