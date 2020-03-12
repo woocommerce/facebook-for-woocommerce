@@ -2021,19 +2021,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function sync_facebook_products( $method ) {
 
-		$sync_started = false;
-
 		try {
 
 			if ( 'feed' === $method ) {
 
-				$sync_started = $this->sync_facebook_products_using_feed();
+				$this->sync_facebook_products_using_feed();
 
 			} elseif ( 'background' === $method ) {
 
 				// if syncs starts, the background processor will continue executing until the request ends and no response will be sent back to the browser
-				$sync_started = $this->sync_facebook_products_using_background_processor();
+				$this->sync_facebook_products_using_background_processor();
 			}
+
+			wp_send_json_success();
 
 		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
 
@@ -2044,23 +2044,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$error_message = $e->getMessage();
 			}
 
-			$sync_started = false;
-		}
-
-		if ( $sync_started ) {
-
-			wp_send_json_success();
-
-		} else {
-
-			if ( isset( $error_message ) ) {
-				$message = sprintf(
-					__( 'There was an error trying to sync the products to Facebook. %s', 'facebook-for-woocommerce' ),
-					$error_message
-				);
-			} else {
-				$message = __( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' );
-			}
+			$message = sprintf(
+				/* translators: Placeholders %s - error message */
+				__( 'There was an error trying to sync the products to Facebook. %s', 'facebook-for-woocommerce' ),
+				$error_message
+			);
 
 			wp_send_json_error( [ 'error' => $message ] );
 		}
