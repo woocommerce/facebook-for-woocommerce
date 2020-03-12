@@ -366,7 +366,7 @@ function sync_in_progress() {
 	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
 
 	// set products sync status
-	jQuery( '#sync_progress' ).show().html( 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>' );
+	jQuery( '#sync_progress' ).show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
 }
 
 
@@ -803,7 +803,7 @@ function check_feed_upload_queue(check_num) {
 				  break;
 					case 'in progress':
 
-						$sync_progress_element.show().html( 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>' );
+						$sync_progress_element.show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
 
 						ping_feed_status_queue( check_num + 1 );
 					break;

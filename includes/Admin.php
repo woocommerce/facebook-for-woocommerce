@@ -112,7 +112,9 @@ class Admin {
 					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 					'i18n'                            => [
-						'general_error' => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
+						/* translators: Placeholders %s - html code for a spinner icon */
+						'sync_in_progress' => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
+						'general_error'    => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
 					],
 				] );
 			}
