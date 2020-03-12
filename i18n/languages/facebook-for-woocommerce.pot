@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Facebook for WooCommerce 1.10.2-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-03-11 03:52:31+00:00\n"
+"POT-Creation-Date: 2020-03-12 03:43:23+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Go to Settings"
 msgstr ""
 
-#: includes/AJAX.php:130 includes/AJAX.php:225 includes/AJAX.php:289
+#: includes/AJAX.php:130 includes/AJAX.php:225 includes/AJAX.php:293
 msgid "Cancel"
 msgstr ""
 
@@ -334,7 +334,11 @@ msgstr ""
 msgid "Exclude Products"
 msgstr ""
 
-#: includes/AJAX.php:297
+#: includes/AJAX.php:288
+msgid "Exclude Products and Hide in Facebook"
+msgstr ""
+
+#: includes/AJAX.php:301
 #. translators: Placeholder %s - <br/> tags
 msgid ""
 "The categories and/or tags that you have selected to exclude from sync "
