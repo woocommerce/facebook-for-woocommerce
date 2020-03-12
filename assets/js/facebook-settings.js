@@ -191,47 +191,54 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 	window.fb_connected = true;
 	sync_in_progress();
-	if ($using_feed) {
+
+	let data = {};
+
+	if ( $using_feed ) {
+
 		window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
 		window.feed_upload = true;
+
 		ping_feed_status_queue();
 
 		if ( $is_test ) {
 
-			jQuery.post( ajaxurl, { action: 'ajax_test_sync_products_using_feed' } );
+			data = { action: 'ajax_test_sync_products_using_feed' };
 
 		} else {
 
-			jQuery.post( ajaxurl, {
+			data = {
 				action:      'ajax_sync_all_fb_products_using_feed',
 				_ajax_nonce: wc_facebook_settings_jsx.nonce,
-			} ).then( function( response ) {
+			};
 
-				if ( response && false === response.success && response.data && response.data.error ) {
-
-					// no need to check the upload status
-					clearInterval( window.fb_feed_pings );
-
-					// enable Manage connection and Sync products buttons when sync stops
-					jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-					jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
-
-					$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + response.data.error + '</span>' );
-				}
-			} );
 		}
 
 	} else {
 
 		check_background_processor_status();
 
-		return ajax(
-			'ajax_sync_all_fb_products',
-			{
-        "_ajax_nonce": wc_facebook_settings_jsx.nonce,
-      }
-		);
+		data = {
+			action:      'ajax_sync_all_fb_products',
+			_ajax_nonce: wc_facebook_settings_jsx.nonce,
+		};
 	}
+
+	jQuery.post( ajaxurl, data ).then( function( response ) {
+
+		if ( response && false === response.success && response.data && response.data.error ) {
+
+			// no need to check the queue or upload status
+			clearInterval( window.fb_pings );
+			clearInterval( window.fb_feed_pings );
+
+			// enable Manage connection and Sync products buttons when sync stops
+			jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
+			jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
+			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + response.data.error + '</span>' );
+		}
+	} );
 }
 
 
