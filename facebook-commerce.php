@@ -2086,12 +2086,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
 
-			WC_Facebookcommerce_Utils::log(
-				'No API key or catalog ID: ' .
-				$this->get_page_access_token() . ' and ' . $this->get_product_catalog_id()
-			);
+			WC_Facebookcommerce_Utils::log( sprintf( 'No API key or Catalog ID: %s and %s', $this->get_page_access_token(), $this->get_product_catalog_id() ) );
 
-			return false;
+			throw new Framework\SV_WC_Plugin_Exception( __( 'The page access token or product catalog ID are missing.', 'facebook-for-woocommerce' ) );
 		}
 
 		$this->remove_resync_message();
@@ -2269,7 +2266,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
 
 			WC_Facebookcommerce_Utils::log( sprintf( 'No API key or Catalog ID: %s and %s', $this->get_page_access_token(), $this->get_product_catalog_id() ) );
-			return false;
+
+			throw new Framework\SV_WC_Plugin_Exception( __( 'The page access token or product catalog ID are missing.', 'facebook-for-woocommerce' ) );
 		}
 
 		$this->remove_resync_message();
