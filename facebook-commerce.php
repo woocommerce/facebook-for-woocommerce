@@ -4210,7 +4210,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function handle_scheduled_resync_action() {
 
-		$this->sync_all_fb_products_using_feed();
+		try {
+			$this->sync_facebook_products_using_feed();
+		} catch ( Framework\SV_WC_Plugin_Exception $e ) {}
 
 		$resync_offset = $this->get_scheduled_resync_offset();
 
