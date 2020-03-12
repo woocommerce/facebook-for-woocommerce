@@ -524,6 +524,11 @@ class AJAX {
 
 						foreach ( $product->get_children() as $variation_id ) {
 
+							// bail if already processed
+							if ( in_array( $variation_id, $processed_products, true ) ) {
+								continue;
+							}
+
 							if ( $variation_product = wc_get_product( $variation_id ) ) {
 
 								$fb_item_id = $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $variation_product->get_id() );
