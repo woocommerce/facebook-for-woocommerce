@@ -814,7 +814,7 @@ function check_feed_upload_queue(check_num) {
 						jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
 						jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
-						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + 'Something went wrong while uploading the product information, please try again.' + '</span>' );
+						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
 						window.feed_upload              = false;
 						if (window.is_test) {
