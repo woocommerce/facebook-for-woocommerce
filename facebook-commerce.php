@@ -1996,10 +1996,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Special function to run all visible products through on_product_publish
-	 **/
-	function ajax_sync_all_fb_products() {
+	 *
+	 * @internal
+	 */
+	public function ajax_sync_all_fb_products() {
+
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'syncall products', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
+	}
+
+
+	/**
+	 * Syncs Facebook products using the background processor.
+	 *
+	 * @since 1.10.2-dev.1
+	 *
+	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @return bool
+	 */
+	private function sync_facebook_products_using_background_processor() {
 
 		if ( ! $this->is_product_sync_enabled() ) {
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
@@ -2014,6 +2029,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			wp_die();
 			return;
 		}
+
 		$this->remove_resync_message();
 
 		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
