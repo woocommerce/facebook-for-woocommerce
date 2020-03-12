@@ -162,7 +162,7 @@ jQuery( document ).ready( function( $ ) {
 						// the user has an option to hide all the affected products from Facebook while adding the exclusion though
 						if ( $( this ).hasClass( 'hide-products' ) ) {
 
-							let product_cats, product_tags = [];
+							let product_cats = [], product_tags = [];
 
 							$( categoriesAdded ).each( function() {
 								product_cats.push( {
@@ -180,7 +180,7 @@ jQuery( document ).ready( function( $ ) {
 
 							$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
 								action:             'facebook_for_woocommerce_set_products_visibility',
-								security:           facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
+								security:           facebook_for_woocommerce_settings_sync.set_product_visibility_nonce,
 								product_categories: product_cats,
 								product_tags:       product_tags,
 							}, function ( response ) {
