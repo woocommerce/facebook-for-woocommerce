@@ -2081,7 +2081,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
 
-			return false;
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Product sync is disabled.', 'facebook-for-woocommerce' ) );
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
@@ -2262,7 +2262,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $this->is_product_sync_enabled() ) {
 			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
-			return false;
+
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Product sync is disabled.', 'facebook-for-woocommerce' ) );
 		}
 
 		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
