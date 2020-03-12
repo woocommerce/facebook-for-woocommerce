@@ -265,6 +265,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param array $params custom event parameters
 		 * @param string $listener name of the JavaScript event to listen for
 		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
+		 * @return string
 		 */
 		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
 
