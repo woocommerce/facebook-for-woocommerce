@@ -137,10 +137,10 @@ jQuery( document ).ready( function( $ ) {
 		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
 			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
-				action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
-				security: facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
+				action:     'facebook_for_woocommerce_set_excluded_terms_prompt',
+				security:   facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
 				categories: categoriesAdded,
-				tags: tagsAdded,
+				tags:       tagsAdded,
 			}, function ( response ) {
 
 				if ( response && ! response.success ) {
@@ -155,9 +155,40 @@ jQuery( document ).ready( function( $ ) {
 					} );
 
 					// exclude products: submit form as normal
-					$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
+					$( '.facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
 
 						blockModal();
+
+						// the user has an option to hide all the affected products from Facebook while adding the exclusion though
+						if ( $( this ).hasClass( 'hide-products' ) ) {
+
+							let product_cats, product_tags = [];
+
+							$( categoriesAdded ).each( function() {
+								product_cats.push( {
+									term_id:    this,
+									visibility: false
+								} );
+							} );
+
+							$( tagsAdded ).each( function() {
+								product_tags.push( {
+									term_id:    this,
+									visibility: false
+								} );
+							} );
+
+							$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+								action:             'facebook_for_woocommerce_set_products_visibility',
+								security:           facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
+								product_categories: product_cats,
+								product_tags:       product_tags,
+							}, function ( response ) {
+								if ( ! response || ! response.success ) {
+									console.log( response )
+								}
+							} );
+						}
 
 						submitSettingsSave = true;
 						$submitButton.trigger( 'click' );
