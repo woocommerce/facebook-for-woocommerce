@@ -635,6 +635,29 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::is_debug_mode_enabled() */
+	public function test_is_debug_mode_enabled() {
+
+		// defaults to false
+		$this->assertFalse( $this->integration->is_debug_mode_enabled() );
+
+		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, 'yes' );
+
+		$this->assertTrue( $this->integration->is_debug_mode_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_debug_mode_enabled() */
+	public function test_is_debug_mode_enabled_filter() {
+
+		add_filter( 'wc_facebook_is_debug_mode_enabled', function() {
+			return true;
+		} );
+
+		$this->assertTrue( $this->integration->is_debug_mode_enabled() );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::ajax_save_fb_settings()
 	 *
