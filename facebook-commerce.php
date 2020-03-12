@@ -2042,18 +2042,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $currently_syncing ) {
-			WC_Facebookcommerce_Utils::log( 'Not syncing, sync in progress' );
+
+			WC_Facebookcommerce_Utils::log( 'Not syncing again, sync already in progress' );
 			WC_Facebookcommerce_Utils::fblog(
 				'Tried to sync during an in-progress sync!',
 				array(),
 				true
 			);
-			$this->display_warning_message(
-				'A product sync is in progress.
-        Please wait until the sync finishes before starting a new one.'
-			);
-			wp_die();
-			return;
+
+			throw new Framewokr\SV_WC_Plugin_Exception( __( 'A product sync is in progress. Please wait until the sync finishes before starting a new one.', 'facebook-for-woocommerce' ) );
 		}
 
 		$is_valid_product_catalog =
