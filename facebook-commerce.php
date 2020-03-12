@@ -76,7 +76,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the messenger color HEX setting ID */
 	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
 
-	/** @var string the "debug mod" setting ID */
+	/** @var string the "debug mode" setting ID */
 	const SETTING_ENABLE_DEBUG_MODE = 'enable_debug_mode';
 
 	/** @var string the standard product description mode name */
