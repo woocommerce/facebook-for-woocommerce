@@ -376,21 +376,39 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			);
 		}
 
+
+		/**
+		 * Gets the status of the configured feed upload.
+		 *
+		 * The status indicator is one of 'in progress', 'complete', or 'error'.
+		 *
+		 * @param array $settings
+		 * @return string
+		 */
 		public function is_upload_complete( &$settings ) {
 			$result = $this->fbgraph->get_upload_status( $settings['fb_upload_id'] );
 			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
 				 $this->log_feed_progress( json_encode( $result ) );
 				 return 'error';
 			}
-			$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'], true );
 
-			if ( isset( $decode_result['end_time'] ) ) {
-				$settings['upload_end_time'] = $decode_result['end_time'];
-				return 'complete';
-			} else {
-				return 'in progress';
+			$response_body = json_decode( wp_remote_retrieve_body( $result ) );
+			$upload_status = 'error';
+
+			if ( isset( $response_body->end_time ) ) {
+
+				$settings['upload_end_time'] = $response_body->end_time;
+
+				$upload_status = 'complete';
+
+			} else if ( 200 === (int) wp_remote_retrieve_response_code( $result ) ) {
+
+				$upload_status = 'in progress';
 			}
+
+			return $upload_status;
 		}
+
 
 		// Log progress in local log file and FB.
 		public function log_feed_progress( $msg, $object = array() ) {
