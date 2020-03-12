@@ -2110,7 +2110,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				true
 			);
 
-			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again." ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again.", 'facebook-for-woocommerce' ) );
 		}
 
 		// Cache the cart URL to display a warning in case it changes later
@@ -2268,7 +2268,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				true
 			);
 
-			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again." ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again.", 'facebook-for-woocommerce' ) );
 		}
 
 		// Cache the cart URL to display a warning in case it changes later
@@ -2298,7 +2298,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			WC_Facebookcommerce_Utils::fblog( 'Sync all products using feed, curl failed', [], true );
 
-			throw new Framework\SV_WC_Plugin_Exception( __( "We couldn't create the feed or upload the product information." ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( "We couldn't create the feed or upload the product information.", 'facebook-for-woocommerce' ) );
 		}
 
 		$this->update_feed_id( $this->fbproductfeed->feed_id );
