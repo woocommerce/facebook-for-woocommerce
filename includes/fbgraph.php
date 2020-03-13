@@ -110,37 +110,49 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		public function _post_sync( $url, $data, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
-			return wp_remote_post(
-				$url,
-				array(
-					'body'    => $data,
-					'headers' => array(
-						'Authorization' => 'Bearer ' . $api_key,
-					),
-					'timeout' => self::CURL_TIMEOUT,
-				)
-			);
+
+			$request_args = [
+				'body'    => $data,
+				'headers' => [
+					'Authorization' => 'Bearer ' . $api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+			];
+
+			$response = wp_remote_post( $url, $request_args );
+
+			$this->log_request( $url, $request_args, $response, 'POST' );
+
+			return $response;
 		}
 
 		public function _post_async( $url, $data, $api_key = '' ) {
+
 			if ( ! class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
 				return;
 			}
 
 			$api_key = $api_key ?: $this->api_key;
+
+			$request_args = [
+				'body'    => $data,
+				'headers' => [
+					'Authorization' => 'Bearer ' . $api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+			];
+
 			$fbasync = new WC_Facebookcommerce_Async_Request();
 
 			$fbasync->query_url  = $url;
 			$fbasync->query_args = array();
-			$fbasync->post_args  = array(
-				'body'    => $data,
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $api_key,
-				),
-				'timeout' => self::CURL_TIMEOUT,
-			);
+			$fbasync->post_args  = $request_args;
 
-			return $fbasync->dispatch();
+			$response = $fbasync->dispatch();
+
+			$this->log_request( $url, $request_args, $response, 'POST' );
+
+			return $response;
 		}
 
 		public function _delete( $url, $api_key = '' ) {
