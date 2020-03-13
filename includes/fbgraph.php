@@ -165,6 +165,76 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			);
 		}
 
+
+		/**
+		 * Logs the request and response data.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param $url
+		 * @param $request_args
+		 * @param array|\WP_Error $response WordPress response object
+		 * @param string $method
+		 */
+		private function log_request( $url, $request_args, $response, $method = '' ) {
+
+			// bail if this class is loaded incorrectly or logging is disabled
+			if ( ! function_exists( 'facebook_for_woocommerce' ) || ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+				return;
+			}
+
+			// add the URI to the data
+			$request_data = array_merge( [
+				'uri' => $url,
+			], $request_args );
+
+			// the request args may not include the method, so allow it to be set
+			if ( $method ) {
+				$request_data['method'] = $method;
+			}
+
+			// mask the page access token
+			if ( ! empty( $request_data['headers']['Authorization'] ) ) {
+
+				$auth_value = $request_data['headers']['Authorization'];
+
+				$request_data['headers']['Authorization'] = str_replace( $auth_value, str_repeat( '*', strlen( $auth_value ) ), $auth_value );
+			}
+
+			// if there was a problem
+			if ( is_wp_error( $response ) ) {
+
+				$code    = $response->get_error_code();
+				$message = $response->get_error_message();
+				$headers = [];
+				$body    = '';
+
+			} else {
+
+				$headers = wp_remote_retrieve_headers( $response );
+
+				if ( is_object( $headers ) ) {
+					$headers = $headers->getAll();
+				} elseif ( ! is_array( $headers ) ) {
+					$headers = [];
+				}
+
+				$code    = wp_remote_retrieve_response_code( $response );
+				$message = wp_remote_retrieve_response_message( $response );
+				$body    = wp_remote_retrieve_body( $response );
+			}
+
+			$response_data = [
+				'code'    => $code,
+				'message' => $message,
+				'headers' => $headers,
+				'body'    => $body,
+			];
+
+			facebook_for_woocommerce()->log_api_request( $request_data, $response_data );
+		}
+
+
 		// GET https://graph.facebook.com/vX.X/{page-id}/?fields=name
 		public function get_page_name( $page_id, $api_key = '' ) {
 			$api_key  = $api_key ?: $this->api_key;
