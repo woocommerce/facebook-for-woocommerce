@@ -145,8 +145,15 @@ function fb_flush(){
 	 );
 }
 
+
+/**
+ * Shows a confirm dialog and starts product sync if the user selectes OK.
+ *
+ * @param {String} verbose an identifier for the confirmation message to display
+ */
 function sync_confirm(verbose = null) {
-	var msg = '';
+
+	let msg = '';
 
 	switch (verbose) {
 
@@ -162,14 +169,14 @@ function sync_confirm(verbose = null) {
 			msg = facebook_for_woocommerce_settings_sync.i18n.confirm_sync;
 	}
 
-	if (confirm( msg )) {
-		sync_all_products(
-			window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload,
-			verbose == 'fb_test_product_sync'
-		);
+	if ( confirm( msg ) ) {
+
+		sync_all_products( window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload, verbose == 'fb_test_product_sync' );
+
 		window.fb_sync_start_time = new Date().getTime();
 	}
 }
+
 
 // Launch the confirm dialog immediately if the param is in the URL.
 if (window.location.href.includes( "fb_force_resync" )) {
