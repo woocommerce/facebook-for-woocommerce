@@ -375,6 +375,9 @@ function sync_in_progress() {
 }
 
 
+/**
+ * Hides sync progress and enable Manage connection and Sync products buttons.
+ */
 function sync_not_in_progress() {
 
 	// enable Manage connection and Sync products buttons when sync is complete
