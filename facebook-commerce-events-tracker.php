@@ -380,22 +380,27 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$output = "
 <!-- Facebook Pixel Event Code -->
 <script>
-	jQuery( document.body ).on( '%s', function(){
+	function handleAddedToCart() {
 		%s
-	});
+		// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
+		jQuery( document.body ).off( '%s', handleAddedToCart );
+	}
+
+	jQuery( document.body ).one( '%s', handleAddedToCart );
 </script>
 <!-- End Facebook Pixel Event Code -->
 ";
 
 				$script = sprintf( $output,
-					'added_to_cart',
 					$this->pixel->get_event_code( 'AddToCart', [
 						'content_ids'  => $this->get_cart_content_ids(),
 						'content_type' => 'product',
 						'contents'     => $this->get_cart_contents(),
 						'value'        => $this->get_cart_total(),
 						'currency'     => get_woocommerce_currency(),
-					] )
+					] ),
+					'added_to_cart',
+					'added_to_cart'
 				);
 			}
 
