@@ -131,6 +131,12 @@ class Admin {
 							'</strong>',
 							'<span class="spinner is-active"></span>'
 						),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_sucessful'    => sprintf( esc_html__( '%1$sStatus:%2$s Test Pass.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_in_progress'  => sprintf( esc_html__( '%1$sStatus:%2$s Integration test in progress...', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_failed'       => sprintf( esc_html__( '%1$sStatus:%2$s Test Fail.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
 						'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
 						'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
 					],

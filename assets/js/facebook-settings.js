@@ -820,8 +820,7 @@ function display_test_result() {
 						sync_not_in_progress();
 						if (sync_complete_element) {
 							sync_complete_element.style.display = '';
-							sync_complete_element.innerHTML     =
-							'<strong>Status: </strong>Test Pass.';
+							sync_complete_element.innerHTML     =  facebook_for_woocommerce_settings_sync.i18n.integration_test_sucessful;
 						}
 
 						$sync_progress_element.empty().hide();
@@ -830,7 +829,7 @@ function display_test_result() {
 				  break;
 					case 'in progress':
 
-						$sync_progress_element.show().html( '<strong>Integration test in progress...</strong>' );
+						$sync_progress_element.show().html( facebook_for_woocommerce_settings_sync.i18n.integration_test_in_progress );
 
 						ping_feed_status_queue();
 					break;
@@ -838,8 +837,7 @@ function display_test_result() {
 						window.debug_info = res.debug_info + '<br/>' + res.stack_trace;
 						if (sync_complete_element) {
 							sync_complete_element.style.display = '';
-							sync_complete_element.innerHTML     =
-							'<strong>Status: </strong>Test Fail.';
+							sync_complete_element.innerHTML     = facebook_for_woocommerce_settings_sync.i18n.integration_test_failed;
 						}
 
 						$sync_progress_element.empty().hide();
