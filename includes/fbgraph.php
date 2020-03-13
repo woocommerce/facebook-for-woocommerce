@@ -156,18 +156,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 		public function _delete( $url, $api_key = '' ) {
+
 			$api_key = $api_key ?: $this->api_key;
 
-			return wp_remote_request(
-				$url,
-				array(
-					'headers' => array(
-						'Authorization' => 'Bearer ' . $api_key,
-					),
-					'timeout' => self::CURL_TIMEOUT,
-					'method'  => 'DELETE',
-				)
-			);
+			$request_args = [
+				'headers' => [
+					'Authorization' => 'Bearer ' . $api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+				'method'  => 'DELETE',
+			];
+
+			$response = wp_remote_request( $url, $request_args );
+
+			$this->log_request( $url, $request_args, $response, 'DELETE' );
+
+			return $response;
 		}
 
 
