@@ -703,13 +703,23 @@ function check_queues() {
 
 				var processing = !!res.processing; // explicit boolean conversion
 				var remaining  = res.remaining;
+
 				if ( processing ) {
 
-					$sync_progress_element.show().html( '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>' );
+					let message = '';
+
+					if ( 1 === remaining ) {
+						message = facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_singular;
+					} else {
+						message = facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_plural;
+					}
+
+					$sync_progress_element.show().html( message.replace( '{count}', remaining ) );
 
 					if ( remaining === 0 ) {
 						product_sync_complete( $sync_progress_element );
 					}
+
 				} else {
 					// Not processing, none remaining.  Either long complete, or just completed
 					if ( window.fb_sync_start_time && res.request_time ) {

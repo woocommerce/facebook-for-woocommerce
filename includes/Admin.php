@@ -117,6 +117,20 @@ class Admin {
 						'confirm_sync_test' => esc_html__( 'Launch Test?', 'facebook-for-woocommerce' ),
 						'confirm_sync'      => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
 						'sync_in_progress'  => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
+						'sync_remaining_items_singular' => sprintf(
+							/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
+							esc_html( _n( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 1, 'facebook-for-woocommerce' ) ),
+							'<strong>',
+							'</strong>',
+							'<span class="spinner is-active"></span>'
+						),
+						'sync_remaining_items_plural'   => sprintf(
+							/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
+							esc_html( _n( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 2, 'facebook-for-woocommerce' ) ),
+							'<strong>',
+							'</strong>',
+							'<span class="spinner is-active"></span>'
+						),
 						'general_error'     => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
 						'feed_upload_error' => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
 					],
