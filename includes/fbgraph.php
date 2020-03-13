@@ -39,7 +39,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			$this->api_key = $api_key;
 		}
 
+
+		/**
+		 * Issues a GET request to the Graph API.
+		 *
+		 * @param string $url request URL
+		 * @param string $api_key Graph API key
+		 * @return array|\WP_Error
+		 */
 		public function _get( $url, $api_key = '' ) {
+
 			$api_key = $api_key ?: $this->api_key;
 
 			$request_args = [
@@ -126,6 +135,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $response;
 		}
 
+
+		/**
+		 * Issues an asynchronous POST request to the Graph API.
+		 *
+		 * @param string $url request URL
+		 * @param array $data request data
+		 * @param string $api_key Graph API key
+		 * @return array|\WP_Error
+		 */
 		public function _post_async( $url, $data, $api_key = '' ) {
 
 			if ( ! class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
@@ -155,6 +173,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $response;
 		}
 
+
+		/**
+		 * Issues a DELETE request to the Graph API.
+		 *
+		 * @param string $url request URL
+		 * @param string $api_key Graph API key
+		 * @return array|\WP_Error
+		 */
 		public function _delete( $url, $api_key = '' ) {
 
 			$api_key = $api_key ?: $this->api_key;
