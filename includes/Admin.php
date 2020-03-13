@@ -279,9 +279,9 @@ class Admin {
 
 				$integration             = facebook_for_woocommerce()->get_integration();
 				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
-				$exlcuded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
+				$excluded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
 
-				if ( $excluded_categories_ids || $exlcuded_tags_ids ) {
+				if ( $excluded_categories_ids || $excluded_tags_ids ) {
 
 					// find the IDs of products that have sync enabled
 					$products_query_vars = [
