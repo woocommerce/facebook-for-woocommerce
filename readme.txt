@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.10.2-dev.1 =
+ * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
  * Dev - Make Pixel script attributes and event parameters filterable
 
 = 2020.03.10 - version 1.10.1 =
