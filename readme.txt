@@ -40,6 +40,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.10.2-dev.1 =
+ * Tweak - Add a setting to easily enable debug logging
+ * Tweak - Log Graph API communication if logging is enabled
  * Tweak - Improve error messages shown when a problem occurs during products sync
  * Fix - Fix undefined index and undefined property notices.
  * Dev - Make Pixel script attributes and event parameters filterable
