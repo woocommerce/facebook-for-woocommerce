@@ -41,6 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 1.10.2-dev.1 =
  * Tweak - When excluding a product term from syncing in the plugin settings page, offer an option to hide excluded synced products from Facebook
+ * Tweak - When excluding product terms from syncing in the plugin settings page, and settings are saved, exclude corresponding products from sync
  * Fix - When excluding a product term from syncing in the plugin settings page, ensure a modal opens to warn about possible conflicts with already synced products
  * Dev - Make Pixel script attributes and event parameters filterable
 

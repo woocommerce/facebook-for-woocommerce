@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Facebook for WooCommerce 1.10.2-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-03-12 03:48:05+00:00\n"
+"POT-Creation-Date: 2020-03-13 03:20:59+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -204,36 +204,36 @@ msgstr ""
 msgid "Sync products"
 msgstr ""
 
-#: facebook-commerce.php:2837
+#: facebook-commerce.php:2886
 msgid "am"
 msgstr ""
 
-#: facebook-commerce.php:2842
+#: facebook-commerce.php:2891
 msgid "pm"
 msgstr ""
 
-#: facebook-commerce.php:2962
+#: facebook-commerce.php:3011
 msgid "The greeting hasn't been updated."
 msgstr ""
 
-#: facebook-commerce.php:2981
+#: facebook-commerce.php:3030
 #. translators: Placeholder: %d - maximum number of allowed characters
 msgid "The Messenger greeting must be %d characters or less."
 msgstr ""
 
-#: facebook-commerce.php:3638
+#: facebook-commerce.php:3687
 msgid "Facebook extension error: %s "
 msgstr ""
 
-#: facebook-commerce.php:3748
+#: facebook-commerce.php:3797
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
 
-#: facebook-commerce.php:3749
+#: facebook-commerce.php:3798
 msgid "Get started with Instagram Shopping"
 msgstr ""
 
-#: facebook-commerce.php:3799
+#: facebook-commerce.php:3848
 msgid ""
 "You're using Remove HTTP which has incompatibilities with our extension. "
 "Please disable it, or select the \"Ignore external links\" option on the "
@@ -244,35 +244,35 @@ msgstr ""
 msgid "Facebook"
 msgstr ""
 
-#: facebook-commerce.php:3808
+#: facebook-commerce.php:3857
 msgid "Control how WooCommerce integrates with your Facebook store."
 msgstr ""
 
-#: facebook-commerce.php:3822
+#: facebook-commerce.php:3871
 msgid "Grow your business on Facebook"
 msgstr ""
 
-#: facebook-commerce.php:3825
+#: facebook-commerce.php:3874
 msgid "Use this WooCommerce and Facebook integration to:"
 msgstr ""
 
-#: facebook-commerce.php:3829
+#: facebook-commerce.php:3878
 msgid "Easily install a tracking pixel"
 msgstr ""
 
-#: facebook-commerce.php:3830
+#: facebook-commerce.php:3879
 msgid "Upload your products and create a shop"
 msgstr ""
 
-#: facebook-commerce.php:3831
+#: facebook-commerce.php:3880
 msgid "Create dynamic ads with your products and pixel"
 msgstr ""
 
-#: facebook-commerce.php:3839
+#: facebook-commerce.php:3888
 msgid "Get Started"
 msgstr ""
 
-#: facebook-commerce.php:3992
+#: facebook-commerce.php:4041
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""

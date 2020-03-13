@@ -2726,6 +2726,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
 			$this->schedule_resync( $saved_resync_offset );
 		}
+
+		// when settings are saved, if there are excluded categories/terms we can exclude corresponding products from sync
+		$products_query = $product_cats = $product_tags = [];
+
+		$product_cat_ids = $this->get_excluded_product_category_ids();
+		$product_tag_ids = $this->get_excluded_product_tag_ids();
+
+		if ( ! empty( $product_cat_ids ) ) {
+
+			foreach ( $product_cat_ids as $tag_id ) {
+
+				$term = get_term_by( 'id', $tag_id, 'product_cat' );
+
+				if ( $term instanceof \WP_Term ) {
+					$product_cats[] = $term->slug;
+				}
+			}
+
+			if ( ! empty( $product_cats ) ) {
+				$products_query['category'] = $product_cats;
+			}
+		}
+
+		if ( ! empty( $product_tag_ids ) ) {
+
+			foreach ( $product_tag_ids as $tag_id ) {
+
+				$term = get_term_by( 'id', $tag_id, 'product_tag' );
+
+				if ( $term instanceof \WP_Term ) {
+					$product_tags[] = $term->slug;
+				}
+			}
+
+			if ( ! empty( $product_tags ) ) {
+				$products_query['tag'] = $product_tags;
+			}
+		}
+
+		if ( ! empty( $products_query ) ) {
+
+			$products_query['limit'] = -1;
+
+			Products::disable_sync_for_products( wc_get_products( $products_query ) );
+		}
 	}
 
 
