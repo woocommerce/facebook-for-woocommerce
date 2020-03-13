@@ -321,6 +321,89 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Setups a filter to add an add to cart fragment to trigger an AddToCart event on added_to_cart JS event.
+		 *
+		 * This method is used by code snippets and should not be removed.
+		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::add_conditional_add_to_cart_event_fragment
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 */
+		public function add_filter_for_conditional_add_to_cart_fragment() {
+
+			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+				add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'add_conditional_add_to_cart_event_fragment' ] );
+			}
+		}
+
+
+		/**
+		 * Adds an add to cart fragment to trigger an AddToCart event on added_to_cart JS event.
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 *
+		 * @param array $fragments add to cart fragments
+		 * @return array
+		 */
+		public function add_conditional_add_to_cart_event_fragment( $fragments ) {
+
+			if ( self::$isEnabled ) {
+
+				$script = $this->get_add_to_cart_conditional_event_script();
+
+				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
+			}
+
+			return $fragments;
+		}
+
+
+		/**
+		 * Gets a JS script for a conditional AddToCart event on added_to_cart JS event.
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 *
+		 * @return string
+		 */
+		public function get_add_to_cart_conditional_event_script() {
+
+			$script = '';
+
+			if ( self::$isEnabled ) {
+
+				$output = "
+<!-- Facebook Pixel Event Code -->
+<script>
+	jQuery( document.body ).on( '%s', function(){
+		%s
+	});
+</script>
+<!-- End Facebook Pixel Event Code -->
+";
+
+				$script = sprintf( $output,
+					'added_to_cart',
+					$this->pixel->get_event_code( 'AddToCart', [
+						'content_ids'  => $this->get_cart_content_ids(),
+						'content_type' => 'product',
+						'contents'     => $this->get_cart_contents(),
+						'value'        => $this->get_cart_total(),
+						'currency'     => get_woocommerce_currency(),
+					] )
+				);
+			}
+
+			return $script;
+		}
+
+
+		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
 		 * @internal
