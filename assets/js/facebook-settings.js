@@ -375,47 +375,7 @@ function sync_in_progress() {
 }
 
 
-function sync_not_in_progress(){
-	// Reset to pre-setup state.
-	if (document.querySelector( '#cta_button' )) {
-		var cta_element                = document.querySelector( '#cta_button' );
-		cta_element.innerHTML          = 'Create Ad';
-		cta_element.style['font-size'] = '12px';
-		cta_element.style.width        = '60px';
-		if (window.facebookAdsToolboxConfig.diaSettingId) {
-			cta_element.onclick = function() {
-				window.open(
-					'https://www.facebook.com/ads/dia/redirect/?settings_id=' +
-					window.facebookAdsToolboxConfig.diaSettingId + '&version=2' +
-					'&entry_point=admin_panel'
-				);
-			};
-		} else {
-			cta_element.style['pointer-events'] = 'none';
-		}
-	}
-	if (document.querySelector( '#learnmore_button' )) {
-		var learnmore_element = document.querySelector( '#learnmore_button' );
-		if (window.facebookAdsToolboxConfig.diaSettingId) {
-			learnmore_element.style.display = '';
-		}
-	}
-	if (document.querySelector( '#setup_h1' )) {
-		document.querySelector( '#setup_h1' ).innerHTML =
-		'Reach the right people and sell more products';
-	}
-	if (document.querySelector( '#setup_l1' )) {
-		document.querySelector( '#setup_l1' ).innerHTML =
-		'Create an ad in a few steps';
-	}
-	if (document.querySelector( '#setup_l2' )) {
-		document.querySelector( '#setup_l2' ).innerHTML =
-		'Use built-in best practice for online sales';
-	}
-	if (document.querySelector( '#setup_l3' )) {
-		document.querySelector( '#setup_l3' ).innerHTML =
-		'Get reporting on sales and revenue';
-	}
+function sync_not_in_progress() {
 
 	// enable Manage connection and Sync products buttons when sync is complete
 	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
