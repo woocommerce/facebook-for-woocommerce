@@ -42,25 +42,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function _get( $url, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
 
-			$response = wp_remote_get(
-				$url,
-				[
-					'headers' => [
-						'Authorization' => 'Bearer ' . $api_key,
-					],
-					'timeout' => self::CURL_TIMEOUT,
-				]
-			);
+			$request_args = [
+				'headers' => [
+					'Authorization' => 'Bearer ' . $api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+			];
 
-			if ( is_wp_error( $response ) ) {
+			$response = wp_remote_get( $url, $request_args );
 
-				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-
-			} elseif ( 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-
-				WC_Facebookcommerce_Utils::log( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
-                WC_Facebookcommerce_Utils::log( wp_remote_retrieve_body( $response ) );
-			}
+			$this->log_request( $url, $request_args, $response );
 
 			return $response;
 		}
@@ -79,16 +70,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 */
 		public function perform_request( $url ) {
 
-			$response = wp_remote_get( $url, [
+			$request_args = [
 				'headers' => [
 					'Authorization' => 'Bearer ' . $this->api_key,
 				],
 				'timeout' => self::CURL_TIMEOUT,
-			] );
+			];
+
+			$response = wp_remote_get( $url, $request_args );
+
+			$this->log_request( $url, $request_args, $response );
 
 			if ( is_wp_error( $response ) ) {
-
-				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
 
 				throw new Framework\SV_WC_API_Exception( $response->get_error_message(), $response->get_error_code() );
 
