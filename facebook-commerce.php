@@ -1314,6 +1314,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function update_product_item( $woo_product, $fb_product_item_id ) {
 		$product_data = $woo_product->prepare_product();
 
+		// send an empty string to clear the additional_image_urls property if the product has no additional images
+		if ( empty( $product_data['additional_image_urls'] ) ) {
+			$product_data['additional_image_urls'] = '';
+		}
+
 		$result = $this->check_api_result(
 			$this->fbgraph->update_product_item(
 				$fb_product_item_id,
