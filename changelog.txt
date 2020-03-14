@@ -2,6 +2,8 @@
 
 2020.nn.nn - version 1.10.2-dev.1
  * Tweak - Add a setting to easily enable debug logging
+ * Fix - Fix a bug that cuased newly added gallery images no to be synced immediately after they were added
+ * Fix - Fix a bug that prevented gallery images from being removed from products on Facebook
  * Dev - Make Pixel script attributes and event parameters filterable
 
 2020.03.10 - version 1.10.1
