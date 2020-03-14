@@ -233,8 +233,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 			clearInterval( window.fb_feed_pings );
 
 			// enable Manage connection and Sync products buttons when sync stops
-			jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-			jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+			jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 			let message;
 
@@ -811,8 +810,7 @@ function check_feed_upload_queue(check_num) {
 					default:
 
 						// enable Manage connection and Sync products buttons when sync stops
-						jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-						jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+						jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
