@@ -361,8 +361,7 @@ function save_settings_and_sync(message) {
 function sync_in_progress() {
 
 	// temporarily disable Manage connection and Sync products buttons
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'none' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
 
 	// set products sync status
 	jQuery( '#sync_progress' ).show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
@@ -412,8 +411,7 @@ function sync_not_in_progress(){
 	}
 
 	// enable Manage connection and Sync products buttons when sync is complete
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 	// Remove sync progress.
 	jQuery( '#sync_progress' ).empty().hide();
