@@ -1483,6 +1483,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
 			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
 
+			unset( $this->settings[ self::SETTING_ENABLE_MESSENGER ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_GREETING ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_LOCALE ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] );
+
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
 			$this->update_feed_id( '' );
