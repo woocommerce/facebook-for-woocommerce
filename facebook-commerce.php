@@ -2331,6 +2331,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$default_locale    = 'en_US';
 		}
 
+		$default_messenger_greeting = __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' );
+		$default_messenger_color    = '#0084ff';
+
 		$form_fields = [
 
 			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
@@ -2447,6 +2450,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'class'   => 'wc-enhanced-select messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
+				'custom_attributes' => [
+					'data-default' => $default_locale,
+				],
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
@@ -2455,19 +2461,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'              => 'messenger_greeting',
 				'class'             => 'messenger-field',
-				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'default'           => $default_messenger_greeting,
 				'css'               => 'max-width: 400px; margin-bottom: 10px',
 				'custom_attributes' => [
-					'maxlength' => $this->get_messenger_greeting_max_characters(),
+					'maxlength'    => $this->get_messenger_greeting_max_characters(),
+					'data-default' => $default_messenger_greeting,
 				],
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
-				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
-				'type'    => 'color',
-				'class'   => 'messenger-field',
-				'default' => '#0084ff',
-				'css'     => 'width: 6em;',
+				'title'             => __( 'Colors', 'facebook-for-woocommerce' ),
+				'type'              => 'color',
+				'class'             => 'messenger-field',
+				'default'           => $default_messenger_color,
+				'css'               => 'width: 6em;',
+				'custom_attributes' => [
+					'data-default' => $default_messenger_color,
+				],
 			],
 
 			[
