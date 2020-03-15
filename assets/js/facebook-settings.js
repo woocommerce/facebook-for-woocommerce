@@ -222,6 +222,16 @@ function delete_all_settings(callback = null, failcallback = null) {
 		get_page_id_box().value = '';
 	}
 
+	// reset messenger settings to their default values
+	jQuery( '#woocommerce_facebookcommerce_enable_messenger' ).prop( 'checked', false ).trigger( 'change' );
+
+	jQuery( '.messenger-field' ).each( function () {
+
+		if ( typeof $( this ).data( 'default' ) !== 'undefined' ) {
+			$( this ).val( $( this ).data( 'default' ) ).trigger( 'change' );
+		}
+	} );
+
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
 	window.fb_connected = false;
