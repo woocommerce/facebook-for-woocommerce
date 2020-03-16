@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 1.10.2-dev.1
+ * Tweak - Add a setting to easily enable debug logging
  * Tweak - When excluding a product term from syncing in the plugin settings page, offer an option to hide excluded synced products from Facebook
  * Tweak - When excluding product terms from syncing in the plugin settings page, and settings are saved, exclude corresponding products from sync
  * Fix - When excluding a product term from syncing in the plugin settings page, ensure a modal opens to warn about possible conflicts with already synced products

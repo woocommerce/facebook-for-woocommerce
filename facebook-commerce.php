@@ -76,6 +76,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the messenger color HEX setting ID */
 	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
 
+	/** @var string the "debug mode" setting ID */
+	const SETTING_ENABLE_DEBUG_MODE = 'enable_debug_mode';
+
 	/** @var string the standard product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_STANDARD = 'standard';
 
@@ -2467,6 +2470,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'css'     => 'width: 6em;',
 			],
 
+			[
+				'title' => __( 'Debug', 'facebook-for-woocommerce' ),
+				'type'  => 'title',
+			],
+
+			self::SETTING_ENABLE_DEBUG_MODE => [
+				'title'    => __( 'Enable debug mode', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'label'    => __( 'Log plugin events for debugging', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Only enable this if you are experiencing problems with the plugin.', 'facebook-for-woocommerce' ),
+				'default'  => 'no',
+			],
+
 		];
 
 		$this->form_fields = $form_fields;
@@ -3659,6 +3675,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_messenger_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_MESSENGER ), $this );
+	}
+
+
+	/**
+	 * Determines whether debug mode is enabled.
+	 *
+	 * @since 1.10.2-dev.1
+	 *
+	 * @return bool
+	 */
+	public function is_debug_mode_enabled() {
+
+		/**
+		 * Filters whether debug mode is enabled.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param bool $is_enabled whether debug mode is enabled
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
 	}
 
 
