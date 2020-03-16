@@ -327,7 +327,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
 
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
+				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -1313,6 +1314,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 **/
 	function update_product_item( $woo_product, $fb_product_item_id ) {
 		$product_data = $woo_product->prepare_product();
+
+		// send an empty string to clear the additional_image_urls property if the product has no additional images
+		if ( empty( $product_data['additional_image_urls'] ) ) {
+			$product_data['additional_image_urls'] = '';
+		}
 
 		$result = $this->check_api_result(
 			$this->fbgraph->update_product_item(
