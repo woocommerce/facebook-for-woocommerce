@@ -496,7 +496,7 @@ class AJAX {
 		}
 
 		if ( ! empty( $_POST['product_tags'] ) && is_array( $_POST['product_tags'] ) ) {
-			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_categories'] ) );
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_tags'] ) );
 		}
 
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
