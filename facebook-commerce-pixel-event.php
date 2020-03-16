@@ -266,17 +266,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
-		 * Prints the JavaScript code to track a conditional event.
+		 * Gets the JavaScript code to track a conditional event wrapped in <script> tag.
 		 *
-		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
 		 *
-		 * @param string $event_name
+		 * @since x.y.z
+		 *
+		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
 		 * @param string $listener name of the JavaScript event to listen for
 		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
 		 * @return string
 		 */
-		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+		public function get_conditional_event_script( $event_name, $params, $listener, $jsonified_pii ) {
 
 			$code             = self::build_event( $event_name, $params, 'track' );
 			$this->last_event = $event_name;
@@ -294,13 +296,31 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo self::get_script_attributes(); ?>>
 				document.addEventListener( '<?php echo esc_js( $listener ); ?>', function (event) {
-                    <?php echo $code; ?>
+					<?php echo $code; ?>
 				}, false );
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
 
 			return ob_get_clean();
+		}
+
+
+		/**
+		 * Prints the JavaScript code to track a conditional event.
+		 *
+		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 *
+		 * @param string $event_name
+		 * @param array $params custom event parameters
+		 * @param string $listener name of the JavaScript event to listen for
+		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
+		 * @return string
+		 */
+		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			return $this->get_conditional_event_script( $event_name, self::build_params( $params, $event_name ), $listener, $jsonified_pii );
 		}
 
 
