@@ -348,7 +348,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 				function handle<?php echo $event_name; ?>Event() {
 					<?php echo $code; ?>
 					// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
-					jQuery( document.body ).off( '<?php echo $listened_event; ?>', handle<?php echo $event_name; ?>Event );
+					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
 				}
 
 				jQuery( document.body ).one( '<?php echo $listened_event; ?>', handle<?php echo $event_name; ?>Event );
