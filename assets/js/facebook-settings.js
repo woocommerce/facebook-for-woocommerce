@@ -222,7 +222,9 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 	jQuery.post( ajaxurl, data ).then( function( response ) {
 
-		if ( ! response || false === response.success ) {
+		// something is wrong if we are sycning products using feed and the response is empty or indicates a failure
+		// we ignore empty responses if using the background processor because in those cases the request does not return a response when the operation is successful
+		if ( ( ! response && $using_feed ) || ( response && false === response.success ) ) {
 
 			// no need to check the queue or upload status
 			clearInterval( window.fb_pings );
