@@ -325,48 +325,38 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
-		 * Gets a JS script for a conditional AddToCart event on added_to_cart JS event.
+		 * Gets the JavaScript code to track a conditional event that is only triggered one time wrapped in <script> tag.
 		 *
 		 * @internal
 		 *
 		 * @since x.y.z
 		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $listened_event name of the JavaScript event to listen for
 		 * @return string
 		 */
-		public function get_add_to_cart_conditional_event_script() {
+		public function get_conditional_one_time_event_script( $event_name, $params, $listened_event ) {
 
-			$script = '';
+			$code = $this->get_event_code( $event_name, $params );
 
-			if ( self::$isEnabled ) {
+			ob_start();
 
-				$output = "
-<!-- Facebook Pixel Event Code -->
-<script>
-	function handleAddedToCart() {
-		%s
-		// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
-		jQuery( document.body ).off( '%s', handleAddedToCart );
-	}
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script>
+				function handle<?php echo $event_name; ?>Event() {
+					<?php echo $code; ?>
+					// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
+					jQuery( document.body ).off( <?php echo $listened_event; ?>, handle<?php echo $event_name; ?>Event );
+				}
 
-	jQuery( document.body ).one( '%s', handleAddedToCart );
-</script>
-<!-- End Facebook Pixel Event Code -->
-";
+				jQuery( document.body ).one( <?php echo $listened_event; ?>, handle<?php echo $event_name; ?>Event );
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
 
-				$script = sprintf( $output,
-					$this->get_event_code( 'AddToCart', [
-						'content_ids'  => $this->get_cart_content_ids(),
-						'content_type' => 'product',
-						'contents'     => $this->get_cart_contents(),
-						'value'        => $this->get_cart_total(),
-						'currency'     => get_woocommerce_currency(),
-					] ),
-					'added_to_cart',
-					'added_to_cart'
-				);
-			}
-
-			return $script;
+			return ob_get_clean();
 		}
 
 

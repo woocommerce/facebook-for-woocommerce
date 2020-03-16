@@ -353,7 +353,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( self::$isEnabled ) {
 
-				$script = $this->pixel->get_add_to_cart_conditional_event_script();
+				$params = [
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				];
+
+				$script = $this->pixel->get_conditional_one_time_event_script( 'AddToCart', $params, 'added_to_cart' );
 
 				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
 			}
