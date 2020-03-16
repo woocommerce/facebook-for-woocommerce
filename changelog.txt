@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 1.10.2-dev.1
+ * Tweak - Add a setting to easily enable debug logging
  * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
  * Dev - Make Pixel script attributes and event parameters filterable
 
