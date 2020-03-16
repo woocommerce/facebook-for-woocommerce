@@ -344,7 +344,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 			?>
 			<!-- Facebook Pixel Event Code -->
-			<script>
+			<script <?php echo self::get_script_attributes(); ?>>
 				function handle<?php echo $event_name; ?>Event() {
 					<?php echo $code; ?>
 					// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
