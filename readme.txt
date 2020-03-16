@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.10.2-dev.1 =
+ * Fix - Messenger setings fields will correctly reflect the values selected during initial setup
  * Dev - Make Pixel script attributes and event parameters filterable
 
 = 2020.03.10 - version 1.10.1 =
