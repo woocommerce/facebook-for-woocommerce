@@ -351,7 +351,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
 				}
 
-				jQuery( document.body ).one( '<?php echo $listened_event; ?>', handle<?php echo $event_name; ?>Event );
+				jQuery( document.body ).one( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
