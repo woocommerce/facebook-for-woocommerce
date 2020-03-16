@@ -222,6 +222,16 @@ function delete_all_settings(callback = null, failcallback = null) {
 		get_page_id_box().value = '';
 	}
 
+	// reset messenger settings to their default values
+	jQuery( '#woocommerce_facebookcommerce_enable_messenger' ).prop( 'checked', false ).trigger( 'change' );
+
+	jQuery( '.messenger-field' ).each( function () {
+
+		if ( typeof $( this ).data( 'default' ) !== 'undefined' ) {
+			$( this ).val( $( this ).data( 'default' ) ).trigger( 'change' );
+		}
+	} );
+
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
 	window.fb_connected = false;
@@ -499,11 +509,15 @@ function setAccessTokenAndPageId(message) {
 	}
 }
 
-function setMsgerChatSetup(data) {
-	if (data.hasOwnProperty( 'is_messenger_chat_plugin_enabled' )) {
-		settings.is_messenger_chat_plugin_enabled =
-		data.is_messenger_chat_plugin_enabled;
+function setMsgerChatSetup( data ) {
+
+	if ( data.hasOwnProperty( 'is_messenger_chat_plugin_enabled' ) ) {
+
+		settings.is_messenger_chat_plugin_enabled = data.is_messenger_chat_plugin_enabled;
+
+		jQuery( '#woocommerce_facebookcommerce_enable_messenger' ).prop( 'checked', data.is_messenger_chat_plugin_enabled ).trigger( 'change' );
 	}
+
 	if (data.hasOwnProperty( 'facebook_jssdk_version' )) {
 		settings.facebook_jssdk_version =
 		data.facebook_jssdk_version;
@@ -512,20 +526,29 @@ function setMsgerChatSetup(data) {
 		settings.fb_page_id = data.page_id;
 	}
 
-	if (data.hasOwnProperty( 'customization' )) {
-		var customization = data.customization;
+	if ( data.hasOwnProperty( 'customization' ) ) {
 
-		if (customization.hasOwnProperty( 'greetingTextCode' )) {
-			settings.msger_chat_customization_greeting_text_code =
-			customization.greetingTextCode;
+		const customization = data.customization;
+
+		if ( customization.hasOwnProperty( 'greetingTextCode' ) ) {
+
+			settings.msger_chat_customization_greeting_text_code = customization.greetingTextCode;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_greeting' ).val( customization.greetingTextCode ).trigger( 'change' );
 		}
-		if (customization.hasOwnProperty( 'locale' )) {
-			settings.msger_chat_customization_locale =
-			customization.locale;
+
+		if ( customization.hasOwnProperty( 'locale' ) ) {
+
+			settings.msger_chat_customization_locale = customization.locale;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_locale' ).val( customization.locale ).trigger( 'change' );
 		}
-		if (customization.hasOwnProperty( 'themeColorCode' )) {
-			settings.msger_chat_customization_theme_color_code =
-			customization.themeColorCode;
+
+		if ( customization.hasOwnProperty( 'themeColorCode' ) ) {
+
+			settings.msger_chat_customization_theme_color_code = customization.themeColorCode;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_color_hex' ).val( customization.themeColorCode ).trigger( 'change' );
 		}
 	}
 }

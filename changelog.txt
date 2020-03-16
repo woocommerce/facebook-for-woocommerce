@@ -3,6 +3,9 @@
 2020.nn.nn - version 1.10.2-dev.1
  * Tweak - Add a setting to easily enable debug logging
  * Tweak - Allow third party plugins and themes to track an add-to-cart event on added_to_cart JS event
+ * Fix - Messenger settings fields will correctly reflect the values selected during initial setup
+ * Fix - Fix a bug that caused newly added gallery images not to be synced immediately after they were added
+ * Fix - Fix a bug that prevented gallery images from being removed from products on Facebook
  * Dev - Make Pixel script attributes and event parameters filterable
 
 2020.03.10 - version 1.10.1
