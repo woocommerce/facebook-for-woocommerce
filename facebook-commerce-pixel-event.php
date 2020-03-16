@@ -305,6 +305,52 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
+		 * Gets a JS script for a conditional AddToCart event on added_to_cart JS event.
+		 *
+		 * @internal
+		 *
+		 * @since x.y.z
+		 *
+		 * @return string
+		 */
+		public function get_add_to_cart_conditional_event_script() {
+
+			$script = '';
+
+			if ( self::$isEnabled ) {
+
+				$output = "
+<!-- Facebook Pixel Event Code -->
+<script>
+	function handleAddedToCart() {
+		%s
+		// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
+		jQuery( document.body ).off( '%s', handleAddedToCart );
+	}
+
+	jQuery( document.body ).one( '%s', handleAddedToCart );
+</script>
+<!-- End Facebook Pixel Event Code -->
+";
+
+				$script = sprintf( $output,
+					$this->get_event_code( 'AddToCart', [
+						'content_ids'  => $this->get_cart_content_ids(),
+						'content_type' => 'product',
+						'contents'     => $this->get_cart_contents(),
+						'value'        => $this->get_cart_total(),
+						'currency'     => get_woocommerce_currency(),
+					] ),
+					'added_to_cart',
+					'added_to_cart'
+				);
+			}
+
+			return $script;
+		}
+
+
+		/**
 		 * Builds an event.
 		 *
 		 * @see \WC_Facebookcommerce_Pixel::inject_event() for the preferred method to inject an event.
