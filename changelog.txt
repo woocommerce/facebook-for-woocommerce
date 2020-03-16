@@ -2,7 +2,7 @@
 
 2020.nn.nn - version 1.10.2-dev.1
  * Tweak - Add a setting to easily enable debug logging
- * Tweak - Allow third party plugins and themes to track a add-to-cart event on added_to_cart JS event
+ * Tweak - Allow third party plugins and themes to track an add-to-cart event on added_to_cart JS event
  * Dev - Make Pixel script attributes and event parameters filterable
 
 2020.03.10 - version 1.10.1
