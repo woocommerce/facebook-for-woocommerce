@@ -327,7 +327,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
 
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 20 );
+				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -1314,6 +1315,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function update_product_item( $woo_product, $fb_product_item_id ) {
 		$product_data = $woo_product->prepare_product();
 
+		// send an empty string to clear the additional_image_urls property if the product has no additional images
+		if ( empty( $product_data['additional_image_urls'] ) ) {
+			$product_data['additional_image_urls'] = '';
+		}
+
 		$result = $this->check_api_result(
 			$this->fbgraph->update_product_item(
 				$fb_product_item_id,
@@ -1482,6 +1488,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
 			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
+
+			unset( $this->settings[ self::SETTING_ENABLE_MESSENGER ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_GREETING ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_LOCALE ] );
+			unset( $this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] );
 
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
@@ -2331,6 +2342,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$default_locale    = 'en_US';
 		}
 
+		$default_messenger_greeting = __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' );
+		$default_messenger_color    = '#0084ff';
+
 		$form_fields = [
 
 			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
@@ -2447,6 +2461,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'class'   => 'wc-enhanced-select messenger-field',
 				'default' => $default_locale,
 				'options' => $messenger_locales,
+				'custom_attributes' => [
+					'data-default' => $default_locale,
+				],
 			],
 
 			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
@@ -2455,19 +2472,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'              => 'messenger_greeting',
 				'class'             => 'messenger-field',
-				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
+				'default'           => $default_messenger_greeting,
 				'css'               => 'max-width: 400px; margin-bottom: 10px',
 				'custom_attributes' => [
-					'maxlength' => $this->get_messenger_greeting_max_characters(),
+					'maxlength'    => $this->get_messenger_greeting_max_characters(),
+					'data-default' => $default_messenger_greeting,
 				],
 			],
 
 			self::SETTING_MESSENGER_COLOR_HEX => [
-				'title'   => __( 'Colors', 'facebook-for-woocommerce' ),
-				'type'    => 'color',
-				'class'   => 'messenger-field',
-				'default' => '#0084ff',
-				'css'     => 'width: 6em;',
+				'title'             => __( 'Colors', 'facebook-for-woocommerce' ),
+				'type'              => 'color',
+				'class'             => 'messenger-field',
+				'default'           => $default_messenger_color,
+				'css'               => 'width: 6em;',
+				'custom_attributes' => [
+					'data-default' => $default_messenger_color,
+				],
 			],
 
 			[
