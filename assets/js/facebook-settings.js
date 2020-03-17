@@ -10,17 +10,6 @@
 var fb_sync_no_response_count = 0;
 var fb_show_advanced_options  = false;
 
-function toggleAdvancedOptions() {
-	var opts = document.getElementById( "fbAdvancedOptions" );
-	if ( ! fb_show_advanced_options) {
-		opts.style.display = "block";
-		document.getElementById( 'fbAdvancedOptionsText' ).innerHTML = 'Hide Advanced Settings';
-	} else {
-		opts.style.display = "none";
-		document.getElementById( 'fbAdvancedOptionsText' ).innerHTML = 'Show Advanced Settings';
-	}
-	fb_show_advanced_options = ! fb_show_advanced_options;
-}
 
 function openPopup() {
 	var width          = 1153;
@@ -145,31 +134,38 @@ function fb_flush(){
 	 );
 }
 
+
+/**
+ * Shows a confirm dialog and starts product sync if the user selectes OK.
+ *
+ * @param {String} verbose an identifier for the confirmation message to display
+ */
 function sync_confirm(verbose = null) {
-	var msg = '';
+
+	let msg = '';
+
 	switch (verbose) {
+
 		case 'fb_force_resync':
-			msg = 'Your products will now be resynced with Facebook, ' +
-			'this may take some time.';
+			msg = facebook_for_woocommerce_settings_sync.i18n.confirm_resync;
 		break;
+
 		case 'fb_test_product_sync':
-			msg = 'Launch Test?';
+			msg = facebook_for_woocommerce_settings_sync.i18n.confirm_sync_test;
 		break;
+
 		default:
-			msg = 'Facebook for WooCommerce automatically syncs your products on ' +
-			'create/update. Are you sure you want to force product resync?\n\n' +
-			'This will query all published products and may take some time. ' +
-			'You only need to do this if your products are out of sync ' +
-			'or some of your products did not sync.';
+			msg = facebook_for_woocommerce_settings_sync.i18n.confirm_sync;
 	}
-	if (confirm( msg )) {
-		sync_all_products(
-			window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload,
-			verbose == 'fb_test_product_sync'
-		);
+
+	if ( confirm( msg ) ) {
+
+		sync_all_products( window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload, verbose == 'fb_test_product_sync' );
+
 		window.fb_sync_start_time = new Date().getTime();
 	}
 }
+
 
 // Launch the confirm dialog immediately if the param is in the URL.
 if (window.location.href.includes( "fb_force_resync" )) {
@@ -380,47 +376,10 @@ function sync_in_progress() {
 }
 
 
-function sync_not_in_progress(){
-	// Reset to pre-setup state.
-	if (document.querySelector( '#cta_button' )) {
-		var cta_element                = document.querySelector( '#cta_button' );
-		cta_element.innerHTML          = 'Create Ad';
-		cta_element.style['font-size'] = '12px';
-		cta_element.style.width        = '60px';
-		if (window.facebookAdsToolboxConfig.diaSettingId) {
-			cta_element.onclick = function() {
-				window.open(
-					'https://www.facebook.com/ads/dia/redirect/?settings_id=' +
-					window.facebookAdsToolboxConfig.diaSettingId + '&version=2' +
-					'&entry_point=admin_panel'
-				);
-			};
-		} else {
-			cta_element.style['pointer-events'] = 'none';
-		}
-	}
-	if (document.querySelector( '#learnmore_button' )) {
-		var learnmore_element = document.querySelector( '#learnmore_button' );
-		if (window.facebookAdsToolboxConfig.diaSettingId) {
-			learnmore_element.style.display = '';
-		}
-	}
-	if (document.querySelector( '#setup_h1' )) {
-		document.querySelector( '#setup_h1' ).innerHTML =
-		'Reach the right people and sell more products';
-	}
-	if (document.querySelector( '#setup_l1' )) {
-		document.querySelector( '#setup_l1' ).innerHTML =
-		'Create an ad in a few steps';
-	}
-	if (document.querySelector( '#setup_l2' )) {
-		document.querySelector( '#setup_l2' ).innerHTML =
-		'Use built-in best practice for online sales';
-	}
-	if (document.querySelector( '#setup_l3' )) {
-		document.querySelector( '#setup_l3' ).innerHTML =
-		'Get reporting on sales and revenue';
-	}
+/**
+ * Hides sync progress and enable Manage connection and Sync products buttons.
+ */
+function sync_not_in_progress() {
 
 	// enable Manage connection and Sync products buttons when sync is complete
 	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
@@ -758,13 +717,23 @@ function check_queues() {
 
 				var processing = !!res.processing; // explicit boolean conversion
 				var remaining  = res.remaining;
+
 				if ( processing ) {
 
-					$sync_progress_element.show().html( '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>' );
+					let message = '';
+
+					if ( 1 === remaining ) {
+						message = facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_singular;
+					} else {
+						message = facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_plural;
+					}
+
+					$sync_progress_element.show().html( message.replace( '{count}', remaining ) );
 
 					if ( remaining === 0 ) {
 						product_sync_complete( $sync_progress_element );
 					}
+
 				} else {
 					// Not processing, none remaining.  Either long complete, or just completed
 					if ( window.fb_sync_start_time && res.request_time ) {
@@ -865,8 +834,7 @@ function display_test_result() {
 						sync_not_in_progress();
 						if (sync_complete_element) {
 							sync_complete_element.style.display = '';
-							sync_complete_element.innerHTML     =
-							'<strong>Status: </strong>Test Pass.';
+							sync_complete_element.innerHTML     =  facebook_for_woocommerce_settings_sync.i18n.integration_test_sucessful;
 						}
 
 						$sync_progress_element.empty().hide();
@@ -875,7 +843,7 @@ function display_test_result() {
 				  break;
 					case 'in progress':
 
-						$sync_progress_element.show().html( '<strong>Integration test in progress...</strong>' );
+						$sync_progress_element.show().html( facebook_for_woocommerce_settings_sync.i18n.integration_test_in_progress );
 
 						ping_feed_status_queue();
 					break;
@@ -883,8 +851,7 @@ function display_test_result() {
 						window.debug_info = res.debug_info + '<br/>' + res.stack_trace;
 						if (sync_complete_element) {
 							sync_complete_element.style.display = '';
-							sync_complete_element.innerHTML     =
-							'<strong>Status: </strong>Test Fail.';
+							sync_complete_element.innerHTML     = facebook_for_woocommerce_settings_sync.i18n.integration_test_failed;
 						}
 
 						$sync_progress_element.empty().hide();

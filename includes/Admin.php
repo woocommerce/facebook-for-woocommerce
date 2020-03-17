@@ -108,15 +108,29 @@ class Admin {
 
 				wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
+				/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
+				$sync_remaining_items_string = _n_noop( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 'facebook-for-woocommerce' );
+
 				wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
 					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 					'set_product_visibility_nonce'    => wp_create_nonce( 'set-products-visibility' ),
 					'i18n'                            => [
 						/* translators: Placeholders %s - html code for a spinner icon */
-						'sync_in_progress'  => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
-						'general_error'     => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
-						'feed_upload_error' => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
+						'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
+						'confirm_sync_test'             => esc_html__( 'Launch Test?', 'facebook-for-woocommerce' ),
+						'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
+						'sync_in_progress'              => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
+						'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
+						'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_sucessful'    => sprintf( esc_html__( '%1$sStatus:%2$s Test Pass.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_in_progress'  => sprintf( esc_html__( '%1$sStatus:%2$s Integration test in progress...', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
+						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
+						'integration_test_failed'       => sprintf( esc_html__( '%1$sStatus:%2$s Test Fail.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
+						'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
+						'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
 					],
 				] );
 			}
