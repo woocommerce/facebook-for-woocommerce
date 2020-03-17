@@ -44,11 +44,13 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Tweak - Allow third party plugins and themes to track an add-to-cart event on added_to_cart JS event
  * Tweak - When excluding a product term from syncing in the plugin settings page, offer an option to hide excluded synced products from Facebook
  * Tweak - When excluding product terms from syncing in the plugin settings page, and settings are saved, exclude corresponding products from sync
+ * Tweak - Improve error messages shown when a problem occurs during products sync
  * Fix - When excluding a product term from syncing in the plugin settings page, ensure a modal opens to warn about possible conflicts with already synced products
  * Fix - Messenger settings fields will correctly reflect the values selected during initial setup
  * Fix - Fix a bug that caused newly added gallery images not to be synced immediately after they were added
  * Fix - Fix a bug that prevented gallery images from being removed from products on Facebook
  * Fix - Fix AddToCart Pixel event tracking when adding products from archive with AJAX and redirect to cart enabled
+ * Fix - Fix undefined index and undefined property notices.
  * Dev - Make Pixel script attributes and event parameters filterable
 
 = 2020.03.10 - version 1.10.1 =

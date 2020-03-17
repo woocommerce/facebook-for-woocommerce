@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 	if ( ! class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
@@ -39,16 +41,71 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		public function _get( $url, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
-			return wp_remote_get(
+
+			$response = wp_remote_get(
 				$url,
-				array(
-					'headers' => array(
+				[
+					'headers' => [
 						'Authorization' => 'Bearer ' . $api_key,
-					),
+					],
 					'timeout' => self::CURL_TIMEOUT,
-				)
+				]
 			);
+
+			if ( is_wp_error( $response ) ) {
+
+				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
+
+			} elseif ( 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+
+				WC_Facebookcommerce_Utils::log( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
+                WC_Facebookcommerce_Utils::log( wp_remote_retrieve_body( $response ) );
+			}
+
+			return $response;
 		}
+
+
+		/**
+		 * Performs a Graph API request to the given URL.
+		 *
+		 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param string $url
+		 * @throws Framework\SV_WC_API_Exception
+		 * @return array
+		 */
+		public function perform_request( $url ) {
+
+			$response = wp_remote_get( $url, [
+				'headers' => [
+					'Authorization' => 'Bearer ' . $this->api_key,
+				],
+				'timeout' => self::CURL_TIMEOUT,
+			] );
+
+			if ( is_wp_error( $response ) ) {
+
+				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
+
+				throw new Framework\SV_WC_API_Exception( $response->get_error_message(), $response->get_error_code() );
+
+			} elseif ( 401 === (int) wp_remote_retrieve_response_code( $response ) ) {
+
+				$response_body = json_decode( wp_remote_retrieve_body( $response ) );
+
+				if ( isset( $response_body->error->code, $response_body->error->message ) ) {
+					throw new Framework\SV_WC_API_Exception( $response_body->error->message, $response_body->error->code );
+				} else {
+					throw new Framework\SV_WC_API_Exception( sprintf( __( 'HTTP %s: %s', 'facebook-for-woocommerce' ), wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) ) );
+				}
+			}
+
+			return $response;
+		}
+
 
 		public function _post( $url, $data, $api_key = '' ) {
 			if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
@@ -113,17 +170,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			$api_key  = $api_key ?: $this->api_key;
 			$url      = $this->build_url( $page_id, '/?fields=name' );
 			$response = self::_get( $url, $api_key );
+
 			if ( is_wp_error( $response ) ) {
 				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-				return;
+				return '';
 			}
+
 			if ( $response['response']['code'] != '200' ) {
-				return;
+				return '';
 			}
 
-			$response_body = wp_remote_retrieve_body( $response );
+			$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 
-			return json_decode( $response_body )->name;
+			return isset( $response_body->name ) ? $response_body->name : '';
 		}
 
 
@@ -157,15 +216,46 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 
+		/**
+		 * Determines whether the product catalog ID is valid.
+		 *
+		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
+		 *
+		 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+		 *
+		 * @param int $product_catalog_id the ID of the product catalog
+		 * @return bool
+		 */
 		public function validate_product_catalog( $product_catalog_id ) {
-			$url      = $this->build_url( $product_catalog_id );
-			$response = self::_get( $url );
-			if ( is_wp_error( $response ) ) {
-				WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-				return;
+
+			try {
+				$is_valid = $this->is_product_catalog_valid( $product_catalog_id );
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+				$is_valid = false;
 			}
-			return $response['response']['code'] == '200';
+
+			return $is_valid;
 		}
+
+
+		/**
+		 * Determines whether the product catalog ID is valid.
+		 *
+		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param int $product_catalog_id the ID of the product catalog
+		 * @return boolean
+		 * @throws Framework\SV_WC_API_Exception
+		 */
+		public function is_product_catalog_valid( $product_catalog_id ) {
+
+			$response = $this->perform_request( $this->build_url( $product_catalog_id ) );
+
+			return 200 === (int) wp_remote_retrieve_response_code( $response );
+		}
+
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {

@@ -180,33 +180,76 @@ if (window.location.href.includes( "fb_force_resync" )) {
 	window.onload  = function() { sync_confirm( "fb_test_product_sync" ); };
 }
 
+
+/**
+ * Sends Ajax request to the backend to initiate product sync.
+ *
+ * @param {boolean} feed whether products should be synced using feed or not
+ * @param {boolean} test whether this is a sync test
+ */
 function sync_all_products($using_feed = false, $is_test = false) {
 
 	window.fb_connected = true;
 	sync_in_progress();
-	if ($using_feed) {
+
+	let data = {};
+
+	if ( $using_feed ) {
+
 		window.facebookAdsToolboxConfig.feed.hasClientSideFeedUpload = true;
 		window.feed_upload = true;
+
 		ping_feed_status_queue();
-		return $is_test ? ajax( 'ajax_test_sync_products_using_feed' )
-		: ajax(
-			'ajax_sync_all_fb_products_using_feed',
-			{
-				"_ajax_nonce": wc_facebook_settings_jsx.nonce,
-			},
-		);
+
+		if ( $is_test ) {
+
+			data = { action: 'ajax_test_sync_products_using_feed' };
+
+		} else {
+
+			data = {
+				action:      'ajax_sync_all_fb_products_using_feed',
+				_ajax_nonce: wc_facebook_settings_jsx.nonce,
+			};
+
+		}
+
 	} else {
 
 		check_background_processor_status();
 
-		return ajax(
-			'ajax_sync_all_fb_products',
-			{
-        "_ajax_nonce": wc_facebook_settings_jsx.nonce,
-      }
-		);
+		data = {
+			action:      'ajax_sync_all_fb_products',
+			_ajax_nonce: wc_facebook_settings_jsx.nonce,
+		};
 	}
+
+	jQuery.post( ajaxurl, data ).then( function( response ) {
+
+		// something is wrong if we are syncing products using feed and the response is empty or indicates a failure
+		// we ignore empty responses if using the background processor because in those cases the request does not return a response when the operation is successful
+		if ( ( ! response && $using_feed ) || ( response && false === response.success ) ) {
+
+			// no need to check the queue or upload status
+			clearInterval( window.fb_pings );
+			clearInterval( window.fb_feed_pings );
+
+			// enable Manage connection and Sync products buttons when sync stops
+			jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
+			let message;
+
+			if ( response && response.data && response.data.error ) {
+				message = response.data.error;
+			} else {
+				message = facebook_for_woocommerce_settings_sync.i18n.general_error;
+			}
+
+			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
+		}
+	} );
 }
+
 
 // Reset all state
 function delete_all_settings(callback = null, failcallback = null) {
@@ -330,13 +373,10 @@ function save_settings_and_sync(message) {
 function sync_in_progress() {
 
 	// temporarily disable Manage connection and Sync products buttons
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'none' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
 
 	// set products sync status
-	if ( document.querySelector( '#sync_progress' ) ) {
-		document.querySelector( '#sync_progress' ).innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
-	}
+	jQuery( '#sync_progress' ).show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
 }
 
 
@@ -383,13 +423,10 @@ function sync_not_in_progress(){
 	}
 
 	// enable Manage connection and Sync products buttons when sync is complete
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 	// Remove sync progress.
-	if (document.querySelector( '#sync_progress' )) {
-		document.querySelector( '#sync_progress' ).innerHTML = '';
-	}
+	jQuery( '#sync_progress' ).empty().hide();
 }
 
 
@@ -676,13 +713,12 @@ function ping_feed_status_queue(count = 0) {
 	);
 }
 
-function product_sync_complete(sync_progress_element) {
+function product_sync_complete( $sync_progress_element ) {
 
 	sync_not_in_progress();
 
-	if (sync_progress_element) {
-		sync_progress_element.innerHTML = '';
-	}
+	$sync_progress_element.empty().hide();
+
 	clearInterval( window.fb_pings );
 }
 
@@ -702,7 +738,9 @@ function check_queues() {
 				clearInterval( window.fb_pings );
 				return;
 			}
-			var sync_progress_element = document.querySelector( '#sync_progress' );
+
+			const $sync_progress_element = jQuery( '#sync_progress' );
+
 			var res = parse_response_check_connection( response );
 			if ( !res ) {
 				if ( fb_sync_no_response_count++ > 5 ) {
@@ -721,11 +759,11 @@ function check_queues() {
 				var processing = !!res.processing; // explicit boolean conversion
 				var remaining  = res.remaining;
 				if ( processing ) {
-					if ( sync_progress_element ) {
-						sync_progress_element.innerHTML = '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>';
-					}
+
+					$sync_progress_element.show().html( '<strong>Progress:</strong> ' + remaining + ' item' + ( remaining > 1 ? 's' : '' ) + ' remaining.<span class="spinner is-active"></span>' );
+
 					if ( remaining === 0 ) {
-						product_sync_complete( sync_progress_element );
+						product_sync_complete( $sync_progress_element );
 					}
 				} else {
 					// Not processing, none remaining.  Either long complete, or just completed
@@ -739,7 +777,7 @@ function check_queues() {
 					}
 
 					if ( remaining === 0 ) {
-						  product_sync_complete( sync_progress_element );
+						  product_sync_complete( $sync_progress_element );
 					}
 				}
 			}
@@ -768,8 +806,9 @@ function check_feed_upload_queue(check_num) {
 			"_ajax_nonce": wc_facebook_settings_jsx.nonce,
 		},
 		function(response) {
-			var sync_progress_element = document.querySelector( '#sync_progress' );
-			var res                   = parse_response_check_connection( response );
+			const $sync_progress_element = jQuery( '#sync_progress' );
+
+			var res = parse_response_check_connection( response );
 
 			clearInterval( window.fb_feed_pings );
 
@@ -781,20 +820,22 @@ function check_feed_upload_queue(check_num) {
 						if (window.is_test) {
 							display_test_result();
 						} else {
-							product_sync_complete( sync_progress_element );
+							product_sync_complete( $sync_progress_element );
 						}
 				  break;
 					case 'in progress':
-						if (sync_progress_element) {
-							sync_progress_element.innerHTML = 'Syncing... Keep this browser open until sync is complete.<span class="spinner is-active"></span>';
-						}
+
+						$sync_progress_element.show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
+
 						ping_feed_status_queue( check_num + 1 );
-					  break;
+					break;
 
 					default:
-						if ( sync_progress_element ) {
-							sync_progress_element.innerHTML = '<strong>Something wrong when uploading, please try again.</strong>';
-						}
+
+						// enable Manage connection and Sync products buttons when sync stops
+						jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+
+						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
 						window.feed_upload              = false;
 						if (window.is_test) {
@@ -813,8 +854,9 @@ function display_test_result() {
 			"_ajax_nonce": wc_facebook_settings_jsx.nonce
 		},
 		function(response) {
+			const $sync_progress_element = jQuery( '#sync_progress' );
+
 			var sync_complete_element = document.querySelector( '#sync_complete' );
-			var sync_progress_element = document.querySelector( '#sync_progress' );
 			var res                   = parse_response_check_connection( response );
 			if (res) {
 				var status = res.pass;
@@ -826,18 +868,17 @@ function display_test_result() {
 							sync_complete_element.innerHTML     =
 							'<strong>Status: </strong>Test Pass.';
 						}
-						if (sync_progress_element) {
-							sync_progress_element.innerHTML = '';
-						}
+
+						$sync_progress_element.empty().hide();
+
 						window.is_test = false;
 				  break;
 					case 'in progress':
-						if (sync_progress_element) {
-							sync_progress_element.innerHTML =
-							'<strong>Integration test in progress...</strong>';
-						}
+
+						$sync_progress_element.show().html( '<strong>Integration test in progress...</strong>' );
+
 						ping_feed_status_queue();
-					  break;
+					break;
 					default:
 						window.debug_info = res.debug_info + '<br/>' + res.stack_trace;
 						if (sync_complete_element) {
@@ -845,9 +886,9 @@ function display_test_result() {
 							sync_complete_element.innerHTML     =
 							'<strong>Status: </strong>Test Fail.';
 						}
-						if (sync_progress_element) {
-							sync_progress_element.innerHTML = '';
-						}
+
+						$sync_progress_element.empty().hide();
+
 						if (document.querySelector( '#debug_info' )) {
 							document.querySelector( '#debug_info' ).style.display = '';
 						}
