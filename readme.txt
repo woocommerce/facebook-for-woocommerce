@@ -48,6 +48,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Messenger settings fields will correctly reflect the values selected during initial setup
  * Fix - Fix a bug that caused newly added gallery images not to be synced immediately after they were added
  * Fix - Fix a bug that prevented gallery images from being removed from products on Facebook
+ * Fix - Fix AddToCart Pixel event tracking when adding products from archive with AJAX and redirect to cart enabled
  * Dev - Make Pixel script attributes and event parameters filterable
 
 = 2020.03.10 - version 1.10.1 =
