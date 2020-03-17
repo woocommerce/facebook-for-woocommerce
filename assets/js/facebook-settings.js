@@ -226,15 +226,16 @@ function sync_all_products($using_feed = false, $is_test = false) {
 
 	jQuery.post( ajaxurl, data ).then( function( response ) {
 
-		if ( ! response || false === response.success ) {
+		// something is wrong if we are syncing products using feed and the response is empty or indicates a failure
+		// we ignore empty responses if using the background processor because in those cases the request does not return a response when the operation is successful
+		if ( ( ! response && $using_feed ) || ( response && false === response.success ) ) {
 
 			// no need to check the queue or upload status
 			clearInterval( window.fb_pings );
 			clearInterval( window.fb_feed_pings );
 
 			// enable Manage connection and Sync products buttons when sync stops
-			jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-			jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+			jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 			let message;
 
@@ -263,6 +264,16 @@ function delete_all_settings(callback = null, failcallback = null) {
 	if (get_page_id_box()) {
 		get_page_id_box().value = '';
 	}
+
+	// reset messenger settings to their default values
+	jQuery( '#woocommerce_facebookcommerce_enable_messenger' ).prop( 'checked', false ).trigger( 'change' );
+
+	jQuery( '.messenger-field' ).each( function () {
+
+		if ( typeof $( this ).data( 'default' ) !== 'undefined' ) {
+			$( this ).val( $( this ).data( 'default' ) ).trigger( 'change' );
+		}
+	} );
 
 	window.facebookAdsToolboxConfig.pixel.pixelId = '';
 	window.facebookAdsToolboxConfig.diaSettingId  = '';
@@ -362,8 +373,7 @@ function save_settings_and_sync(message) {
 function sync_in_progress() {
 
 	// temporarily disable Manage connection and Sync products buttons
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'none' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'none' );
 
 	// set products sync status
 	jQuery( '#sync_progress' ).show().html( facebook_for_woocommerce_settings_sync.i18n.sync_in_progress );
@@ -413,8 +423,7 @@ function sync_not_in_progress(){
 	}
 
 	// enable Manage connection and Sync products buttons when sync is complete
-	jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-	jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+	jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 	// Remove sync progress.
 	jQuery( '#sync_progress' ).empty().hide();
@@ -537,11 +546,15 @@ function setAccessTokenAndPageId(message) {
 	}
 }
 
-function setMsgerChatSetup(data) {
-	if (data.hasOwnProperty( 'is_messenger_chat_plugin_enabled' )) {
-		settings.is_messenger_chat_plugin_enabled =
-		data.is_messenger_chat_plugin_enabled;
+function setMsgerChatSetup( data ) {
+
+	if ( data.hasOwnProperty( 'is_messenger_chat_plugin_enabled' ) ) {
+
+		settings.is_messenger_chat_plugin_enabled = data.is_messenger_chat_plugin_enabled;
+
+		jQuery( '#woocommerce_facebookcommerce_enable_messenger' ).prop( 'checked', data.is_messenger_chat_plugin_enabled ).trigger( 'change' );
 	}
+
 	if (data.hasOwnProperty( 'facebook_jssdk_version' )) {
 		settings.facebook_jssdk_version =
 		data.facebook_jssdk_version;
@@ -550,20 +563,29 @@ function setMsgerChatSetup(data) {
 		settings.fb_page_id = data.page_id;
 	}
 
-	if (data.hasOwnProperty( 'customization' )) {
-		var customization = data.customization;
+	if ( data.hasOwnProperty( 'customization' ) ) {
 
-		if (customization.hasOwnProperty( 'greetingTextCode' )) {
-			settings.msger_chat_customization_greeting_text_code =
-			customization.greetingTextCode;
+		const customization = data.customization;
+
+		if ( customization.hasOwnProperty( 'greetingTextCode' ) ) {
+
+			settings.msger_chat_customization_greeting_text_code = customization.greetingTextCode;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_greeting' ).val( customization.greetingTextCode ).trigger( 'change' );
 		}
-		if (customization.hasOwnProperty( 'locale' )) {
-			settings.msger_chat_customization_locale =
-			customization.locale;
+
+		if ( customization.hasOwnProperty( 'locale' ) ) {
+
+			settings.msger_chat_customization_locale = customization.locale;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_locale' ).val( customization.locale ).trigger( 'change' );
 		}
-		if (customization.hasOwnProperty( 'themeColorCode' )) {
-			settings.msger_chat_customization_theme_color_code =
-			customization.themeColorCode;
+
+		if ( customization.hasOwnProperty( 'themeColorCode' ) ) {
+
+			settings.msger_chat_customization_theme_color_code = customization.themeColorCode;
+
+			jQuery( '#woocommerce_facebookcommerce_messenger_color_hex' ).val( customization.themeColorCode ).trigger( 'change' );
 		}
 	}
 }
@@ -811,8 +833,7 @@ function check_feed_upload_queue(check_num) {
 					default:
 
 						// enable Manage connection and Sync products buttons when sync stops
-						jQuery( '#woocommerce-facebook-settings-manage-connection' ).css( 'pointer-events', 'auto' );
-						jQuery( '#woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
+						jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
 						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
