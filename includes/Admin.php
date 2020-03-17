@@ -84,7 +84,7 @@ class Admin {
 
 		if ( isset( $current_screen->id ) ) {
 
-			if ( in_array( $current_screen->id, $modal_screens ) || facebook_for_woocommerce()->is_plugin_settings() ) {
+			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
 				wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
@@ -111,6 +111,7 @@ class Admin {
 				wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
 					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+					'set_product_visibility_nonce'    => wp_create_nonce( 'set-products-visibility' ),
 					'i18n'                            => [
 						/* translators: Placeholders %s - html code for a spinner icon */
 						'sync_in_progress'  => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),

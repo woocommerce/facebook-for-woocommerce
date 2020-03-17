@@ -476,11 +476,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		/**
-		 * Assemble product payload for POST
-		 **/
-		function prepare_product(
-		$retailer_id = null,
-		$prepare_for_product_feed = false ) {
+		 * Gets product data to send to Facebook.
+		 *
+		 * @param string $retailer_id the retailer ID of the product
+		 * @param bool $prepare_for_product_feed whether the data is going to be used in a feed upload
+		 * @return array
+		 */
+		public function prepare_product( $retailer_id = null, $prepare_for_product_feed = false ) {
+
 			if ( ! $retailer_id ) {
 				$retailer_id =
 				WC_Facebookcommerce_Utils::get_fb_retailer_id( $this );
