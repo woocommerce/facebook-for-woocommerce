@@ -45,6 +45,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Tweak - When excluding a product term from syncing in the plugin settings page, offer an option to hide excluded synced products from Facebook
  * Tweak - When excluding product terms from syncing in the plugin settings page, and settings are saved, exclude corresponding products from sync
  * Tweak - Improve error messages shown when a problem occurs during products sync
+ * Tweak - Log Graph API communication if logging is enabled
  * Fix - When excluding a product term from syncing in the plugin settings page, ensure a modal opens to warn about possible conflicts with already synced products
  * Fix - Messenger settings fields will correctly reflect the values selected during initial setup
  * Fix - Fix a bug that caused newly added gallery images not to be synced immediately after they were added
