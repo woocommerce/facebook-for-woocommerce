@@ -282,7 +282,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 */
 		public function add_filter_for_add_to_cart_fragments() {
 
@@ -297,7 +297,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param array $fragments add to cart fragments
 		 * @return array
@@ -330,7 +330,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 */
 		public function add_filter_for_conditional_add_to_cart_fragment() {
 
@@ -345,7 +345,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param array $fragments add to cart fragments
 		 * @return array
@@ -375,11 +375,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
 		 * @internal
-		 * @deprecated since x.y.z
+		 * @deprecated since 1.10.2-dev.1
 		 */
 		public function inject_ajax_add_to_cart_event() {
 
-			wc_deprecated_function( __METHOD__, 'x.y.z' );
+			wc_deprecated_function( __METHOD__, '1.10.2-dev.1' );
 		}
 
 
@@ -388,7 +388,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param string $redirect URL redirecting to (usually cart)
 		 * @param \WC_Product $product the product just added to the cart
@@ -409,7 +409,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param int $product_id the ID of the product just added to the cart
 		 */
@@ -564,7 +564,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets the cart content items count.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return int
 		 */
@@ -577,7 +577,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets all content IDs from cart.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return string JSON data
 		 */
@@ -603,7 +603,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets the cart content data.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return string JSON data
 		 */
