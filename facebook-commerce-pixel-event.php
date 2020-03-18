@@ -198,7 +198,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * Use {@see \WC_Facebookcommerce_Pixel::inject_event()} to print or enqueue the code.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -218,7 +218,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -270,7 +270,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -329,7 +329,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -388,7 +388,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * Parameters provided by users should not be overwritten by this function.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param array $params user defined parameters
 		 * @param string $event the event name the params are for
@@ -401,7 +401,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			/**
 			 * Filters the parameters for the pixel code.
 			 *
-			 * @since 1.10.2-dev.1
+			 * @since 1.10.2
 			 *
 			 * @param array $params user defined parameters
 			 * @param string $event the event name
@@ -413,7 +413,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		/**
 		 * Gets script tag attributes.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @return string
 		 */
@@ -424,7 +424,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			/**
 			 * Filters Facebook Pixel script attributes.
 			 *
-			 * @since 1.10.2-dev.1
+			 * @since 1.10.2
 			 *
 			 * @param array $custom_attributes
 			 */
@@ -512,13 +512,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		/**
 		 * Gets Facebook Pixel base code.
 		 *
-		 * @deprecated since 1.10.2-dev.1
+		 * @deprecated since 1.10.2
 		 *
 		 * @return string
 		 */
 		public static function get_basecode() {
 
-			wc_deprecated_function( __METHOD__, '1.10.2-dev.1' );
+			wc_deprecated_function( __METHOD__, '1.10.2' );
 
 			return '';
 		}

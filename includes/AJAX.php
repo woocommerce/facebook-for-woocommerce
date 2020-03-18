@@ -427,7 +427,7 @@ class AJAX {
 	 *
 	 * @see \SkyVerge\WooCommerce\Facebook\AJAX::set_products_visibility()
 	 *
-	 * @since 1.10.2-dev.1
+	 * @since 1.10.2
 	 *
 	 * @param array $terms_data term data with product IDs and visibility
 	 * @return array product IDs and visibility data

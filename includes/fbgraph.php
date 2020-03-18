@@ -71,7 +71,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param string $url
 		 * @throws Framework\SV_WC_API_Exception
@@ -204,7 +204,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Logs the request and response data.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param $url
 		 * @param $request_args
@@ -348,7 +348,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param int $product_catalog_id the ID of the product catalog
 		 * @return boolean

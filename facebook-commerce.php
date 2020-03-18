@@ -2028,7 +2028,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * It can either use a Feed upload or update each product individually based on the selecetd method.
 	 * Ends the request sending a JSON response indicating success or failure.
 	 *
-	 * @since 1.10.2-dev.1
+	 * @since 1.10.2
 	 *
 	 * @param string $method either 'feed' or 'background'
 	 */
@@ -2071,7 +2071,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Syncs Facebook products using the background processor.
 	 *
-	 * @since 1.10.2-dev.1
+	 * @since 1.10.2
 	 *
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 * @return bool
@@ -2251,7 +2251,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
 	 *
-	 * @since 1.10.2-dev.1
+	 * @since 1.10.2
 	 *
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 * @return bool
@@ -3764,7 +3764,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether debug mode is enabled.
 	 *
-	 * @since 1.10.2-dev.1
+	 * @since 1.10.2
 	 *
 	 * @return bool
 	 */
@@ -3773,7 +3773,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters whether debug mode is enabled.
 		 *
-		 * @since 1.10.2-dev.1
+		 * @since 1.10.2
 		 *
 		 * @param bool $is_enabled whether debug mode is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
