@@ -198,7 +198,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * Use {@see \WC_Facebookcommerce_Pixel::inject_event()} to print or enqueue the code.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -218,7 +218,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
@@ -266,17 +266,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
-		 * Prints the JavaScript code to track a conditional event.
+		 * Gets the JavaScript code to track a conditional event wrapped in <script> tag.
 		 *
-		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 * @see \WC_Facebookcommerce_Pixel::get_event_code()
 		 *
-		 * @param string $event_name
+		 * @since 1.10.2
+		 *
+		 * @param string $event_name the name of the event to track
 		 * @param array $params custom event parameters
 		 * @param string $listener name of the JavaScript event to listen for
 		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
 		 * @return string
 		 */
-		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+		public function get_conditional_event_script( $event_name, $params, $listener, $jsonified_pii ) {
 
 			$code             = self::build_event( $event_name, $params, 'track' );
 			$this->last_event = $event_name;
@@ -294,8 +296,62 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo self::get_script_attributes(); ?>>
 				document.addEventListener( '<?php echo esc_js( $listener ); ?>', function (event) {
-                    <?php echo $code; ?>
+					<?php echo $code; ?>
 				}, false );
+			</script>
+			<!-- End Facebook Pixel Event Code -->
+			<?php
+
+			return ob_get_clean();
+		}
+
+
+		/**
+		 * Prints the JavaScript code to track a conditional event.
+		 *
+		 * The tracking code will be executed when the given JavaScript event is triggered.
+		 *
+		 * @param string $event_name
+		 * @param array $params custom event parameters
+		 * @param string $listener name of the JavaScript event to listen for
+		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
+		 * @return string
+		 */
+		public function inject_conditional_event( $event_name, $params, $listener, $jsonified_pii = '' ) {
+
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			return $this->get_conditional_event_script( $event_name, self::build_params( $params, $event_name ), $listener, $jsonified_pii );
+		}
+
+
+		/**
+		 * Gets the JavaScript code to track a conditional event that is only triggered one time wrapped in <script> tag.
+		 *
+		 * @internal
+		 *
+		 * @since 1.10.2
+		 *
+		 * @param string $event_name the name of the event to track
+		 * @param array $params custom event parameters
+		 * @param string $listened_event name of the JavaScript event to listen for
+		 * @return string
+		 */
+		public function get_conditional_one_time_event_script( $event_name, $params, $listened_event ) {
+
+			$code = $this->get_event_code( $event_name, $params );
+
+			ob_start();
+
+			?>
+			<!-- Facebook Pixel Event Code -->
+			<script <?php echo self::get_script_attributes(); ?>>
+				function handle<?php echo $event_name; ?>Event() {
+					<?php echo $code; ?>
+					// some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one
+					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
+				}
+
+				jQuery( document.body ).one( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
@@ -332,7 +388,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * Parameters provided by users should not be overwritten by this function.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2
 		 *
 		 * @param array $params user defined parameters
 		 * @param string $event the event name the params are for
@@ -345,7 +401,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			/**
 			 * Filters the parameters for the pixel code.
 			 *
-			 * @since x.y.z
+			 * @since 1.10.2
 			 *
 			 * @param array $params user defined parameters
 			 * @param string $event the event name
@@ -357,7 +413,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		/**
 		 * Gets script tag attributes.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2
 		 *
 		 * @return string
 		 */
@@ -368,7 +424,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			/**
 			 * Filters Facebook Pixel script attributes.
 			 *
-			 * @since x.y.z
+			 * @since 1.10.2
 			 *
 			 * @param array $custom_attributes
 			 */
@@ -456,13 +512,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		/**
 		 * Gets Facebook Pixel base code.
 		 *
-		 * @deprecated since x.y.z
+		 * @deprecated since 1.10.2
 		 *
 		 * @return string
 		 */
 		public static function get_basecode() {
 
-			wc_deprecated_function( __METHOD__, 'x.y.z' );
+			wc_deprecated_function( __METHOD__, '1.10.2' );
 
 			return '';
 		}
