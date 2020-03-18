@@ -58,6 +58,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// AddToCart while using redirect to cart page
 			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
 				add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'set_last_product_added_to_cart_upon_redirect' ], 10, 2 );
+				add_action( 'woocommerce_ajax_added_to_cart',   [ $this, 'set_last_product_added_to_cart_upon_ajax_redirect' ] );
 				add_action( 'woocommerce_after_cart',           [ $this, 'inject_add_to_cart_redirect_event' ], 10, 2 );
 			}
 
@@ -281,7 +282,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 */
 		public function add_filter_for_add_to_cart_fragments() {
 
@@ -296,7 +297,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param array $fragments add to cart fragments
 		 * @return array
@@ -321,14 +322,64 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Setups a filter to add an add to cart fragment to trigger an AddToCart event on added_to_cart JS event.
+		 *
+		 * This method is used by code snippets and should not be removed.
+		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::add_conditional_add_to_cart_event_fragment
+		 *
+		 * @internal
+		 *
+		 * @since 1.10.2-dev.1
+		 */
+		public function add_filter_for_conditional_add_to_cart_fragment() {
+
+			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+				add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'add_conditional_add_to_cart_event_fragment' ] );
+			}
+		}
+
+
+		/**
+		 * Adds an add to cart fragment to trigger an AddToCart event on added_to_cart JS event.
+		 *
+		 * @internal
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param array $fragments add to cart fragments
+		 * @return array
+		 */
+		public function add_conditional_add_to_cart_event_fragment( $fragments ) {
+
+			if ( self::$isEnabled ) {
+
+				$params = [
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				];
+
+				$script = $this->pixel->get_conditional_one_time_event_script( 'AddToCart', $params, 'added_to_cart' );
+
+				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
+			}
+
+			return $fragments;
+		}
+
+
+		/**
 		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
 		 *
 		 * @internal
-		 * @deprecated since x.y.z
+		 * @deprecated since 1.10.2-dev.1
 		 */
 		public function inject_ajax_add_to_cart_event() {
 
-			wc_deprecated_function( __METHOD__, 'x.y.z' );
+			wc_deprecated_function( __METHOD__, '1.10.2-dev.1' );
 		}
 
 
@@ -337,7 +388,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @param string $redirect URL redirecting to (usually cart)
 		 * @param \WC_Product $product the product just added to the cart
@@ -350,6 +401,25 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			return $redirect;
+		}
+
+
+		/**
+		 * Sets last product added to cart to session when adding a product to cart from an archive page and both AJAX adding and redirection to cart are enabled.
+		 *
+		 * @internal
+		 *
+		 * @since 1.10.2-dev.1
+		 *
+		 * @param int $product_id the ID of the product just added to the cart
+		 */
+		public function set_last_product_added_to_cart_upon_ajax_redirect( $product_id ) {
+
+			$product = wc_get_product( $product_id );
+
+			if ( $product instanceof \WC_Product ) {
+				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
+			}
 		}
 
 
@@ -494,7 +564,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets the cart content items count.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return int
 		 */
@@ -507,7 +577,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets all content IDs from cart.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return string JSON data
 		 */
@@ -533,7 +603,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets the cart content data.
 		 *
-		 * @since x.y.z
+		 * @since 1.10.2-dev.1
 		 *
 		 * @return string JSON data
 		 */

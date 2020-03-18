@@ -156,6 +156,22 @@ class IntegrationSettingsCest {
 
 
 	/**
+	 * Test that the Debug fields are present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_debug_fields_present( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Debug fields are present' );
+
+		$I->see( 'Enable debug mode', 'th.titledesc' );
+		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE );
+	}
+
+
+	/**
 	 * Test that the Connection fields are saved correctly.
 	 *
 	 * @param AcceptanceTester $I tester instance
@@ -234,6 +250,29 @@ class IntegrationSettingsCest {
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING  => 'Hello darkness my old friend',
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX => '#000000',
 		];
+		$I->submitForm( '#mainform', $form, 'save' );
+		$I->waitForText( 'Your settings have been saved.' );
+
+		$I->seeInFormFields( '#mainform', $form );
+	}
+
+
+	/**
+	 * Test that the Debug fields are saved correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_debug_fields_saved( AcceptanceTester $I ) {
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->wantTo( 'Test that the Debug fields are saved correctly' );
+
+		$form = [
+			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE => true,
+		];
+
 		$I->submitForm( '#mainform', $form, 'save' );
 		$I->waitForText( 'Your settings have been saved.' );
 

@@ -345,13 +345,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * Helper log function for debugging
 		 */
 		public static function log( $message ) {
-			if ( WP_DEBUG === true ) {
-				if ( is_array( $message ) || is_object( $message ) ) {
-					error_log( json_encode( $message ) );
-				} else {
-					error_log( sanitize_textarea_field( $message ) );
-				}
+
+			// if this file is being included outside the plugin, or the plugin setting is disabled
+			if ( ! function_exists( 'facebook_for_woocommerce' ) || ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+				return;
 			}
+
+			if ( is_array( $message ) || is_object( $message ) ) {
+				$message = json_encode( $message );
+			} else {
+				$message = sanitize_textarea_field( $message );
+			}
+
+			facebook_for_woocommerce()->log( $message );
 		}
 
 		// Return store name with sanitized apostrophe

@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.10.1
+Stable tag: 1.10.2-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,9 +39,25 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.03.10 - version 1.10.1
+= 2020.nn.nn - version 1.10.2-dev.1 =
+ * Tweak - Add a setting to easily enable debug logging
+ * Tweak - Allow third party plugins and themes to track an add-to-cart event on added_to_cart JS event
+ * Tweak - When excluding a product term from syncing in the plugin settings page, offer an option to hide excluded synced products from Facebook
+ * Tweak - When excluding product terms from syncing in the plugin settings page, and settings are saved, exclude corresponding products from sync
+ * Tweak - Improve error messages shown when a problem occurs during products sync
+ * Tweak - Log Graph API communication if logging is enabled
+ * Fix - When excluding a product term from syncing in the plugin settings page, ensure a modal opens to warn about possible conflicts with already synced products
+ * Fix - Messenger settings fields will correctly reflect the values selected during initial setup
+ * Fix - Fix a bug that caused newly added gallery images not to be synced immediately after they were added
+ * Fix - Fix a bug that prevented gallery images from being removed from products on Facebook
+ * Fix - Fix AddToCart Pixel event tracking when adding products from archive with AJAX and redirect to cart enabled
+ * Fix - Fix undefined index and undefined property notices.
+ * Dev - Make Pixel script attributes and event parameters filterable
+
+= 2020.03.10 - version 1.10.1 =
  * Fix - Prevent Fatal error during the upgrade routine introduced in version 1.10.0
  * Fix - Only load the admin settings JavaScript on the Facebook settings page to prevent conflicts with other scripts
+ * Misc - Add support for WooCommerce 4.0
 
 = 2020.03.03 - version 1.10.0 =
  * Feature - Exclude specific products, variations, product categories, and product tags from syncing to Facebook
@@ -49,8 +65,8 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Revamped settings screen with on-site control over pixel, product sync, and Messenger behavior
  * Tweak - Use Action Scheduler for the daily forced re-sync, if enabled
  * Fix - Improve pixel tracking accuracy for add-to-cart events
- * Misc. - Add the SkyVerge plugin framework as the plugin base
- * Misc. - Require WooCommerce 3.5 and above
+ * Misc - Add the SkyVerge plugin framework as the plugin base
+ * Misc - Require WooCommerce 3.5 and above
 
 = 1.9.15 - 2019-06-27 =
 * CSRF handling for Ajax calls like ajax_woo_infobanner_post_click, ajax_woo_infobanner_post_xout, ajax_fb_toggle_visibility

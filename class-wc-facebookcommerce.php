@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.10.1';
+		const VERSION = '1.10.2-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
