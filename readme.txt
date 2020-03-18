@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.10.3-dev.1 =
+ * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
  * Fix - Make sure that the Facebook sync enabled and catalog visibility columns are properly displayed on narrow screen sizes on some browsers
 
 = 2020.03.17 - version 1.10.2 =
