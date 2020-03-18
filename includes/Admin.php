@@ -296,13 +296,38 @@ class Admin {
 
 				$query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $query_vars );
 
+				// since we record enabled status on child variations, we may need to query variable products found for their children to exclude them from query results
+				$exclude_products = [];
+				$found_ids        = get_posts( array_merge( $query_vars, [ 'fields' => 'ids' ] ) );
+				$found_products   = empty( $found_ids ) ? [] : wc_get_products( [
+					'limit'   => -1,
+					'type'    => 'variable',
+					'include' => $found_ids,
+				] );
+
+				/** @var \WC_Product[] $found_products */
+				foreach ( $found_products as $product ) {
+
+					if ( ! Products::is_sync_enabled_for_product( $product ) ) {
+						$exclude_products[] = $product->get_id();
+					}
+				}
+
+				if ( ! empty( $exclude_products ) ) {
+					if ( ! empty( $query_vars['post__not_in'] ) ) {
+						$query_vars['post__not_in'] = array_merge( $query_vars['post__not_in'], $exclude_products );
+					} else {
+						$query_vars['post__not_in'] = $exclude_products;
+					}
+				}
+
 			} else {
 
 				$integration             = facebook_for_woocommerce()->get_integration();
 				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
-				$exlcuded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
+				$excluded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
 
-				if ( $excluded_categories_ids || $exlcuded_tags_ids ) {
+				if ( $excluded_categories_ids || $excluded_tags_ids ) {
 
 					// find the IDs of products that have sync enabled
 					$products_query_vars = [
@@ -665,7 +690,7 @@ class Admin {
 			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
 			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
 			'class'         => 'checkbox js-variable-fb-sync-toggle',
-			'wrapper_class' => 'fb-sync-enabled-field'
+			'wrapper_class' => 'fb-sync-enabled-field',
 		] );
 
 		woocommerce_wp_textarea_input( [
@@ -703,7 +728,7 @@ class Admin {
 			'label'         => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
 			'value'         => $image_url,
 			'class'         => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
-			'wrapper_class' => 'form-row form-row-full'
+			'wrapper_class' => 'form-row form-row-full',
 		] );
 
 		woocommerce_wp_text_input( [
