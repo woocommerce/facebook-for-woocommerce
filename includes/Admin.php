@@ -308,15 +308,8 @@ class Admin {
 				/** @var \WC_Product[] $found_products */
 				foreach ( $found_products as $product ) {
 
-					foreach ( $product->get_children() as $variation_id ) {
-
-						$variation = wc_get_product( $variation_id );
-
-						if ( $variation && ! Products::is_sync_enabled_for_product( $variation ) ) {
-
-							$exclude_products[] = $product->get_id();
-							break;
-						}
+					if ( ! Products::is_sync_enabled_for_product( $product ) ) {
+						$exclude_products[] = $product->get_id();
 					}
 				}
 
