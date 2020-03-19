@@ -391,13 +391,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @since 1.10.2
 		 *
 		 * @param string $redirect URL redirecting to (usually cart)
-		 * @param \WC_Product $product the product just added to the cart
+		 * @param null|\WC_Product $product the product just added to the cart
 		 * @return string
 		 */
-		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product ) {
+		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
 
 			if ( $product instanceof \WC_Product ) {
 				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
+			} else {
+				facebook_for_woocommerce()->log( 'Cannot record AddToCart event because the product cannot be determined. Backtrace: ' . print_r( wp_debug_backtrace_summary(), true ) );
 			}
 
 			return $redirect;
@@ -411,9 +413,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @since 1.10.2
 		 *
-		 * @param int $product_id the ID of the product just added to the cart
+		 * @param null|int $product_id the ID of the product just added to the cart
 		 */
-		public function set_last_product_added_to_cart_upon_ajax_redirect( $product_id ) {
+		public function set_last_product_added_to_cart_upon_ajax_redirect( $product_id = null ) {
+
+			if ( ! $product_id ) {
+				facebook_for_woocommerce()->log( 'Cannot record AddToCart event because the product cannot be determined. Backtrace: ' . print_r( wp_debug_backtrace_summary(), true ) );
+				return;
+			}
 
 			$product = wc_get_product( $product_id );
 
