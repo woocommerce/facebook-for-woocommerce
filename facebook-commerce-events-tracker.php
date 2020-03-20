@@ -542,6 +542,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					continue;
 				}
 
+				// TODO consider 'StartTrial' event for free trial Subscriptions, which is the same as here (minus sign_up_fee) and tracks "when a person starts a free trial of a product or service" {FN 2020-03-20}
+
+				// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
 				$this->pixel->inject_event( 'Subscribe', [
 					'sign_up_fee' => $subscription->get_sign_up_fee(),
 					'value'       => $subscription->get_total(),
