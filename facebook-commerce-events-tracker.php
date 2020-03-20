@@ -51,8 +51,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				array( $this, 'inject_search_event' )
 			);
 
-			// AddToCart
-			add_action( 'woocommerce_add_to_cart',             [ $this, 'inject_add_to_cart_event' ], 40, 4 );
+			// AddToCart events
+			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 40, 4 );
 			// AddToCart while AJAX is enabled
 			add_action( 'woocommerce_ajax_added_to_cart', [ $this, 'add_filter_for_add_to_cart_fragments' ] );
 			// AddToCart while using redirect to cart page
