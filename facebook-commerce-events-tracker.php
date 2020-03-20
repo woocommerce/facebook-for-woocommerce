@@ -165,7 +165,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			if ( ! is_admin() && is_search() && get_search_query() !== '' ) {
-				if ( $this->pixel->check_last_event( 'Search' ) ) {
+				if ( $this->pixel->is_last_event( 'Search' ) ) {
 					return;
 				}
 
@@ -440,7 +440,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_initiate_checkout_event() {
 
-			if ( ! self::$isEnabled || $this->pixel->check_last_event( 'InitiateCheckout' ) ) {
+			if ( ! self::$isEnabled || $this->pixel->is_last_event( 'InitiateCheckout' ) ) {
 				return;
 			}
 
@@ -470,7 +470,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_purchase_event( $order_id ) {
 
-			if ( ! self::$isEnabled || $this->pixel->check_last_event( 'Purchase' ) ) {
+			if ( ! self::$isEnabled || $this->pixel->is_last_event( 'Purchase' ) ) {
 				return;
 			}
 
@@ -526,7 +526,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_subscribe_event( $order_id ) {
 
-			if ( self::$isEnabled || $this->pixel->check_last_event( 'Subscribe' ) ) {
+			if ( self::$isEnabled || $this->pixel->is_last_event( 'Subscribe' ) ) {
 				return;
 			}
 
