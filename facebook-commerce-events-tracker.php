@@ -62,26 +62,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				add_action( 'woocommerce_after_cart',           [ $this, 'inject_add_to_cart_redirect_event' ], 10, 2 );
 			}
 
-			add_action(
-				'woocommerce_after_checkout_form',
-				array( $this, 'inject_initiate_checkout_event' )
-			);
-			add_action(
-				'woocommerce_thankyou',
-				array( $this, 'inject_gateway_purchase_event' ),
-				self::FB_PRIORITY_HIGH
-			);
-			add_action(
-				'woocommerce_payment_complete',
-				array( $this, 'inject_purchase_event' ),
-				self::FB_PRIORITY_HIGH
-			);
+			// InitiateCheckout events
+			add_action( 'woocommerce_after_checkout_form', [ $this, 'inject_initiate_checkout_event' ] );
+			// Purchase|Subscribe events
+			add_action( 'woocommerce_thankyou',         [ $this, 'inject_gateway_purchase_event' ], 2 );
+			add_action( 'woocommerce_payment_complete', [ $this, 'inject_purchase_event' ], 2 );
+
 			add_action(
 				'wpcf7_contact_form',
 				array( $this, 'inject_lead_event_hook' ),
 				self::FB_PRIORITY_LOW
 			);
-
 		}
 
 		public function apply_filters() {
