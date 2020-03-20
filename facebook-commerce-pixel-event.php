@@ -186,6 +186,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		/**
 		 * Determines if the last event in the current thread matches a given event.
 		 *
+		 * @since x.y.z
+		 *
 		 * @param string $event_name
 		 * @return bool
 		 */
