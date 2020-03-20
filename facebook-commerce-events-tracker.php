@@ -64,9 +64,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// InitiateCheckout events
 			add_action( 'woocommerce_after_checkout_form', [ $this, 'inject_initiate_checkout_event' ] );
-			// Purchase|Subscribe events
+			// Purchase events
 			add_action( 'woocommerce_thankyou',         [ $this, 'inject_purchase_event' ], 40 );
 			add_action( 'woocommerce_payment_complete', [ $this, 'inject_purchase_event' ], 40 );
+			// Subscribe events
+			add_action( 'woocommerce_checkout_subscription_created', [ $this, 'inject_subscribe_event' ] );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
@@ -509,9 +511,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'value'        => $order->get_total(),
 				'currency'     => get_woocommerce_currency(),
 			] );
-
-			// additionally, check for any subscriptions in the order and track those
-			$this->inject_subscribe_event( $order_id );
 		}
 
 
@@ -522,35 +521,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @param int $order_id order identifier
+		 * @param \WC_Subscription $subscription object
 		 */
-		public function inject_subscribe_event( $order_id ) {
+		public function inject_subscribe_event( $subscription ) {
 
-			if ( self::$isEnabled || $this->pixel->is_last_event( 'Subscribe' ) ) {
+			if ( self::$isEnabled || ! $subscription instanceof \WC_Subscription ) {
 				return;
 			}
 
-			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) ) {
-				return;
-			}
+			// TODO consider 'StartTrial' event for free trial Subscriptions, which is the same as here (minus sign_up_fee) and tracks "when a person starts a free trial of a product or service" {FN 2020-03-20}
 
-			$subscription_ids = wcs_get_subscriptions_for_order( $order_id );
-
-			foreach ( $subscription_ids as $subscription ) {
-
-				if ( ! $subscription instanceof \WC_Subscription ) {
-					continue;
-				}
-
-				// TODO consider 'StartTrial' event for free trial Subscriptions, which is the same as here (minus sign_up_fee) and tracks "when a person starts a free trial of a product or service" {FN 2020-03-20}
-
-				// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
-				$this->pixel->inject_event( 'Subscribe', [
-					'sign_up_fee' => $subscription->get_sign_up_fee(),
-					'value'       => $subscription->get_total(),
-					'currency'    => get_woocommerce_currency(),
-				] );
-			}
+			// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
+			$this->pixel->inject_event( 'Subscribe', [
+				'sign_up_fee' => $subscription->get_sign_up_fee(),
+				'value'       => $subscription->get_total(),
+				'currency'    => get_woocommerce_currency(),
+			] );
 		}
 
 
