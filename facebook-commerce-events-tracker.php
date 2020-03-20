@@ -434,7 +434,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers InitiateCheckout for checkout page.
+		 * Triggers an InitiateCheckout event when customer reaches checkout page.
 		 *
 		 * @internal
 		 */
@@ -455,7 +455,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers Purchase for payment transaction complete and for the thank you page in cases of delayed payment.
+		 * Triggers a Purchase event when checkout is completed.
+		 *
+		 * This may happen either when:
+		 * - WooCommerce signals a payment transaction complete (most gateways)
+		 * - Customer reaches Thank You page skipping payment (for gateways that do not require payment, e.g. Cheque, BACS, Cash on delivery...)
+		 *
+		 * The method checks if the event was not triggered already avoiding a duplicate.
+		 * Finally, if the order contains subscriptions, it will also track an associated Subscription event.
 		 *
 		 * @internal
 		 *
@@ -509,7 +516,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers Subscribe for payment transaction complete of purchases with subscription products.
+		 * Triggers a Subscribe event when a given order contains subscription products.
+		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()
 		 *
 		 * @internal
 		 *
@@ -543,12 +552,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers Purchase for thank you page for payment methods that require manual payment complete
+		 * Triggers a Purchase event.
 		 *
-		 * For example Cash on delivery, bank transfer, cheque payment methods.
-		 * These don't trigger woocommerce_payment_complete action without admin.
-		 *
-		 * @see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()
+		 * Duplicate of {@see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()}
 		 *
 		 * TODO remove this deprecated method by version 2.0.0 or by March 2020 {FN 2020-03-20}
 		 *
@@ -560,6 +566,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_gateway_purchase_event( $order_id ) {
 
 			wc_deprecated_function( __METHOD__, 'x,y.z', __CLASS__ . '::inject_purchase_event()' );
+
+			$this->inject_purchase_event( $order_id );
 		}
 
 
