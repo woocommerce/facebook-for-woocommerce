@@ -506,6 +506,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_subscribe_event( $order_id ) {
 
+			if ( self::$isEnabled || $this->pixel->check_last_event( 'Subscribe' ) ) {
+				return;
+			}
+
 			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) ) {
 				return;
 			}
