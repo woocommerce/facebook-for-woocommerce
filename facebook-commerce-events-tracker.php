@@ -435,6 +435,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Triggers InitiateCheckout for checkout page.
+		 *
+		 * @internal
 		 */
 		public function inject_initiate_checkout_event() {
 
@@ -454,6 +456,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Triggers Purchase for payment transaction complete and for the thank you page in cases of delayed payment.
+		 *
+		 * @internal
 		 *
 		 * @param int $order_id order identifier
 		 */
@@ -494,43 +498,60 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
-		 * Triggers Subscribe for payment transaction complete of purchase with
-		 * subscription.
+		 * Triggers Subscribe for payment transaction complete of purchases with subscription products.
+		 *
+		 * @internal
+		 *
+		 * @param int $order_id order identifier
 		 */
 		public function inject_subscribe_event( $order_id ) {
+
 			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) ) {
 				return;
 			}
 
 			$subscription_ids = wcs_get_subscriptions_for_order( $order_id );
-			foreach ( $subscription_ids as $subscription_id ) {
-				$subscription = new WC_Subscription( $subscription_id );
-				$this->pixel->inject_event(
-					'Subscribe',
-					array(
-						'sign_up_fee' => $subscription->get_sign_up_fee(),
-						'value'       => $subscription->get_total(),
-						'currency'    => get_woocommerce_currency(),
-					)
-				);
+
+			foreach ( $subscription_ids as $subscription ) {
+
+				if ( ! $subscription instanceof \WC_Subscription ) {
+					continue;
+				}
+
+				$this->pixel->inject_event( 'Subscribe', [
+					'sign_up_fee' => $subscription->get_sign_up_fee(),
+					'value'       => $subscription->get_total(),
+					'currency'    => get_woocommerce_currency(),
+				] );
 			}
 		}
 
+
 		/**
-		 * Triggers Purchase for thank you page for COD, BACS CHEQUE payment
-		 * which won't invoke woocommerce_payment_complete.
+		 * Triggers Purchase for thank you page for payment methods that require manual payment complete
+		 *
+		 * For example Cash on delivery, bank transfer, cheque payment methods.
+		 * These don't trigger woocommerce_payment_complete action without admin.
+		 *
+		 * @internal
+		 *
+		 * @param int $order_id order identifier
 		 */
 		public function inject_gateway_purchase_event( $order_id ) {
-			if ( ! self::$isEnabled ||
-			  $this->pixel->check_last_event( 'Purchase' ) ) {
+
+			if ( ! self::$isEnabled || $this->pixel->check_last_event( 'Purchase' ) ) {
 				return;
 			}
 
-			$order   = new WC_Order( $order_id );
-			$payment = $order->get_payment_method();
-			$this->inject_purchase_event( $order_id );
-			$this->inject_subscribe_event( $order_id );
+			$order = wc_get_order( $order_id );
+
+			if ( $order && $order->needs_payment() ) {
+
+				$this->inject_purchase_event( $order_id );
+				$this->inject_subscribe_event( $order_id );
+			}
 		}
+
 
 		/** Contact Form 7 Support **/
 		public function inject_lead_event_hook() {
