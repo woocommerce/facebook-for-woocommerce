@@ -65,8 +65,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// InitiateCheckout events
 			add_action( 'woocommerce_after_checkout_form', [ $this, 'inject_initiate_checkout_event' ] );
 			// Purchase|Subscribe events
-			add_action( 'woocommerce_thankyou',         [ $this, 'inject_gateway_purchase_event' ], 2 );
-			add_action( 'woocommerce_payment_complete', [ $this, 'inject_purchase_event' ], 2 );
+			add_action( 'woocommerce_thankyou',         [ $this, 'inject_purchase_event' ], 40 );
+			add_action( 'woocommerce_payment_complete', [ $this, 'inject_purchase_event' ], 40 );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
@@ -467,10 +467,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$this->inject_subscribe_event( $order_id );
-
-			$order        = new \WC_Order( $order_id );
+			$order        = wc_get_order( $order_id );
 			$content_type = 'product';
+			$num_items    = 0;
+			$contents     = [];
 			$product_ids  = [ [] ];
 
 			foreach ( $order->get_items() as $item ) {
@@ -482,18 +482,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					if ( 'product_group' !== $content_type && $product->is_type( 'variable' ) ) {
 						$content_type = 'product_group';
 					}
+
+					$quantity = $item->get_quantity();
+					$content  = new \stdClass();
+
+					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+					$content->quantity = $quantity;
+
+					$contents[] = $content;
+					$num_items += $quantity;
 				}
 			}
 
-			$product_ids = wp_json_encode( array_merge( ... $product_ids ) );
-
 			$this->pixel->inject_event( 'Purchase', [
-				'num_items'    => $this->get_cart_num_items(),
-				'content_ids'  => $product_ids,
+				'num_items'    => $num_items,
+				'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
+				'contents'     => $contents,
 				'content_type' => $content_type,
 				'value'        => $order->get_total(),
 				'currency'     => get_woocommerce_currency(),
 			] );
+
+			// additionally, check for any subscriptions in the order and track those
+			$this->inject_subscribe_event( $order_id );
 		}
 
 
@@ -537,23 +548,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * For example Cash on delivery, bank transfer, cheque payment methods.
 		 * These don't trigger woocommerce_payment_complete action without admin.
 		 *
+		 * @see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()
+		 *
+		 * TODO remove this deprecated method by version 2.0.0 or by March 2020 {FN 2020-03-20}
+		 *
 		 * @internal
+		 * @deprecated since x.y.z
 		 *
 		 * @param int $order_id order identifier
 		 */
 		public function inject_gateway_purchase_event( $order_id ) {
 
-			if ( ! self::$isEnabled || $this->pixel->check_last_event( 'Purchase' ) ) {
-				return;
-			}
-
-			$order = wc_get_order( $order_id );
-
-			if ( $order && $order->needs_payment() ) {
-
-				$this->inject_purchase_event( $order_id );
-				$this->inject_subscribe_event( $order_id );
-			}
+			wc_deprecated_function( __METHOD__, 'x,y.z', __CLASS__ . '::inject_purchase_event()' );
 		}
 
 
