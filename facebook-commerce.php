@@ -3650,6 +3650,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Updates the Facebook upload ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value upload ID value
+	 */
+	public function update_upload_id( $value ) {
+
+		$this->upload_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_UPLOAD_ID, $this->upload_id );
+	}
+
+
+	/**
 	 * Updates the Facebook pixel install time.
 	 *
 	 * @since 1.10.0
