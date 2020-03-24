@@ -386,9 +386,14 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @return string
 		 */
 		public function is_upload_complete( &$settings ) {
-			$result = $this->fbgraph->get_upload_status( $settings['fb_upload_id'] );
+
+			$upload_id = facebook_for_woocommerce()->get_integration()->get_upload_id();
+			$result    = $this->fbgraph->get_upload_status( $upload_id );
+
 			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+
 				 $this->log_feed_progress( json_encode( $result ) );
+
 				 return 'error';
 			}
 

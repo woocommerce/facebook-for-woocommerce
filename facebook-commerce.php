@@ -1503,7 +1503,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
 			$this->update_feed_id( '' );
-			$this->settings['fb_upload_id']    = '';
+			$this->update_upload_id( '' );
 			$this->settings['upload_end_time'] = '';
 
 			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
@@ -1534,36 +1534,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Check Feed Upload Status
-	 **/
-	function ajax_check_feed_upload_status() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
+	 * Checks the feed upload status.
+	 *
+	 * @internal
+	 */
+	public function ajax_check_feed_upload_status() {
+
+		\WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
+
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
+
 		if ( $this->get_page_access_token() ) {
-			$response = array(
+
+			$response = [
 				'connected' => true,
 				'status'    => 'in progress',
-			);
-			if ( ! empty( $this->settings['fb_upload_id'] ) ) {
+			];
+
+			if ( ! empty( $this->get_upload_id() ) ) {
+
 				if ( ! isset( $this->fbproductfeed ) ) {
+
 					if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) {
 						include_once 'includes/fbproductfeed.php';
 					}
-					$this->fbproductfeed = new WC_Facebook_Product_Feed(
+
+					$this->fbproductfeed = new \WC_Facebook_Product_Feed(
 						$this->get_product_catalog_id(),
 						$this->fbgraph
 					);
 				}
+
 				$status = $this->fbproductfeed->is_upload_complete( $this->settings );
 
 				$response['status'] = $status;
+
 			} else {
-				$response = array(
+
+				$response = [
 					'connected' => true,
 					'status'    => 'error',
-				);
+				];
 			}
-			if ( $response['status'] == 'complete' ) {
+
+			if ( 'complete' === $response['status'] ) {
+
 				update_option(
 					$this->get_option_key(),
 					apply_filters(
@@ -1572,11 +1587,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					)
 				);
 			}
+
 		} else {
-			$response = array(
-				'connected' => false,
-			);
+
+			$response = [ 'connected' => false ];
 		}
+
 		printf( json_encode( $response ) );
 		wp_die();
 	}
@@ -2322,8 +2338,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$this->update_feed_id( $this->fbproductfeed->feed_id );
-
-		$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
+		$this->update_upload_id( $this->fbproductfeed->upload_id );
 
 		update_option(
 			$this->get_option_key(),
