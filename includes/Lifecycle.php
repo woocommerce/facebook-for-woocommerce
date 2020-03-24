@@ -38,6 +38,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		$this->upgrade_versions = [
 			'1.10.0',
 			'1.10.1',
+			'1.10.3', // TODO ensure this is the right version upon merging this PR {FN 2020-03-24}
 		];
 	}
 
@@ -197,6 +198,24 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	protected function upgrade_to_1_10_1() {
 
 		$this->migrate_1_9_settings();
+	}
+
+
+	/**
+	 * Upgrades to version 1.10.3.
+	 *
+	 * TODO ensure this is the right version upon merging this PR {FN 2020-03-24}
+	 *
+	 * @since x.y.z
+	 */
+	protected function upgrade_to_1_10_3() {
+
+		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
+
+		// moves the upload ID to a standalone option
+		if ( ! empty( $settings['fb_upload_id'] ) ) {
+			$this->get_plugin()->get_integration()->update_upload_id( $settings['fb_upload_id'] );
+		}
 	}
 
 

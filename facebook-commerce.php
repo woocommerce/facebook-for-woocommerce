@@ -34,6 +34,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the feed ID is stored */
 	const OPTION_FEED_ID = 'wc_facebook_feed_id';
 
+	/** @var string the WordPress option name where the upload ID is stored */
+	const OPTION_UPLOAD_ID = 'wc_facebook_upload_id';
+
 	/** @var string the WordPress option name where the JS SDK version is stored */
 	const OPTION_JS_SDK_VERSION = 'wc_facebook_js_sdk_version';
 
@@ -100,6 +103,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/** @var string|null the configured feed ID */
 	public $feed_id;
+
+	/** @var string|null the configured upload ID */
+	private $upload_id;
 
 	/** @var string|null the configured pixel install time */
 	public $pixel_install_time;
@@ -1497,7 +1503,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->update_external_merchant_settings_id( '' );
 			$this->update_pixel_install_time( 0 );
 			$this->update_feed_id( '' );
-			$this->settings['fb_upload_id']    = '';
+			$this->update_upload_id( '' );
 			$this->settings['upload_end_time'] = '';
 
 			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
@@ -1528,36 +1534,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Check Feed Upload Status
-	 **/
-	function ajax_check_feed_upload_status() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
+	 * Checks the feed upload status.
+	 *
+	 * @internal
+	 */
+	public function ajax_check_feed_upload_status() {
+
+		\WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
+
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
+
 		if ( $this->get_page_access_token() ) {
-			$response = array(
+
+			$response = [
 				'connected' => true,
 				'status'    => 'in progress',
-			);
-			if ( ! empty( $this->settings['fb_upload_id'] ) ) {
+			];
+
+			if ( ! empty( $this->get_upload_id() ) ) {
+
 				if ( ! isset( $this->fbproductfeed ) ) {
+
 					if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) {
 						include_once 'includes/fbproductfeed.php';
 					}
-					$this->fbproductfeed = new WC_Facebook_Product_Feed(
+
+					$this->fbproductfeed = new \WC_Facebook_Product_Feed(
 						$this->get_product_catalog_id(),
 						$this->fbgraph
 					);
 				}
+
 				$status = $this->fbproductfeed->is_upload_complete( $this->settings );
 
 				$response['status'] = $status;
+
 			} else {
-				$response = array(
+
+				$response = [
 					'connected' => true,
 					'status'    => 'error',
-				);
+				];
 			}
-			if ( $response['status'] == 'complete' ) {
+
+			if ( 'complete' === $response['status'] ) {
+
 				update_option(
 					$this->get_option_key(),
 					apply_filters(
@@ -1566,11 +1587,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					)
 				);
 			}
+
 		} else {
-			$response = array(
-				'connected' => false,
-			);
+
+			$response = [ 'connected' => false ];
 		}
+
 		printf( json_encode( $response ) );
 		wp_die();
 	}
@@ -2316,8 +2338,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$this->update_feed_id( $this->fbproductfeed->feed_id );
-
-		$this->settings['fb_upload_id'] = $this->fbproductfeed->upload_id;
+		$this->update_upload_id( $this->fbproductfeed->upload_id );
 
 		update_option(
 			$this->get_option_key(),
@@ -3258,6 +3279,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/***
+	 * Gets the Facebook Upload ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_upload_id() {
+
+		if ( ! is_string( $this->upload_id ) ) {
+
+			$value = get_option( self::OPTION_UPLOAD_ID, '' );
+
+			$this->upload_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook upload ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $upload_id Facebook upload ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_upload_id', $this->upload_id, $this );
+	}
+
+
 	/**
 	 * Gets the Facebook pixel install time in UTC seconds.
 	 *
@@ -3612,6 +3661,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->feed_id = $this->sanitize_facebook_credential( $value );
 
 		update_option( self::OPTION_FEED_ID, $this->feed_id );
+	}
+
+
+	/**
+	 * Updates the Facebook upload ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $value upload ID value
+	 */
+	public function update_upload_id( $value ) {
+
+		$this->upload_id = $this->sanitize_facebook_credential( $value );
+
+		update_option( self::OPTION_UPLOAD_ID, $this->upload_id );
 	}
 
 
