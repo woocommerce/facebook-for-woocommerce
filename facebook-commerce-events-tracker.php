@@ -504,7 +504,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->pixel->inject_event( 'Purchase', [
 				'num_items'    => $num_items,
 				'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
-				'contents'     => wc_json_encode( $contents ),
+				'contents'     => wp_json_encode( $contents ),
 				'content_type' => $content_type,
 				'value'        => $order->get_total(),
 				'currency'     => get_woocommerce_currency(),
