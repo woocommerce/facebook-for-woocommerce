@@ -114,6 +114,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_upload_id() */
+	public function test_get_upload_id() {
+
+		$this->assertEquals( 'lorem123', $this->integration->get_upload_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_upload_id() */
+	public function test_get_upload_id_filter() {
+
+		add_filter( 'wc_facebook_upload_id', function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->integration->get_upload_id() );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::get_pixel_install_time() */
 	public function test_get_pixel_install_time() {
 
@@ -250,6 +268,33 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 	/** @see test_update_feed_id() */
 	public function provider_update_feed_id() {
+
+		return [
+			[ 'new-id', 'new-id' ],
+			[ [ 1, 2 ], '' ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::update_upload_id()
+	 *
+	 * @param string|null|array $value value to set
+	 * @param string $expected expected stored value
+	 *
+	 * @dataProvider provider_update_feed_id
+	 */
+	public function test_update_upload_id( $value, $expected ) {
+
+		$this->integration->update_upload_id( $value );
+
+		$this->assertEquals( $expected, $this->integration->get_upload_id() );
+		$this->assertEquals( $expected, get_option( \WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID ) );
+	}
+
+
+	/** @see test_update_upload_id() */
+	public function provider_update_upload_id() {
 
 		return [
 			[ 'new-id', 'new-id' ],
@@ -896,6 +941,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'def456' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, 'ghi789' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, 'jkl012' );
+		update_option( WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID, 'lorem123' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
 		update_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, 'v2.9' );
 
