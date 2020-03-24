@@ -104,6 +104,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string|null the configured feed ID */
 	public $feed_id;
 
+	/** @var string|null the configured upload ID */
+	private $upload_id;
+
 	/** @var string|null the configured pixel install time */
 	public $pixel_install_time;
 
@@ -3258,6 +3261,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (string) apply_filters( 'wc_facebook_feed_id', $this->feed_id, $this );
+	}
+
+
+	/***
+	 * Gets the Facebook Upload ID.
+	 *
+	 * @since x.y.z
+	 *
+	 * @return string
+	 */
+	public function get_upload_id() {
+
+		if ( ! is_string( $this->upload_id ) ) {
+
+			$value = get_option( self::OPTION_UPLOAD_ID, '' );
+
+			$this->upload_id = is_string( $value ) ? $value : '';
+		}
+
+		/**
+		 * Filters the Facebook upload ID.
+		 *
+		 * @since x.y.z
+		 *
+		 * @param string $upload_id Facebook upload ID
+		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
+		 */
+		return (string) apply_filters( 'wc_facebook_upload_id', $this->upload_id, $this );
 	}
 
 
