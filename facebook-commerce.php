@@ -893,7 +893,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -969,14 +969,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function on_product_publish( $wp_id ) {
 
-		if ( get_post_status( $wp_id ) != 'publish' ) {
+		if ( get_post_status( $wp_id ) !== 'publish' ) {
 			return;
 		}
 
-		$woo_product  = new WC_Facebook_Product( $wp_id );
+		$woo_product = new WC_Facebook_Product( $wp_id );
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -986,6 +986,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->on_simple_product_publish( $wp_id, $woo_product );
 		}
 	}
+
 
 	/**
 	 * If the user has opt-in to remove products that are out of stock,
@@ -1084,7 +1085,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
