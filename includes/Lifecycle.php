@@ -38,7 +38,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		$this->upgrade_versions = [
 			'1.10.0',
 			'1.10.1',
-			'1.10.3', // TODO ensure this is the right version upon merging this PR {FN 2020-03-24}
+			'1.10.3',
 		];
 	}
 
@@ -204,9 +204,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Upgrades to version 1.10.3.
 	 *
-	 * TODO ensure this is the right version upon merging this PR {FN 2020-03-24}
-	 *
-	 * @since x.y.z
+	 * @since 1.10.3-dev.1
 	 */
 	protected function upgrade_to_1_10_3() {
 

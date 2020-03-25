@@ -87,7 +87,7 @@ class AJAX {
 						'buttons' => $buttons,
 					] );
 
-				} elseif ( 'enabled' === $sync_enabled ) {
+				} elseif ( 'enabled' === $sync_enabled && ! $product->is_type( 'variable' ) ) {
 
 					$has_excluded_terms = false;
 
