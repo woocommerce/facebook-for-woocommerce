@@ -3,6 +3,7 @@
 2020.nn.nn - version 1.10.3-dev.1
  * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
  * Fix - Make sure that the Facebook sync enabled and catalog visibility columns are properly displayed on narrow screen sizes on some browsers
+ * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
 
 2020.03.17 - version 1.10.2
  * Tweak - Add a setting to easily enable debug logging
