@@ -154,7 +154,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 					}
 
 					// skip if not enabled for sync
-					if ( $woo_product->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
+					if ( $woo_product->woo_product instanceof \WC_Product && ! SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
 						continue;
 					}
 
