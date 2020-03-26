@@ -195,12 +195,13 @@ jQuery( document ).ready( function( $ ) {
 				return true;
 			}
 
-			let $submitButton  = $( this ),
+			let $submitButton    = $( this ),
 				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
-				productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
-				productCat     = [],
-				productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
-				syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
+				productCat       = [],
+				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
+				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' ),
+				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
@@ -209,12 +210,13 @@ jQuery( document ).ready( function( $ ) {
 			if ( productID > 0 ) {
 
 				$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-					action:      'facebook_for_woocommerce_set_product_sync_prompt',
-					security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
-					sync_enabled: syncEnabled ? 'enabled' : 'disabled',
-					product:      productID,
-					categories:   productCat,
-					tags:         productTag
+					action:           'facebook_for_woocommerce_set_product_sync_prompt',
+					security:         facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
+					sync_enabled:     syncEnabled    ? 'enabled' : 'disabled',
+					var_sync_enabled: varSyncEnabled ? 'enabled' : 'disabled',
+					product:          productID,
+					categories:       productCat,
+					tags:             productTag
 				}, function( response ) {
 
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
