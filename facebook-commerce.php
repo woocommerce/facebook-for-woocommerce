@@ -738,7 +738,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			plugins_url(
 				'/assets/css/facebook-infobanner.css',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 
 		if ( ! facebook_for_woocommerce()->is_plugin_settings() ) {
@@ -811,7 +813,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			plugins_url(
 				'/assets/css/facebook.css',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 	}
 
