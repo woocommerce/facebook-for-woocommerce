@@ -893,7 +893,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -924,10 +924,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
+
 	/**
-	 * Update FB visibility for trashing and restore.
+	 * Updates Facebook Visibility upon trashing and restore.
+	 *
+	 * @internal
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param \WP_post $post
 	 */
-	function fb_change_product_published_status( $new_status, $old_status, $post ) {
+	public function fb_change_product_published_status( $new_status, $old_status, $post ) {
 		global $post;
 
 		if ( ! $post ) {
@@ -939,18 +946,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product = wc_get_product( $post->ID );
 
 		// bail if this product isn't enabled for sync
-		if ( ! $product instanceof \WC_Product || ! Products::is_sync_enabled_for_product( $product ) ) {
+		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
 			return;
 		}
 
-		// change from publish status -> unpublish status, e.g. trash, draft, etc.
+		// change from publish status -> unpublish status (e.g. trash, draft, etc.)
 		// change from trash status -> publish status
 		// no need to update for change from trash <-> unpublish status
-		if ( ( $old_status == 'publish' && $new_status != 'publish' ) ||
-		( $old_status == 'trash' && $new_status == 'publish' ) ) {
+		if ( ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' ) ) {
 			$this->update_fb_visibility( $post->ID, $visibility );
 		}
 	}
+
 
 	/**
 	 * Generic function for use with any product publishing.
@@ -962,14 +969,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function on_product_publish( $wp_id ) {
 
-		if ( get_post_status( $wp_id ) != 'publish' ) {
+		if ( get_post_status( $wp_id ) !== 'publish' ) {
 			return;
 		}
 
-		$woo_product  = new WC_Facebook_Product( $wp_id );
+		$woo_product = new WC_Facebook_Product( $wp_id );
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -979,6 +986,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->on_simple_product_publish( $wp_id, $woo_product );
 		}
 	}
+
 
 	/**
 	 * If the user has opt-in to remove products that are out of stock,
@@ -1077,7 +1085,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! \SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -4153,23 +4161,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
-	function on_quick_and_bulk_edit_save( $product ) {
+
+	/**
+	 * Sync product upon quick or bulk edit save action.
+	 *
+	 * @internal
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public function on_quick_and_bulk_edit_save( $product ) {
 
 		// bail if not a product or product is not enabled for sync
-		if ( ! $product instanceof \WC_Product || ! Products::is_sync_enabled_for_product( $product ) ) {
+		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
 			return;
 		}
 
 		$wp_id      = $product->get_id();
-		$visibility = get_post_status( $wp_id ) === 'publish'
-		? self::FB_SHOP_PRODUCT_VISIBLE
-		: self::FB_SHOP_PRODUCT_HIDDEN;
-		// case 1: new status is 'publish' regardless of old status, sync to FB
+		$visibility = get_post_status( $wp_id ) === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
+
 		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
+			// - new status is 'publish' regardless of old status, sync to Facebook
 			$this->on_product_publish( $wp_id );
 		} else {
-			// case 2: product never publish to FB, new status is not publish
-			// case 3: product new status is not publish and published before
+			// - product never published to Facebook, new status is not publish
+			// - product new status is not publish but may have been published before
 			$this->update_fb_visibility( $wp_id, $visibility );
 		}
 	}
