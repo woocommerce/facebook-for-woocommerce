@@ -2475,7 +2475,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_html() */
 			[
-				'type'  => 'product_sync_title',
+				//'type'  => 'product_sync_title',
+				'type'  => 'title',
+				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 			],
 
 			self::SETTING_ENABLE_PRODUCT_SYNC => [
@@ -2829,9 +2831,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<table class="form-table">
 		<?php
 
-		$field = ob_get_clean();
-
-		return '';
+		return ob_get_clean();
 	}
 
 
