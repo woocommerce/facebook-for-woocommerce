@@ -924,6 +924,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$pg_result = $this->fbgraph->delete_product_group( $fb_product_group_id );
 			WC_Facebookcommerce_Utils::log( $pg_result );
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
