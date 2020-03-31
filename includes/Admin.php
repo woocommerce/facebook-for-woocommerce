@@ -44,6 +44,8 @@ class Admin {
 
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
+		// add admin notice to inform that the catalog visibility setting was removed
+		add_action( 'admin_notices', [ $this, 'add_catalog_visibility_settings_removed_notice' ] );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -545,6 +547,34 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	/**
+	 * Prints a notice on products page to inform users that catalog visibility settings were removed.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function add_catalog_visibility_settings_removed_notice() {
+		global $current_screen;
+
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
+				sprintf(
+					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
+					esc_html__( '%1$sHeads up!%2$s Catalog visibility settings have been temporarily removed as we migrate to a more secure experience. To remove products from your Facebook catalog, please disable syncing to Facebook for the product. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
+					'<strong>',
+					'</strong>',
+					'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#section-10" target="_blank">', // TODO: add link to FAQ entry {WV 2020-03-30}
+					'</a>'
+				),
+				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-catalog-visibility-settings-removed',
+				[ 'notice_class' => 'notice-info' ]
+			);
+		}
 	}
 
 
