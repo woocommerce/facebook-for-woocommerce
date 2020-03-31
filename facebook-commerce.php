@@ -2526,11 +2526,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			/** @see \WC_Facebookcommerce_Integration::generate_resync_schedule_html() */
 			/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
-			self::SETTING_SCHEDULED_RESYNC_OFFSET => [
-				'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-				'class' => 'product-sync-field resync-schedule-fieldset',
-				'type'  => 'resync_schedule',
-			],
+			//self::SETTING_SCHEDULED_RESYNC_OFFSET => [
+			//	'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
+			//	'class' => 'product-sync-field resync-schedule-fieldset',
+			//	'type'  => 'resync_schedule',
+			//],
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
