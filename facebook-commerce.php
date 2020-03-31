@@ -2829,7 +2829,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<table class="form-table">
 		<?php
 
-		return ob_get_clean();
+		$field = ob_get_clean();
+
+		return '';
 	}
 
 
