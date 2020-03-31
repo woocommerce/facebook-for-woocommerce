@@ -4445,4 +4445,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Enables product sync delay admin notice.
+	 *
+	 * @since x.y.z
+	 */
+	private function enable_product_sync_delay_admin_notice() {
+
+		set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id(), true, MINUTE_IN_SECONDS );
+	}
+
+
 }
