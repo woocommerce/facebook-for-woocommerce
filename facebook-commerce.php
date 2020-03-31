@@ -842,6 +842,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				break;
 			}
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
