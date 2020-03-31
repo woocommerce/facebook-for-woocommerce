@@ -3290,7 +3290,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/***
 	 * Gets the Facebook Upload ID.
 	 *
-	 * @since 1.10.3-dev.1
+	 * @since 1.11.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -3306,7 +3306,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook upload ID.
 		 *
-		 * @since 1.10.3-dev.1
+		 * @since 1.11.0-dev.1
 		 *
 		 * @param string $upload_id Facebook upload ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3675,7 +3675,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook upload ID.
 	 *
-	 * @since 1.10.3-dev.1
+	 * @since 1.11.0-dev.1
 	 *
 	 * @param string $value upload ID value
 	 */
