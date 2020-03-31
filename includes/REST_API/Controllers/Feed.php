@@ -97,4 +97,30 @@ class Feed extends \WP_REST_Controller {
 	}
 
 
+	/**
+	 * Gets the feed data URL.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_feed_url() {
+
+		return get_rest_url( null, REST_API::API_NAMESPACE . '/feed' );
+	}
+
+
+	/**
+	 * Gets the feed ping URL.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_feed_ping_url() {
+
+		return self::get_feed_url() . '/ping';
+	}
+
+
 }
