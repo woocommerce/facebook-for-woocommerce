@@ -10,6 +10,7 @@
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\REST_API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -742,11 +743,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>',
+			enabled: true,
+			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '',
-			feedPingUrl: '',
+			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
+			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		tokenExpired: '<?php echo $this->get_page_access_token() && ! $this->get_page_name(); ?>',
