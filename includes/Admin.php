@@ -49,6 +49,8 @@ class Admin {
 		// add admin notice to inform that producy sync has changed
 		add_action( 'admin_notices', [ $this, 'add_product_sync_delay_notice' ] );
 
+		add_action( 'wc_' . facebook_for_woocommerce()->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
+
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
 		add_action( 'manage_product_posts_custom_column', [ $this, 'add_product_list_table_columns_content' ] );
@@ -585,6 +587,26 @@ class Admin {
 			}
 
 			delete_transient( $transient_name );
+		}
+	}
+
+
+	/**
+	 * Handles dismissed notices.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $message_id the dismissed notice ID
+	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 */
+	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+
+		// undismiss product sync delay notice unless 'permantly' is included in the request
+		if ( ! SV_WC_Helper::get_requested_value( 'permanently' ) && 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay' === $message_id ) {
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->undismiss_notice( $message_id, $user_id );
 		}
 	}
 
