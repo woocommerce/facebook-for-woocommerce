@@ -263,4 +263,24 @@ jQuery( document ).ready( function( $ ) {
 		} );
 	}
 
+
+	// product list screen or individual product edit screen
+	if ( 'product' === pagenow || 'edit-product' === pagenow ) {
+
+		// handle the "Do not show this notice again" button
+		$( '.js-wc-plugin-framework-admin-notice' ).on( 'click', '.notice-dismiss-permanently', function() {
+
+			var $notice = $( this ).closest( '.js-wc-plugin-framework-admin-notice' );
+
+			$.get( ajaxurl, {
+				action:      'wc_plugin_framework_' + $( $notice ).data( 'plugin-id' ) + '_dismiss_notice',
+				messageid:   $( $notice ).data( 'message-id' ),
+				permanently: true
+			} );
+
+			$notice.fadeOut();
+		} );
+	}
+
+
 } );
