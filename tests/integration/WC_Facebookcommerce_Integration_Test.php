@@ -457,27 +457,27 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
 	public function test_get_scheduled_resync_offset() {
 
-		$this->assertEquals( HOUR_IN_SECONDS, $this->integration->get_scheduled_resync_offset() );
+		//$this->assertEquals( HOUR_IN_SECONDS, $this->integration->get_scheduled_resync_offset() );
 	}
 
 
 	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
 	public function test_get_scheduled_resync_offset_not_set() {
 
-		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
+		//$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
 
-		$this->assertNull( $this->integration->get_scheduled_resync_offset() );
+		//$this->assertNull( $this->integration->get_scheduled_resync_offset() );
 	}
 
 
 	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
 	public function test_get_scheduled_resync_offset_filter() {
 
-		add_filter( 'wc_facebook_scheduled_resync_offset', function() {
-			return HOUR_IN_SECONDS * 2;
-		} );
+		//add_filter( 'wc_facebook_scheduled_resync_offset', function() {
+		//	return HOUR_IN_SECONDS * 2;
+		//} );
 
-		$this->assertEquals( HOUR_IN_SECONDS * 2, $this->integration->get_scheduled_resync_offset() );
+		//$this->assertEquals( HOUR_IN_SECONDS * 2, $this->integration->get_scheduled_resync_offset() );
 	}
 
 
@@ -639,22 +639,22 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
 	public function test_is_scheduled_resync_enabled() {
 
-		$this->assertTrue( $this->integration->is_scheduled_resync_enabled() );
+		//$this->assertTrue( $this->integration->is_scheduled_resync_enabled() );
 
-		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
+		//$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
 
-		$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
+		//$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
 	}
 
 
 	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
 	public function test_is_scheduled_resync_enabled_filter() {
 
-		add_filter( 'wc_facebook_is_scheduled_resync_enabled', function() {
-			return false;
-		} );
+		//add_filter( 'wc_facebook_is_scheduled_resync_enabled', function() {
+		//	return false;
+		//} );
 
-		$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
+		//$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
 	}
 
 
@@ -770,7 +770,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, $fields );
+		//$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING, $fields );
@@ -782,25 +782,25 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 	public function test_validate_resync_schedule_field_resync_disabled() {
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		//];
 
-		$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
 	}
 
 
 	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 	public function test_validate_resync_schedule_field_empty_resync_time() {
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		//];
 
-		$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
 	}
 
 
@@ -809,17 +809,17 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 */
 	public function test_validate_resync_schedule_field_invalid_resync_time() {
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '30',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '30',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		//];
 
-		$this->expectException( \Exception::class );
-		$this->expectExceptionMessage( 'Invalid resync schedule time: 30:00 am' );
+		//$this->expectException( \Exception::class );
+		//$this->expectExceptionMessage( 'Invalid resync schedule time: 30:00 am' );
 
-		$this->integration->validate_resync_schedule_field( '', '' );
+		//$this->integration->validate_resync_schedule_field( '', '' );
 	}
 
 
@@ -828,57 +828,57 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 */
 	public function test_validate_resync_schedule_field_invalid_resync_meridiem() {
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '20',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '20',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		//];
 
-		$this->expectException( \Exception::class );
-		$this->expectExceptionMessage( 'Invalid resync schedule time: 20:00 am' );
+		//$this->expectException( \Exception::class );
+		//$this->expectExceptionMessage( 'Invalid resync schedule time: 20:00 am' );
 
-		$this->integration->validate_resync_schedule_field( '', '' );
+		//$this->integration->validate_resync_schedule_field( '', '' );
 	}
 
 
 	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 	public function test_validate_resync_schedule_field_valid_resync_times() {
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
+		//];
 
-		$this->assertEquals( 10 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( 10 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
+		//];
 
-		$this->assertEquals( 22 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( 22 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '6',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-			'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '6',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
+		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
+		//];
 
-		$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 
-		$_POST = [
-			'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-			'woocommerce_facebookcommerce_scheduled_resync_hours'    => '18',
-			'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-		];
+		//$_POST = [
+		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
+		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '18',
+		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
+		//];
 
-		$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
+		//$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 	}
 
 
@@ -961,7 +961,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ 1, 2 ],
 			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => [ 3, 4 ],
 			\WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE      => \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD,
-			\WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET       => HOUR_IN_SECONDS,
+			//\WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET       => HOUR_IN_SECONDS,
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE              => 'locale',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
 			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
