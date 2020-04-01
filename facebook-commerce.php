@@ -114,6 +114,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string|null the configured JS SDK version */
 	private $js_sdk_version;
 
+	/** @var bool|null whether the feed has been migrated from FBE 1 to FBE 1.5 */
+	private $feed_migrated;
+
 
 	/** Legacy properties *********************************************************************************************/
 
@@ -199,9 +202,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Load the settings.
 		$this->init_settings();
-
-		$this->feed_migrated = isset( $this->settings['feed_migrated'] )
-		&& $this->settings['feed_migrated'];
 
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 
@@ -760,7 +760,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedPrepared: {
 			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
 			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
-			feedMigrated: <?php echo $this->feed_migrated ? 'true' : 'false'; ?>,
+			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
@@ -3792,6 +3792,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Sets whether the feed has been migrated from FBE 1 to FBE 1.5.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @param bool $is_migrated whether the feed has been migrated from FBE 1 to FBE 1.5
+	 */
+	private function set_feed_migrated( $is_migrated ) {
+
+		$this->feed_migrated = (bool) $is_migrated;
+
+		update_option( 'wc_facebook_feed_migrated', wc_bool_to_string( $this->feed_migrated ) );
+	}
+
+
 	/** Conditional methods *******************************************************************************************/
 
 
@@ -3910,6 +3925,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+	}
+
+
+	/***
+	 * Determines if the feed has been migrated from FBE 1 to FBE 1.5
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_feed_migrated() {
+
+		if ( ! is_bool( $this->feed_migrated ) ) {
+
+			$value = get_option( 'wc_facebook_feed_migrated', 'no' );
+
+			$this->feed_migrated = wc_string_to_bool( $value );
+		}
+
+		return $this->feed_migrated;
 	}
 
 
