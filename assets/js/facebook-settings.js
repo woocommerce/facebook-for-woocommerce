@@ -472,8 +472,17 @@ function setPixel(message) {
 	);
 }
 
-function genFeed(message) {
-	// no-op
+function genFeed( message ) {
+
+	console.log( 'generating feed' );
+
+	$.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl )
+		.done( function( json ) {
+			window.sendToFacebook( 'ack feed', message.params );
+		} )
+		.fail( function( xhr, ajaxOptions, thronwError ) {
+			window.sendToFacebook( 'fail feed', message.params );
+		} );
 }
 
 function setAccessTokenAndPageId(message) {
@@ -549,6 +558,24 @@ function setMsgerChatSetup( data ) {
 	}
 }
 
+function setFeedMigrated(message) {
+
+	if ( ! message.params.hasOwnProperty( 'feed_migrated' ) )  {
+
+		console.error(
+			'Facebook Extension Error: feed migrated not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set feed migrated', message.params );
+		return;
+	}
+
+	settings.feed_migrated = message.params.feed_migrated;
+	window.sendToFacebook( 'ack set feed migrated', message.params );
+	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
+}
+
 function iFrameListener(event) {
 	// Fix for web.facebook.com
 	const origin = event.origin || event.originalEvent.origin;
@@ -588,6 +615,9 @@ function iFrameListener(event) {
 		break;
 		case 'set pixel':
 			setPixel( event.data );
+		break;
+		case 'set feed migrated':
+			setFeedMigrated( event.data );
 		break;
 		case 'gen feed':
 			genFeed();
