@@ -20,6 +20,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	class WC_Facebook_Product_Feed {
 
 
+		/** @var string product catalog feed file directory inside the uploads folder */
+		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
+
 		/** @var string product catalog feed file name */
 		const FILE_NAME = 'product_catalog.csv';
 
@@ -40,6 +43,21 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->facebook_catalog_id = $facebook_catalog_id;
 			$this->fbgraph             = $fbgraph;
 			$this->feed_id             = $feed_id;
+		}
+
+
+		/**
+		 * Gets the product catalog feed file directory.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return string
+		 */
+		public function get_file_directory() {
+
+			$uploads_directory = wp_upload_dir( null, false );
+
+			return trailingslashit( $uploads_directory['basedir'] ) . self::UPLOADS_DIRECTORY;
 		}
 
 
