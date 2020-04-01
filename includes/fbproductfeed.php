@@ -39,10 +39,15 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		private $has_default_product_count = 0;
 		private $no_default_product_count  = 0;
 
-		public function __construct(
-		$facebook_catalog_id,
-		$fbgraph,
-		$feed_id = null ) {
+		/**
+		 * WC_Facebook_Product_Feed constructor.
+		 *
+		 * @param string|null $facebook_catalog_id Facebook catalog ID, if any
+		 * @param \WC_Facebookcommerce_Graph_API|null $fbgraph Facebook Graph API instance
+		 * @param string|null $feed_id Facebook feed ID, if any
+		 */
+		public function __construct( $facebook_catalog_id = null, $fbgraph = null, $feed_id = null ) {
+
 			$this->facebook_catalog_id = $facebook_catalog_id;
 			$this->fbgraph             = $fbgraph;
 			$this->feed_id             = $feed_id;
