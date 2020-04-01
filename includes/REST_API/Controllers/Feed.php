@@ -72,6 +72,8 @@ class Feed extends \WP_REST_Controller {
 	 *
 	 * @since 1.11.0-dev.1
 	 *
+	 * @internal
+	 *	 
 	 * @param \WP_REST_Request $request
 	 * @return \WP_Error|\WP_REST_Response
 	 */
