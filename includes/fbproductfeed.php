@@ -57,6 +57,24 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Schedules a new feed generation.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		public function schedule_feed_generation() {
+
+			WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
+
+			// if async priority actions are supported (AS 3.0+)
+			if ( function_exists( 'as_enqueue_async_action' ) ) {
+				as_enqueue_async_action( 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' );
+			} else {
+				as_schedule_single_action( time(), 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' );
+			}
+		}
+
+
+		/**
 		 * Generates the product catalog feed.
 		 *
 		 * This replaces any previously generated feed file.

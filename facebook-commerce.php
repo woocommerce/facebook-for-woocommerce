@@ -4447,4 +4447,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Handles the schedule feed generation action, triggered by the REST API.
+	 *
+	 * @since 1.11.0-dev.1
+	 */
+	public function handle_generate_product_catalog_feed() {
+
+		$feed_handler = new WC_Facebook_Product_Feed();
+
+		try {
+
+			$feed_handler->generate_feed();
+
+		} catch ( \Exception $exception ) {
+
+			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
+		}
+	}
+
+
 }
