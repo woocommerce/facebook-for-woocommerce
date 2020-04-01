@@ -558,13 +558,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * TODO remove this deprecated method by version 2.0.0 or by March 2020 {FN 2020-03-20}
 		 *
 		 * @internal
-		 * @deprecated since 1.10.3-dev.1
+		 * @deprecated since 1.11.0-dev.1
 		 *
 		 * @param int $order_id order identifier
 		 */
 		public function inject_gateway_purchase_event( $order_id ) {
 
-			wc_deprecated_function( __METHOD__, '1.10.3-dev.1', __CLASS__ . '::inject_purchase_event()' );
+			wc_deprecated_function( __METHOD__, '1.11.0-dev.1', __CLASS__ . '::inject_purchase_event()' );
 
 			$this->inject_purchase_event( $order_id );
 		}

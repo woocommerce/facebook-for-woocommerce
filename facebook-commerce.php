@@ -354,6 +354,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1    // Args passed to on_quick_and_bulk_edit_save ('product')
 				);
 
+				add_action( 'trashed_post', [ $this, 'on_product_trash' ] );
+
 				add_action(
 					'before_delete_post',
 					array( $this, 'on_product_delete' ),
@@ -633,6 +635,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 
 			?>
+				<?php /* ?>
 				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
 				type="checkbox"
@@ -640,6 +643,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<?php echo checked( ! $woo_product->woo_product instanceof \WC_Product || Products::is_product_visible( $woo_product->woo_product ) ); ?>/>
 
 				<p/>
+				<?php */ ?>
 				<input name="is_product_page" type="hidden" value="1"/>
 
 				<p/>
@@ -812,7 +816,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
-		$is_visible   = ! empty( $_POST['fb_visibility'] );
+		$is_visible   = ! empty( $_POST[ Products::VISIBILITY_META_KEY ] );
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
@@ -828,7 +832,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		}
 
-		$this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
+		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
+		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
 		if ( $sync_enabled ) {
 
@@ -851,6 +856,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				break;
 			}
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -883,6 +890,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+
+	/**
+	 * Enables product sync delay notice when a post is moved to the trash.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $post_id the post ID
+	 */
+	public function on_product_trash( $post_id ) {
+
+		$product = wc_get_product( $post_id );
+
+		if ( $product instanceof \WC_Product ) {
+			$this->enable_product_sync_delay_admin_notice();
+		}
 	}
 
 
@@ -931,6 +957,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$pg_result = $this->fbgraph->delete_product_group( $fb_product_group_id );
 			WC_Facebookcommerce_Utils::log( $pg_result );
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -2655,6 +2683,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
 		</h3>
 		<?php if ( empty( $this->get_page_name() ) ) : ?>
+		<?php
+/**
 			<div id="connection-message-invalid">
 				<p style="color: #DC3232;">
 					<?php esc_html_e( 'Your connection has expired.', 'facebook-for-woocommerce' ); ?>
@@ -2671,6 +2701,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					</strong>
 				</p>
 			</div>
+ */
+		?>
 		<?php endif; ?>
 		<table class="form-table">
 		<?php
@@ -2693,12 +2725,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
 
 		$key       = $this->get_field_key( $key );
-		$page_name = $this->get_page_name();
-		$page_url  = $this->get_page_url();
+		// $page_name = $this->get_page_name();
+		// $page_url  = $this->get_page_url();
 
 		ob_start();
 
-		?>
+		/*?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
 				<?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?>
@@ -2729,16 +2761,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 					&mdash;
 
-				<?php endif; ?>
+				<?php endif;*/ ?>
 				<input
 					type="hidden"
 					name="<?php echo esc_attr( $key ); ?>"
 					id="<?php echo esc_attr( $key ); ?>"
 					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
 				/>
+				<?php /*
 			</td>
 		</tr>
-		<?php
+		<?php */
 
 		return ob_get_clean();
 	}
@@ -3314,7 +3347,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/***
 	 * Gets the Facebook Upload ID.
 	 *
-	 * @since 1.10.3-dev.1
+	 * @since 1.11.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -3330,7 +3363,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook upload ID.
 		 *
-		 * @since 1.10.3-dev.1
+		 * @since 1.11.0-dev.1
 		 *
 		 * @param string $upload_id Facebook upload ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3699,7 +3732,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook upload ID.
 	 *
-	 * @since 1.10.3-dev.1
+	 * @since 1.11.0-dev.1
 	 *
 	 * @param string $value upload ID value
 	 */
@@ -3769,7 +3802,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return $this->get_page_access_token() && $this->get_facebook_page_id();
+		return (bool) $this->get_facebook_page_id();
 	}
 
 
@@ -3971,7 +4004,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		if ( $this->is_configured() ) {
+		// TODO: replace with `if ( $this->is_configured() ) {` when access tokens become available again {WV 2020-03-31}
+		if ( $this->get_facebook_page_id() && $this->get_page_access_token() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		} else {
 			$page_name = '';
@@ -4485,6 +4519,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
 		}
+	}
+
+	/**
+	 * Enables product sync delay admin notice.
+	 *
+	 * @since x.y.z
+	 */
+	private function enable_product_sync_delay_admin_notice() {
+
+		set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id(), true, MINUTE_IN_SECONDS );
 	}
 
 

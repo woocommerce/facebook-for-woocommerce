@@ -38,7 +38,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		$this->upgrade_versions = [
 			'1.10.0',
 			'1.10.1',
-			'1.10.3',
+			'1.11.0',
 		];
 	}
 
@@ -202,11 +202,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 
 	/**
-	 * Upgrades to version 1.10.3.
+	 * Upgrades to version 1.11.0-dev.1.
 	 *
-	 * @since 1.10.3-dev.1
+	 * @since 1.11.0-dev.1
 	 */
-	protected function upgrade_to_1_10_3() {
+	protected function upgrade_to_1_11_0() {
 
 		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
 
