@@ -247,34 +247,69 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			return true;
 		}
 
-		public function generate_productfeed_file() {
-			$this->log_feed_progress( 'Generating product feed file' );
+
+		/**
+		 * Gets the product IDs that will be included in the feed file.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return int[]
+		 */
+		private function get_product_ids() {
+
 			$post_ids           = $this->get_product_wpid();
 			$all_parent_product = array_map(
 				function( $post_id ) {
-					if ( get_post_type( $post_id ) == 'product_variation' ) {
+					if ( get_post_type( $post_id ) === 'product_variation' ) {
 						return wp_get_post_parent_id( $post_id );
 					}
 				},
 				$post_ids
 			);
+
 			$all_parent_product = array_filter( array_unique( $all_parent_product ) );
-			$product_ids        = array_diff( $post_ids, $all_parent_product );
-			return $this->write_product_feed_file( $product_ids );
+
+			return array_diff( $post_ids, $all_parent_product );
 		}
 
-		public function write_product_feed_file( $wp_ids ) {
+
+		/**
+		 * Generates the product catalog feed file.
+		 *
+		 * @return bool
+		 */
+		public function generate_productfeed_file() {
+
+			return $this->write_product_feed_file( $this->get_product_ids() );
+		}
+
+
+		/**
+		 * Writes the product catalog feed file with data for the given product IDs.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @param int[] $wp_ids product IDs
+		 * @param bool $is_dry_run whether this is a dry run or the file should be written
+		 * @return bool
+		 */
+		public function write_product_feed_file( $wp_ids, $is_dry_run = false ) {
 
 			try {
 
-				$feed_file =
-				fopen(
-					dirname( __FILE__ ) . DIRECTORY_SEPARATOR .
-					( self::FACEBOOK_CATALOG_FEED_FILENAME ),
-					'w'
-				);
 
-				fwrite( $feed_file, $this->get_product_feed_header_row() );
+				if ( ! $is_dry_run ) {
+
+					$file_path = $this->get_file_path();
+
+					$feed_file = @fopen( $this->get_file_path(), 'w' );
+
+					if ( false === $feed_file || ! is_writable( $file_path ) ) {
+						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
+					}
+
+					fwrite( $feed_file, $this->get_product_feed_header_row() );
+				}
 
 				$product_group_attribute_variants = array();
 
@@ -299,15 +334,28 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 						$woo_product,
 						$product_group_attribute_variants
 					);
-					fwrite( $feed_file, $product_data_as_feed_row );
+
+					if ( ! empty( $feed_file ) ) {
+						fwrite( $feed_file, $product_data_as_feed_row );
+					}
 				}
-				fclose( $feed_file );
+
 				wp_reset_postdata();
-				return true;
+
+				$written = true;
+
 			} catch ( Exception $e ) {
+
 				WC_Facebookcommerce_Utils::log( json_encode( $e->getMessage() ) );
-				return false;
+
+				$written = false;
 			}
+
+			if ( ! empty( $feed_file ) ) {
+				fclose( $feed_file );
+			}
+
+			return $written;
 		}
 
 		public function get_product_feed_header_row() {
