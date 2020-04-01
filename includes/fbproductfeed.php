@@ -407,7 +407,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$post_ids           = $this->get_product_wpid();
 			$all_parent_product = array_map(
 				function( $post_id ) {
-					if ( get_post_type( $post_id ) === 'product_variation' ) {
+					if ( 'product_variation' === get_post_type( $post_id ) ) {
 						return wp_get_post_parent_id( $post_id );
 					}
 				},
