@@ -103,7 +103,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			} catch ( \Exception $exception ) {
 
-				WC_Facebookcommerce_Utils::log( $exception->getMessage() );
+				\WC_Facebookcommerce_Utils::log( $exception->getMessage() );
 			}
 		}
 
