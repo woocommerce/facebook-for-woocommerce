@@ -86,7 +86,7 @@ class Feed extends \WP_REST_Controller {
 		try {
 
 			// try regenerating the file if it doesn't already exist
-			if ( ! file_exists( $file_path ) ) {
+			if ( ! empty( $request['regenerate'] ) || ! file_exists( $file_path ) ) {
 				$feed_handler->generate_feed();
 			}
 

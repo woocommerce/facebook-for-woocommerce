@@ -476,7 +476,7 @@ function genFeed( message ) {
 
 	console.log( 'generating feed' );
 
-	$.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl )
+	$.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
 		.done( function( json ) {
 			window.sendToFacebook( 'ack feed', message.params );
 		} )
