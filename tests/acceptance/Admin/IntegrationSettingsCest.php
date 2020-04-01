@@ -85,8 +85,8 @@ class IntegrationSettingsCest {
 
 		$I->see( 'Manage connection', 'a.button' );
 
-		$I->see( 'Facebook page', 'th.titledesc' );
-		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
+		// $I->see( 'Facebook page', 'th.titledesc' );
+		// // TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
 
