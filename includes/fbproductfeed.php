@@ -238,7 +238,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			 *
 			 * @param int $sample_size number of products to use when estimating the feed file generation time
 			 */
-			$sample_size = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_buffer_time', 200 );
+			$sample_size = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_estimate_sample_size', 200 );
 
 			return max( $sample_size, 100 );
 		}
