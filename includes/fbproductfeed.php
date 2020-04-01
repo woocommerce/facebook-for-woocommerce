@@ -20,6 +20,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	class WC_Facebook_Product_Feed {
 
 
+		/** @var string transient name for storing the average feed generation time */
+		const TRANSIENT_AVERAGE_FEED_GENERATION_TIME = 'wc_facebook_average_feed_generation_time';
+
 		/** @var string product catalog feed file directory inside the uploads folder */
 		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
 
@@ -43,6 +46,32 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->facebook_catalog_id = $facebook_catalog_id;
 			$this->fbgraph             = $fbgraph;
 			$this->feed_id             = $feed_id;
+		}
+
+
+		/**
+		 * Sets the average feed generation time.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @param float $time generation time
+		 */
+		private function set_average_feed_generation_time( $time ) {
+
+			set_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME, $time );
+		}
+
+
+		/**
+		 * Gets the average feed generation time.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return float
+		 */
+		private function get_average_feed_generation_time() {
+
+			return get_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME );
 		}
 
 
