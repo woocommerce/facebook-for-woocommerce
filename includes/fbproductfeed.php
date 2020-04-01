@@ -63,7 +63,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		public function schedule_feed_generation() {
 
-			WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
+			\WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
 
 			// if async priority actions are supported (AS 3.0+)
 			if ( function_exists( 'as_enqueue_async_action' ) ) {
