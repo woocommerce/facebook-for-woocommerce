@@ -87,10 +87,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			try {
 
-				if ( ! wp_mkdir_p( $this->get_file_directory() ) ) {
-					throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
-				}
-
 				$start_time = microtime( true );
 
 				$this->generate_productfeed_file();
@@ -325,19 +321,20 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$start_time = microtime( true );
 			$this->log_feed_progress( 'Sync all products using feed' );
 
-			if ( ! is_writable( dirname( __FILE__ ) ) ) {
+			try {
+
+				if ( ! $this->generate_productfeed_file() ) {
+					throw new Framework\SV_WC_Plugin_Exception( 'Feed file not generated' );
+				}
+
+			} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
 				$this->log_feed_progress(
-					'Failure - Sync all products using feed, folder is not writable'
+					'Failure - Sync all products using feed. ' . $exception->getMessage()
 				);
 				return false;
 			}
 
-			if ( ! $this->generate_productfeed_file() ) {
-				$this->log_feed_progress(
-					'Failure - Sync all products using feed, feed file not generated'
-				);
-				return false;
-			}
 			$this->log_feed_progress( 'Sync all products using feed, feed file generated' );
 
 			if ( ! $this->feed_id ) {
@@ -419,8 +416,13 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * Generates the product catalog feed file.
 		 *
 		 * @return bool
+		 * @throws Framework\SV_WC_Plugin_Exception
 		 */
 		public function generate_productfeed_file() {
+
+			if ( ! wp_mkdir_p( $this->get_file_directory() ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
+			}
 
 			return $this->write_product_feed_file( $this->get_product_ids() );
 		}
