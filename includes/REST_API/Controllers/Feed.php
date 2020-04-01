@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\REST_API\Controllers;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\REST_API;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * The feed controller.
@@ -79,6 +80,22 @@ class Feed extends \WP_REST_Controller {
 		$feed_handler = new \WC_Facebook_Product_Feed();
 
 		$file_path = $feed_handler->get_file_path();
+
+		try {
+
+			// try regenerating the file if it doesn't already exist
+			if ( ! file_exists( $file_path ) ) {
+				$feed_handler->generate_feed();
+			}
+
+			if ( ! is_readable( $file_path ) ) {
+				throw new SV_WC_Plugin_Exception( 'File is not readable', 400 );
+			}
+
+		} catch ( \Exception $exception ) {
+
+			return new \WP_Error( 'wc_facebook_could_not_get_feed_file', sprintf( 'Could not get feed file. %s', $exception->getMessage() ), [ 'status' => $exception->getCode() ] );
+		}
 
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="' . basename($file_path ) . '"' );
