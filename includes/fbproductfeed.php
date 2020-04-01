@@ -63,6 +63,74 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Gets the estimated feed generation time.
+		 *
+		 * Performs a dry run and returns either the dry run time or last average estimated time, whichever is higher.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return int
+		 */
+		public function get_estimated_feed_generation_time() {
+
+			$estimate = $this->estimate_generation_time();
+			$average  = $this->get_average_feed_generation_time();
+
+			return (int) max( $estimate, $average );
+		}
+
+
+		/**
+		 * Estimates the feed generation time.
+		 *
+		 * Runs a dry-run generation of a subset of products, then extrapolates that out to the full catalog size. Also
+		 * adds a bit of buffer time.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return float
+		 */
+		private function estimate_generation_time() {
+
+			$product_ids    = $this->get_product_ids();
+			$total_products = count( $product_ids );
+			$sample_size    = $this->get_feed_generation_estimate_sample_size();
+			$buffer_time    = $this->get_feed_generation_buffer_time();
+
+			if ( $total_products > 0 ) {
+
+				if ( $total_products < $sample_size ) {
+
+					$sample_size = $total_products;
+
+				} else {
+
+					$product_ids = array_slice( $product_ids, 0, $sample_size );
+				}
+
+				$start_time = microtime( true );
+
+				$this->write_product_feed_file( $product_ids, true );
+
+				$end_time = microtime( true );
+
+				$time_spent = $end_time - $start_time;
+
+				// estimated Time = 150% of Linear extrapolation of the time to generate n products +  buffer time.
+				$time_estimate = $time_spent * $total_products / $sample_size * 1.5 + $buffer_time;
+
+			} else {
+
+				$time_estimate = $buffer_time;
+			}
+
+			WC_Facebookcommerce_Utils::log( 'Feed Generation Time Estimate: '. $time_estimate );
+
+			return $time_estimate;
+		}
+
+
+		/**
 		 * Gets the average feed generation time.
 		 *
 		 * @since 1.11.0-dev.1
