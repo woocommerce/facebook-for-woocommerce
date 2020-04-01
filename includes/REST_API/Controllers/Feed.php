@@ -121,6 +121,8 @@ class Feed extends \WP_REST_Controller {
 
 		$feed_handler = new \WC_Facebook_Product_Feed();
 
+		$feed_handler->schedule_feed_generation();
+
 		return rest_ensure_response( $feed_handler->get_estimated_feed_generation_time() );
 	}
 
