@@ -350,6 +350,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1    // Args passed to on_quick_and_bulk_edit_save ('product')
 				);
 
+				add_action( 'trashed_post', [ $this, 'on_product_trash' ] );
+
 				add_action(
 					'before_delete_post',
 					array( $this, 'on_product_delete' ),
@@ -845,6 +847,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				break;
 			}
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -877,6 +881,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+
+	/**
+	 * Enables product sync delay notice when a post is moved to the trash.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param int $post_id the post ID
+	 */
+	public function on_product_trash( $post_id ) {
+
+		$product = wc_get_product( $post_id );
+
+		if ( $product instanceof \WC_Product ) {
+			$this->enable_product_sync_delay_admin_notice();
+		}
 	}
 
 
@@ -925,6 +948,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$pg_result = $this->fbgraph->delete_product_group( $fb_product_group_id );
 			WC_Facebookcommerce_Utils::log( $pg_result );
 		}
+
+		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -4449,6 +4474,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( null !== $resync_offset && $this->is_product_sync_enabled() && ! $this->is_resync_scheduled() ) {
 			$this->schedule_resync( $resync_offset );
 		}
+	}
+
+
+	/**
+	 * Enables product sync delay admin notice.
+	 *
+	 * @since x.y.z
+	 */
+	private function enable_product_sync_delay_admin_notice() {
+
+		set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id(), true, MINUTE_IN_SECONDS );
 	}
 
 

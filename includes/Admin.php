@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -44,8 +46,13 @@ class Admin {
 
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
+
+		// add admin notice to inform that product sync has changed
+		add_action( 'admin_notices', [ $this, 'add_product_sync_delay_notice' ] );
 		// add admin notice to inform that the catalog visibility setting was removed
 		add_action( 'admin_notices', [ $this, 'add_catalog_visibility_settings_removed_notice' ] );
+		// handle dismissal of special notices
+		add_action( 'wc_' . facebook_for_woocommerce()->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -547,6 +554,63 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	/**
+	 * Prints a notice on products page to inform users about changes in product sync.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 */
+	public function add_product_sync_delay_notice() {
+		global $current_screen;
+
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id();
+
+		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) && get_transient( $transient_name ) ) {
+
+			if ( isset( $_GET['message'] ) || isset( $_GET['trashed'] ) || isset( $_GET['deleted'] ) ) {
+
+				facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
+					sprintf(
+						/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
+						esc_html__( '%1$sHeads up!%2$s Product sync is temporarily changed as we migrate to a more secure experience. An automated sync from Facebook will run within the hour to update the catalog with any changes you\'ve made. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
+						'<strong>',
+						'</strong>',
+						'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security" target="_blank">',
+						'</a>'
+					)
+					. '</p><p>' // close notice paragraph and open a new one for the button
+					. '<button class="button notice-dismiss-permanently" type="button">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</button>',
+					'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay',
+					[ 'notice_class' => 'notice-info' ]
+				);
+			}
+
+			delete_transient( $transient_name );
+		}
+	}
+
+
+	/**
+	 * Handles dismissed notices.
+	 *
+	 * @internal
+	 *
+	 * @since x.y.z
+	 *
+	 * @param string $message_id the dismissed notice ID
+	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 */
+	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+
+		// undismiss product sync delay notice unless 'permanently' is included in the request
+		if ( ! SV_WC_Helper::get_requested_value( 'permanently' ) && 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay' === $message_id ) {
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->undismiss_notice( $message_id, $user_id );
+		}
 	}
 
 
