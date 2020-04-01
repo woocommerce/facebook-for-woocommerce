@@ -200,6 +200,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Load the settings.
 		$this->init_settings();
 
+		$this->feed_migrated = isset( $this->settings['feed_migrated'] )
+		&& $this->settings['feed_migrated'];
+
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 
 		// if there is a pixel option saved and no integration setting saved, inherit the pixel option
@@ -753,6 +756,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		feedPrepared: {
 			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
 			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
+			feedMigrated: <?php echo $this->feed_migrated ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 		tokenExpired: '<?php echo $this->get_page_access_token() && ! $this->get_page_name(); ?>',
