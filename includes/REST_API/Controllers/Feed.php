@@ -55,7 +55,7 @@ class Feed extends \WP_REST_Controller {
 			]
 		);
 
-		// /feed/ping for Facebook to hit and get the estimated generation time before calling /feed
+		/** @see Feed::ping() /feed/ping for Facebook to hit and get the estimated generation time before calling /feed */
 		register_rest_route(
 			$this->namespace, "/{$this->rest_base}/ping", [
 				[
