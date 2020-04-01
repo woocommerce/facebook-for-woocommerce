@@ -348,7 +348,7 @@ function save_settings_and_sync(message) {
 					window.sendToFacebook( 'ack set pixel', message.params );
 					window.sendToFacebook( 'ack set page access token', message.params );
 					window.sendToFacebook( 'ack set merchant settings', message.params );
-					sync_all_products( true );
+					// sync_all_products( true ); TODO: reinstate when switching back to FBE 2
 				} else {
 					window.sendToFacebook( 'fail save_settings', response );
 					console.log( 'Fail response on save_settings_and_sync' );
@@ -472,8 +472,17 @@ function setPixel(message) {
 	);
 }
 
-function genFeed(message) {
-	// no-op
+function genFeed( message ) {
+
+	console.log( 'generating feed' );
+
+	$.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
+		.done( function( json ) {
+			window.sendToFacebook( 'ack feed', message.params );
+		} )
+		.fail( function( xhr, ajaxOptions, thronwError ) {
+			window.sendToFacebook( 'fail feed', message.params );
+		} );
 }
 
 function setAccessTokenAndPageId(message) {
@@ -549,6 +558,32 @@ function setMsgerChatSetup( data ) {
 	}
 }
 
+function setFeedMigrated(message) {
+
+	if ( ! message.params.hasOwnProperty( 'feed_migrated' ) )  {
+
+		console.error(
+			'Facebook Extension Error: feed migrated not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set feed migrated', message.params );
+		return;
+	}
+
+	settings.feed_migrated = message.params.feed_migrated;
+	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
+
+	save_settings_for_plugin(
+		function( response ) {
+			window.sendToFacebook( 'ack set feed migrated', message );
+		},
+		function( response ) {
+			window.sendToFacebook( 'fail set feed migrated', message );
+		}
+	);
+}
+
 function iFrameListener(event) {
 	// Fix for web.facebook.com
 	const origin = event.origin || event.originalEvent.origin;
@@ -588,6 +623,9 @@ function iFrameListener(event) {
 		break;
 		case 'set pixel':
 			setPixel( event.data );
+		break;
+		case 'set feed migrated':
+			setFeedMigrated( event.data );
 		break;
 		case 'gen feed':
 			genFeed();
@@ -956,17 +994,3 @@ function syncShortDescription() {
 	}
 	);
 }
-
-
-jQuery( document ).ready( function( $ ) {
-
-	// check background processor status in case products are being synced in the background when the page loads
-	check_background_processor_status();
-
-	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
-
-		event.preventDefault();
-
-		sync_confirm();
-	} );
-} );

@@ -10,6 +10,7 @@
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\REST_API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -112,6 +113,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/** @var string|null the configured JS SDK version */
 	private $js_sdk_version;
+
+	/** @var bool|null whether the feed has been migrated from FBE 1 to FBE 1.5 */
+	private $feed_migrated;
 
 
 	/** Legacy properties *********************************************************************************************/
@@ -414,6 +418,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 		// Must be outside of admin for cron to schedule correctly.
 		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
+
+		// handle the special background feed generation action
+		add_action( 'wc_facebook_generate_product_catalog_feed', [ $this, 'handle_generate_product_catalog_feed' ] );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
@@ -746,14 +753,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		feed: {
 			totalVisibleProducts: '<?php echo esc_js( $this->get_product_count() ); ?>',
-			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>'
+			hasClientSideFeedUpload: '<?php echo esc_js( ! ! $this->get_feed_id() ); ?>',
+			enabled: true,
+			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '',
-			feedPingUrl: '',
+			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
+			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
+			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
-		/**tokenExpired: '<?php echo $this->get_page_access_token() && ! $this->get_page_name(); ?>',*/
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
 		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
 		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
@@ -1487,6 +1496,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
 		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
 
+		// listen for a feed migrated event for FBE 1.5
+		if ( ! empty( $_REQUEST['feed_migrated'] ) ) {
+			$this->set_feed_migrated( wc_bool_to_string( $_REQUEST['feed_migrated'] ) );
+		}
+
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
 		echo 'settings_saved';
 
@@ -1570,11 +1584,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Checks the feed upload status.
+	 * Checks the feed upload status (FBE v1.0).
 	 *
 	 * @internal
 	 */
 	public function ajax_check_feed_upload_status() {
+		$response = array(
+			'connected' => true,
+			'status'    => 'complete',
+		);
+		printf( json_encode( $response ) );
+		wp_die();
+	}
+
+
+	/**
+	 * Check Feed Upload Status (FBE v2.0)
+	 * TODO: When migrating to FBE v2.0, remove above function and rename
+	 * below function to ajax_check_feed_upload_status()
+	 **/
+	public function ajax_check_feed_upload_status_v2() {
 
 		\WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'check feed upload status', true );
 
@@ -3768,6 +3797,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
+	/**
+	 * Sets whether the feed has been migrated from FBE 1 to FBE 1.5.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @param bool $is_migrated whether the feed has been migrated from FBE 1 to FBE 1.5
+	 */
+	private function set_feed_migrated( $is_migrated ) {
+
+		$this->feed_migrated = (bool) $is_migrated;
+
+		update_option( 'wc_facebook_feed_migrated', wc_bool_to_string( $this->feed_migrated ) );
+	}
+
+
 	/** Conditional methods *******************************************************************************************/
 
 
@@ -3886,6 +3930,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+	}
+
+
+	/***
+	 * Determines if the feed has been migrated from FBE 1 to FBE 1.5
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_feed_migrated() {
+
+		if ( ! is_bool( $this->feed_migrated ) ) {
+
+			$value = get_option( 'wc_facebook_feed_migrated', 'no' );
+
+			$this->feed_migrated = wc_string_to_bool( $value );
+		}
+
+		return $this->feed_migrated;
 	}
 
 
@@ -4479,6 +4543,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
+
+	/**
+	 * Handles the schedule feed generation action, triggered by the REST API.
+	 *
+	 * @since 1.11.0-dev.1
+	 */
+	public function handle_generate_product_catalog_feed() {
+
+		$feed_handler = new WC_Facebook_Product_Feed();
+
+		try {
+
+			$feed_handler->generate_feed();
+
+		} catch ( \Exception $exception ) {
+
+			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
+		}
+	}
 
 	/**
 	 * Enables product sync delay admin notice.
