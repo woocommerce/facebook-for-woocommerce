@@ -759,7 +759,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			feedMigrated: <?php echo $this->feed_migrated ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
-		tokenExpired: '<?php echo $this->get_page_access_token() && ! $this->get_page_name(); ?>',
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
 		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
 		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
