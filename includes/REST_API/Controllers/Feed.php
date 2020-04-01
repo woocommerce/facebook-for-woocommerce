@@ -117,6 +117,8 @@ class Feed extends \WP_REST_Controller {
 	 *
 	 * @since 1.11.0-dev.1
 	 *
+	 * @internal
+	 *	 
 	 * @return \WP_Error|\WP_REST_Response
 	 */
 	public function ping() {
