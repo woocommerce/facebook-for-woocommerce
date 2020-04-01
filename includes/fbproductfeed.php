@@ -83,7 +83,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		public function generate_feed() {
 
-			WC_Facebookcommerce_Utils::log( 'Generating a fresh product feed file' );
+			\WC_Facebookcommerce_Utils::log( 'Generating a fresh product feed file' );
 
 			try {
 
