@@ -1496,6 +1496,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
 		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
 
+		// listen for a feed migrated event for FBE 1.5
+		if ( ! empty( $_REQUEST['feed_migrated'] ) ) {
+			$this->set_feed_migrated( wc_bool_to_string( $_REQUEST['feed_migrated'] ) );
+		}
+
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
 		echo 'settings_saved';
 

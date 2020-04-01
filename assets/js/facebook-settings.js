@@ -572,8 +572,16 @@ function setFeedMigrated(message) {
 	}
 
 	settings.feed_migrated = message.params.feed_migrated;
-	window.sendToFacebook( 'ack set feed migrated', message.params );
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
+
+	save_settings_for_plugin(
+		function( response ) {
+			window.sendToFacebook( 'ack set feed migrated', message );
+		},
+		function( response ) {
+			window.sendToFacebook( 'fail set feed migrated', message );
+		}
+	);
 }
 
 function iFrameListener(event) {
