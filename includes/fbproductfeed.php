@@ -66,7 +66,13 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 					throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
 				}
 
+				$start_time = microtime( true );
+
 				$this->generate_productfeed_file();
+
+				$generation_time = microtime( true ) - $start_time;
+
+				$this->set_feed_generation_time_with_decay( $generation_time );
 
 				WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
 
@@ -74,6 +80,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				WC_Facebookcommerce_Utils::log( $exception->getMessage() );
 			}
+		}
+
+
+		/**
+		 * Sets the average feed generation time with a 25% decay.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @param float $generation_time last generation time
+		 */
+		private function set_feed_generation_time_with_decay( $generation_time ) {
+
+			// update feed generation time estimate w/ 25% decay.
+			$existing_generation_time = $this->get_average_feed_generation_time();
+
+			if ( $generation_time < $existing_generation_time ) {
+				$generation_time = $generation_time * 0.25 + $existing_generation_time * 0.75;
+			}
+
+			$this->set_average_feed_generation_time( $generation_time );
 		}
 
 
