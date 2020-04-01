@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 	/**
