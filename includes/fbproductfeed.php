@@ -47,6 +47,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Gets the product catalog feed file path.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return string
+		 */
+		public function get_file_path() {
+
+			/**
+			 * Filters the product catalog feed file path.
+			 *
+			 * @since 1.11.0-dev.1
+			 *
+			 * @param string $file_path the file path
+			 */
+			return apply_filters( 'wc_facebook_product_catalog_feed_file_path', "{$this->get_file_directory()}/{$this->get_file_name()}" );
+		}
+
+
+		/**
 		 * Gets the product catalog feed file directory.
 		 *
 		 * @since 1.11.0-dev.1
