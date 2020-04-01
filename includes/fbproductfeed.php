@@ -50,6 +50,34 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Generates the product catalog feed.
+		 *
+		 * This replaces any previously generated feed file.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		public function generate_feed() {
+
+			WC_Facebookcommerce_Utils::log( 'Generating a fresh product feed file' );
+
+			try {
+
+				if ( ! wp_mkdir_p( $this->get_file_directory() ) ) {
+					throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
+				}
+
+				$this->generate_productfeed_file();
+
+				WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
+
+			} catch ( \Exception $exception ) {
+
+				WC_Facebookcommerce_Utils::log( $exception->getMessage() );
+			}
+		}
+
+
+		/**
 		 * Sets the average feed generation time.
 		 *
 		 * @since 1.11.0-dev.1
