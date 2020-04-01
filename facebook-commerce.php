@@ -3750,7 +3750,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return $this->get_facebook_page_id();
+		return (bool) $this->get_facebook_page_id();
 	}
 
 
