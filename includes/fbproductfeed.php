@@ -368,11 +368,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				'Sync all products using feed, facebook upload created'
 			);
 
-			unlink(
-				dirname( __FILE__ ) .
-				DIRECTORY_SEPARATOR . ( self::FACEBOOK_CATALOG_FEED_FILENAME )
-			);
-
 			$total_product_count        =
 			$this->has_default_product_count + $this->no_default_product_count;
 			$default_product_percentage =
@@ -654,8 +649,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		private function create_upload( $facebook_feed_id ) {
 			$result = $this->fbgraph->create_upload(
 				$facebook_feed_id,
-				dirname( __FILE__ ) . DIRECTORY_SEPARATOR .
-				( self::FACEBOOK_CATALOG_FEED_FILENAME )
+				$this->get_file_path()
 			);
 			if ( is_null( $result ) || ! isset( $result['id'] ) || ! $result['id'] ) {
 				$this->log_feed_progress( json_encode( $result ) );
