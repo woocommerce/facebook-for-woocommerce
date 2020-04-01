@@ -45,7 +45,7 @@ class Feed extends \WP_REST_Controller {
 	 */
 	public function register_routes() {
 
-		// /feed for getting the latest feed data
+		/** @see Feed::get_item() /feed for getting the latest feed data */
 		register_rest_route(
 			$this->namespace, "/{$this->rest_base}", [
 				[
