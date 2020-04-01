@@ -573,15 +573,7 @@ function setFeedMigrated(message) {
 
 	settings.feed_migrated = message.params.feed_migrated;
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
-
-	save_settings_for_plugin(
-		function( response ) {
-			window.sendToFacebook( 'ack set feed migrated', message );
-		},
-		function( response ) {
-			window.sendToFacebook( 'fail set feed migrated', message );
-		}
-	);
+	window.sendToFacebook( 'ack set feed migrated', message );
 }
 
 function iFrameListener(event) {
@@ -621,16 +613,17 @@ function iFrameListener(event) {
 		case 'set catalog':
 			setCatalog( event.data );
 		break;
-		case 'set pixel':
-			setPixel( event.data );
-		break;
 		case 'set feed migrated':
 			setFeedMigrated( event.data );
+			break;
+		case 'set pixel':
+			setPixel( event.data );
 		break;
 		case 'gen feed':
 			genFeed();
 		break;
 
+		/*
 		case 'set page access token':
 			// should be last message received
 			setAccessTokenAndPageId( event.data );
@@ -641,6 +634,7 @@ function iFrameListener(event) {
 			jQuery( '#integration-settings' ).show();
 			jQuery( '.woocommerce-save-button' ).show();
 		break;
+		*/
 
 		case 'set msger chat':
 			setMsgerChatSetup( event.data.params );
