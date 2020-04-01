@@ -99,7 +99,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				$this->set_feed_generation_time_with_decay( $generation_time );
 
-				WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
+				\WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
 
 			} catch ( \Exception $exception ) {
 
