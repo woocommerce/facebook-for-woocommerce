@@ -82,6 +82,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				include_once 'facebook-commerce.php';
 
 				require_once __DIR__ . '/includes/Products.php';
+				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 
 				if ( is_ajax() ) {
