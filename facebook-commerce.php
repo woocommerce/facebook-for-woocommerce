@@ -628,6 +628,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 
 			?>
+				<?php /* ?>
 				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
 				type="checkbox"
@@ -635,6 +636,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				<?php echo checked( ! $woo_product->woo_product instanceof \WC_Product || Products::is_product_visible( $woo_product->woo_product ) ); ?>/>
 
 				<p/>
+				<?php */ ?>
 				<input name="is_product_page" type="hidden" value="1"/>
 
 				<p/>
@@ -805,7 +807,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
-		$is_visible   = ! empty( $_POST['fb_visibility'] );
+		$is_visible   = ! empty( $_POST[ Products::VISIBILITY_META_KEY ] );
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
@@ -821,7 +823,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		}
 
-		$this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
+		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
+		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
 		if ( $sync_enabled ) {
 
