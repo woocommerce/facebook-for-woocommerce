@@ -623,7 +623,6 @@ function iFrameListener(event) {
 			genFeed();
 		break;
 
-		/*
 		case 'set page access token':
 			// should be last message received
 			setAccessTokenAndPageId( event.data );
@@ -634,7 +633,6 @@ function iFrameListener(event) {
 			jQuery( '#integration-settings' ).show();
 			jQuery( '.woocommerce-save-button' ).show();
 		break;
-		*/
 
 		case 'set msger chat':
 			setMsgerChatSetup( event.data.params );
@@ -988,3 +986,14 @@ function syncShortDescription() {
 	}
 	);
 }
+
+jQuery( document ).ready( function( $ ) {
+
+	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
+
+		event.preventDefault();
+
+		sync_confirm();
+	} );
+
+} );
