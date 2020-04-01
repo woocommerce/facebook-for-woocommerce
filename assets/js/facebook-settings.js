@@ -348,7 +348,7 @@ function save_settings_and_sync(message) {
 					window.sendToFacebook( 'ack set pixel', message.params );
 					window.sendToFacebook( 'ack set page access token', message.params );
 					window.sendToFacebook( 'ack set merchant settings', message.params );
-					sync_all_products( true );
+					// sync_all_products( true ); TODO: reinstate when switching back to FBE 2
 				} else {
 					window.sendToFacebook( 'fail save_settings', response );
 					console.log( 'Fail response on save_settings_and_sync' );
@@ -986,17 +986,3 @@ function syncShortDescription() {
 	}
 	);
 }
-
-
-jQuery( document ).ready( function( $ ) {
-
-	// check background processor status in case products are being synced in the background when the page loads
-	check_background_processor_status();
-
-	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
-
-		event.preventDefault();
-
-		sync_confirm();
-	} );
-} );
