@@ -1897,7 +1897,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// check required fields
-		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+		if ( ! $this->is_configured() ) {
 
 			$message = sprintf(
 				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
@@ -3824,7 +3824,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return (bool) $this->get_facebook_page_id();
+		return (bool) $this->get_external_merchant_settings_id();
 	}
 
 
