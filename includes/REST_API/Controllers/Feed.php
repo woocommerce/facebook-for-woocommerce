@@ -76,9 +76,20 @@ class Feed extends \WP_REST_Controller {
 	 */
 	public function get_item( $request ) {
 
-		// TODO: get the feed {CW 2020-03-30}
+		$feed_handler = new \WC_Facebook_Product_Feed();
 
-		return rest_ensure_response( [] );
+		$file_path = $feed_handler->get_file_path();
+
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="' . basename($file_path ) . '"' );
+		header( 'Expires: 0' );
+		header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
+		header( 'Pragma: public' );
+		header( 'Content-Length:'. filesize( $file_path ) );
+
+		readfile( $file_path, 'rb' );
+
+		exit;
 	}
 
 
