@@ -3952,7 +3952,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		if ( $this->is_configured() ) {
+		// TODO: replace with `if ( $this->is_configured() ) {` when access tokens become available again {WV 2020-03-31}
+		if ( $this->get_facebook_page_id() && $this->get_page_access_token() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
 		} else {
 			$page_name = '';
