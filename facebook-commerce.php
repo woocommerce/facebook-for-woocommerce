@@ -2532,8 +2532,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_html() */
 			[
-				//'type'  => 'product_sync_title',
-				'type'  => 'title',
+				'type'  => 'product_sync_title',
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 			],
 
@@ -2689,7 +2688,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				onclick="facebookConfig();"
 			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
 		</h3>
-		<?php if ( empty( $this->get_page_name() ) ) : ?>
+		<?php // if ( empty( $this->get_page_name() ) ) : ?>
 		<?php
 /**
 			<div id="connection-message-invalid">
@@ -2710,7 +2709,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			</div>
  */
 		?>
-		<?php endif; ?>
+		<?php // endif; ?>
 		<table class="form-table">
 		<?php
 
@@ -2880,13 +2879,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		?>
 		</table>
 		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
+
 			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
-			<a
-				id="woocommerce-facebook-settings-sync-products"
-				class="button product-sync-field"
-				href="#"
-				style="vertical-align: middle; margin-left: 20px;"
-			><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+
+			<?php if ( $this->get_page_name() ) : ?>
+				<a
+					id="woocommerce-facebook-settings-sync-products"
+					class="button product-sync-field"
+					href="#"
+					style="vertical-align: middle; margin-left: 20px;"
+				><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
+			<?php endif; ?>
+
 		</h3>
 		<div><p id="sync_progress" style="display: none"></p></div>
 		<table class="form-table">
