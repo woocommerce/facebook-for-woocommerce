@@ -3750,7 +3750,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return $this->get_page_access_token() && $this->get_facebook_page_id();
+		return $this->get_facebook_page_id();
 	}
 
 
