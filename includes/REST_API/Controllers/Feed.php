@@ -119,9 +119,9 @@ class Feed extends \WP_REST_Controller {
 	 */
 	public function ping() {
 
-		$estimated_time = 20; // TODO: get a real feed generation estimate, in seconds {CW 2020-03-30}
+		$feed_handler = new \WC_Facebook_Product_Feed();
 
-		return rest_ensure_response( $estimated_time );
+		return rest_ensure_response( $feed_handler->get_estimated_feed_generation_time() );
 	}
 
 
