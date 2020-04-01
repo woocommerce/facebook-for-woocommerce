@@ -19,6 +19,11 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	 */
 	class WC_Facebook_Product_Feed {
 
+
+		/** @var string product catalog feed file name */
+		const FILE_NAME = 'product_catalog.csv';
+
+
 		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
@@ -36,6 +41,27 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->fbgraph             = $fbgraph;
 			$this->feed_id             = $feed_id;
 		}
+
+
+		/**
+		 * Gets the product catalog feed file name.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return string
+		 */
+		public function get_file_name() {
+
+			/**
+			 * Filters the product catalog feed file name.
+			 *
+			 * @since 1.11.0-dev.1
+			 *
+			 * @param string $file_name the file name
+			 */
+			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', self::FILE_NAME );
+		}
+
 
 		public function sync_all_products_using_feed() {
 			$start_time = microtime( true );
