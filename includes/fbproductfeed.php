@@ -63,6 +63,11 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		public function schedule_feed_generation() {
 
+			// don't schedule another if one's already scheduled or in progress
+			if ( false !== as_next_scheduled_action( 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' ) ) {
+				return;
+			}
+
 			\WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
 
 			// if async priority actions are supported (AS 3.0+)
