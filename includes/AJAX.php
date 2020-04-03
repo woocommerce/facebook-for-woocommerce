@@ -284,10 +284,13 @@ class AJAX {
 				id="facebook-for-woocommerce-confirm-settings-change"
 				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change"
 			><?php esc_html_e( 'Exclude Products', 'facebook-for-woocommerce' ); ?></button>
+
+			<!-- TODO: restore for FBE 2.0
 			<button
 				id="facebook-for-woocommerce-confirm-settings-change-hide-products"
 				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change hide-products"
-			><?php esc_html_e( 'Exclude Products and Hide in Facebook', 'facebook-for-woocommerce' ); ?></button>
+			><?php esc_html_e( 'Exclude Products and Hide in Facebook', 'facebook-for-woocommerce' ); ?></button> -->
+
 			<button
 				id="facebook-for-woocommerce-cancel-settings-change"
 				class="button button-large button-primary"
