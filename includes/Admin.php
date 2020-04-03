@@ -576,7 +576,7 @@ class Admin {
 				facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 					sprintf(
 						/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-						esc_html__( '%1$sHeads up!%2$s Product sync is temporarily changed as we migrate to a more secure experience. An automated sync from Facebook will run within the hour to update the catalog with any changes you\'ve made. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
+						esc_html__( '%1$sHeads up!%2$s Product sync is temporarily changed as we migrate to a more secure experience. An automated sync from Facebook will run every hour to update the catalog with any changes you\'ve made. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
 						'<strong>',
 						'</strong>',
 						'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security" target="_blank">',
