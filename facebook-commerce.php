@@ -1261,11 +1261,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$fb_product_group_id
 			);
 
+			/** TODO: restore when adopting FBE 2.0
 			$this->display_success_message(
 				'Created product group <a href="https://facebook.com/' .
 				$fb_product_group_id . '" target="_blank">' .
 				$fb_product_group_id . '</a> on Facebook.'
 			);
+			*/
 
 			return $fb_product_group_id;
 		}
@@ -1300,11 +1302,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$fb_product_item_id
 			);
 
+			/** TODO: restore when adopting FBE 2.0
 			$this->display_success_message(
 				'Created product item <a href="https://facebook.com/' .
 				$fb_product_item_id . '" target="_blank">' .
 				$fb_product_item_id . '</a> on Facebook.'
 			);
+			*/
 
 			return $fb_product_item_id;
 		}
@@ -1351,6 +1355,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
+		/** TODO: restore when adopting FBE 2.0
 		if ( $result ) {
 			$this->display_success_message(
 				'Updated product group <a href="https://facebook.com/' .
@@ -1358,6 +1363,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'</a> on Facebook.'
 			);
 		}
+		*/
 	}
 
 	/**
@@ -1378,12 +1384,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
+		/** TODO: restore when adopting FBE 2.0
 		if ( $result ) {
 			$this->display_success_message(
 				'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
 				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
 			);
 		}
+		*/
 	}
 
 	/**
