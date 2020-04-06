@@ -491,7 +491,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$order        = wc_get_order( $order_id );
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				return;
+			}
+
 			$content_type = 'product';
 			$num_items    = 0;
 			$contents     = [];
