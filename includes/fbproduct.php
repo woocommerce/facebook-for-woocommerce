@@ -691,7 +691,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 						break;
 
-						case WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
+						case \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
 
 							// If we can't validate the GENDER field, we'll fall through to the
 							// default case and set the gender into custom data.
