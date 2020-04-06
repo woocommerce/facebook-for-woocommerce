@@ -483,11 +483,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$last_order = (int) WC()->session->get( 'facebook_for_woocommerce_last_order', 0 );
+			$last_order_id = WC()->session->get( 'facebook_for_woocommerce_last_order', 0 );
 
-			if ( ! ( $last_order > 0 ) ) {
+			if ( ! ( $last_order_id > 0 ) ) {
 				WC()->session->set( 'facebook_for_woocommerce_last_order', (int) $order_id );
-			} elseif ( $last_order === $order_id ) {
+			} elseif ( $last_order_id === $order_id ) {
 				return;
 			}
 
