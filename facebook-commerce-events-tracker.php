@@ -451,6 +451,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			WC()->session->set( 'facebook_for_woocommerce_last_order', 0 );
+
 			$this->pixel->inject_event( 'InitiateCheckout', [
 				'num_items'    => $this->get_cart_num_items(),
 				'content_ids'  => $this->get_cart_content_ids(),
@@ -478,6 +480,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_purchase_event( $order_id ) {
 
 			if ( ! self::$isEnabled || $this->pixel->is_last_event( 'Purchase' ) ) {
+				return;
+			}
+
+			$last_order = WC()->session->get( 'facebook_for_woocommerce_last_order' );
+
+			if ( ! $last_order || ! ( $last_order > 0 ) ) {
+				WC()->session->set( 'facebook_for_woocommerce_last_order', (int) $order_id );
+			} elseif ( $last_order === $order_id ) {
 				return;
 			}
 
