@@ -632,24 +632,24 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 
 			$variant_names = array_keys( $attributes );
-			$variant_array = [];
+			$variant_data  = [];
 
 			// Loop through variants (size, color, etc) if they exist
 			// For each product field type, pull the single variant
-			foreach ( $variant_names as $orig_name ) {
+			foreach ( $variant_names as $original_variant_name ) {
 
 				// Retrieve label name for attribute
-				$label = wc_attribute_label( $orig_name, $this );
+				$label = wc_attribute_label( $original_variant_name, $product );
 
 				// Clean up variant name (e.g. pa_color should be color)
 				// Replace "custom_data:foo" with just "foo" so we can use the key
 				// Product item API expects "custom_data" instead of "custom_data:foo"
-				$new_name = str_replace( 'custom_data:', '', \WC_Facebookcommerce_Utils::sanitize_variant_name( $orig_name ) );
+				$new_name = str_replace( 'custom_data:', '', \WC_Facebookcommerce_Utils::sanitize_variant_name( $original_variant_name ) );
 
 				// Sometimes WC returns an array, sometimes it's an assoc array, depending
 				// on what type of taxonomy it's using.  array_values will guarantee we
 				// only get a flat array of values.
-				if ( $options = $this->get_variant_option_name( $label, $attributes[ $orig_name ] ) ) {
+				if ( $options = $this->get_variant_option_name( $label, $attributes[ $original_variant_name ] ) ) {
 
 					if ( is_array( $options ) ) {
 
@@ -681,7 +681,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 						case \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR:
 						case \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN:
 
-							$variant_array[] = [
+							$variant_data[] = [
 								'product_field' => $new_name,
 								'label'         => $label,
 								'options'       => $option_values,
@@ -697,7 +697,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 							// default case and set the gender into custom data.
 							if ( $product_data[ $new_name ] ) {
 
-								$variant_array[] = [
+								$variant_data[] = [
 									'product_field' => $new_name,
 									'label'         => $label,
 									'options'       => $option_values,
@@ -720,12 +720,12 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 				} else {
 
-					\WC_Facebookcommerce_Utils::log( $product->get_id() . ': No options for ' . $orig_name );
+					\WC_Facebookcommerce_Utils::log( $product->get_id() . ': No options for ' . $original_variant_name );
 					continue;
 				}
 			}
 
-			return $variant_array;
+			return $variant_data;
 		}
 
 
@@ -743,7 +743,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			try {
 
-				if ( $product->is_type( 'variation' ) ) {
+				if ( $product->is_type( 'variable' ) ) {
 					throw new \Exception( 'prepare_variants_for_group called on non-variable product' );
 				}
 
@@ -755,7 +755,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 				foreach ( array_keys( $product->get_attributes() ) as $name ) {
 
-					$label = wc_attribute_label( $name, $this );
+					$label = wc_attribute_label( $name, $product );
 
 					if ( taxonomy_is_product_attribute( $name ) ) {
 						$key = $name;
@@ -773,11 +773,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 						$option_values = $variation_attributes[ $key ];
 					} else {
 						// skip variations without valid attribute options
-						WC_Facebookcommerce_Utils::log( $product->get_id() . ': No options for ' . $name );
+						\WC_Facebookcommerce_Utils::log( $product->get_id() . ': No options for ' . $name );
 						continue;
 					}
 
-					// If this is a wc_product_variable, check default attribute.
+					// If this is a variable product, check default attribute.
 					// If it's being used, show it as the first option on Facebook.
 					if ( $first_option = $product->get_variation_default_attribute( $key ) ) {
 
@@ -792,9 +792,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 						$option_values = $this->get_grouped_product_option_names( $key, $option_values );
 					}
 
-					// https://developers.facebook.com/docs/marketing-api/reference/product-variant/
-					// For API approach, product_field need to start with 'custom_data:'
-					// Clean up variant name (e.g. pa_color should be color)
+					/**
+					 * For API approach, product_field need to start with 'custom_data:'
+					 * @link https://developers.facebook.com/docs/marketing-api/reference/product-variant/
+					 * Clean up variant name (e.g. pa_color should be color):
+					 */
 					$name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $name );
 
 					// for feed uploading, product field should remove prefix 'custom_data:'
