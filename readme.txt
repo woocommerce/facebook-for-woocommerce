@@ -45,6 +45,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
  * Fix - Ensure variable products excluded from sync are not synced in Facebook
  * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
+ * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
 
 = 2020.03.17 - version 1.10.2 =
  * Tweak - Add a setting to easily enable debug logging
