@@ -634,6 +634,10 @@ function iFrameListener(event) {
 			jQuery( '.woocommerce-save-button' ).show();
 		break;
 
+		case 'set page':
+			setPage( event.data );
+		break;
+
 		case 'set msger chat':
 			setMsgerChatSetup( event.data.params );
 			save_settings_for_plugin(
@@ -649,6 +653,31 @@ function iFrameListener(event) {
 }
 
 addAnEventListener( window,'message',iFrameListener );
+
+/**
+ * Sets the page parameters received from FBE.
+ *
+ * @since 1.11.0-dev.1
+ *
+ * @param {Object} message
+ */
+function setPage( message ) {
+
+	if ( ! message.params.hasOwnProperty( 'page_id' ) )  {
+
+		console.error(
+			'Facebook Extension Error: page ID not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set page', message.params );
+		return;
+	}
+
+	settings.page_id = message.params.page_id;
+
+	jQuery( '#woocommerce_facebookcommerce_facebook_page_id' ).val( settings.page_id );
+}
 
 function urlFromSameDomain(url1, url2) {
 	if ( ! url1.startsWith( 'http' ) || ! url2.startsWith( 'http' )) {
