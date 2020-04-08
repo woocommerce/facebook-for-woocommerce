@@ -322,11 +322,11 @@ function save_settings(callback = null, failcallback = null, localsettings = nul
 function save_settings_for_plugin(callback, failcallback) {
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				console.log( response );
 				callback( response );
 			} else {
-				console.log( 'Fail response on save_settings_and_sync' );
+				console.log( 'Fail response on save_settings_for_plugin' );
 				failcallback( response );
 			}
 		},
@@ -460,7 +460,7 @@ function setPixel(message) {
 	// We need this to support changing the pixel id after setup.
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				window.sendToFacebook( 'ack set pixel', message.params );
 			} //may not get settings_saved if we try to save pixel before an API key
 		},

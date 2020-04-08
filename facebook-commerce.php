@@ -1452,9 +1452,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				} else {
 
 					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-					echo 'Not saving pixel-only settings';
 
-					wp_die();
+					wp_send_json_error();
 				}
 			}
 		}
@@ -1510,9 +1509,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-		echo 'settings_saved';
 
-		wp_die();
+		wp_send_json_success();
 	}
 
 	/**
