@@ -1411,6 +1411,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		\WC_Facebookcommerce_Utils::log( 'Saving settings via AJAX' );
+
 		if ( isset( $_REQUEST['api_key'] ) ) {
 
 			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
