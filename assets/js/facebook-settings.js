@@ -607,9 +607,6 @@ function iFrameListener(event) {
 		case 'get dia settings':
 			window.sendToFacebook( 'dia settings', window.diaConfig );
 		break;
-		case 'set merchant settings':
-			setMerchantSettings( event.data );
-		break;
 		case 'set catalog':
 			setCatalog( event.data );
 		break;
@@ -623,19 +620,61 @@ function iFrameListener(event) {
 			genFeed();
 		break;
 
+		// simulate this success response so FBE considers setup complete
 		case 'set page access token':
-			// should be last message received
-			setAccessTokenAndPageId( event.data );
-			save_settings_and_sync( event.data );
-
-			// hide Facebook fancy box and show integration settings
-			jQuery( '#fbsetup' ).hide();
-			jQuery( '#integration-settings' ).show();
-			jQuery( '.woocommerce-save-button' ).show();
+			window.sendToFacebook( 'ack set page access token', event.data.params );
 		break;
 
 		case 'set page':
 			setPage( event.data );
+		break;
+
+		case 'set merchant settings':
+
+			setMerchantSettings( event.data );
+
+			// this should be the final message sent, so save the settings at this point
+			save_settings(
+				function( response ) {
+
+					console.log( response );
+
+					if ( response && true === response.success ) {
+
+						// final acks
+						if ( settings.pixel_id ) {
+							window.sendToFacebook( 'ack set pixel', event.data.params );
+						}
+
+						if ( settings.page_id ) {
+							window.sendToFacebook( 'ack set page', event.data.params );
+						}
+
+						if ( settings.external_merchant_settings_id ) {
+
+							window.sendToFacebook( 'ack set merchant settings', event.data.params );
+
+							// hide Facebook fancy box and show integration settings
+							jQuery( '#fbsetup' ).hide();
+							jQuery( '#integration-settings' ).show();
+							jQuery( '.woocommerce-save-button' ).show();
+						}
+
+					} else {
+
+						window.sendToFacebook( 'fail save_settings', response );
+
+						console.log( 'Fail response on save_settings' );
+					}
+				},
+				function( errorResponse ){
+
+					console.log( 'Ajax error while saving settings:' + JSON.stringify( errorResponse ) );
+
+					window.sendToFacebook( 'fail save_settings_ajax', JSON.stringify( errorResponse ) );
+				}
+			);
+
 		break;
 
 		case 'set msger chat':
