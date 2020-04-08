@@ -684,7 +684,7 @@ function iFrameListener(event) {
 					window.sendToFacebook( 'ack msger chat', event.data );
 				},
 				function(response) {
-					window.sendToFacebook( 'fail ack msger chat', event.data );
+					window.sendToFacebook( 'fail msger chat', event.data );
 				}
 			);
 		break;
