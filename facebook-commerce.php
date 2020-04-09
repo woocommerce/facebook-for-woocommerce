@@ -1411,12 +1411,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		\WC_Facebookcommerce_Utils::log( 'Saving settings via AJAX' );
+
 		if ( isset( $_REQUEST['api_key'] ) ) {
 
 			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
 
 			if ( ctype_alnum( $api_key ) ) {
 				$this->update_page_access_token( $api_key );
+			}
+		}
+
+		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
+
+			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
+
+			if ( is_numeric( $external_merchant_settings_id ) ) {
+				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
 			}
 		}
 
@@ -1441,7 +1452,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			if ( ctype_digit( $pixel_id ) ) {
 
 				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
-				if ( $this->get_page_access_token() ) {
+				if ( $this->get_external_merchant_settings_id() ) {
 
 					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
 						$this->update_pixel_install_time( time() );
@@ -1452,9 +1463,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				} else {
 
 					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-					echo 'Not saving pixel-only settings';
 
-					wp_die();
+					wp_send_json_error();
 				}
 			}
 		}
@@ -1469,15 +1479,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			if ( ctype_digit( $page_id ) ) {
 				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
-			}
-		}
-
-		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
-
-			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
-
-			if ( ctype_digit( $external_merchant_settings_id ) ) {
-				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
 			}
 		}
 
@@ -1510,9 +1511,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-		echo 'settings_saved';
 
-		wp_die();
+		wp_send_json_success();
 	}
 
 	/**

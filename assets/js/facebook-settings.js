@@ -322,11 +322,11 @@ function save_settings(callback = null, failcallback = null, localsettings = nul
 function save_settings_for_plugin(callback, failcallback) {
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				console.log( response );
 				callback( response );
 			} else {
-				console.log( 'Fail response on save_settings_and_sync' );
+				console.log( 'Fail response on save_settings_for_plugin' );
 				failcallback( response );
 			}
 		},
@@ -460,7 +460,7 @@ function setPixel(message) {
 	// We need this to support changing the pixel id after setup.
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				window.sendToFacebook( 'ack set pixel', message.params );
 			} //may not get settings_saved if we try to save pixel before an API key
 		},
@@ -607,9 +607,6 @@ function iFrameListener(event) {
 		case 'get dia settings':
 			window.sendToFacebook( 'dia settings', window.diaConfig );
 		break;
-		case 'set merchant settings':
-			setMerchantSettings( event.data );
-		break;
 		case 'set catalog':
 			setCatalog( event.data );
 		break;
@@ -623,15 +620,61 @@ function iFrameListener(event) {
 			genFeed();
 		break;
 
+		// simulate this success response so FBE considers setup complete
 		case 'set page access token':
-			// should be last message received
-			setAccessTokenAndPageId( event.data );
-			save_settings_and_sync( event.data );
+			window.sendToFacebook( 'ack set page access token', event.data.params );
+		break;
 
-			// hide Facebook fancy box and show integration settings
-			jQuery( '#fbsetup' ).hide();
-			jQuery( '#integration-settings' ).show();
-			jQuery( '.woocommerce-save-button' ).show();
+		case 'set page':
+			setPage( event.data );
+		break;
+
+		case 'set merchant settings':
+
+			setMerchantSettings( event.data );
+
+			// this should be the final message sent, so save the settings at this point
+			save_settings(
+				function( response ) {
+
+					console.log( response );
+
+					if ( response && true === response.success ) {
+
+						// final acks
+						if ( settings.pixel_id ) {
+							window.sendToFacebook( 'ack set pixel', event.data.params );
+						}
+
+						if ( settings.page_id ) {
+							window.sendToFacebook( 'ack set page', event.data.params );
+						}
+
+						if ( settings.external_merchant_settings_id ) {
+
+							window.sendToFacebook( 'ack set merchant settings', event.data.params );
+
+							// hide Facebook fancy box and show integration settings
+							jQuery( '#fbsetup' ).hide();
+							jQuery( '#integration-settings' ).show();
+							jQuery( '.woocommerce-save-button' ).show();
+						}
+
+					} else {
+
+						window.sendToFacebook( 'fail save_settings', response );
+
+						console.log( 'Fail response on save_settings' );
+					}
+				},
+				function( errorResponse ){
+
+					console.log( 'Ajax error while saving settings:' + JSON.stringify( errorResponse ) );
+
+					window.sendToFacebook( 'fail save_settings_ajax', JSON.stringify( errorResponse ) );
+				}
+			);
+
 		break;
 
 		case 'set msger chat':
@@ -641,7 +684,7 @@ function iFrameListener(event) {
 					window.sendToFacebook( 'ack msger chat', event.data );
 				},
 				function(response) {
-					window.sendToFacebook( 'fail ack msger chat', event.data );
+					window.sendToFacebook( 'fail msger chat', event.data );
 				}
 			);
 		break;
@@ -649,6 +692,31 @@ function iFrameListener(event) {
 }
 
 addAnEventListener( window,'message',iFrameListener );
+
+/**
+ * Sets the page parameters received from FBE.
+ *
+ * @since 1.11.0-dev.1
+ *
+ * @param {Object} message
+ */
+function setPage( message ) {
+
+	if ( ! message.params.hasOwnProperty( 'page_id' ) )  {
+
+		console.error(
+			'Facebook Extension Error: page ID not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set page', message.params );
+		return;
+	}
+
+	settings.page_id = message.params.page_id;
+
+	jQuery( '#woocommerce_facebookcommerce_facebook_page_id' ).val( settings.page_id );
+}
 
 function urlFromSameDomain(url1, url2) {
 	if ( ! url1.startsWith( 'http' ) || ! url2.startsWith( 'http' )) {
