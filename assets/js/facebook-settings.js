@@ -241,7 +241,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 				message = facebook_for_woocommerce_settings_sync.i18n.general_error;
 			}
 
-			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
+			jQuery( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
 		}
 	} );
 }
@@ -266,8 +266,8 @@ function delete_all_settings(callback = null, failcallback = null) {
 
 	jQuery( '.messenger-field' ).each( function () {
 
-		if ( typeof $( this ).data( 'default' ) !== 'undefined' ) {
-			$( this ).val( $( this ).data( 'default' ) ).trigger( 'change' );
+		if ( typeof jQuery( this ).data( 'default' ) !== 'undefined' ) {
+			jQuery( this ).val( jQuery( this ).data( 'default' ) ).trigger( 'change' );
 		}
 	} );
 
@@ -476,7 +476,7 @@ function genFeed( message ) {
 
 	console.log( 'generating feed' );
 
-	$.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
+	jQuery.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
 		.done( function( json ) {
 			window.sendToFacebook( 'ack feed', message.params );
 		} )
@@ -902,7 +902,7 @@ function check_feed_upload_queue(check_num) {
 						// enable Manage connection and Sync products buttons when sync stops
 						jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
-						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
+						jQuery( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
 						window.feed_upload              = false;
 						if (window.is_test) {
