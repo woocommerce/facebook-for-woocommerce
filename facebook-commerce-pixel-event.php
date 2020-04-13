@@ -184,10 +184,34 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
-		 * Prevent double-fires by checking the last event
+		 * Determines if the last event in the current thread matches a given event.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @param string $event_name
+		 * @return bool
+		 */
+		public function is_last_event( $event_name ) {
+
+			return $event_name === $this->last_event;
+		}
+
+
+		/**
+		 * Determines if the last event in the current thread matches a given event.
+		 *
+		 * TODO remove this deprecated method by March 2020 or version 2.0.0 {FN 2020-03-25}
+		 *
+		 * @deprecated since 1.11.0-dev.1
+		 *
+		 * @param string $event_name
+		 * @return bool
 		 */
 		public function check_last_event( $event_name ) {
-			return $event_name === $this->last_event;
+
+			wc_deprecated_function( __METHOD__, '1.11.0-dev.1', __CLASS__ . '::has_last_event()' );
+
+			return $this->is_last_event( $event_name );
 		}
 
 

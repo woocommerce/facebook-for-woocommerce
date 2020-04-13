@@ -85,8 +85,8 @@ class IntegrationSettingsCest {
 
 		$I->see( 'Manage connection', 'a.button' );
 
-		$I->see( 'Facebook page', 'th.titledesc' );
-		// TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
+		// $I->see( 'Facebook page', 'th.titledesc' );
+		// // TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
 
 		$I->see( 'Pixel', 'th.titledesc' );
 
@@ -108,7 +108,7 @@ class IntegrationSettingsCest {
 
 		$I->wantTo( 'Test that the Product sync fields are present' );
 
-		$I->see( 'Sync products', 'a.button' );
+		//$I->see( 'Sync products', 'a.button' );
 
 		$I->see( 'Enable product sync', 'th.titledesc' );
 		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
@@ -122,11 +122,11 @@ class IntegrationSettingsCest {
 		$I->see( 'Product description sync', 'th.titledesc' );
 		$I->seeElement( 'select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
 
-		$I->see( 'Force daily resync at', 'th.titledesc' );
-		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . 'scheduled_resync_enabled' );
-		$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_hours' );
-		$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_minutes' );
-		$I->seeElement( 'select' . self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
+		//$I->see( 'Force daily resync at', 'th.titledesc' );
+		//$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . 'scheduled_resync_enabled' );
+		//$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_hours' );
+		//$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_minutes' );
+		//$I->seeElement( 'select' . self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
 	}
 
 
@@ -220,10 +220,10 @@ class IntegrationSettingsCest {
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS . '[]'      => [ (string) $excluded_tag_taxonomy_id ],
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE             => WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT,
 
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_enabled'  => true,
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_hours'    => '10',
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_minutes'  => '30',
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_meridiem' => 'pm',
+			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_enabled'  => true,
+			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_hours'    => '10',
+			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_minutes'  => '30',
+			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_meridiem' => 'pm',
 		];
 		$I->submitForm( '#mainform', $form, 'save' );
 		$I->waitForText( 'Your settings have been saved.' );

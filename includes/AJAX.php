@@ -51,15 +51,17 @@ class AJAX {
 		check_ajax_referer( 'set-product-sync-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
+		$product_id       = isset( $_POST['product'] )          ? (int) $_POST['product']             : 0;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+		$sync_enabled     = isset( $_POST['sync_enabled'] )     ? (string) $_POST['sync_enabled']     : '';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_cats = isset( $_POST['categories'] )   ? (array)  $_POST['categories']   : [];
+		$var_sync_enabled = isset( $_POST['var_sync_enabled'] ) ? (string) $_POST['var_sync_enabled'] : '';
+	    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_cats     = isset( $_POST['categories'] )       ? (array) $_POST['categories']        : [];
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_tags = isset( $_POST['tags'] )         ? (array)  $_POST['tags']         : [];
+		$product_tags     = isset( $_POST['tags'] )             ? (array) $_POST['tags']              : [];
 
-		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
+		if ( $product_id > 0 && in_array( $var_sync_enabled, [ 'enabled', 'disabled' ], true ) && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
 
 			$product = wc_get_product( $product_id );
 
@@ -87,7 +89,7 @@ class AJAX {
 						'buttons' => $buttons,
 					] );
 
-				} elseif ( 'enabled' === $sync_enabled ) {
+				} elseif ( ( 'enabled' === $sync_enabled && ! $product->is_type( 'variable' ) ) || ( 'enabled' === $var_sync_enabled && $product->is_type( 'variable' ) ) ) {
 
 					$has_excluded_terms = false;
 
@@ -282,10 +284,13 @@ class AJAX {
 				id="facebook-for-woocommerce-confirm-settings-change"
 				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change"
 			><?php esc_html_e( 'Exclude Products', 'facebook-for-woocommerce' ); ?></button>
+
+			<!-- TODO: restore for FBE 2.0
 			<button
 				id="facebook-for-woocommerce-confirm-settings-change-hide-products"
 				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change hide-products"
-			><?php esc_html_e( 'Exclude Products and Hide in Facebook', 'facebook-for-woocommerce' ); ?></button>
+			><?php esc_html_e( 'Exclude Products and Hide in Facebook', 'facebook-for-woocommerce' ); ?></button> -->
+
 			<button
 				id="facebook-for-woocommerce-cancel-settings-change"
 				class="button button-large button-primary"

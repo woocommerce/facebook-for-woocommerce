@@ -241,7 +241,7 @@ function sync_all_products($using_feed = false, $is_test = false) {
 				message = facebook_for_woocommerce_settings_sync.i18n.general_error;
 			}
 
-			$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
+			jQuery( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + message + '</span>' );
 		}
 	} );
 }
@@ -266,8 +266,8 @@ function delete_all_settings(callback = null, failcallback = null) {
 
 	jQuery( '.messenger-field' ).each( function () {
 
-		if ( typeof $( this ).data( 'default' ) !== 'undefined' ) {
-			$( this ).val( $( this ).data( 'default' ) ).trigger( 'change' );
+		if ( typeof jQuery( this ).data( 'default' ) !== 'undefined' ) {
+			jQuery( this ).val( jQuery( this ).data( 'default' ) ).trigger( 'change' );
 		}
 	} );
 
@@ -322,11 +322,11 @@ function save_settings(callback = null, failcallback = null, localsettings = nul
 function save_settings_for_plugin(callback, failcallback) {
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				console.log( response );
 				callback( response );
 			} else {
-				console.log( 'Fail response on save_settings_and_sync' );
+				console.log( 'Fail response on save_settings_for_plugin' );
 				failcallback( response );
 			}
 		},
@@ -348,7 +348,7 @@ function save_settings_and_sync(message) {
 					window.sendToFacebook( 'ack set pixel', message.params );
 					window.sendToFacebook( 'ack set page access token', message.params );
 					window.sendToFacebook( 'ack set merchant settings', message.params );
-					sync_all_products( true );
+					// sync_all_products( true ); TODO: reinstate when switching back to FBE 2
 				} else {
 					window.sendToFacebook( 'fail save_settings', response );
 					console.log( 'Fail response on save_settings_and_sync' );
@@ -460,7 +460,7 @@ function setPixel(message) {
 	// We need this to support changing the pixel id after setup.
 	save_settings(
 		function(response){
-			if (response && response.includes( 'settings_saved' )) {
+			if (response && true === response.success ) {
 				window.sendToFacebook( 'ack set pixel', message.params );
 			} //may not get settings_saved if we try to save pixel before an API key
 		},
@@ -472,8 +472,17 @@ function setPixel(message) {
 	);
 }
 
-function genFeed(message) {
-	// no-op
+function genFeed( message ) {
+
+	console.log( 'generating feed' );
+
+	jQuery.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
+		.done( function( json ) {
+			window.sendToFacebook( 'ack feed', message.params );
+		} )
+		.fail( function( xhr, ajaxOptions, thronwError ) {
+			window.sendToFacebook( 'fail feed', message.params );
+		} );
 }
 
 function setAccessTokenAndPageId(message) {
@@ -549,6 +558,24 @@ function setMsgerChatSetup( data ) {
 	}
 }
 
+function setFeedMigrated(message) {
+
+	if ( ! message.params.hasOwnProperty( 'feed_migrated' ) )  {
+
+		console.error(
+			'Facebook Extension Error: feed migrated not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set feed migrated', message.params );
+		return;
+	}
+
+	settings.feed_migrated = message.params.feed_migrated;
+	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
+	window.sendToFacebook( 'ack set feed migrated', message );
+}
+
 function iFrameListener( event ) {
 
 	const origin = event.origin || event.originalEvent.origin;
@@ -590,12 +617,12 @@ function iFrameListener( event ) {
 		case 'get dia settings':
 			window.sendToFacebook( 'dia settings', window.diaConfig );
 		break;
-		case 'set merchant settings':
-			setMerchantSettings( event.data );
-		break;
 		case 'set catalog':
 			setCatalog( event.data );
 		break;
+		case 'set feed migrated':
+			setFeedMigrated( event.data );
+			break;
 		case 'set pixel':
 			setPixel( event.data );
 		break;
@@ -603,15 +630,61 @@ function iFrameListener( event ) {
 			genFeed();
 		break;
 
+		// simulate this success response so FBE considers setup complete
 		case 'set page access token':
-			// should be last message received
-			setAccessTokenAndPageId( event.data );
-			save_settings_and_sync( event.data );
+			window.sendToFacebook( 'ack set page access token', event.data.params );
+		break;
 
-			// hide Facebook fancy box and show integration settings
-			jQuery( '#fbsetup' ).hide();
-			jQuery( '#integration-settings' ).show();
-			jQuery( '.woocommerce-save-button' ).show();
+		case 'set page':
+			setPage( event.data );
+		break;
+
+		case 'set merchant settings':
+
+			setMerchantSettings( event.data );
+
+			// this should be the final message sent, so save the settings at this point
+			save_settings(
+				function( response ) {
+
+					console.log( response );
+
+					if ( response && true === response.success ) {
+
+						// final acks
+						if ( settings.pixel_id ) {
+							window.sendToFacebook( 'ack set pixel', event.data.params );
+						}
+
+						if ( settings.page_id ) {
+							window.sendToFacebook( 'ack set page', event.data.params );
+						}
+
+						if ( settings.external_merchant_settings_id ) {
+
+							window.sendToFacebook( 'ack set merchant settings', event.data.params );
+
+							// hide Facebook fancy box and show integration settings
+							jQuery( '#fbsetup' ).hide();
+							jQuery( '#integration-settings' ).show();
+							jQuery( '.woocommerce-save-button' ).show();
+						}
+
+					} else {
+
+						window.sendToFacebook( 'fail save_settings', response );
+
+						console.log( 'Fail response on save_settings' );
+					}
+				},
+				function( errorResponse ){
+
+					console.log( 'Ajax error while saving settings:' + JSON.stringify( errorResponse ) );
+
+					window.sendToFacebook( 'fail save_settings_ajax', JSON.stringify( errorResponse ) );
+				}
+			);
+
 		break;
 
 		case 'set msger chat':
@@ -621,7 +694,7 @@ function iFrameListener( event ) {
 					window.sendToFacebook( 'ack msger chat', event.data );
 				},
 				function(response) {
-					window.sendToFacebook( 'fail ack msger chat', event.data );
+					window.sendToFacebook( 'fail msger chat', event.data );
 				}
 			);
 		break;
@@ -629,6 +702,31 @@ function iFrameListener( event ) {
 }
 
 addAnEventListener( window,'message',iFrameListener );
+
+/**
+ * Sets the page parameters received from FBE.
+ *
+ * @since 1.11.0-dev.1
+ *
+ * @param {Object} message
+ */
+function setPage( message ) {
+
+	if ( ! message.params.hasOwnProperty( 'page_id' ) )  {
+
+		console.error(
+			'Facebook Extension Error: page ID not received',
+			message.params
+		);
+
+		window.sendToFacebook( 'fail set page', message.params );
+		return;
+	}
+
+	settings.page_id = message.params.page_id;
+
+	jQuery( '#woocommerce_facebookcommerce_facebook_page_id' ).val( settings.page_id );
+}
 
 function urlFromSameDomain(url1, url2) {
 	if ( ! url1.startsWith( 'http' ) || ! url2.startsWith( 'http' )) {
@@ -814,7 +912,7 @@ function check_feed_upload_queue(check_num) {
 						// enable Manage connection and Sync products buttons when sync stops
 						jQuery( '#woocommerce-facebook-settings-manage-connection, #woocommerce-facebook-settings-sync-products' ).css( 'pointer-events', 'auto' );
 
-						$( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
+						jQuery( '#sync_progress' ).show().html( '<span style="color: #DC3232">' + facebook_for_woocommerce_settings_sync.i18n.feed_upload_error + '</span>' );
 
 						window.feed_upload              = false;
 						if (window.is_test) {
@@ -967,11 +1065,7 @@ function syncShortDescription() {
 	);
 }
 
-
 jQuery( document ).ready( function( $ ) {
-
-	// check background processor status in case products are being synced in the background when the page loads
-	check_background_processor_status();
 
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 
@@ -979,4 +1073,5 @@ jQuery( document ).ready( function( $ ) {
 
 		sync_confirm();
 	} );
+
 } );

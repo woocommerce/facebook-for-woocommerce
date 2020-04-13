@@ -1,5 +1,14 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 1.11.0-dev.1
+ * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
+ * Fix - Make sure that the Facebook sync enabled and catalog visibility columns are properly displayed on narrow screen sizes on some browsers
+ * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
+ * Fix - Ensure variable products excluded from sync are not synced in Facebook
+ * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
+ * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
+ * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
+
 2020.03.17 - version 1.10.2
  * Tweak - Add a setting to easily enable debug logging
  * Tweak - Allow third party plugins and themes to track an add-to-cart event on added_to_cart JS event
