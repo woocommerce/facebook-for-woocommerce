@@ -196,4 +196,17 @@ class Feed {
 	}
 
 
+	/**
+	 * Gets the URL for retrieving the product feed data.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_feed_data_url() {
+
+		return add_query_arg( 'wc-api', self::REQUEST_FEED_ACTION, home_url( '/' ) );
+	}
+
+
 }

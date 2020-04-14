@@ -10,7 +10,7 @@
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\REST_API;
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -758,8 +758,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
-			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
+			feedUrl: '<?php echo esc_url( Feed::get_feed_data_url() ); ?>',
+			feedPingUrl: '',
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
