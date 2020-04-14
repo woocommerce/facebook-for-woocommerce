@@ -50,6 +50,9 @@ class Feed {
 	 */
 	private function add_hooks() {
 
+		// regenerate the product feed
+		add_action( self::GENERATE_FEED_CALLBACK, [ $this, 'regenerate_feed' ] );
+
 		// handle the feed data request
 		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, [ $this, 'handle_feed_data_request' ] );
 	}
@@ -118,6 +121,21 @@ class Feed {
 		}
 
 		exit;
+	}
+
+
+	/**
+	 * Regenerates the product feed.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0-dev.1
+	 */
+	public function regenerate_feed() {
+
+		$feed_handler = new \WC_Facebook_Product_Feed();
+
+		$feed_handler->generate_feed();
 	}
 
 
