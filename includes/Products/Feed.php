@@ -24,6 +24,13 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Feed {
 
 
+	/** @var string the action callback for generating a feed */
+	const GENERATE_FEED_CALLBACK = 'wc_facebook_regenerate_feed';
+
+	/** @var string the action slug for getting the product feed */
+	const REQUEST_FEED_ACTION = 'wc_facebook_get_feed_data';
+
+
 	/**
 	 * Feed constructor.
 	 *
