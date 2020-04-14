@@ -46,6 +46,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
+		private $product_feed;
+
 
 		/**
 		 * Constructs the plugin.
@@ -82,8 +85,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				include_once 'facebook-commerce.php';
 
 				require_once __DIR__ . '/includes/Products.php';
+				require_once __DIR__ . '/includes/Products/Feed.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
+
+				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 
 				if ( is_ajax() ) {
 
@@ -166,6 +172,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_ajax_handler() {
 
 			return $this->ajax;
+		}
+
+
+		/**
+		 * Gets the product feed handler.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Feed
+		 */
+		public function get_product_feed_handler() {
+
+			return $this->product_feed;
 		}
 
 
