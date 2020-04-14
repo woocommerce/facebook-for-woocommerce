@@ -23,4 +23,27 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  */
 class Feed {
 
+
+	/**
+	 * Feed constructor.
+	 *
+	 * @since 1.11.0-dev.1
+	 */
+	public function __construct() {
+
+		// add the necessary action and filter hooks
+		$this->add_hooks();
+	}
+
+
+	/**
+	 * Adds the necessary action and filter hooks.
+	 *
+	 * @since 1.11.0-dev.1
+	 */
+	private function add_hooks() {
+
+	}
+
+
 }
