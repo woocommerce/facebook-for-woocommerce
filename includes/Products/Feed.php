@@ -76,7 +76,7 @@ class Feed {
 		$file_path    = $feed_handler->get_file_path();
 
 		// regenerate if the file doesn't exist
-		if ( ! file_exists( $file_path ) ) {
+		if ( ! empty( $_GET['regenerate'] ) || ! file_exists( $file_path ) ) {
 			$feed_handler->generate_feed();
 		}
 
