@@ -576,12 +576,22 @@ function setFeedMigrated(message) {
 	window.sendToFacebook( 'ack set feed migrated', message );
 }
 
-function iFrameListener(event) {
-	// Fix for web.facebook.com
+function iFrameListener( event ) {
+
 	const origin = event.origin || event.originalEvent.origin;
-	if (origin != window.facebookAdsToolboxConfig.popupOrigin &&
-	urlFromSameDomain( origin, window.facebookAdsToolboxConfig.popupOrigin )) {
-		window.facebookAdsToolboxConfig.popupOrigin = origin;
+
+	if ( origin !== window.facebookAdsToolboxConfig.popupOrigin ) {
+
+		// Fix for web.facebook.com
+		if ( urlFromSameDomain( origin, window.facebookAdsToolboxConfig.popupOrigin ) ) {
+
+			window.facebookAdsToolboxConfig.popupOrigin = origin;
+
+		// otherwise bail if not a message from facebook.com
+		} else {
+
+			return;
+		}
 	}
 
 	switch (event.data.type) {
