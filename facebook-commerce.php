@@ -3282,7 +3282,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_page_access_token', $this->page_access_token, $this );
+		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $this->page_access_token : '', $this );
 	}
 
 
