@@ -627,7 +627,7 @@ function iFrameListener(event) {
 			setPixel( event.data );
 		break;
 		case 'gen feed':
-			genFeed();
+			genFeed( event.data );
 		break;
 
 		// simulate this success response so FBE considers setup complete
