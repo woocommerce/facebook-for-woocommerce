@@ -321,20 +321,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Initializes the REST API handler.
-		 *
-		 * @since 1.11.0-dev.1
-		 */
-		protected function init_rest_api_handler() {
-
-			require_once( $this->get_plugin_path() . '/includes/REST_API.php' );
-			require_once( $this->get_plugin_path() . '/includes/REST_API/Controllers/Feed.php' );
-
-			$this->rest_api_handler = new SkyVerge\WooCommerce\Facebook\REST_API( $this );
-		}
-
-
-		/**
 		 * Initializes the lifecycle handler.
 		 *
 		 * @since 1.10.0
