@@ -573,7 +573,17 @@ function setFeedMigrated(message) {
 
 	settings.feed_migrated = message.params.feed_migrated;
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
-	window.sendToFacebook( 'ack set feed migrated', message );
+
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).hide();
+
+	save_settings_for_plugin(
+		function( response ) {
+			window.sendToFacebook( 'ack set feed migrated', event.data );
+		},
+		function( response ) {
+			window.sendToFacebook( 'fail set feed migrated', event.data );
+		}
+	);
 }
 
 function iFrameListener(event) {
@@ -612,7 +622,7 @@ function iFrameListener(event) {
 		break;
 		case 'set feed migrated':
 			setFeedMigrated( event.data );
-			break;
+		break;
 		case 'set pixel':
 			setPixel( event.data );
 		break;
