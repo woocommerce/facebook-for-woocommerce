@@ -334,11 +334,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				self::FB_PRIORITY_MID
 			);
 
+			// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+			add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
+
+			// don't duplicate product FBID meta
+			add_filter( 'woocommerce_duplicate_product_exclude_meta', [ $this, 'fb_duplicate_product_reset_meta' ] );
+
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
-
-				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -385,11 +388,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				add_action(
 					'wp_ajax_ajax_delete_fb_product',
 					array( $this, 'ajax_delete_fb_product' )
-				);
-
-				add_filter(
-					'woocommerce_duplicate_product_exclude_meta',
-					array( $this, 'fb_duplicate_product_reset_meta' )
 				);
 
 				add_action(
@@ -835,7 +833,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
 		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
-		if ( $sync_enabled ) {
+		if ( $sync_enabled && $this->get_page_access_token() && $this->get_product_catalog_id() ) {
 
 			switch ( $product->get_type() ) {
 
