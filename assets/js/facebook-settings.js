@@ -171,7 +171,10 @@ if ( window.location.href.includes( 'manage-connection' ) ) {
 	window.onload = function() { facebookConfig(); };
 }
 
-// Launch the confirm dialog immediately if the param is in the URL.
+/*
+ * Launch the confirm dialog immediately if the param is in the URL.
+ * TODO: restore after migration to FBE 2.0
+ *
 if (window.location.href.includes( "fb_force_resync" )) {
 	window.onload = function() { sync_confirm( "fb_force_resync" ); };
 } else if (window.location.href.includes( "fb_test_product_sync" )) {
@@ -179,6 +182,7 @@ if (window.location.href.includes( "fb_force_resync" )) {
 	window.is_test = true;
 	window.onload  = function() { sync_confirm( "fb_test_product_sync" ); };
 }
+*/
 
 
 /**
