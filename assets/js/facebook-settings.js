@@ -476,7 +476,7 @@ function genFeed( message ) {
 
 	console.log( 'generating feed' );
 
-	jQuery.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '?regenerate=true' )
+	jQuery.get( window.facebookAdsToolboxConfig.feedPrepared.feedUrl + '&regenerate=true' )
 		.done( function( json ) {
 			window.sendToFacebook( 'ack feed', message.params );
 		} )
@@ -573,7 +573,17 @@ function setFeedMigrated(message) {
 
 	settings.feed_migrated = message.params.feed_migrated;
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
-	window.sendToFacebook( 'ack set feed migrated', message );
+
+	jQuery( '#woocommerce-facebook-settings-sync-products' ).hide();
+
+	save_settings_for_plugin(
+		function( response ) {
+			window.sendToFacebook( 'ack set feed migrated', event.data );
+		},
+		function( response ) {
+			window.sendToFacebook( 'fail set feed migrated', event.data );
+		}
+	);
 }
 
 function iFrameListener( event ) {
@@ -622,12 +632,12 @@ function iFrameListener( event ) {
 		break;
 		case 'set feed migrated':
 			setFeedMigrated( event.data );
-			break;
+		break;
 		case 'set pixel':
 			setPixel( event.data );
 		break;
 		case 'gen feed':
-			genFeed();
+			genFeed( event.data );
 		break;
 
 		// simulate this success response so FBE considers setup complete

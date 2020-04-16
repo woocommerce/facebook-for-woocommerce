@@ -10,7 +10,7 @@
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\REST_API;
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -756,8 +756,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
-			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
+			feedUrl: '<?php echo esc_url( Feed::get_feed_data_url() ); ?>',
+			feedPingUrl: '',
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
@@ -1411,6 +1411,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		\WC_Facebookcommerce_Utils::log( 'Saving settings via AJAX' );
 
+		// listen for a feed migrated event for FBE 1.5
+		if ( isset( $_REQUEST['feed_migrated'] ) ) {
+
+			$this->set_feed_migrated( wc_string_to_bool( $_REQUEST['feed_migrated'] ) );
+
+			// don't save anything else if already connected
+			if ( $this->get_external_merchant_settings_id() ) {
+				wp_send_json_success();
+			}
+		}
+
 		if ( isset( $_REQUEST['api_key'] ) ) {
 
 			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
@@ -1503,11 +1514,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
 		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
 
-		// listen for a feed migrated event for FBE 1.5
-		if ( ! empty( $_REQUEST['feed_migrated'] ) ) {
-			$this->set_feed_migrated( wc_bool_to_string( $_REQUEST['feed_migrated'] ) );
-		}
-
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
 
 		wp_send_json_success();
@@ -1546,6 +1552,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->init_settings();
 			$this->update_page_access_token( '' );
 			$this->update_product_catalog_id( '' );
+			$this->set_feed_migrated( false );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
@@ -3273,7 +3280,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_page_access_token', $this->page_access_token, $this );
+		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $this->page_access_token : '', $this );
 	}
 
 
