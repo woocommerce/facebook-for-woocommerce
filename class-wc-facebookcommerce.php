@@ -120,6 +120,38 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
+		 * Adds the plugin admin notices.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		public function add_admin_notices() {
+
+			parent::add_admin_notices();
+
+			$integration = $this->get_integration();
+
+			// if the feed hasn't been migrated to FBE 1.5 and the access token is bad, display a notice
+			if ( $integration && $integration->is_configured() && ! $integration->is_feed_migrated() && ! $integration->get_page_name() ) {
+
+				$configure_url = $this->is_plugin_settings() ? '#' : add_query_arg( 'manage-connection', 'true', $this->get_settings_url() );
+
+				$message = sprintf(
+					/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
+					__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s, go to %1$sAdvanced Options%2$s, and click %1$sReconnect Catalog%2$s to securely reconnect. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+					'<strong>', '</strong>',
+					'<a href="' . esc_url( $configure_url ) . '" class="wc-facebook-manage-connection">', '</a>',
+					'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security" target="_blank">', '</a>'
+				);
+
+				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v1_5', [
+					'dismissible'  => false,
+					'notice_class' => 'notice-info wc-facebook-migrate-notice',
+				] );
+			}
+		}
+
+
+		/**
 		 * Adds a Facebook integration to WooCommerce.
 		 *
 		 * @internal

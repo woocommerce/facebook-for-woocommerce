@@ -3957,7 +3957,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return bool
 	 */
-	private function is_feed_migrated() {
+	public function is_feed_migrated() {
 
 		if ( ! is_bool( $this->feed_migrated ) ) {
 
