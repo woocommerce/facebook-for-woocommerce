@@ -583,6 +583,7 @@ function setFeedMigrated(message) {
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
 
 	jQuery( '#woocommerce-facebook-settings-sync-products' ).hide();
+	jQuery( '.notice.wc-facebook-migrate-notice' ).hide();
 
 	save_settings_for_plugin(
 		function( response ) {
