@@ -166,6 +166,10 @@ function sync_confirm(verbose = null) {
 	}
 }
 
+// auto-launch the FBE popup if directed to by the URL
+if ( window.location.href.includes( 'manage-connection' ) ) {
+	window.onload = function() { facebookConfig(); };
+}
 
 // Launch the confirm dialog immediately if the param is in the URL.
 if (window.location.href.includes( "fb_force_resync" )) {
