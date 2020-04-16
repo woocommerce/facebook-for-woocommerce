@@ -1416,7 +1416,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// listen for a feed migrated event for FBE 1.5
 		if ( isset( $_REQUEST['feed_migrated'] ) ) {
 
-			$this->set_feed_migrated( wc_bool_to_string( (bool) $_REQUEST['feed_migrated'] ) );
+			$this->set_feed_migrated( wc_string_to_bool( $_REQUEST['feed_migrated'] ) );
 
 			// don't save anything else if already connected
 			if ( $this->get_external_merchant_settings_id() ) {
