@@ -743,7 +743,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			try {
 
-				if ( $product->is_type( 'variable' ) ) {
+				if ( ! $product->is_type( 'variable' ) ) {
 					throw new \Exception( 'prepare_variants_for_group called on non-variable product' );
 				}
 
