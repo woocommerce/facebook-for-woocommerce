@@ -25,7 +25,7 @@ class Feed {
 
 
 	/** @var string the action callback for generating a feed */
-	const GENERATE_FEED_CALLBACK = 'wc_facebook_regenerate_feed';
+	const GENERATE_FEED_ACTION = 'wc_facebook_regenerate_feed';
 
 	/** @var string the action slug for getting the product feed */
 	const REQUEST_FEED_ACTION = 'wc_facebook_get_feed_data';
@@ -54,7 +54,7 @@ class Feed {
 		add_action( 'init', [ $this, 'schedule_feed_generation' ] );
 
 		// regenerate the product feed
-		add_action( self::GENERATE_FEED_CALLBACK, [ $this, 'regenerate_feed' ] );
+		add_action( self::GENERATE_FEED_ACTION, [ $this, 'regenerate_feed' ] );
 
 		// handle the feed data request
 		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, [ $this, 'handle_feed_data_request' ] );
@@ -155,7 +155,7 @@ class Feed {
 
 		// only schedule if configured
 		if ( ! $integration || ! $integration->is_configured() || ! $integration->is_product_sync_enabled() ) {
-			as_unschedule_all_actions( self::GENERATE_FEED_CALLBACK );
+			as_unschedule_all_actions( self::GENERATE_FEED_ACTION );
 			return;
 		}
 
@@ -168,8 +168,8 @@ class Feed {
 		 */
 		$interval = apply_filters( 'wc_facebook_feed_generation_interval', MINUTE_IN_SECONDS * 15 );
 
-		if ( ! as_next_scheduled_action( self::GENERATE_FEED_CALLBACK ) ) {
-			as_schedule_recurring_action( time(), max( 2, $interval ), self::GENERATE_FEED_CALLBACK, [], facebook_for_woocommerce()->get_id_dasherized() );
+		if ( ! as_next_scheduled_action( self::GENERATE_FEED_ACTION ) ) {
+			as_schedule_recurring_action( time(), max( 2, $interval ), self::GENERATE_FEED_ACTION, [], facebook_for_woocommerce()->get_id_dasherized() );
 		}
 	}
 
