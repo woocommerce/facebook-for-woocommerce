@@ -1085,6 +1085,14 @@ function syncShortDescription() {
 
 jQuery( document ).ready( function( $ ) {
 
+	// when a "manage connection" link is click from a notice
+	$( '.notice .wc-facebook-manage-connection' ).click( function( event ) {
+
+		event.preventDefault();
+
+		facebookConfig();
+	} );
+
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 
 		event.preventDefault();
