@@ -166,8 +166,10 @@ function sync_confirm(verbose = null) {
 	}
 }
 
-
-// Launch the confirm dialog immediately if the param is in the URL.
+/*
+ * Launch the confirm dialog immediately if the param is in the URL.
+ * TODO: restore after migration to FBE 2.0
+ *
 if (window.location.href.includes( "fb_force_resync" )) {
 	window.onload = function() { sync_confirm( "fb_force_resync" ); };
 } else if (window.location.href.includes( "fb_test_product_sync" )) {
@@ -175,6 +177,7 @@ if (window.location.href.includes( "fb_force_resync" )) {
 	window.is_test = true;
 	window.onload  = function() { sync_confirm( "fb_test_product_sync" ); };
 }
+*/
 
 
 /**
@@ -575,6 +578,7 @@ function setFeedMigrated(message) {
 	window.facebookAdsToolboxConfig.feedPrepared.feedMigrated = message.params.feed_migrated;
 
 	jQuery( '#woocommerce-facebook-settings-sync-products' ).hide();
+	jQuery( '.notice.wc-facebook-migrate-notice' ).hide();
 
 	save_settings_for_plugin(
 		function( response ) {
@@ -1076,6 +1080,14 @@ function syncShortDescription() {
 }
 
 jQuery( document ).ready( function( $ ) {
+
+	// when a "manage connection" link is click from a notice
+	$( '.notice .wc-facebook-manage-connection' ).click( function( event ) {
+
+		event.preventDefault();
+
+		facebookConfig();
+	} );
 
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 
