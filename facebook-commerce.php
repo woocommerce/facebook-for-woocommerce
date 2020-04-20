@@ -1004,6 +1004,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function on_product_publish( $wp_id ) {
 
+		// bail if we don't have a page access token or a catalog ID configured
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+			return;
+		}
+
 		if ( get_post_status( $wp_id ) !== 'publish' ) {
 			return;
 		}
@@ -4241,7 +4246,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Helper function to update FB visibility.
 	 */
 	function update_fb_visibility( $wp_id, $visibility ) {
+
+		// bail if we don't have a page access token or a catalog ID configured
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+			return;
+		}
+
 		$woo_product = new WC_Facebook_Product( $wp_id );
+
 		if ( ! $woo_product->exists() ) {
 			// This function can be called for non-woo products.
 			return;
