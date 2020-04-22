@@ -30,6 +30,9 @@ class Feed {
 	/** @var string the action slug for getting the product feed */
 	const REQUEST_FEED_ACTION = 'wc_facebook_get_feed_data';
 
+	/** @var string the WordPress option name where the secret included in the feed URL is stored */
+	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
+
 
 	/**
 	 * Feed constructor.
