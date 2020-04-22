@@ -10,7 +10,7 @@
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\REST_API;
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -334,11 +334,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				self::FB_PRIORITY_MID
 			);
 
+			// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+			add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
+
+			// don't duplicate product FBID meta
+			add_filter( 'woocommerce_duplicate_product_exclude_meta', [ $this, 'fb_duplicate_product_reset_meta' ] );
+
 			// Only load product processing hooks if we have completed setup.
 			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
-
-				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
-				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
@@ -385,11 +388,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				add_action(
 					'wp_ajax_ajax_delete_fb_product',
 					array( $this, 'ajax_delete_fb_product' )
-				);
-
-				add_filter(
-					'woocommerce_duplicate_product_exclude_meta',
-					array( $this, 'fb_duplicate_product_reset_meta' )
 				);
 
 				add_action(
@@ -758,8 +756,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_url() ); ?>',
-			feedPingUrl: '<?php echo esc_url( REST_API\Controllers\Feed::get_feed_ping_url() ); ?>',
+			feedUrl: '<?php echo esc_url( Feed::get_feed_data_url() ); ?>',
+			feedPingUrl: '',
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
@@ -835,7 +833,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
 		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
-		if ( $sync_enabled ) {
+		if ( $sync_enabled && $this->get_page_access_token() && $this->get_product_catalog_id() ) {
 
 			switch ( $product->get_type() ) {
 
@@ -1005,6 +1003,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param int $wp_id product ID
 	 */
 	public function on_product_publish( $wp_id ) {
+
+		// bail if we don't have a page access token or a catalog ID configured
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+			return;
+		}
 
 		if ( get_post_status( $wp_id ) !== 'publish' ) {
 			return;
@@ -1411,12 +1414,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		\WC_Facebookcommerce_Utils::log( 'Saving settings via AJAX' );
+
+		// listen for a feed migrated event for FBE 1.5
+		if ( isset( $_REQUEST['feed_migrated'] ) ) {
+
+			$this->set_feed_migrated( wc_string_to_bool( $_REQUEST['feed_migrated'] ) );
+
+			// don't save anything else if already connected
+			if ( $this->get_external_merchant_settings_id() ) {
+				wp_send_json_success();
+			}
+		}
+
 		if ( isset( $_REQUEST['api_key'] ) ) {
 
 			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
 
 			if ( ctype_alnum( $api_key ) ) {
 				$this->update_page_access_token( $api_key );
+			}
+		}
+
+		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
+
+			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
+
+			if ( is_numeric( $external_merchant_settings_id ) ) {
+				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
 			}
 		}
 
@@ -1441,7 +1466,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			if ( ctype_digit( $pixel_id ) ) {
 
 				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
-				if ( $this->get_page_access_token() ) {
+				if ( $this->get_external_merchant_settings_id() ) {
 
 					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
 						$this->update_pixel_install_time( time() );
@@ -1452,9 +1477,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				} else {
 
 					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-					echo 'Not saving pixel-only settings';
 
-					wp_die();
+					wp_send_json_error();
 				}
 			}
 		}
@@ -1469,15 +1493,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			if ( ctype_digit( $page_id ) ) {
 				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
-			}
-		}
-
-		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
-
-			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
-
-			if ( ctype_digit( $external_merchant_settings_id ) ) {
-				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
 			}
 		}
 
@@ -1504,15 +1519,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
 		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
 
-		// listen for a feed migrated event for FBE 1.5
-		if ( ! empty( $_REQUEST['feed_migrated'] ) ) {
-			$this->set_feed_migrated( wc_bool_to_string( $_REQUEST['feed_migrated'] ) );
-		}
-
 		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-		echo 'settings_saved';
 
-		wp_die();
+		wp_send_json_success();
 	}
 
 	/**
@@ -1548,6 +1557,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->init_settings();
 			$this->update_page_access_token( '' );
 			$this->update_product_catalog_id( '' );
+			$this->set_feed_migrated( false );
 
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
@@ -3275,7 +3285,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_page_access_token', $this->page_access_token, $this );
+		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $this->page_access_token : '', $this );
 	}
 
 
@@ -3952,7 +3962,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return bool
 	 */
-	private function is_feed_migrated() {
+	public function is_feed_migrated() {
 
 		if ( ! is_bool( $this->feed_migrated ) ) {
 
@@ -4236,7 +4246,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Helper function to update FB visibility.
 	 */
 	function update_fb_visibility( $wp_id, $visibility ) {
+
+		// bail if we don't have a page access token or a catalog ID configured
+		if ( ! $this->get_page_access_token() || ! $this->get_product_catalog_id() ) {
+			return;
+		}
+
 		$woo_product = new WC_Facebook_Product( $wp_id );
+
 		if ( ! $woo_product->exists() ) {
 			// This function can be called for non-woo products.
 			return;

@@ -69,7 +69,8 @@ jQuery( document ).ready( function( $ ) {
 			let $submitButton    = $( this ),
 				chosenBulkAction = $submitButton.prev( 'select' ).val();
 
-			if ( 'facebook_exclude' === chosenBulkAction || 'facebook_include' === chosenBulkAction ) {
+			// TODO: also check `'facebook_exclude' === chosenBulkAction` once Catalog Visibility settings are available again {WV 2020-04-20}
+			if ( 'facebook_include' === chosenBulkAction ) {
 
 				let products = [];
 

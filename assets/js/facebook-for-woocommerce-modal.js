@@ -7,38 +7,44 @@
  * @package FacebookCommerce
  */
 
-$ = jQuery;
+(function( $ ) {
 
-/**
- * Determines if the current modal is blocked.
- *
- * @returns {boolean}
- */
-function isModalBlocked() {
-	let $modal = $( '.wc-backbone-modal-content' );
-	return $modal.is( '.processing') || $modal.parents( '.processing' ).length;
-}
+	/**
+	 * Determines if the current modal is blocked.
+	 *
+	 * @returns {boolean}
+	 */
+	window.isModalBlocked = function() {
 
+		let $modal = $( '.wc-backbone-modal-content' );
 
-/**
- * Blocks the current modal.
- */
-function blockModal() {
-	if ( ! isModalBlocked() ) {
-		return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
-			message: null,
-			overlayCSS: {
-				background: '#fff',
-				opacity: 0.6
-			}
-		} );
+		return $modal.is( '.processing' ) || $modal.parents( '.processing' ).length;
 	}
-}
 
 
-/**
- * Unblocks the current modal.
- */
-function unBlockModal() {
-	$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
-}
+	/**
+	 * Blocks the current modal.
+	 */
+	window.blockModal = function() {
+
+		if ( ! isModalBlocked() ) {
+			return $( '.wc-backbone-modal-content' ).addClass( 'processing' ).block( {
+				message:    null,
+				overlayCSS: {
+					background: '#fff',
+					opacity:    0.6
+				}
+			} );
+		}
+	}
+
+
+	/**
+	 * Unblocks the current modal.
+	 */
+	window.unBlockModal = function() {
+
+		$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
+	}
+
+})( jQuery );
