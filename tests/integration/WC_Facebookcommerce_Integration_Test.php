@@ -746,8 +746,11 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 */
 	public function test_ajax_save_fb_settings( $setting, $param, $submitted, $expected = null ) {
 
+		// force wp_send_json() to call wp_die()
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
 		// disable wp_die()
-		add_filter( 'wp_die_handler', function() { return '__return_false'; } );
+		add_filter( 'wp_die_ajax_handler', function() { return '__return_false'; } );
 
 		// login as administrator
 		$user = new WP_User( wp_insert_user( [ 'user_login' => 'admin_' . wp_rand(), 'user_pass' => 'password' ] ) );
