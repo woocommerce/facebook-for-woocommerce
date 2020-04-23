@@ -6,16 +6,16 @@ class ProductSyncSettingCest {
 
 
 	/** @var string selector for the Facebook description field */
-	const FIELD_DESCRIPTION = '#' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
+	const FIELD_DESCRIPTION = '#fb_product_description';
 
 	/** @var string selector for the Facebook image source field */
 	const FIELD_IMAGE_SOURCE = '[name="fb_product_image_source"]';
 
 	/** @var string selector for the Facebook custom image URL field */
-	const FIELD_CUSTOM_IMAGE_URL = '#' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
+	const FIELD_CUSTOM_IMAGE_URL = '#fb_product_image';
 
 	/** @var string selector for the Facebook price field */
-	const FIELD_PRICE = '#' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
+	const FIELD_PRICE = '#fb_product_price';
 
 
 	/** @var \WC_Product|null product object created for the test */
@@ -33,7 +33,7 @@ class ProductSyncSettingCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		// save two generic products
