@@ -27,8 +27,6 @@ class FeedTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Feed::get_feed_data_url() */
 	public function test_get_feed_data_url() {
 
-		update_option( Feed::OPTION_FEED_URL_SECRET, '123456' );
-
 		$feed_data_url = Feed::get_feed_data_url();
 
 		$this->assertStringContainsString( sprintf( 'wc-api=%s', Feed::REQUEST_FEED_ACTION ), $feed_data_url );
