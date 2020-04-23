@@ -48,6 +48,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
  * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
  * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
+ * Fix - Fix a JavaScript error triggered when saving a product and using checkboxes for tags
 
 = 2020.03.17 - version 1.10.2 =
  * Tweak - Add a setting to easily enable debug logging
