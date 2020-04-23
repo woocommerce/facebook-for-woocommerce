@@ -432,7 +432,45 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
 			}
 
+			$this->create_files_to_protect_product_feed_directory();
+
 			return $this->write_product_feed_file( $this->get_product_ids() );
+		}
+
+
+		/**
+		 * Creates files in the catalog feed directory to prevent directory listing and hotlinking.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		private function create_files_to_protect_product_feed_directory() {
+
+			$catalog_feed_directory = trailingslashit( $this->get_file_directory() );
+
+			$files = [
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => 'index.html',
+					'content' => '',
+				],
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => '.htaccess',
+					'content' => 'deny from all',
+				],
+			];
+
+			foreach ( $files as $file ) {
+
+				if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
+
+					if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+
+						fwrite( $file_handle, $file['content'] );
+						fclose( $file_handle );
+					}
+				}
+			}
 		}
 
 
