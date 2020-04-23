@@ -562,7 +562,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.11.0-dev.1
 	 */
 	public function add_product_sync_delay_notice() {
 		global $current_screen;
@@ -599,7 +599,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.11.0-dev.1
 	 *
 	 * @param string $message_id the dismissed notice ID
 	 * @param int $user_id the ID of the user the noticed was dismissed for
@@ -619,7 +619,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.11.0-dev.1
 	 */
 	public function add_catalog_visibility_settings_removed_notice() {
 		global $current_screen;

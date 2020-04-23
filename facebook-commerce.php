@@ -896,7 +896,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since x.y.z
+	 * @since 1.11.0-dev.1
 	 *
 	 * @param int $post_id the post ID
 	 */
@@ -4595,7 +4595,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Enables product sync delay admin notice.
 	 *
-	 * @since x.y.z
+	 * @since 1.11.0-dev.1
 	 */
 	private function enable_product_sync_delay_admin_notice() {
 
