@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
@@ -28,8 +29,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/** @var string product catalog feed file directory inside the uploads folder */
 		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
 
-		/** @var string product catalog feed file name */
-		const FILE_NAME = 'product_catalog.csv';
+		/** @var string product catalog feed file name - %s will be replaced with a hash */
+		const FILE_NAME = 'product_catalog_%s.csv';
 
 
 		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
@@ -311,6 +312,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		public function get_file_name() {
 
+			$file_name = sprintf( self::FILE_NAME, wp_hash( Feed::get_feed_secret() ) );
+
 			/**
 			 * Filters the product catalog feed file name.
 			 *
@@ -318,7 +321,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			 *
 			 * @param string $file_name the file name
 			 */
-			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', self::FILE_NAME );
+			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', $file_name );
 		}
 
 
@@ -429,7 +432,45 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
 			}
 
+			$this->create_files_to_protect_product_feed_directory();
+
 			return $this->write_product_feed_file( $this->get_product_ids() );
+		}
+
+
+		/**
+		 * Creates files in the catalog feed directory to prevent directory listing and hotlinking.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		private function create_files_to_protect_product_feed_directory() {
+
+			$catalog_feed_directory = trailingslashit( $this->get_file_directory() );
+
+			$files = [
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => 'index.html',
+					'content' => '',
+				],
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => '.htaccess',
+					'content' => 'deny from all',
+				],
+			];
+
+			foreach ( $files as $file ) {
+
+				if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
+
+					if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+
+						fwrite( $file_handle, $file['content'] );
+						fclose( $file_handle );
+					}
+				}
+			}
 		}
 
 

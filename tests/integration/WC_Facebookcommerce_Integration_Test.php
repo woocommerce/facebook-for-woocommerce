@@ -560,34 +560,65 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	// /**
+	//  * @see \WC_Facebookcommerce_Integration::is_configured()
+	//  *
+	//  * TODO: uncomment when FBE 2.0 modifications are available {WV 2020-04-22}
+	//  *
+	//  * @param string $access_token Facebook access token
+	//  * @param string $page_id Facebok page ID
+	//  * @param bool $expected whether Facebook for WooCommerce is configured or not
+	//  *
+	//  * @dataProvider provider_is_configured()
+	//  */
+	// public function test_is_configured( $access_token, $page_id, $expected ) {
+
+	// 	$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
+
+	// 	$this->integration->update_page_access_token( $access_token );
+	// 	$this->integration->init_settings();
+
+	// 	$this->assertSame( $expected, $this->integration->is_configured() );
+	// }
+
+
+	// /** @see test_is_configured() */
+	// public function provider_is_configured() {
+
+	// 	return [
+	// 		[ 'abc123', 'facebook-page-id', true ],
+	// 		[ '',       'facebook-page-id', false ],
+	// 		[ 'abc123', '',                 false ],
+	// 		[ '',       '',                 false ],
+	// 	];
+	// }
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::is_configured()
 	 *
-	 * @param string $access_token Facebook access token
-	 * @param string $page_id Facebok page ID
+	 * TODO: consider removing this test when FBE 2.0 modifications are available {WV 2020-04-22}
+	 *
+	 * @param string $external_merchant_settings_id Facebook external merchant settings ID
 	 * @param bool $expected whether Facebook for WooCommerce is configured or not
 	 *
-	 * @dataProvider provider_is_configured()
+	 * @dataProvider provider_is_configured_with_external_merchant_settings_id()
 	 */
-	public function test_is_configured( $access_token, $page_id, $expected ) {
+	public function test_is_configured_with_external_merchant_settings_id( $external_merchant_settings_id, $expected ) {
 
-		$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
-
-		//$this->integration->update_page_access_token( $access_token );
+		$this->integration->update_external_merchant_settings_id( $external_merchant_settings_id );
 		$this->integration->init_settings();
 
 		$this->assertSame( $expected, $this->integration->is_configured() );
 	}
 
 
-	/** @see test_is_configured() */
-	public function provider_is_configured() {
+	/** @see test_is_configured_with_external_merchant_settings_id() */
+	public function provider_is_configured_with_external_merchant_settings_id() {
 
 		return [
-			[ 'abc123', 'facebook-page-id', true ],
-			//[ '',       'facebook-page-id', false ],
-			[ 'abc123', '',                 false ],
-			[ '',       '',                 false ],
+			[ 'external-merchant-settings-id', true ],
+			[ '',                              false ],
 		];
 	}
 
@@ -715,8 +746,11 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 */
 	public function test_ajax_save_fb_settings( $setting, $param, $submitted, $expected = null ) {
 
+		// force wp_send_json() to call wp_die()
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
 		// disable wp_die()
-		add_filter( 'wp_die_handler', function() { return '__return_false'; } );
+		add_filter( 'wp_die_ajax_handler', function() { return '__return_false'; } );
 
 		// login as administrator
 		$user = new WP_User( wp_insert_user( [ 'user_login' => 'admin_' . wp_rand(), 'user_pass' => 'password' ] ) );

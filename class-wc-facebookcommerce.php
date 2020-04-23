@@ -79,7 +79,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
-					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', get_admin_url() . '/admin.php?page=wc-settings&tab=integration' . '&section=facebookcommerce' );
+					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ) );
 				}
 
 				include_once 'facebook-commerce.php';

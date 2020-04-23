@@ -30,6 +30,9 @@ class Feed {
 	/** @var string the action slug for getting the product feed */
 	const REQUEST_FEED_ACTION = 'wc_facebook_get_feed_data';
 
+	/** @var string the WordPress option name where the secret included in the feed URL is stored */
+	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
+
 
 	/**
 	 * Feed constructor.
@@ -81,6 +84,11 @@ class Feed {
 		}
 
 		try {
+
+			// bail early if the feed secret is not included or is not valid
+			if ( Feed::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			}
 
 			// bail early if the file can't be read
 			if ( ! is_readable( $file_path ) ) {
@@ -207,7 +215,36 @@ class Feed {
 	 */
 	public static function get_feed_data_url() {
 
-		return add_query_arg( 'wc-api', self::REQUEST_FEED_ACTION, home_url( '/' ) );
+		$query_args = [
+			'wc-api' => self::REQUEST_FEED_ACTION,
+			'secret' => self::get_feed_secret(),
+		];
+
+		return add_query_arg( $query_args, home_url( '/' ) );
+	}
+
+
+	/**
+	 * Gets the secret value that should be included in the Feed URL.
+	 *
+	 * Generates a new secret and stores it in the database if no value is set.
+	 *
+	 * @since 1.11.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_feed_secret() {
+
+		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
+
+		if  ( ! $secret ) {
+
+			$secret = wp_hash( 'products-feed-' . time() );
+
+			update_option( self::OPTION_FEED_URL_SECRET, $secret );
+		}
+
+		return $secret;
 	}
 
 

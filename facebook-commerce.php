@@ -756,7 +756,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_url( Feed::get_feed_data_url() ); ?>',
+			feedUrl: '<?php echo esc_url_raw( Feed::get_feed_data_url() ); ?>',
 			feedPingUrl: '',
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
