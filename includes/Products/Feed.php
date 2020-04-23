@@ -85,6 +85,11 @@ class Feed {
 
 		try {
 
+			// bail early if the feed secret is not included or is not valid
+			if ( Feed::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			}
+
 			// bail early if the file can't be read
 			if ( ! is_readable( $file_path ) ) {
 				throw new Framework\SV_WC_Plugin_Exception( 'File is not readable.', 404 );
