@@ -233,7 +233,7 @@ class Feed {
 	 *
 	 * @return string
 	 */
-	private static function get_feed_secret() {
+	public static function get_feed_secret() {
 
 		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
 
