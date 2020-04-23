@@ -200,7 +200,8 @@ jQuery( document ).ready( function( $ ) {
 				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
 				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
 				productCat       = [],
-				productTag       = [],
+				// this query will get tags when not using checkboxes
+				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
 				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' ),
 				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
 
@@ -208,6 +209,7 @@ jQuery( document ).ready( function( $ ) {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
 			} );
 
+			// this query will get tags when using checkboxes
 			$( '#taxonomy-product_tag input[name="tax_input[product_tag][]"]:checked' ).each( function() {
 				productTag.push( parseInt( $( this ).val(), 10 ) );
 			} );
