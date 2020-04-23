@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.10.2
+Stable tag: 1.11.0-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,17 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.nn.nn - version 1.11.0-dev.1 =
+ * Tweak - Sync products using Facebook's feed pull method
+ * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
+ * Fix - Make sure that the Facebook sync enabled and catalog visibility columns are properly displayed on narrow screen sizes on some browsers
+ * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
+ * Fix - Ensure variable products excluded from sync are not synced in Facebook
+ * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
+ * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
+ * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
+ * Fix - Fix a JavaScript error triggered when saving a product and using checkboxes for tags
 
 = 2020.03.17 - version 1.10.2 =
  * Tweak - Add a setting to easily enable debug logging

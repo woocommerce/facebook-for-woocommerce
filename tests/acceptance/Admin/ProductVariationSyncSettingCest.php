@@ -24,7 +24,7 @@ class ProductVariationSyncSettingCest {
 	 */
     public function _before( AcceptanceTester $I ) {
 
-	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
 	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		$product_objects = $I->haveVariableProductInDatabase();

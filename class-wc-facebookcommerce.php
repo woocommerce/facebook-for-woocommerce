@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.10.2';
+		const VERSION = '1.11.0-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -45,6 +45,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
+		private $product_feed;
 
 
 		/**
@@ -76,13 +79,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
-					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', get_admin_url() . '/admin.php?page=wc-settings&tab=integration' . '&section=facebookcommerce' );
+					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ) );
 				}
 
 				include_once 'facebook-commerce.php';
 
 				require_once __DIR__ . '/includes/Products.php';
+				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
+
+				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 
 				if ( is_ajax() ) {
 
@@ -109,6 +116,51 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			require_once __DIR__ . '/includes/Admin.php';
 
 			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+		}
+
+
+		/**
+		 * Adds the plugin admin notices.
+		 *
+		 * @since 1.11.0-dev.1
+		 */
+		public function add_admin_notices() {
+
+			parent::add_admin_notices();
+
+			$integration = $this->get_integration();
+
+			// if the feed hasn't been migrated to FBE 1.5 and the access token is bad, display a notice
+			if ( $integration && $integration->is_configured() && ! $integration->is_feed_migrated() && ! $integration->get_page_name() ) {
+
+				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security';
+
+				if ( $this->is_plugin_settings() ) {
+
+					$message = sprintf(
+						/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
+						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s and go to %1$sAdvanced Options%2$s > %1$sReconnect Catalog%2$s to securely reconnect. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+						'<strong>', '</strong>',
+						'<a href="#" class="wc-facebook-manage-connection">', '</a>',
+						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+					);
+
+				} else {
+
+					$message = sprintf(
+						/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
+						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s and go to %1$sManage Connection%2$s > %1$sAdvanced Options%2$s > %1$sReconnect Catalog%2$s to securely reconnect. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+						'<strong>', '</strong>',
+						'<a href="' . esc_url( $this->get_settings_url() ) . '">', '</a>',
+						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+					);
+				}
+
+				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v1_5', [
+					'dismissible'  => false,
+					'notice_class' => 'notice-info wc-facebook-migrate-notice',
+				] );
+			}
 		}
 
 
@@ -165,6 +217,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_ajax_handler() {
 
 			return $this->ajax;
+		}
+
+
+		/**
+		 * Gets the product feed handler.
+		 *
+		 * @since 1.11.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Feed
+		 */
+		public function get_product_feed_handler() {
+
+			return $this->product_feed;
 		}
 
 
