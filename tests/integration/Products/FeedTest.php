@@ -12,15 +12,6 @@ class FeedTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
-	/**
-	 * Runs before each test.
-	 */
-	protected function _before() {
-
-		require_once 'includes/Products/Feed.php';
-	}
-
-
 	/** Test methods **************************************************************************************************/
 
 
