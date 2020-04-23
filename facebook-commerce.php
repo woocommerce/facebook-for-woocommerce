@@ -896,7 +896,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @param int $post_id the post ID
 	 */
@@ -3376,7 +3376,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/***
 	 * Gets the Facebook Upload ID.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return string
 	 */
@@ -3392,7 +3392,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Filters the Facebook upload ID.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param string $upload_id Facebook upload ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -3761,7 +3761,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook upload ID.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @param string $value upload ID value
 	 */
@@ -3822,7 +3822,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Sets whether the feed has been migrated from FBE 1 to FBE 1.5.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @param bool $is_migrated whether the feed has been migrated from FBE 1 to FBE 1.5
 	 */
@@ -3958,7 +3958,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/***
 	 * Determines if the feed has been migrated from FBE 1 to FBE 1.5
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return bool
 	 */
@@ -4576,7 +4576,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Handles the schedule feed generation action, triggered by the REST API.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function handle_generate_product_catalog_feed() {
 
@@ -4595,7 +4595,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Enables product sync delay admin notice.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	private function enable_product_sync_delay_admin_notice() {
 

@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * This will eventually replace \WC_Facebook_Product_Feed as we refactor and move its functionality here.
  *
- * @since 1.11.0-dev.1
+ * @since 1.11.0
  */
 class Feed {
 
@@ -37,7 +37,7 @@ class Feed {
 	/**
 	 * Feed constructor.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function __construct() {
 
@@ -49,7 +49,7 @@ class Feed {
 	/**
 	 * Adds the necessary action and filter hooks.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	private function add_hooks() {
 
@@ -69,7 +69,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function handle_feed_data_request() {
 
@@ -140,7 +140,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function regenerate_feed() {
 
@@ -155,7 +155,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function schedule_feed_generation() {
 
@@ -170,7 +170,7 @@ class Feed {
 		/**
 		 * Filters the frequency with which the product feed data is generated.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
 		 */
@@ -187,7 +187,7 @@ class Feed {
 	 *
 	 * Helper method, do not open to public.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return bool
 	 */
@@ -209,7 +209,7 @@ class Feed {
 	/**
 	 * Gets the URL for retrieving the product feed data.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return string
 	 */
@@ -229,7 +229,7 @@ class Feed {
 	 *
 	 * Generates a new secret and stores it in the database if no value is set.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return string
 	 */

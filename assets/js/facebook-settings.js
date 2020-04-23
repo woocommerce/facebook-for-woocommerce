@@ -720,7 +720,7 @@ addAnEventListener( window,'message',iFrameListener );
 /**
  * Sets the page parameters received from FBE.
  *
- * @since 1.11.0-dev.1
+ * @since 1.11.0
  *
  * @param {Object} message
  */
