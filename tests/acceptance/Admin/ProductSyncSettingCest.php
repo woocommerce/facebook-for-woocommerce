@@ -267,4 +267,36 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * Test that the sync is automatically disabled when saving virtual products.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_sync_disabled_saving_virtual_products( AcceptanceTester $I ) {
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the sync is automatically disabled when saving virtual products' );
+
+		// checkOption does not work here for some reason
+		$I->click( '#_virtual' );
+
+		// scroll to and click the Update button
+		$I->scrollTo( '#publish', 0, -200 );
+		$I->click( '#publish' );
+
+		$I->waitForText( 'Product updated' );
+
+		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
+		$I->click( '#_virtual' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+	}
+
+
 }
