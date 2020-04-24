@@ -169,4 +169,36 @@ class ProductSyncBulkActionsCest {
 	}
 
 
+	/**
+	 * Test that the Include in Facebook sync does not enable sync for a virtual product.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_include_bulk_action_virtual( AcceptanceTester $I ) {
+
+		// disable sync for the product before viewing the Products page
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product ] );
+
+		// make the product virtual
+		$this->product->set_virtual( true );
+		$this->product->save();
+
+		$I->amOnProductsPage();
+
+		$I->see( 'Disabled', 'table.wp-list-table td' );
+
+		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a virtual product' );
+
+		$I->click( "#cb-select-{$this->product->get_id()}" );
+		$I->selectOption( '[name=action]', 'Include in Facebook sync' );
+		$I->click( '#doaction' );
+		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
+
+		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
+		$I->see( 'Disabled', 'table.wp-list-table td' );
+	}
+
+
 }
