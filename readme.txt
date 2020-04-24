@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 1.11.1-dev.1 =
+
 = 2020.04.23 - version 1.11.0 =
  * Tweak - Sync products using Facebook's feed pull method
  * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
