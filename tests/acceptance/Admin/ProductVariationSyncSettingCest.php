@@ -261,7 +261,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->wantTo( 'Test that the fields are hidden when the variation is made virtual' );
 
-		$I->waitForElementVisible( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 5 );
+		$I->waitForElementVisible( "#variable_description{$index}" );
 
 		$I->click( "[name='variable_is_virtual[{$index}]']" );
 
@@ -280,6 +280,39 @@ class ProductVariationSyncSettingCest {
 		$I->seeElement( ".variable_fb_product_image_source{$index}_field" );
 		$I->seeElement( "#variable_fb_product_image{$index}" );
 		$I->seeElement( "#variable_fb_product_price{$index}" );
+	}
+
+
+	/**
+	 * Test that the sync is automatically disabled when saving virtual variations.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_sync_disabled_saving_virtual_variations( AcceptanceTester $I ) {
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the sync is automatically disabled when saving virtual variations' );
+
+		$I->waitForElementVisible( "#variable_description{$index}" );
+
+		$I->click( "[name='variable_is_virtual[{$index}]']" );
+
+		$I->click( [ 'css' => '.save-variation-changes' ] );
+
+		$I->wait( 4 );
+
+		$index = $I->openVariationMetabox( $this->product_variation );
+
+		$I->waitForElementVisible( "#variable_description{$index}" );
+
+		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
+		$I->click( "[name='variable_is_virtual[{$index}]']" );
+
+		$I->seeElement( "#variable_fb_sync_enabled{$index}" );
+		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
 	}
 
 
