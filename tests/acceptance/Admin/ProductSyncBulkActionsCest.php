@@ -201,4 +201,58 @@ class ProductSyncBulkActionsCest {
 	}
 
 
+	/**
+	 * Test that the Exclude from Facebook sync disables sync for a standard product.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_exclude_bulk_action_standard( AcceptanceTester $I ) {
+
+		// enable sync for the product before viewing the Products page
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product ] );
+
+		$I->amOnProductsPage();
+
+		$I->see( 'Enabled', 'table.wp-list-table td' );
+
+		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product' );
+
+		$I->click( "#cb-select-{$this->product->get_id()}" );
+		$I->selectOption( '[name=action]', 'Exclude from Facebook sync' );
+		$I->click( '#doaction' );
+		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
+
+		$I->see( 'Disabled', 'table.wp-list-table td' );
+	}
+
+
+	/**
+	 * Test that the Exclude from Facebook sync disables sync when using the secondary dropdown at the bottom of the list table.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_exclude_bulk_action_secondary_dropdown( AcceptanceTester $I ) {
+
+		// enable sync for the product before viewing the Products page
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product ] );
+
+		$I->amOnProductsPage();
+
+		$I->see( 'Enabled', 'table.wp-list-table td' );
+
+		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product when using the secondary dropdown at the bottom of the list table' );
+
+		$I->click( "#cb-select-{$this->product->get_id()}" );
+		$I->selectOption( '[name=action2]', 'Exclude from Facebook sync' );
+		$I->click( '#doaction2' );
+		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
+
+		$I->see( 'Disabled', 'table.wp-list-table td' );
+	}
+
+
 }
