@@ -657,7 +657,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => [ 'show_if_simple' ],
+			'class'  => [ 'show_if_simple', 'hide_if_virtual' ],
 		];
 
 		return $tabs;
