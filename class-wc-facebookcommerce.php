@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
+use SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -48,6 +49,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
+
+		/** @var Background_Disable_Virtual_Products_Sync instance */
+		protected $background_disable_virtual_products_sync;
 
 
 		/**
@@ -100,6 +104,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// register the WooCommerce integration
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
+
+				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
+					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
+				}
 			}
 		}
 
@@ -230,6 +238,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_product_feed_handler() {
 
 			return $this->product_feed;
+		}
+
+
+		/**
+		 * Gets the background disable virtual products sync handler instance.
+		 *
+		 * @since 1.11.1-dev.1
+		 */
+		public function get_background_disable_virtual_products_sync_instance() {
+
+			return $this->background_disable_virtual_products_sync;
 		}
 
 
