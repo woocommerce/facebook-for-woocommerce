@@ -784,7 +784,7 @@ class Admin {
 			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
 			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
 			'class'         => 'checkbox js-variable-fb-sync-toggle',
-			'wrapper_class' => 'fb-sync-enabled-field',
+			'wrapper_class' => 'fb-sync-enabled-field hide_if_variation_virtual',
 		] );
 
 		woocommerce_wp_textarea_input( [
@@ -797,7 +797,7 @@ class Admin {
 			'rows'          => 5,
 			'value'         => $description,
 			'class'         => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row-full',
+			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
 		] );
 
 		woocommerce_wp_radio( [
@@ -813,7 +813,7 @@ class Admin {
 			],
 			'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
 			'class'         => 'enable-if-sync-enabled js-fb-product-image-source',
-			'wrapper_class' => 'fb-product-image-source-field',
+			'wrapper_class' => 'fb-product-image-source-field hide_if_variation_virtual',
 		] );
 
 		woocommerce_wp_text_input( [
@@ -822,7 +822,7 @@ class Admin {
 			'label'         => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
 			'value'         => $image_url,
 			'class'         => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
-			'wrapper_class' => 'form-row form-row-full',
+			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
 		] );
 
 		woocommerce_wp_text_input( [
@@ -837,7 +837,7 @@ class Admin {
 			'description'   => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
 			'value'         => wc_format_decimal( $price ),
 			'class'         => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-full',
+			'wrapper_class' => 'form-row form-full hide_if_variation_virtual',
 		] );
 	}
 
