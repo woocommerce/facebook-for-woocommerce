@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 1.11.1-dev.1
+ * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
 
 2020.04.23 - version 1.11.0
  * Tweak - Sync products using Facebook's feed pull method
