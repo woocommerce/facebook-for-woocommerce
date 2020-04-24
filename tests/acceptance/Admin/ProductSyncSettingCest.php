@@ -236,4 +236,35 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * Test that the tab is hidden for virtual products.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_tab_hidden_virtual_products( AcceptanceTester $I ) {
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the tab is hidden when the product is made virtual' );
+
+		// checkOption does not work here for some reason
+		$I->click( '#_virtual' );
+
+		$I->dontSee( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->wantTo( 'Test that the tab and fields are shown when the product is made non virtual' );
+
+		$I->click( '#_virtual' );
+
+		$I->see( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+
+		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook Description', '.form-field' );
+		$I->see( 'Facebook Product Image', '.form-field' );
+		$I->see( 'Facebook Price', '.form-field' );
+	}
+
+
 }
