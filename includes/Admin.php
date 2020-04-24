@@ -885,7 +885,7 @@ class Admin {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
+		if ( ! $variation->is_virtual() && isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
 
 			Products::enable_sync_for_products( [ $variation ] );
 
