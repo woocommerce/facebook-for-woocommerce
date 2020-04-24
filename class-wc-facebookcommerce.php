@@ -106,6 +106,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
 
 				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
+
+					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
+
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
 				}
 			}
