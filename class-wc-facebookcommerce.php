@@ -107,6 +107,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
 
+					require_once __DIR__ . '/vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-async-request.php';
+					require_once __DIR__ . '/vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-background-job-handler.php';
 					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
 
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
