@@ -53,6 +53,12 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 
 		if ( ! isset( $job->total ) ) {
 			$job->total = $this->count_remaining_products();
+
+			if ( empty( $job->total ) ) {
+
+				// no products need to be excluded from sync, do not display admin notice
+				update_option( 'wc_facebook_sync_virtual_products_disabled_skipped', 'yes' );
+			}
 		}
 
 		if ( ! isset( $job->progress ) ) {

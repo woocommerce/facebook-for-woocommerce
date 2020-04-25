@@ -53,6 +53,9 @@ class Admin {
 		add_action( 'admin_notices', [ $this, 'add_catalog_visibility_settings_removed_notice' ] );
 		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
 		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
+		// add admin notice to inform sync has been automatically disabled for virtual products
+		add_action( 'admin_notices', [ $this, 'add_disabled_virtual_products_sync_notice' ] );
+
 		// handle dismissal of special notices
 		add_action( 'wc_' . facebook_for_woocommerce()->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
 
@@ -673,13 +676,41 @@ class Admin {
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 				sprintf(
 					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %3$sClick here to read more about Facebook\'s policy.%4$s', 'facebook-for-woocommerce' ),
+					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %3$sClick here to read more about Facebook\'s policy%4$s.', 'facebook-for-woocommerce' ),
 					'<strong>',
 					'</strong>',
 					'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
 					'</a>'
 				),
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
+				[ 'notice_class' => 'notice-info' ]
+			);
+		}
+	}
+
+
+	/**
+	 * Prints a notice to inform sync has been automatically disabled for virtual products.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.1-dev.1
+	 */
+	public function add_disabled_virtual_products_sync_notice() {
+
+		if ( 'yes' === get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) &&
+		     'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled_skipped', 'no' ) ) {
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
+				sprintf(
+					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
+					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we have removed any previously synced virtual products from the catalog sync going forward. %3$sClick here to read more about Facebook\'s policy%4$s.', 'facebook-for-woocommerce' ),
+					'<strong>',
+					'</strong>',
+					'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
+					'</a>'
+				),
+				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-disabled-virtual-products-sync',
 				[ 'notice_class' => 'notice-info' ]
 			);
 		}
