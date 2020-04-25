@@ -65,10 +65,10 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 		// disable sync until memory or time limit is exceeded
 		while ( $processed_products < $remaining_products ) {
 
-			$rows_inserted = $this->disable_sync();
+			$rows_updated = $this->disable_sync();
 
-			$processed_products += $rows_inserted;
-			$job->progress     += $rows_inserted;
+			$processed_products += $rows_updated;
+			$job->progress      += $rows_updated;
 
 			// update job progress
 			$job = $this->update_job( $job );
@@ -125,10 +125,12 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 
 		$sql = "
 			UPDATE {$wpdb->postmeta} AS sync_meta
-				SET meta_value = 'no'
-				INNER JOIN {$wpdb->posts} AS posts ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' AND sync_meta.meta_value = 'yes' )
+				INNER JOIN {$wpdb->posts} AS posts ON ( posts.ID = sync_meta.post_id )
 				INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
-				WHERE posts.post_type = 'product'
+				SET sync_meta.meta_value = 'no'
+				WHERE sync_meta.meta_key = '_wc_facebook_sync_enabled'
+				AND sync_meta.meta_value = 'yes'
+				AND posts.post_type = 'product'
 				LIMIT 1000
 		";
 
