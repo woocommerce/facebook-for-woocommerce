@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.0
+Stable tag: 1.11.2
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.nn.nn - version 1.11.2 =
+ * Misc - Add support for WooCommerce 4.1
 
 = 2020.04.27 - version 1.11.1 =
  * Fix - Fix integration with WPML
