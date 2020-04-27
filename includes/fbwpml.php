@@ -121,15 +121,9 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 								<?php endforeach; ?>
 
+								<p class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true"><?php esc_html_e( "Saved. An automated sync from Facebook will run every hour to update the catalog with any changes you've made.", 'facebook-for-woocommerce' ); ?></p>
+
 								<p class="buttons-wrap">
-									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
-										<?php printf(
-											/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
-											esc_html__( 'Saved. You should now %1$sRe-Sync%2$s your products with Facebook.', 'facebook-for-woocommerce' ),
-											sprintf( '<a href="%s">', esc_url( add_query_arg( 'fb_force_resync', 'true', WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) ) ),
-											'</a>'
-										); ?>
-									</span>
 									<input
 										class="button button-primary"
 										name="save"
