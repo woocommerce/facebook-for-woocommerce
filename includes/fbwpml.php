@@ -130,6 +130,7 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 								<?php endforeach; ?>
 
+								<?php // TODO: restore success message removed in e7f290f when FBE 2.0 changes are available {WV 2020-04-27} ?>
 								<p class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true"><?php esc_html_e( "Saved. An automated sync from Facebook will run every hour to update the catalog with any changes you've made.", 'facebook-for-woocommerce' ); ?></p>
 
 								<p class="buttons-wrap">
