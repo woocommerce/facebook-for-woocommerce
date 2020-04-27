@@ -32,7 +32,7 @@ class Integrations {
 	/**
 	 * Integrations constructor.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.1
 	 *
 	 * @param Framework\SV_WC_Plugin $plugin plugin instance
 	 */
@@ -47,7 +47,7 @@ class Integrations {
 	/**
 	 * Loads integration classes.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.1
 	 */
 	private function load_integrations() {
 
