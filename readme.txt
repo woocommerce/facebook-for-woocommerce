@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 1.11.1-dev.1 =
+= 2020.04.27 - version 1.11.1 =
  * Fix - Fix integration with WPML
 
 = 2020.04.23 - version 1.11.0 =

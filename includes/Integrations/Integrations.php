@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * The integrations handler.
  *
- * @since 1.11.1-dev.1
+ * @since 1.11.1
  */
 class Integrations {
 
