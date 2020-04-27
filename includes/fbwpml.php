@@ -25,12 +25,21 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 		public static $default_lang = null;
 		const OPTION                = 'fb_wmpl_language_visibility';
 
+
+		/**
+		 * Constructor for WC_Facebook_WPML_Injector class.
+		 */
 		public function __construct() {
-			add_action( 'icl_menu_footer', array( $this, 'wpml_support' ) );
-			add_action( 'icl_ajx_custom_call', array( $this, 'wpml_ajax_support' ), 10, 2 );
+
 			self::$settings     = get_option( self::OPTION );
 			self::$default_lang = apply_filters( 'wpml_default_language', null );
+
+			if ( is_admin() ) {
+				add_action( 'icl_menu_footer',     [ $this, 'wpml_support' ] );
+				add_action( 'icl_ajx_custom_call', [ $this, 'wpml_ajax_support' ], 10, 2 );
+			}
 		}
+
 
 		public static function should_hide( $wp_id ) {
 			$product_lang = apply_filters( 'wpml_post_language_details', null, $wp_id );
@@ -121,15 +130,10 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 
 								<?php endforeach; ?>
 
+								<?php // TODO: restore success message removed in e7f290f when FBE 2.0 changes are available {WV 2020-04-27} ?>
+								<p class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true"><?php esc_html_e( "Saved. An automated sync from Facebook will run every hour to update the catalog with any changes you've made.", 'facebook-for-woocommerce' ); ?></p>
+
 								<p class="buttons-wrap">
-									<span class="icl_ajx_response_fb" id="icl_ajx_response_fb" hidden="true">
-										<?php printf(
-											/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
-											esc_html__( 'Saved. You should now %1$sRe-Sync%2$s your products with Facebook.', 'facebook-for-woocommerce' ),
-											sprintf( '<a href="%s">', esc_url( add_query_arg( 'fb_force_resync', 'true', WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) ) ),
-											'</a>'
-										); ?>
-									</span>
 									<input
 										class="button button-primary"
 										name="save"

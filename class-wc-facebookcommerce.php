@@ -84,6 +84,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
@@ -100,6 +101,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// register the WooCommerce integration
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
+
+				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
+
 			}
 		}
 
