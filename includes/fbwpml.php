@@ -25,12 +25,21 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 		public static $default_lang = null;
 		const OPTION                = 'fb_wmpl_language_visibility';
 
+
+		/**
+		 * Constructor for WC_Facebook_WPML_Injector class.
+		 */
 		public function __construct() {
-			add_action( 'icl_menu_footer', array( $this, 'wpml_support' ) );
-			add_action( 'icl_ajx_custom_call', array( $this, 'wpml_ajax_support' ), 10, 2 );
+
 			self::$settings     = get_option( self::OPTION );
 			self::$default_lang = apply_filters( 'wpml_default_language', null );
+
+			if ( is_admin() ) {
+				add_action( 'icl_menu_footer',     [ $this, 'wpml_support' ] );
+				add_action( 'icl_ajx_custom_call', [ $this, 'wpml_ajax_support' ], 10, 2 );
+			}
 		}
+
 
 		public static function should_hide( $wp_id ) {
 			$product_lang = apply_filters( 'wpml_post_language_details', null, $wp_id );
