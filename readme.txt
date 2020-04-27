@@ -46,7 +46,6 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
  * Fix - Ensure variable products excluded from sync are not synced in Facebook
  * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
- * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
  * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
  * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
  * Fix - Fix a JavaScript error triggered when saving a product and using checkboxes for tags
