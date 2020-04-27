@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.11.0';
+		const VERSION = '1.11.1-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -84,6 +84,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
@@ -100,6 +101,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// register the WooCommerce integration
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
+
+				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
+
 			}
 		}
 
