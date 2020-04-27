@@ -451,8 +451,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			WC()->session->set( 'facebook_for_woocommerce_last_order', 0 );
-
 			$this->pixel->inject_event( 'InitiateCheckout', [
 				'num_items'    => $this->get_cart_num_items(),
 				'content_ids'  => $this->get_cart_content_ids(),
