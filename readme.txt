@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.0-dev.1
+Stable tag: 1.11.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 1.11.0-dev.1 =
+= 2020.04.23 - version 1.11.0 =
  * Tweak - Sync products using Facebook's feed pull method
  * Fix - When filtering products by sync enabled status, make sure variable products with sync disabled status do not show up in results
  * Fix - Make sure that the Facebook sync enabled and catalog visibility columns are properly displayed on narrow screen sizes on some browsers
@@ -49,6 +49,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
  * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
  * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
+ * Fix - Fix a JavaScript error triggered when saving a product and using checkboxes for tags
 
 = 2020.03.17 - version 1.10.2 =
  * Tweak - Add a setting to easily enable debug logging

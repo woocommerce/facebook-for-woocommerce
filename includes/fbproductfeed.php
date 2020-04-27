@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
@@ -28,8 +29,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/** @var string product catalog feed file directory inside the uploads folder */
 		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
 
-		/** @var string product catalog feed file name */
-		const FILE_NAME = 'product_catalog.csv';
+		/** @var string product catalog feed file name - %s will be replaced with a hash */
+		const FILE_NAME = 'product_catalog_%s.csv';
 
 
 		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
@@ -59,7 +60,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Schedules a new feed generation.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 */
 		public function schedule_feed_generation() {
 
@@ -84,7 +85,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * This replaces any previously generated feed file.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 */
 		public function generate_feed() {
 
@@ -112,7 +113,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Sets the average feed generation time with a 25% decay.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param float $generation_time last generation time
 		 */
@@ -132,7 +133,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Sets the average feed generation time.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param float $time generation time
 		 */
@@ -147,7 +148,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * Performs a dry run and returns either the dry run time or last average estimated time, whichever is higher.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return int
 		 */
@@ -166,7 +167,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * Runs a dry-run generation of a subset of products, then extrapolates that out to the full catalog size. Also
 		 * adds a bit of buffer time.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return float
 		 */
@@ -213,7 +214,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the average feed generation time.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return float
 		 */
@@ -226,7 +227,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the number of products to use when estimating the feed file generation time.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return int
 		 */
@@ -235,7 +236,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			/**
 			 * Filters the number of products to use when estimating the feed file generation time.
 			 *
-			 * @since 1.11.0-dev.1
+			 * @since 1.11.0
 			 *
 			 * @param int $sample_size number of products to use when estimating the feed file generation time
 			 */
@@ -248,7 +249,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the number of seconds to add as a buffer when estimating the feed file generation time.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return int
 		 */
@@ -257,7 +258,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			/**
 			 * Filters the number of seconds to add as a buffer when estimating the feed file generation time.
 			 *
-			 * @since 1.11.0-dev.1
+			 * @since 1.11.0
 			 *
 			 * @param int $time number of seconds to add as a buffer when estimating the feed file generation time
 			 */
@@ -270,7 +271,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product catalog feed file path.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return string
 		 */
@@ -279,7 +280,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			/**
 			 * Filters the product catalog feed file path.
 			 *
-			 * @since 1.11.0-dev.1
+			 * @since 1.11.0
 			 *
 			 * @param string $file_path the file path
 			 */
@@ -290,7 +291,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product catalog feed file directory.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return string
 		 */
@@ -305,20 +306,22 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product catalog feed file name.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return string
 		 */
 		public function get_file_name() {
 
+			$file_name = sprintf( self::FILE_NAME, wp_hash( Feed::get_feed_secret() ) );
+
 			/**
 			 * Filters the product catalog feed file name.
 			 *
-			 * @since 1.11.0-dev.1
+			 * @since 1.11.0
 			 *
 			 * @param string $file_name the file name
 			 */
-			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', self::FILE_NAME );
+			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', $file_name );
 		}
 
 
@@ -395,7 +398,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product IDs that will be included in the feed file.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return int[]
 		 */
@@ -429,14 +432,52 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
 			}
 
+			$this->create_files_to_protect_product_feed_directory();
+
 			return $this->write_product_feed_file( $this->get_product_ids() );
+		}
+
+
+		/**
+		 * Creates files in the catalog feed directory to prevent directory listing and hotlinking.
+		 *
+		 * @since 1.11.0
+		 */
+		private function create_files_to_protect_product_feed_directory() {
+
+			$catalog_feed_directory = trailingslashit( $this->get_file_directory() );
+
+			$files = [
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => 'index.html',
+					'content' => '',
+				],
+				[
+					'base'    => $catalog_feed_directory,
+					'file'    => '.htaccess',
+					'content' => 'deny from all',
+				],
+			];
+
+			foreach ( $files as $file ) {
+
+				if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
+
+					if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+
+						fwrite( $file_handle, $file['content'] );
+						fclose( $file_handle );
+					}
+				}
+			}
 		}
 
 
 		/**
 		 * Writes the product catalog feed file with data for the given product IDs.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param int[] $wp_ids product IDs
 		 * @param bool $is_dry_run whether this is a dry run or the file should be written

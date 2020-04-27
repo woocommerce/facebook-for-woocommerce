@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * This will eventually replace \WC_Facebook_Product_Feed as we refactor and move its functionality here.
  *
- * @since 1.11.0-dev.1
+ * @since 1.11.0
  */
 class Feed {
 
@@ -30,11 +30,14 @@ class Feed {
 	/** @var string the action slug for getting the product feed */
 	const REQUEST_FEED_ACTION = 'wc_facebook_get_feed_data';
 
+	/** @var string the WordPress option name where the secret included in the feed URL is stored */
+	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
+
 
 	/**
 	 * Feed constructor.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function __construct() {
 
@@ -46,7 +49,7 @@ class Feed {
 	/**
 	 * Adds the necessary action and filter hooks.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	private function add_hooks() {
 
@@ -66,7 +69,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function handle_feed_data_request() {
 
@@ -81,6 +84,11 @@ class Feed {
 		}
 
 		try {
+
+			// bail early if the feed secret is not included or is not valid
+			if ( Feed::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			}
 
 			// bail early if the file can't be read
 			if ( ! is_readable( $file_path ) ) {
@@ -132,7 +140,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function regenerate_feed() {
 
@@ -147,7 +155,7 @@ class Feed {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 */
 	public function schedule_feed_generation() {
 
@@ -162,7 +170,7 @@ class Feed {
 		/**
 		 * Filters the frequency with which the product feed data is generated.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
 		 */
@@ -179,7 +187,7 @@ class Feed {
 	 *
 	 * Helper method, do not open to public.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return bool
 	 */
@@ -201,13 +209,42 @@ class Feed {
 	/**
 	 * Gets the URL for retrieving the product feed data.
 	 *
-	 * @since 1.11.0-dev.1
+	 * @since 1.11.0
 	 *
 	 * @return string
 	 */
 	public static function get_feed_data_url() {
 
-		return add_query_arg( 'wc-api', self::REQUEST_FEED_ACTION, home_url( '/' ) );
+		$query_args = [
+			'wc-api' => self::REQUEST_FEED_ACTION,
+			'secret' => self::get_feed_secret(),
+		];
+
+		return add_query_arg( $query_args, home_url( '/' ) );
+	}
+
+
+	/**
+	 * Gets the secret value that should be included in the Feed URL.
+	 *
+	 * Generates a new secret and stores it in the database if no value is set.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @return string
+	 */
+	public static function get_feed_secret() {
+
+		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
+
+		if  ( ! $secret ) {
+
+			$secret = wp_hash( 'products-feed-' . time() );
+
+			update_option( self::OPTION_FEED_URL_SECRET, $secret );
+		}
+
+		return $secret;
 	}
 
 

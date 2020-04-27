@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.11.0-dev.1';
+		const VERSION = '1.11.0';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -79,7 +79,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
-					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', get_admin_url() . '/admin.php?page=wc-settings&tab=integration' . '&section=facebookcommerce' );
+					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ) );
 				}
 
 				include_once 'facebook-commerce.php';
@@ -122,7 +122,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Adds the plugin admin notices.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 */
 		public function add_admin_notices() {
 
@@ -223,7 +223,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the product feed handler.
 		 *
-		 * @since 1.11.0-dev.1
+		 * @since 1.11.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Products\Feed
 		 */
