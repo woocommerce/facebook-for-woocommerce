@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.11.1-dev.1 =
+ * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
 
 = 2020.04.23 - version 1.11.0 =
  * Tweak - Sync products using Facebook's feed pull method

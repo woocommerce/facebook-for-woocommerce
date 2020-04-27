@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 1.11.1-dev.1
+ * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
 
 2020.04.23 - version 1.11.0
  * Tweak - Sync products using Facebook's feed pull method
@@ -9,7 +10,6 @@
  * Fix - Do not show a confirmation modal when saving a variable product that was previously synced but belongs now to a term excluded from sync
  * Fix - Ensure variable products excluded from sync are not synced in Facebook
  * Fix - Trigger a modal prompt when attempting to enable sync for variations of a variable product that belongs to a term excluded from sync
- * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
  * Fix - Address potential PHP warnings in the product feed with non-standard product variations introduced by third party plugins
  * Fix - Fix a JavaScript error triggered on the settings page while trying to excluded terms from sync
  * Fix - Fix a JavaScript error triggered when saving a product and using checkboxes for tags
