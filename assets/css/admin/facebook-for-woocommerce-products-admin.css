@@ -35,3 +35,9 @@
 .woocommerce_variation .fb-product-image-source-field .wc-radios {
 	clear: both;
 }
+
+/* adjusts widths of the products table, same as WooCommerce categories and tags */
+#facebook_sync_enabled,
+#facebook_catalog_visibility {
+	width: 11% !important;
+}

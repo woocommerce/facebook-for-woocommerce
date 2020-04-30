@@ -69,7 +69,8 @@ jQuery( document ).ready( function( $ ) {
 			let $submitButton    = $( this ),
 				chosenBulkAction = $submitButton.prev( 'select' ).val();
 
-			if ( 'facebook_exclude' === chosenBulkAction || 'facebook_include' === chosenBulkAction ) {
+			// TODO: also check `'facebook_exclude' === chosenBulkAction` once Catalog Visibility settings are available again {WV 2020-04-20}
+			if ( 'facebook_include' === chosenBulkAction ) {
 
 				let products = [];
 
@@ -141,7 +142,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Toggles (enables/disables) Facebook setting fields.
 		 *
-		 * @since 1.10.0-dev.1
+		 * @since 1.10.0
 		 *
 		 * @param {boolean} enabled whether the settings fields should be enabled or not
 		 * @param {jQuery} $container a common ancestor of all the elements that can be enabled/disabled
@@ -195,26 +196,34 @@ jQuery( document ).ready( function( $ ) {
 				return true;
 			}
 
-			let $submitButton  = $( this ),
+			let $submitButton    = $( this ),
 				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
-				productID      = parseInt( $( 'input#post_ID' ).val(), 10 ),
-				productCat     = [],
-				productTag     = $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ),
-				syncEnabled    = $( 'input#fb_sync_enabled' ).prop( 'checked' );
+				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
+				productCat       = [],
+				// this query will get tags when not using checkboxes
+				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
+				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' ),
+				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
 			} );
 
+			// this query will get tags when using checkboxes
+			$( '#taxonomy-product_tag input[name="tax_input[product_tag][]"]:checked' ).each( function() {
+				productTag.push( parseInt( $( this ).val(), 10 ) );
+			} );
+
 			if ( productID > 0 ) {
 
 				$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-					action:      'facebook_for_woocommerce_set_product_sync_prompt',
-					security:     facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
-					sync_enabled: syncEnabled ? 'enabled' : 'disabled',
-					product:      productID,
-					categories:   productCat,
-					tags:         productTag
+					action:           'facebook_for_woocommerce_set_product_sync_prompt',
+					security:         facebook_for_woocommerce_products_admin.set_product_sync_prompt_nonce,
+					sync_enabled:     syncEnabled    ? 'enabled' : 'disabled',
+					var_sync_enabled: varSyncEnabled ? 'enabled' : 'disabled',
+					product:          productID,
+					categories:       productCat,
+					tags:             productTag
 				}, function( response ) {
 
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
@@ -260,5 +269,25 @@ jQuery( document ).ready( function( $ ) {
 
 		} );
 	}
+
+
+	// product list screen or individual product edit screen
+	if ( 'product' === pagenow || 'edit-product' === pagenow ) {
+
+		// handle the "Do not show this notice again" button
+		$( '.js-wc-plugin-framework-admin-notice' ).on( 'click', '.notice-dismiss-permanently', function() {
+
+			var $notice = $( this ).closest( '.js-wc-plugin-framework-admin-notice' );
+
+			$.get( ajaxurl, {
+				action:      'wc_plugin_framework_' + $( $notice ).data( 'plugin-id' ) + '_dismiss_notice',
+				messageid:   $( $notice ).data( 'message-id' ),
+				permanently: true
+			} );
+
+			$notice.fadeOut();
+		} );
+	}
+
 
 } );

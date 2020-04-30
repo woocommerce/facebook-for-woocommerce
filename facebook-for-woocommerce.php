@@ -10,11 +10,10 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 1.10.0-dev.1
- * Woo: 2127297:0ea4fe4c2d7ca6338f8a322fb3e4e187
+ * Version: 1.11.1
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.5.0
- * WC tested up to: 3.9.1
+ * WC tested up to: 4.0.1
  *
  * @package FacebookCommerce
  */
@@ -24,7 +23,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The plugin loader class.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  */
 class WC_Facebook_Loader {
 
@@ -55,7 +54,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Constructs the class.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function __construct() {
 
@@ -76,29 +75,29 @@ class WC_Facebook_Loader {
 	/**
 	 * Cloning instances is forbidden due to singleton pattern.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function __clone() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0-dev.1' );
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
 	/**
 	 * Unserializing instances is forbidden due to singleton pattern.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function __wakeup() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0-dev.1' );
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
 	/**
 	 * Initializes the plugin.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function init_plugin() {
 
@@ -120,7 +119,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Loads the base framework classes.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	private function load_framework() {
 
@@ -133,7 +132,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Gets the framework version in namespace form.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -146,7 +145,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Gets the framework version used by this plugin.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -163,7 +162,7 @@ class WC_Facebook_Loader {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function activation_check() {
 
@@ -181,7 +180,7 @@ class WC_Facebook_Loader {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function check_environment() {
 
@@ -199,7 +198,7 @@ class WC_Facebook_Loader {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function add_plugin_notices() {
 
@@ -229,7 +228,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Determines if the required plugins are compatible.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -242,7 +241,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Determines if the WordPress compatible.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -259,7 +258,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Determines if the WooCommerce compatible.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -278,7 +277,7 @@ class WC_Facebook_Loader {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function deactivate_plugin() {
 
@@ -293,7 +292,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Adds an admin notice to be displayed.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string $slug the slug for the notice
 	 * @param string $class the css class for the notice
@@ -313,7 +312,7 @@ class WC_Facebook_Loader {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function admin_notices() {
 
@@ -333,7 +332,7 @@ class WC_Facebook_Loader {
 	 *
 	 * Override this method to add checks for more than just the PHP version.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return bool
 	 */
@@ -346,7 +345,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Gets the message for display when the environment is incompatible with this plugin.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return string
 	 */
@@ -361,7 +360,7 @@ class WC_Facebook_Loader {
 	 *
 	 * Ensures only one instance can be loaded.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @return \WC_Facebook_Loader
 	 */

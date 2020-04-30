@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Products handler.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  */
 class Products {
 
@@ -50,7 +50,7 @@ class Products {
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product[] $products array of product objects
 	 * @param bool $enabled whether sync should be enabled for $products
@@ -91,7 +91,7 @@ class Products {
 	/**
 	 * Enables sync for given products.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product[] $products an array of product objects
 	 */
@@ -104,7 +104,7 @@ class Products {
 	/**
 	 * Disables sync for given products.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product[] $products an array of product objects
 	 */
@@ -121,7 +121,7 @@ class Products {
 	 * @see Products::is_sync_enabled_for_product()
 	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product
 	 * @return bool
@@ -141,7 +141,7 @@ class Products {
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return bool
@@ -181,7 +181,7 @@ class Products {
 	/**
 	 * Determines whether the product's terms would make it excluded to be synced from Facebook.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return bool if true, product should be excluded from sync, if false, product can be included in sync (unless manually excluded by individual product meta)
@@ -209,7 +209,7 @@ class Products {
 	/**
 	 * Sets a product's visibility in the Facebook shop.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @param bool $visibility true for 'published' or false for 'staging'
@@ -235,7 +235,7 @@ class Products {
 	/**
 	 * Checks whether a product should be visible on Facebook.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product
 	 * @return bool

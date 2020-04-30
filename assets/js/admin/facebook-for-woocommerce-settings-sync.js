@@ -9,9 +9,8 @@
 
 jQuery( document ).ready( function( $ ) {
 
-
 	// run script only on Facebook Settings page
-	if ( 'woocommerce_page_wc-settings' === window.pagenow.length ? window.pagenow : '' ) {
+	if ( $( 'input[name="section"][value="facebookcommerce"]' ).closest( 'form' ).length === 0 ) {
 		return;
 	}
 
@@ -23,7 +22,7 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedCategoriesAdded() {
 
-		const newCategoryIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_categories' ).val();
+		const newCategoryIDs = $( '#woocommerce_facebookcommerce_excluded_product_category_ids' ).val();
 		let oldCategoryIDs   = [];
 
 		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
@@ -42,7 +41,7 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedTagsAdded() {
 
-		const newTagIDs = $( '#woocommerce_facebookcommerce_fb_sync_exclude_tags' ).val();
+		const newTagIDs = $( '#woocommerce_facebookcommerce_excluded_product_tag_ids' ).val();
 		let oldTagIDs   = [];
 
 		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedTagIDs ) {
@@ -135,14 +134,13 @@ jQuery( document ).ready( function( $ ) {
 		      categoriesAdded = getExcludedCategoriesAdded(),
 		      tagsAdded       = getExcludedTagsAdded();
 
-
 		if ( categoriesAdded.length > 0 || tagsAdded.length > 0 ) {
 
 			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
-				action: 'facebook_for_woocommerce_set_excluded_terms_prompt',
-				security: facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
+				action:     'facebook_for_woocommerce_set_excluded_terms_prompt',
+				security:   facebook_for_woocommerce_settings_sync.set_excluded_terms_prompt_nonce,
 				categories: categoriesAdded,
-				tags: tagsAdded,
+				tags:       tagsAdded,
 			}, function ( response ) {
 
 				if ( response && ! response.success ) {
@@ -157,12 +155,51 @@ jQuery( document ).ready( function( $ ) {
 					} );
 
 					// exclude products: submit form as normal
-					$( '#facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
+					$( '.facebook-for-woocommerce-confirm-settings-change' ).on( 'click', function () {
 
 						blockModal();
 
-						submitSettingsSave = true;
-						$submitButton.trigger( 'click' );
+						// the user has an option to hide all the affected products from Facebook while adding the exclusion though
+						if ( $( this ).hasClass( 'hide-products' ) ) {
+
+							let product_cats = [], product_tags = [];
+
+							$( categoriesAdded ).each( function() {
+								product_cats.push( {
+									term_id:    this,
+									taxonomy:   'product_cat',
+									visibility: false
+								} );
+							} );
+
+							$( tagsAdded ).each( function() {
+								product_tags.push( {
+									term_id:    this,
+									taxonomy:   'product_tag',
+									visibility: false
+								} );
+							} );
+
+							$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+								action:             'facebook_for_woocommerce_set_products_visibility',
+								security:           facebook_for_woocommerce_settings_sync.set_product_visibility_nonce,
+								product_categories: product_cats,
+								product_tags:       product_tags,
+							}, function ( response ) {
+
+								if ( ! response || ! response.success ) {
+									console.log( response )
+								}
+
+								submitSettingsSave = true;
+								$submitButton.trigger( 'click' );
+							} );
+
+						} else {
+
+							submitSettingsSave = true;
+							$submitButton.trigger( 'click' );
+						}
 					} );
 
 				} else {
