@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * AJAX handler.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  */
 class AJAX {
 
@@ -23,7 +23,7 @@ class AJAX {
 	/**
 	 * AJAX handler constructor.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function __construct() {
 
@@ -44,22 +44,24 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function handle_set_product_sync_prompt() {
 
 		check_ajax_referer( 'set-product-sync-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_id   = isset( $_POST['product'] )      ? (int)    $_POST['product']      : 0;
+		$product_id       = isset( $_POST['product'] )          ? (int) $_POST['product']             : 0;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+		$sync_enabled     = isset( $_POST['sync_enabled'] )     ? (string) $_POST['sync_enabled']     : '';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_cats = isset( $_POST['categories'] )   ? (array)  $_POST['categories']   : [];
+		$var_sync_enabled = isset( $_POST['var_sync_enabled'] ) ? (string) $_POST['var_sync_enabled'] : '';
+	    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_cats     = isset( $_POST['categories'] )       ? (array) $_POST['categories']        : [];
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_tags = isset( $_POST['tags'] )         ? (array)  $_POST['tags']         : [];
+		$product_tags     = isset( $_POST['tags'] )             ? (array) $_POST['tags']              : [];
 
-		if ( $product_id > 0 && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
+		if ( $product_id > 0 && in_array( $var_sync_enabled, [ 'enabled', 'disabled' ], true ) && in_array( $sync_enabled, [ 'enabled', 'disabled' ], true ) ) {
 
 			$product = wc_get_product( $product_id );
 
@@ -87,7 +89,7 @@ class AJAX {
 						'buttons' => $buttons,
 					] );
 
-				} elseif ( 'enabled' === $sync_enabled ) {
+				} elseif ( ( 'enabled' === $sync_enabled && ! $product->is_type( 'variable' ) ) || ( 'enabled' === $var_sync_enabled && $product->is_type( 'variable' ) ) ) {
 
 					$has_excluded_terms = false;
 
@@ -154,7 +156,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function handle_set_product_sync_bulk_action_prompt() {
 
@@ -244,7 +246,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function handle_set_excluded_terms_prompt() {
 
@@ -280,8 +282,15 @@ class AJAX {
 			?>
 			<button
 				id="facebook-for-woocommerce-confirm-settings-change"
-				class="button button-large button-primary"
+				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change"
 			><?php esc_html_e( 'Exclude Products', 'facebook-for-woocommerce' ); ?></button>
+
+			<!-- TODO: restore for FBE 2.0
+			<button
+				id="facebook-for-woocommerce-confirm-settings-change-hide-products"
+				class="button button-large button-primary facebook-for-woocommerce-confirm-settings-change hide-products"
+			><?php esc_html_e( 'Exclude Products and Hide in Facebook', 'facebook-for-woocommerce' ); ?></button> -->
+
 			<button
 				id="facebook-for-woocommerce-cancel-settings-change"
 				class="button button-large button-primary"
@@ -314,7 +323,7 @@ class AJAX {
 	 * Queries products with sync enabled, belonging to the added term IDs
 	 * and not belonging to the term IDs that are already stored in the setting.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param string[] $new_excluded_categories
 	 * @param string[] $new_excluded_tags
@@ -419,34 +428,109 @@ class AJAX {
 
 
 	/**
+	 * Gets an array of product IDs data for handling visibility (helper method).
+	 *
+	 * @see \SkyVerge\WooCommerce\Facebook\AJAX::set_products_visibility()
+	 *
+	 * @since 1.10.2
+	 *
+	 * @param array $terms_data term data with product IDs and visibility
+	 * @return array product IDs and visibility data
+	 */
+	private function get_product_ids_for_visibility_from_terms( $terms_data ) {
+
+		$products  = [];
+
+		foreach ( $terms_data as $term_data ) {
+
+			if ( ! isset( $term_data['term_id'], $term_data['taxonomy'], $term_data['visibility'] ) ) {
+				continue;
+			}
+
+			if ( 'product_cat' === $term_data['taxonomy'] ) {
+				$tax_query_arg = 'category';
+			} elseif( 'product_tag' === $term_data['taxonomy'] ) {
+				$tax_query_arg = 'tag';
+			} else {
+				continue;
+			}
+
+			$term = get_term_by( 'id', $term_data['term_id'], $term_data['taxonomy'] );
+
+			if ( ! $term instanceof \WP_Term ) {
+				continue;
+			}
+
+			$found_products = wc_get_products( [
+				'limit'        => -1,
+				'return'       => 'ids',
+				$tax_query_arg => [ $term->slug ],
+			] );
+
+			foreach ( $found_products as $product_id ) {
+
+				$products[] = [
+					'product_id' => $product_id,
+					'visibility' => $term_data['visibility']
+				];
+			}
+		}
+
+		return $products;
+	}
+
+
+	/**
 	 * Sets products visibility in Facebook.
 	 *
 	 * @internal
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	public function set_products_visibility() {
 
 		check_ajax_referer( 'set-products-visibility', 'security' );
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 		$integration = facebook_for_woocommerce()->get_integration();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$products   = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+		$products    = isset( $_POST['products'] ) ? (array) $_POST['products'] : [];
+
+		if ( ! empty( $_POST['product_categories'] ) && is_array( $_POST['product_categories'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_categories'] ) );
+		}
+
+		if ( ! empty( $_POST['product_tags'] ) && is_array( $_POST['product_tags'] ) ) {
+			$products = array_merge( $products, $this->get_product_ids_for_visibility_from_terms( $_POST['product_tags'] ) );
+		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$error = 'No products found to set visibility for.'; // console error message
 
 		if ( $integration && ! empty( $products ) ) {
 
+			$processed_products = [];
+
 			foreach ( $products as $product_data ) {
+
+				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
+
+				// bail if already processed
+				if ( in_array( $product_id, $processed_products, true ) ) {
+					continue;
+				}
 
 				$visibility_meta_value = isset( $product_data['visibility'] ) ? wc_string_to_bool( $product_data['visibility'] ) : null;
 
+				// bail if visibility value is not valid
 				if ( ! is_bool( $visibility_meta_value ) ) {
 					continue;
 				}
 
 				$visibility_api_value = $visibility_meta_value ? $integration::FB_SHOP_PRODUCT_VISIBLE : $integration::FB_SHOP_PRODUCT_HIDDEN;
 
-				$product_id = isset( $product_data['product_id'] ) ? absint( $product_data['product_id'] ) : 0;
-				$product    = $product_id > 0 ? wc_get_product( $product_id ) : null;
+				$product = $product_id > 0 ? wc_get_product( $product_id ) : null;
 
 				if ( $product instanceof \WC_Product ) {
 
@@ -454,6 +538,11 @@ class AJAX {
 					if ( $product->is_type( 'variable' ) ) {
 
 						foreach ( $product->get_children() as $variation_id ) {
+
+							// bail if already processed
+							if ( in_array( $variation_id, $processed_products, true ) ) {
+								continue;
+							}
 
 							if ( $variation_product = wc_get_product( $variation_id ) ) {
 
@@ -465,6 +554,8 @@ class AJAX {
 								if ( $integration->check_api_result( $fb_request ) ) {
 									Products::set_product_visibility( $variation_product, $visibility_meta_value );
 								}
+
+								$processed_products[] = $variation_id;
 							}
 						}
 
@@ -481,13 +572,15 @@ class AJAX {
 							Products::set_product_visibility( $product, $visibility_meta_value );
 						}
 					}
+
+					$processed_products[] = $product_id;
 				}
 			}
 
-			wp_send_json_success();
+			wp_send_json_success( $processed_products );
 		}
 
-		wp_send_json_error();
+		wp_send_json_error( $error );
 	}
 
 

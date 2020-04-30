@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The Facebook for WooCommerce plugin lifecycle handler.
  *
- * @since 1.10.0-dev.1
+ * @since 1.10.0
  *
  * @method \WC_Facebookcommerce get_plugin()
  */
@@ -27,7 +27,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Lifecycle constructor.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 *
 	 * @param Framework\SV_WC_Plugin $plugin
 	 */
@@ -37,6 +37,8 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		$this->upgrade_versions = [
 			'1.10.0',
+			'1.10.1',
+			'1.11.0',
 		];
 	}
 
@@ -44,7 +46,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Migrates options from previous versions of the plugin, which did not use the Framework.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function install() {
 
@@ -62,13 +64,30 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Upgrades to version 1.10.0.
 	 *
-	 * @since 1.10.0-dev.1
+	 * @since 1.10.0
 	 */
 	protected function upgrade_to_1_10_0() {
 
-		// preserve legacy values
+		$this->migrate_1_9_settings();
+	}
+
+
+	/**
+	 * Migrates Facebook for WooCommerce options used in version 1.9.x to the options and settings used in 1.10.x.
+	 *
+	 * Some users who upgraded from 1.9.x to 1.10.0 ended up with an incomplete upgrade and could have configured the plugin from scratch after that.
+	 * This routine will update the options and settings only if a previous value does not exists.
+	 *
+	 * @since 1.10.1
+	 */
+	private function migrate_1_9_settings() {
+
 		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
-		update_option( 'woocommerce_facebookcommerce_legacy_settings', $values );
+
+		// preserve legacy values
+		if ( false === get_option( 'woocommerce_facebookcommerce_legacy_settings' ) ) {
+			update_option( 'woocommerce_facebookcommerce_legacy_settings', $values );
+		}
 
 		// migrate options from woocommerce_facebookcommerce_settings
 		$options = [
@@ -82,22 +101,27 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		foreach ( $options as $old_index => $new_option_name ) {
 
-			if ( isset( $values[ $old_index ] ) ) {
+			if ( isset( $values[ $old_index ] ) && false === get_option( $new_option_name ) ) {
 
 				$new_value = $values[ $old_index ];
 
 				if ( 'pixel_install_time' === $old_index ) {
 
 					// convert to UTC timestamp
-					$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
-					$new_value          = $pixel_install_time->getTimestamp();
+					try {
+						$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
+					} catch ( \Exception $e ) {
+						$pixel_install_time = false;
+					}
+
+					$new_value = $pixel_install_time instanceof \DateTime ? $pixel_install_time->getTimestamp() : null;
 				}
 
 				update_option( $new_option_name, $new_value );
 			}
 		}
 
-		$new_settings = [];
+		$new_settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
 
 		// migrate settings from woocommerce_facebookcommerce_settings
 		$settings = [
@@ -112,43 +136,83 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		foreach ( $settings as $old_index => $new_index ) {
 
-			if ( isset( $values[ $old_index ] ) ) {
+			if ( isset( $values[ $old_index ] ) && ! isset( $new_settings[ $new_index ] ) ) {
 				$new_settings[ $new_index ] = $values[ $old_index ];
 			}
 		}
 
 		// migrate settings from standalone options
-		$product_sync_enabled = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
+		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] ) ) {
 
-		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ]      = $product_sync_enabled ? 'yes' : 'no';
-		$new_settings[ \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE ] = ! empty( get_option( 'fb_sync_short_description', 0 ) ) ? \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT : \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD;
+			$product_sync_enabled = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
 
-		$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
+			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] = $product_sync_enabled ? 'yes' : 'no';
+		}
 
-		if ( ! empty( $autosync_time ) ) {
+		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE ] ) ) {
+			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE ] = ! empty( get_option( 'fb_sync_short_description', 0 ) ) ? \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT : \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD;
+		}
 
-			$parsed_time = strtotime( $autosync_time );
+		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] ) ) {
+
+			$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
+			$parsed_time   = ! empty( $autosync_time ) ? strtotime( $autosync_time ) : false;
+			$resync_offset = null;
 
 			if ( false !== $parsed_time ) {
 
 				$midnight = ( new \DateTime() )->setTimestamp( $parsed_time )->setTime( 0, 0, 0 );
 
 				$resync_offset = $parsed_time - $midnight->getTimestamp();
-
-				$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $resync_offset;
 			}
+
+			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $resync_offset;
+		}
+
+		// maybe remove old settings entries
+		$old_indexes = array_merge( array_keys( $options ), array_keys( $settings ), [ 'fb_settings_heading', 'fb_upload_id', 'upload_end_time' ] );
+
+		foreach ( $old_indexes as $old_index ) {
+			unset( $new_settings[ $old_index ] );
 		}
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
 
 		// schedule the next product resync action
-		if ( isset( $resync_offset ) && $product_sync_enabled ) {
+		if ( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] && 'yes' === $new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] ) {
 
 			$integration = $this->get_plugin()->get_integration();
 
 			if ( ! $integration->is_resync_scheduled() ) {
-				$integration->schedule_resync( $resync_offset );
+				$integration->schedule_resync( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] );
 			}
+		}
+	}
+
+
+	/**
+	 * Upgrades to version 1.10.1.
+	 *
+	 * @since 1.10.1
+	 */
+	protected function upgrade_to_1_10_1() {
+
+		$this->migrate_1_9_settings();
+	}
+
+
+	/**
+	 * Upgrades to version 1.11.0.
+	 *
+	 * @since 1.11.0
+	 */
+	protected function upgrade_to_1_11_0() {
+
+		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
+
+		// moves the upload ID to a standalone option
+		if ( ! empty( $settings['fb_upload_id'] ) ) {
+			$this->get_plugin()->get_integration()->update_upload_id( $settings['fb_upload_id'] );
 		}
 	}
 
