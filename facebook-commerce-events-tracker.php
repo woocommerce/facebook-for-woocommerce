@@ -490,6 +490,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// use an order meta to ensure an order is tracked with any payment method, also when the order is placed through AJAX
 			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
 
+			// use an order meta to ensure a Purchase event is not tracked multiple times
+			$purchase_tracked_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked';
+
 			// when saving the order meta data: add a flag to mark the order tracked
 			if ( 'woocommerce_checkout_update_order_meta' === current_action() ) {
 				$order->update_meta_data( $order_placed_meta, 'yes' );
@@ -498,7 +501,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			// bail if by the time we are on the thank you page the meta has not been set
-			if ( 'yes' !== $order->get_meta( $order_placed_meta ) ) {
+			if ( 'yes' !== $order->get_meta( $order_placed_meta ) || 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
 				return;
 			}
 
@@ -538,6 +541,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			] );
 
 			$this->inject_subscribe_event( $order_id );
+
+			// mark the order as tracked
+			$order->update_meta_data( $purchase_tracked_meta, 'yes' );
+			$order->save_meta_data();
 		}
 
 
