@@ -500,7 +500,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// bail if by the time we are on the thank you page the meta has not been set
+			// bail if by the time we are on the thank you page the meta has not been set or we already tracked a Purchase event
 			if ( 'yes' !== $order->get_meta( $order_placed_meta ) || 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
 				return;
 			}
