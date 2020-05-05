@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 1.11.3-dev.1 =
+
 = 2020.05.04 - version 1.11.2 =
  * Misc - Add support for WooCommerce 4.1
 
