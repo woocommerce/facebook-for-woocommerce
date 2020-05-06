@@ -53,6 +53,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the "enable advanced matching" setting ID */
 	const SETTING_ENABLE_ADVANCED_MATCHING = 'enable_advanced_matching';
 
+	/** @var string the "use s2s" setting ID */
+	const SETTING_USE_S2S = 'use_s2s';
+
+	/** @var string the "access token" setting ID */
+	const SETTING_ACCESS_TOKEN = 'access_token';
+
 	/** @var string the "enable product sync" setting ID */
 	const SETTING_ENABLE_PRODUCT_SYNC = 'enable_product_sync';
 
@@ -176,6 +182,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// so that it works the same way the pixel ID does
 			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
 			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
+
+			$settings_use_s2s = $this->is_use_s2s_enabled();
+			WC_Facebookcommerce_Pixel::set_use_s2s( $settings_use_s2s );
+
+			$settings_access_token = $this->get_access_token();
+			WC_Facebookcommerce_Pixel::set_access_token($settings_access_token);
 		}
 	}
 
@@ -217,6 +229,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
 		}
+
+		//For now, the values of use s2s and access token will be the ones returned from WC_Facebookcommerce_Pixel
+		$use_s2s = WC_Facebookcommerce_Pixel::get_use_s2s();
+		$this->settings[self::SETTING_USE_S2S] = $use_s2s;
+
+		$access_token = WC_Facebookcommerce_Pixel::get_access_token();
+		$this->settings[self::SETTING_ACCESS_TOKEN] = $access_token;
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 			include_once 'includes/fbutils.php';
@@ -1559,6 +1578,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
 			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
+			$this->settings[ self::SETTING_USE_S2S ] = false;
+			$this->settings[ self::SETTING_ACCESS_TOKEN ] = '';
 
 			unset( $this->settings[ self::SETTING_ENABLE_MESSENGER ] );
 			unset( $this->settings[ self::SETTING_MESSENGER_GREETING ] );
@@ -3493,6 +3514,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (string) apply_filters( 'wc_facebook_pixel_id', $this->get_option( self::SETTING_FACEBOOK_PIXEL_ID, '' ), $this );
+	}
+
+	/**
+	 * Gets the configured use s2s flag.
+	 *
+	 * @return bool
+	 */
+	public function is_use_s2s_enabled() {
+		return WC_Facebookcommerce_Pixel::get_use_s2s();
+	}
+
+	/**
+	 * Gets the configured access token
+	 *
+	 * @return string
+	 */
+	public function get_access_token() {
+		return WC_Facebookcommerce_Pixel::get_access_token();
 	}
 
 
