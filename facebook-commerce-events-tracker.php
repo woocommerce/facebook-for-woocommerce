@@ -65,8 +65,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// InitiateCheckout events
 			add_action( 'woocommerce_after_checkout_form', [ $this, 'inject_initiate_checkout_event' ] );
 			// Purchase and Subscribe events
-			add_action( 'woocommerce_thankyou',         [ $this, 'inject_purchase_event' ], 40 );
-			add_action( 'woocommerce_payment_complete', [ $this, 'inject_purchase_event' ], 40 );
+			add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'inject_purchase_event' ] );
+			add_action( 'woocommerce_thankyou',                   [ $this, 'inject_purchase_event' ], 40 );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
@@ -481,7 +481,30 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$order        = wc_get_order( $order_id );
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				return;
+			}
+
+			// use an order meta to ensure an order is tracked with any payment method, also when the order is placed through AJAX
+			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+
+			// use an order meta to ensure a Purchase event is not tracked multiple times
+			$purchase_tracked_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked';
+
+			// when saving the order meta data: add a flag to mark the order tracked
+			if ( 'woocommerce_checkout_update_order_meta' === current_action() ) {
+				$order->update_meta_data( $order_placed_meta, 'yes' );
+				$order->save_meta_data();
+				return;
+			}
+
+			// bail if by the time we are on the thank you page the meta has not been set or we already tracked a Purchase event
+			if ( 'yes' !== $order->get_meta( $order_placed_meta ) || 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
+				return;
+			}
+
 			$content_type = 'product';
 			$num_items    = 0;
 			$contents     = [];
@@ -518,6 +541,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			] );
 
 			$this->inject_subscribe_event( $order_id );
+
+			// mark the order as tracked
+			$order->update_meta_data( $purchase_tracked_meta, 'yes' );
+			$order->save_meta_data();
 		}
 
 
