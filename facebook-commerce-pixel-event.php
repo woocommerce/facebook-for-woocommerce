@@ -258,14 +258,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $method name of the pixel's fbq() function to call
 		 * @return string
 		 */
-		public function get_event_script( $event_name, $params, $method = 'track' ) {
+		public function get_event_script( $event_name, $params, $method = 'track', $event_id = null ) {
 
 			ob_start();
 
 			?>
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo self::get_script_attributes(); ?>>
-				<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
+				<?php echo $this->get_event_code( $event_name, $params, $method, $event_id ); ?>
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
@@ -289,16 +289,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			$server_event = WC_Facebook_ServerEventFactory::create_event($event_name, $params);
 			WC_Facebook_ServerSideEvent::get_instance()->track($server_event);
 			$event_id = $server_event->getEventId();
-
-			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-
-				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method, $event_id ) );
-
-			} else {
-
-				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method ) );
-			}
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method, $event_id ) );
+ 
 		}
 
 
