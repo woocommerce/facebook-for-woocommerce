@@ -255,4 +255,69 @@ class ProductSyncBulkActionsCest {
 	}
 
 
+	/**
+	 * Test that the Include in Facebook sync only enables sync for non-virtual variations.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 *
+	 * @throws Exception
+	 */
+	public function try_include_bulk_action_virtual_variation( AcceptanceTester $I ) {
+
+		// save a variable product
+		$result = $I->haveVariableProductInDatabase( [
+			'attributes' => [
+				'color' => [ 'red', 'green' ]
+			],
+			'variations' => [
+				'regular_variation' => [ 'color' => 'red' ],
+				'virtual_variation' => [ 'color' => 'green' ],
+			],
+		] );
+
+		$variable_product = $result['product'];
+
+		/** @var WC_Product_Variation[] $variations */
+		$variations = $result['variations'];
+
+		$virtual_variation = $variations['virtual_variation'];
+		$virtual_variation->set_virtual( true );
+		$virtual_variation->save();
+
+		// disable sync for the product before viewing the Products page
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $variable_product ] );
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the Include in Facebook sync only enables sync for non-virtual variations' );
+
+		$I->click( "#cb-select-{$variable_product->get_id()}" );
+		$I->selectOption( '[name=action]', 'Include in Facebook sync' );
+		$I->click( '#doaction' );
+		$I->waitForElement( "#cb-select-{$variable_product->get_id()}:not(:checked)" );
+
+		$I->see( 'Enabled', 'table.wp-list-table td' );
+
+		$variable_product = wc_get_product( $variable_product );
+		$variation_ids    = $variable_product->get_children();
+
+		foreach ( $variation_ids as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+
+			$meta_criteria = [
+				'post_id'    => $variation_id,
+				'meta_key'   => '_wc_facebook_sync_enabled',
+				'meta_value' => 'yes',
+			];
+
+			if ( ! $variation->is_virtual() ) {
+				$I->seePostMetaInDatabase( $meta_criteria );
+			} else {
+				$I->dontSeePostMetaInDatabase( $meta_criteria );
+			}
+		}
+	}
+
+
 }
