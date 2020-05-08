@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 1.11.3-dev.1 =
+ * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
  * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
 
 = 2020.05.04 - version 1.11.2 =
