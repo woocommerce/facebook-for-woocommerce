@@ -16,7 +16,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 
 /**
- * Background job handler to exclude virtual products from sync.
+ * Background job handler to exclude virtual products and virtual product variations from sync.
  *
  * @since 1.11.3-dev.2
  */
@@ -40,8 +40,8 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	/**
 	 * Processes job.
 	 *
-	 * This job continues to update products meta data until we run out of memory or exceed the time limit.
-	 * There is no list of items to loop over.
+	 * This job continues to update products and product variations meta data until we run out of memory
+	 * or exceed the time limit. There is no list of items to loop over.
 	 *
 	 * @since 1.11.3-dev.2
 	 *
@@ -56,7 +56,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 
 			if ( empty( $job->total ) ) {
 
-				// no products need to be excluded from sync, do not display admin notice
+				// no products or variations need to be excluded from sync, do not display admin notice
 				update_option( 'wc_facebook_sync_virtual_products_disabled_skipped', 'yes' );
 			}
 		}
@@ -98,7 +98,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 
 
 	/**
-	 * Counts the number of virtual products with sync enabled.
+	 * Counts the number of virtual products or product variations with sync enabled.
 	 *
 	 * @since 1.11.3-dev.2
 	 *
@@ -112,7 +112,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 			FROM {$wpdb->posts} AS posts
 			INNER JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' AND sync_meta.meta_value = 'yes' )
 			INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
-			WHERE posts.post_type = 'product'
+			WHERE posts.post_type IN ( 'product', 'product_variation' )
 		";
 
 		return (int) $wpdb->get_var( $sql );
@@ -136,7 +136,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 				SET sync_meta.meta_value = 'no'
 				WHERE sync_meta.meta_key = '_wc_facebook_sync_enabled'
 				AND sync_meta.meta_value = 'yes'
-				AND posts.post_type = 'product'
+				AND posts.post_type IN ( 'product', 'product_variation' )
 				LIMIT 1000
 		";
 
