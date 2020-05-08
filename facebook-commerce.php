@@ -406,14 +406,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				if ( isset( $_GET['remove_sticky'] ) ) {
 					$this->remove_sticky_message();
 				}
-
-				if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-					include_once 'includes/fbwpml.php';
-					new WC_Facebook_WPML_Injector();
-				}
 			}
+
 			$this->load_background_sync_process();
 		}
+
 		// Must be outside of admin for cron to schedule correctly.
 		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
 
