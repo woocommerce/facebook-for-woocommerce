@@ -666,7 +666,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 */
 	public function add_enabling_virtual_products_sync_notice() {
 		global $current_screen;
@@ -694,7 +694,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 */
 	public function add_disabled_virtual_products_sync_notice() {
 

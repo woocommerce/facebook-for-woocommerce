@@ -39,7 +39,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.0',
 			'1.10.1',
 			'1.11.0',
-			'1.11.1',
+			'1.11.3',
 		];
 	}
 
@@ -219,11 +219,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 
 	/**
-	 * Upgrades to version 1.11.1.
+	 * Upgrades to version 1.11.3.
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 */
-	protected function upgrade_to_1_11_1() {
+	protected function upgrade_to_1_11_3() {
 
 		if ( $handler = $this->get_plugin()->get_background_disable_virtual_products_sync_instance() ) {
 

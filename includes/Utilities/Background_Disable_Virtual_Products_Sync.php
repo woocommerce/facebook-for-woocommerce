@@ -18,7 +18,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Background job handler to exclude virtual products from sync.
  *
- * @since 1.11.1-dev.1
+ * @since 1.11.3-dev.2
  */
 class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Background_Job_Handler {
 
@@ -26,7 +26,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	/**
 	 * Background job constructor.
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 */
 	public function __construct() {
 
@@ -43,7 +43,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	 * This job continues to update products meta data until we run out of memory or exceed the time limit.
 	 * There is no list of items to loop over.
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 *
 	 * @param object $job
 	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
@@ -100,7 +100,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	/**
 	 * Counts the number of virtual products with sync enabled.
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 *
 	 * @return bool
 	 */
@@ -122,7 +122,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	/**
 	 * Update rows into the postmeta table to disable sync.
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 *
 	 * @return int
 	 */
@@ -156,7 +156,7 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	/**
 	 * No-op
 	 *
-	 * @since 1.11.1-dev.1
+	 * @since 1.11.3-dev.2
 	 */
 	protected function process_item( $item, $job ) {
 		// void

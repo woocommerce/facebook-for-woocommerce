@@ -252,7 +252,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the background disable virtual products sync handler instance.
 		 *
-		 * @since 1.11.1-dev.1
+		 * @since 1.11.3-dev.2
 		 */
 		public function get_background_disable_virtual_products_sync_instance() {
 
