@@ -73,6 +73,12 @@ class Products {
 
 						if ( $product_variation instanceof \WC_Product ) {
 
+							if ( $enabled && $product_variation->is_virtual() ) {
+
+								// never enable sync for virtual variations
+								continue;
+							}
+
 							$product_variation->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 							$product_variation->save_meta_data();
 						}
