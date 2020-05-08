@@ -103,9 +103,13 @@ class AJAX {
 
 							$product_tag_ids = [];
 
-							foreach ( $product_tags as $product_tag_name ) {
+							foreach ( $product_tags as $product_tag_name_or_id ) {
 
-								if ( $term = get_term_by( 'name', $product_tag_name, 'product_tag' ) ) {
+								if ( $term = get_term_by( 'name', $product_tag_name_or_id, 'product_tag' ) ) {
+
+									$product_tag_ids[] = $term->term_id;
+
+								} elseif ( $term = get_term( (int) $product_tag_name_or_id, 'product_tag' ) ) {
 
 									$product_tag_ids[] = $term->term_id;
 								}
