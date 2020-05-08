@@ -20,6 +20,12 @@
 
 defined( 'ABSPATH' ) or exit;
 
+require_once plugin_dir_path(__FILE__).'vendor/autoload.php';
+
+if ( ! class_exists( 'WC_Facebook_ServerEventAsyncTask' ) ) {
+	include_once 'facebook-server-event-async-task.php';
+}
+
 /**
  * The plugin loader class.
  *
@@ -69,6 +75,8 @@ class WC_Facebook_Loader {
 		if ( $this->is_environment_compatible() ) {
 			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
 		}
+
+		new WC_Facebook_ServerEventAsyncTask();
 	}
 
 
