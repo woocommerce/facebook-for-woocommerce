@@ -182,8 +182,8 @@ jQuery( document ).ready( function( $ ) {
 
 		// trigger settings fields modifiers when variations are loaded
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
-			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
-			$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
+			$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 		} );
 
 		let submitProductSave = false;
