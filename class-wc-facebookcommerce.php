@@ -49,6 +49,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
+		private $connection_handler;
+
 
 		/**
 		 * Constructs the plugin.
