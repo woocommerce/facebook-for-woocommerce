@@ -210,6 +210,7 @@ class Connection {
 	 */
 	public function update_access_token( $value ) {
 
+		update_option( self::OPTION_ACCESS_TOKEN, $value );
 	}
 
 
