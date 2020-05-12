@@ -87,7 +87,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$scopes = $this->get_connection()->get_scopes();
 
-		$this->assertIsArray( $scopes );
 		$this->assertContains( $scope, $scopes );
 	}
 
