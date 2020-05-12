@@ -107,7 +107,12 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_redirect_url() */
 	public function test_get_redirect_url() {
 
-		$this->assertIsString( $this->get_connection()->get_redirect_url() );
+		$redirect_url = $this->get_connection()->get_redirect_url();
+
+		$this->assertIsString( $redirect_url );
+		$this->assertStringContainsString( home_url(), $redirect_url );
+		$this->assertStringContainsString( 'wc-api=' . Connection::ACTION_CONNECT, $redirect_url );
+		$this->assertStringContainsString( 'nonce=', $redirect_url );
 	}
 
 
