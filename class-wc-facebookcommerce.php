@@ -243,6 +243,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
+		 * Gets the connection handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Handlers\Connection
+		 */
+		public function get_connection_handler() {
+
+			return $this->connection_handler;
+		}
+
+
+		/**
 		 * Gets the integration instance.
 		 *
 		 * @since 1.10.0
