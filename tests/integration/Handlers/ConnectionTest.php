@@ -76,10 +76,41 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_scopes() */
-	public function test_get_scopes() {
+	/**
+	 * @see Connection::get_scopes()
+	 *
+	 * @param string $scope an API scope that should be included
+	 *
+	 * @dataProvider provider_get_scopes
+	 */
+	public function test_get_scopes( $scope ) {
 
-		$this->assertIsArray( $this->get_connection()->get_scopes() );
+		$scopes = $this->get_connection()->get_scopes();
+
+		$this->assertContains( $scope, $scopes );
+	}
+
+
+	/** @see test_get_scopes() */
+	public function provider_get_scopes() {
+
+		return [
+			'manage_business_extension' => [ 'manage_business_extension' ],
+			'catalog_management'        => [ 'catalog_management' ],
+			'business_management'       => [ 'business_management' ],
+		];
+	}
+
+
+	/** @see Connection::get_scopes() */
+	public function test_get_scopes_filter() {
+
+		add_filter( 'wc_facebook_connection_scopes', function() {
+
+			return [ 'filtered' ];
+		} );
+
+		$this->assertSame( [ 'filtered' ], $this->get_connection()->get_scopes() );
 	}
 
 
@@ -121,17 +152,57 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_business_name() */
-	public function test_get_business_name() {
+	/**
+	 * @see Connection::get_business_name()
+	 *
+	 * @dataProvider provider_get_business_name
+	 *
+	 * @param string $option_value the option value to set
+	 */
+	public function test_get_business_name( $option_value ) {
 
-		$this->assertIsString( $this->get_connection()->get_business_name() );
+		update_option( 'blogname', $option_value );
+
+		$this->assertSame( $option_value, $this->get_connection()->get_business_name() );
+	}
+
+
+	/** @see test_get_business_name() */
+	public function provider_get_business_name() {
+
+		return [
+			[ 'Test Store' ],
+			[ 'Tèst Store' ],
+			[ "Test's Store" ],
+			[ 'Test "Store"' ],
+			[ 'Test & Store' ]
+		];
+	}
+
+
+	/** @see Connection::get_business_name() */
+	public function test_get_business_name_filtered() {
+
+		$option_value = 'Test Store';
+
+		update_option( 'blogname', $option_value );
+
+		add_filter( 'wc_facebook_connection_business_name', function() {
+			return 'Filtered Test Store';
+		} );
+
+		$this->assertSame( 'Filtered Test Store', $this->get_connection()->get_business_name() );
 	}
 
 
 	/** @see Connection::get_business_manager_id() */
 	public function test_get_business_manager_id() {
 
-		$this->assertIsString( $this->get_connection()->get_business_manager_id() );
+		$business_manager_id = 'business manager id';
+
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
@@ -154,7 +225,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$business_manager_id = 'business manager id';
 
-		$this->assertNull( $this->get_connection()->update_business_manager_id( $business_manager_id ) );
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
