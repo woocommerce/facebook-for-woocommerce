@@ -116,6 +116,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_redirect_url() */
+	public function test_get_redirect_url_filter() {
+
+		add_filter( 'wc_facebook_redirect_url', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->get_connection()->get_redirect_url() );
+	}
+
+
 	/** @see Connection::get_connect_parameters() */
 	public function test_get_connect_parameters() {
 
