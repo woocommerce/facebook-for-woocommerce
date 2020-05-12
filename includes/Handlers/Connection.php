@@ -26,13 +26,12 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
+	/** @var string the access token option name */
+	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
+
 
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
-
-
-	/** @var string the access token option name */
-	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
 
 	/**
