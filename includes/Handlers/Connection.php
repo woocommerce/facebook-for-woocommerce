@@ -19,9 +19,16 @@ defined( 'ABSPATH' ) or exit;
  */
 class Connection {
 
+  
+	/** @var string the WordPress option name where the external business ID is stored */
+	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
+
+
+	/** @var string|null the generated external merchant settings ID */
+	private $external_business_id;
 
 
 	/**
@@ -147,7 +154,29 @@ class Connection {
 	 */
 	public function get_external_business_id() {
 
-		return '';
+		if ( ! is_string( $this->external_business_id ) ) {
+
+			$value = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
+
+			if ( ! is_string( $value ) ) {
+
+				$value = sanitize_title( get_bloginfo( 'name' ) ) . '-' . uniqid();
+
+				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
+			}
+
+			$this->external_business_id = $value;
+		}
+
+		/**
+		 * Filters the external business ID.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $external_business_id stored external business ID
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_external_business_id', $this->external_business_id, $this );
 	}
 
 

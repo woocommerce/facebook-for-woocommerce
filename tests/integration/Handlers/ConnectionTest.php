@@ -117,7 +117,38 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_external_business_id() */
 	public function test_get_external_business_id() {
 
-		$this->assertIsString( $this->get_connection()->get_external_business_id() );
+		update_option( Connection::OPTION_EXTERNAL_BUSINESS_ID, 'external business id' );
+
+		$this->assertSame( 'external business id', $this->get_connection()->get_external_business_id() );
+	}
+
+
+	/** @see Connection::get_external_business_id() */
+	public function test_get_external_business_id_generation() {
+
+		// force the generation of a new ID
+		delete_option( Connection::OPTION_EXTERNAL_BUSINESS_ID );
+
+		$connection           = $this->get_connection();
+		$external_business_id = $connection->get_external_business_id();
+
+		$this->assertNotEmpty( $external_business_id );
+		$this->assertIsString( $external_business_id );
+
+		$this->assertEquals( $external_business_id, $connection->get_external_business_id() );
+		$this->assertEquals( $external_business_id, get_option( Connection::OPTION_EXTERNAL_BUSINESS_ID ) );
+	}
+
+
+	/** @see Connection::get_external_business_id() */
+	public function test_get_external_business_id_filter() {
+
+		add_filter( 'wc_facebook_external_business_id', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->get_connection()->get_external_business_id() );
 	}
 
 
