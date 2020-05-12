@@ -98,12 +98,14 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		// force the generation of a new ID
 		delete_option( Connection::OPTION_EXTERNAL_BUSINESS_ID );
 
-		$external_business_id = $this->get_connection()->get_external_business_id();
+		$connection           = $this->get_connection();
+		$external_business_id = $connection->get_external_business_id();
 
 		$this->assertNotEmpty( $external_business_id );
 		$this->assertIsString( $external_business_id );
 
-		$this->assertEquals( $external_business_id, $this->get_connection()->get_external_business_id() );
+		$this->assertEquals( $external_business_id, $connection->get_external_business_id() );
+		$this->assertEquals( $external_business_id, get_option( Connection::OPTION_EXTERNAL_BUSINESS_ID ) );
 	}
 
 
