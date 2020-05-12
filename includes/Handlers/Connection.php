@@ -116,7 +116,11 @@ class Connection {
 	 */
 	public function get_scopes() {
 
-		return [];
+		return [
+			'manage_business_extension',
+			'catalog_management',
+			'business_management',
+		];
 	}
 
 
