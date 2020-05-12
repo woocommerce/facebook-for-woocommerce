@@ -87,6 +87,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
@@ -107,6 +108,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
 
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
 			}
 		}
 
