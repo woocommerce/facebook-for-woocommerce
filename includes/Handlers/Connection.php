@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string the business manager ID option name */
+	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
@@ -166,7 +170,7 @@ class Connection {
 	 */
 	public function get_business_manager_id() {
 
-		return '';
+		return get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
 	}
 
 
@@ -205,6 +209,7 @@ class Connection {
 	 */
 	public function update_business_manager_id( $value ) {
 
+		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
 	}
 
 
