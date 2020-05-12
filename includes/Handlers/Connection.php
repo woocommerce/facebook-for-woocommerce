@@ -123,7 +123,7 @@ class Connection {
 		];
 
 		/**
-		 * Filters the connection scopes that will be requested during the connection flow.
+		 * Filters the scopes that will be requested during the connection flow.
 		 *
 		 * @since 2.0.0-dev.1
 		 *
