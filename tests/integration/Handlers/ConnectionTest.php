@@ -76,10 +76,41 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_scopes() */
-	public function test_get_scopes() {
+	/**
+	 * @see Connection::get_scopes()
+	 *
+	 * @param string $scope an API scope that should be included
+	 *
+	 * @dataProvider provider_get_scopes
+	 */
+	public function test_get_scopes( $scope ) {
 
-		$this->assertIsArray( $this->get_connection()->get_scopes() );
+		$scopes = $this->get_connection()->get_scopes();
+
+		$this->assertContains( $scope, $scopes );
+	}
+
+
+	/** @see test_get_scopes() */
+	public function provider_get_scopes() {
+
+		return [
+			'manage_business_extension' => [ 'manage_business_extension' ],
+			'catalog_management'        => [ 'catalog_management' ],
+			'business_management'       => [ 'business_management' ],
+		];
+	}
+
+
+	/** @see Connection::get_scopes() */
+	public function test_get_scopes_filter() {
+
+		add_filter( 'wc_facebook_connection_scopes', function() {
+
+			return [ 'filtered' ];
+		} );
+
+		$this->assertSame( [ 'filtered' ], $this->get_connection()->get_scopes() );
 	}
 
 
