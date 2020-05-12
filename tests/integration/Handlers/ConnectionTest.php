@@ -107,6 +107,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_external_business_id() */
+	public function test_get_external_business_id_filter() {
+
+		add_filter( 'wc_facebook_external_business_id', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->get_connection()->get_external_business_id() );
+	}
+
+
 	/** @see Connection::get_business_name() */
 	public function test_get_business_name() {
 
