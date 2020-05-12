@@ -58,7 +58,11 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_access_token() */
 	public function test_get_access_token() {
 
-		$this->assertIsString( $this->get_connection()->get_access_token() );
+		$access_token = 'access token';
+
+		$this->get_connection()->update_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_access_token() );
 	}
 
 
@@ -236,7 +240,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$access_token = 'access token';
 
-		$this->assertNull( $this->get_connection()->update_access_token( $access_token ) );
+		$this->get_connection()->update_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_access_token() );
 	}
 
 
