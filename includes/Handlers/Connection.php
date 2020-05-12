@@ -151,7 +151,15 @@ class Connection {
 			$this->external_business_id = $value;
 		}
 
-		return $this->external_business_id;
+		/**
+		 * Filters the external business ID.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $external_business_id stored external business ID
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_external_business_id', $this->external_business_id, $this );
 	}
 
 
