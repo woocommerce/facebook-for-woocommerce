@@ -24,6 +24,10 @@ class Connection {
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
 
+	/** @var string|null the generated external merchant settings ID */
+	public $external_business_id;
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
@@ -133,7 +137,21 @@ class Connection {
 	 */
 	public function get_external_business_id() {
 
-		return '';
+		if ( ! is_string( $this->external_business_id ) ) {
+
+			$value = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
+
+			if ( ! is_string( $value ) ) {
+
+				$value = sanitize_key( get_bloginfo( 'name' ) ) . '-' . uniqid();
+
+				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
+			}
+
+			$this->external_business_id = $value;
+		}
+
+		return $this->external_business_id;
 	}
 
 
