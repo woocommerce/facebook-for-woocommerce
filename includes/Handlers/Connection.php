@@ -191,6 +191,8 @@ class Connection {
      * Stores the given ID value.
      *
      * @since 2.0.0-dev.1
+     *
+     * @param string $value the business manager ID
      */
     public function update_business_manager_id( $value ) {
 
@@ -201,6 +203,8 @@ class Connection {
      * Stores the given token value.
      *
      * @since 2.0.0-dev.1
+     *
+     * @param string $value the access token
      */
     public function update_access_token( $value ) {
 
