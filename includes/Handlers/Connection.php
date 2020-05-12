@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string the business manager ID option name */
+	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
