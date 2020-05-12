@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string the WordPress option name where the external business ID is stored */
+	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
