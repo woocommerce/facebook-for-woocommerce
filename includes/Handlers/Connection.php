@@ -12,8 +12,6 @@ namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
-
 /**
  * The connection handler.
  *
