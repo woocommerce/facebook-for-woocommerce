@@ -105,7 +105,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_scopes() */
 	public function test_get_scopes_filter() {
 
-		add_filter( 'wc_faceobok_connection_scopes', function() {
+		add_filter( 'wc_facebook_connection_scopes', function() {
 
 			return [ 'filtered' ];
 		} );

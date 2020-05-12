@@ -130,7 +130,7 @@ class Connection {
 		 * @param string[] $scopes connection scopes
 		 * @param Connection $connection connection handler instance
 		 */
-		return (array) apply_filters( 'wc_faceobok_connection_scopes', $scopes, $this );
+		return (array) apply_filters( 'wc_facebook_connection_scopes', $scopes, $this );
 	}
 
 
