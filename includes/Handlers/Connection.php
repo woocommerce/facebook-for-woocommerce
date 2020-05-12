@@ -172,7 +172,9 @@ class Connection {
 	 */
 	public function get_redirect_url() {
 
-		return '';
+		$redirect_url = add_query_arg( 'wc-api', self::ACTION_CONNECT, home_url() );
+
+		return wp_nonce_url( $redirect_url, self::ACTION_CONNECT, 'nonce' );
 	}
 
 
