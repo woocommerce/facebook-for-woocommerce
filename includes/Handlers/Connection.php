@@ -142,7 +142,18 @@ class Connection {
 	 */
 	public function get_business_name() {
 
-		return '';
+		$business_name = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES, 'UTF-8' );
+
+		/**
+		 * Filters the shop's business name.
+		 *
+		 * This is passed to Facebook when connecting. Defaults to the site name.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $business_name the shop's business name
+		 */
+		return apply_filters( 'wc_facebook_connection_business_name', $business_name );
 	}
 
 

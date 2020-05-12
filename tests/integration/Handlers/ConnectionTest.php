@@ -90,10 +90,46 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_business_name() */
-	public function test_get_business_name() {
+	/**
+	 * @see Connection::get_business_name()
+	 *
+	 * @dataProvider provider_get_business_name
+	 *
+	 * @param string $option_value the option value to set
+	 */
+	public function test_get_business_name( $option_value ) {
 
-		$this->assertIsString( $this->get_connection()->get_business_name() );
+		update_option( 'blogname', $option_value );
+
+		$this->assertSame( $option_value, $this->get_connection()->get_business_name() );
+	}
+
+
+	/** @see test_get_business_name() */
+	public function provider_get_business_name() {
+
+		return [
+			[ 'Test Store' ],
+			[ 'Tèst Store' ],
+			[ "Test's Store" ],
+			[ 'Test "Store"' ],
+			[ 'Test & Store' ]
+		];
+	}
+
+
+	/** @see Connection::get_business_name() */
+	public function test_get_business_name_filtered() {
+
+		$option_value = 'Test Store';
+
+		update_option( 'blogname', $option_value );
+
+		add_filter( 'wc_facebook_connection_business_name', function() {
+			return 'Filtered Test Store';
+		} );
+
+		$this->assertSame( 'Filtered Test Store', $this->get_connection()->get_business_name() );
 	}
 
 
