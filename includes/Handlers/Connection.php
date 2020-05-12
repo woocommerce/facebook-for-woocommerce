@@ -159,7 +159,7 @@ class Connection {
 	 */
 	public function get_business_manager_id() {
 
-		return '';
+		return get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
 	}
 
 
