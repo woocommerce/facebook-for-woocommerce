@@ -102,6 +102,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_scopes() */
+	public function test_get_scopes_filter() {
+
+		add_filter( 'wc_faceobok_connection_scopes', function() {
+
+			return [ 'filtered' ];
+		} );
+
+		$this->assertSame( [ 'filtered' ], $this->get_connection()->get_scopes() );
+	}
+
+
 	/** @see Connection::get_external_business_id() */
 	public function test_get_external_business_id() {
 
