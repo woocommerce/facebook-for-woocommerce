@@ -25,7 +25,7 @@ class Connection {
 
 
 	/** @var string|null the generated external merchant settings ID */
-	public $external_business_id;
+	private $external_business_id;
 
 
 	/**
