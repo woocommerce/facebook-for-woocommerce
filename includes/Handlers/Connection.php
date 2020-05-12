@@ -198,6 +198,7 @@ class Connection {
 	 */
 	public function update_business_manager_id( $value ) {
 
+		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
 	}
 
 
