@@ -116,11 +116,21 @@ class Connection {
 	 */
 	public function get_scopes() {
 
-		return [
+		$scopes = [
 			'manage_business_extension',
 			'catalog_management',
 			'business_management',
 		];
+
+		/**
+		 * Filters the connection scopes that will be requested during the connection flow.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string[] $scopes connection scopes
+		 * @param Connection $connection connection handler instance
+		 */
+		return (array) apply_filters( 'wc_faceobok_connection_scopes', $scopes, $this );
 	}
 
 
