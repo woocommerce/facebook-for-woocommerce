@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string the access token option name */
+	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
