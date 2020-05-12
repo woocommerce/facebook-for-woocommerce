@@ -76,15 +76,30 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_scopes() */
-	public function test_get_scopes() {
+	/**
+	 * @see Connection::get_scopes()
+	 *
+	 * @param string $scope an API scope that should be included
+	 *
+	 * @dataProvider provider_get_scopes
+	 */
+	public function test_get_scopes( $scope ) {
 
 		$scopes = $this->get_connection()->get_scopes();
 
 		$this->assertIsArray( $scopes );
-		$this->assertContains( 'manage_business_extension', $scopes );
-		$this->assertContains( 'catalog_management', $scopes );
-		$this->assertContains( 'business_management', $scopes );
+		$this->assertContains( $scope, $scopes );
+	}
+
+
+	/** @see test_get_scopes() */
+	public function provider_get_scopes() {
+
+		return [
+			'manage_business_extension' => [ 'manage_business_extension' ],
+			'catalog_management'        => [ 'catalog_management' ],
+			'business_management'       => [ 'business_management' ],
+		];
 	}
 
 
