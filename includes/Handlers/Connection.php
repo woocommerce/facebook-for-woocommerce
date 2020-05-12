@@ -172,9 +172,17 @@ class Connection {
 	 */
 	public function get_redirect_url() {
 
-		$redirect_url = add_query_arg( 'wc-api', self::ACTION_CONNECT, home_url() );
+		$redirect_url = wp_nonce_url( add_query_arg( 'wc-api', self::ACTION_CONNECT, home_url() ), self::ACTION_CONNECT, 'nonce' );
 
-		return wp_nonce_url( $redirect_url, self::ACTION_CONNECT, 'nonce' );
+		/**
+		 * Filters the redirect URL where the user will return to after OAuth.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $redirect_url redirect URL
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_redirect_url', $redirect_url, $this );
 	}
 
 
