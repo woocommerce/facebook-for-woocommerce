@@ -100,7 +100,11 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_business_manager_id() */
 	public function test_get_business_manager_id() {
 
-		$this->assertIsString( $this->get_connection()->get_business_manager_id() );
+		$business_manager_id = 'business manager id';
+
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
@@ -123,7 +127,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$business_manager_id = 'business manager id';
 
-		$this->assertNull( $this->get_connection()->update_business_manager_id( $business_manager_id ) );
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
