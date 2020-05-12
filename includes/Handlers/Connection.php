@@ -143,7 +143,7 @@ class Connection {
 
 			if ( ! is_string( $value ) ) {
 
-				$value = sanitize_key( get_bloginfo( 'name' ) ) . '-' . uniqid();
+				$value = sanitize_title( get_bloginfo( 'name' ) ) . '-' . uniqid();
 
 				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
 			}
