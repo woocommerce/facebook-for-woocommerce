@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string the action callback for the connection */
+	const ACTION_CONNECT = 'wc_facebook_connect';
+
+
 	/**
 	 * Constructs a new Connection.
 	 *
