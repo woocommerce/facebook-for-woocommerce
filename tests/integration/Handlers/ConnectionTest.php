@@ -119,7 +119,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_redirect_url() */
 	public function test_get_redirect_url_filter() {
 
-		add_filter( 'wc_facebook_redirect_url', function() {
+		add_filter( 'wc_facebook_connection_redirect_url', function() {
 
 			return 'filtered';
 		} );

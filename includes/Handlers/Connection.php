@@ -182,7 +182,7 @@ class Connection {
 		 * @param string $redirect_url redirect URL
 		 * @param Connection $connection connection handler instance
 		 */
-		return (string) apply_filters( 'wc_facebook_redirect_url', $redirect_url, $this );
+		return (string) apply_filters( 'wc_facebook_connection_redirect_url', $redirect_url, $this );
 	}
 
 
