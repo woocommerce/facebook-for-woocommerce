@@ -81,7 +81,7 @@ class Connection {
 	 */
 	public function get_access_token() {
 
-		return '';
+		return get_option( self::OPTION_ACCESS_TOKEN, '' );
 	}
 
 
