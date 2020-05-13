@@ -58,7 +58,11 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_access_token() */
 	public function test_get_access_token() {
 
-		$this->assertIsString( $this->get_connection()->get_access_token() );
+		$access_token = 'access token';
+
+		$this->get_connection()->update_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_access_token() );
 	}
 
 
@@ -76,31 +80,133 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_scopes() */
-	public function test_get_scopes() {
+	/**
+	 * @see Connection::get_scopes()
+	 *
+	 * @param string $scope an API scope that should be included
+	 *
+	 * @dataProvider provider_get_scopes
+	 */
+	public function test_get_scopes( $scope ) {
 
-		$this->assertIsArray( $this->get_connection()->get_scopes() );
+		$scopes = $this->get_connection()->get_scopes();
+
+		$this->assertContains( $scope, $scopes );
+	}
+
+
+	/** @see test_get_scopes() */
+	public function provider_get_scopes() {
+
+		return [
+			'manage_business_extension' => [ 'manage_business_extension' ],
+			'catalog_management'        => [ 'catalog_management' ],
+			'business_management'       => [ 'business_management' ],
+		];
+	}
+
+
+	/** @see Connection::get_scopes() */
+	public function test_get_scopes_filter() {
+
+		add_filter( 'wc_facebook_connection_scopes', function() {
+
+			return [ 'filtered' ];
+		} );
+
+		$this->assertSame( [ 'filtered' ], $this->get_connection()->get_scopes() );
 	}
 
 
 	/** @see Connection::get_external_business_id() */
 	public function test_get_external_business_id() {
 
-		$this->assertIsString( $this->get_connection()->get_external_business_id() );
+		update_option( Connection::OPTION_EXTERNAL_BUSINESS_ID, 'external business id' );
+
+		$this->assertSame( 'external business id', $this->get_connection()->get_external_business_id() );
+	}
+
+
+	/** @see Connection::get_external_business_id() */
+	public function test_get_external_business_id_generation() {
+
+		// force the generation of a new ID
+		delete_option( Connection::OPTION_EXTERNAL_BUSINESS_ID );
+
+		$connection           = $this->get_connection();
+		$external_business_id = $connection->get_external_business_id();
+
+		$this->assertNotEmpty( $external_business_id );
+		$this->assertIsString( $external_business_id );
+
+		$this->assertEquals( $external_business_id, $connection->get_external_business_id() );
+		$this->assertEquals( $external_business_id, get_option( Connection::OPTION_EXTERNAL_BUSINESS_ID ) );
+	}
+
+
+	/** @see Connection::get_external_business_id() */
+	public function test_get_external_business_id_filter() {
+
+		add_filter( 'wc_facebook_external_business_id', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->get_connection()->get_external_business_id() );
+	}
+
+
+	/**
+	 * @see Connection::get_business_name()
+	 *
+	 * @dataProvider provider_get_business_name
+	 *
+	 * @param string $option_value the option value to set
+	 */
+	public function test_get_business_name( $option_value ) {
+
+		update_option( 'blogname', $option_value );
+
+		$this->assertSame( $option_value, $this->get_connection()->get_business_name() );
+	}
+
+
+	/** @see test_get_business_name() */
+	public function provider_get_business_name() {
+
+		return [
+			[ 'Test Store' ],
+			[ 'Tèst Store' ],
+			[ "Test's Store" ],
+			[ 'Test "Store"' ],
+			[ 'Test & Store' ]
+		];
 	}
 
 
 	/** @see Connection::get_business_name() */
-	public function test_get_business_name() {
+	public function test_get_business_name_filtered() {
 
-		$this->assertIsString( $this->get_connection()->get_business_name() );
+		$option_value = 'Test Store';
+
+		update_option( 'blogname', $option_value );
+
+		add_filter( 'wc_facebook_connection_business_name', function() {
+			return 'Filtered Test Store';
+		} );
+
+		$this->assertSame( 'Filtered Test Store', $this->get_connection()->get_business_name() );
 	}
 
 
 	/** @see Connection::get_business_manager_id() */
 	public function test_get_business_manager_id() {
 
-		$this->assertIsString( $this->get_connection()->get_business_manager_id() );
+		$business_manager_id = 'business manager id';
+
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
@@ -119,7 +225,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_redirect_url() */
 	public function test_get_redirect_url_filter() {
 
-		add_filter( 'wc_facebook_redirect_url', function() {
+		add_filter( 'wc_facebook_connection_redirect_url', function() {
 
 			return 'filtered';
 		} );
@@ -140,7 +246,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$business_manager_id = 'business manager id';
 
-		$this->assertNull( $this->get_connection()->update_business_manager_id( $business_manager_id ) );
+		$this->get_connection()->update_business_manager_id( $business_manager_id );
+
+		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
 	}
 
 
@@ -149,7 +257,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$access_token = 'access token';
 
-		$this->assertNull( $this->get_connection()->update_access_token( $access_token ) );
+		$this->get_connection()->update_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_access_token() );
 	}
 
 

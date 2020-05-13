@@ -23,6 +23,19 @@ class Connection {
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
+	/** @var string the WordPress option name where the external business ID is stored */
+	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
+
+	/** @var string the business manager ID option name */
+	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
+
+	/** @var string the access token option name */
+	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
+
+
+	/** @var string|null the generated external merchant settings ID */
+	private $external_business_id;
+
 
 	/**
 	 * Constructs a new Connection.
@@ -81,7 +94,7 @@ class Connection {
 	 */
 	public function get_access_token() {
 
-		return '';
+		return get_option( self::OPTION_ACCESS_TOKEN, '' );
 	}
 
 
@@ -120,7 +133,21 @@ class Connection {
 	 */
 	public function get_scopes() {
 
-		return [];
+		$scopes = [
+			'manage_business_extension',
+			'catalog_management',
+			'business_management',
+		];
+
+		/**
+		 * Filters the scopes that will be requested during the connection flow.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string[] $scopes connection scopes
+		 * @param Connection $connection connection handler instance
+		 */
+		return (array) apply_filters( 'wc_facebook_connection_scopes', $scopes, $this );
 	}
 
 
@@ -133,7 +160,29 @@ class Connection {
 	 */
 	public function get_external_business_id() {
 
-		return '';
+		if ( ! is_string( $this->external_business_id ) ) {
+
+			$value = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
+
+			if ( ! is_string( $value ) ) {
+
+				$value = sanitize_title( get_bloginfo( 'name' ) ) . '-' . uniqid();
+
+				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
+			}
+
+			$this->external_business_id = $value;
+		}
+
+		/**
+		 * Filters the external business ID.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $external_business_id stored external business ID
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_external_business_id', $this->external_business_id, $this );
 	}
 
 
@@ -146,7 +195,18 @@ class Connection {
 	 */
 	public function get_business_name() {
 
-		return '';
+		$business_name = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES, 'UTF-8' );
+
+		/**
+		 * Filters the shop's business name.
+		 *
+		 * This is passed to Facebook when connecting. Defaults to the site name.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $business_name the shop's business name
+		 */
+		return apply_filters( 'wc_facebook_connection_business_name', $business_name );
 	}
 
 
@@ -159,7 +219,7 @@ class Connection {
 	 */
 	public function get_business_manager_id() {
 
-		return '';
+		return get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
 	}
 
 
@@ -182,7 +242,7 @@ class Connection {
 		 * @param string $redirect_url redirect URL
 		 * @param Connection $connection connection handler instance
 		 */
-		return (string) apply_filters( 'wc_facebook_redirect_url', $redirect_url, $this );
+		return (string) apply_filters( 'wc_facebook_connection_redirect_url', $redirect_url, $this );
 	}
 
 
@@ -208,6 +268,7 @@ class Connection {
 	 */
 	public function update_business_manager_id( $value ) {
 
+		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
 	}
 
 
@@ -220,6 +281,7 @@ class Connection {
 	 */
 	public function update_access_token( $value ) {
 
+		update_option( self::OPTION_ACCESS_TOKEN, $value );
 	}
 
 
