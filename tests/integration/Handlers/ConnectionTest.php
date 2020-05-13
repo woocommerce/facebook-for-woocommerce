@@ -237,7 +237,82 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_connect_parameters() */
 	public function test_get_connect_parameters() {
 
-		$this->assertIsArray( $this->get_connection()->get_connect_parameters() );
+		$connection            = $this->get_connection();
+		$connection_parameters = $connection->get_connect_parameters();
+
+		$this->assertIsArray( $connection_parameters );
+		$this->assertArrayHasKey( 'client_id', $connection_parameters );
+		$this->assertArrayHasKey( 'redirect_uri', $connection_parameters );
+		$this->assertArrayHasKey( 'state', $connection_parameters );
+		$this->assertArrayHasKey( 'display', $connection_parameters );
+		$this->assertArrayHasKey( 'response_type', $connection_parameters );
+		$this->assertArrayHasKey( 'scope', $connection_parameters );
+		$this->assertArrayHasKey( 'extras', $connection_parameters );
+
+		$this->assertEquals( Connection::CLIENT_ID, $connection_parameters['client_id'] );
+		$this->assertEquals( Connection::PROXY_URL, $connection_parameters['redirect_uri'] );
+		$this->assertEquals( $connection->get_redirect_url(), $connection_parameters['state'] );
+		$this->assertEquals( 'page', $connection_parameters['display'] );
+		$this->assertEquals( 'token', $connection_parameters['response_type'] );
+		$this->assertEquals( implode( ',', $connection->get_scopes() ), $connection_parameters['scope'] );
+		$this->assertJson( $connection_parameters['extras'] );
+	}
+
+
+	/** @see Connection::get_connect_parameters_extras() */
+	public function test_get_connect_parameters_extras() {
+
+		$connection = $this->get_connection();
+		$reflection = new \ReflectionClass( $connection );
+		$method     = $reflection->getMethod( 'get_connect_parameters_extras' );
+
+		$method->setAccessible( true );
+
+		$extras = $method->invoke( $connection );
+
+		$this->assertIsArray( $extras );
+		$this->assertArrayHasKey( 'setup', $extras );
+		$this->assertArrayHasKey( 'business_config', $extras );
+		$this->assertArrayHasKey( 'repeat', $extras );
+
+		$this->assertIsArray( $extras['setup'] );
+		$this->assertIsArray( $extras['business_config'] );
+		$this->assertFalse( $extras['repeat'] );
+
+		$this->assertArrayHasKey( 'external_business_id', $extras['setup'] );
+		$this->assertArrayHasKey( 'timezone', $extras['setup'] );
+		$this->assertArrayHasKey( 'currency', $extras['setup'] );
+		$this->assertArrayHasKey( 'business_vertical', $extras['setup'] );
+
+		// merchant settings ID shouldn't be present by default
+		$this->assertArrayNotHasKey( 'merchant_settings_id', $extras['setup'] );
+
+		$this->assertEquals( $connection->get_external_business_id(), $extras['setup']['external_business_id'] );
+		$this->assertEquals( wc_timezone_string(), $extras['setup']['timezone'] );
+		$this->assertEquals( get_woocommerce_currency(), $extras['setup']['currency'] );
+		$this->assertEquals( 'ECOMMERCE', $extras['setup']['business_vertical'] );
+
+		$this->assertArrayHasKey( 'business', $extras['business_config'] );
+
+		$this->assertEquals( $connection->get_business_name(), $extras['business_config']['business']['name'] );
+	}
+
+
+	/** @see Connection::get_connect_parameters_extras() */
+	public function test_get_connect_parameters_extras_migrating() {
+
+		facebook_for_woocommerce()->get_integration()->update_external_merchant_settings_id( '1234' );
+
+		$connection = $this->get_connection();
+		$reflection = new \ReflectionClass( $connection );
+		$method     = $reflection->getMethod( 'get_connect_parameters_extras' );
+
+		$method->setAccessible( true );
+
+		$extras = $method->invoke( $connection );
+
+		$this->assertArrayHasKey( 'merchant_settings_id', $extras['setup'] );
+		$this->assertSame( '1234', $extras['setup']['merchant_settings_id'] );
 	}
 
 

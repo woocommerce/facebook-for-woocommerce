@@ -20,6 +20,12 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string Facebook client identifier */
+	const CLIENT_ID = '1234';
+
+	/** @var string WooCommerce connection proxy */
+	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
+
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
@@ -255,7 +261,49 @@ class Connection {
 	 */
 	public function get_connect_parameters() {
 
-		return [];
+		return [
+			'client_id'     => self::CLIENT_ID,
+			'redirect_uri'  => self::PROXY_URL,
+			'state'         => $this->get_redirect_url(),
+			'display'       => 'page',
+			'response_type' => 'token',
+			'scope'         => implode( ',', $this->get_scopes() ),
+			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
+		];
+	}
+
+
+	/**
+	 * Gets connection parameters extras.
+	 *
+	 * @see Connection::get_connect_parameters()
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array associative array (to be converted to JSON encoded for connection purposes)
+	 */
+	private function get_connect_parameters_extras() {
+
+		$parameters = [
+			'setup' => [
+				'external_business_id' => $this->get_external_business_id(),
+				'timezone'             => wc_timezone_string(),
+				'currency'             => get_woocommerce_currency(),
+				'business_vertical'    => 'ECOMMERCE',
+			],
+			'business_config' => [
+				'business' => [
+					'name' => $this->get_business_name(),
+				],
+			],
+			'repeat' => false,
+		];
+
+		if ( $external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id() ) {
+			$parameters['setup']['merchant_settings_id'] = $external_merchant_settings_id;
+		}
+
+		return $parameters;
 	}
 
 
