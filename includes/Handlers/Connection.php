@@ -264,6 +264,7 @@ class Connection {
 		return [
 			'client_id'     => self::CLIENT_ID,
 			'redirect_uri'  => self::PROXY_URL,
+			'state'         => $this->get_redirect_url(),
 			'display'       => 'page',
 			'response_type' => 'token',
 			'scope'         => implode( ',', $this->get_scopes() ),

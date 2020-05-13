@@ -243,6 +243,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertIsArray( $connection_parameters );
 		$this->assertArrayHasKey( 'client_id', $connection_parameters );
 		$this->assertArrayHasKey( 'redirect_uri', $connection_parameters );
+		$this->assertArrayHasKey( 'state', $connection_parameters );
 		$this->assertArrayHasKey( 'display', $connection_parameters );
 		$this->assertArrayHasKey( 'response_type', $connection_parameters );
 		$this->assertArrayHasKey( 'scope', $connection_parameters );
@@ -251,6 +252,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( Connection::CLIENT_ID, $connection_parameters['client_id'] );
 		$this->assertEquals( Connection::PROXY_URL, $connection_parameters['redirect_uri'] );
+		$this->assertEquals( $connection->get_redirect_url(), $connection_parameters['state'] );
 		$this->assertEquals( 'page', $connection_parameters['display'] );
 		$this->assertEquals( 'token', $connection_parameters['response_type'] );
 		$this->assertEquals( implode( ',', $connection->get_scopes() ), $connection_parameters['scope'] );
