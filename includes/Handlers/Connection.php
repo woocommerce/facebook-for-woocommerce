@@ -23,6 +23,9 @@ class Connection {
 	/** @var string Facebook client identifier */
 	const CLIENT_ID = '1234';
 
+	/** @var string WooCommerce connection proxy */
+	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
+
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
