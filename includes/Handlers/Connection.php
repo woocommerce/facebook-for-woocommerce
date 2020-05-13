@@ -46,6 +46,7 @@ class Connection {
 	 */
 	public function __construct() {
 
+		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 	}
 
 
