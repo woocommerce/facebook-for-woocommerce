@@ -75,6 +75,8 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
 			}
 
+			$access_token = $this->create_system_user_token( $access_token );
+
 			$this->update_access_token( $access_token );
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
