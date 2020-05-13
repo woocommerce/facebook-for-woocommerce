@@ -261,7 +261,42 @@ class Connection {
 	 */
 	public function get_connect_parameters() {
 
-		return [];
+		return [
+			'client_id'     => self::CLIENT_ID,
+			'redirect_uri'  => self::PROXY_URL,
+			'display'       => 'page',
+			'response_type' => 'token',
+			'scope'         => $this->get_scopes(),
+			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
+			'extras.repeat' => false,
+		];
+	}
+
+
+	/**
+	 * Gets connection parameters extras.
+	 *
+	 * @see Connection::get_connect_parameters()
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array associative array (to be converted to JSON encoded for connection purposes)
+	 */
+	private function get_connect_parameters_extras() {
+
+		return [
+			'setup'           => [
+				'external_business_id' => $this->get_external_business_id(),
+				'timezone'             => wc_timezone_string(),
+				'currency'             => get_woocommerce_currency(),
+				'business_vertical'    => 'ECOMMERCE',
+				'merchant_settings_id' => facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id(),
+			],
+			'business_config' => [
+				'business.name' => get_bloginfo( 'name' ),
+			],
+			'repeat'          => false,
+		];
 	}
 
 
