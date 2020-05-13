@@ -20,6 +20,9 @@ defined( 'ABSPATH' ) or exit;
 class Connection {
 
 
+	/** @var string Facebook client identifier */
+	const CLIENT_ID = '1234';
+
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
