@@ -63,6 +63,25 @@ class Connection {
 			return;
 		}
 
+		try {
+
+			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT ) ) {
+				throw new SV_WC_API_Exception( 'Invalid nonce' );
+			}
+
+			$access_token = ! empty( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : '';
+
+			$this->update_access_token( $access_token );
+
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
+
+			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Connection unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
+		}
+
 	}
 
 
