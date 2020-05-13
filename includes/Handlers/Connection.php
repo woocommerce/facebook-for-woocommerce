@@ -284,21 +284,26 @@ class Connection {
 	 */
 	private function get_connect_parameters_extras() {
 
-		return [
-			'setup'           => [
+		$parameters = [
+			'setup' => [
 				'external_business_id' => $this->get_external_business_id(),
 				'timezone'             => wc_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
-				'merchant_settings_id' => facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id(),
 			],
 			'business_config' => [
 				'business' => [
 					'name' => $this->get_business_name(),
 				],
 			],
-			'repeat'          => false,
+			'repeat' => false,
 		];
+
+		if ( $external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id() ) {
+			$parameters['setup']['merchant_settings_id'] = $external_merchant_settings_id;
+		}
+
+		return $parameters;
 	}
 
 
