@@ -69,7 +69,12 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
-		$this->assertIsString( $this->get_connection()->get_connect_url() );
+		$connection     = $this->get_connection();
+		$connection_url = $connection->get_connect_url();
+
+		$this->assertIsString( $connection_url );
+		$this->assertStringContainsString( Connection::OAUTH_URL, $connection_url );
+		$this->assertEquals( add_query_arg( $connection->get_connect_parameters(), Connection::OAUTH_URL ), $connection_url );
 	}
 
 
