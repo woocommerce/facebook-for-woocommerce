@@ -269,7 +269,6 @@ class Connection {
 			'response_type' => 'token',
 			'scope'         => implode( ',', $this->get_scopes() ),
 			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
-			'extras.repeat' => false,
 		];
 	}
 
