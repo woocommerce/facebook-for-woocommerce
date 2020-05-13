@@ -23,7 +23,10 @@ class Connection {
 	/** @var string Facebook client identifier */
 	const CLIENT_ID = '1234';
 
-	/** @var string WooCommerce connection proxy */
+	/** @var string Facebook OAuth URL */
+	const OAUTH_URL = 'https://facebook.com/dialog/oauth';
+
+	/** @var string WooCommerce connection proxy URL */
 	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
 
 	/** @var string the action callback for the connection */
