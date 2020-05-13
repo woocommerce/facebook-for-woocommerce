@@ -116,7 +116,7 @@ class Connection {
 	 */
 	public function get_connect_url() {
 
-		return '';
+		return add_query_arg( $this->get_connect_parameters(), self::OAUTH_URL );
 	}
 
 
