@@ -88,6 +88,8 @@ class Connection {
 			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Connection unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
 		}
 
+		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+		exit;
 	}
 
 
