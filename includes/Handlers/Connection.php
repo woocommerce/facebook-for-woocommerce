@@ -267,7 +267,10 @@ class Connection {
 	 */
 	public function get_redirect_url() {
 
-		$redirect_url = wp_nonce_url( add_query_arg( 'wc-api', self::ACTION_CONNECT, home_url() ), self::ACTION_CONNECT, 'nonce' );
+		$redirect_url = add_query_arg( [
+			'wc-api' => self::ACTION_CONNECT,
+			'nonce'  => wp_create_nonce( self::ACTION_CONNECT ),
+		], home_url( '/' ) );
 
 		/**
 		 * Filters the redirect URL where the user will return to after OAuth.
