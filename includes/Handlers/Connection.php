@@ -266,7 +266,7 @@ class Connection {
 			'redirect_uri'  => self::PROXY_URL,
 			'display'       => 'page',
 			'response_type' => 'token',
-			'scope'         => $this->get_scopes(),
+			'scope'         => implode( ',', $this->get_scopes() ),
 			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
 			'extras.repeat' => false,
 		];
