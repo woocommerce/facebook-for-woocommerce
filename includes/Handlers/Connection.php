@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -55,6 +57,11 @@ class Connection {
 	 * @since 2.0.0-dev.1
 	 */
 	public function handle_connect() {
+
+		// don't handle anything unless the user can manage WooCommerce settings
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
 
 	}
 
