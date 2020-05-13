@@ -71,6 +71,10 @@ class Connection {
 
 			$access_token = ! empty( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : '';
 
+			if ( ! $access_token ) {
+				throw new SV_WC_API_Exception( 'Access token is missing' );
+			}
+
 			$this->update_access_token( $access_token );
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
