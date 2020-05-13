@@ -291,9 +291,10 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 'ECOMMERCE', $extras['setup']['business_vertical'] );
 		$this->assertEquals( facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id(), $extras['setup']['merchant_settings_id'] );
 
-		$this->assertArrayHasKey( 'business.name', $extras['business_config'] );
+		$this->assertArrayHasKey( 'business', $extras['business_config'] );
 
-		$this->assertEquals( get_bloginfo( 'name' ), $extras['business_config']['business.name'] );
+		$this->assertEquals( $connection->get_business_name(), $extras['business_config']['business']['name'] );
+
 	}
 
 

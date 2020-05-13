@@ -293,7 +293,9 @@ class Connection {
 				'merchant_settings_id' => facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id(),
 			],
 			'business_config' => [
-				'business.name' => get_bloginfo( 'name' ),
+				'business' => [
+					'name' => $this->get_business_name(),
+				],
 			],
 			'repeat'          => false,
 		];
