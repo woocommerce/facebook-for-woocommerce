@@ -353,14 +353,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				self::FB_PRIORITY_MID
 			);
 
-			// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
-			add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
-
 			// don't duplicate product FBID meta
 			add_filter( 'woocommerce_duplicate_product_exclude_meta', [ $this, 'fb_duplicate_product_reset_meta' ] );
 
 			// add product processing hooks if the plugin is configured only
 			if ( $this->is_configured() && $this->get_product_catalog_id() ) {
+
+				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+				add_action( 'woocommerce_process_product_meta', [ $this, 'on_product_save' ], 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
