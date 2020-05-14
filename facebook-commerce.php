@@ -1963,22 +1963,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			echo $this->get_message_html( $message, 'info' );
 		}
 
-		// WooCommerce 2.x upgrade nag
-		if ( $this->get_page_access_token() && ( ! isset( $this->background_processor ) ) ) {
-
-			$message = sprintf(
-				/* translators: Placeholders %1$s - WooCommerce version */
-				esc_html__(
-					'Facebook product sync may not work correctly in WooCommerce version %1$s. Please upgrade to WooCommerce 3.',
-					'facebook-for-woocommerce'
-				),
-				esc_html( WC()->version )
-			);
-
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html( $message, 'warning' );
-		}
-
 		$this->maybe_display_facebook_api_messages();
 	}
 
