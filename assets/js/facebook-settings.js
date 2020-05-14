@@ -117,10 +117,6 @@ function ajax(action, payload = null, callback = null, failcallback = null) {
 var settings       = {'facebook_for_woocommerce' : 1};
 var pixel_settings = {'facebook_for_woocommerce' : 1};
 
-function facebookConfig() {
-	window.sendToFacebook = openPopup();
-	window.diaConfig      = { 'clientSetup': window.facebookAdsToolboxConfig };
-}
 
 function fb_flush(){
 	console.log( "Removing all FBIDs from all products!" );
@@ -1085,8 +1081,6 @@ jQuery( document ).ready( function( $ ) {
 	$( '.notice .wc-facebook-manage-connection' ).click( function( event ) {
 
 		event.preventDefault();
-
-		facebookConfig();
 	} );
 
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
