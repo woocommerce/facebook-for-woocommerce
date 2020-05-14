@@ -3892,7 +3892,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return (bool) $this->get_external_merchant_settings_id();
+		return facebook_for_woocommerce()->get_connection_handler()->is_connected();
 	}
 
 
