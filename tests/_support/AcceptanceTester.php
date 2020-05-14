@@ -218,7 +218,6 @@ class AcceptanceTester extends \Codeception\Actor {
 	/**
 	 * Checks that a link with the given text is a Connect button.
 	 *
-	 * @param AcceptanceTester $I tester instance
 	 * @param string $text button text
 	 * @param string $selector button selector
 	 */
