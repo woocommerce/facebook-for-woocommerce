@@ -2718,7 +2718,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				class="button"
 				href="<?php echo esc_url( $connect_url ); ?>"
 				style="vertical-align: middle; margin-left: 20px;"
-				onclick="facebookConfig();"
 			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
 		</h3>
 		<?php // if ( empty( $this->get_page_name() ) ) : ?>
@@ -4237,7 +4236,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
 						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<a href="<?php echo esc_url( $connect_url ); ?>" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
+						<a href="<?php echo esc_url( $connect_url ); ?>" class="btn pre-setup" id="cta_button">
 							<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
 						</a>
 
