@@ -359,8 +359,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// don't duplicate product FBID meta
 			add_filter( 'woocommerce_duplicate_product_exclude_meta', [ $this, 'fb_duplicate_product_reset_meta' ] );
 
-			// Only load product processing hooks if we have completed setup.
-			if ( $this->get_page_access_token() && $this->get_product_catalog_id() ) {
+			// add product processing hooks if the plugin is configured only
+			if ( $this->is_configured() ) {
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
