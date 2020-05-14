@@ -43,13 +43,7 @@ class IntegrationSettingsCest {
 
 		$I->amOnIntegrationSettingsPage();
 
-		$I->see( 'Get Started', 'a#cta_button' );
-
-		$button_url  = $I->grabAttributeFrom( 'a#cta_button', 'href' );
-		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
-
-		// compare URLs after removing the nonce parameter
-		$I->assertEquals( preg_replace( '/nonce[^&]+/', '', $button_url ), preg_replace( '/nonce[^&]+/', '', $connect_url ) );
+		$I->seeConnectButton( 'Get Started', 'a#cta_button' );
 	}
 
 
