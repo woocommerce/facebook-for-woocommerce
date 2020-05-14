@@ -594,35 +594,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	// }
 
 
-	/**
-	 * @see \WC_Facebookcommerce_Integration::is_configured()
-	 *
-	 * TODO: consider removing this test when FBE 2.0 modifications are available {WV 2020-04-22}
-	 *
-	 * @param string $external_merchant_settings_id Facebook external merchant settings ID
-	 * @param bool $expected whether Facebook for WooCommerce is configured or not
-	 *
-	 * @dataProvider provider_is_configured_with_external_merchant_settings_id()
-	 */
-	public function test_is_configured_with_external_merchant_settings_id( $external_merchant_settings_id, $expected ) {
-
-		$this->integration->update_external_merchant_settings_id( $external_merchant_settings_id );
-		$this->integration->init_settings();
-
-		$this->assertSame( $expected, $this->integration->is_configured() );
-	}
-
-
-	/** @see test_is_configured_with_external_merchant_settings_id() */
-	public function provider_is_configured_with_external_merchant_settings_id() {
-
-		return [
-			[ 'external-merchant-settings-id', true ],
-			[ '',                              false ],
-		];
-	}
-
-
 	/** @see \WC_Facebookcommerce_Integration::is_advanced_matching_enabled() */
 	public function test_is_advanced_matching_enabled() {
 
