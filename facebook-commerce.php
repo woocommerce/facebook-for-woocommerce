@@ -4185,10 +4185,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		facebook_for_woocommerce()->get_message_handler()->show_messages();
 
+		$access_token   = facebook_for_woocommerce()->get_connection_handler()->get_access_token();
 		$page_name      = $this->get_page_name();
 		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $this->get_page_access_token() );
-		$apikey_invalid = ! $pre_setup && $this->get_page_access_token() && ! $page_name;
+		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $access_token );
+		$apikey_invalid = ! $pre_setup && $access_token && ! $page_name;
 
 		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
 		$https_will_be_stripped = $remove_http_active && ! get_option( 'factmaven_rhttp' )['external'];
