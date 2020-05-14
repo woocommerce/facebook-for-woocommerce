@@ -138,7 +138,17 @@ class Connection {
 	 */
 	public function get_access_token() {
 
-		return get_option( self::OPTION_ACCESS_TOKEN, '' );
+		$access_token = get_option( self::OPTION_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the API access token.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $access_token access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return apply_filters( 'wc_facebook_connection_access_token', $access_token, $this );
 	}
 
 
