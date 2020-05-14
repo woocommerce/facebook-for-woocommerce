@@ -4189,6 +4189,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$can_manage     = current_user_can( 'manage_woocommerce' );
 		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $access_token );
 		$apikey_invalid = ! $pre_setup && $access_token && ! $page_name;
+		$connect_url    = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
 
 		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
 		$https_will_be_stripped = $remove_http_active && ! get_option( 'factmaven_rhttp' )['external'];
@@ -4235,7 +4236,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
 						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
 
-						<a href="#" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
+						<a href="<?php echo esc_url( $connect_url ); ?>" class="btn pre-setup" onclick="facebookConfig()" id="cta_button">
 							<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
 						</a>
 
