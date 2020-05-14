@@ -89,6 +89,27 @@ class Connection {
 
 			$this->update_access_token( $access_token );
 
+			$integration = facebook_for_woocommerce()->get_integration();
+			$api         = new \WC_Facebookcommerce_Graph_API( $access_token );
+
+			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
+
+			if ( ! empty( $asset_ids['page_id'] ) ) {
+				$integration->update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $asset_ids['page_id'] ) );
+			}
+
+			if ( ! empty( $asset_ids['pixel_id'] ) ) {
+				$integration->update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $asset_ids['pixel_id'] ) );
+			}
+
+			if ( ! empty( $asset_ids['catalog_id'] ) ) {
+				$integration->update_product_catalog_id( sanitize_text_field( $asset_ids['catalog_id'] ) );
+			}
+
+			if ( ! empty( $asset_ids['business_manager_id'] ) ) {
+				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
+			}
+
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
