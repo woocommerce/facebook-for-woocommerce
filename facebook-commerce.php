@@ -4100,9 +4100,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		// TODO: replace with `if ( $this->is_configured() ) {` when access tokens become available again {WV 2020-03-31}
-		if ( $this->get_facebook_page_id() && $this->get_page_access_token() ) {
-			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		if ( $this->get_facebook_page_id() && $this->is_configured() ) {
+			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id() );
 		} else {
 			$page_name = '';
 		}
@@ -4120,8 +4119,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_url() {
 
-		if ( $this->is_configured() ) {
-			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id(), $this->get_page_access_token() );
+		if ( $this->get_facebook_page_id() && $this->is_configured() ) {
+			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id() );
 		} else {
 			$page_url = '';
 		}
