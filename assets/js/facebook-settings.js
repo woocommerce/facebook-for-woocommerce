@@ -10,36 +10,6 @@
 var fb_sync_no_response_count = 0;
 var fb_show_advanced_options  = false;
 
-
-function openPopup() {
-	var width          = 1153;
-	var height         = 808;
-	var topPos         = screen.height / 2 - height / 2;
-	var leftPos        = screen.width / 2 - width / 2;
-	window.originParam = window.location.protocol + '//' + window.location.host;
-	var popupUrl;
-	if (window.facebookAdsToolboxConfig.popupOrigin.includes( 'staticxx' )) {
-		window.facebookAdsToolboxConfig.popupOrigin = 'https://www.facebook.com/';
-	}
-	window.facebookAdsToolboxConfig.popupOrigin = prepend_protocol(
-		window.facebookAdsToolboxConfig.popupOrigin
-	);
-	popupUrl                                    = window.facebookAdsToolboxConfig.popupOrigin;
-
-	var path = '/ads/dia';
-	var page = window.open( popupUrl + '/login.php?display=popup&next=' + encodeURIComponent( popupUrl + path + '?origin=' + window.originParam + ' &merchant_settings_id=' + window.facebookAdsToolboxConfig.diaSettingId ), 'DiaWizard', ['toolbar=no', 'location=no', 'directories=no', 'status=no', 'menubar=no', 'scrollbars=no', 'resizable=no', 'copyhistory=no', 'width=' + width, 'height=' + height, 'top=' + topPos, 'left=' + leftPos].join( ',' ) );
-
-	return function (type, params) {
-		page.postMessage(
-			{
-				type: type,
-				params: params
-			},
-			window.facebookAdsToolboxConfig.popupOrigin
-		);
-	};
-}
-
 function prepend_protocol(url) {
 	// Preprend https if the url begis with //www.
 	if (url.indexOf( '//www.' ) === 0) {
