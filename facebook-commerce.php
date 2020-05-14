@@ -245,7 +245,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
 			include_once 'includes/fbgraph.php';
-			$this->fbgraph = new WC_Facebookcommerce_Graph_API( $this->get_page_access_token() );
+			$this->fbgraph = new WC_Facebookcommerce_Graph_API( facebook_for_woocommerce()->get_connection_handler()->get_access_token() );
 		}
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
