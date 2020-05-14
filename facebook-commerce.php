@@ -2704,7 +2704,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	protected function generate_manage_connection_title_html( $key, array $args = [] ) {
 
-		$key = $this->get_field_key( $key );
+		$key         = $this->get_field_key( $key );
+		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
 
 		ob_start();
 
@@ -2715,7 +2716,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			<a
 				id="woocommerce-facebook-settings-manage-connection"
 				class="button"
-				href="#"
+				href="<?php echo esc_url( $connect_url ); ?>"
 				style="vertical-align: middle; margin-left: 20px;"
 				onclick="facebookConfig();"
 			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
