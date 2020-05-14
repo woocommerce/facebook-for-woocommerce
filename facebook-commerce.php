@@ -476,7 +476,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( isset( $_POST['request_time'] ) ) {
 			$request_time = esc_js( sanitize_text_field( wp_unslash( $_POST['request_time'] ) ) );
 		}
-		if ( $this->get_page_access_token() ) {
+
+		if ( facebook_for_woocommerce()->get_connection_handler()->get_access_token() ) {
+
 			if ( isset( $this->background_processor ) ) {
 				$is_processing = $this->background_processor->handle_cron_healthcheck();
 				$remaining     = $this->background_processor->get_item_count();
@@ -499,6 +501,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'background' => false,
 			);
 		}
+
 		printf( json_encode( $response ) );
 		wp_die();
 	}
