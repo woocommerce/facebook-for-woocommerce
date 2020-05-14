@@ -32,10 +32,10 @@ class Admin {
 		// enqueue admin scripts
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
-		$integration = facebook_for_woocommerce()->get_integration();
+		$plugin = facebook_for_woocommerce();
 
 		// only alter the admin UI if the plugin is connected to Facebook and ready to sync products
-		if ( ! $integration->get_product_catalog_id() ) {
+		if ( ! $plugin->get_connection_handler()->is_connected() || ! $plugin->get_integration()->get_product_catalog_id() ) {
 			return;
 		}
 
@@ -52,7 +52,7 @@ class Admin {
 		// add admin notice to inform that the catalog visibility setting was removed
 		add_action( 'admin_notices', [ $this, 'add_catalog_visibility_settings_removed_notice' ] );
 		// handle dismissal of special notices
-		add_action( 'wc_' . facebook_for_woocommerce()->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
+		add_action( 'wc_' . $plugin->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
