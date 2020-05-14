@@ -161,7 +161,7 @@ class Connection {
 	 */
 	public function get_connect_url() {
 
-		return add_query_arg( $this->get_connect_parameters(), self::OAUTH_URL );
+		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters() ), self::OAUTH_URL );
 	}
 
 
