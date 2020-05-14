@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -53,6 +55,7 @@ class Connection {
 	 */
 	public function __construct() {
 
+		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 	}
 
 
@@ -65,6 +68,38 @@ class Connection {
 	 */
 	public function handle_connect() {
 
+		// don't handle anything unless the user can manage WooCommerce settings
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		try {
+
+			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT ) ) {
+				throw new SV_WC_API_Exception( 'Invalid nonce' );
+			}
+
+			$access_token = ! empty( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : '';
+
+			if ( ! $access_token ) {
+				throw new SV_WC_API_Exception( 'Access token is missing' );
+			}
+
+			$access_token = $this->create_system_user_token( $access_token );
+
+			$this->update_access_token( $access_token );
+
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
+
+			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Connection unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
+		}
+
+		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+		exit;
 	}
 
 
@@ -241,7 +276,10 @@ class Connection {
 	 */
 	public function get_redirect_url() {
 
-		$redirect_url = wp_nonce_url( add_query_arg( 'wc-api', self::ACTION_CONNECT, home_url() ), self::ACTION_CONNECT, 'nonce' );
+		$redirect_url = add_query_arg( [
+			'wc-api' => self::ACTION_CONNECT,
+			'nonce'  => wp_create_nonce( self::ACTION_CONNECT ),
+		], home_url( '/' ) );
 
 		/**
 		 * Filters the redirect URL where the user will return to after OAuth.
