@@ -170,6 +170,23 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-info wc-facebook-migrate-notice',
 				] );
 			}
+
+			if ( $this->get_integration()->get_external_merchant_settings_id() ) {
+
+				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
+
+				$message = sprintf(
+					__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+					'<strong>', '</strong>',
+					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
+					'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+				);
+
+				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v2_0', [
+					'dismissible'  => false,
+					'notice_class' => 'notice-info wc-facebook-migrate-notice',
+				] );
+			}
 		}
 
 
