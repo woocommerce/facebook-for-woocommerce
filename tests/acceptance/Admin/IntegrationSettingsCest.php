@@ -1,5 +1,7 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+
 class IntegrationSettingsCest {
 
 
@@ -15,7 +17,7 @@ class IntegrationSettingsCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		$I->haveFacebookForWooCommerceSettingsInDatabase( [
@@ -24,6 +26,30 @@ class IntegrationSettingsCest {
 
 		// always log in
 		$I->loginAsAdmin();
+	}
+
+
+	/**
+	 * Test that the Get Started button is present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_get_started_button_present( AcceptanceTester $I ) {
+
+		$I->wantTo( 'Test that the Get Started button is present' );
+
+		$I->dontHaveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN );
+		$I->dontHaveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID );
+
+		$I->amOnIntegrationSettingsPage();
+
+		$I->see( 'Get Started', 'a#cta_button' );
+
+		$button_url  = $I->grabAttributeFrom( 'a#cta_button', 'href' );
+		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
+
+		// compare URLs after removing the nonce parameter
+		$I->assertEquals( preg_replace( '/nonce[^&]+/', '', $button_url ), preg_replace( '/nonce[^&]+/', '', $connect_url ) );
 	}
 
 
