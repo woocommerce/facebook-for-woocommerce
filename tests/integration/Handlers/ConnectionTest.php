@@ -66,6 +66,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_access_token() */
+	public function test_get_access_token_filter() {
+
+		add_filter( 'wc_facebook_connection_access_token', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertSame( 'filtered', $this->get_connection()->get_access_token() );
+	}
+
+
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
@@ -344,9 +356,20 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Connection::is_connected() */
+	public function test_is_not_connected_without_access_token() {
+
+		$this->assertFalse( $this->get_connection()->is_connected() );
+	}
+
+
+	/** @see Connection::is_connected() */
 	public function test_is_connected() {
 
-		$this->assertIsBool( $this->get_connection()->is_connected() );
+		$connection = $this->get_connection();
+
+		$connection->update_access_token( 'access token' );
+
+		$this->assertTrue( $connection->is_connected() );
 	}
 
 
