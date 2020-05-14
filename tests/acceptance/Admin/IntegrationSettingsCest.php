@@ -103,7 +103,7 @@ class IntegrationSettingsCest {
 
 		$I->wantTo( 'Test that the Connection fields are present' );
 
-		$I->see( 'Manage connection', 'a.button' );
+		$I->seeConnectButton( 'Manage connection', 'a#woocommerce-facebook-settings-manage-connection' );
 
 		// $I->see( 'Facebook page', 'th.titledesc' );
 		// // TODO: mock fbgraph calls to get_page_name and get_page_url and verify the page link {DM 2020-01-30}
