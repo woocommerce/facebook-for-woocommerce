@@ -1657,7 +1657,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
-		if ( $this->get_page_access_token() ) {
+		if ( $this->is_configured() ) {
 
 			$response = [
 				'connected' => true,
