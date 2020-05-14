@@ -826,7 +826,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Checks the product type and calls the corresponding on publish method.
 	 *
-	 *
 	 * @internal
 	 *
 	 * @since 1.10.0
@@ -862,7 +861,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
 		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
 
-		if ( $sync_enabled && $this->get_page_access_token() && $this->get_product_catalog_id() ) {
+		if ( $sync_enabled && $this->is_configured() ) {
 
 			switch ( $product->get_type() ) {
 
