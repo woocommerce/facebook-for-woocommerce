@@ -385,7 +385,7 @@ class Connection {
 	 */
 	public function is_connected() {
 
-		return true;
+		return (bool) $this->get_access_token();
 	}
 
 
