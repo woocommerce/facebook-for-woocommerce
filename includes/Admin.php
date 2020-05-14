@@ -35,7 +35,7 @@ class Admin {
 		$plugin = facebook_for_woocommerce();
 
 		// only alter the admin UI if the plugin is connected to Facebook and ready to sync products
-		if ( ! $plugin->get_integration()->get_product_catalog_id() ) {
+		if ( ! $plugin->get_connection_handler()->is_connected() || ! $plugin->get_integration()->get_product_catalog_id() ) {
 			return;
 		}
 
