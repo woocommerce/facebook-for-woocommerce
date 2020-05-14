@@ -66,6 +66,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_access_token() */
+	public function test_get_access_token_filter() {
+
+		add_filter( 'wc_facebook_connection_access_token', function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertSame( 'filtered', $this->get_connection()->get_access_token() );
+	}
+
+
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
