@@ -137,6 +137,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
+			//  if the site has the old FBE 1.0 external settings ID option stored, inform users that they need to connect to FBE 2.0
 			if ( $this->get_integration()->get_external_merchant_settings_id() ) {
 
 				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
