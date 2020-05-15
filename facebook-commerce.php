@@ -3878,7 +3878,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_configured() {
 
-		return facebook_for_woocommerce()->get_connection_handler()->is_connected();
+		return $this->get_facebook_page_id() && facebook_for_woocommerce()->get_connection_handler()->is_connected();
 	}
 
 
@@ -4100,7 +4100,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		if ( $this->get_facebook_page_id() && $this->is_configured() ) {
+		if ( $this->is_configured() ) {
 			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id() );
 		} else {
 			$page_name = '';
@@ -4119,7 +4119,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_url() {
 
-		if ( $this->get_facebook_page_id() && $this->is_configured() ) {
+		if ( $this->is_configured() ) {
 			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id() );
 		} else {
 			$page_url = '';
