@@ -312,7 +312,14 @@ class Connection {
 	 */
 	public function get_connect_parameters() {
 
-		return [
+		/**
+		 * Filters the connection parameters.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $parameters connection parameters
+		 */
+		return apply_filters( 'wc_facebook_connection_parameters', [
 			'client_id'     => self::CLIENT_ID,
 			'redirect_uri'  => self::PROXY_URL,
 			'state'         => $this->get_redirect_url(),
@@ -320,7 +327,7 @@ class Connection {
 			'response_type' => 'token',
 			'scope'         => implode( ',', $this->get_scopes() ),
 			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
-		];
+		] );
 	}
 
 
