@@ -270,7 +270,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( Connection::PROXY_URL, $connection_parameters['redirect_uri'] );
 		$this->assertEquals( $connection->get_redirect_url(), $connection_parameters['state'] );
 		$this->assertEquals( 'page', $connection_parameters['display'] );
-		$this->assertEquals( 'token', $connection_parameters['response_type'] );
+		$this->assertEquals( 'code', $connection_parameters['response_type'] );
 		$this->assertEquals( implode( ',', $connection->get_scopes() ), $connection_parameters['scope'] );
 		$this->assertJson( $connection_parameters['extras'] );
 	}
