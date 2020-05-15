@@ -54,6 +54,11 @@ class ProductMetaboxCest {
 		$I->wantTo( 'Test that product metabox is shown when the plugin is connected' );
 
 		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, 'xyz' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'xyz' );
+
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => '1234',
+		] );
 
 		$I->amEditingPostWithId( $this->product->get_id() );
 		$I->waitForElementVisible( 'input[type="submit"][value="Update"]', 5 );
