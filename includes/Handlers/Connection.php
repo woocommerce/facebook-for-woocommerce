@@ -324,7 +324,7 @@ class Connection {
 			'redirect_uri'  => self::PROXY_URL,
 			'state'         => $this->get_redirect_url(),
 			'display'       => 'page',
-			'response_type' => 'token',
+			'response_type' => 'code',
 			'scope'         => implode( ',', $this->get_scopes() ),
 			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
 		] );
