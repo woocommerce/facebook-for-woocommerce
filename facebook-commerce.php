@@ -1096,11 +1096,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$fb_product_group_id = $this->get_product_fbid(
-			self::FB_PRODUCT_GROUP_ID,
-			$wp_id,
-			$woo_product
-		);
+		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $wp_id, $woo_product );
 
 		if ( $fb_product_group_id ) {
 
@@ -1110,7 +1106,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} else {
 
-			$this->create_product_variable( $woo_product );
+			$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product->woo_product );
+
+			$this->create_product_group( $woo_product, $retailer_id, true );
 		}
 
 		$child_products = $woo_product->get_children();
