@@ -541,10 +541,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 					}
 
 					$file_path = $this->get_file_path();
-					$feed_file = @fopen( $file_path, 'w' );
 
-					// check if we can open the final feed file
-					if ( false === $feed_file || ! is_writable( $file_path ) ) {
+					// check if we will be able to write to the final feed file
+					if ( ! is_writable( $file_path ) ) {
 						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
 					}
 
@@ -585,10 +584,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				if ( ! empty( $temp_feed_file ) ) {
 					fclose( $temp_feed_file );
-				}
-
-				if ( ! empty( $feed_file ) ) {
-					fclose( $feed_file );
 				}
 
 				if ( ! empty( $temp_file_path ) && ! empty( $file_path ) && ! empty( $temp_feed_file ) ) {
