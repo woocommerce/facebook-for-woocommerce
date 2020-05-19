@@ -33,16 +33,6 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
-	 * Background Sync Handler constructor.
-	 *
-	 * @since 2.0.0-dev.1
-	 */
-	public function __construct() {
-		// TODO
-	}
-
-
-	/**
 	 * Processes a job.
 	 *
 	 * @since 2.0.0-dev.1
