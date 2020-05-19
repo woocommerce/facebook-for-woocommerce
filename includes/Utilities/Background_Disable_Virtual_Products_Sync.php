@@ -110,8 +110,8 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 		$sql = "
 			SELECT COUNT( posts.ID )
 			FROM {$wpdb->posts} AS posts
-			INNER JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' AND sync_meta.meta_value = 'yes' )
 			INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
+			LEFT JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' AND sync_meta.meta_value = 'yes' )
 			WHERE posts.post_type IN ( 'product', 'product_variation' )
 		";
 
