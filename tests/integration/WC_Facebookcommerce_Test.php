@@ -34,7 +34,7 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see WC_Facebookcommerce::get_products_sync_background_handler() */
 	public function test_get_products_sync_background_handler() {
 
-		$this->assertInstanceOf( Background::class, facebook_for_woocommerce()->get_products_sync_handler() );
+		$this->assertInstanceOf( Background::class, facebook_for_woocommerce()-> get_products_sync_background_handler() );
 	}
 
 
