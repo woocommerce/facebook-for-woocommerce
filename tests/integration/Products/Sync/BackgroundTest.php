@@ -14,16 +14,6 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
-	public function _before() {
-
-		parent::_before();
-
-		require_once 'vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-async-request.php';
-		require_once 'vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-background-job-handler.php';
-		require_once 'includes/Products/Sync/Background.php';
-	}
-
-
 	/** Test methods **************************************************************************************************/
 
 
