@@ -38,13 +38,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 			'process_items' => \Codeception\Stub\Expected::exactly( empty( $requests ) ? 0 : 1 ),
 		], $this );
 
-		$job = (object) [
-			'id'       => uniqid(),
-			'status'   => 'queued',
-			'requests' => $requests,
-		];
-
-		$background->process_job( $job );
+		$background->process_job( $this->get_test_job( [ 'requests' => $requests ] ) );
 	}
 
 
