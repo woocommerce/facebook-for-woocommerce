@@ -299,6 +299,26 @@ class Connection {
 
 
 	/**
+	 * Gets the proxy URL.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string URL
+	 */
+	public function get_proxy_url() {
+
+		/**
+		 * Filters the proxy URL.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $proxy_url the connection proxy URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_proxy_url', self::PROXY_URL );
+	}
+
+
+	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
 	 *
 	 * @since 2.0.0-dev.1
@@ -342,7 +362,7 @@ class Connection {
 		 */
 		return apply_filters( 'wc_facebook_connection_parameters', [
 			'client_id'     => self::CLIENT_ID,
-			'redirect_uri'  => self::PROXY_URL,
+			'redirect_uri'  => $this->get_proxy_url(),
 			'state'         => $this->get_redirect_url(),
 			'display'       => 'page',
 			'response_type' => 'code',
