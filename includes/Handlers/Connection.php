@@ -355,7 +355,7 @@ class Connection {
 		 */
 		return apply_filters( 'wc_facebook_connection_parameters', [
 			'client_id'     => self::CLIENT_ID,
-			'redirect_uri'  => self::PROXY_URL,
+			'redirect_uri'  => $this->get_proxy_url(),
 			'state'         => $this->get_redirect_url(),
 			'display'       => 'page',
 			'response_type' => 'code',
