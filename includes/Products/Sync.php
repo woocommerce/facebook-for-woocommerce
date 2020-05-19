@@ -22,6 +22,15 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Sync {
 
 
+	/** @var string the prefix used in the array indexes */
+	const PRODUCT_INDEX_PREFIX = 'p-';
+
+	/** @var string the update action */
+	const ACTION_UPDATE = 'UPDATE';
+
+	/** @var string the delete action */
+	const ACTION_DELETE = 'DELETE';
+
 	/** @var array the array of requests to schedule for sync */
 	protected $requests = [];
 
@@ -55,7 +64,10 @@ class Sync {
 	 * @param array $product_ids
 	 */
 	public function create_or_update_products( array $product_ids ) {
-		// TODO
+
+		foreach ( $product_ids as $product_id ) {
+			$this->requests[ $this->get_product_index( $product_id ) ] = self::ACTION_UPDATE;
+		}
 	}
 
 
@@ -79,4 +91,20 @@ class Sync {
 	public function schedule_sync() {
 		// TODO
 	}
+
+
+	/**
+	 * Gets the prefixed product ID used as the array index.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param $product_id
+	 * @return string
+	 */
+	private function get_product_index( $product_id ) {
+
+		return self::PRODUCT_INDEX_PREFIX . $product_id;
+	}
+
+
 }
