@@ -93,6 +93,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
+
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
