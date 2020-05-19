@@ -1197,33 +1197,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
-	function create_product_variable( $woo_product ) {
-		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
-
-		$fb_product_group_id = $this->create_product_group(
-			$woo_product,
-			$retailer_id,
-			true
-		);
-
-		if ( $fb_product_group_id ) {
-			$child_products = $woo_product->get_children();
-			$variation_id   = $woo_product->find_matching_product_variation();
-			foreach ( $child_products as $item_id ) {
-				$child_product      = new WC_Facebook_Product( $item_id, $woo_product );
-				$retailer_id        =
-				WC_Facebookcommerce_Utils::get_fb_retailer_id( $child_product );
-				$fb_product_item_id = $this->create_product_item(
-					$child_product,
-					$retailer_id,
-					$fb_product_group_id
-				);
-				if ( $item_id == $variation_id && $fb_product_item_id ) {
-						$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
-				}
-			}
-		}
-	}
 
 	/**
 	 * Create product group and product, store fb-specific info
