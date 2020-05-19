@@ -85,7 +85,6 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		// loop over unprocessed items and process them
 		if ( ! empty( $data ) ) {
 
-			$processed       = 0;
 			$items_per_batch = (int) $items_per_batch;
 
 			foreach ( $data as $item ) {
@@ -125,7 +124,25 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
 	 */
 	public function process_items( $job, $data, $items_per_batch = null ) {
-		// TODO
+
+		$processed = 0;
+
+		foreach ( $data as $item ) {
+
+			// process the item
+			$this->process_item( $item, $job );
+
+			$processed++;
+			$job->progress++;
+
+			// update job progress
+			$job = $this->update_job( $job );
+
+			// job limits reached
+			if ( ( $items_per_batch && $processed >= $items_per_batch ) || $this->time_exceeded() || $this->memory_exceeded() ) {
+				break;
+			}
+		}
 	}
 
 
