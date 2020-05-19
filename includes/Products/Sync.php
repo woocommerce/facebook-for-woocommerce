@@ -22,6 +22,15 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Sync {
 
 
+	/** @var string the prefix used in the array indexes */
+	const PRODUCT_INDEX_PREFIX = 'p-';
+
+	/** @var string the update action */
+	const ACTION_UPDATE = 'UPDATE';
+
+	/** @var string the delete action */
+	const ACTION_DELETE = 'DELETE';
+
 	/** @var array the array of requests to schedule for sync */
 	protected $requests = [];
 
