@@ -140,8 +140,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @param object|\stdClass $job
 	 * @return array
 	 */
-	public function process_item($item, $job) {
-		// TODO
+	public function process_item( $item, $job ) {
+
+		list( $product_id, $method ) = $item;
 	}
 
 
