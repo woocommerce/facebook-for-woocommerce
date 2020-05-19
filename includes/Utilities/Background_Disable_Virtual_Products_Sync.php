@@ -129,27 +129,63 @@ class Background_Disable_Virtual_Products_Sync extends Framework\SV_WP_Backgroun
 	private function disable_sync() {
 		global $wpdb;
 
+		$rows_inserted = 0;
+
+		// get post IDs to update
 		$sql = "
-			UPDATE {$wpdb->postmeta} AS sync_meta
-				INNER JOIN {$wpdb->posts} AS posts ON ( posts.ID = sync_meta.post_id )
-				INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
-				SET sync_meta.meta_value = 'no'
-				WHERE sync_meta.meta_key = '_wc_facebook_sync_enabled'
-				AND sync_meta.meta_value = 'yes'
-				AND posts.post_type IN ( 'product', 'product_variation' )
-				LIMIT 1000
+			SELECT DISTINCT( posts.ID )
+			FROM {$wpdb->posts} AS posts
+			INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
+			LEFT JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' AND sync_meta.meta_value = 'yes' )
+			WHERE posts.post_type IN ( 'product', 'product_variation' )
+			LIMIT 1000
 		";
 
-		$rows_updated = $wpdb->query( $sql );
+		$post_ids = $wpdb->get_col( $sql );
 
-		if ( false === $rows_updated ) {
+		if ( empty( $post_ids ) ) {
 
-			$message = sprintf( 'There was an error trying to update products meta data. %s', $wpdb->last_error );
+			facebook_for_woocommerce()->log( 'There are no products or products variations to update.' );
 
-			facebook_for_woocommerce()->log( $message );
+		} else {
+
+			$post_ids_str = implode( "','", $post_ids );
+
+			// delete the metadata so we can insert it without creating duplicates
+			$sql = "
+				DELETE FROM {$wpdb->postmeta}
+					WHERE meta_key = '_wc_facebook_sync_enabled'
+					AND post_id IN ( '{$post_ids_str}' )
+			";
+
+			$wpdb->query( $sql );
+
+			$values = [];
+
+			foreach ( $post_ids as $post_id ) {
+
+				$values[] = "('$post_id', '_wc_facebook_sync_enabled', 'no')";
+			}
+
+			$values_str = implode( ',', $values );
+
+			// we need to explicitly insert the metadata and set it to no, because not having it means sync is enabled
+			$sql = "
+				INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value )
+					VALUES {$values_str}
+			";
+
+			$rows_inserted = $wpdb->query( $sql );
+
+			if ( false === $rows_inserted ) {
+
+				$message = sprintf( 'There was an error trying to set products and variations meta data. %s', $wpdb->last_error );
+
+				facebook_for_woocommerce()->log( $message );
+			}
 		}
 
-		return (int) $rows_updated;
+		return (int) $rows_inserted;
 	}
 
 
