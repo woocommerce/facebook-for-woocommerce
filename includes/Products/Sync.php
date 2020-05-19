@@ -88,4 +88,20 @@ class Sync {
 	public function schedule_sync() {
 		// TODO
 	}
+
+
+	/**
+	 * Gets the prefixed product ID used as the array index.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param $product_id
+	 * @return string
+	 */
+	private function get_product_index( $product_id ) {
+
+		return self::PRODUCT_INDEX_PREFIX . $product_id;
+	}
+
+
 }
