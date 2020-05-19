@@ -299,6 +299,19 @@ class Connection {
 
 
 	/**
+	 * Gets the proxy URL.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string URL
+	 */
+	public function get_proxy_url() {
+
+		return self::PROXY_URL;
+	}
+
+
+	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
 	 *
 	 * @since 2.0.0-dev.1
