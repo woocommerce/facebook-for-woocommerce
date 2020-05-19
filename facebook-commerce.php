@@ -1108,24 +1108,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->update_product_group( $woo_product );
 
-			$child_products = $woo_product->get_children();
-			$variation_id   = $woo_product->find_matching_product_variation();
-
-			// check if item_id is default variation. If yes, update in the end.
-			// If default variation value is to update, delete old fb_product_item_id
-			// and create new one in order to make it order correctly.
-			foreach ( $child_products as $item_id ) {
-
-				$fb_product_item_id = $this->on_simple_product_publish( $item_id, null, $woo_product );
-
-				if ( $item_id == $variation_id && $fb_product_item_id ) {
-					$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
-				}
-			}
-
 		} else {
 
 			$this->create_product_variable( $woo_product );
+		}
+
+		$child_products = $woo_product->get_children();
+		$variation_id   = $woo_product->find_matching_product_variation();
+
+		// check if item_id is default variation. If yes, update in the end.
+		// If default variation value is to update, delete old fb_product_item_id
+		// and create new one in order to make it order correctly.
+		foreach ( $child_products as $item_id ) {
+
+			$fb_product_item_id = $this->on_simple_product_publish( $item_id, null, $woo_product );
+
+			if ( $item_id == $variation_id && $fb_product_item_id ) {
+				$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
+			}
 		}
 	}
 
