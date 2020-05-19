@@ -24,6 +24,10 @@ defined( 'ABSPATH' ) or exit;
 class API extends SV_WC_API_Base {
 
 
+	/** @var string the configured access token */
+	protected $access_token;
+
+
 	/**
 	 * Returns a new request object.
 	 *
