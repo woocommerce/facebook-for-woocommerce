@@ -42,9 +42,76 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @throws \Exception when job data is incorrect
 	 * @return \stdClass $job
 	 */
-	public function process_job( $job, $items_per_batch = null )
-	{
-		// TODO
+	public function process_job( $job, $items_per_batch = null ) {
+
+		if ( ! $this->start_time ) {
+			$this->start_time = time();
+		}
+
+		// Indicate that the job has started processing
+		if ( 'processing' !== $job->status ) {
+
+			$job->status                = 'processing';
+			$job->started_processing_at = current_time( 'mysql' );
+
+			$job = $this->update_job( $job );
+		}
+
+		$data_key = $this->data_key;
+
+		if ( ! isset( $job->{$data_key} ) ) {
+			throw new \Exception( sprintf( __( 'Job data key "%s" not set', 'woocommerce-plugin-framework' ), $data_key ) );
+		}
+
+		if ( ! is_array( $job->{$data_key} ) ) {
+			throw new \Exception( sprintf( __( 'Job data key "%s" is not an array', 'woocommerce-plugin-framework' ), $data_key ) );
+		}
+
+		$data = $job->{$data_key};
+
+		$job->total = count( $data );
+
+		// progress indicates how many items have been processed, it
+		// does NOT indicate the processed item key in any way
+		if ( ! isset( $job->progress ) ) {
+			$job->progress = 0;
+		}
+
+		// skip already processed items
+		if ( $job->progress && ! empty( $data ) ) {
+			$data = array_slice( $data, $job->progress, null, true );
+		}
+
+		// loop over unprocessed items and process them
+		if ( ! empty( $data ) ) {
+
+			$processed       = 0;
+			$items_per_batch = (int) $items_per_batch;
+
+			foreach ( $data as $item ) {
+
+				// process the item
+				$this->process_item( $item, $job );
+
+				$processed++;
+				$job->progress++;
+
+				// update job progress
+				$job = $this->update_job( $job );
+
+				// job limits reached
+				if ( ( $items_per_batch && $processed >= $items_per_batch ) || $this->time_exceeded() || $this->memory_exceeded() ) {
+					break;
+				}
+			}
+		}
+
+		// complete current job
+		if ( $job->progress >= count( $job->{$data_key} ) ) {
+			$job = $this->complete_job( $job );
+		}
+
+		return $job;
 	}
 
 
