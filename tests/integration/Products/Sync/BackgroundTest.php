@@ -59,6 +59,36 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_items() */
+	public function test_process_items() {
+
+		$requests = [
+			Sync::PRODUCT_INDEX_PREFIX . '1' => Sync::ACTION_UPDATE,
+			Sync::PRODUCT_INDEX_PREFIX . '2' => Sync::ACTION_UPDATE,
+			Sync::PRODUCT_INDEX_PREFIX . '3' => Sync::ACTION_DELETE,
+		];
+
+		$job = $this->get_test_job( [ 'requests' => $requests ] );
+
+		$background = Stub::make( Background::class, [
+			'start_time'   => time(),
+			'process_item' => function( $item, $job ) {
+
+				// assert the $item has two elements
+				$this->assertEquals( 2, count( $item ) );
+
+				// assert the first position is one of the product IDs
+				$this->assertContains( $item[0], [ 1, 2, 3 ] );
+
+				// assert the second position is one of the accepted sync methods
+				$this->assertContains( $item[1], [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ] );
+			},
+		] );
+
+		$background->process_items( $job, $requests );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
