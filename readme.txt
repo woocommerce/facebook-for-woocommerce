@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.3-dev.1
+Stable tag: 2.0.0-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,8 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 1.11.3-dev.1 =
+= 2020.nn.nn - version 2.0.0-dev.1 =
  * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
+ * Fix - Use the plugin version instead of of a timestamp as the version number for enqueued scripts and stylesheets
  * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
  * Fix - Fix a JavaScript issue that was causing a notice to be displayed when bulk editing product variations
 

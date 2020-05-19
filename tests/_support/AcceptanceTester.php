@@ -215,4 +215,22 @@ class AcceptanceTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Checks that a link with the given text is a Connect button.
+	 *
+	 * @param string $text button text
+	 * @param string $selector button selector
+	 */
+	public function seeConnectButton( $text, $selector ) {
+
+		$this->see( $text, $selector );
+
+		$button_url  = $this->grabAttributeFrom( $selector, 'href' );
+		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
+
+		// compare URLs after removing the nonce parameter
+		$this->assertEquals( preg_replace( '/nonce[^&]+/', '', $button_url ), preg_replace( '/nonce[^&]+/', '', $connect_url ) );
+	}
+
+
 }
