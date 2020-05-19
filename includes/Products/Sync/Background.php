@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -109,10 +110,12 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		$processed = 0;
 
-		foreach ( $data as $item ) {
+		foreach ( $data as $prefixed_product_id => $method ) {
+
+			$product_id = (int) str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_product_id );
 
 			// process the item
-			$this->process_item( $item, $job );
+			$this->process_item( [ $product_id, $method ], $job );
 
 			$processed++;
 			$job->progress++;
