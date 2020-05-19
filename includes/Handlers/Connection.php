@@ -307,7 +307,14 @@ class Connection {
 	 */
 	public function get_proxy_url() {
 
-		return self::PROXY_URL;
+		/**
+		 * Filters the proxy URL.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $proxy_url the connection proxy URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_proxy_url', self::PROXY_URL );
 	}
 
 
