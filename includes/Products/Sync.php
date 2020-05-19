@@ -79,7 +79,10 @@ class Sync {
 	 * @param array $product_ids
 	 */
 	public function delete_products( array $product_ids ) {
-		// TODO
+
+		foreach ( $product_ids as $product_id ) {
+			$this->requests[ $this->get_product_index( $product_id ) ] = self::ACTION_DELETE;
+		}
 	}
 
 
