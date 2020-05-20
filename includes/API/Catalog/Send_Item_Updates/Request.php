@@ -22,7 +22,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 class Request extends API\Request  {
 
 
-	/** @var array an arary of item update requests */
+	/** @var array an array of item update requests */
 	protected $requests = [];
 
 	/** @var bool determines whether updates for products that are not currently in the catalog should create new items */
