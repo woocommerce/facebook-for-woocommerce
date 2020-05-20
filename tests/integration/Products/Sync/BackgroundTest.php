@@ -79,8 +79,90 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_item() */
+	public function test_process_item_update_request_with_simple_product() {
+
+		$product_simple = new \WC_Product_Simple();
+		$product_simple->save();
+
+		// retailer_id and retailer_product_group_id should match for simple products
+		$retailer_id = "wc_post_id_{$product_simple->get_id()}";
+
+		$request = [
+			'retailer_id' => $retailer_id,
+			'data'        => [
+				'retailer_product_group_id' => $retailer_id,
+			],
+		];
+
+		$this->check_process_item_update_request( $product_simple, $request );
+	}
+
+
+	/**
+	 * Tests that process_item() returns accurate data for an update sync request.
+	 *
+	 * It compares data entries explicitly set in the $request parameter only to allow testing scenarios for each product field separately.
+	 *
+	 * @see Background::process_item()
+	 *
+	 * @param \WC_Product $product product object
+	 * @param array $request expect result
+	 */
+	private function check_process_item_update_request( $product, $request ) {
+
+		$item = [ $product->get_id(), Sync::ACTION_UPDATE ];
+		$job  = $this->get_test_job();
+
+		$result = $this->get_background()->process_item( $item, $job );
+
+		$this->assertIsArray( $result );
+		$this->assertEquals( Sync::ACTION_UPDATE, $result['method'] );
+
+		$data = $result['data'];
+
+		// validate data type and allowed values for fields that are always included
+		$this->assertIsArray( $data['additional_image_urls'] );
+		$this->assertTrue( in_array( $data['availability'], [ 'in stock', 'out of stock' ], true ) );
+		$this->assertIsString( $data['brand'] );
+		$this->assertEquals( 'new', $data['condition'] );
+		$this->assertIsString( $data['description'] );
+		$this->assertIsString( $data['image_url'] );
+		$this->assertIsString( $data['name'] );
+		$this->assertIsInt( $data['price'] );
+		$this->assertIsString( $data['product_type'] );
+		$this->assertIsString( $data['retailer_id'] );
+		$this->assertIsString( $data['retailer_product_group_id'] );
+		$this->assertIsInt( $data['sale_price'] );
+		$this->assertIsString( $data['url'] );
+		$this->assertTrue( in_array( $data['visibility'], [ 'published', 'staging' ], true ) );
+
+		// compare results with specific values from the test case
+		if ( isset( $request['retailer_id'] ) ) {
+			$this->assertEquals( $request['retailer_id'], $result['retailer_id'] );
+		}
+
+		if ( isset( $request['data'] ) ) {
+
+			foreach ( $request['data'] as $key => $value ) {
+				$this->assertEquals( $request['data'][ $key ], $result['data'][ $key ] );
+			}
+		}
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
+
+	/**
+	 * Gets a background sync instance.
+	 *
+	 * @return Background
+	 */
+	private function get_background() {
+
+		return new Background();
+	}
 
 	/**
 	 * Gets a test job object.
