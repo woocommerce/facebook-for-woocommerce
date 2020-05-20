@@ -94,6 +94,8 @@ class API extends Framework\SV_WC_API_Base {
 	public function update_product_group( $product_group_id, $data ) {
 
 		$request = $this->get_new_request( [ $product_group_id, '', 'POST' ] );
+
+		$this->set_response_handler( Response::class );
 	}
 
 
