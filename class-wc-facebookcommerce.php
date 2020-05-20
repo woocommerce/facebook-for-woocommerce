@@ -345,7 +345,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_support_url() {
 
-			return 'https://woocommerce.com/my-account/tickets/';
+			return 'https://wordpress.org/support/plugin/facebook-for-woocommerce/';
 		}
 
 
