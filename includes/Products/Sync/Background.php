@@ -223,6 +223,20 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	}
 
 
+	/**
+	 * Processes a DELETE sync request for the given product.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	private function process_item_delete( $product ) {
+
+		return [
+			'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+			'method'      => Sync::ACTION_DELETE,
+		];
+	}
 
 
 	/**
