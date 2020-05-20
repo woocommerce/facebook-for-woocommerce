@@ -221,7 +221,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Upgrades to version 1.11.3.
 	 *
-	 * @since 1.11.3-dev.2
+	 * @since 2.0.0-dev.1
 	 */
 	protected function upgrade_to_1_11_3() {
 

@@ -294,7 +294,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the background disable virtual products sync handler instance.
 		 *
-		 * @since 1.11.3-dev.2
+		 * @since 2.0.0-dev.1
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync
 		 */
