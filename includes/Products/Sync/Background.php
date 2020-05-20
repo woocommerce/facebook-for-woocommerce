@@ -114,8 +114,14 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 			$product_id = (int) str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_product_id );
 
-			// process the item
-			$this->process_item( [ $product_id, $method ], $job );
+			try {
+
+				$this->process_item( [ $product_id, $method ], $job );
+
+			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
+
+				facebook_for_woocommerce()->log( "Background sync error: {$e->getMessage()}" );
+			}
 
 			$processed++;
 			$job->progress++;
@@ -139,6 +145,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @param mixed $item
 	 * @param object|\stdClass $job
 	 * @return array
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function process_item( $item, $job ) {
 
@@ -147,8 +154,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$product = wc_get_product( $product_id );
 
 		if ( ! $product instanceof \WC_Product ) {
-			// TODO: throw an exception and add a test
-			return;
+			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
 		}
 
 		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
