@@ -39,7 +39,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param \stdClass|object $job
-	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
+	 * @param int|null $items_per_batch number of items to process in a single request (defaults to null for unlimited)
 	 * @throws \Exception when job data is incorrect
 	 * @return \stdClass $job
 	 */
@@ -104,7 +104,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @param \stdClass|object $job
 	 * @param array $data
-	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
+	 * @param int|null $items_per_batch number of items to process in a single request (defaults to null for unlimited)
 	 */
 	public function process_items( $job, $data, $items_per_batch = null ) {
 
