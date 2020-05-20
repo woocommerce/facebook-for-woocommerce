@@ -279,7 +279,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
-	 * Tests that an exception is thrown if no product is found with the given product ID.
+	 * Tests that process_item() throws exceptions if product or method are invalid.
 	 *
 	 * @see Background::process_item()
 	 *
