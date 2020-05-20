@@ -203,6 +203,32 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
+	 * Normalizes product data to be included in a sync request.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 * @return array
+	 */
+	private function normalize_product_data( $data ) {
+
+		// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
+		$data['condition'] = 'new';
+
+		$data['product_type'] = $data['category'];
+
+		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
+		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
+
+			$data['additional_variant_attributes'] = $data['custom_data'];
+			unset( $data['custom_data'] );
+		}
+
+		return $data;
+	}
+
+
+	/**
 	 * Prepares the product data to be included in a sync request.
 	 *
 	 * @since 2.0.0-dev.1
