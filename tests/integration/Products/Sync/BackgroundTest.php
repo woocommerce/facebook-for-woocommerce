@@ -216,6 +216,21 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_item() */
+	public function test_process_item_delete_request() {
+
+		$product = new \WC_Product_Simple();
+		$product->save();
+
+		$item = [ $product->get_id(), Sync::ACTION_DELETE ];
+
+		$result = $this->get_background()->process_item( $item, null );
+
+		$this->assertEquals( "wc_post_id_{$product->get_id()}", $result['retailer_id'] );
+		$this->assertEquals( Sync::ACTION_DELETE, $result['method'] );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
