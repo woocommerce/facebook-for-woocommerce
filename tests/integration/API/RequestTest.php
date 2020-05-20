@@ -31,6 +31,7 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	 * @param string $object_id object ID
 	 * @param string $path endpoint route
 	 * @param string $method HTTP method
+	 * @param string $expected_path expected request path
 	 *
 	 * @dataProvider provider_constructor
 	 */
