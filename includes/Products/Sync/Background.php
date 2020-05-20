@@ -156,7 +156,13 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			return;
 		}
 
-		return $this->process_item_update( $product );
+		if ( Sync::ACTION_UPDATE === $method ) {
+			$request = $this->process_item_update( $product );
+		} else {
+			$request = $this->process_item_delete( $product );
+		}
+
+		return $request;
 	}
 
 
