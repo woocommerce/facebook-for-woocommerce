@@ -3,7 +3,7 @@
 /**
  * Tests the API class.
  */
-class API_Test extends \Codeception\TestCase\WPTestCase {
+class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @var \IntegrationTester */
