@@ -107,6 +107,8 @@ class API extends Framework\SV_WC_API_Base {
 	public function delete_product_group( $product_group_id ) {
 
 		$request = $this->get_new_request( [ $product_group_id, '', 'DELETE' ] );
+
+		$this->set_response_handler( Response::class );
 	}
 
 
