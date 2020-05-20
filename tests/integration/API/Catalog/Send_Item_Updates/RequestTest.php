@@ -1,5 +1,7 @@
 <?php
 
+namespace SkyVerge\WooCommerce\Facebook\Tests\API\Catalog\Send_Item_Updates;
+
 use SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Request;
 
 /**

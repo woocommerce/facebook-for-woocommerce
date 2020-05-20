@@ -1,5 +1,7 @@
 <?php
 
+namespace SkyVerge\WooCommerce\Facebook\Tests\API;
+
 use SkyVerge\WooCommerce\Facebook\API\Request;
 
 /**
