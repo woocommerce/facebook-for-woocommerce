@@ -36,4 +36,17 @@ class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 	}
 
 
+	/**
+	 * Gets the rate limit ID for this request.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_rate_limit_id() {
+
+		return 'wc_facebook_ads_management_api_request';
+	}
+
+
 }
