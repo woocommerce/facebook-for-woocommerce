@@ -47,4 +47,11 @@ class Request_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request::get_rate_limit_id() */
+	public function test_get_rate_limit_id() {
+
+		$this->assertEquals( 'wc_facebook_ads_management_api_request', Request::get_rate_limit_id() );
+	}
+
+
 }
