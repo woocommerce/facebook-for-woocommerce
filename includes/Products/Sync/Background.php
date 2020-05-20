@@ -147,6 +147,52 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
+	 * Prepares the product data to be included in a sync request.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 * @return array
+	 */
+	private function prepare_product_data( $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+
+			$parent_product = wc_get_product( $product->get_parent_id() );
+
+			if ( ! $parent_product instanceof \WC_Product ) {
+				// TODO: throw an exception and add a test
+				return;
+			}
+
+			$fb_parent_product = new \WC_Facebook_Product( $parent_product );
+			$fb_product        = new \WC_Facebook_Product( $product->get_id(), $fb_parent_product );
+
+			$retailer_product_group_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+
+		} else {
+
+			$fb_product = new \WC_Facebook_Product( $product->get_id() );
+
+			$retailer_product_group_id = null;
+		}
+
+		$data = $fb_product->prepare_product();
+
+		// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
+		$data['condition'] = 'new';
+
+		$data['product_type'] = $data['category'];
+
+		$data['retailer_product_group_id'] = $retailer_product_group_id ?: $data['retailer_id'];
+
+		return $data;
+	}
+
+
+
+
+	/**
 	 * Sends item updates to Facebook.
 	 *
 	 * @since 2.0.0-dev.1
