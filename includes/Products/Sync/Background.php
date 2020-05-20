@@ -158,8 +158,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		}
 
 		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
-			// TODO: throw an exception and add a test
-			return;
+			throw new Framework\SV_WC_Plugin_Exception( "Invalid sync request method: {$method}." );
 		}
 
 		if ( Sync::ACTION_UPDATE === $method ) {
