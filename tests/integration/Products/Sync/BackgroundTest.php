@@ -3,6 +3,7 @@
 use Codeception\Stub;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * Tests the Sync\Background class.
@@ -228,6 +229,42 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( "wc_post_id_{$product->get_id()}", $result['retailer_id'] );
 		$this->assertEquals( Sync::ACTION_DELETE, $result['method'] );
+	}
+
+
+	/**
+	 * Tests that an exception is thrown if no product is found with the given product ID.
+	 *
+	 * @see Background::process_item()
+	 *
+	 * @dataProvider provider_process_item_exceptions
+	 */
+	public function test_process_item_exceptions( $product, $method ) {
+
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
+
+		$item = [ $product->get_id(), $method ];
+
+		$this->get_background()->process_item( $item, null );
+	}
+
+
+	/** @see test_process_item_exceptions() */
+	public function provider_process_item_exceptions() {
+
+		$valid_product = new \WC_Product_Simple();
+		$valid_product->save();
+
+		$product_without_id = new \WC_Product_Simple();
+
+		$product_variation_without_parent = new \WC_Product_Variation();
+		$product_variation_without_parent->save();
+
+		return [
+			[ $product_without_id,               Sync::ACTION_UPDATE ],
+			[ $product_variation_without_parent, Sync::ACTION_UPDATE ],
+			[ $valid_product,                    'INVALID' ],
+		];
 	}
 
 
