@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.0.0-dev.1 =
+ * Tweak - Hide Facebook options for virtual products and virtual variations
+ * Tweak - Do not allow merchant to bulk enable sync for virtual products
+ * Tweak - On upgrade, automatically disable sync for virtual products and virtual variations
  * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
  * Fix - Use the plugin version instead of of a timestamp as the version number for enqueued scripts and stylesheets
  * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
