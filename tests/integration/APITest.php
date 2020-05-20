@@ -62,4 +62,26 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->assertSame( $response, $api->create_product_group( '123456', $product_group_data ) );
 	}
 
+
+	/** @see API::update_product_group() */
+	public function test_update_product_group() {
+
+		$product_group_data = [ 'test' => 'test' ];
+
+		// test will fail if Request::set_data() is not called once
+		$request = $this->make( Request::class, [
+			'set_data' => \Codeception\Stub\Expected::once( $product_group_data ),
+		] );
+
+		$response = new Response( '' );
+
+		$api = $this->make( API::class, [
+			'get_new_request' => $request,
+			'perform_request' => $response,
+		] );
+
+		// assert that perform_request() was called
+		$this->assertSame( $response, $api->update_product_group( '1234', $product_group_data ) );
+	}
+
 }
