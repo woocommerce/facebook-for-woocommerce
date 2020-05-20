@@ -34,11 +34,11 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @dataProvider provider_constructor
 	 */
-	public function test_constructor( $object_id, $path, $method, $expect_path ) {
+	public function test_constructor( $object_id, $path, $method, $expected_path ) {
 
 		$request = new Request( $object_id, $path, $method );
 
-		$this->assertEquals( $expect_path, $request->get_path() );
+		$this->assertEquals( $expected_path, $request->get_path() );
 		$this->assertEquals( $method, $request->get_method() );
 	}
 
