@@ -143,6 +143,20 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	public function process_item( $item, $job ) {
 
 		list( $product_id, $method ) = $item;
+
+		$product = wc_get_product( $product_id );
+
+		if ( ! $product instanceof \WC_Product ) {
+			// TODO: throw an exception and add a test
+			return;
+		}
+
+		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
+			// TODO: throw an exception and add a test
+			return;
+		}
+
+		return $this->process_item_update( $product );
 	}
 
 
