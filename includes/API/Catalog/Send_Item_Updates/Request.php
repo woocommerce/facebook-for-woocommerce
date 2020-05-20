@@ -55,4 +55,17 @@ class Request extends API\Request  {
 	}
 
 
+	/**
+	 * Sets whether updates for products that are not currently in the catalog should create new items.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $data
+	 */
+	public function set_allow_upsert( $allow_upsert ) {
+
+		$this->allow_upsert = (bool) $allow_upsert;
+	}
+
+
 }
