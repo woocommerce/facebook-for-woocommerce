@@ -151,6 +151,32 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_item() */
+	public function test_process_item_update_request_with_product_variation() {
+
+		$parent_product = new \WC_Product_Variable();
+		$parent_product->save();
+
+		$product_variation = new \WC_Product_Variation();
+		$product_variation->save();
+
+		$product_variation->set_parent_id( $parent_product->get_id() );
+		$product_variation->save();
+
+		$parent_product->set_children( [ $product_variation->get_id() ] );
+		$parent_product->save();
+
+		$request = [
+			'retailer_id' => "wc_post_id_{$product_variation->get_id()}",
+			'data'        => [
+				'retailer_product_group_id' => "wc_post_id_{$parent_product->get_id()}"
+			],
+		];
+
+		$this->check_process_item_update_request( $product_variation, $request );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
