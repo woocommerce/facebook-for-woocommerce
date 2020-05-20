@@ -73,7 +73,7 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function create_product_group( $catalog_id, $data ) {
 
-		$request = new Request( $catalog_id, '/product_groups', 'POST' );
+		$request = $this->get_new_request( [ $catalog_id, '/product_groups', 'POST' ] );
 
 		$request->set_data( $data );
 
@@ -213,11 +213,13 @@ class API extends Framework\SV_WC_API_Base {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param array $args optional request arguments
-	 * @return \SkyVerge\WooCommerce\Facebook\API\Request
+	 * @return Request
 	 */
 	protected function get_new_request( $args = [] ) {
 
-		// TODO: Implement get_new_request() method.
+		list( $object_id, $path, $method ) = $args;
+
+		return new Request( $object_id ?: null, $path ?: null, $method ?: null );
 	}
 
 
