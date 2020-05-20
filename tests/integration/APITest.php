@@ -62,4 +62,60 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->assertSame( $response, $api->create_product_group( '123456', $product_group_data ) );
 	}
 
+
+	/** @see API::update_product_group() */
+	public function test_update_product_group() {
+
+		// TODO
+	}
+
+	/** @see API::delete_product_group() */
+	public function test_delete_product_group() {
+
+		// TODO
+	}
+
+	/** @see API::find_product_item() */
+	public function test_find_product_item() {
+
+		// TODO
+	}
+
+	/** @see API::create_product_item() */
+	public function test_create_product_item() {
+
+		// TODO
+	}
+
+	/** @see API::update_product_item() */
+	public function test_update_product_item() {
+
+		// TODO
+	}
+
+	/** @see API::delete_product_item() */
+	public function test_delete_product_item() {
+
+		// TODO
+	}
+
+	/** @see API::set_rate_limit_delay() */
+	public function test_set_rate_limit_delay() {
+
+		// TODO
+	}
+
+	/** @see API::get_rate_limit_delay() */
+	public function test_get_rate_limit_delay() {
+
+		// TODO
+	}
+
+	/** @see API::calculate_rate_limit_delay() */
+	public function test_calculate_rate_limit_delay() {
+
+		// TODO
+	}
+
+
 }
