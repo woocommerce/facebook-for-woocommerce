@@ -47,6 +47,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 */
 	public function set_data( $data ) {
 
+		$this->data = $data;
 	}
 
 
