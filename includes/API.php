@@ -203,7 +203,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param array $args optional request arguments
 	 * @return \SkyVerge\WooCommerce\Facebook\API\Request
 	 */
-	protected function get_new_request( $args = array() ) {
+	protected function get_new_request( $args = [] ) {
 
 		// TODO: Implement get_new_request() method.
 	}
