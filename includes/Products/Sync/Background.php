@@ -182,7 +182,11 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	private function process_item_update( $product ) {
 
-		$product_data = $this->prepare_product_data( $product );
+		if ( $product->is_type( 'variation' ) ) {
+			$product_data = $this->prepare_product_variation_data( $product );
+		} else {
+			$product_data = $this->prepare_product_data( $product );
+		}
 
 		$request = [
 			'retailer_id' => $product_data['retailer_id'],
