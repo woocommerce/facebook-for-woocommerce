@@ -177,6 +177,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param \WC_Product $product product object
+	 * @return array
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	private function process_item_update( $product ) {
 
