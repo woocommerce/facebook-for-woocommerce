@@ -177,6 +177,45 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * Tests that the retailer ID field uses the product SKU if avaiable.
+	 *
+	 * @see Background::process_item()
+	 *
+	 * @param string $sku product SKU
+	 * @param string $reatiler_id expected retailer ID
+	 *
+	 * @dataProvider provider_process_item_update_request_retailer_id_generation
+	 */
+	public function test_process_item_update_request_retailer_id_generation( $sku, $retailer_id ) {
+
+		$product = new \WC_Product_Simple();
+		$product->set_sku( $sku );
+		$product->save();
+
+		$retailer_id = sprintf( $retailer_id, $product->get_id() );
+
+		$request = [
+			'retailer_id' => $retailer_id,
+			'data'        => [
+				'retailer_product_group_id' => $retailer_id,
+			],
+		];
+
+		$this->check_process_item_update_request( $product, $request );
+	}
+
+
+	/** @see test_process_item_update_request_retailer_id_generation() */
+	public function provider_process_item_update_request_retailer_id_generation() {
+
+		return [
+			[ 'SKU-123', 'SKU-123_%d' ],
+			[ '',        'wc_post_id_%d' ],
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
