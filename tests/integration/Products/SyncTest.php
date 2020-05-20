@@ -12,14 +12,6 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
-	public function _before() {
-
-		parent::_before();
-
-		require_once 'includes/Products/Sync.php';
-	}
-
-
 	/** Test methods **************************************************************************************************/
 
 
