@@ -314,6 +314,40 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Background::process_item_update()
+	 *
+	 * @param string $filter filter name
+	 * @param string $method sync request method
+	 *
+	 * @dataProvider provider_process_item_filters
+	 */
+	public function test_process_item_filters( $filter, $method ) {
+
+		add_filter( $filter, static function() {
+
+			return [ 'filtered' => true ];
+		} );
+
+		$product = new \WC_Product_Simple();
+		$product->save();
+
+		$request = $this->get_background()->process_item( [ $product, $method ], null );
+
+		$this->assertEquals( [ 'filtered' => true ], $request );
+	}
+
+
+	/** @see test_process_item_filters */
+	public function provider_process_item_filters() {
+
+		return [
+			[ 'wc_facebook_sync_background_item_update_request', Sync::ACTION_UPDATE ],
+			[ 'wc_facebook_sync_background_item_delete_request', Sync::ACTION_DELETE ]
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
