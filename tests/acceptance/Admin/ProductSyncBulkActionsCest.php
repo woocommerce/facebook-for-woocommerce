@@ -296,6 +296,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$variable_product->get_id()}:not(:checked)" );
 
+		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
 		$I->see( 'Enabled', 'table.wp-list-table td' );
 
 		$variable_product = wc_get_product( $variable_product );
