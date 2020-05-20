@@ -76,7 +76,7 @@ class Sync {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $product_ids
+	 * @param int[] $product_ids
 	 */
 	public function delete_products( array $product_ids ) {
 
