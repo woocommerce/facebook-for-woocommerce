@@ -203,6 +203,35 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
+	 * Prepares the data for a product variation to be included in a sync request.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 * @return array
+	 * @throws Framework\SV_WC_Plugin_Exception
+	 */
+	private function prepare_product_variation_data( $product ) {
+
+		$parent_product = wc_get_product( $product->get_parent_id() );
+
+		if ( ! $parent_product instanceof \WC_Product ) {
+			throw new Framework\SV_WC_Plugin_Exception( "No parent product found with ID equal to {$product->get_parent_id()}." );
+		}
+
+		$fb_parent_product = new \WC_Facebook_Product( $parent_product );
+		$fb_product        = new \WC_Facebook_Product( $product->get_id(), $fb_parent_product );
+
+		$data = $fb_product->prepare_product();
+
+		// product variations use the parent product's retailer ID as the retailer product group ID
+		$data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+
+		return $this->normalize_product_data( $data );
+	}
+
+
+	/**
 	 * Normalizes product data to be included in a sync request.
 	 *
 	 * @since 2.0.0-dev.1
