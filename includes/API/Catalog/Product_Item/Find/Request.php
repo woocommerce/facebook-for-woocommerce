@@ -12,12 +12,14 @@ namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\API;
+
 /**
  * Find Product Item API request object.
  *
  * @since 2.0.0-dev.1
  */
-class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
+class Request extends API\Request {
 
 
 	/**
