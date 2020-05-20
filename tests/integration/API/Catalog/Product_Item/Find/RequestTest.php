@@ -5,7 +5,7 @@ use SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request;
 /**
  * Tests the API\Catalog\Product_Item\Find\Request class.
  */
-class Request_Test extends \Codeception\TestCase\WPTestCase {
+class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @var \IntegrationTester */
