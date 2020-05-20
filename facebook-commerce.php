@@ -937,21 +937,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function on_product_delete( $product_id ) {
 
-		$woo_product = new \WC_Facebook_Product( $product_id );
+		$woo_product = wc_get_product( $product_id );
 
 		// bail if product does not exist
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! $woo_product->exists() ) {
+		if ( ! $woo_product instanceof \WC_Product ) {
 			return;
 		}
 
 		// bail if not enabled for sync
-		if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( ! Products::product_should_be_synced( $woo_product ) ) {
 			return;
 		}
 
-		if ( ! $woo_product->woo_product->is_type( 'variable' ) ) {
+		if ( ! $woo_product->is_type( 'variable' ) ) {
 
-			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id, $woo_product );
+			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 
 			if ( $fb_product_id ) {
 				$this->delete_product_item( $product_id );
@@ -965,7 +965,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 
-		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id, $woo_product );
+		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
 
 		if ( $fb_product_group_id ) {
 
