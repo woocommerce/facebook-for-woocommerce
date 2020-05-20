@@ -3,7 +3,7 @@
 use SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request;
 
 /**
- * Tests the Find Product Item Request class.
+ * Tests the API\Catalog\Product_Item\Find\Request class.
  */
 class Request_Test extends \Codeception\TestCase\WPTestCase {
 
@@ -16,6 +16,8 @@ class Request_Test extends \Codeception\TestCase\WPTestCase {
 	 * Runs before each test.
 	 */
 	protected function _before() {
+
+		parent::_before();
 
 		require_once 'includes/API/Request.php';
 		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
