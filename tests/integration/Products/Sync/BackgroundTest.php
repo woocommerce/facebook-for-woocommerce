@@ -217,6 +217,52 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * Tests that custom variation attributes are included in the additional_variant_attributes field.
+	 *
+	 * @see Background::process_item()
+	 */
+	public function test_process_item_update_request_with_custom_variation_attributes() {
+
+		$attributes[0] = new \WC_Product_Attribute();
+		$attributes[0]->set_name( 'Test Attribute 2' );
+		$attributes[0]->set_options( [ 'foo-1', 'foo-2', 'foo-3' ] );
+		$attributes[0]->set_visible( true );
+		$attributes[0]->set_variation( true );
+
+		$attributes[1] = new \WC_Product_Attribute();
+		$attributes[1]->set_name( 'Test Attribute 1' );
+		$attributes[1]->set_options( [ 'bar-1', 'bar-2', 'bar-3' ] );
+		$attributes[1]->set_visible( true );
+		$attributes[1]->set_variation( true );
+
+		$parent_product = new \WC_Product_Variable();
+		$parent_product->save();
+
+		$product_variation = new \WC_Product_Variation();
+		$product_variation->save();
+
+		$product_variation->set_parent_id( $parent_product->get_id() );
+		$product_variation->set_attributes( [ 'test-attribute-1' => 'foo-1', 'test-attribute-2' => 'bar-3' ] );
+		$product_variation->save();
+
+		$parent_product->set_children( [ $product_variation->get_id() ] );
+		$parent_product->set_attributes( $attributes );
+		$parent_product->save();
+
+		$request = [
+			'data' => [
+				'additional_variant_attributes' => [
+					'test-attribute-1' => 'foo-1',
+					'test-attribute-2' => 'bar-3',
+				],
+			],
+		];
+
+		$this->check_process_item_update_request( $product_variation, $request );
+	}
+
+
 	/** @see Background::process_item() */
 	public function test_process_item_delete_request() {
 
