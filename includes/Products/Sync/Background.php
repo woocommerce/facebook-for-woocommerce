@@ -147,6 +147,25 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
+	 * Processes an UPDATE sync request for the given product.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	private function process_item_update( $product ) {
+
+		$product_data = $this->prepare_product_data( $product );
+
+		return [
+			'retailer_id' => $product_data['retailer_id'],
+			'method'      => Sync::ACTION_UPDATE,
+			'data'        => $product_data,
+		];
+	}
+
+
+	/**
 	 * Prepares the product data to be included in a sync request.
 	 *
 	 * @since 2.0.0-dev.1
