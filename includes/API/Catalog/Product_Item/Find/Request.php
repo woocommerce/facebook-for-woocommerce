@@ -43,9 +43,9 @@ class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 	 */
 	public function __construct( $catalog_id, $retailer_id ) {
 
-		$path = "catalog:{$catalog_id}:" . base64_encode( $retailer_id );
+		parent::__construct( null, null, 'GET' );
 
-		parent::__construct( $catalog_id, $path, 'GET' );
+		$this->path = "catalog:{$catalog_id}:" . base64_encode( $retailer_id );
 	}
 
 
