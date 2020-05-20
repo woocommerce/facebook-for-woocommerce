@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
+use SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -57,6 +58,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
 		private $connection_handler;
+
+		/** @var Background_Disable_Virtual_Products_Sync instance */
+		protected $background_disable_virtual_products_sync;
 
 
 		/**
@@ -108,6 +112,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 
 				if ( is_ajax() ) {
 
@@ -122,6 +127,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+
+				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
+
+					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
+
+					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
+				}
 			}
 		}
 
@@ -276,6 +288,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_connection_handler() {
 
 			return $this->connection_handler;
+		}
+
+
+		/**
+		 * Gets the background disable virtual products sync handler instance.
+		 *
+		 * @since 1.11.3-dev.2
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync
+		 */
+		public function get_background_disable_virtual_products_sync_instance() {
+
+			return $this->background_disable_virtual_products_sync;
 		}
 
 
