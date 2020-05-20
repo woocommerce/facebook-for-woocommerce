@@ -21,6 +21,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  * API handler.
  *
  * @since 2.0.0-dev.1
+ *
+ * @method Response perform_request( $request )
  */
 class API extends Framework\SV_WC_API_Base {
 
