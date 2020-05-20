@@ -10,18 +10,17 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Base;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Request;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin;
-
 defined( 'ABSPATH' ) or exit;
+
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 
 /**
  * API handler.
  *
  * @since 2.0.0-dev.1
  */
-class API extends SV_WC_API_Base {
+class API extends Framework\SV_WC_API_Base {
 
 
 	/** @var string the configured access token */
@@ -202,9 +201,9 @@ class API extends SV_WC_API_Base {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param array $args optional request arguments
-	 * @return SV_WC_API_Request|object
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Request
 	 */
-	protected function get_new_request( $args = array() ) {
+	protected function get_new_request( $args = [] ) {
 
 		// TODO: Implement get_new_request() method.
 	}
