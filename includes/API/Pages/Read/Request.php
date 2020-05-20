@@ -22,4 +22,17 @@ use SkyVerge\WooCommerce\Facebook\API;
 class Request extends API\Request  {
 
 
+	/**
+	 * Gets the request parameters.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_params() {
+
+		return [ 'fields' => 'name,link' ];
+	}
+
+
 }
