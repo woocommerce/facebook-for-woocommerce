@@ -22,4 +22,18 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Request extends Framework\SV_WC_API_JSON_Request {
 
 
+	/**
+	 * API request constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $object_id object ID
+	 * @param string $path endpoint route
+	 * @param string $method HTTP method
+	 */
+	public function __construct( $object_id, $path, $method ) {
+
+	}
+
+
 }
