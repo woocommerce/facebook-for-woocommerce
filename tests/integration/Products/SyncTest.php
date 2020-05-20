@@ -3,7 +3,7 @@
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
- * Tests the Feed class.
+ * Tests the Sync class.
  */
 class SyncTest extends \Codeception\TestCase\WPTestCase {
 
