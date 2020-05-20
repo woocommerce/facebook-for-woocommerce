@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -52,7 +53,8 @@ class Sync {
 	 * @since 2.0.0-dev.1
 	 */
 	public function add_hooks() {
-		// TODO
+
+		add_action( 'shutdown', [ $this, 'schedule_sync' ] );
 	}
 
 
@@ -90,9 +92,17 @@ class Sync {
 	 * Creates a background job to sync the products in the requests array.
 	 *
 	 * @since 2.0.0-dev.1
+	 *
+	 * @return \stdClass|object|null
 	 */
 	public function schedule_sync() {
-		// TODO
+
+		if ( ! empty( $this->requests ) ) {
+
+			return facebook_for_woocommerce()->get_products_sync_background_handler()->create_job( [
+				'requests' => $this->requests
+			] );
+		}
 	}
 
 
