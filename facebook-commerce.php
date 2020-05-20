@@ -378,12 +378,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action( 'trashed_post', [ $this, 'on_product_trash' ] );
 
-				add_action(
-					'before_delete_post',
-					array( $this, 'on_product_delete' ),
-					10,
-					1
-				);
+				add_action( 'before_delete_post', [ $this, 'on_product_delete' ] );
 
 				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
@@ -938,47 +933,45 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Deletes a product from Facebook.
 	 *
-	 * @param int $wp_id product ID
+	 * @param int $product_id product ID
 	 */
-	public function on_product_delete( $wp_id ) {
+	public function on_product_delete( $product_id ) {
 
-		$woo_product = new WC_Facebook_Product( $wp_id );
+		$woo_product = new \WC_Facebook_Product( $product_id );
 
-		if ( ! $woo_product->exists() ) {
-			// This happens when the wp_id is not a product or it's already
-			// been deleted.
+		// bail if product does not exist
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! $woo_product->exists() ) {
 			return;
 		}
 
-		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
+		// bail if not enabled for sync
+		if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
-		$fb_product_group_id = $this->get_product_fbid(
-			self::FB_PRODUCT_GROUP_ID,
-			$wp_id,
-			$woo_product
-		);
-		$fb_product_item_id  = $this->get_product_fbid(
-			self::FB_PRODUCT_ITEM_ID,
-			$wp_id,
-			$woo_product
-		);
-		if ( ! ( $fb_product_group_id || $fb_product_item_id ) ) {
-			return;  // No synced product, no-op.
+		if ( ! $woo_product->woo_product->is_type( 'variable' ) ) {
+
+			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $wp_id, $woo_product );
+
+			if ( $fb_product_id ) {
+				$this->delete_product_item( $product_id );
+			}
+
+		} else {
+
+			$product_ids = array_merge( [ $product_id ], $woo_product->get_children() );
+
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product_ids );
 		}
-		$products = array( $wp_id );
-		if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
-			$children = $woo_product->get_children();
-			$products = array_merge( $products, $children );
-		}
-		foreach ( $products as $item_id ) {
-			$this->delete_product_item( $item_id );
-		}
+
+
+		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id, $woo_product );
+
 		if ( $fb_product_group_id ) {
+
 			$pg_result = $this->fbgraph->delete_product_group( $fb_product_group_id );
-			WC_Facebookcommerce_Utils::log( $pg_result );
+
+			\WC_Facebookcommerce_Utils::log( $pg_result );
 		}
 
 		$this->enable_product_sync_delay_admin_notice();
