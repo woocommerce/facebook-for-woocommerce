@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\API;
 
 /**
- * Base API request object.
+ * Request object for the Send Item Updates API request.
  *
  * @since 2.0.0-dev.1
  */
