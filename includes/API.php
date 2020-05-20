@@ -66,6 +66,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @param array $data product group data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function create_product_group( $catalog_id, $data ) {
 
@@ -75,6 +77,7 @@ class API extends Framework\SV_WC_API_Base {
 
 		$this->response_handler = Response::class;
 
+		return $this->perform_request( $request );
 	}
 
 
