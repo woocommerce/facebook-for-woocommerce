@@ -21,7 +21,20 @@ class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 
 
 	/**
-	 * Find Product Item API request constructor.
+	 * Gets the ID of this request for rate limiting purposes.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_rate_limit_id() {
+
+		return 'wc_facebook_ads_management_api_request';
+	}
+
+
+	/**
+	 * API request constructor.
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -46,19 +59,6 @@ class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 	public function get_params() {
 
 		return [ 'fields' => 'id,product_group{id}' ];
-	}
-
-
-	/**
-	 * Gets the rate limit ID for this request.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @return string
-	 */
-	public static function get_rate_limit_id() {
-
-		return 'wc_facebook_ads_management_api_request';
 	}
 
 
