@@ -82,6 +82,27 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Sync::schedule_sync() */
+	public function test_schedule_sync() {
+
+		$background  = facebook_for_woocommerce()->get_products_sync_background_handler();
+		$sync        = $this->get_sync();
+		$product_ids = [ 123, 456 ];
+
+		$sync->create_or_update_products( $product_ids );
+
+		$requests_property = new ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		$requests = $requests_property->getValue( $sync );
+		$job      = $sync->schedule_sync();
+		$bg_job   = $background->get_job( $job->id );
+
+		$this->assertNotNull( $bg_job );
+		$this->assertEquals( $requests, $bg_job->requests );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
