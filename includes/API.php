@@ -129,12 +129,20 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id parent product ID
+	 * @param array $data product data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function create_product_item( $product_group_id, $data ) {
 
-		// TODO: Implement create_product_item() method.
+		$request = $this->get_new_request( [ $product_group_id, '/products', 'POST' ] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
