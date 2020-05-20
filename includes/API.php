@@ -93,7 +93,7 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function update_product_group( $product_group_id, $data ) {
 
-		// TODO: Implement update_product_group() method.
+		$request = $this->get_new_request( [ $product_group_id, '', 'POST' ] );
 	}
 
 
