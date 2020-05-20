@@ -184,11 +184,21 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		$product_data = $this->prepare_product_data( $product );
 
-		return [
+		$request = [
 			'retailer_id' => $product_data['retailer_id'],
 			'method'      => Sync::ACTION_UPDATE,
 			'data'        => $product_data,
 		];
+
+		/**
+		 * Filters the data that will be included in a UPDATE sync request.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $request request data
+		 * @param \WC_Product $product product object
+		 */
+		return apply_filters( 'wc_facebook_sync_background_item_update_request', $request, $product );
 	}
 
 
