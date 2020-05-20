@@ -42,4 +42,17 @@ class Request extends API\Request  {
 	}
 
 
+	/**
+	 * Sets the array of item update requests.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $requests item update requests
+	 */
+	public function set_requests( array $requests ) {
+
+		$this->requests = $requests;
+	}
+
+
 }
