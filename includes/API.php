@@ -215,7 +215,7 @@ class API extends SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @return SV_WC_Plugin
+	 * @return \WC_Facebookcommerce
 	 */
 	protected function get_plugin() {
 
