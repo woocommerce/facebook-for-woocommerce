@@ -90,6 +90,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $product_group_id
 	 * @param array $data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function update_product_group( $product_group_id, $data ) {
 
@@ -98,6 +100,8 @@ class API extends Framework\SV_WC_API_Base {
 		$request->set_data( $data );
 
 		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
