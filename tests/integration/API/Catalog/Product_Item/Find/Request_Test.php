@@ -54,4 +54,16 @@ class Request_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request::get_params() */
+	public function test_get_params() {
+
+		$catalog_id  = '165835951532406';
+		$retailer_id = base64_decode( 'd3BfcG9zdF8xMDQx' );
+
+		$request = new Request( $catalog_id, $retailer_id );
+
+		$this->assertEquals( [ 'fields' => 'id,product_group{id}' ], $request->get_params() );
+	}
+
+
 }
