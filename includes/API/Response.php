@@ -22,4 +22,14 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Response extends Framework\SV_WC_API_JSON_Response {
 
 
+	/**
+	 * Gets the response ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function get_id() {
+
+	}
+
+
 }
