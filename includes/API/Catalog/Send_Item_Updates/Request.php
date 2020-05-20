@@ -29,4 +29,17 @@ class Request extends API\Request  {
 	protected $allow_upsert = true;
 
 
+	/**
+	 * API request constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $catalog_id catalog ID
+	 */
+	public function __construct( $catalog_id ) {
+
+		parent::__construct( $catalog_id, '/batch', 'POST' );
+	}
+
+
 }
