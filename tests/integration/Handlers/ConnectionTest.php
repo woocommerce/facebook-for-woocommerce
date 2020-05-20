@@ -227,6 +227,27 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_proxy_url() */
+	public function test_get_proxy_url() {
+
+		$proxy_url = $this->get_connection()->get_proxy_url();
+
+		$this->assertIsString( $proxy_url );
+		$this->assertEquals( Connection::PROXY_URL, $proxy_url );
+	}
+
+
+	/** @see Connection::get_proxy_url() */
+	public function test_get_proxy_url_filter() {
+
+		add_filter( 'wc_facebook_connection_proxy_url', static function() {
+			return 'filtered';
+		} );
+
+		$this->assertEquals( 'filtered', $this->get_connection()->get_proxy_url() );
+	}
+
+
 	/** @see Connection::get_redirect_url() */
 	public function test_get_redirect_url() {
 
@@ -242,8 +263,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_redirect_url() */
 	public function test_get_redirect_url_filter() {
 
-		add_filter( 'wc_facebook_connection_redirect_url', function() {
-
+		add_filter( 'wc_facebook_connection_redirect_url', static function() {
 			return 'filtered';
 		} );
 

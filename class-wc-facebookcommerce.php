@@ -49,6 +49,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
+		private $products_sync_handler;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync\Background background sync handler */
+		private $sync_background_handler;
+
 		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
 		private $connection_handler;
 
@@ -87,14 +93,21 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
+
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/Products/Sync.php';
+				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 
-				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
+				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
 
 				if ( is_ajax() ) {
 
@@ -224,6 +237,32 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_product_feed_handler() {
 
 			return $this->product_feed;
+		}
+
+
+		/**
+		 * Gets the products sync handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync
+		 */
+		public function get_products_sync_handler() {
+
+			return $this->products_sync_handler;
+		}
+
+
+		/**
+		 * Gets the products sync background handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync\Background
+		 */
+		public function get_products_sync_background_handler() {
+
+			return $this->sync_background_handler;
 		}
 
 

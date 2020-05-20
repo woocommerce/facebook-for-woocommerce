@@ -858,9 +858,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		}
 
-		// do not attempt to update product visibility during FBE 1.5: the Visible setting was removed so it always seems as if the visibility had been disabled
-		// $this->update_fb_visibility( $product->get_id(), $is_visible ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN );
-
 		if ( $sync_enabled && $this->is_configured() && $this->get_product_catalog_id() ) {
 
 			switch ( $product->get_type() ) {
@@ -1096,11 +1093,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$fb_product_group_id = $this->get_product_fbid(
-			self::FB_PRODUCT_GROUP_ID,
-			$wp_id,
-			$woo_product
-		);
+		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $wp_id, $woo_product );
 
 		if ( $fb_product_group_id ) {
 
@@ -1108,24 +1101,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->update_product_group( $woo_product );
 
-			$child_products = $woo_product->get_children();
-			$variation_id   = $woo_product->find_matching_product_variation();
-
-			// check if item_id is default variation. If yes, update in the end.
-			// If default variation value is to update, delete old fb_product_item_id
-			// and create new one in order to make it order correctly.
-			foreach ( $child_products as $item_id ) {
-
-				$fb_product_item_id = $this->on_simple_product_publish( $item_id, null, $woo_product );
-
-				if ( $item_id == $variation_id && $fb_product_item_id ) {
-					$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
-				}
-			}
-
 		} else {
 
-			$this->create_product_variable( $woo_product );
+			$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product->woo_product );
+
+			$this->create_product_group( $woo_product, $retailer_id, true );
+		}
+
+		$child_products = $woo_product->get_children();
+
+		// scheduled update for each variation
+		foreach ( $child_products as $item_id ) {
+
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $item_id ] );
 		}
 	}
 
@@ -1206,33 +1194,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
-	function create_product_variable( $woo_product ) {
-		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
-
-		$fb_product_group_id = $this->create_product_group(
-			$woo_product,
-			$retailer_id,
-			true
-		);
-
-		if ( $fb_product_group_id ) {
-			$child_products = $woo_product->get_children();
-			$variation_id   = $woo_product->find_matching_product_variation();
-			foreach ( $child_products as $item_id ) {
-				$child_product      = new WC_Facebook_Product( $item_id, $woo_product );
-				$retailer_id        =
-				WC_Facebookcommerce_Utils::get_fb_retailer_id( $child_product );
-				$fb_product_item_id = $this->create_product_item(
-					$child_product,
-					$retailer_id,
-					$fb_product_group_id
-				);
-				if ( $item_id == $variation_id && $fb_product_item_id ) {
-						$this->set_default_variant( $fb_product_group_id, $fb_product_item_id );
-				}
-			}
-		}
-	}
 
 	/**
 	 * Create product group and product, store fb-specific info
