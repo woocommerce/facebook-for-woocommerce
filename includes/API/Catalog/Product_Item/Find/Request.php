@@ -37,6 +37,19 @@ class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 
 
 	/**
+	 * Gets the request parameters.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_params() {
+
+		return [ 'fields' => 'id,product_group{id}' ];
+	}
+
+
+	/**
 	 * Gets the rate limit ID for this request.
 	 *
 	 * @since 2.0.0-dev.1
