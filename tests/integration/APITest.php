@@ -81,11 +81,28 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		// TODO
 	}
 
+
 	/** @see API::create_product_item() */
 	public function test_create_product_item() {
 
-		// TODO
+		$product_data = [ 'test' => 'test' ];
+
+		// test will fail if Request::set_data() is not called once
+		$request = $this->make( Request::class, [
+			'set_data' => \Codeception\Stub\Expected::once( $product_data ),
+		] );
+
+		$response = new Response( '' );
+
+		$api = $this->make( API::class, [
+			'get_new_request' => $request,
+			'perform_request' => $response,
+		] );
+
+		// assert that perform_request() was called
+		$this->assertSame( $response, $api->create_product_item( '123456', $product_data ) );
 	}
+
 
 	/** @see API::update_product_item() */
 	public function test_update_product_item() {
