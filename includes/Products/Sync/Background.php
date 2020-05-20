@@ -197,6 +197,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @param \WC_Product $product product object
 	 * @return array
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	private function prepare_product_data( $product ) {
 
@@ -205,8 +206,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$parent_product = wc_get_product( $product->get_parent_id() );
 
 			if ( ! $parent_product instanceof \WC_Product ) {
-				// TODO: throw an exception and add a test
-				return;
+				throw new Framework\SV_WC_Plugin_Exception( "No parent product found with ID equal to {$product->get_parent_id()}." );
 			}
 
 			$fb_parent_product = new \WC_Facebook_Product( $parent_product );
