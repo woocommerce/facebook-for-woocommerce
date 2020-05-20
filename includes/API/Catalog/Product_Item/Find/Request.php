@@ -20,4 +20,20 @@ defined( 'ABSPATH' ) or exit;
 class Request extends \SkyVerge\WooCommerce\Facebook\API\Request {
 
 
+	/**
+	 * Find Product Item API request constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $catalog_id catalog ID
+	 * @param string $retailer_id retailer ID of the product
+	 */
+	public function __construct( $catalog_id, $retailer_id ) {
+
+		$path = "catalog:{$catalog_id}:" . base64_encode( $retailer_id );
+
+		parent::__construct( $catalog_id, $path, 'GET' );
+	}
+
+
 }
