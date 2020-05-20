@@ -69,11 +69,20 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		// TODO
 	}
 
+
 	/** @see API::delete_product_group() */
 	public function test_delete_product_group() {
 
-		// TODO
+		$response = new Response( '' );
+
+		$api = $this->make( API::class, [
+			'perform_request' => $response,
+		] );
+
+		// assert that perform_request() was called
+		$this->assertSame( $response, $api->delete_product_group( '1234' ) );
 	}
+
 
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
