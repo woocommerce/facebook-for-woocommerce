@@ -532,6 +532,10 @@ class Admin {
 									}
 								}
 							}
+						} else {
+
+							// add the product to the list of products to disable sync from
+							$products[] = $product;
 						}
 					}
 				}
