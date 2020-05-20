@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\API\Request;
+use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 
@@ -69,6 +70,8 @@ class API extends Framework\SV_WC_API_Base {
 	public function create_product_group( $catalog_id, $data ) {
 
 		$request = new Request( $catalog_id, '/product_groups', 'POST' );
+
+		$this->response_handler = Response::class;
 	}
 
 
