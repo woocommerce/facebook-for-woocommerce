@@ -951,7 +951,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $woo_product->woo_product->is_type( 'variable' ) ) {
 
-			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $wp_id, $woo_product );
+			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id, $woo_product );
 
 			if ( $fb_product_id ) {
 				$this->delete_product_item( $product_id );
