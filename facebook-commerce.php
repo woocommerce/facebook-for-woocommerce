@@ -4240,49 +4240,57 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Helper function to update FB visibility.
+	 *
+	 * @param int $product_id product ID
+	 * @param string $visibility visibility
 	 */
-	function update_fb_visibility( $wp_id, $visibility ) {
+	function update_fb_visibility( $product_id, $visibility ) {
 
 		// bail if the plugin is not configured properly
 		if ( ! $this->is_configured() || ! $this->get_product_catalog_id() ) {
 			return;
 		}
 
-		$woo_product = new WC_Facebook_Product( $wp_id );
+		$woo_product = new \WC_Facebook_Product( $product_id );
 
-		if ( ! $woo_product->exists() ) {
-			// This function can be called for non-woo products.
+		// bail if product isn't found
+		if ( ! $woo_product->woo_product instanceof \WC_Product || ! $woo_product->exists() ) {
 			return;
 		}
 
-		$products = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
-		foreach ( $products as $item_id ) {
-			$fb_product_item_id = $this->get_product_fbid(
-				self::FB_PRODUCT_ITEM_ID,
-				$item_id
-			);
+		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
+
+		if ( ! $woo_product->woo_product->is_type( 'variable' ) ) {
+
+			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 
 			if ( ! $fb_product_item_id ) {
-				WC_Facebookcommerce_Utils::fblog(
-					$fb_product_item_id . " doesn't exist but underwent a visibility transform.",
-					array(),
-					true
-				);
-				  continue;
+				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
+				 return;
 			}
-			$result = $this->check_api_result(
-				$this->fbgraph->update_product_item(
-					$fb_product_item_id,
-					array( 'visibility' => $visibility )
-				)
-			);
-			if ( $result ) {
 
-				$is_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
+			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
 
-				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
+			if ( $this->check_api_result( $set_visibility ) ) {
+				Products::set_product_visibility( $woo_product->woo_product, $should_set_visible );
 			}
+
+		} else {
+
+			$product_ids = array_merge( [ $product_id ], $woo_product->get_children() );
+
+			foreach ( $product_ids as $index => $product_id ) {
+
+				$product = wc_get_product( $product_id );
+
+				if ( $product instanceof \WC_Product ) {
+					Products::set_product_visibility( $product, $should_set_visible );
+				} else {
+					unset( $product_ids[ $index ] );
+				}
+			}
+
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
 		}
 	}
 
