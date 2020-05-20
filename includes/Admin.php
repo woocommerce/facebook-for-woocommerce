@@ -498,25 +498,47 @@ class Admin {
 
 			if ( ! empty( $product_ids ) ) {
 
-				$is_enabling_sync_virtual_products = false;
+				$is_enabling_sync_virtual_products   = false;
+				$is_enabling_sync_virtual_variations = false;
 
 				foreach ( $product_ids as $product_id ) {
 
 					if ( $product = wc_get_product( $product_id ) ) {
 
-						// do not enable sync for virtual products
-						if ( 'facebook_include' === $action && $product->is_virtual() ) {
+						if ( 'facebook_include' === $action ) {
 
-							$is_enabling_sync_virtual_products = true;
+							if ( $product->is_virtual() ) {
 
-						} else {
+								$is_enabling_sync_virtual_products = true;
 
-							$products[] = $product;
+							} else {
+
+								// products with virtual variations are also added to the list,
+								// because they may have non-virtual variations as well
+								$products[] = $product;
+
+								if ( $product->is_type( 'variable' ) ) {
+
+									// check if the product has virtual variations, to display notice
+									foreach ( $product->get_children() as $variation_id ) {
+
+										$variation = wc_get_product( $variation_id );
+
+										if ( $variation && $variation->is_virtual() ) {
+
+											$is_enabling_sync_virtual_variations = true;
+											break;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 
-				if ( $is_enabling_sync_virtual_products ) {
+				// display notice if enabling sync for virtual products or variations
+				if ( $is_enabling_sync_virtual_products || $is_enabling_sync_virtual_variations ) {
+
 					$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
 				}
 
