@@ -153,8 +153,16 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::delete_product_item() */
 	public function test_delete_product_item() {
 
-		// TODO
+		$response = new Response( '' );
+
+		$api = $this->make( API::class, [
+			'perform_request' => $response,
+		] );
+
+		// assert that perform_request() was called
+		$this->assertSame( $response, $api->delete_product_item( '123456' ) );
 	}
+
 
 	/** @see API::set_rate_limit_delay() */
 	public function test_set_rate_limit_delay() {
