@@ -165,12 +165,20 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_item_id product item ID
+	 * @param array $data product data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function update_product_item( $product_group_id, $data ) {
+	public function update_product_item( $product_item_id, $data ) {
 
-		// TODO: Implement update_product_item() method.
+		$request = $this->get_new_request( [ $product_item_id, '', 'POST' ] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
