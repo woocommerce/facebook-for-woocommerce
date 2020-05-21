@@ -18,7 +18,9 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API/Request.php';
+		if ( ! class_exists( Request::class ) ) {
+			require_once 'includes/API/Request.php';
+		}
 	}
 
 

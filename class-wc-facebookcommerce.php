@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
@@ -217,9 +218,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			if ( ! is_object( $this->api ) ) {
 
-				require_once __DIR__ . '/includes/API.php';
-				require_once __DIR__ . '/includes/API/Request.php';
-				require_once __DIR__ . '/includes/API/Response.php';
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
+				}
+
+				if ( ! class_exists( API\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Request.php';
+				}
+
+				if ( ! class_exists( API\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Response.php';
+				}
 
 				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
 			}

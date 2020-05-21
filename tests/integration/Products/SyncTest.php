@@ -45,7 +45,9 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
     public function test_delete_products( $product_ids ) {
 
         // TODO: remove when this file is included in the main plugin class {WV 2020-05-19}
-        require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/Products/Sync.php';
+	    if ( ! class_exists( Sync::class ) ) {
+            require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/Products/Sync.php';
+	    }
 
         $sync = new Sync();
 

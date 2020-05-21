@@ -26,8 +26,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API.php';
-		require_once 'includes/API/Request.php';
+		if ( ! class_exists( API::class ) ) {
+			require_once 'includes/API.php';
+		}
+
+		if ( ! class_exists( Request::class ) ) {
+			require_once 'includes/API/Request.php';
+		}
 	}
 
 
@@ -45,7 +50,9 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::send_item_updates() */
 	public function test_send_item_updates() {
 
-		require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
+			require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		}
 
 		$catalog_id   = '123456';
 		$requests     = [
@@ -150,8 +157,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
-		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
-		require_once 'includes/API/Catalog/Product_Item/Response.php';
+		if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		}
+
+		if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Response.php';
+		}
 
 		$catalog_id  = '123456';
 		$retailer_id = '456';

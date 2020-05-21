@@ -19,8 +19,13 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API/Request.php';
-		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\API\Request::class ) ) {
+			require_once 'includes/API/Request.php';
+		}
+
+		if ( ! class_exists( Request::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		}
 	}
 
 
