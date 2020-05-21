@@ -157,12 +157,18 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $catalog_id
-	 * @param string $retailer_id
+	 * @param string $catalog_id catalog ID
+	 * @param string $retailer_id retailer ID of the product
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function find_product_item( $catalog_id, $retailer_id ) {
 
-		// TODO: Implement find_product_item() method.
+		$request = new \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request( $catalog_id, $retailer_id );
+
+		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
