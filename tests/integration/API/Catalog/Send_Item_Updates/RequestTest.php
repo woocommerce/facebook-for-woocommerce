@@ -73,4 +73,22 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::get_data() */
+	public function test_get_data() {
+
+		$requests     = [ [ 'method' => Sync::ACTION_UPDATE ] ];
+		$allow_upsert = false;
+
+		$request = new Request( '1234' );
+
+		$request->set_requests( $requests );
+		$request->set_allow_upsert( $allow_upsert );
+
+		$data = $request->get_data();
+
+		$this->assertSame( $requests, $data['requests'] );
+		$this->assertSame( $allow_upsert, $data['allow_upsert'] );
+	}
+
+
 }
