@@ -30,18 +30,16 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see Request::__construct()
 	 *
-	 * @param string $object_id object ID
 	 * @param string $path endpoint route
 	 * @param string $method HTTP method
-	 * @param string $expected_path expected request path
 	 *
 	 * @dataProvider provider_constructor
 	 */
-	public function test_constructor( $object_id, $path, $method, $expected_path ) {
+	public function test_constructor( $path, $method ) {
 
-		$request = new Request( $object_id, $path, $method );
+		$request = new Request( $path, $method );
 
-		$this->assertEquals( $expected_path, $request->get_path() );
+		$this->assertEquals( $path, $request->get_path() );
 		$this->assertEquals( $method, $request->get_method() );
 	}
 
@@ -49,12 +47,11 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	public function provider_constructor( $requests ) {
 
 		return [
-			[ 'me', '', 'GET', '/me' ],
-			[ '1234', '/products', 'GET', '/1234/products' ],
+			[ '/me', 'GET' ],
+			[ '/1234/products', 'GET' ],
 
-			[ '1234', 'batch', 'POST', '/1234/batch' ],
-			[ '1234', '/batch/', 'POST', '/1234/batch' ],
-			[ '1234', '', 'POST', '/1234' ],
+			[ '/1234/batch', 'POST' ],
+			[ '/1234', 'POST' ],
 		];
 	}
 
