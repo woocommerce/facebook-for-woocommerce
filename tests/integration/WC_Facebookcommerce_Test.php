@@ -37,7 +37,7 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 
 		$plugin->get_connection_handler()->update_access_token( null );
 
-		// remove existing instances to make sure the methods attempts to create a new one
+		// remove existing instances to make sure the method attempts to create a new one
 		$instance = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
 		$instance->setAccessible( true );
 		$instance->setValue( $plugin, null );
