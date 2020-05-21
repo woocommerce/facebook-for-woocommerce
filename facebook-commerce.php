@@ -4278,10 +4278,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} else {
 
+		    // parent product
 			Products::set_product_visibility( $product, $should_set_visible );
 
 			$product_ids = [ $product_id ];
 
+			// set visibility for all children
 			foreach ( $product->get_children() as $index => $id ) {
 
 				$product = wc_get_product( $id );
@@ -4295,6 +4297,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$product_ids[] = $product->get_id();
 			}
 
+			// sync product with all variations
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
 		}
 	}
