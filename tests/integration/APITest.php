@@ -81,23 +81,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see API::test_do_post_parse_response_validation() */
-	public function provider_do_post_parse_response_validation() {
-
-		return [
-			[ 4,     API\Exceptions\Request_Limit_Reached::class ],
-			[ 17,    API\Exceptions\Request_Limit_Reached::class ],
-			[ 32,    API\Exceptions\Request_Limit_Reached::class ],
-			[ 613,   API\Exceptions\Request_Limit_Reached::class ],
-			[ 80004, API\Exceptions\Request_Limit_Reached::class ],
-
-			[ null, Framework\SV_WC_API_Exception::class ],
-			[ 102,  Framework\SV_WC_API_Exception::class ],
-			[ 190,  Framework\SV_WC_API_Exception::class ],
-		];
-	}
-
-
 	/**
 	 * Intercepts HTTP requests and returns a prepared response.
 	 *
@@ -137,6 +120,23 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 			return $response;
 		}, 10, 3 );
+	}
+
+
+	/** @see API::test_do_post_parse_response_validation() */
+	public function provider_do_post_parse_response_validation() {
+
+		return [
+			[ 4,     API\Exceptions\Request_Limit_Reached::class ],
+			[ 17,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 32,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 613,   API\Exceptions\Request_Limit_Reached::class ],
+			[ 80004, API\Exceptions\Request_Limit_Reached::class ],
+
+			[ null, Framework\SV_WC_API_Exception::class ],
+			[ 102,  Framework\SV_WC_API_Exception::class ],
+			[ 190,  Framework\SV_WC_API_Exception::class ],
+		];
 	}
 
 
