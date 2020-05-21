@@ -52,13 +52,29 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Response::get_url() */
-	public function test_get_url() {
+	/**
+	 * @see Response::get_url()
+	 *
+	 * @param array $response_body response body
+	 * @param string|null $page_url expected page url
+	 *
+	 * @dataProvider provider_get_url
+	 */
+	public function test_get_url( $response_body, $page_url ) {
 
-		$raw_response = json_encode( [ 'name' => 'Test Page', 'link' => 'https://example.org' ] );
-		$request      = new Response( $raw_response );
+		$response = new Response( json_encode( $response_body ) );
 
-		$this->assertEquals( 'https://example.org', $request->get_url() );
+		$this->assertSame( $page_url, $response->get_url() );
+	}
+
+
+	/** @see test_get_url() */
+	public function provider_get_url() {
+
+		return [
+			[ [ 'name' => 'Test Page', 'link' => 'https://example.org' ], 'https://example.org' ],
+			[ [ 'error' => [ 'type' => 'OAuthException', 'code' => 100 ] ], null ],
+		];
 	}
 
 
