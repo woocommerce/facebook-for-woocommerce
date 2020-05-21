@@ -107,4 +107,18 @@ class Request extends API\Request  {
 	}
 
 
+	/**
+	 * Gets the request data.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function get_data() {
+
+		return [
+			'allow_upsert' => $this->get_allow_upsert(),
+			'requests'     => $this->get_requests(),
+		];
+	}
+
+
 }
