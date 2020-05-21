@@ -4238,6 +4238,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $to_delete;
 	}
 
+
 	/**
 	 * Helper function to update FB visibility.
 	 *
@@ -4251,16 +4252,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$woo_product = new \WC_Facebook_Product( $product_id );
+		$product = wc_get_product( $product_id );
 
 		// bail if product isn't found
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! $woo_product->exists() ) {
+		if ( ! $product instanceof \WC_Product ) {
 			return;
 		}
 
 		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
 
-		if ( ! $woo_product->woo_product->is_type( 'variable' ) ) {
+		if ( ! $product->is_type( 'variable' ) ) {
 
 			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 
@@ -4272,22 +4273,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
 
 			if ( $this->check_api_result( $set_visibility ) ) {
-				Products::set_product_visibility( $woo_product->woo_product, $should_set_visible );
+				Products::set_product_visibility( $product, $should_set_visible );
 			}
 
 		} else {
 
-			$product_ids = array_merge( [ $product_id ], $woo_product->get_children() );
+			Products::set_product_visibility( $product, $should_set_visible );
 
-			foreach ( $product_ids as $index => $product_id ) {
+			$product_ids = [ $product_id ];
 
-				$product = wc_get_product( $product_id );
+			foreach ( $product->get_children() as $index => $id ) {
 
-				if ( $product instanceof \WC_Product ) {
-					Products::set_product_visibility( $product, $should_set_visible );
-				} else {
-					unset( $product_ids[ $index ] );
+				$product = wc_get_product( $id );
+
+				if ( ! $product instanceof \WC_Product ) {
+				    continue;
 				}
+
+				Products::set_product_visibility( $product, $should_set_visible );
+
+				$product_ids[] = $product->get_id();
 			}
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
