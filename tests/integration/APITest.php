@@ -139,6 +139,29 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::do_post_parse_response_validation() */
+	public function test_do_post_parse_response_validation_with_a_valid_response() {
+
+		$product_group_id = '111001234947059';
+
+		$args = [
+			'request_path'  => '1234/product_groups',
+			'response_body' => [
+				'id' => $product_group_id,
+			],
+		];
+
+		$this->prepare_request_response( $args );
+
+		$api = new API( 'access_token' );
+
+		$response = $api->create_product_group( '1234', [] );
+
+		// TODO: replace with $response->get_id() the implementation for that method is merged
+		$this->assertEquals( $product_group_id, $response->id );
+	}
+
+
 	/** @see API::create_product_group() */
 	public function test_create_product_group() {
 
