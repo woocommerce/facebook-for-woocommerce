@@ -23,6 +23,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class API extends Framework\SV_WC_API_Base {
 
 
+	/** @var string URI used for the request */
+	protected $request_uri = 'https://graph.facebook.com/v7.0';
+
 	/** @var string the configured access token */
 	protected $access_token;
 
