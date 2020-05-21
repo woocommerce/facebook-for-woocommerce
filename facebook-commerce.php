@@ -4278,10 +4278,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} else {
 
-		    // parent product
+			// parent product
 			Products::set_product_visibility( $product, $should_set_visible );
 
-			$product_ids = [ $product_id ];
+			// we should not add the parent product ID to the array of product IDs to be
+			// updated because product groups, which are used to represent the parent product
+			// for variable products, don't have the visibility property on Facebook
+			$product_ids = [];
 
 			// set visibility for all children
 			foreach ( $product->get_children() as $index => $id ) {
