@@ -22,4 +22,17 @@ use SkyVerge\WooCommerce\Facebook\API;
 class Response extends API\Response  {
 
 
+	/**
+	 * Gets the page name.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string|null
+	 */
+	public function get_name() {
+
+		return $this->name;
+	}
+
+
 }
