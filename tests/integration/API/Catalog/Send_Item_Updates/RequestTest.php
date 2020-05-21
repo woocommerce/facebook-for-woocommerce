@@ -3,6 +3,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Tests\API\Catalog\Send_Item_Updates;
 
 use SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Request;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
  * Tests the API\Catalog\Send_Item_Updates\Request class.
@@ -39,22 +40,54 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Request::set_requests() */
 	public function test_set_requests() {
 
-		$request = new Request( '1234 ');
+		$request  = new Request( '1234 ');
+		$requests = [ [ 'method' => Sync::ACTION_UPDATE ] ];
 
-		$request->set_requests( [] );
+		$request->set_requests( $requests );
 
-		// TODO: assert that the array of requests is included in get_data()
+		$this->assertSame( $requests, $request->get_requests() );
 	}
 
 
-	/** @see Request::set_allow_upsert() */
-	public function test_set_allow_upsert() {
+	/**
+	 * @see Request::set_allow_upsert()
+	 *
+	 * @param boolean $allow_upsert whether updates can create new items
+	 *
+	 * @dataProvider provider_set_allow_upsert()
+	 */
+	public function test_set_allow_upsert( bool $allow_upsert ) {
 
 		$request = new Request( '1234 ');
 
-		$request->set_allow_upsert( false );
+		$request->set_allow_upsert( $allow_upsert );
 
-		// TODO: assert that the allow upsert is included in get_data()
+		$this->assertSame( $allow_upsert, $request->get_allow_upsert() );
+	}
+
+
+	/** @see test_set_allow_upsert() */
+	public function provider_set_allow_upsert() {
+
+		return [ [ true ], [ false ] ];
+	}
+
+
+	/** @see Request::get_data() */
+	public function test_get_data() {
+
+		$requests     = [ [ 'method' => Sync::ACTION_UPDATE ] ];
+		$allow_upsert = false;
+
+		$request = new Request( '1234' );
+
+		$request->set_requests( $requests );
+		$request->set_allow_upsert( $allow_upsert );
+
+		$data = $request->get_data();
+
+		$this->assertSame( $requests, $data['requests'] );
+		$this->assertSame( $allow_upsert, $data['allow_upsert'] );
 	}
 
 
