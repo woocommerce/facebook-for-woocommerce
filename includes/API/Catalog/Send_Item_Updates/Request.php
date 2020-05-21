@@ -73,7 +73,7 @@ class Request extends API\Request  {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param bool $allow_upsert wehther to allow updates to insert new items
+	 * @param bool $allow_upsert whether to allow updates to insert new items
 	 */
 	public function set_allow_upsert( $allow_upsert ) {
 
