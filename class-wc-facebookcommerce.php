@@ -20,7 +20,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.11.3';
+		const VERSION = '2.0.0-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -52,6 +52,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var Background_Disable_Virtual_Products_Sync instance */
 		protected $background_disable_virtual_products_sync;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
+		private $products_sync_handler;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync\Background background sync handler */
+		private $sync_background_handler;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
+		private $connection_handler;
 
 
 		/**
@@ -88,13 +97,21 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
+				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
+
+				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/Products/Sync.php';
+				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 
-				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
+				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
 
 				if ( is_ajax() ) {
 
@@ -110,12 +127,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
 
-					require_once __DIR__ . '/vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-async-request.php';
-					require_once __DIR__ . '/vendor/skyverge/wc-plugin-framework/woocommerce/utilities/class-sv-wp-background-job-handler.php';
 					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
 
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
 				}
+
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
 			}
 		}
 
@@ -144,35 +161,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			$integration = $this->get_integration();
+			// TODO: should we remove the Esternal Merchant Settings ID value from the database when we complete a connection using FBE 2.0? {WV 2020-05-14}
+			//  if the site has the old FBE 1.0 external settings ID option stored, inform users that they need to connect to FBE 2.0
+			if ( ! $this->connection_handler->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
 
-			// if the feed hasn't been migrated to FBE 1.5 and the access token is bad, display a notice
-			if ( $integration && $integration->is_configured() && ! $integration->is_feed_migrated() && ! $integration->get_page_name() ) {
+				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
 
-				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security';
+				$message = sprintf(
+					__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+					'<strong>', '</strong>',
+					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
+					'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+				);
 
-				if ( $this->is_plugin_settings() ) {
-
-					$message = sprintf(
-						/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
-						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s and go to %1$sAdvanced Options%2$s > %1$sReconnect Catalog%2$s to securely reconnect. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
-						'<strong>', '</strong>',
-						'<a href="#" class="wc-facebook-manage-connection">', '</a>',
-						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
-					);
-
-				} else {
-
-					$message = sprintf(
-						/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
-						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s and go to %1$sManage Connection%2$s > %1$sAdvanced Options%2$s > %1$sReconnect Catalog%2$s to securely reconnect. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
-						'<strong>', '</strong>',
-						'<a href="' . esc_url( $this->get_settings_url() ) . '">', '</a>',
-						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
-					);
-				}
-
-				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v1_5', [
+				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v2_0', [
 					'dismissible'  => false,
 					'notice_class' => 'notice-info wc-facebook-migrate-notice',
 				] );
@@ -253,10 +255,51 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * Gets the background disable virtual products sync handler instance.
 		 *
 		 * @since 1.11.3-dev.2
+		 *
+		 * @return Background_Disable_Virtual_Products_Sync
 		 */
 		public function get_background_disable_virtual_products_sync_instance() {
 
 			return $this->background_disable_virtual_products_sync;
+		}
+
+
+		/**
+		 * Gets the products sync handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync
+		 */
+		public function get_products_sync_handler() {
+
+			return $this->products_sync_handler;
+		}
+
+
+		/**
+		 * Gets the products sync background handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync\Background
+		 */
+		public function get_products_sync_background_handler() {
+
+			return $this->sync_background_handler;
+		}
+
+
+		/**
+		 * Gets the connection handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Handlers\Connection
+		 */
+		public function get_connection_handler() {
+
+			return $this->connection_handler;
 		}
 
 

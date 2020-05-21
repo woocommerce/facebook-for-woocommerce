@@ -10,36 +10,6 @@
 var fb_sync_no_response_count = 0;
 var fb_show_advanced_options  = false;
 
-
-function openPopup() {
-	var width          = 1153;
-	var height         = 808;
-	var topPos         = screen.height / 2 - height / 2;
-	var leftPos        = screen.width / 2 - width / 2;
-	window.originParam = window.location.protocol + '//' + window.location.host;
-	var popupUrl;
-	if (window.facebookAdsToolboxConfig.popupOrigin.includes( 'staticxx' )) {
-		window.facebookAdsToolboxConfig.popupOrigin = 'https://www.facebook.com/';
-	}
-	window.facebookAdsToolboxConfig.popupOrigin = prepend_protocol(
-		window.facebookAdsToolboxConfig.popupOrigin
-	);
-	popupUrl                                    = window.facebookAdsToolboxConfig.popupOrigin;
-
-	var path = '/ads/dia';
-	var page = window.open( popupUrl + '/login.php?display=popup&next=' + encodeURIComponent( popupUrl + path + '?origin=' + window.originParam + ' &merchant_settings_id=' + window.facebookAdsToolboxConfig.diaSettingId ), 'DiaWizard', ['toolbar=no', 'location=no', 'directories=no', 'status=no', 'menubar=no', 'scrollbars=no', 'resizable=no', 'copyhistory=no', 'width=' + width, 'height=' + height, 'top=' + topPos, 'left=' + leftPos].join( ',' ) );
-
-	return function (type, params) {
-		page.postMessage(
-			{
-				type: type,
-				params: params
-			},
-			window.facebookAdsToolboxConfig.popupOrigin
-		);
-	};
-}
-
 function prepend_protocol(url) {
 	// Preprend https if the url begis with //www.
 	if (url.indexOf( '//www.' ) === 0) {
@@ -117,10 +87,6 @@ function ajax(action, payload = null, callback = null, failcallback = null) {
 var settings       = {'facebook_for_woocommerce' : 1};
 var pixel_settings = {'facebook_for_woocommerce' : 1};
 
-function facebookConfig() {
-	window.sendToFacebook = openPopup();
-	window.diaConfig      = { 'clientSetup': window.facebookAdsToolboxConfig };
-}
 
 function fb_flush(){
 	console.log( "Removing all FBIDs from all products!" );
@@ -1080,14 +1046,6 @@ function syncShortDescription() {
 }
 
 jQuery( document ).ready( function( $ ) {
-
-	// when a "manage connection" link is click from a notice
-	$( '.notice .wc-facebook-manage-connection' ).click( function( event ) {
-
-		event.preventDefault();
-
-		facebookConfig();
-	} );
 
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 

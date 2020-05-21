@@ -1,5 +1,7 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+
 class ProductSyncColumnCest {
 
 
@@ -19,7 +21,7 @@ class ProductSyncColumnCest {
 		// save a generic product
 		$this->product = $I->haveProductInDatabase();
 
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		// always log in
@@ -39,6 +41,38 @@ class ProductSyncColumnCest {
 		$I->wantTo( 'Test that the column is present' );
 
 		$I->see( 'FB Sync Enabled', 'table.wp-list-table th' );
+	}
+
+
+	/**
+	 * Test that the column is not present.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param \Codeception\Example $example test data
+	 *
+	 * @dataProvider provider_column_not_present
+	 */
+	public function try_column_not_present( AcceptanceTester $I, \Codeception\Example $example ) {
+
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, $example['access_token'] );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, $example['catalog_id'] );
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the column is not present if the plugin is not connected or ready' );
+
+		$I->dontSee( 'FB Sync Enabled', 'table.wp-list-table th' );
+	}
+
+
+	/** @see try_column_not_present() */
+	protected function provider_column_not_present() {
+
+		return [
+			[ 'access_token' => '',     'catalog_id' => '' ],
+			[ 'access_token' => '1234', 'catalog_id' => '' ],
+			[ 'access_token' => '',     'catalog_id' => '1234'],
+		];
 	}
 
 

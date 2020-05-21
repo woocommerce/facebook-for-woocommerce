@@ -560,65 +560,35 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	// /**
-	//  * @see \WC_Facebookcommerce_Integration::is_configured()
-	//  *
-	//  * TODO: uncomment when FBE 2.0 modifications are available {WV 2020-04-22}
-	//  *
-	//  * @param string $access_token Facebook access token
-	//  * @param string $page_id Facebok page ID
-	//  * @param bool $expected whether Facebook for WooCommerce is configured or not
-	//  *
-	//  * @dataProvider provider_is_configured()
-	//  */
-	// public function test_is_configured( $access_token, $page_id, $expected ) {
-
-	// 	$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
-
-	// 	$this->integration->update_page_access_token( $access_token );
-	// 	$this->integration->init_settings();
-
-	// 	$this->assertSame( $expected, $this->integration->is_configured() );
-	// }
-
-
-	// /** @see test_is_configured() */
-	// public function provider_is_configured() {
-
-	// 	return [
-	// 		[ 'abc123', 'facebook-page-id', true ],
-	// 		[ '',       'facebook-page-id', false ],
-	// 		[ 'abc123', '',                 false ],
-	// 		[ '',       '',                 false ],
-	// 	];
-	// }
-
-
 	/**
 	 * @see \WC_Facebookcommerce_Integration::is_configured()
 	 *
-	 * TODO: consider removing this test when FBE 2.0 modifications are available {WV 2020-04-22}
-	 *
-	 * @param string $external_merchant_settings_id Facebook external merchant settings ID
+	 * @param string $access_token Facebook access token
+	 * @param string $page_id Facebok page ID
 	 * @param bool $expected whether Facebook for WooCommerce is configured or not
 	 *
-	 * @dataProvider provider_is_configured_with_external_merchant_settings_id()
+	 * @dataProvider provider_is_configured()
 	 */
-	public function test_is_configured_with_external_merchant_settings_id( $external_merchant_settings_id, $expected ) {
+	public function test_is_configured( $access_token, $page_id, $expected ) {
 
-		$this->integration->update_external_merchant_settings_id( $external_merchant_settings_id );
-		$this->integration->init_settings();
+		$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
+
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( $access_token );
 
 		$this->assertSame( $expected, $this->integration->is_configured() );
 	}
 
 
-	/** @see test_is_configured_with_external_merchant_settings_id() */
-	public function provider_is_configured_with_external_merchant_settings_id() {
+	/** @see test_is_configured() */
+	public function provider_is_configured() {
+
+		// TODO: uncomment the third case after we start retrieving Page IDs using Handlers\Connection::get_asset_ids() {WV-2020-05-13}
 
 		return [
-			[ 'external-merchant-settings-id', true ],
-			[ '',                              false ],
+			[ 'abc123', 'facebook-page-id', true ],
+			[ '',       'facebook-page-id', false ],
+			// [ 'abc123', '',                 false ],
+			[ '',       '',                 false ],
 		];
 	}
 
@@ -631,6 +601,21 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'no' );
 
 		$this->assertFalse( $this->integration->is_advanced_matching_enabled() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::is_use_s2s_enabled() */
+	public function test_is_use_s2s_enabled() {
+		//For now we are testing that the class returns the default value
+		$this->assertFalse( $this->integration->is_use_s2s_enabled() );
+
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_access_token() */
+	public function test_get_access_token() {
+		//For now we are testing that the class returns the default value
+		$this->assertEmpty( $this->integration->get_access_token() );
 	}
 
 
@@ -1009,4 +994,3 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 
 }
-

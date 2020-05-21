@@ -17,6 +17,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		const SETTINGS_KEY = 'facebook_config';
 		const PIXEL_ID_KEY = 'pixel_id';
 		const USE_PII_KEY  = 'use_pii';
+		const USE_S2S_KEY= 'use_s2s';
+		const ACCESS_TOKEN_KEY = 'access_token';
 
 		/** @var string cache key for pixel script block output  */
 		const PIXEL_RENDER     = 'pixel_render';
@@ -504,6 +506,48 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			update_option( self::SETTINGS_KEY, $fb_options );
 		}
 
+		public static function get_use_s2s() {
+			$fb_options = self::get_options();
+			if ( ! $fb_options ) {
+				return false;
+			}
+			return isset( $fb_options[ self::USE_S2S_KEY ] ) ?
+				 $fb_options[ self::USE_S2S_KEY ] : false;
+		}
+
+		public static function set_use_s2s( $use_s2s ) {
+			$fb_options = self::get_options();
+
+			if ( isset( $fb_options[ self::USE_S2S_KEY ] )
+			  && $fb_options[ self::USE_S2S_KEY ] == $use_s2s ) {
+				return;
+			}
+
+			$fb_options[ self::USE_S2S_KEY ] = $use_s2s;
+			update_option( self::SETTINGS_KEY, $fb_options );
+		}
+
+		public static function get_access_token() {
+			$fb_options = self::get_options();
+			if ( ! $fb_options ) {
+				return '';
+			}
+			return isset( $fb_options[ self::ACCESS_TOKEN_KEY ] ) ?
+				 $fb_options[ self::ACCESS_TOKEN_KEY ] : '';
+		}
+
+		public static function set_access_token( $access_token ) {
+			$fb_options = self::get_options();
+
+			if ( isset( $fb_options[ self::ACCESS_TOKEN_KEY ] )
+			  && $fb_options[ self::ACCESS_TOKEN_KEY ] == $access_token ) {
+				return;
+			}
+
+			$fb_options[ self::ACCESS_TOKEN_KEY ] = $access_token;
+			update_option( self::SETTINGS_KEY, $fb_options );
+		}
+
 		private static function get_version_info() {
 			global $wp_version;
 
@@ -528,6 +572,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 				array(
 					self::PIXEL_ID_KEY => '0',
 					self::USE_PII_KEY  => 0,
+					self::USE_S2S_KEY => false,
+					self::ACCESS_TOKEN_KEY => '',
 				)
 			);
 		}

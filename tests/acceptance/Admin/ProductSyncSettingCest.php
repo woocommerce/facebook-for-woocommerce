@@ -1,5 +1,6 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 class ProductSyncSettingCest {
@@ -33,8 +34,16 @@ class ProductSyncSettingCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
+		/**
+		 * Set these in the database so that the product processing hooks are properly set
+		 * @see \WC_Facebookcommerce_Integration::__construct()
+		 */
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => '1234',
+		] );
 
 		// save two generic products
 		$this->sync_enabled_product  = $I->haveProductInDatabase();
@@ -111,13 +120,6 @@ class ProductSyncSettingCest {
 	 */
 	public function try_field_enable( AcceptanceTester $I ) {
 
-		/**
-		 * Set these in the database so that the product processing hooks are properly set
-		 * @see \WC_Facebookcommerce_Integration::__construct()
-		 */
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
-
 		$I->amEditingPostWithId( $this->sync_disabled_product->get_id() );
 
 		$I->wantTo( 'Test that the field value is saved correctly when enabling sync' );
@@ -141,13 +143,6 @@ class ProductSyncSettingCest {
 	 * @throws Exception
 	 */
 	public function try_field_disable( AcceptanceTester $I ) {
-
-		/**
-		 * Set these in the database so that the product processing hooks are properly set
-		 * @see \WC_Facebookcommerce_Integration::__construct()
-		 */
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
 

@@ -1,5 +1,6 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 class ProductVariationSyncSettingCest {
@@ -24,8 +25,16 @@ class ProductVariationSyncSettingCest {
 	 */
     public function _before( AcceptanceTester $I ) {
 
-	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
-	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+		/**
+		 * Set these in the database so that the product processing hooks are properly set
+		 * @see \WC_Facebookcommerce_Integration::__construct()
+		 */
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => '1234',
+		] );
 
 		$product_objects = $I->haveVariableProductInDatabase();
 
