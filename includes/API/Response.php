@@ -76,4 +76,17 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	}
 
 
+	/**
+	 * Gets the API error code.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return int|null
+	 */
+	public function get_api_error_code() {
+
+		return isset( $this->error->code ) ? (int) $this->error->code : null;
+	}
+
+
 }
