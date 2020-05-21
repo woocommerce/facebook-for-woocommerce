@@ -205,6 +205,28 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
+		 * Gets the API instance.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return SkyVerge\WooCommerce\Facebook\API
+		 */
+		public function get_api() {
+
+			if ( ! is_object( $this->api ) ) {
+
+				require_once __DIR__ . '/includes/API.php';
+				require_once __DIR__ . '/includes/API/Request.php';
+				require_once __DIR__ . '/includes/API/Response.php';
+
+				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
+			}
+
+			return $this->api;
+		}
+
+
+		/**
 		 * Gets the admin handler instance.
 		 *
 		 * @since 1.10.0
