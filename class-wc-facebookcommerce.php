@@ -37,6 +37,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
 
+		/** @var SkyVerge\WooCommerce\Facebook\API instance */
+		private $api;
+
 		/** @var \WC_Facebookcommerce_Integration instance */
 		private $integration;
 
@@ -201,6 +204,33 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** Getter methods ********************************************************************************************/
+
+
+		/**
+		 * Gets the API instance.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\API
+		 * @throws Framework\SV_WC_API_Exception
+		 */
+		public function get_api() {
+
+			if ( ! is_object( $this->api ) ) {
+
+				if ( ! $this->get_connection_handler()->get_access_token() ) {
+					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
+				}
+
+				require_once __DIR__ . '/includes/API.php';
+				require_once __DIR__ . '/includes/API/Request.php';
+				require_once __DIR__ . '/includes/API/Response.php';
+
+				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
+			}
+
+			return $this->api;
+		}
 
 
 		/**
