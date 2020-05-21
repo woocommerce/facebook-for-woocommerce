@@ -168,6 +168,13 @@ jQuery( document ).ready( function( $ ) {
 			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
+		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
+
+			$( '.js-variable-fb-sync-toggle' ).each( function () {
+				toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+			} );
+		} );
+
 		// show/hide Custom Image URL setting
 		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
 
@@ -182,8 +189,8 @@ jQuery( document ).ready( function( $ ) {
 
 		// trigger settings fields modifiers when variations are loaded
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
-			$( '.js-variable-fb-sync-toggle' ).trigger( 'change' );
-			$( '.js-fb-product-image-source:checked' ).trigger( 'change' );
+			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
+			$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 		} );
 
 		let submitProductSave = false;
