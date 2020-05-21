@@ -26,13 +26,29 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-	/** @see Response::get_name() */
-	public function test_get_name() {
+	/**
+	 * @see Response::get_name()
+	 *
+	 * @param array $response_body response body
+	 * @param string|null $page_name expected page name
+	 *
+	 * @dataProvider provider_get_name
+	 */
+	public function test_get_name( $response_body, $page_name ) {
 
-		$raw_response = json_encode( [ 'name' => 'Test Page', 'link' => 'https://example.org' ] );
-		$request      = new Response( $raw_response );
+		$response = new Response( json_encode( $response_body ) );
 
-		$this->assertEquals( 'Test Page', $request->get_name() );
+		$this->assertSame( $page_name, $response->get_name() );
+	}
+
+
+	/** @see test_get_name() */
+	public function provider_get_name() {
+
+		return [
+			[ [ 'name' => 'Test Page', 'link' => 'https://example.org' ], 'Test Page' ],
+			[ [ 'error' => [ 'type' => 'OAuthException', 'code' => 100 ] ], null ],
+		];
 	}
 
 
