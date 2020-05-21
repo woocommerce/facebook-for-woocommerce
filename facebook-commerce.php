@@ -571,9 +571,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_metabox_jsx',
 			plugins_url(
-				'/assets/js/facebook-metabox.min.js?ts=' . time(),
+				'/assets/js/facebook-metabox.min.js',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_localize_script(
 			'wc_facebook_metabox_jsx',
@@ -719,9 +721,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_infobanner_jsx',
 			plugins_url(
-				'/assets/js/facebook-infobanner.min.js?ts=' . time(),
+				'/assets/js/facebook-infobanner.min.js',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_localize_script(
 		 'wc_facebook_infobanner_jsx',
@@ -734,7 +738,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			plugins_url(
 				'/assets/css/facebook-infobanner.css',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 
 		if ( ! facebook_for_woocommerce()->is_plugin_settings() ) {
@@ -791,9 +797,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_settings_jsx',
 			plugins_url(
-				'/assets/js/facebook-settings.min.js?ts=' . time(),
+				'/assets/js/facebook-settings.min.js',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_localize_script(
 			'wc_facebook_settings_jsx',
@@ -805,7 +813,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			plugins_url(
 				'/assets/css/facebook.css',
 				__FILE__
-			)
+			),
+			[],
+			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 	}
 
@@ -4186,6 +4196,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Admin Panel Options
 	 */
 	function admin_options() {
+
+		facebook_for_woocommerce()->get_message_handler()->show_messages();
 
 		$page_name      = $this->get_page_name();
 		$can_manage     = current_user_can( 'manage_woocommerce' );

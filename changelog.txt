@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 2.0.0-dev.1
+ * Fix - Use the plugin version instead of of a timestamp as the version number for enqueued scripts and stylesheets
+
 2020.04.27 - version 1.11.1
  * Fix - Fix integration with WPML
 

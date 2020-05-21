@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '1.11.1';
+		const VERSION = '2.0.0-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -48,6 +48,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
+		private $connection_handler;
 
 
 		/**
@@ -84,6 +87,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				include_once 'facebook-commerce.php';
 
+				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
@@ -104,6 +108,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
 
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
 			}
 		}
 
@@ -234,6 +239,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_product_feed_handler() {
 
 			return $this->product_feed;
+		}
+
+
+		/**
+		 * Gets the connection handler.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Handlers\Connection
+		 */
+		public function get_connection_handler() {
+
+			return $this->connection_handler;
 		}
 
 
