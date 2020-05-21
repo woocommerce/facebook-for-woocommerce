@@ -1,5 +1,7 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+
 class ProductSyncBulkActionsCest {
 
 
@@ -19,7 +21,7 @@ class ProductSyncBulkActionsCest {
 		// save a generic product
 		$this->product = $I->haveProductInDatabase();
 
-		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
 		// always log in
