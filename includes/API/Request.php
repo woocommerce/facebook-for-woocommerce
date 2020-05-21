@@ -33,6 +33,8 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 */
 	public function __construct( $object_id, $path, $method ) {
 
+		$this->method = $method;
+		$this->path   = $path ? sprintf( '/%s/%s', $object_id, trim( $path, '/' ) ) : "/{$object_id}";
 	}
 
 
@@ -45,6 +47,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 */
 	public function set_data( $data ) {
 
+		$this->data = $data;
 	}
 
 
