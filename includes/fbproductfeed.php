@@ -605,6 +605,18 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				WC_Facebookcommerce_Utils::log( json_encode( $e->getMessage() ) );
 
 				$written = false;
+
+				// close the temporary file
+				if ( ! empty( $temp_feed_file ) && is_resource( $temp_feed_file ) ) {
+
+					fclose( $temp_feed_file );
+				}
+
+				// delete the temporary file
+				if ( ! empty( $temp_file_path ) ) {
+
+					unlink( $temp_file_path );
+				}
 			}
 
 			return $written;
