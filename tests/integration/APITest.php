@@ -272,4 +272,33 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see API::get_new_request()
+	 *
+	 * @param array $args
+	 * @param string $expected_path
+	 * @param string $expected_method
+	 *
+	 * @dataProvider provider_get_new_request
+	 */
+	public function test_get_new_request( $args, $expected_path, $expected_method ) {
+
+		// TODO
+	}
+
+
+	/** @see test_get_new_request() */
+	public function provider_get_new_request() {
+
+		return [
+			[ [ 'path' => '/me', 'method' => 'GET' ], '/me', 'GET' ],
+			[ [ 'path' => '/1234/products', 'method' => 'GET' ], '/1234/products', 'GET' ],
+			[ [ 'path' => '/1234/batch', 'method' => 'POST' ], '/1234/batch', 'POST' ],
+			[ [ 'path' => '/1234/batch' ], '/1234/batch', 'GET' ],
+			[ [ 'method' => 'DELETE' ], '/', 'DELETE' ],
+			[ [], '/', 'GET' ],
+		];
+	}
+
+
 }
