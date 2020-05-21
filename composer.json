@@ -22,6 +22,6 @@
     "require-dev": {
         "wp-coding-standards/wpcs": "~2.2.0",
         "phpcompatibility/php-compatibility": "~9.3.5",
-        "lucatume/wp-browser": ">= 2.3.4 <2.4.0"
+        "lucatume/wp-browser": ">= 2.3.4"
     }
 }

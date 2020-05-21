@@ -288,7 +288,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		public function inject_event( $event_name, $params, $method = 'track' ) {
 			$event_id = null;
 			if( self::get_use_s2s() ){
-				$event_id = $this->create_and_send_server_side_event( $event_name );
+				$event_id = $this->create_and_send_server_side_event( $event_name, $params );
 			}
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
@@ -307,9 +307,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string event name
 		 * @return string event id
 		 */
-		public function create_and_send_server_side_event( $event_name ){
+		public function create_and_send_server_side_event( $event_name, $params ){
 			try{
-				$event = WC_Facebookcommerce_ServerEventFactory::new_event($event_name);
+				$event = WC_Facebookcommerce_ServerEventFactory::create_event($event_name, $params);
 				if( !is_null( $event ) ){
 					WC_Facebookcommerce_ServerEventSender::send_event($event);
 					return $event->getEventId();

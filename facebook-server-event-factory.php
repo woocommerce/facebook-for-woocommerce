@@ -47,6 +47,79 @@ class WC_Facebookcommerce_ServerEventFactory {
   }
 
   /**
+   * Creates an Event with the standard parameters and custom data specified in data
+   * custom data includes email, first_name, last_name, currency, value, content_ids, content_type
+   * content_name, content_category, num_items, search string, contents
+   * @param string event The event name
+   * @param array data The custom data
+   * @return Event
+   */
+  public static function create_event($event_name, $data) {
+    $event = self::new_event($event_name);
+    if (WC_Facebookcommerce_Pixel::get_use_pii_key()) {
+      $user_data = $event->getUserData();
+      if (!empty($data['email'])) {
+        $user_data->setEmail($data['email']);
+      }
+
+      if (!empty($data['first_name'])) {
+        $user_data->setFirstName($data['first_name']);
+      }
+
+      if (!empty($data['last_name'])) {
+        $user_data->setLastName($data['last_name']);
+      }
+    }
+
+    $custom_data = $event->getCustomData();
+    if (!empty($data['currency'])) {
+      $custom_data->setCurrency($data['currency']);
+    }
+
+    if (!empty($data['value'])) {
+      $custom_data->setValue($data['value']);
+    }
+
+    if (!empty($data['content_ids'])) {
+      $custom_data->setContentIds($data['content_ids']);
+    }
+
+    if (!empty($data['content_type'])) {
+      $custom_data->setContentType($data['content_type']);
+    }
+
+    if (!empty($data['content_name'])) {
+      $custom_data->setContentName($data['content_name']);
+    }
+
+    if (!empty($data['content_category'])) {
+      $custom_data->setContentCategory($data['content_category']);
+    }
+
+    if (!empty($data['num_items'])) {
+      $custom_data->setNumItems($data['num_items']);
+    }
+
+    if (!empty($data['search_string'])) {
+      $custom_data->setSearchString($data['search_string']);
+    }
+
+    if (!empty($data['contents'])) {
+      $contents = array();
+      foreach(json_decode($data['contents']) as $content) {
+        $contents[] = array(
+          'id' => $content->id,
+          'quantity' => $content->quantity
+        );
+      }
+
+      $custom_data->setContents(new Content($contents));
+    }
+
+    return $event;
+  }
+
+  /**
    * Gets the ip address of the client
    * @return string
    */
