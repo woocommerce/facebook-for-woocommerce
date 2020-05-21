@@ -85,7 +85,7 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_unchecked( AcceptanceTester $I ) {
+	public function try_field_is_unchecked_sync_disabled( AcceptanceTester $I ) {
 
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
 
@@ -103,7 +103,7 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_checked( AcceptanceTester $I ) {
+	public function try_field_is_checked_sync_enabled( AcceptanceTester $I ) {
 
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
 
