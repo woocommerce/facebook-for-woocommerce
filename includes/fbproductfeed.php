@@ -610,7 +610,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				}
 
 				// delete the temporary file
-				if ( ! empty( $temp_file_path ) ) {
+				if ( ! empty( $temp_file_path ) && file_exists( $temp_file_path ) ) {
 
 					unlink( $temp_file_path );
 				}
