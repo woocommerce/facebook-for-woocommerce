@@ -28,6 +28,17 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function __construct( $access_token ) {
+
+		$this->access_token = $access_token;
+	}
+
+
+	/**
 	 * Gets a Page object from Facebook.
 	 *
 	 * @since 2.0.0-dev.1
