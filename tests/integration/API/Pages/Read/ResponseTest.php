@@ -7,7 +7,7 @@ use SkyVerge\WooCommerce\Facebook\API\Pages\Read\Response;
 /**
  * Tests the API\Pages\Read\Response class.
  */
-class RequestTest extends \Codeception\TestCase\WPTestCase {
+class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @var \IntegrationTester */
