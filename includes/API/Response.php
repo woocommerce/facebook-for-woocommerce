@@ -35,4 +35,19 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	}
 
 
+	/**
+	 * Determines whether the response includes an API error.
+	 *
+	 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#handling-errors
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return boolean
+	 */
+	public function has_api_error() {
+
+		return (bool) $this->error;
+	}
+
+
 }
