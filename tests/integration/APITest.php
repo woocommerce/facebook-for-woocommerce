@@ -3,6 +3,7 @@
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * Tests the API class.
@@ -25,6 +26,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		parent::_before();
 
 		require_once 'includes/API.php';
+		require_once 'includes/API/Exceptions/Request_Limit_Reached.php';
 		require_once 'includes/API/Request.php';
 		require_once 'includes/API/Response.php';
 	}
@@ -39,6 +41,102 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/**
+	 * @see API::do_post_parse_response_validation()
+	 *
+	 * @param int $code error code
+	 * @param string $exception expected exception class name
+	 *
+	 * @dataProvider provider_do_post_parse_response_validation
+	 */
+	public function test_do_post_parse_response_validation( $code, $exception ) {
+
+		$message = sprintf( '(#%d) Message describing the error', $code );
+
+		$this->expectException( $exception );
+		$this->expectExceptionCode( $code );
+		$this->expectExceptionMessageRegExp( '/' . preg_quote( $message, '/' ) . '/' );
+
+		$args = [
+			'request_path'     => '1234/product_groups',
+			'response_body'    => [
+				'error' => [
+					'message'          => $message,
+					'type'             => 'OAuthException',
+					'code'             => $code,
+				]
+			],
+			'response_code'    => 400,
+			'response_message' => 'Bad Request',
+		];
+
+		$this->prepare_request_response( $args );
+
+		$api = new API( 'access_token' );
+
+		$api->create_product_group( '1234', [] );
+	}
+
+
+	/** @see API::test_do_post_parse_response_validation() */
+	public function provider_do_post_parse_response_validation() {
+
+		return [
+			[ 4,     API\Exceptions\Request_Limit_Reached::class ],
+			[ 17,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 32,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 613,   API\Exceptions\Request_Limit_Reached::class ],
+			[ 80004, API\Exceptions\Request_Limit_Reached::class ],
+
+			[ null, Framework\SV_WC_API_Exception::class ],
+			[ 102,  Framework\SV_WC_API_Exception::class ],
+			[ 190,  Framework\SV_WC_API_Exception::class ],
+		];
+	}
+
+
+	/**
+	 * Intercepts HTTP requests and returns a prepared response.
+	 *
+	 * @param array $args {
+	 *     @type string $request_path a fragment of the URL that will be intercepted
+	 *     @type array $response_headers HTTP headers for the response
+	 *     @type array $response_body response data that will be JSON-encoded
+	 *     @type int $response_code HTTP response code
+	 *     @type string $response_message HTTP response message
+	 * }
+	 */
+	private function prepare_request_response( $args ) {
+
+		$args = wp_parse_args( $args, [
+			'request_path'     => '',
+			'response_headers' => [],
+			'response_body'    => [],
+			'response_code'    => 200,
+			'response_message' => 'Ok'
+		] );
+
+		add_filter( 'pre_http_request', static function( $response, $parsed_args, $url ) use ( $args ) {
+
+			if ( false !== strpos( $url, $args['request_path'] ) ) {
+
+				$response = [
+					'headers'       => $args['response_headers'],
+					'body'          => json_encode( $args['response_body'] ),
+					'response'      => [
+						'code'    => $args['response_code'],
+						'message' => $args['response_message'],
+					],
+					'cookies'       => [],
+					'http_response' => null,
+				];
+			}
+
+			return $response;
+		}, 10, 3 );
+	}
 
 
 	/** @see API::create_product_group() */
