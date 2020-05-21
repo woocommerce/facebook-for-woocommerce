@@ -112,7 +112,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
-				$this->product_feed = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 
 				if ( is_ajax() ) {
 
