@@ -8,16 +8,8 @@
  * @package FacebookCommerce
  */
 
-use FacebookAds\Object\ServerSide\Event;
-
 if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
-	if ( ! class_exists( 'WC_Facebookcommerce_ServerEventFactory' ) ) {
-		include_once 'facebook-server-event-factory.php';
-	}
-	if ( ! class_exists( 'WC_Facebookcommerce_ServerEventSender' ) ) {
-		include_once 'facebook-server-event-sender.php';
-	}
 
 	class WC_Facebookcommerce_Pixel {
 
@@ -239,11 +231,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $method name of the pixel's fbq() function to call
 		 * @return string
 		 */
-		public function get_event_code( $event_name, $params, $method = 'track', $event_id = null) {
+		public function get_event_code( $event_name, $params, $method = 'track' ) {
 
 			$this->last_event = $event_name;
 
-			return self::build_event( $event_name, $params, $method, $event_id );
+			return self::build_event( $event_name, $params, $method );
 		}
 
 
@@ -259,14 +251,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $method name of the pixel's fbq() function to call
 		 * @return string
 		 */
-		public function get_event_script( $event_name, $params, $method = 'track', $event_id = null ) {
+		public function get_event_script( $event_name, $params, $method = 'track' ) {
 
 			ob_start();
 
 			?>
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo self::get_script_attributes(); ?>>
-				<?php echo $this->get_event_code( $event_name, $params, $method, $event_id ); ?>
+				<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
@@ -286,39 +278,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $method name of the pixel's fbq() function to call
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
-			$event_id = null;
-			if( self::get_use_s2s() ){
-				$event_id = $this->create_and_send_server_side_event( $event_name );
-			}
+
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method, $event_id ) );
+				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method ) );
 
 			} else {
 
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method, $event_id ) );
+				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method ) );
 			}
-		}
-
-		/**
-		 * Creates a server event, sends it and returns the event id
-		 *
-		 * @param string event name
-		 * @return string event id
-		 */
-		public function create_and_send_server_side_event( $event_name ){
-			try{
-				$event = WC_Facebookcommerce_ServerEventFactory::new_event($event_name);
-				if( !is_null( $event ) ){
-					WC_Facebookcommerce_ServerEventSender::send_event($event);
-					return $event->getEventId();
-				}
-			}
-			catch (Exception $e){
-				error_log( $e );
-			}
-			return null;
 		}
 
 
@@ -427,16 +396,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $method optional, defaults to 'track'
 		 * @return string
 		 */
-		public static function build_event( $event_name, $params, $method = 'track', $event_id = null ) {
+		public static function build_event( $event_name, $params, $method = 'track' ) {
 
 			return sprintf(
 				"/* %s Facebook Integration Event Tracking */\n" .
-				"fbq('%s', '%s', %s%s);",
+				"fbq('%s', '%s', %s);",
 				WC_Facebookcommerce_Utils::getIntegrationName(),
 				esc_js( $method ),
 				esc_js( $event_name ),
-				json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-				$event_id != null ? ", " . json_encode( array( 'eventID' => $event_id), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT) : ""
+				json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 			);
 		}
 
@@ -595,17 +563,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 				'source'        => 'wordpress',
 				'version'       => $wp_version,
 				'pluginVersion' => WC_Facebookcommerce_Utils::PLUGIN_VERSION,
-			);
-		}
-
-		public static function get_agent() {
-			$version_info = self::get_version_info();
-
-			return sprintf(
-				'%s-%s-%s',
-				$version_info['source'],
-				$version_info['version'],
-				$version_info['pluginVersion']
 			);
 		}
 
