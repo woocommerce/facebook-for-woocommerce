@@ -180,22 +180,23 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::update_product_item() */
 	public function test_update_product_item() {
 
-		$product_data = [ 'test' => 'test' ];
+		$product_item_id = '123456';
+		$product_data    = [ 'test' => 'test' ];
 
-		// test will fail if Request::set_data() is not called once
-		$request = $this->make( Request::class, [
-			'set_data' => \Codeception\Stub\Expected::once( $product_data ),
-		] );
-
-		$response = new Response( '' );
-
+		// test will fail if do_remote_request() is not called once
 		$api = $this->make( API::class, [
-			'get_new_request' => $request,
-			'perform_request' => $response,
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
 		] );
 
-		// assert that perform_request() was called
-		$this->assertSame( $response, $api->update_product_item( '123456', $product_data ) );
+		$api->update_product_item( $product_item_id, $product_data );
+
+		$this->assertInstanceOf( Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$product_item_id}", $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+		$this->assertEquals( $product_data, $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( Response::class, $api->get_response() );
 	}
 
 
