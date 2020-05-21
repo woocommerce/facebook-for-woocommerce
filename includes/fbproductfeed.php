@@ -291,7 +291,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product catalog temporary feed file path.
 		 *
-		 * @since 1.11.3-dev.1
+		 * @since 1.11.3
 		 *
 		 * @return string
 		 */
@@ -300,7 +300,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			/**
 			 * Filters the product catalog temporary feed file path.
 			 *
-			 * @since 1.11.3-dev.1
+			 * @since 1.11.3
 			 *
 			 * @param string $file_path the temporary file path
 			 */
@@ -348,7 +348,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Gets the product catalog temporary feed file name.
 		 *
-		 * @since 1.11.3-dev.1
+		 * @since 1.11.3
 		 *
 		 * @return string
 		 */
@@ -359,7 +359,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			/**
 			 * Filters the product catalog temporary feed file name.
 			 *
-			 * @since 1.11.3-dev.1
+			 * @since 1.11.3
 			 *
 			 * @param string $file_name the temporary file name
 			 */
