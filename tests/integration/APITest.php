@@ -158,8 +158,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$response = $api->create_product_group( '1234', [] );
 
-		// TODO: replace with $response->get_id() the implementation for that method is merged
-		$this->assertEquals( $product_group_id, $response->id );
+		$this->assertEquals( $product_group_id, $response->get_id() );
 	}
 
 
