@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\API\Catalog\Product_Item;
 use SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Response;
 
 /**
- * Tests the Connection class.
+ * Tests the API\Catalog\Product_Item\Response class.
  */
 class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
