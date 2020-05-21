@@ -128,14 +128,22 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::delete_product_group() */
 	public function test_delete_product_group() {
 
-		$response = new Response( '' );
+		$product_group_id = '1234';
 
+		// test will fail if do_remote_request() is not called once
 		$api = $this->make( API::class, [
-			'perform_request' => $response,
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
 		] );
 
-		// assert that perform_request() was called
-		$this->assertSame( $response, $api->delete_product_group( '1234' ) );
+		$api->delete_product_group( $product_group_id );
+
+		$this->assertInstanceOf( Request::class, $api->get_request() );
+		$this->assertEquals( 'DELETE', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$product_group_id}", $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( Response::class, $api->get_response() );
 	}
 
 
