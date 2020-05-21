@@ -1,10 +1,10 @@
 <?php
 
 use Codeception\Stub;
-use SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Update\Response;
+use SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response;
 
 /**
- * Tests the API\Catalog\Send_Item_Update\Response class.
+ * Tests the API\Catalog\Send_Item_Updates\Response class.
  */
 class ResponseTest extends \Codeception\TestCase\WPTestCase {
 

@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
- * Send_Item_Update API response object
+ * Base API response object
  *
  * @since 2.0.0-dev.1
  */
