@@ -35,4 +35,17 @@ class Response extends API\Response  {
 	}
 
 
+	/**
+	 * Gets the page URL.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string|null
+	 */
+	public function get_url() {
+
+		return $this->link;
+	}
+
+
 }
