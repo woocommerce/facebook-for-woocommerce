@@ -150,7 +150,26 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
-		// TODO
+		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		require_once 'includes/API/Catalog/Product_Item/Response.php';
+
+		$catalog_id  = '123456';
+		$retailer_id = '456';
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->find_product_item( $catalog_id, $retailer_id );
+
+		$this->assertInstanceOf( API\Catalog\Product_Item\Find\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( "catalog:{$catalog_id}:" . base64_encode( $retailer_id ), $api->get_request()->get_path() );
+		$this->assertEquals( [ 'fields' => 'id,product_group{id}' ], $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Catalog\Product_Item\Response::class, $api->get_response() );
 	}
 
 
