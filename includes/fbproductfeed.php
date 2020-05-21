@@ -593,9 +593,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 					if ( empty( $renamed ) ) {
 						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
 					}
-
-					// delete the temporary file
-					unlink( $temp_file_path );
 				}
 
 				$written = true;
@@ -613,7 +610,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				}
 
 				// delete the temporary file
-				if ( ! empty( $temp_file_path ) ) {
+				if ( ! empty( $temp_file_path ) && file_exists( $temp_file_path ) ) {
 
 					unlink( $temp_file_path );
 				}
