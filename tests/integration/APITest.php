@@ -1,8 +1,10 @@
 <?php
 
+use Codeception\Util\Stub;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
  * Tests the API class.
@@ -26,7 +28,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		require_once 'includes/API.php';
 		require_once 'includes/API/Request.php';
-		require_once 'includes/API/Response.php';
 	}
 
 
@@ -39,6 +40,43 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/** @see API::send_item_updates() */
+	public function test_send_item_updates() {
+
+		require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+
+		$catalog_id   = '123456';
+		$requests     = [
+			[ '1234' => Sync::ACTION_UPDATE ],
+			[ '4567' => Sync::ACTION_DELETE ],
+			[ '8901' => Sync::ACTION_UPDATE ],
+		];
+		$allow_upsert = true;
+
+		$expected_request_data = [
+			'allow_upsert' => $allow_upsert,
+			'requests'     => $requests
+		];
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->send_item_updates( $catalog_id, $requests, $allow_upsert );
+
+		$this->assertInstanceOf( API\Catalog\Send_Item_Updates\Request::class, $api->get_request() );
+		$this->assertEquals( $requests, $api->get_request()->get_requests() );
+		$this->assertEquals( $allow_upsert, $api->get_request()->get_allow_upsert() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$catalog_id}/batch", $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+		$this->assertEquals( $expected_request_data, $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Catalog\Send_Item_Updates\Response::class, $api->get_response() );
+	}
 
 
 	/** @see API::create_product_group() */
