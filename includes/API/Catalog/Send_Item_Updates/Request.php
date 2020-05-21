@@ -69,6 +69,19 @@ class Request extends API\Request  {
 
 
 	/**
+	 * Gets the array of item update requests.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_requests() {
+
+		return $this->requests;
+	}
+
+
+	/**
 	 * Sets whether updates for products that are not currently in the catalog should create new items.
 	 *
 	 * @since 2.0.0-dev.1
@@ -78,6 +91,19 @@ class Request extends API\Request  {
 	public function set_allow_upsert( $allow_upsert ) {
 
 		$this->allow_upsert = (bool) $allow_upsert;
+	}
+
+
+	/**
+	 * Gets whether updates for products that are not currently in the catalog should create new items.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public function get_allow_upsert() {
+
+		return $this->allow_upsert;
 	}
 
 
