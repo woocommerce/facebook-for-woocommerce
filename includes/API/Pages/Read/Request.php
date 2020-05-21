@@ -23,6 +23,19 @@ class Request extends API\Request  {
 
 
 	/**
+	 * API request constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $page_id page ID
+	 */
+	public function __construct( $page_id ) {
+
+		parent::__construct( $page_id, 'GET' );
+	}
+
+
+	/**
 	 * Gets the request parameters.
 	 *
 	 * @since 2.0.0-dev.1

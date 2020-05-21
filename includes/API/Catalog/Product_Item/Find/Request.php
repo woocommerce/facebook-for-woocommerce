@@ -45,9 +45,7 @@ class Request extends API\Request {
 	 */
 	public function __construct( $catalog_id, $retailer_id ) {
 
-		parent::__construct( null, null, 'GET' );
-
-		$this->path = "catalog:{$catalog_id}:" . base64_encode( $retailer_id );
+		parent::__construct( "catalog:{$catalog_id}:" . base64_encode( $retailer_id ), 'GET' );
 	}
 
 
