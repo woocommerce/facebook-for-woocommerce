@@ -31,13 +31,13 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	 */
 	public function get_group_id() {
 
-		$product_group = '';
+		$product_group_id = '';
 
 		if ( isset( $this->response_data->product_group->id ) ) {
-			$product_group = $this->response_data->product_group->id;
+			$product_group_id = $this->response_data->product_group->id;
 		}
 
-		return $product_group;
+		return $product_group_id;
 	}
 
 
