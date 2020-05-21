@@ -99,6 +99,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/API/Response.php';
+				require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
