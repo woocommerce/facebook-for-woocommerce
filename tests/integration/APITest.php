@@ -59,6 +59,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->expectExceptionCode( $code );
 		$this->expectExceptionMessageRegExp( '/' . preg_quote( $message, '/' ) . '/' );
 
+		// mock the response for the HTTP request
 		$args = [
 			'request_path'     => '1234/product_groups',
 			'response_body'    => [
