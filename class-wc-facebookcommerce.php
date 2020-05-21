@@ -37,6 +37,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
 
+		/** @var SkyVerge\WooCommerce\Facebook\API instance */
+		private $api;
+
 		/** @var \WC_Facebookcommerce_Integration instance */
 		private $integration;
 
