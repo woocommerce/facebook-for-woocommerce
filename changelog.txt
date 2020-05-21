@@ -1,6 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 1.11.3-dev.1
+ * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
  * Tweak - Hide Facebook options for virtual products and virtual variations
  * Tweak - Do not allow merchant to bulk enable sync for virtual products
  * Tweak - On upgrade, automatically disable sync for virtual products and virtual variations
