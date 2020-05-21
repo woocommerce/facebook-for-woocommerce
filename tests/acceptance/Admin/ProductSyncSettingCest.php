@@ -240,6 +240,7 @@ class ProductSyncSettingCest {
 	 * Test that the tab is hidden for virtual products.
 	 *
 	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
 	 */
 	public function try_tab_hidden_virtual_products( AcceptanceTester $I ) {
 
@@ -256,7 +257,7 @@ class ProductSyncSettingCest {
 
 		$I->click( '#_virtual' );
 
-		$I->see( 'Facebook', '.fb_commerce_tab_options' );
+		$I->waitForElementVisible( '.fb_commerce_tab_options' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
