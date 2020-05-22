@@ -4405,7 +4405,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new WC_Facebook_Product( $wp_id );
 		}
 
-		$products    = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
+		$products = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
+
+		// if the product with ID equal to $wp_id is variable, $woo_product will be the first child
 		$woo_product = new WC_Facebook_Product( current( $products ) );
 
 		// This is a generalized function used elsewhere
