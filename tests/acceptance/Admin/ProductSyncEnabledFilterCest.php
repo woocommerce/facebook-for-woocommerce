@@ -82,8 +82,8 @@ class ProductSyncEnabledFilterCest {
 
 		$I->wantTo( 'Test that the column displays both sync enabled and sync disabled products' );
 
-		$this->seeColumnHasValue( $I, 'Enabled' );
-		$this->seeColumnHasValue( $I, 'Disabled' );
+		$this->seeColumnHasValue( $I, 'Sync and show' );
+		$this->seeColumnHasValue( $I, 'Do not sync' );
 	}
 
 
@@ -100,7 +100,7 @@ class ProductSyncEnabledFilterCest {
 
 		$this->selectFilterOption( $I, 'Facebook sync enabled' );
 
-		$this->seeColumnHasValue( $I, 'Enabled' );
+		$this->seeColumnHasValue( $I, 'Sync and show' );
 		$this->seeColumnDoesNotHaveValue( $I, 'Disabled' );
 	}
 
@@ -118,8 +118,8 @@ class ProductSyncEnabledFilterCest {
 
 		$this->selectFilterOption( $I, 'Facebook sync disabled' );
 
-		$this->seeColumnHasValue( $I, 'Disabled' );
-		$this->seeColumnDoesNotHaveValue( $I, 'Enabled' );
+		$this->seeColumnHasValue( $I, 'Do not sync' );
+		$this->seeColumnDoesNotHaveValue( $I, 'Sync and show' );
 
 		$this->seeProductRow( $I, $this->product_in_excluded_category->get_id() );
 		$this->seeProductRow( $I, $this->product_in_excluded_tag->get_id() );

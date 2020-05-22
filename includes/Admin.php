@@ -174,8 +174,7 @@ class Admin {
 	 */
 	public function add_product_list_table_columns( $columns ) {
 
-		$columns['facebook_sync_enabled']       = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
-		// $columns['facebook_catalog_visibility'] = __( 'FB Catalog Visibility', 'facebook-for-woocommerce' );
+		$columns['facebook_sync'] = __( 'Facebook sync', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
@@ -193,75 +192,24 @@ class Admin {
 	public function add_product_list_table_columns_content( $column ) {
 		global $post;
 
-		if ( 'facebook_sync_enabled' === $column ) :
+		if ( 'facebook_sync' !== $column ) {
+			return;
+		}
 
-			$product = wc_get_product( $post );
+		$product = wc_get_product( $post );
 
-			if ( $product && Products::product_should_be_synced( $product ) ) :
-				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
-			else :
-				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
-			endif;
+		if ( $product && Products::product_should_be_synced( $product ) ) {
 
-		elseif ( 'facebook_catalog_visibility' === $column ) :
+			if ( Products::is_product_visible( $product ) ) {
+				esc_html_e( 'Sync and show', 'facebook-for-woocommerce' );
+			} else {
+				esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' );
+			}
 
-			$integration         = facebook_for_woocommerce()->get_integration();
-			$product             = wc_get_product( $post );
-			$fb_product          = new \WC_Facebook_Product( $post );
-			$fb_product_group_id = $integration && $product && $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product );
+		} else {
 
-			if ( ! $fb_product_group_id ) :
-
-				?>
-				<span
-					class="facebook-for-woocommerce-product-visibility-toggle"
-					style="cursor:default;"
-					title="<?php
-					/* translators: Points to a product that was never synced with Facebook */
-					esc_attr_e( 'Never synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
-				>&ndash;</span>
-				<?php
-
-			else :
-
-				$is_sync_enabled = Products::product_should_be_synced( $product );
-				$is_visible      = Products::is_product_visible( $product );
-				$is_hidden       = ! $is_visible;
-
-				if ( $is_sync_enabled ) {
-					/* translators: Action to hide a product (currently synced with Facebook) from the Facebook catalog */
-					$visible_tooltip_text = __( 'Hide from Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
-					/* translators: Action to publish a product (currently synced with Facebook) in the Facebook catalog */
-					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
-				} else {
-					/* translators: Action to hide a product (currently not synced with Facebook) from the Facebook catalog */
-					$visible_tooltip_text = __( 'Hide from Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
-					/* translators: Action to publish a product (currently not synced with Facebook) in the Facebook catalog */
-					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
-				}
-
-				?>
-				<button
-					id="facebook-for-woocommerce-product-visibility-show-<?php echo esc_attr( $post->ID ); ?>"
-					class="button button-primary button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-show"
-					style="<?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
-					data-action="show"
-					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $hidden_tooltip_text ); ?>"
-				><?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?></button>
-				<button
-					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
-					class="button button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
-					style="<?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
-					data-action="hide"
-					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $visible_tooltip_text ); ?>"
-				><?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?></button>
-				<?php
-
-			endif;
-
-		endif;
+			esc_html_e( 'Do not sync', 'facebook-for-woocommerce' );
+		}
 	}
 
 
