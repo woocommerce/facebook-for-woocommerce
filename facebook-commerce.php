@@ -1068,24 +1068,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_variable_product_publish( $wp_id, $woo_product = null ) {
 
-		if ( ! $this->is_product_sync_enabled() ) {
+		if ( ! $woo_product instanceof \WC_Facebook_Product ) {
+			$woo_product = new \WC_Facebook_Product( $wp_id );
+		}
+
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( get_post_status( $wp_id ) != 'publish' ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
 		// Check if product group has been published to FB.  If not, it's new.
 		// If yes, loop through variants and see if product items are published.
-		if ( ! $woo_product ) {
-			$woo_product = new WC_Facebook_Product( $wp_id );
-		}
-
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
-			return;
-		}
-
 		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $wp_id, $woo_product );
 
 		if ( $fb_product_group_id ) {
