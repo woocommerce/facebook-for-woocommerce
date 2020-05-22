@@ -324,11 +324,13 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $requests
+	 * @param array $requests sync requests
 	 */
 	public function send_item_updates( array $requests ) {
+
 		$catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
-		facebook_for_woocommerce()->get_api()->send_item_updates($catalog_id, $requests, true );
+
+		facebook_for_woocommerce()->get_api()->send_item_updates( $catalog_id, $requests, true );
 	}
 
 
