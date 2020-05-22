@@ -165,9 +165,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// TODO: should we remove the Esternal Merchant Settings ID value from the database when we complete a connection using FBE 2.0? {WV 2020-05-14}
-			//  if the site has the old FBE 1.0 external settings ID option stored, inform users that they need to connect to FBE 2.0
-			if ( ! $this->connection_handler->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
+			// inform users that they need to connect to FBE 2.0 if they've upgraded from FBE 1.x
+			if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && ! $this->get_connection_handler()->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
 
 				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
 
