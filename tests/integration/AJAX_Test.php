@@ -39,7 +39,9 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/AJAX.php';
+		if ( ! class_exists( AJAX::class ) ) {
+			require_once 'includes/AJAX.php';
+		}
 
 		$this->integration = facebook_for_woocommerce()->get_integration();
 

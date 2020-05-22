@@ -18,8 +18,13 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API/Response.php';
-		require_once 'includes/API/Pages/Read/Response.php';
+		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\API\Response::class ) ) {
+			require_once 'includes/API/Response.php';
+		}
+
+		if ( ! class_exists( Response::class ) ) {
+			require_once 'includes/API/Pages/Read/Response.php';
+		}
 	}
 
 

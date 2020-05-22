@@ -16,6 +16,16 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
+	public function _before() {
+
+		parent::_before();
+
+		if ( ! class_exists( API::class ) ) {
+			require_once 'includes/API.php';
+		}
+	}
+
+
 	/** Test methods **************************************************************************************************/
 
 
