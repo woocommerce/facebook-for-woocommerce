@@ -20,8 +20,6 @@
 
 defined( 'ABSPATH' ) or exit;
 
-require_once plugin_dir_path(__FILE__).'vendor/autoload.php';
-
 /**
  * The plugin loader class.
  *
@@ -109,6 +107,8 @@ class WC_Facebook_Loader {
 
 		$this->load_framework();
 
+		$this->register_autoloader_for_facebook_business_sdk();
+
 		require_once( plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php' );
 
 		// fire it up!
@@ -128,6 +128,15 @@ class WC_Facebook_Loader {
 		if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginFramework\\' . $this->get_framework_version_namespace() . '\\SV_WC_Plugin' ) ) {
 			require_once( plugin_dir_path( __FILE__ ) . 'vendor/skyverge/wc-plugin-framework/woocommerce/class-sv-wc-plugin.php' );
 		}
+	}
+
+	/**
+	 * Register an autoloader for the business sdk classes.
+	 *
+	 */
+	private function register_autoloader_for_facebook_business_sdk() {
+		require_once( plugin_dir_path( __FILE__ ) ."facebook-custom-autoloader.php");
+		spl_autoload_register( [ new WC_Facebookcommerce_CustomAutoloader( 'FacebookAds', plugin_dir_path( __FILE__ ).'vendor/facebook/php-business-sdk/src/FacebookAds/' ), 'load' ] );
 	}
 
 
