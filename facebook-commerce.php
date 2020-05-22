@@ -853,7 +853,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		}
 
-		if ( $sync_enabled && $this->is_configured() && $this->get_product_catalog_id() ) {
+		if ( $sync_enabled ) {
 
 			switch ( $product->get_type() ) {
 
