@@ -687,13 +687,13 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 *
 	 * @dataProvider provider_get_page_url
 	 */
-	public function test_get_page_url( $page, $page_name ) {
+	public function test_get_page_url( $page, $page_url ) {
 
 		$property = new ReflectionProperty( \WC_Facebookcommerce_Integration::class, 'page' );
 		$property->setAccessible( true );
 		$property->setValue( $this->integration, $page );
 
-		$this->assertEquals( $page_name, $this->integration->get_page_url() );
+		$this->assertEquals( $page_url, $this->integration->get_page_url() );
 	}
 
 
