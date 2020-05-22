@@ -649,15 +649,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 
 			?>
-				<?php /* ?>
-				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
-				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
-				type="checkbox"
-				value="1"
-				<?php echo checked( ! $woo_product->woo_product instanceof \WC_Product || Products::is_product_visible( $woo_product->woo_product ) ); ?>/>
 
-				<p/>
-				<?php */ ?>
 				<input name="is_product_page" type="hidden" value="1"/>
 
 				<p/>

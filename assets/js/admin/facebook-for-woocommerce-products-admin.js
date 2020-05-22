@@ -16,45 +16,6 @@ jQuery( document ).ready( function( $ ) {
 	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
-
-		let visibilityToggles = $( '.facebook-for-woocommerce-product-visibility-toggle' );
-
-		// init visibility toggles tooltips
-		visibilityToggles.tipTip( {
-			attribute:  'title',
-			edgeOffset: 5,
-			fadeIn:     50,
-			fadeOut:    50,
-			delay:      200
-		} );
-
-		// handle FB Catalog Visibility buttons
-		visibilityToggles.on( 'click', function( e ) {
-			e.preventDefault();
-
-			let action     = $( this ).data( 'action' ),
-			    visibility = 'show' === action ? 'yes' : 'no',
-			    productID  = parseInt( $( this ).data( 'product-id' ), 10 );
-
-			if ( 'show' === action ) {
-				$( this ).hide().next( 'button' ).show();
-			} else if ( 'hide' === action ) {
-				$( this ).hide().prev( 'button' ).show();
-			}
-
-			$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-				action:   'facebook_for_woocommerce_set_products_visibility',
-				security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-				products: [
-					{
-						product_id: productID,
-						visibility: visibility
-					}
-				]
-			} );
-		} );
-
-
 		// handle bulk actions
 		let submitProductBulkAction = false;
 
