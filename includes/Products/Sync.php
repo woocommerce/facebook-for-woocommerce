@@ -99,9 +99,12 @@ class Sync {
 
 		if ( ! empty( $this->requests ) ) {
 
-			return facebook_for_woocommerce()->get_products_sync_background_handler()->create_job( [
-				'requests' => $this->requests
-			] );
+			$job_handler = facebook_for_woocommerce()->get_products_sync_background_handler();
+			$job         = $job_handler->create_job( [ 'requests' => $this->requests ] );
+
+			$job_handler->dispatch();
+
+			return $job;
 		}
 	}
 
