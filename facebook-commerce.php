@@ -4072,6 +4072,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			} catch ( Framework\SV_WC_API_Exception $e ) {
 
+				// we intentionally set $this->page to an empty array if an error occurs to avoid additional API requests
+				// it's unlikely that we will get a different result if the exception was caused by an expired token, incorrect page ID, or rate limiting error
 				$this->page = [];
 
 				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
