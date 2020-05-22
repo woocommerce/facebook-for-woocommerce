@@ -54,13 +54,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Background::process_items() */
 	public function test_process_items() {
 
-		$requests = [
-			Sync::PRODUCT_INDEX_PREFIX . '1' => Sync::ACTION_UPDATE,
-			Sync::PRODUCT_INDEX_PREFIX . '2' => Sync::ACTION_UPDATE,
-			Sync::PRODUCT_INDEX_PREFIX . '3' => Sync::ACTION_DELETE,
-		];
-
-		$job = $this->get_test_job( [ 'requests' => $requests ] );
+		$job = $this->get_test_job();
 
 		$background = $this->make( Background::class, [
 			'start_time'   => time(),
@@ -78,7 +72,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 			'send_item_updates' => \Codeception\Stub\Expected::once(),
 		] );
 
-		$background->process_items( $job, $requests );
+		$background->process_items( $job, $job->requests );
 	}
 
 
@@ -401,7 +395,11 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$defaults = [
 			'id'       => uniqid(),
 			'status'   => 'queued',
-			'requests' => [],
+			'requests' => [
+				Sync::PRODUCT_INDEX_PREFIX . '1' => Sync::ACTION_UPDATE,
+				Sync::PRODUCT_INDEX_PREFIX . '2' => Sync::ACTION_UPDATE,
+				Sync::PRODUCT_INDEX_PREFIX . '3' => Sync::ACTION_DELETE,
+			],
 			'progress' => 0,
 		];
 
