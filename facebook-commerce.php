@@ -4106,13 +4106,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_url() {
 
-		if ( $this->is_configured() ) {
-			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id() );
-		} else {
-			$page_url = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_url ) ? $page_url : '';
+		return isset( $page['url'] ) ? $page['url'] : '';
 	}
 
 
