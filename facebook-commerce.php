@@ -123,6 +123,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var bool|null whether the feed has been migrated from FBE 1 to FBE 1.5 */
 	private $feed_migrated;
 
+	/** @var array the page name and url */
+	private $page;
+
 
 	/** Legacy properties *********************************************************************************************/
 
@@ -4048,19 +4051,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the array that holds the name and url of the configured Facebook page.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_page() {
+
+		if ( ! is_array( $this->page ) && $this->is_configured() ) {
+
+			try {
+
+				$response = facebook_for_woocommerce()->get_api()->get_page( $this->get_facebook_page_id() );
+
+				$this->page = [
+					'name' => $response->get_name(),
+					'url'  => $response->get_url(),
+				];
+
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+
+				// we intentionally set $this->page to an empty array if an error occurs to avoid additional API requests
+				// it's unlikely that we will get a different result if the exception was caused by an expired token, incorrect page ID, or rate limiting error
+				$this->page = [];
+
+				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
+
+				facebook_for_woocommerce()->log( $message );
+			}
+		}
+
+		return is_array( $this->page ) ? $this->page : [];
+	}
+
+
+	/**
 	 * Gets the name of the configured Facebook page.
 	 *
 	 * @return string
 	 */
 	public function get_page_name() {
 
-		if ( $this->is_configured() ) {
-			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id() );
-		} else {
-			$page_name = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_name ) ? $page_name : '';
+		return isset( $page['name'] ) ? $page['name'] : '';
 	}
 
 
@@ -4073,13 +4108,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_url() {
 
-		if ( $this->is_configured() ) {
-			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id() );
-		} else {
-			$page_url = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_url ) ? $page_url : '';
+		return isset( $page['url'] ) ? $page['url'] : '';
 	}
 
 
@@ -4231,51 +4262,70 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $to_delete;
 	}
 
+
 	/**
 	 * Helper function to update FB visibility.
+	 *
+	 * @param int $product_id product ID
+	 * @param string $visibility visibility
 	 */
-	function update_fb_visibility( $wp_id, $visibility ) {
+	function update_fb_visibility( $product_id, $visibility ) {
 
 		// bail if the plugin is not configured properly
 		if ( ! $this->is_configured() || ! $this->get_product_catalog_id() ) {
 			return;
 		}
 
-		$woo_product = new WC_Facebook_Product( $wp_id );
+		$product = wc_get_product( $product_id );
 
-		if ( ! $woo_product->exists() ) {
-			// This function can be called for non-woo products.
+		// bail if product isn't found
+		if ( ! $product instanceof \WC_Product ) {
 			return;
 		}
 
-		$products = WC_Facebookcommerce_Utils::get_product_array( $woo_product );
-		foreach ( $products as $item_id ) {
-			$fb_product_item_id = $this->get_product_fbid(
-				self::FB_PRODUCT_ITEM_ID,
-				$item_id
-			);
+		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
+
+		if ( ! $product->is_type( 'variable' ) ) {
+
+			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 
 			if ( ! $fb_product_item_id ) {
-				WC_Facebookcommerce_Utils::fblog(
-					$fb_product_item_id . " doesn't exist but underwent a visibility transform.",
-					array(),
-					true
-				);
-				  continue;
+				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
+				 return;
 			}
-			$result = $this->check_api_result(
-				$this->fbgraph->update_product_item(
-					$fb_product_item_id,
-					array( 'visibility' => $visibility )
-				)
-			);
-			if ( $result ) {
 
-				$is_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
+			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
 
-				update_post_meta( $item_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, wc_bool_to_string( $is_visible ) );
+			if ( $this->check_api_result( $set_visibility ) ) {
+				Products::set_product_visibility( $product, $should_set_visible );
 			}
+
+		} else {
+
+			// parent product
+			Products::set_product_visibility( $product, $should_set_visible );
+
+			// we should not add the parent product ID to the array of product IDs to be
+			// updated because product groups, which are used to represent the parent product
+			// for variable products, don't have the visibility property on Facebook
+			$product_ids = [];
+
+			// set visibility for all children
+			foreach ( $product->get_children() as $index => $id ) {
+
+				$product = wc_get_product( $id );
+
+				if ( ! $product instanceof \WC_Product ) {
+				    continue;
+				}
+
+				Products::set_product_visibility( $product, $should_set_visible );
+
+				$product_ids[] = $product->get_id();
+			}
+
+			// sync product with all variations
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
 		}
 	}
 

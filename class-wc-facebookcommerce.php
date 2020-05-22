@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -37,6 +38,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
+
+		/** @var SkyVerge\WooCommerce\Facebook\API instance */
+		private $api;
 
 		/** @var \WC_Facebookcommerce_Integration instance */
 		private $integration;
@@ -210,6 +214,57 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** Getter methods ********************************************************************************************/
+
+
+		/**
+		 * Gets the API instance.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\API
+		 * @throws Framework\SV_WC_API_Exception
+		 */
+		public function get_api() {
+
+			if ( ! is_object( $this->api ) ) {
+
+				if ( ! $this->get_connection_handler()->get_access_token() ) {
+					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
+				}
+
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
+				}
+
+				if ( ! class_exists( API\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Request.php';
+				}
+
+				if ( ! class_exists( API\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
+					require_once __DIR__ . '/includes/API/Exceptions/Request_Limit_Reached.php';
+				}
+
+				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
+			}
+
+			return $this->api;
+		}
 
 
 		/**
