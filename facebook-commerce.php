@@ -4051,6 +4051,40 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the array that holds the name and url of the configured Facebook page.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_page() {
+
+		if ( ! is_array( $this->page ) && $this->is_configured() ) {
+
+			try {
+
+				$response = facebook_for_woocommerce()->get_api()->get_page( $this->get_facebook_page_id() );
+
+				$this->page = [
+					'name' => $response->get_name(),
+					'url'  => $response->get_url(),
+				];
+
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+
+				$this->page = [];
+
+				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
+
+				facebook_for_woocommerce()->log( $message );
+			}
+		}
+
+		return is_array( $this->page ) ? $this->page : [];
+	}
+
+
+	/**
 	 * Gets the name of the configured Facebook page.
 	 *
 	 * @return string
