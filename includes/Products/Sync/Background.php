@@ -193,8 +193,14 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$product_data = $this->prepare_product_data( $product );
 		}
 
+		// extract the retailer_id
+		$retailer_id = $product_data['retailer_id'];
+
+		// retailer_id cannot be included in the data object
+		unset( $product_data['retailer_id'] );
+
 		$request = [
-			'retailer_id' => $product_data['retailer_id'],
+			'retailer_id' => $retailer_id,
 			'method'      => Sync::ACTION_UPDATE,
 			'data'        => $product_data,
 		];
