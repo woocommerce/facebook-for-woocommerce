@@ -62,7 +62,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 		$job = $this->get_test_job( [ 'requests' => $requests ] );
 
-		$background = Stub::make( Background::class, [
+		$background = $this->make( Background::class, [
 			'start_time'   => time(),
 			'process_item' => function( $item, $job ) {
 
@@ -75,6 +75,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 				// assert the second position is one of the accepted sync methods
 				$this->assertContains( $item[1], [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ] );
 			},
+			'send_item_updates' => \Codeception\Stub\Expected::once(),
 		] );
 
 		$background->process_items( $job, $requests );
