@@ -1196,11 +1196,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the product with the given ID should be synced.
 	 *
+	 * TODO: can we move this logic into Products::product_should_be_synced()? {WV 2020-05-22}
+	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param \WC_Product $product product object
+	 * @param \WC_Product|false $product product object
 	 */
-	private function product_should_be_synced( $product ) {
+	public function product_should_be_synced( $product ) {
 
 		$should_be_synced = true;
 
