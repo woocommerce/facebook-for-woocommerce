@@ -750,12 +750,14 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->assertFalse( $this->integration->is_advanced_matching_enabled() );
 	}
 
+
 	/** @see \WC_Facebookcommerce_Integration::is_use_s2s_enabled() */
 	public function test_is_use_s2s_enabled() {
 		//For now we are testing that the class returns the default value
 		$this->assertFalse( $this->integration->is_use_s2s_enabled() );
 
 	}
+
 
 	/** @see \WC_Facebookcommerce_Integration::get_access_token() */
 	public function test_get_access_token() {

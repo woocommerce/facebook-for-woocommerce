@@ -168,6 +168,13 @@ jQuery( document ).ready( function( $ ) {
 			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
+		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
+
+			$( '.js-variable-fb-sync-toggle' ).each( function () {
+				toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+			} );
+		} );
+
 		// show/hide Custom Image URL setting
 		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
 

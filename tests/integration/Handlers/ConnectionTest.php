@@ -15,10 +15,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	public function _before() {
 
 		parent::_before();
-
-		if ( ! class_exists( Connection::class ) ) {
-			require_once 'includes/Handlers/Connection.php';
-		}
 	}
 
 

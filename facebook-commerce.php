@@ -383,7 +383,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action( 'before_delete_post', [ $this, 'on_product_delete' ] );
 
-				  add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
+				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
 
 				add_action(
 					'transition_post_status',
@@ -839,7 +839,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$sync_enabled = ! empty( $_POST['fb_sync_enabled'] );
+		$sync_enabled = ! $product->is_virtual() && ! empty( $_POST['fb_sync_enabled'] );
 		$is_visible   = ! empty( $_POST[ Products::VISIBILITY_META_KEY ] );
 
 		if ( ! $product->is_type( 'variable' ) ) {

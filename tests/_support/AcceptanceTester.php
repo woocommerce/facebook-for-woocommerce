@@ -204,8 +204,8 @@ class AcceptanceTester extends \Codeception\Actor {
 		// matches elements that contain a hidden input field with value equal to the ID of the variation
 		$variation_container_xpath .= "[descendant::{$variation_id_xpath}]";
 
-		$this->waitForElementVisible( $variation_container_xpath, 5 );
-		$this->waitForElementNotVisible( '.blockOverlay', 5 );
+		$this->waitForElementVisible( $variation_container_xpath, 15 );
+		$this->waitForElementNotVisible( '.blockOverlay', 15 );
 		$this->scrollTo( $variation_container_xpath, 0, -200 );
 
 		$this->click( $variation_container_xpath );
