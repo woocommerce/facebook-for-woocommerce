@@ -235,6 +235,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Response.php';
 				}
 
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				}
+
 				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
 			}
 

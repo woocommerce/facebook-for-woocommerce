@@ -59,7 +59,11 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function get_page( $page_id ) {
 
-		// TODO: Implement get_page() method.
+		$request = new API\Pages\Read\Request( $page_id );
+
+		$this->set_response_handler( API\Pages\Read\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
