@@ -165,13 +165,13 @@ jQuery( document ).ready( function( $ ) {
 
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
-			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
 
 			$( '.js-variable-fb-sync-toggle' ).each( function () {
-				toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
 			} );
 		} );
 
@@ -209,8 +209,8 @@ jQuery( document ).ready( function( $ ) {
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
 				syncEnabled      = $( 'input#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
+				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).val() !== 'sync_disabled';
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );

@@ -896,19 +896,32 @@ class Admin {
 			return;
 		}
 
-		$sync_enabled = $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$sync_enabled = 'no' !== $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$is_visible = ( $visibility = $this->get_product_variation_meta( $variation, Products::VISIBILITY_META_KEY, $parent ) ) ? wc_string_to_bool( $visibility ) : true;
+
 		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
 		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
 		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
 		$image_source = $variation->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY );
 
-		woocommerce_wp_checkbox( [
-			'id'            => "variable_fb_sync_enabled$index",
-			'name'          => "variable_fb_sync_enabled[$index]",
-			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
+		if ( $sync_enabled ) {
+			$sync_mode = $is_visible ? self::SYNC_MODE_SYNC_AND_SHOW : self::SYNC_MODE_SYNC_AND_HIDE;
+		} else {
+			$sync_mode = self::SYNC_MODE_SYNC_DISABLED;
+		}
+
+		woocommerce_wp_select( [
+			'id'            => "variable_facebook_sync_mode$index",
+			'name'          => "variable_facebook_sync_mode[$index]",
+			'label'         => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+			'options' => [
+				self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
+				self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
+				self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
+			],
+			'value'         => $sync_mode,
 			'class'         => 'checkbox js-variable-fb-sync-toggle',
-			'wrapper_class' => 'fb-sync-enabled-field hide_if_variation_virtual',
+			'wrapper_class' => 'hide_if_variation_virtual',
 		] );
 
 		woocommerce_wp_textarea_input( [
@@ -1008,10 +1021,14 @@ class Admin {
 			return;
 		}
 
+		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? $_POST['variable_facebook_sync_mode'][ $index ] : self::SYNC_MODE_SYNC_DISABLED;
+		$sync_enabled = self::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( ! $variation->is_virtual() && isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
+		if ( $sync_enabled && ! $variation->is_virtual() ) {
 
 			Products::enable_sync_for_products( [ $variation ] );
+			Products::set_product_visibility( $variation, self::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
 
 			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
 			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
