@@ -123,6 +123,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var bool|null whether the feed has been migrated from FBE 1 to FBE 1.5 */
 	private $feed_migrated;
 
+	/** @var array the page name and url */
+	private $page;
+
 
 	/** Legacy properties *********************************************************************************************/
 
