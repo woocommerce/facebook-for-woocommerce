@@ -63,7 +63,7 @@ class Sync {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $product_ids
+	 * @param int[] $product_ids
 	 */
 	public function create_or_update_products( array $product_ids ) {
 

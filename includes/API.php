@@ -12,19 +12,83 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\API\Request;
+use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
-
 
 /**
  * API handler.
  *
  * @since 2.0.0-dev.1
+ *
+ * @method Response perform_request( $request )
  */
 class API extends Framework\SV_WC_API_Base {
 
 
+	/** @var string URI used for the request */
+	protected $request_uri = 'https://graph.facebook.com/v7.0';
+
 	/** @var string the configured access token */
 	protected $access_token;
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function __construct( $access_token ) {
+
+		$this->access_token = $access_token;
+
+		$this->request_headers = [
+			'Authorization' => "Bearer {$access_token}",
+		];
+	}
+
+
+	/**
+	 * Validates a response after it has been parsed and instantiated.
+	 *
+	 * Throws an exception if a rate limit or general API error is included in the response.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	protected function do_post_parse_response_validation() {
+
+		/** @var API\Response $response */
+		$response = $this->get_response();
+
+		if ( $response && $response->has_api_error() ) {
+
+			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
+
+			/**
+			 * Graph API
+			 *
+			 * 4 - API Too Many Calls
+			 * 17 - API User Too Many Calls
+			 * 32 - Page-level throttling
+			 * 613 - Custom-level throttling
+			 *
+			 * Marketing API (Catalog Batch API)
+			 *
+			 * 80004 - There have been too many calls to this ad-account
+			 *
+			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
+			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
+			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
+			 */
+			if ( in_array( $response->get_api_error_code(), [ 4, 17, 32, 613, 80004 ], true ) ) {
+				throw new API\Exceptions\Request_Limit_Reached( $message, $response->get_api_error_code() );
+			}
+
+			throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
+		}
+	}
 
 
 	/**
@@ -33,11 +97,16 @@ class API extends Framework\SV_WC_API_Base {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param $page_id page ID
-	 * @return
+	 * @return API\Pages\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function get_page( $page_id ) {
 
-		// TODO: Implement get_page() method.
+		$request = new API\Pages\Read\Request( $page_id );
+
+		$this->set_response_handler( API\Pages\Read\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -48,12 +117,22 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
+	 * @param string $catalog_id catalog ID
 	 * @param array $requests array of prefixed product IDs to create, update or remove
-	 * @param bool $allow_upsert
+	 * @param bool $allow_upsert whether to allow updates to insert new items
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function send_item_updates( $requests, $allow_upsert ) {
+	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
 
-		// TODO: Implement send_item_updates() method.
+		$request = new \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Request( $catalog_id );
+
+		$request->set_requests( $requests );
+		$request->set_allow_upsert( $allow_upsert );
+
+		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -62,12 +141,23 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $catalog_id
-	 * @param array $data
+	 * @param string $catalog_id catalog ID
+	 * @param array $data product group data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function create_product_group( $catalog_id, $data ) {
 
-		// TODO: Implement create_product_group() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$catalog_id}/product_groups",
+			'method' => 'POST',
+		] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -78,10 +168,21 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $product_group_id
 	 * @param array $data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function update_product_group( $product_group_id, $data ) {
 
-		// TODO: Implement update_product_group() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}",
+			'method' => 'POST',
+		] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -91,10 +192,19 @@ class API extends Framework\SV_WC_API_Base {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param string $product_group_id
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function delete_product_group( $product_group_id ) {
 
-		// TODO: Implement delete_product_group() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}",
+			'method' => 'DELETE',
+		] );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -103,12 +213,18 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $catalog_id
-	 * @param string $retailer_id
+	 * @param string $catalog_id catalog ID
+	 * @param string $retailer_id retailer ID of the product
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function find_product_item( $catalog_id, $retailer_id ) {
 
-		// TODO: Implement find_product_item() method.
+		$request = new \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request( $catalog_id, $retailer_id );
+
+		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -117,12 +233,23 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id parent product ID
+	 * @param array $data product data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function create_product_item( $product_group_id, $data ) {
 
-		// TODO: Implement create_product_item() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}/products",
+			'method' => 'POST',
+		] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -131,12 +258,23 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_item_id product item ID
+	 * @param array $data product data
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function update_product_item( $product_group_id, $data ) {
+	public function update_product_item( $product_item_id, $data ) {
 
-		// TODO: Implement update_product_item() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_item_id}",
+			'method' => 'POST',
+		] );
+
+		$request->set_data( $data );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -145,11 +283,20 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
+	 * @param string $product_item_id product item ID
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function delete_product_item( $product_group_id ) {
+	public function delete_product_item( $product_item_id ) {
 
-		// TODO: Implement delete_product_item() method.
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_item_id}",
+			'method' => 'DELETE',
+		] );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -200,12 +347,24 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $args optional request arguments
-	 * @return \SkyVerge\WooCommerce\Facebook\API\Request
+	 * @param array $args {
+	 *     Optional. An array of request arguments.
+	 *
+	 *     @type string $path request path
+	 *     @type string $method request method
+	 * }
+	 * @return Request
 	 */
 	protected function get_new_request( $args = [] ) {
 
-		// TODO: Implement get_new_request() method.
+		$defaults = [
+			'path'   => '/',
+			'method' => 'GET',
+		];
+
+		$args = wp_parse_args( $args, $defaults );
+
+		return new Request( $args['path'], $args['method'] );
 	}
 
 

@@ -41,7 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 2.0.0-dev.1 =
  * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
- * Fix - Use the plugin version instead of of a timestamp as the version number for enqueued scripts and stylesheets
+ * Fix - Use the plugin version instead of a timestamp as the version number for enqueued scripts and stylesheets
 
 = 2020.05.20 - version 1.11.3 =
  * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
