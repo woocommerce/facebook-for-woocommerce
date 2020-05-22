@@ -2,6 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\Admin;
 
 class ProductSyncSettingCest {
 
@@ -71,7 +72,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook sync', '.form-field' );
 		$I->see( 'Facebook Description', '.form-field' );
 		$I->see( 'Facebook Product Image', '.form-field' );
 		$I->see( 'Facebook Price', '.form-field' );
@@ -91,7 +92,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->seeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 	}
 
 
@@ -108,7 +109,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
 	}
 
 
@@ -127,12 +128,12 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
-		$I->checkOption( '#fb_sync_enabled' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 		$I->click( 'Update' );
 		$I->waitForText( 'Product updated' );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->seeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 	}
 
 
@@ -151,12 +152,12 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
-		$I->uncheckOption( '#fb_sync_enabled' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 		$I->click( 'Update' );
 		$I->waitForText( 'Product updated' );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
 	}
 
 
@@ -256,7 +257,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook sync', '.form-field' );
 		$I->see( 'Facebook Description', '.form-field' );
 		$I->see( 'Facebook Product Image', '.form-field' );
 		$I->see( 'Facebook Price', '.form-field' );
@@ -290,8 +291,8 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->see( 'Facebook sync', '.form-field' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
 	}
 
 

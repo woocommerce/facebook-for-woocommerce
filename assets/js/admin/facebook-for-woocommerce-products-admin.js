@@ -154,14 +154,14 @@ jQuery( document ).ready( function( $ ) {
 
 
 		// toggle Facebook settings fields for simple products
-		const syncEnabledCheckbox   = $( '#fb_sync_enabled' );
-		const facebookSettingsPanel = syncEnabledCheckbox.closest( '.woocommerce_options_panel' );
+		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
+		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
 
-		syncEnabledCheckbox.on( 'click', function() {
-			toggleFacebookSettings( $( this ).prop( 'checked' ), facebookSettingsPanel );
+		syncModeSelect.on( 'change', function() {
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
 		} );
 
-		toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ), facebookSettingsPanel );
+		toggleFacebookSettings( syncModeSelect.val() !== 'sync_disabled', facebookSettingsPanel );
 
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
@@ -209,8 +209,8 @@ jQuery( document ).ready( function( $ ) {
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' ),
 				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
+				syncEnabled      = $( 'input#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );

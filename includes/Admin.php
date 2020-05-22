@@ -787,10 +787,18 @@ class Admin {
 
 		// all products have sync enabled unless explicitly disabled
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
+		$is_visible = ( $visibility = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true ) ) ? wc_string_to_bool( $visibility ) : true;
+
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
 		$image_source = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+
+		if ( $sync_enabled ) {
+			$sync_mode = $is_visible ? self::SYNC_MODE_SYNC_AND_SHOW : self::SYNC_MODE_SYNC_AND_HIDE;
+		} else {
+			$sync_mode = self::SYNC_MODE_SYNC_DISABLED;
+		}
 
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
@@ -798,10 +806,15 @@ class Admin {
 			<div class='options_group'>
 				<?php
 
-				woocommerce_wp_checkbox( [
-					'id'          => 'fb_sync_enabled',
-					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-					'value'       => wc_bool_to_string( (bool) $sync_enabled ),
+				woocommerce_wp_select( [
+					'id' => 'wc_facebook_sync_mode',
+					'label' => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+					'options' => [
+						self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
+						self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
+						self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
+					],
+					'value'   => $sync_mode,
 				] );
 
 				woocommerce_wp_textarea_input( [

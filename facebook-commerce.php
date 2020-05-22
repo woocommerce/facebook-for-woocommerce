@@ -835,15 +835,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$sync_enabled = ! $product->is_virtual() && ! empty( $_POST['fb_sync_enabled'] );
-		$is_visible   = ! empty( $_POST[ Products::VISIBILITY_META_KEY ] );
+		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED;
+		$sync_enabled = \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
 			if ( $sync_enabled ) {
 
 				Products::enable_sync_for_products( [ $product ] );
+				Products::set_product_visibility( $product, \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
 
 				$this->save_product_settings( $product );
 
