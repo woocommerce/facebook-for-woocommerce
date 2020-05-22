@@ -22,6 +22,16 @@ defined( 'ABSPATH' ) or exit;
 class Admin {
 
 
+	/** @var string the "sync and show" sync mode slug */
+	const SYNC_MODE_SYNC_AND_SHOW = 'sync_and_show';
+
+	/** @var string the "sync and show" sync mode slug */
+	const SYNC_MODE_SYNC_AND_HIDE = 'sync_and_hide';
+
+	/** @var string the "sync disabled" sync mode slug */
+	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
+
+
 	/**
 	 * Admin constructor.
 	 *
