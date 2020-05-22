@@ -1192,6 +1192,40 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Determines whether the product with the given ID should be synced.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	private function product_should_be_synced( $product ) {
+
+		$should_be_synced = true;
+
+		if ( ! $this->is_product_sync_enabled() ) {
+			$should_be_synced = false;
+		}
+
+		// can't sync if we don't have a valid product object
+		if ( $should_be_synced && ! $product instanceof \WC_Product ) {
+			$should_be_synced = false;
+		}
+
+		// only published product should be synced
+		if ( $should_be_synced && 'publish' !== get_post_status( $product->get_id() ) ) {
+			$should_be_synced = false;
+		}
+
+		// make sure the given product is enabled for sync
+		if ( $should_be_synced && ! Products::product_should_be_synced( $product ) ) {
+			$should_be_synced = false;
+		}
+
+		return $should_be_synced;
+	}
+
+
+	/**
 	 * Create product group and product, store fb-specific info
 	 **/
 	function create_product_simple( $woo_product, $fb_product_group_id = null ) {
