@@ -123,7 +123,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $catalog_id catalog ID
 	 * @param array $requests array of prefixed product IDs to create, update or remove
 	 * @param bool $allow_upsert whether to allow updates to insert new items
-	 * @return Response
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
