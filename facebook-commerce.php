@@ -831,7 +831,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED;
-		$sync_enabled = \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
+		$sync_enabled = \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode && ! $product->is_virtual();
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
