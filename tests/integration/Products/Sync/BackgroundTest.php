@@ -69,10 +69,41 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 				// assert the second position is one of the accepted sync methods
 				$this->assertContains( $item[1], [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ] );
 			},
-			'send_item_updates' => \Codeception\Stub\Expected::once(),
 		] );
 
 		$background->process_items( $job, $job->requests );
+	}
+
+
+	/** @see Background::process_items() */
+	public function test_process_items_sends_item_updates() {
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
+		$job = $this->get_test_job();
+
+		// mock the API to return an successful response
+		$api = $this->make( API::class, [
+			'send_item_updates' => new API\Catalog\Send_Item_Updates\Response( json_encode( [ 'handles' => [ 'handle' ] ] ) ),
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$background = $this->make( Background::class, [
+			'start_time'   => time(),
+			'process_item' => [ 'request' ],
+		] );
+
+		$background->process_items( $job, $job->requests );
+
+		// test that process_items() updates the job with the batch handles returned by send_item_updates()
+		$this->assertEquals( [ 'handle' ], $job->handles );
 	}
 
 
