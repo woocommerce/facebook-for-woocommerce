@@ -1117,24 +1117,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function on_simple_product_publish( $wp_id, $woo_product = null, &$parent_product = null ) {
 
-		if ( ! $this->is_product_sync_enabled() ) {
+		if ( ! $woo_product instanceof \WC_Facebook_Product ) {
+			$woo_product = new \WC_Facebook_Product( $wp_id, $parent_product );
+		}
+
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( get_post_status( $wp_id ) != 'publish' ) {
-			return;
-		}
-
-		if ( ! $woo_product ) {
-			$woo_product = new WC_Facebook_Product( $wp_id, $parent_product );
-		}
-
-		// skip if not enabled for sync
-		if ( ! $woo_product->woo_product instanceof \WC_Product || ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
-			return;
-		}
-
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product ) ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
