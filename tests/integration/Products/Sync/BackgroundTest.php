@@ -1,6 +1,7 @@
 <?php
 
 use Codeception\Stub;
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -345,6 +346,35 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 			[ 'wc_facebook_sync_background_item_update_request', Sync::ACTION_UPDATE ],
 			[ 'wc_facebook_sync_background_item_delete_request', Sync::ACTION_DELETE ]
 		];
+	}
+
+
+	/** @see Background::send_item_updates() */
+	public function test_send_item_updates() {
+
+		if ( ! class_exists( API::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API.php';
+		}
+
+		$catalog_id = '1234';
+		$requests   = [ [
+			'data'        => [],
+			'method'      => Sync::ACTION_UPDATE,
+			'retailer_id' => 'wc_post_id_5678',
+		] ];
+
+		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( $catalog_id );
+
+		// test will fail unless API::send_item_updates() is called exactly once with the given parameters
+		$api = $this->make( API::class, [
+			'send_item_updates' => \Codeception\Stub\Expected::once( $catalog_id, $requests, true ),
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_background()->send_item_updates( $requests );
 	}
 
 
