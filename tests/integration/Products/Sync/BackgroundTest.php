@@ -107,6 +107,40 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_items() */
+	public function test_process_items_when_send_item_updates_throws_an_exception() {
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
+		$job = $this->get_test_job();
+
+		// mock the API to throw an exception
+		$api = $this->make( API::class, [
+			'send_item_updates' => static function() {
+				throw new Framework\SV_WC_API_Exception();
+			},
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$background = $this->make( Background::class, [
+			'start_time'   => time(),
+			'process_item' => [ 'request' ],
+		] );
+
+		$background->process_items( $job, $job->requests );
+
+		// test that process_items() does not update the job with an array of batch handles if send_item_updates() throws an exception
+		$this->assertFalse( isset( $job->handles ) );
+	}
+
+
 	/** @see Background::process_item() */
 	public function test_process_item_update_request_with_simple_product() {
 
