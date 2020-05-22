@@ -109,6 +109,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	public function process_items( $job, $data, $items_per_batch = null ) {
 
 		$processed = 0;
+		$requests  = [];
 
 		foreach ( $data as $prefixed_product_id => $method ) {
 
@@ -116,7 +117,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 			try {
 
-				$this->process_item( [ $product_id, $method ], $job );
+				$requests[] = $this->process_item( [ $product_id, $method ], $job );
 
 			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
 
@@ -133,6 +134,10 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			if ( ( $items_per_batch && $processed >= $items_per_batch ) || $this->time_exceeded() || $this->memory_exceeded() ) {
 				break;
 			}
+		}
+
+		if ( ! empty( $requests ) ) {
+			$this->send_item_updates($requests);
 		}
 	}
 
@@ -315,8 +320,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @param $requests
 	 */
-	public function send_item_updates( $requests ) {
-		// TODO
+	public function send_item_updates( array $requests ) {
+		$catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
+		facebook_for_woocommerce()->get_api()->send_item_updates($catalog_id, $requests, true );
 	}
 
 
