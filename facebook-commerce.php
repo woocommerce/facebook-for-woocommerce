@@ -1021,20 +1021,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Will determine product type (simple or variable) and delegate to
 	 * appropriate handler.
 	 *
-	 * @param int $wp_id product ID
+	 * @param int $product_id product ID
 	 */
-	public function on_product_publish( $wp_id ) {
+	public function on_product_publish( $product_id ) {
 
 		// bail if the plugin is not configured properly
 		if ( ! $this->is_configured() || ! $this->get_product_catalog_id() ) {
 			return;
 		}
 
-		if ( get_post_status( $wp_id ) !== 'publish' ) {
+		if ( get_post_status( $product_id ) !== 'publish' ) {
 			return;
 		}
 
-		$product = wc_get_product( $wp_id );
+		$product = wc_get_product( $product_id );
 
 		// skip if not enabled for sync
 		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
@@ -1042,9 +1042,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $product->is_type( 'variable' ) ) {
-			$this->on_variable_product_publish( $wp_id );
+			$this->on_variable_product_publish( $product_id );
 		} else {
-			$this->on_simple_product_publish( $wp_id );
+			$this->on_simple_product_publish( $product_id );
 		}
 	}
 
