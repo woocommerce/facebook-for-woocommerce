@@ -550,10 +550,7 @@ class Admin {
 
 					Products::enable_sync_for_products( $products );
 
-					// re-sync each product
-					foreach ( $products as $product ) {
-						facebook_for_woocommerce()->get_integration()->on_product_publish( $product->get_id() );
-					}
+					$this->resync_products( $products );
 
 				} elseif ( 'facebook_exclude' === $action ) {
 
@@ -563,6 +560,22 @@ class Admin {
 		}
 
 		return $redirect;
+	}
+
+
+	/**
+	 * Re-syncs the given products.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param \WC_Product $products
+	 */
+	private function resync_products( array $products ) {
+
+		// re-sync each product
+		foreach ( $products as $product ) {
+			facebook_for_woocommerce()->get_integration()->on_product_publish( $product->get_id() );
+		}
 	}
 
 
