@@ -57,16 +57,13 @@ class Admin {
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
-		// add admin notice to inform that product sync has changed
-		add_action( 'admin_notices', [ $this, 'add_product_sync_delay_notice' ] );
+		// add admin notice to inform that disabled products may need to be deleted manually
+		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
 
 		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
 		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
 		// add admin notice to inform sync has been automatically disabled for virtual products
 		add_action( 'admin_notices', [ $this, 'add_disabled_virtual_products_sync_notice' ] );
-
-		// handle dismissal of special notices
-		add_action( 'wc_' . $plugin->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -560,58 +557,50 @@ class Admin {
 
 
 	/**
-	 * Prints a notice on products page to inform users about changes in product sync.
+	 * Adds a transient so an informational notice is displayed on the next page load.
 	 *
-	 * @internal
+	 * @since 2.0.0-dev.1
 	 *
-	 * @since 1.11.0
+	 * @param int $count number of products
 	 */
-	public function add_product_sync_delay_notice() {
-		global $current_screen;
+	public static function add_product_disabled_sync_notice( $count = 1 ) {
 
-		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id();
-
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) && get_transient( $transient_name ) ) {
-
-			if ( isset( $_GET['message'] ) || isset( $_GET['trashed'] ) || isset( $_GET['deleted'] ) ) {
-
-				facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
-					sprintf(
-						/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-						esc_html__( '%1$sHeads up!%2$s Product sync is temporarily changed as we migrate to a more secure experience. An automated sync from Facebook will run every hour to update the catalog with any changes you\'ve made. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
-						'<strong>',
-						'</strong>',
-						'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security" target="_blank">',
-						'</a>'
-					)
-					. '</p><p>' // close notice paragraph and open a new one for the button
-					. '<button class="button notice-dismiss-permanently" type="button">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</button>',
-					'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay',
-					[ 'notice_class' => 'notice-info' ]
-				);
-			}
-
-			delete_transient( $transient_name );
+		if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-disabled-sync' ) ) {
+			set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id(), $count, MINUTE_IN_SECONDS );
 		}
 	}
 
 
 	/**
-	 * Handles dismissed notices.
+	 * Adds a message for after a product or set of products get excluded from sync.
 	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param string $message_id the dismissed notice ID
-	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 * @since 2.0.0-dev.1
 	 */
-	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+	public function maybe_show_product_disabled_sync_notice() {
 
-		// undismiss product sync delay notice unless 'permanently' is included in the request
-		if ( ! SV_WC_Helper::get_requested_value( 'permanently' ) && 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay' === $message_id ) {
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id();
+		$message_id     = 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-disabled-sync';
 
-			facebook_for_woocommerce()->get_admin_notice_handler()->undismiss_notice( $message_id, $user_id );
+		if ( ( $count = get_transient( $transient_name ) ) && ( SV_WC_Helper::is_current_screen( 'edit-product' ) || SV_WC_Helper::is_current_screen( 'product' ) ) ) {
+
+			$message = sprintf(
+				_n( '%1$sHeads up!%2$s If this product was previously visible in Facebook, you may need to %3$sdelete it from the Facebook catalog%4$s to completely hide it from customer view.', '%1$sHeads up!%2$s If these products were previously visible in Facebook, you may need to %3$sdelete them from the Facebook catalog%4$s to completely hide them from customer view.', $count, 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>',
+				'<a href="https://www.facebook.com/business/help/428079314773256" target="_blank">', '</a>'
+			);
+
+			$message .= '<a class="button js-wc-plugin-framework-notice-dismiss">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</a>';
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
+				$message,
+				$message_id,
+				[
+					'dismissible'  => false, // we add our own dismiss button
+					'notice_class' => 'notice-info',
+				]
+			);
+
+			delete_transient( $transient_name );
 		}
 	}
 
@@ -1078,6 +1067,37 @@ class Admin {
 
 
 	/** Deprecated methods ********************************************************************************************/
+
+
+	/**
+	 * No-op: Prints a notice on products page to inform users about changes in product sync.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 */
+	public function add_product_sync_delay_notice() {
+
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+	}
+
+
+	/**
+	 * No-op: Handles dismissed notices.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 *
+	 * @param string $message_id the dismissed notice ID
+	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 */
+	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+	}
 
 
 	/**
