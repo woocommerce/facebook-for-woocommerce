@@ -64,8 +64,7 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$columns = $this->admin->add_product_list_table_columns( [] );
 
 		$this->assertIsArray( $columns );
-		$this->assertArrayHasKey( 'facebook_sync_enabled', $columns );
-		// $this->assertArrayHasKey( 'facebook_catalog_visibility', $columns );
+		$this->assertArrayHasKey( 'facebook_sync', $columns );
 	}
 
 
