@@ -379,8 +379,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					1    // Args passed to on_quick_and_bulk_edit_save ('product')
 				);
 
-				add_action( 'trashed_post', [ $this, 'on_product_trash' ] );
-
 				add_action( 'before_delete_post', [ $this, 'on_product_delete' ] );
 
 				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
@@ -844,6 +842,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			} else {
 
+				// if previously enabled, add a notice on the next page load
+				if ( Products::is_sync_enabled_for_product( $product ) ) {
+					\SkyVerge\WooCommerce\Facebook\Admin::add_product_disabled_sync_notice();
+				}
+
 				Products::disable_sync_for_products( [ $product ] );
 			}
 		}
@@ -869,8 +872,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				break;
 			}
 		}
-
-		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -903,25 +904,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
-	}
-
-
-	/**
-	 * Enables product sync delay notice when a post is moved to the trash.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param int $post_id the post ID
-	 */
-	public function on_product_trash( $post_id ) {
-
-		$product = wc_get_product( $post_id );
-
-		if ( $product instanceof \WC_Product ) {
-			$this->enable_product_sync_delay_admin_notice();
-		}
 	}
 
 
@@ -968,8 +950,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			\WC_Facebookcommerce_Utils::log( $pg_result );
 		}
-
-		$this->enable_product_sync_delay_admin_notice();
 	}
 
 
@@ -4623,14 +4603,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
+
+	/** Deprecated methods ********************************************************************************************/
+
+
 	/**
-	 * Enables product sync delay admin notice.
+	 * Enables product sync delay notice when a post is moved to the trash.
+	 *
+	 * @internal
 	 *
 	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 *
+	 * @param int $post_id the post ID
 	 */
-	private function enable_product_sync_delay_admin_notice() {
+	public function on_product_trash( $post_id ) {
 
-		set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id(), true, MINUTE_IN_SECONDS );
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
