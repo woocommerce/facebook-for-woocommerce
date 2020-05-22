@@ -26,6 +26,12 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
 		if ( ! class_exists( API::class ) ) {
 			require_once 'includes/API.php';
 		}
@@ -45,6 +51,28 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/** @see API::get_page() */
+	public function test_get_page() {
+
+		$page_id   = '123456';
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_page( $page_id );
+
+		$this->assertInstanceOf( API\Pages\Read\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$page_id}", $api->get_request()->get_path() );
+		$this->assertEquals( [ 'fields' => 'name,link' ], $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Pages\Read\Response::class, $api->get_response() );
+	}
 
 
 	/** @see API::send_item_updates() */

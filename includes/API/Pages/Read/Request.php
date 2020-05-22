@@ -31,7 +31,7 @@ class Request extends API\Request  {
 	 */
 	public function __construct( $page_id ) {
 
-		parent::__construct( $page_id, 'GET' );
+		parent::__construct( "/{$page_id}", 'GET' );
 	}
 
 
