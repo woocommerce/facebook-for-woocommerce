@@ -83,13 +83,10 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
 			if ( in_array( $response->get_api_error_code(), [ 4, 17, 32, 613, 80004 ], true ) ) {
-
 				throw new API\Exceptions\Request_Limit_Reached( $message, $response->get_api_error_code() );
-
-			} else {
-
-				throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
 			}
+
+			throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
 		}
 	}
 
