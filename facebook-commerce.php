@@ -4091,13 +4091,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_name() {
 
-		if ( $this->is_configured() ) {
-			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id() );
-		} else {
-			$page_name = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_name ) ? $page_name : '';
+		return isset( $page['name'] ) ? $page['name'] : '';
 	}
 
 
