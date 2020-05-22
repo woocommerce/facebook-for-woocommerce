@@ -18,7 +18,9 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API/Catalog/Product_Item/Response.php';
+		if ( ! class_exists( Response::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Response.php';
+		}
 	}
 
 

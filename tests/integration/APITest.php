@@ -26,8 +26,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API.php';
-		require_once 'includes/API/Request.php';
+		if ( ! class_exists( API::class ) ) {
+			require_once 'includes/API.php';
+		}
+
+		if ( ! class_exists( Request::class ) ) {
+			require_once 'includes/API/Request.php';
+		}
 	}
 
 
@@ -45,7 +50,9 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::send_item_updates() */
 	public function test_send_item_updates() {
 
-		require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
+			require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		}
 
 		$catalog_id   = '123456';
 		$requests     = [
@@ -150,8 +157,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
-		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
-		require_once 'includes/API/Catalog/Product_Item/Response.php';
+		if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		}
+
+		if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Response.php';
+		}
 
 		$catalog_id  = '123456';
 		$retailer_id = '456';
@@ -257,6 +269,46 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	public function test_calculate_rate_limit_delay() {
 
 		// TODO
+	}
+
+
+	/**
+	 * @see API::get_new_request()
+	 *
+	 * @param array $args
+	 * @param string $expected_path
+	 * @param string $expected_method
+	 * @throws ReflectionException
+	 *
+	 * @dataProvider provider_get_new_request
+	 */
+	public function test_get_new_request( $args, $expected_path, $expected_method ) {
+
+		$api = new API( 'fake-token' );
+
+		$reflection = new \ReflectionClass( $api );
+		$method     = $reflection->getMethod( 'get_new_request' );
+
+		$method->setAccessible( true );
+
+		$request = $method->invokeArgs( $api, [ $args ] );
+
+		$this->assertEquals( $expected_path, $request->get_path() );
+		$this->assertEquals( $expected_method, $request->get_method() );
+	}
+
+
+	/** @see test_get_new_request() */
+	public function provider_get_new_request() {
+
+		return [
+			[ [ 'path' => '/me', 'method' => 'GET' ], '/me', 'GET' ],
+			[ [ 'path' => '/1234/products', 'method' => 'GET' ], '/1234/products', 'GET' ],
+			[ [ 'path' => '/1234/batch', 'method' => 'POST' ], '/1234/batch', 'POST' ],
+			[ [ 'path' => '/1234/batch' ], '/1234/batch', 'GET' ],
+			[ [ 'method' => 'DELETE' ], '/', 'DELETE' ],
+			[ [], '/', 'GET' ],
+		];
 	}
 
 

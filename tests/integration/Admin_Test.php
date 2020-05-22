@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
+use SkyVerge\WooCommerce\Facebook\Admin;
 
 /**
  * Tests the Admin class.
@@ -11,7 +12,7 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	/** @var \SkyVerge\WooCommerce\Facebook\Admin */
+	/** @var Admin */
 	protected $admin;
 
 	/** @var \WC_Facebookcommerce_Integration */
@@ -23,7 +24,9 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/Admin.php';
+		if ( ! class_exists( Admin::class ) ) {
+			require_once 'includes/Admin.php';
+		}
 
 		$this->integration = facebook_for_woocommerce()->get_integration();
 
@@ -31,7 +34,7 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( '1234' );
 		$this->integration->update_product_catalog_id( '1234' );
 
-		$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+		$this->admin = new Admin();
 	}
 
 

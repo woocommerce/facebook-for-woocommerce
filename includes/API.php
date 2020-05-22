@@ -101,7 +101,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function create_product_group( $catalog_id, $data ) {
 
-		$request = $this->get_new_request( [ $catalog_id, '/product_groups', 'POST' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$catalog_id}/product_groups",
+			'method' => 'POST',
+		] );
 
 		$request->set_data( $data );
 
@@ -123,7 +126,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function update_product_group( $product_group_id, $data ) {
 
-		$request = $this->get_new_request( [ $product_group_id, '', 'POST' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}",
+			'method' => 'POST',
+		] );
 
 		$request->set_data( $data );
 
@@ -144,7 +150,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function delete_product_group( $product_group_id ) {
 
-		$request = $this->get_new_request( [ $product_group_id, '', 'DELETE' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}",
+			'method' => 'DELETE',
+		] );
 
 		$this->set_response_handler( Response::class );
 
@@ -184,7 +193,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function create_product_item( $product_group_id, $data ) {
 
-		$request = $this->get_new_request( [ $product_group_id, '/products', 'POST' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_group_id}/products",
+			'method' => 'POST',
+		] );
 
 		$request->set_data( $data );
 
@@ -206,7 +218,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function update_product_item( $product_item_id, $data ) {
 
-		$request = $this->get_new_request( [ $product_item_id, '', 'POST' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_item_id}",
+			'method' => 'POST',
+		] );
 
 		$request->set_data( $data );
 
@@ -227,7 +242,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function delete_product_item( $product_item_id ) {
 
-		$request = $this->get_new_request( [ $product_item_id, '', 'DELETE' ] );
+		$request = $this->get_new_request( [
+			'path'   => "/{$product_item_id}",
+			'method' => 'DELETE',
+		] );
 
 		$this->set_response_handler( Response::class );
 
@@ -282,14 +300,24 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $args optional request arguments
+	 * @param array $args {
+	 *     Optional. An array of request arguments.
+	 *
+	 *     @type string $path request path
+	 *     @type string $method request method
+	 * }
 	 * @return Request
 	 */
 	protected function get_new_request( $args = [] ) {
 
-		list( $object_id, $path, $method ) = $args;
+		$defaults = [
+			'path'   => '/',
+			'method' => 'GET',
+		];
 
-		return new Request( $object_id ?: null, $path ?: null, $method ?: null );
+		$args = wp_parse_args( $args, $defaults );
+
+		return new Request( $args['path'], $args['method'] );
 	}
 
 

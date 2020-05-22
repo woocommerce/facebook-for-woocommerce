@@ -51,7 +51,7 @@ class Request extends API\Request  {
 	 */
 	public function __construct( $catalog_id ) {
 
-		parent::__construct( $catalog_id, '/batch', 'POST' );
+		parent::__construct( "/{$catalog_id}/batch", 'POST' );
 	}
 
 
