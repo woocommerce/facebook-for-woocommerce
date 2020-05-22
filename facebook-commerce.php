@@ -123,6 +123,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var bool|null whether the feed has been migrated from FBE 1 to FBE 1.5 */
 	private $feed_migrated;
 
+	/** @var array the page name and url */
+	private $page;
+
 
 	/** Legacy properties *********************************************************************************************/
 
@@ -4048,19 +4051,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the array that holds the name and url of the configured Facebook page.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_page() {
+
+		if ( ! is_array( $this->page ) && $this->is_configured() ) {
+
+			try {
+
+				$response = facebook_for_woocommerce()->get_api()->get_page( $this->get_facebook_page_id() );
+
+				$this->page = [
+					'name' => $response->get_name(),
+					'url'  => $response->get_url(),
+				];
+
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+
+				// we intentionally set $this->page to an empty array if an error occurs to avoid additional API requests
+				// it's unlikely that we will get a different result if the exception was caused by an expired token, incorrect page ID, or rate limiting error
+				$this->page = [];
+
+				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
+
+				facebook_for_woocommerce()->log( $message );
+			}
+		}
+
+		return is_array( $this->page ) ? $this->page : [];
+	}
+
+
+	/**
 	 * Gets the name of the configured Facebook page.
 	 *
 	 * @return string
 	 */
 	public function get_page_name() {
 
-		if ( $this->is_configured() ) {
-			$page_name = $this->fbgraph->get_page_name( $this->get_facebook_page_id() );
-		} else {
-			$page_name = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_name ) ? $page_name : '';
+		return isset( $page['name'] ) ? $page['name'] : '';
 	}
 
 
@@ -4073,13 +4108,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_page_url() {
 
-		if ( $this->is_configured() ) {
-			$page_url = $this->fbgraph->get_page_url( $this->get_facebook_page_id() );
-		} else {
-			$page_url = '';
-		}
+		$page = $this->get_page();
 
-		return is_string( $page_url ) ? $page_url : '';
+		return isset( $page['url'] ) ? $page['url'] : '';
 	}
 
 

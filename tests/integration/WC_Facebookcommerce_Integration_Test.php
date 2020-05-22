@@ -1,5 +1,8 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 /**
  * Tests the integration class.
  */
@@ -557,6 +560,150 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		} );
 
 		$this->assertEquals( 'filtered', $this->integration->get_messenger_color_hex() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_page() */
+	public function test_get_page() {
+
+		if ( ! class_exists( API\Response::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Response.php';
+		}
+
+		if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Pages/Read/Response.php';
+		}
+
+		if ( ! class_exists( API::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API.php';
+		}
+
+		$response_data = [ 'name' => 'Test Page', 'link' => 'https://example.org' ];
+		$response      = new API\Pages\Read\Response( json_encode( $response_data ) );
+		$api           = $this->make( API::class, [ 'get_page' => $response ] );
+
+		$expected_result = [ 'name' => 'Test Page', 'url' => 'https://example.org' ];
+
+		$this->check_get_page( $api, 'access_token', $expected_result );
+	}
+
+
+	/**
+	 * Tests that that \WC_Facebookcommerce_Integration::get_page() returns the expected result for the given access token and API response.
+	 *
+	 * @param API $api API stub
+	 * @param string $access_token configured access token
+	 * @param array $expected_result expected return value
+	 */
+	private function check_get_page( $api, $access_token, $expected_result ) {
+
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( $access_token );
+
+		// replace the API instance with our stub
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// remove saved page information
+		$property = new ReflectionProperty( \WC_Facebookcommerce_Integration::class, 'page' );
+		$property->setAccessible( true );
+		$property->setValue( $this->integration, null );
+
+		// make \WC_Facebookcommerce_Integration::get_page() accessible
+		$method = new ReflectionMethod( \WC_Facebookcommerce_Integration::class, 'get_page' );
+		$method->setAccessible( true );
+
+		$this->assertEquals( $expected_result, $method->invoke( $this->integration ) );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_page() */
+	public function test_get_page_with_exception() {
+
+		if ( ! class_exists( API::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API.php';
+		}
+
+		$api = $this->make( API::class, [ 'get_page' => static function() {
+			throw new Framework\SV_WC_API_Exception();
+		} ] );
+
+		// it should return an empty array if no page information can't be retrieved
+		$expected_result = [];
+
+		$this->check_get_page( $api, 'access_token', $expected_result );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_page() */
+	public function test_get_page_if_plugin_is_not_configured() {
+
+		// irrelevant because the API wont be used
+		$api = null;
+
+		// remove the access token to prevent the plugin from trying to use the API to retrieve page information
+		$access_token = null;
+
+		// it should return an empty array if there is no page information available
+		$expected_result = [];
+
+		$this->check_get_page( $api, $access_token, $expected_result );
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::get_page_name()
+	 *
+	 * @param array $page stored page information
+	 * @param string $page_name expected page name
+	 *
+	 * @dataProvider provider_get_page_name
+	 */
+	public function test_get_page_name( $page, $page_name ) {
+
+		$property = new ReflectionProperty( \WC_Facebookcommerce_Integration::class, 'page' );
+		$property->setAccessible( true );
+		$property->setValue( $this->integration, $page );
+
+		$this->assertEquals( $page_name, $this->integration->get_page_name() );
+	}
+
+
+	/** @see test_get_page_name() */
+	public function provider_get_page_name() {
+
+		return [
+			[ [ 'name' => 'Test Page', 'url' => 'https://example.org' ], 'Test Page' ],
+			[ [], '' ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebookcommerce_Integration::get_page_url()
+	 *
+	 * @param array $page stored page information
+	 * @param string $page_url expected page URL
+	 *
+	 * @dataProvider provider_get_page_url
+	 */
+	public function test_get_page_url( $page, $page_url ) {
+
+		$property = new ReflectionProperty( \WC_Facebookcommerce_Integration::class, 'page' );
+		$property->setAccessible( true );
+		$property->setValue( $this->integration, $page );
+
+		$this->assertEquals( $page_url, $this->integration->get_page_url() );
+	}
+
+
+	/** @see test_get_page_url() */
+	public function provider_get_page_url() {
+
+		return [
+			[ [ 'name' => 'Test Page', 'url' => 'https://example.org' ], 'https://example.org' ],
+			[ [], '' ],
+		];
 	}
 
 
