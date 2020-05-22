@@ -159,47 +159,9 @@ jQuery( document ).ready( function( $ ) {
 
 						blockModal();
 
-						// the user has an option to hide all the affected products from Facebook while adding the exclusion though
-						if ( $( this ).hasClass( 'hide-products' ) ) {
+						submitSettingsSave = true;
+						$submitButton.trigger( 'click' );
 
-							let product_cats = [], product_tags = [];
-
-							$( categoriesAdded ).each( function() {
-								product_cats.push( {
-									term_id:    this,
-									taxonomy:   'product_cat',
-									visibility: false
-								} );
-							} );
-
-							$( tagsAdded ).each( function() {
-								product_tags.push( {
-									term_id:    this,
-									taxonomy:   'product_tag',
-									visibility: false
-								} );
-							} );
-
-							$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
-								action:             'facebook_for_woocommerce_set_products_visibility',
-								security:           facebook_for_woocommerce_settings_sync.set_product_visibility_nonce,
-								product_categories: product_cats,
-								product_tags:       product_tags,
-							}, function ( response ) {
-
-								if ( ! response || ! response.success ) {
-									console.log( response )
-								}
-
-								submitSettingsSave = true;
-								$submitButton.trigger( 'click' );
-							} );
-
-						} else {
-
-							submitSettingsSave = true;
-							$submitButton.trigger( 'click' );
-						}
 					} );
 
 				} else {

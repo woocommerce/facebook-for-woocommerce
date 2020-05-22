@@ -30,7 +30,6 @@ jQuery( document ).ready( function( $ ) {
 			let $submitButton    = $( this ),
 				chosenBulkAction = $submitButton.prev( 'select' ).val();
 
-			// TODO: also check `'facebook_exclude' === chosenBulkAction` once Catalog Visibility settings are available again {WV 2020-04-20}
 			if ( 'facebook_include' === chosenBulkAction ) {
 
 				let products = [];
@@ -55,28 +54,6 @@ jQuery( document ).ready( function( $ ) {
 						new $.WCBackboneModal.View( {
 							target: 'facebook-for-woocommerce-modal',
 							string: response.data
-						} );
-
-						// exclude from sync: offer to handle product visibility
-						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
-
-							blockModal();
-
-							if ( $( this ).hasClass( 'hide-products' ) ) {
-
-								$.each( products, function() {
-
-									let $toggle = $( '#post-' + this ).find( 'td.facebook_catalog_visibility button.facebook-for-woocommerce-product-visibility-hide' );
-
-									if ( $toggle.is( ':visible' ) ) {
-										$toggle.trigger( 'click' );
-									}
-								} );
-							}
-
-							// submit form after modal prompt action
-							submitProductBulkAction = true;
-							$submitButton.trigger( 'click' );
 						} );
 
 					} else {
@@ -165,7 +142,6 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			let $submitButton    = $( this ),
-				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
 				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
 				productCat       = [],
 				// this query will get tags when not using checkboxes
@@ -195,7 +171,7 @@ jQuery( document ).ready( function( $ ) {
 				}, function( response ) {
 
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
-					if ( response && ! response.success && ( syncEnabled || ( ! syncEnabled && $visibleCheckbox.length && $visibleCheckbox.is( ':checked' ) ) ) ) {
+					if ( response && ! response.success && syncEnabled ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -204,20 +180,6 @@ jQuery( document ).ready( function( $ ) {
 						new $.WCBackboneModal.View( {
 							target: 'facebook-for-woocommerce-modal',
 							string: response.data
-						} );
-
-						// exclude from sync: offer to handle product visibility
-						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
-
-							blockModal();
-
-							if ( $( this ).hasClass( 'hide-products' ) ) {
-								$visibleCheckbox.prop( 'checked', false );
-							}
-
-							// no modal displayed: submit form as normal
-							submitProductSave = true;
-							$submitButton.trigger( 'click' );
 						} );
 
 					} else {
