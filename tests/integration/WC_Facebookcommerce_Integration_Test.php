@@ -652,6 +652,34 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 
 	/**
+	 * @see \WC_Facebookcommerce_Integration::get_page_name()
+	 *
+	 * @param array $page stored page information
+	 * @param string $page_name expected page name
+	 *
+	 * @dataProvider provider_get_page_name
+	 */
+	public function test_get_page_name( $page, $page_name ) {
+
+		$property = new ReflectionProperty( \WC_Facebookcommerce_Integration::class, 'page' );
+		$property->setAccessible( true );
+		$property->setValue( $this->integration, $page );
+
+		$this->assertEquals( $page_name, $this->integration->get_page_name() );
+	}
+
+
+	/** @see test_get_page_name() */
+	public function provider_get_page_name() {
+
+		return [
+			[ [ 'name' => 'Test Page', 'url' => 'https://example.org' ], 'Test Page' ],
+			[ [], '' ],
+		];
+	}
+
+
+	/**
 	 * @see \WC_Facebookcommerce_Integration::is_configured()
 	 *
 	 * @param string $access_token Facebook access token
