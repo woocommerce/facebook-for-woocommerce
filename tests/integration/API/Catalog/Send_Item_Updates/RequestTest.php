@@ -46,7 +46,12 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	public function test_set_requests() {
 
 		$request  = new Request( '1234 ');
-		$requests = [ [ 'method' => Sync::ACTION_UPDATE ] ];
+
+		$requests = [ [
+			'data'        => [],
+			'method'      => Sync::ACTION_UPDATE,
+			'retailer_id' => 'wc_post_id_7890',
+		] ];
 
 		$request->set_requests( $requests );
 
@@ -81,10 +86,14 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Request::get_data() */
 	public function test_get_data() {
 
-		$requests     = [ [ 'method' => Sync::ACTION_UPDATE ] ];
-		$allow_upsert = false;
-
 		$request = new Request( '1234' );
+
+		$allow_upsert = false;
+		$requests     = [ [
+			'data'        => [],
+			'method'      => Sync::ACTION_UPDATE,
+			'retailer_id' => 'wc_post_id_7890',
+		] ];
 
 		$request->set_requests( $requests );
 		$request->set_allow_upsert( $allow_upsert );
