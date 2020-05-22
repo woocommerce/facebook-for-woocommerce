@@ -289,6 +289,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Gets the product catalog temporary feed file path.
+		 *
+		 * @since 1.11.3
+		 *
+		 * @return string
+		 */
+		public function get_temp_file_path() {
+
+			/**
+			 * Filters the product catalog temporary feed file path.
+			 *
+			 * @since 1.11.3
+			 *
+			 * @param string $file_path the temporary file path
+			 */
+			return apply_filters( 'wc_facebook_product_catalog_temp_feed_file_path', "{$this->get_file_directory()}/{$this->get_temp_file_name()}" );
+		}
+
+
+		/**
 		 * Gets the product catalog feed file directory.
 		 *
 		 * @since 1.11.0
@@ -322,6 +342,28 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			 * @param string $file_name the file name
 			 */
 			return apply_filters( 'wc_facebook_product_catalog_feed_file_name', $file_name );
+		}
+
+
+		/**
+		 * Gets the product catalog temporary feed file name.
+		 *
+		 * @since 1.11.3
+		 *
+		 * @return string
+		 */
+		public function get_temp_file_name() {
+
+			$file_name = sprintf( self::FILE_NAME, 'temp_' . wp_hash( Feed::get_feed_secret() ) );
+
+			/**
+			 * Filters the product catalog temporary feed file name.
+			 *
+			 * @since 1.11.3
+			 *
+			 * @param string $file_name the temporary file name
+			 */
+			return apply_filters( 'wc_facebook_product_catalog_temp_feed_file_name', $file_name );
 		}
 
 
@@ -490,15 +532,22 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				if ( ! $is_dry_run ) {
 
+					$temp_file_path = $this->get_temp_file_path();
+					$temp_feed_file = @fopen( $temp_file_path, 'w' );
+
+					// check if we can open the temporary feed file
+					if ( false === $temp_feed_file || ! is_writable( $temp_file_path ) ) {
+						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog temporary feed file for writing', 'facebook-for-woocommerce' ), 500 );
+					}
+
 					$file_path = $this->get_file_path();
 
-					$feed_file = @fopen( $this->get_file_path(), 'w' );
-
-					if ( false === $feed_file || ! is_writable( $file_path ) ) {
+					// check if we will be able to write to the final feed file
+					if ( file_exists( $file_path ) && ! is_writable( $file_path ) ) {
 						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
 					}
 
-					fwrite( $feed_file, $this->get_product_feed_header_row() );
+					fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
 				}
 
 				$product_group_attribute_variants = array();
@@ -525,12 +574,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 						$product_group_attribute_variants
 					);
 
-					if ( ! empty( $feed_file ) ) {
-						fwrite( $feed_file, $product_data_as_feed_row );
+					if ( ! empty( $temp_feed_file ) ) {
+						fwrite( $temp_feed_file, $product_data_as_feed_row );
 					}
 				}
 
 				wp_reset_postdata();
+
+
+				if ( ! empty( $temp_feed_file ) ) {
+					fclose( $temp_feed_file );
+				}
+
+				if ( ! empty( $temp_file_path ) && ! empty( $file_path ) && ! empty( $temp_feed_file ) ) {
+
+					$renamed = rename( $temp_file_path, $file_path );
+
+					if ( empty( $renamed ) ) {
+						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
+					}
+				}
 
 				$written = true;
 
@@ -539,10 +602,18 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				WC_Facebookcommerce_Utils::log( json_encode( $e->getMessage() ) );
 
 				$written = false;
-			}
 
-			if ( ! empty( $feed_file ) ) {
-				fclose( $feed_file );
+				// close the temporary file
+				if ( ! empty( $temp_feed_file ) && is_resource( $temp_feed_file ) ) {
+
+					fclose( $temp_feed_file );
+				}
+
+				// delete the temporary file
+				if ( ! empty( $temp_file_path ) && file_exists( $temp_file_path ) ) {
+
+					unlink( $temp_file_path );
+				}
 			}
 
 			return $written;

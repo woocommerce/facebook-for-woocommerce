@@ -27,14 +27,13 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $object_id object ID
 	 * @param string $path endpoint route
 	 * @param string $method HTTP method
 	 */
-	public function __construct( $object_id, $path, $method ) {
+	public function __construct( $path, $method ) {
 
 		$this->method = $method;
-		$this->path   = $path ? sprintf( '/%s/%s', $object_id, trim( $path, '/' ) ) : "/{$object_id}";
+		$this->path   = $path;
 	}
 
 

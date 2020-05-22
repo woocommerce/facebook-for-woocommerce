@@ -5,6 +5,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * Tests the API class.
@@ -26,8 +27,11 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/API.php';
-		require_once 'includes/API/Request.php';
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 
@@ -42,10 +46,153 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/**
+	 * @see API::do_post_parse_response_validation()
+	 *
+	 * @param int $code error code
+	 * @param string $exception expected exception class name
+	 *
+	 * @dataProvider provider_do_post_parse_response_validation
+	 */
+	public function test_do_post_parse_response_validation( $code, $exception ) {
+
+		$message = sprintf( '(#%d) Message describing the error', $code );
+
+		$this->expectException( $exception );
+		$this->expectExceptionCode( $code );
+		$this->expectExceptionMessageRegExp( '/' . preg_quote( $message, '/' ) . '/' );
+
+		// mock the response for the HTTP request
+		$args = [
+			'request_path'     => '1234/product_groups',
+			'response_body'    => [
+				'error' => [
+					'message'          => $message,
+					'type'             => 'OAuthException',
+					'code'             => $code,
+				]
+			],
+			'response_code'    => 400,
+			'response_message' => 'Bad Request',
+		];
+
+		$this->prepare_request_response( $args );
+
+		$api = new API( 'access_token' );
+
+		$api->create_product_group( '1234', [] );
+	}
+
+
+	/**
+	 * Intercepts HTTP requests and returns a prepared response.
+	 *
+	 * @param array $args {
+	 *     @type string $request_path a fragment of the URL that will be intercepted
+	 *     @type array $response_headers HTTP headers for the response
+	 *     @type array $response_body response data that will be JSON-encoded
+	 *     @type int $response_code HTTP response code
+	 *     @type string $response_message HTTP response message
+	 * }
+	 */
+	private function prepare_request_response( $args ) {
+
+		$args = wp_parse_args( $args, [
+			'request_path'     => '',
+			'response_headers' => [],
+			'response_body'    => [],
+			'response_code'    => 200,
+			'response_message' => 'Ok'
+		] );
+
+		add_filter( 'pre_http_request', static function( $response, $parsed_args, $url ) use ( $args ) {
+
+			if ( false !== strpos( $url, $args['request_path'] ) ) {
+
+				$response = [
+					'headers'       => $args['response_headers'],
+					'body'          => json_encode( $args['response_body'] ),
+					'response'      => [
+						'code'    => $args['response_code'],
+						'message' => $args['response_message'],
+					],
+					'cookies'       => [],
+					'http_response' => null,
+				];
+			}
+
+			return $response;
+		}, 10, 3 );
+	}
+
+
+	/** @see API::test_do_post_parse_response_validation() */
+	public function provider_do_post_parse_response_validation() {
+
+		return [
+			[ 4,     API\Exceptions\Request_Limit_Reached::class ],
+			[ 17,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 32,    API\Exceptions\Request_Limit_Reached::class ],
+			[ 613,   API\Exceptions\Request_Limit_Reached::class ],
+			[ 80004, API\Exceptions\Request_Limit_Reached::class ],
+
+			[ null, Framework\SV_WC_API_Exception::class ],
+			[ 102,  Framework\SV_WC_API_Exception::class ],
+			[ 190,  Framework\SV_WC_API_Exception::class ],
+		];
+	}
+
+
+	/** @see API::do_post_parse_response_validation() */
+	public function test_do_post_parse_response_validation_with_a_valid_response() {
+
+		$product_group_id = '111001234947059';
+
+		$args = [
+			'request_path'  => '1234/product_groups',
+			'response_body' => [
+				'id' => $product_group_id,
+			],
+		];
+
+		$this->prepare_request_response( $args );
+
+		$api = new API( 'access_token' );
+
+		$response = $api->create_product_group( '1234', [] );
+
+		$this->assertEquals( $product_group_id, $response->get_id() );
+	}
+
+
+	/** @see API::get_page() */
+	public function test_get_page() {
+
+		$page_id   = '123456';
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_page( $page_id );
+
+		$this->assertInstanceOf( API\Pages\Read\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$page_id}", $api->get_request()->get_path() );
+		$this->assertEquals( [ 'fields' => 'name,link' ], $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Pages\Read\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::send_item_updates() */
 	public function test_send_item_updates() {
 
-		require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
+			require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
+		}
 
 		$catalog_id   = '123456';
 		$requests     = [
@@ -150,8 +297,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
-		require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
-		require_once 'includes/API/Catalog/Product_Item/Response.php';
+		if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
+		}
+
+		if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+			require_once 'includes/API/Catalog/Product_Item/Response.php';
+		}
 
 		$catalog_id  = '123456';
 		$retailer_id = '456';
@@ -257,6 +409,46 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	public function test_calculate_rate_limit_delay() {
 
 		// TODO
+	}
+
+
+	/**
+	 * @see API::get_new_request()
+	 *
+	 * @param array $args
+	 * @param string $expected_path
+	 * @param string $expected_method
+	 * @throws ReflectionException
+	 *
+	 * @dataProvider provider_get_new_request
+	 */
+	public function test_get_new_request( $args, $expected_path, $expected_method ) {
+
+		$api = new API( 'fake-token' );
+
+		$reflection = new \ReflectionClass( $api );
+		$method     = $reflection->getMethod( 'get_new_request' );
+
+		$method->setAccessible( true );
+
+		$request = $method->invokeArgs( $api, [ $args ] );
+
+		$this->assertEquals( $expected_path, $request->get_path() );
+		$this->assertEquals( $expected_method, $request->get_method() );
+	}
+
+
+	/** @see test_get_new_request() */
+	public function provider_get_new_request() {
+
+		return [
+			[ [ 'path' => '/me', 'method' => 'GET' ], '/me', 'GET' ],
+			[ [ 'path' => '/1234/products', 'method' => 'GET' ], '/1234/products', 'GET' ],
+			[ [ 'path' => '/1234/batch', 'method' => 'POST' ], '/1234/batch', 'POST' ],
+			[ [ 'path' => '/1234/batch' ], '/1234/batch', 'GET' ],
+			[ [ 'method' => 'DELETE' ], '/', 'DELETE' ],
+			[ [], '/', 'GET' ],
+		];
 	}
 
 

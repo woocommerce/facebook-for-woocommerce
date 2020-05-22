@@ -8,7 +8,9 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
+use SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -51,6 +53,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
+
+		/** @var Background_Disable_Virtual_Products_Sync instance */
+		protected $background_disable_virtual_products_sync;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
 		private $products_sync_handler;
@@ -99,8 +104,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
-				require_once __DIR__ . '/includes/API/Response.php';
-				require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
@@ -125,6 +128,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
 
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
+
+				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
+
+					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
+
+					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
+				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
 			}
@@ -222,9 +232,33 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
-				require_once __DIR__ . '/includes/API.php';
-				require_once __DIR__ . '/includes/API/Request.php';
-				require_once __DIR__ . '/includes/API/Response.php';
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
+				}
+
+				if ( ! class_exists( API\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Request.php';
+				}
+
+				if ( ! class_exists( API\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
+					require_once __DIR__ . '/includes/API/Exceptions/Request_Limit_Reached.php';
+				}
 
 				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
 			}
@@ -269,6 +303,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_product_feed_handler() {
 
 			return $this->product_feed;
+		}
+
+
+		/**
+		 * Gets the background disable virtual products sync handler instance.
+		 *
+		 * @since 1.11.3-dev.2
+		 *
+		 * @return Background_Disable_Virtual_Products_Sync
+		 */
+		public function get_background_disable_virtual_products_sync_instance() {
+
+			return $this->background_disable_virtual_products_sync;
 		}
 
 
