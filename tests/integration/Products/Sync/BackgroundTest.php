@@ -134,7 +134,6 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertIsString( $data['name'] );
 		$this->assertIsInt( $data['price'] );
 		$this->assertIsString( $data['product_type'] );
-		$this->assertIsString( $data['retailer_id'] );
 		$this->assertIsString( $data['retailer_product_group_id'] );
 		$this->assertIsInt( $data['sale_price'] );
 		$this->assertIsString( $data['url'] );
