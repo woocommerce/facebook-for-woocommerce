@@ -1030,14 +1030,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( get_post_status( $product_id ) !== 'publish' ) {
-			return;
-		}
-
 		$product = wc_get_product( $product_id );
 
-		// skip if not enabled for sync
-		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
+		if ( ! $this->product_should_be_synced( $product ) ) {
 			return;
 		}
 
