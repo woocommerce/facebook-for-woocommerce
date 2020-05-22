@@ -278,12 +278,23 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	 * @param array $args
 	 * @param string $expected_path
 	 * @param string $expected_method
+	 * @throws ReflectionException
 	 *
 	 * @dataProvider provider_get_new_request
 	 */
 	public function test_get_new_request( $args, $expected_path, $expected_method ) {
 
-		// TODO
+		$api = new API( 'fake-token' );
+
+		$reflection = new \ReflectionClass( $api );
+		$method     = $reflection->getMethod( 'get_new_request' );
+
+		$method->setAccessible( true );
+
+		$request = $method->invokeArgs( $api, [ $args ] );
+
+		$this->assertEquals( $expected_path, $request->get_path() );
+		$this->assertEquals( $expected_method, $request->get_method() );
 	}
 
 
