@@ -98,6 +98,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param $page_id page ID
 	 * @return API\Pages\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function get_page( $page_id ) {
 
