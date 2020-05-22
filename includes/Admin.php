@@ -512,6 +512,8 @@ class Admin {
 				} elseif ( 'facebook_exclude' === $action ) {
 
 					Products::disable_sync_for_products( $products );
+
+					self::add_product_disabled_sync_notice( count( $products ) );
 				}
 			}
 		}
