@@ -1054,11 +1054,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * this function will delete the product from FB Page as well.
 	 */
 	function delete_on_out_of_stock( $wp_id, $woo_product ) {
-		if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' &&
-		! $woo_product->is_in_stock() ) {
+
+		if ( Products::product_should_be_deleted( $woo_product ) ) {
+
 			$this->delete_product_item( $wp_id );
 			return true;
 		}
+
 		return false;
 	}
 
