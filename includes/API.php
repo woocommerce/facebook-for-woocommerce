@@ -45,6 +45,9 @@ class API extends Framework\SV_WC_API_Base {
 		$this->request_headers = [
 			'Authorization' => "Bearer {$access_token}",
 		];
+
+		$this->set_request_content_type_header( 'application/json' );
+		$this->set_request_accept_header( 'application/json' );
 	}
 
 
