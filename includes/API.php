@@ -310,7 +310,14 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	protected function get_new_request( $args = [] ) {
 
-		return new Request( $args['path'] ?: '/', $args['method'] ?: 'GET' );
+		$defaults = [
+			'path'   => '/',
+			'method' => 'GET',
+		];
+
+		$args = wp_parse_args( $args, $defaults );
+
+		return new Request( $args['path'], $args['method'] );
 	}
 
 
