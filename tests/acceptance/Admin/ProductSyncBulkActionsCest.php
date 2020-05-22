@@ -53,6 +53,8 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Sync and show', 'table.wp-list-table td' );
+
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
 
@@ -227,6 +229,20 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+
+		$I->waitForText( 'If this product was previously visible in Facebook' );
+		$I->click( '.notice .js-wc-plugin-framework-notice-dismiss' );
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product ] );
+
+		$I->amOnProductsPage();
+
+		$I->click( "#cb-select-{$this->product->get_id()}" );
+		$I->selectOption( '[name=action]', 'Exclude from Facebook sync' );
+		$I->click( '#doaction' );
+		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
+
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
 
