@@ -635,6 +635,22 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::get_page() */
+	public function test_get_page_if_plugin_is_not_configured() {
+
+		// irrelevant because the API wont be used
+		$api = null;
+
+		// remove the access token to prevent the plugin from trying to use the API to retrieve page information
+		$access_token = null;
+
+		// it should return an empty array if there is no page information available
+		$expected_result = [];
+
+		$this->check_get_page( $api, $access_token, $expected_result );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::is_configured()
 	 *
