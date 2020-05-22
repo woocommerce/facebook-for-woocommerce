@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * Tests the integration class.
@@ -613,6 +614,24 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$method->setAccessible( true );
 
 		$this->assertEquals( $expected_result, $method->invoke( $this->integration ) );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::get_page() */
+	public function test_get_page_with_exception() {
+
+		if ( ! class_exists( API::class ) ) {
+			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API.php';
+		}
+
+		$api = $this->make( API::class, [ 'get_page' => static function() {
+			throw new Framework\SV_WC_API_Exception();
+		} ] );
+
+		// it should return an empty array if no page information can't be retrieved
+		$expected_result = [];
+
+		$this->check_get_page( $api, 'access_token', $expected_result );
 	}
 
 
