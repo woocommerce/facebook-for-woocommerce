@@ -138,6 +138,42 @@ class ProductSyncSettingCest {
 
 
 	/**
+	 * Test that the "excluded categories" modal displays when required.
+	 *
+	 * @param AcceptanceTester $I
+	 * @throws Exception
+	 */
+	public function try_field_enable_with_excluded_category( AcceptanceTester $I ) {
+
+		// have an excluded category
+		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded category', 'product_cat' );
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $excluded_category_id ]
+		] );
+
+		// add the product to the excluded category
+		wp_add_object_terms( $this->sync_disabled_product->get_id(), [ $excluded_category_id ], 'product_cat' );
+
+		$I->amEditingPostWithId( $this->sync_disabled_product->get_id() );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
+		$I->click( 'Update' );
+
+		$I->waitForElementVisible( '#wc-backbone-modal-dialog' );
+		$I->see( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync', '#wc-backbone-modal-dialog' );
+		$I->see( 'Go to Settings', '#wc-backbone-modal-dialog' );
+		$I->see( 'Cancel', '#wc-backbone-modal-dialog' );
+
+		$I->click( 'Cancel', '#wc-backbone-modal-dialog' );
+
+		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
+	}
+
+
+	/**
 	 * Test that the field value is saved correctly when disabling sync.
 	 *
 	 * @param AcceptanceTester $I tester instance
