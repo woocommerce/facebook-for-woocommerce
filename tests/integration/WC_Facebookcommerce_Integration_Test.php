@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -796,6 +797,53 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		} );
 
 		$this->assertFalse( $this->integration->is_product_sync_enabled() );
+	}
+
+	/**
+	 * @see product_should_be_synced
+	 *
+	 * @param bool $sync_enabled whether product sync is enabled at the plugin level
+	 * @param \WC_Product $product product object
+	 * @param bool $should_be_synced expected return value
+	 *
+	 * @dataProvider provider_product_should_be_synced
+	 */
+	public function test_product_should_be_synced( $sync_enabled, $product, $should_be_synced ) {
+
+		add_filter( 'wc_facebook_is_product_sync_enabled', function() use ( $sync_enabled) {
+			return $sync_enabled;
+		} );
+
+		$method = new ReflectionMethod( $this->integration, 'product_should_be_synced' );
+		$method->setAccessible( true );
+
+		$this->assertSame( $should_be_synced, $method->invoke( $this->integration, $product ) );
+	}
+
+
+	/** @see test_product_should_be_synced */
+	public function provider_product_should_be_synced() {
+
+		$draft_product = new \WC_Product();
+		$draft_product->set_status( 'draft');
+		$draft_product->save();
+
+		$product_with_sync_disabled = new \WC_Product();
+		$product_with_sync_disabled->update_meta_data( Products::SYNC_ENABLED_META_KEY, 'no' );
+		$product_with_sync_disabled->save_meta_data();
+		$product_with_sync_disabled->save();
+
+		$published_product = new \WC_Product();
+		$published_product->set_status( 'publish' );
+		$published_product->save();
+
+		return [
+			'sync disabled'              => [ false, null, false ],
+			'not a product'              => [ true, null, false ],
+			'draft product'              => [ true, $draft_product, false ],
+			'product with sync disabled' => [ true, $product_with_sync_disabled, false ],
+			'published product'          => [ true, $published_product, true ],
+		];
 	}
 
 
