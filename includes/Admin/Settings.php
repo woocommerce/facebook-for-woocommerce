@@ -34,6 +34,8 @@ class Settings {
 	public function __construct() {
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
+
+		add_action( 'wp_loaded', [ $this, 'save' ] );
 	}
 
 
@@ -98,7 +100,30 @@ class Settings {
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function save() {}
+	public function save() {
+
+		if ( ! is_admin() || SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
+			return;
+		}
+
+		$screen = $this->get_screen( SV_WC_Helper::get_posted_value( 'screen_id' ) );
+
+		if ( ! $screen ) {
+			return;
+		}
+
+		if ( ! SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( __( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
+		}
+
+		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
+
+		$screen->save();
+	}
 
 
 	/**
