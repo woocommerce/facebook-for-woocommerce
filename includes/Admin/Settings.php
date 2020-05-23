@@ -58,6 +58,22 @@ class Settings {
 
 
 	/**
+	 * Gets a settings screen object based on ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $screen_id desired screen ID
+	 * @return Abstract_Settings_Screen|null
+	 */
+	private function get_screen( $screen_id ) {
+
+		$screens = $this->get_screens();
+
+		return ! empty( $screens[ $screen_id ] ) ? $screens[ $screen_id ] : null;
+	}
+
+
+	/**
 	 * Gets the available screens.
 	 *
 	 * @since 2.0.0-dev.1
