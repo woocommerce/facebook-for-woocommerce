@@ -48,6 +48,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
 		private $admin;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Admin\Settings */
+		private $admin_settings;
+
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
@@ -137,6 +140,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+
+				// load admin handlers, before admin_init
+				if ( is_admin() ) {
+
+					require_once __DIR__ . '/includes/Admin/Settings.php';
+					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+
+					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
+				}
 			}
 		}
 
@@ -151,8 +163,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function init_admin() {
 
 			require_once __DIR__ . '/includes/Admin.php';
-			require_once __DIR__ . '/includes/Admin/Settings.php';
-			require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
 
 			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
 		}
