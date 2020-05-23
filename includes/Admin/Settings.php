@@ -58,6 +58,26 @@ class Settings {
 
 
 	/**
+	 * Gets the available screens.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return Abstract_Settings_Screen[]
+	 */
+	private function get_screens() {
+
+		/**
+		 * Filters the admin settings screens.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $screens available screen objects
+		 */
+		return (array) apply_filters( 'wc_facebook_admin_settings_screens', [], $this );
+	}
+
+
+	/**
 	 * Gets the tabs.
 	 *
 	 * @since 2.0.0-dev.1
