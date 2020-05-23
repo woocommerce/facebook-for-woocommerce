@@ -65,7 +65,7 @@ class Settings {
 	 * @param string $screen_id desired screen ID
 	 * @return Abstract_Settings_Screen|null
 	 */
-	private function get_screen( $screen_id ) {
+	public function get_screen( $screen_id ) {
 
 		$screens = $this->get_screens();
 
@@ -80,7 +80,7 @@ class Settings {
 	 *
 	 * @return Abstract_Settings_Screen[]
 	 */
-	private function get_screens() {
+	public function get_screens() {
 
 		/**
 		 * Filters the admin settings screens.
@@ -100,7 +100,7 @@ class Settings {
 	 *
 	 * @return array
 	 */
-	private function get_tabs() {
+	public function get_tabs() {
 
 		/**
 		 * Filters the admin settings tabs.
