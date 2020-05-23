@@ -183,6 +183,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-info wc-facebook-migrate-notice',
 				] );
 			}
+
+			// if the connection is otherwise invalid, but there is an access token
+			if ( get_transient( 'wc_facebook_connection_invalid' ) && $this->get_connection_handler()->is_connected() ) {
+
+				$message = sprintf(
+					__( '%1$sHeads up!%2$s Your connection to Facebook is no longer valid. Please %3$sclick here%4$s to securely reconnect your account and continue syncing products.', 'facebook-for-woocommerce' ),
+					'<strong>', '</strong>',
+					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+				);
+
+				$this->get_admin_notice_handler()->add_admin_notice( $message, 'connection_invalid', [
+					'notice_class' => 'notice-error',
+				] );
+			}
 		}
 
 
