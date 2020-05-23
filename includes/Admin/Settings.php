@@ -26,12 +26,19 @@ class Settings {
 	const PAGE_ID = 'wc-facebook';
 
 
+	/** @var Abstract_Settings_Screen[] */
+	private $screens;
+
+
 	/**
 	 * Settings constructor.
 	 *
 	 * @since 2.0.0-dev.1
 	 */
 	public function __construct() {
+
+		$this->screens = [
+		];
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
 
@@ -151,9 +158,6 @@ class Settings {
 	 */
 	public function get_screens() {
 
-		$screens = [
-		];
-
 		/**
 		 * Filters the admin settings screens.
 		 *
@@ -161,7 +165,7 @@ class Settings {
 		 *
 		 * @param array $screens available screen objects
 		 */
-		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', $screens, $this );
+		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', $this->screens, $this );
 
 		// ensure no bogus values are added via filter
 		$screens = array_filter( $screens, function( $value ) {
