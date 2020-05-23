@@ -256,6 +256,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
 				}
 
+				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Request.php';
+				}
+
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
 					require_once __DIR__ . '/includes/API/Exceptions/Request_Limit_Reached.php';
 				}
