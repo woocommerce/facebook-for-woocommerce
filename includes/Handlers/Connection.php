@@ -47,13 +47,18 @@ class Connection {
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
+	/** @var \WC_Facebookcommerce */
+	private $plugin;
+
 
 	/**
 	 * Constructs a new Connection.
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function __construct() {
+	public function __construct( \WC_Facebookcommerce $plugin ) {
+
+		$this->plugin = $plugin;
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 	}
@@ -444,6 +449,19 @@ class Connection {
 	public function is_connected() {
 
 		return (bool) $this->get_access_token();
+	}
+
+
+	/**
+	 * Gets the plugin instance.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return \WC_Facebookcommerce
+	 */
+	public function get_plugin() {
+
+		return $this->plugin;
 	}
 
 

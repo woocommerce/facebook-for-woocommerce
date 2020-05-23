@@ -136,7 +136,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
 				}
 
-				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
 			}
 		}
 
