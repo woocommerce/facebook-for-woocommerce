@@ -19,16 +19,16 @@ abstract class Abstract_Settings_Screen {
 
 
 	/** @var string screen ID */
-	private $id;
+	protected $id;
 
 	/** @var string screen label, for display */
-	private $label;
+	protected $label;
 
 	/** @var string screen title, for display */
-	private $title;
+	protected $title;
 
 	/** @var string screen description, for display */
-	private $description;
+	protected $description;
 
 
 	/** Getter methods ************************************************************************************************/
