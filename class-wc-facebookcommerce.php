@@ -151,6 +151,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function init_admin() {
 
 			require_once __DIR__ . '/includes/Admin.php';
+			require_once __DIR__ . '/includes/Admin/Settings.php';
+			require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
 
 			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
 		}
