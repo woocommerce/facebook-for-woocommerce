@@ -82,6 +82,9 @@ class Settings {
 	 */
 	public function get_screens() {
 
+		$screens = [
+		];
+
 		/**
 		 * Filters the admin settings screens.
 		 *
@@ -89,7 +92,7 @@ class Settings {
 		 *
 		 * @param array $screens available screen objects
 		 */
-		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', [], $this );
+		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', $screens, $this );
 
 		// ensure no bogus values are added via filter
 		$screens = array_filter( $screens, function( $value ) {
@@ -111,6 +114,12 @@ class Settings {
 	 */
 	public function get_tabs() {
 
+		$tabs = [];
+
+		foreach ( $this->get_screens() as $screen_id => $screen ) {
+			$tabs[ $screen_id ] = $screen->get_label();
+		}
+
 		/**
 		 * Filters the admin settings tabs.
 		 *
@@ -118,7 +127,7 @@ class Settings {
 		 *
 		 * @param array $tabs tab data, as $id => $label
 		 */
-		return (array) apply_filters( 'wc_facebook_admin_settings_tabs', [], $this );
+		return (array) apply_filters( 'wc_facebook_admin_settings_tabs', $tabs, $this );
 	}
 
 
