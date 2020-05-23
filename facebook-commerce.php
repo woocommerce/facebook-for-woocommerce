@@ -693,7 +693,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @return int
 	 */
-	private function get_product_count() {
+	public function get_product_count() {
 
 		$args     = [
 			'post_type'      => 'product',

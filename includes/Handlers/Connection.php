@@ -394,6 +394,17 @@ class Connection {
 				'business' => [
 					'name' => $this->get_business_name(),
 				],
+				'page_shop' => [
+					'enabled'               => true,
+					'visible_product_count' => facebook_for_woocommerce()->get_integration()->get_product_count(),
+				],
+				'messenger_chat' => [
+					'enabled' => true,
+					'domains' => home_url(),
+				],
+				'ig_shopping' => [
+					'enabled' => true,
+				],
 			],
 			'repeat' => false,
 		];
