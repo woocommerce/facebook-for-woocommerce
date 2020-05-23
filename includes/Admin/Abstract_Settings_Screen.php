@@ -71,6 +71,17 @@ abstract class Abstract_Settings_Screen {
 	}
 
 
+	/**
+	 * Saves the settings.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function save() {
+
+		woocommerce_update_options( $this->get_settings() );
+	}
+
+
 	/** Getter methods ************************************************************************************************/
 
 
