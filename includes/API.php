@@ -86,8 +86,23 @@ class API extends Framework\SV_WC_API_Base {
 				throw new API\Exceptions\Request_Limit_Reached( $message, $response->get_api_error_code() );
 			}
 
+			/**
+			 * Handle invalid token errors
+			 *
+			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
+			 */
+			if ( in_array( $response->get_api_error_code(), [ 10, 102, 190 ], false ) ) {
+				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+			} else {
+				// this was an unrelated error, so the OAuth connection may still be valid
+				delete_transient( 'wc_facebook_connection_invalid' );
+			}
+
 			throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
 		}
+
+		// if we get this far we're connected, so delete any invalid connection flag
+		delete_transient( 'wc_facebook_connection_invalid' );
 	}
 
 
