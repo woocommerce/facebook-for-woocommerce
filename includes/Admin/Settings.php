@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -51,7 +53,44 @@ class Settings {
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function render() {}
+	public function render() {
+
+		$tabs        = $this->get_tabs();
+		$current_tab = SV_WC_Helper::get_requested_value( 'tab' );
+
+		if ( ! $current_tab ) {
+			$current_tab = current( array_keys( $tabs ) );
+		}
+
+		$screen = $this->get_screen( $current_tab );
+
+		?>
+
+		<div class="wrap woocommerce">
+
+			<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
+
+				<?php foreach ( $tabs as $id => $label ) : ?>
+					<a href="<?php echo esc_html( admin_url( 'admin.php?page=' . self::PAGE_ID . '&tab=' . esc_attr( $id ) ) ); ?>" class="nav-tab <?php echo $current_tab === $id ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>
+				<?php endforeach; ?>
+
+			</nav>
+
+			<?php facebook_for_woocommerce()->get_message_handler()->show_messages(); ?>
+
+			<?php if ( $screen ) : ?>
+
+				<h1 class="screen-reader-text"><?php echo esc_html( $screen->get_title() ); ?></h1>
+				<p><?php echo wp_kses_post( $screen->get_description() ); ?></p>
+
+				<?php $screen->render(); ?>
+
+			<?php endif; ?>
+
+		</div>
+
+		<?php
+	}
 
 
 	/**
