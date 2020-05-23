@@ -31,6 +31,46 @@ abstract class Abstract_Settings_Screen {
 	protected $description;
 
 
+	/**
+	 * Renders the screen.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function render() {
+
+		/**
+		 * Filters the screen settings.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $settings settings
+		 */
+		$settings = (array) apply_filters( 'wc_facebook_admin_' . $this->get_id() . '_settings', $this->get_settings(), $this );
+
+		if ( empty( $settings ) ) {
+			return;
+		}
+
+		?>
+
+		<?php if ( $this->get_disconnected_message() && ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) : ?>
+			<div class="notice notice-info"><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></div>
+		<?php endif; ?>
+
+		<form method="post" id="mainform" action="" enctype="multipart/form-data">
+
+			<?php woocommerce_admin_fields( $settings ); ?>
+
+			<input type="hidden" name="screen_id" value="<?php echo esc_attr( $this->get_id() ); ?>">
+			<?php wp_nonce_field( 'wc_facebook_admin_save_' . $this->get_id() . '_settings' ); ?>
+			<?php submit_button( __( 'Save changes', 'facebook-for-woocommerce' ), 'primary', 'save_' . $this->get_id() . '_settings' ); ?>
+
+		</form>
+
+		<?php
+	}
+
+
 	/** Getter methods ************************************************************************************************/
 
 
