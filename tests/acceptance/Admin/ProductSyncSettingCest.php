@@ -130,7 +130,7 @@ class ProductSyncSettingCest {
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
@@ -191,7 +191,7 @@ class ProductSyncSettingCest {
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
@@ -214,7 +214,8 @@ class ProductSyncSettingCest {
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+
+		$I->waitForText( 'Product updated', 20  );
 		$I->waitForText( 'If this product was previously visible in Facebook' );
 		$I->click( '.js-wc-plugin-framework-notice-dismiss' );
 
@@ -223,14 +224,14 @@ class ProductSyncSettingCest {
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 20  );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
 		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 20  );
 		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
@@ -259,7 +260,7 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15  );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
@@ -295,7 +296,7 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
@@ -358,7 +359,7 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 
 		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
 		$I->click( '#_virtual' );
