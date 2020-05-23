@@ -69,7 +69,7 @@ class Settings {
 
 		$screens = $this->get_screens();
 
-		return ! empty( $screens[ $screen_id ] ) ? $screens[ $screen_id ] : null;
+		return ! empty( $screens[ $screen_id ] ) && $screens[ $screen_id ] instanceof Abstract_Settings_Screen ? $screens[ $screen_id ] : null;
 	}
 
 
@@ -89,7 +89,16 @@ class Settings {
 		 *
 		 * @param array $screens available screen objects
 		 */
-		return (array) apply_filters( 'wc_facebook_admin_settings_screens', [], $this );
+		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', [], $this );
+
+		// ensure no bogus values are added via filter
+		$screens = array_filter( $screens, function( $value ) {
+
+			return $value instanceof Abstract_Settings_Screen;
+
+		} );
+
+		return $screens;
 	}
 
 
