@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Settings {
 
 
+	/** @var string base settings page ID */
+	const PAGE_ID = 'wc-facebook';
+
+
 	/**
 	 * Settings constructor.
 	 *
@@ -27,6 +31,7 @@ class Settings {
 	 */
 	public function __construct() {
 
+		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
 	}
 
 
@@ -37,7 +42,7 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-
+		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, [ $this, 'render' ], 5 );
 	}
 
 
