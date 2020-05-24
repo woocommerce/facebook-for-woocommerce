@@ -509,14 +509,15 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see API::get_new_request()
 	 *
-	 * @param array $args
-	 * @param string $expected_path
-	 * @param string $expected_method
+	 * @param array $args test case
+	 * @param string $expected_path expected request path
+	 * @param string $expected_method expected request method
+	 * @param string $expected_params optional array of expected requested parameters
 	 * @throws ReflectionException
 	 *
 	 * @dataProvider provider_get_new_request
 	 */
-	public function test_get_new_request( $args, $expected_path, $expected_method ) {
+	public function test_get_new_request( $args, $expected_path, $expected_method, $expected_params = [] ) {
 
 		$api = new API( 'fake-token' );
 
@@ -529,13 +530,20 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( $expected_path, $request->get_path() );
 		$this->assertEquals( $expected_method, $request->get_method() );
+		$this->assertEquals( $expected_params, $request->get_params() );
 	}
 
 
 	/** @see test_get_new_request() */
 	public function provider_get_new_request() {
 
+		$params = [
+			'fields' => 'id',
+			'limit'  => 100,
+		];
+
 		return [
+			[ [ 'path' => '/me', 'method' => 'GET', 'params' => $params ], '/me', 'GET', $params ],
 			[ [ 'path' => '/me', 'method' => 'GET' ], '/me', 'GET' ],
 			[ [ 'path' => '/1234/products', 'method' => 'GET' ], '/1234/products', 'GET' ],
 			[ [ 'path' => '/1234/batch', 'method' => 'POST' ], '/1234/batch', 'POST' ],
