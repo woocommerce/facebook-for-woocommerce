@@ -4266,7 +4266,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Helper function to update FB visibility.
 	 *
-	 * @param int $product_id product ID
+	 * @param int|\WC_Product $product_id product ID or product object
 	 * @param string $visibility visibility
 	 */
 	function update_fb_visibility( $product_id, $visibility ) {
@@ -4276,7 +4276,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$product = wc_get_product( $product_id );
+		$product = $product_id instanceof \WC_Product ? $product_id : wc_get_product( $product_id );
 
 		// bail if product isn't found
 		if ( ! $product instanceof \WC_Product ) {
