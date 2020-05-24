@@ -75,19 +75,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
 
 	/** @var string the "enable messenger" setting ID */
-	const SETTING_ENABLE_MESSENGER = 'enable_messenger';
+	const SETTING_ENABLE_MESSENGER = 'wc_facebook_enable_messenger';
 
 	/** @var string the messenger locale setting ID */
-	const SETTING_MESSENGER_LOCALE = 'messenger_locale';
+	const SETTING_MESSENGER_LOCALE = 'wc_facebook_messenger_locale';
 
 	/** @var string the messenger greeting setting ID */
-	const SETTING_MESSENGER_GREETING = 'messenger_greeting';
+	const SETTING_MESSENGER_GREETING = 'wc_facebook_messenger_greeting';
 
 	/** @var string the messenger color HEX setting ID */
-	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
+	const SETTING_MESSENGER_COLOR_HEX = 'wc_facebook_messenger_color_hex';
 
 	/** @var string the "debug mode" setting ID */
-	const SETTING_ENABLE_DEBUG_MODE = 'enable_debug_mode';
+	const SETTING_ENABLE_DEBUG_MODE = 'wc_facebook_enable_debug_mode';
 
 	/** @var string the standard product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_STANDARD = 'standard';
@@ -778,7 +778,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		},
 		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
 		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
-		messengerGreetingMaxCharacters: <?php echo esc_js( $this->get_messenger_greeting_max_characters() ); ?>
 	};
 
 	</script>
@@ -2456,24 +2455,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product_tags = $term_query->get_terms();
 
-		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-
-		// tries matching with WordPress locale, otherwise English, otherwise first available language
-		if ( isset( $messenger_locales[ get_locale() ] ) ) {
-			$default_locale = get_locale();
-		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
-			$default_locale = 'en_US';
-		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
-			$default_locale = key( $messenger_locales );
-		} else {
-			// fallback to English in case of invalid/empty filtered list of languages
-			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
-			$default_locale    = 'en_US';
-		}
-
-		$default_messenger_greeting = __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' );
-		$default_messenger_color    = '#0084ff';
-
 		$form_fields = [
 
 			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
@@ -3600,7 +3581,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $locale the configured Facebook messenger locale
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_messenger_locale', $this->get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
+		return (string) apply_filters( 'wc_facebook_messenger_locale', get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
 	}
 
 
@@ -3621,35 +3602,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $greeting the configured Facebook messenger greeting
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', $this->get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
+		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
 
 		// TODO: update to SV_WC_Helper::str_truncate() when frameworked {CW 2020-01-22}
-		return substr( $greeting, 0, $this->get_messenger_greeting_max_characters() );
-	}
-
-
-	/**
-	 * Gets the maximum number of characters allowed in the messenger greeting.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return int
-	 */
-	public function get_messenger_greeting_max_characters() {
-
-		$default = 80;
-
-		/**
-		 * Filters the maximum number of characters allowed in the messenger greeting.
-		 *
-		 * @since 1.10.0
-		 *
-		 * @param int $max the maximum number of characters allowed in the messenger greeting
-		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
-		 */
-		$max = (int) apply_filters( 'wc_facebook_messenger_greeting_max_characters', $default, $this );
-
-		return $max < 1 ? $default : $max;
+		return substr( $greeting, 0, \SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger::get_greeting_max_characters() );
 	}
 
 
@@ -3672,7 +3628,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $hex the configured Facebook messenger color hex
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_messenger_color_hex', $this->get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
+		return (string) apply_filters( 'wc_facebook_messenger_color_hex', get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
 	}
 
 
