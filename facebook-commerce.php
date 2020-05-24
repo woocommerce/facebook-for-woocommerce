@@ -4289,7 +4289,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
 
-		if ( $product->is_ty( 'variable' ) ) {
+		if ( $product->is_type( 'variation' ) ) {
+
+			Products::set_product_visibility( $product, $should_set_visible );
+
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $product->get_id() ] );
+
+		} elseif ( $product->is_type( 'variable' ) ) {
 
 			// parent product
 			Products::set_product_visibility( $product, $should_set_visible );
