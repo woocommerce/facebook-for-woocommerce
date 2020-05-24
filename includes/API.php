@@ -212,6 +212,26 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a list of Product Items in the given Product Group.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @param int $limit max number of results returned per page of data
+	 * @return API\Catalog\Product_Group\Products\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
+
+		$request = new API\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
+
+		$this->set_response_handler( API\Catalog\Product_Group\Products\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Finds a Product Item using the Catalog ID and the Retailer ID of the product or product variation.
 	 *
 	 * @since 2.0.0-dev.1
