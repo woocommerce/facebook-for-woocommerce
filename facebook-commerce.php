@@ -991,7 +991,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param \WP_post $post
 	 */
 	public function fb_change_product_published_status( $new_status, $old_status, $post ) {
-		global $post;
 
 		if ( ! $post ) {
 			return;
