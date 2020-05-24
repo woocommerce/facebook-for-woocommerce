@@ -325,14 +325,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
-		if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
-			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
-		}
-
-		if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
-			require_once 'includes/API/Catalog/Product_Item/Response.php';
-		}
-
 		$catalog_id  = '123456';
 		$retailer_id = '456';
 
