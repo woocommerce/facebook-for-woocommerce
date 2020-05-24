@@ -169,8 +169,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id product group ID
+	 * @param array $data product group data
 	 * @return Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
