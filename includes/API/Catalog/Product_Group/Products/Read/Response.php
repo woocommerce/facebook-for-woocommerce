@@ -32,7 +32,7 @@ class Response extends API\Response {
 	 *
 	 * @return array
 	 */
-	public function get_product_item_ids() {
+	public function get_ids() {
 
 		$product_item_ids = [];
 

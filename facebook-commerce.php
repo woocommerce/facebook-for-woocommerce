@@ -746,7 +746,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			do {
 
-				$product_item_ids = array_merge( $product_item_ids, $response->get_product_item_ids() );
+				$product_item_ids = array_merge( $product_item_ids, $response->get_ids() );
 
 			// get up to two additional pages of results
 			} while ( $response = facebook_for_woocommerce()->get_api()->next( $response, 2 ) );
