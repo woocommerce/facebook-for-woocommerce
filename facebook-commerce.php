@@ -689,6 +689,60 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets a list of Product Item IDs indexed by the ID of the variation.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @return array
+	 */
+	private function get_variation_product_item_ids( $product, $product_group_id ) {
+
+		$product_item_ids_by_variation_id = [];
+		$missing_product_item_ids         = [];
+
+		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored
+		foreach ( $product->get_children() as $variation_id ) {
+
+			if ( $variation = wc_get_product( $variation_id ) ) {
+
+				if ( $product_item_id = $variation->get_meta( self::FB_PRODUCT_ITEM_ID ) ) {
+
+					$product_item_ids_by_variation_id[ $variation_id ] = $product_item_id;
+
+				} else {
+
+					$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
+
+					$missing_product_item_ids[ $retailer_id ] = $variation;
+
+					$product_item_ids_by_variation_id[ $variation_id ] = null;
+				}
+			}
+		}
+
+		// use the Graph API to try to find and store the product item IDs for variations that don't have a value yet
+		if ( $missing_product_item_ids ) {
+
+			$product_item_ids = $this->find_variation_product_item_ids( $product_group_id );
+
+			foreach ( $missing_product_item_ids as $retailer_id => $variation ) {
+
+				if ( isset( $product_item_ids[ $retailer_id ] ) ) {
+
+					$variation->update_meta_data( self::FB_PRODUCT_ITEM_ID, $product_item_ids[ $retailer_id ] );
+					$variation->save_meta_data();
+
+					$product_item_ids_by_variation_id[ $variation->get_id() ] = $product_item_ids[ $retailer_id ];
+				}
+			}
+		}
+
+		return $product_item_ids_by_variation_id;
+	}
+
+
+	/**
 	 * Uses the Graph API to return a list of Product Item IDs indexed by the variation's retailer ID.
 	 *
 	 * @since 2.0.0-dev.1
