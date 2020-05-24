@@ -491,11 +491,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function is_plugin_settings() {
 
-			$page    = Framework\SV_WC_Helper::get_requested_value( 'page' );
-			$tab     = Framework\SV_WC_Helper::get_requested_value( 'tab' );
-			$section = Framework\SV_WC_Helper::get_requested_value( 'section' );
-
-			return is_admin() && 'wc-settings' === $page && 'integration' === $tab && self::INTEGRATION_ID === $section;
+			return is_admin() && \SkyVerge\WooCommerce\Facebook\Admin\Settings::PAGE_ID === Framework\SV_WC_Helper::get_requested_value( 'page' );
 		}
 
 
