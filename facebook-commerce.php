@@ -1000,7 +1000,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product = wc_get_product( $post->ID );
 
-		// bail if this product isn't enabled for sync
+		// bail if we couldn't retrieve a valid product object or the product isn't enabled for sync
+		//
+		// Note that while moving a variable product to the trash, this method is called for each one of the
+		// variations before it gets called with the variable product. As a result, Products::product_should_be_synced()
+		// always returns false for the variable product (since all children are in the trash at that point).
+		// This causes update_fb_visibility() to be called on simple products and product variations only.
 		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
 			return;
 		}
