@@ -130,6 +130,8 @@ class Settings {
 		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
 
 		$screen->save();
+
+		facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
 	}
 
 
