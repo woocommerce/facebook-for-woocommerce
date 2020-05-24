@@ -55,8 +55,8 @@ abstract class Abstract_Settings_Screen {
 
 		?>
 
-		<?php if ( $this->get_disconnected_message() && ! $is_connected ) : ?>
-			<div class="notice notice-info"><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></div>
+		<?php if ( ! $is_connected && $this->get_disconnected_message() ) : ?>
+			<div class="notice notice-info"><p><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></p></div>
 		<?php endif; ?>
 
 		<form class="wc-facebook-settings <?php echo $is_connected ? 'connected' : 'disconnected'; ?>" method="post" id="mainform" action="" enctype="multipart/form-data">
