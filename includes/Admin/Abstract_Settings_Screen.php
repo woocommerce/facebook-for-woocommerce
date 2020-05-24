@@ -51,13 +51,15 @@ abstract class Abstract_Settings_Screen {
 			return;
 		}
 
+		$is_connected = facebook_for_woocommerce()->get_connection_handler()->is_connected();
+
 		?>
 
-		<?php if ( $this->get_disconnected_message() && ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) : ?>
+		<?php if ( $this->get_disconnected_message() && ! $is_connected ) : ?>
 			<div class="notice notice-info"><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></div>
 		<?php endif; ?>
 
-		<form method="post" id="mainform" action="" enctype="multipart/form-data">
+		<form class="wc-facebook-settings <?php echo $is_connected ? 'connected' : 'disconnected'; ?>" method="post" id="mainform" action="" enctype="multipart/form-data">
 
 			<?php woocommerce_admin_fields( $settings ); ?>
 
