@@ -413,6 +413,80 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::next() */
+	public function test_next() {
+
+		$response_data = [
+			'paging' => [
+				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+			],
+		];
+
+		$request_args = [
+			'path'   => '/1234/products',
+			'method' => 'GET',
+			'params' => [
+				'fields' => 'id,retailer_id',
+				'limit'  => 1000,
+				'after'  => 'ABCD',
+			],
+		];
+
+		$response      = $this->get_paginated_response( $response_data );
+		$next_response = $this->get_paginated_response( [] );
+
+		$api = $this->make( API::class, [
+			'perform_request' => function( API\Request $request ) use ( $request_args, $next_response ) {
+
+				$this->assertEquals( $request_args['path'],   $request->get_path() );
+				$this->assertEquals( $request_args['method'], $request->get_method() );
+				$this->assertEquals( $request_args['params'], $request->get_params() );
+
+				return $next_response;
+			},
+		] );
+
+		$this->assertSame( $next_response, $api->next( $response ) );
+		$this->assertEquals( $next_response->get_pages_retrieved(), $response->get_pages_retrieved() + 1 );
+	}
+
+
+	/** @see API::next() */
+	public function test_next_when_there_is_no_next_page() {
+
+		$response = $this->get_paginated_response( [] );
+
+		$api = $this->make( API::class, [
+			'perform_request' => Codeception\Stub\Expected::never(),
+		] );
+
+		$this->assertNull( $api->next( $response ) );
+	}
+
+
+	/** @see API::next() */
+	public function test_next_when_enough_pages_have_been_retrieved() {
+
+		$response_data = [
+			'paging' => [
+				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+			],
+		];
+
+		$additional_pages = 2;
+		$pages_retrieved  = 3; // the first page from the original response and two more using next()
+
+		$response = $this->get_paginated_response( $response_data );
+		$response->set_pages_retrieved( $pages_retrieved );
+
+		$api = $this->make( API::class, [
+			'perform_request' => Codeception\Stub\Expected::never(),
+		] );
+
+		$this->assertNull( $api->next( $response, $additional_pages ) );
+	}
+
+
 	/** @see API::set_rate_limit_delay() */
 	public function test_set_rate_limit_delay() {
 
@@ -469,6 +543,23 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			[ [ 'method' => 'DELETE' ], '/', 'DELETE' ],
 			[ [], '/', 'GET' ],
 		];
+	}
+
+
+	/** Helper methods **************************************************************************************************/
+
+
+	/**
+	 * Gets an instance of an anonymous Response class that uses the API\Traits\Paginated_Response trait.
+	 *
+	 * @return API\Response
+	 */
+	private function get_paginated_response( $response_data ) {
+
+		return new class( json_encode( $response_data ) ) extends API\Response {
+
+			use API\Traits\Paginated_Response;
+		};
 	}
 
 
