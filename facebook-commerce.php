@@ -4289,22 +4289,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
 
-		if ( ! $product->is_type( 'variable' ) ) {
-
-			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
-
-			if ( ! $fb_product_item_id ) {
-				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
-				 return;
-			}
-
-			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
-
-			if ( $this->check_api_result( $set_visibility ) ) {
-				Products::set_product_visibility( $product, $should_set_visible );
-			}
-
-		} else {
+		if ( $product->is_ty( 'variable' ) ) {
 
 			// parent product
 			Products::set_product_visibility( $product, $should_set_visible );
@@ -4330,6 +4315,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// sync product with all variations
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+
+		} else {
+
+			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
+
+			if ( ! $fb_product_item_id ) {
+				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
+				 return;
+			}
+
+			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
+
+			if ( $this->check_api_result( $set_visibility ) ) {
+				Products::set_product_visibility( $product, $should_set_visible );
+			}
 		}
 	}
 
