@@ -432,8 +432,8 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			],
 		];
 
-		$response      = $this->get_paginated_response( $response_data );
-		$next_response = $this->get_paginated_response( [] );
+		$response      = $this->tester->get_paginated_response( $response_data );
+		$next_response = $this->tester->get_paginated_response();
 
 		$api = $this->make( API::class, [
 			'perform_request' => function( API\Request $request ) use ( $request_args, $next_response ) {
@@ -454,7 +454,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::next() */
 	public function test_next_when_there_is_no_next_page() {
 
-		$response = $this->get_paginated_response( [] );
+		$response = $this->tester->get_paginated_response();
 
 		$api = $this->make( API::class, [
 			'perform_request' => Codeception\Stub\Expected::never(),
@@ -476,7 +476,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$additional_pages = 2;
 		$pages_retrieved  = 3; // the first page from the original response and two more using next()
 
-		$response = $this->get_paginated_response( $response_data );
+		$response = $this->tester->get_paginated_response( $response_data );
 		$response->set_pages_retrieved( $pages_retrieved );
 
 		$api = $this->make( API::class, [
@@ -551,23 +551,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			[ [ 'method' => 'DELETE' ], '/', 'DELETE' ],
 			[ [], '/', 'GET' ],
 		];
-	}
-
-
-	/** Helper methods **************************************************************************************************/
-
-
-	/**
-	 * Gets an instance of an anonymous Response class that uses the API\Traits\Paginated_Response trait.
-	 *
-	 * @return API\Response
-	 */
-	private function get_paginated_response( $response_data ) {
-
-		return new class( json_encode( $response_data ) ) extends API\Response {
-
-			use API\Traits\Paginated_Response;
-		};
 	}
 
 
