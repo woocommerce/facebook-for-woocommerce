@@ -412,7 +412,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 *     @type string $path request path
 	 *     @type string $method request method
-	 *     @type array  $params request parameters
+	 *     @type array $params request parameters
 	 * }
 	 * @return Request
 	 */
