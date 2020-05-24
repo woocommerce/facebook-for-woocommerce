@@ -355,6 +355,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 *     @type string $path request path
 	 *     @type string $method request method
+	 *     @type array  $params request parameters
 	 * }
 	 * @return Request
 	 */
@@ -363,11 +364,17 @@ class API extends Framework\SV_WC_API_Base {
 		$defaults = [
 			'path'   => '/',
 			'method' => 'GET',
+			'params' => [],
 		];
 
-		$args = wp_parse_args( $args, $defaults );
+		$args    = wp_parse_args( $args, $defaults );
+		$request = new Request( $args['path'], $args['method'] );
 
-		return new Request( $args['path'], $args['method'] );
+		if ( $args['params'] ) {
+			$request->set_params( $args['params'] );
+		}
+
+		return $request;
 	}
 
 
