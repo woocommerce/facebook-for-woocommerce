@@ -1010,7 +1010,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// change from trash status -> publish status
 		// no need to update for change from trash <-> unpublish status
 		if ( ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' ) ) {
-			$this->update_fb_visibility( $post->ID, $visibility );
+			$this->update_fb_visibility( $product, $visibility );
 		}
 	}
 
@@ -4353,7 +4353,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} else {
 			// - product never published to Facebook, new status is not publish
 			// - product new status is not publish but may have been published before
-			$this->update_fb_visibility( $wp_id, $visibility );
+			$this->update_fb_visibility( $product, $visibility );
 		}
 	}
 
