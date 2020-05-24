@@ -324,6 +324,43 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the next page of results for a paginated response.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param API\Response $response previous response object
+	 * @param int $additional_pages number of additional pages of results to retrieve
+	 * @return API\Response|null
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function next( API\Response $response, $additional_pages = null ) {
+
+		$next_response = null;
+
+		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
+		if ( ( null === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
+
+			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+
+			$request = $this->get_new_request( [
+				'path'   => isset( $components['path'] ) ? $components['path'] : '',
+				'method' => 'GET',
+				'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : [],
+			] );
+
+			$this->set_response_handler( get_class( $response ) );
+
+			$next_response = $this->perform_request( $request );
+
+			// this is the n + 1 page of results for the original response
+			$next_response->set_pages_retrieved( $response->get_pages_retrieved() + 1 );
+		}
+
+		return $next_response;
+	}
+
+
+	/**
 	 * Stores an option with the delay, in seconds, for requests with the given rate limit ID.
 	 *
 	 * @since 2.0.0-dev.1
