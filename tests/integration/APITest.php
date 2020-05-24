@@ -294,6 +294,34 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_product_group_products() */
+	public function test_get_product_group_products() {
+
+		$product_group_id = '1234';
+		$limit            = 42;
+
+		$request_params   = [
+			'fields' => 'id,retailer_id',
+			'limit'  => $limit,
+		];
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_product_group_products( $product_group_id, $limit );
+
+		$this->assertInstanceOf( API\Catalog\Product_Group\Products\Read\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$product_group_id}/products", $api->get_request()->get_path() );
+		$this->assertEquals( $request_params, $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Catalog\Product_Group\Products\Read\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
 
