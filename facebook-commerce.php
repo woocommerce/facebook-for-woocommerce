@@ -689,6 +689,40 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Uses the Graph API to return a list of Product Item IDs indexed by the variation's retailer ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @return array
+	 */
+	private function find_variation_product_item_ids( $product_group_id ) {
+
+		$product_item_ids = [];
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api()->get_product_group_products( $product_group_id );
+
+			do {
+
+				$product_item_ids = array_merge( $product_item_ids, $response->get_product_item_ids() );
+
+			// get up to two additional pages of results
+			} while ( $response = facebook_for_woocommerce()->get_api()->next( $response, 2 ) );
+
+		} catch ( Framework\SV_WC_API_Exception $e ) {
+
+			$message = sprintf( 'There was an error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() );
+
+			facebook_for_woocommerce()->log( $message );
+		}
+
+		return $product_item_ids;
+	}
+
+
+	/**
 	 * Gets the total of published products.
 	 *
 	 * @return int
