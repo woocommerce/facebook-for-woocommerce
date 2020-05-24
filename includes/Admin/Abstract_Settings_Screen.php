@@ -63,9 +63,11 @@ abstract class Abstract_Settings_Screen {
 
 			<?php woocommerce_admin_fields( $settings ); ?>
 
-			<input type="hidden" name="screen_id" value="<?php echo esc_attr( $this->get_id() ); ?>">
-			<?php wp_nonce_field( 'wc_facebook_admin_save_' . $this->get_id() . '_settings' ); ?>
-			<?php submit_button( __( 'Save changes', 'facebook-for-woocommerce' ), 'primary', 'save_' . $this->get_id() . '_settings' ); ?>
+			<?php if ( $is_connected ) : ?>
+				<input type="hidden" name="screen_id" value="<?php echo esc_attr( $this->get_id() ); ?>">
+				<?php wp_nonce_field( 'wc_facebook_admin_save_' . $this->get_id() . '_settings' ); ?>
+				<?php submit_button( __( 'Save changes', 'facebook-for-woocommerce' ), 'primary', 'save_' . $this->get_id() . '_settings' ); ?>
+			<?php endif; ?>
 
 		</form>
 
