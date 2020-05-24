@@ -614,44 +614,30 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $fb_product_group_id ) {
 
 			?>
-				<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
-				<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
-				target="_blank">
-					<?php echo esc_html( $fb_product_group_id ); ?>
-				</a>
-				<p/>
-			<?php
 
-			if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
+			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?> <a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
+			                                                                           target="_blank"><?php echo esc_html( $fb_product_group_id ); ?></a>
+			<p/>
 
-				?>
-					<p><?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
-				<?php
+			<?php if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) : ?>
 
-				$children = $woo_product->get_children();
+				<?php if ( $product_item_ids_by_variation_id = $this->get_variation_product_item_ids( $woo_product, $fb_product_group_id ) ) : ?>
 
-				foreach ( $children as $child_id ) {
+					<p>
+						<?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
 
-					$fb_product_item_id = $this->get_product_fbid(
-						self::FB_PRODUCT_ITEM_ID,
-						$child_id
-					);
+						<?php foreach ( $product_item_ids_by_variation_id as $variation_id => $product_item_id ) : ?>
 
-					?>
-						<?php echo esc_html( $child_id ); ?>:
-						<a href="https://facebook.com/<?php echo esc_attr( $fb_product_item_id ); ?>"
-						target="_blank">
-							<?php echo esc_html( $fb_product_item_id ); ?>
-						</a><br/>
-					<?php
-				}
+							<?php echo esc_html( $variation_id ); ?>: <a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>"
+							                                             target="_blank"><?php echo esc_html( $product_item_id ); ?></a><br/>
 
-				?>
+						<?php endforeach; ?>
 					</p>
-				<?php
-			}
 
-			?>
+				<?php endif; ?>
+
+			<?php endif; ?>
+
 				<?php /* ?>
 				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
