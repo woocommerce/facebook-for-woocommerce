@@ -46,7 +46,9 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) {
+		$tab = SV_WC_Helper::get_requested_value( 'tab' );
+
+		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ! $tab || $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) {
 			return;
 		}
 
