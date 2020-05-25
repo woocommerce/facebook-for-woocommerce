@@ -42,27 +42,22 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
      *
      * @dataProvider provider_delete_products()
      */
-    public function test_delete_products( $product_ids ) {
-
-        // TODO: remove when this file is included in the main plugin class {WV 2020-05-19}
-	    if ( ! class_exists( Sync::class ) ) {
-            require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/Products/Sync.php';
-	    }
+    public function test_delete_products( $retailer_ids ) {
 
         $sync = new Sync();
 
-        $sync->delete_products( $product_ids );
+        $sync->delete_products( $retailer_ids );
 
         $requests_property = new ReflectionProperty( Sync::class, 'requests' );
         $requests_property->setAccessible( true );
 
         $requests = $requests_property->getValue( $sync );
 
-        foreach ( $product_ids as $product_id ) {
-            $this->assertEquals( Sync::ACTION_DELETE, $requests["p-{$product_id}"] );
+        foreach ( $retailer_ids as $retailer_id ) {
+            $this->assertEquals( Sync::ACTION_DELETE, $requests[ $retailer_id ] );
         }
 
-        $this->assertEquals( count( $requests ), count( $product_ids ) );
+        $this->assertEquals( count( $requests ), count( $retailer_ids ) );
     }
 
 
@@ -71,7 +66,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
         return [
             [ [] ],
-            [ [ 1, 2, 3, 4 ] ],
+            [ [ "wc_post_id_1", "wc_post_id_2", "sku_3" ] ],
         ];
 	}
 
