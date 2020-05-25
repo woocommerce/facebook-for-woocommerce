@@ -952,19 +952,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( ! $product->is_type( 'variable' ) ) {
+		if ( $product->is_type( 'variable' ) ) {
+
+			$product_ids = array_merge( [ $product_id ], $product->get_children() );
+
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product_ids );
+
+		} else {
 
 			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 
 			if ( $fb_product_id ) {
 				$this->delete_product_item( $product_id );
 			}
-
-		} else {
-
-			$product_ids = array_merge( [ $product_id ], $product->get_children() );
-
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product_ids );
 		}
 
 
