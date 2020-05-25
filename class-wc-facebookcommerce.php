@@ -411,7 +411,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_settings_url( $plugin_id = null ) {
 
-			return admin_url( 'admin.php?page=wc-settings&tab=integration&section=' . self::INTEGRATION_ID );
+			return admin_url( 'admin.php?page=wc-facebook' );
 		}
 
 
