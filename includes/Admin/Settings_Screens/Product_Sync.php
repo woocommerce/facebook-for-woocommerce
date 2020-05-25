@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
 /**
  * The Messenger settings screen object.
@@ -47,6 +48,12 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @since 2.0.0-dev.1
 	 */
 	public function enqueue_assets() {
+
+		$tab = SV_WC_Helper::get_requested_value( 'tab' );
+
+		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && self::ID !== $tab ) ) {
+			return;
+		}
 
 		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
 		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
