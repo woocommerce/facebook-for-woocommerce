@@ -952,7 +952,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( $product->is_type( 'variable' ) ) {
+		if ( $product->is_type( 'variation' ) ) {
+
+			// enqueue variation to be deleted in the background
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $product->get_id() ] );
+
+		} elseif ( $product->is_type( 'variable' ) ) {
 
 			$product_ids = array_merge( [ $product_id ], $product->get_children() );
 
