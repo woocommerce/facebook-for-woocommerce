@@ -954,12 +954,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $product->is_type( 'variation' ) ) {
 
+			$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
 			// enqueue variation to be deleted in the background
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $product->get_id() ] );
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $retailer_id ] );
 
 		} elseif ( $product->is_type( 'variable' ) ) {
 
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product->get_children() );
+			$retailer_ids = [];
+
+			foreach ( $product->get_children() as $variation_id ) {
+
+				$variation = wc_get_product( $variation_id );
+
+				if ( $variation instanceof \WC_Product ) {
+					$retailer_ids[] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
+				}
+			}
+
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $retailer_ids );
 
 			$this->delete_product_group( $product_id );
 
