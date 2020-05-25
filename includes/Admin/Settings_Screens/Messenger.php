@@ -48,7 +48,12 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		wp_enqueue_script( 'wc-facebook-admin-settings-messenger', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-settings-messenger.min.js', [ 'jquery', 'iris' ], \WC_Facebookcommerce::VERSION );
+		// only enqueue assets on this specific screen
+		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || self::ID !== SV_WC_Helper::get_requested_value( 'tab' ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'wc-facebook-admin-settings-messenger', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-settings-messenger.min.js', [ 'jquery', 'iris', 'wc-enhanced-select' ], \WC_Facebookcommerce::VERSION );
 	}
 
 
