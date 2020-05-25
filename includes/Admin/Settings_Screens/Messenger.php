@@ -34,7 +34,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Messenger', 'facebook-for-woocommerce' );
 		$this->title = __( 'Messenger', 'facebook-for-woocommerce' );
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		add_action( 'woocommerce_admin_field_messenger_greeting', [ $this, 'render_greeting_field'] );
 		add_action( 'woocommerce_admin_settings_sanitize_option_wc_facebook_messenger_greeting', [ $this, 'sanitize_messenger_greeting' ], 10, 3 );
@@ -42,11 +42,11 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 
 	/**
-	 * Enqueues the scripts.
+	 * Enqueues the assets.
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_assets() {
 
 		wp_enqueue_script( 'wc-facebook-admin-settings-messenger', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-settings-messenger.min.js', [ 'jquery', 'iris' ], \WC_Facebookcommerce::VERSION );
 	}
