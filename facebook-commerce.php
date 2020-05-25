@@ -970,15 +970,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		}
 
-
-		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
-
-		if ( $fb_product_group_id ) {
-
-			$pg_result = $this->fbgraph->delete_product_group( $fb_product_group_id );
-
-			\WC_Facebookcommerce_Utils::log( $pg_result );
-		}
+		$this->delete_product_group( $product_id );
 
 		$this->enable_product_sync_delay_admin_notice();
 	}
@@ -4258,6 +4250,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			WC_Facebookcommerce_Utils::log( $pi_result );
 		}
 	}
+
+
+	/**
+	 * Uses the Graph API to delete the Product Group associated with the given product.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param int $product_id product ID
+	 */
+	private function delete_product_group( $product_id ) {
+
+		$product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
+
+		if ( $product_group_id ) {
+
+			$pg_result = $this->fbgraph->delete_product_group( $product_group_id );
+
+			\WC_Facebookcommerce_Utils::log( $pg_result );
+		}
+	}
+
 
 	function fb_duplicate_product_reset_meta( $to_delete ) {
 		array_push( $to_delete, self::FB_PRODUCT_ITEM_ID );
