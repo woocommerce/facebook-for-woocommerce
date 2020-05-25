@@ -268,12 +268,12 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 			<div class="actions">
 
-				<?php foreach ( $actions as $action ) : ?>
+				<?php foreach ( $actions as $action_id => $action ) : ?>
 
 					<a
 						href="<?php echo esc_url( $action['url'] ); ?>"
-						class="<?php echo ( 'internal' !== $action['type'] ) ? 'button' : ''; ?> button-<?php echo esc_attr( $action['type'] ); ?>"
-						<?php echo ( 'internal' !== $action['type'] ) ? 'target="_blank"' : ''; ?>
+						class="button button-<?php echo esc_attr( $action['type'] ); ?>"
+						<?php echo ( 'get-started' !== $action_id ) ? 'target="_blank"' : ''; ?>
 					>
 						<?php echo esc_html( $action['label'] ); ?>
 					</a>
