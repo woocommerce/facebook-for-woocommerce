@@ -169,22 +169,16 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	public function process_item( $item, $job ) {
 
-		list( $product_id, $method ) = $item;
-
-		$product = wc_get_product( $product_id );
-
-		if ( ! $product instanceof \WC_Product ) {
-			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
-		}
+		list( $item_id, $method ) = $item;
 
 		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
 			throw new Framework\SV_WC_Plugin_Exception( "Invalid sync request method: {$method}." );
 		}
 
 		if ( Sync::ACTION_UPDATE === $method ) {
-			$request = $this->process_item_update( $product );
+			$request = $this->process_item_update( $item_id );
 		} else {
-			$request = $this->process_item_delete( $product );
+			$request = $this->process_item_delete( $item_id );
 		}
 
 		return $request;
