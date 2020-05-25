@@ -71,6 +71,86 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
+		$static_items = [
+			'page' => [
+				'label' => __( 'Page', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_integration()->get_facebook_page_id(),
+			],
+			'pixel' => [
+				'label' => __( 'Pixel', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(),
+			],
+			'catalog' => [
+				'label' => __( 'Catalog', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
+				'url'   => 'https://facebook.com/products',
+			],
+			'business-manager' => [
+				'label' => __( 'Business manager', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id(),
+			],
+		];
+
+		?>
+
+		<table class="form-table">
+			<tbody>
+
+				<?php foreach ( $static_items as $id => $item ) :
+
+					$item = wp_parse_args( $item, [
+						'label' => '',
+						'value' => '',
+						'url'   => '',
+					] );
+
+					?>
+
+					<tr valign="top" class="wc-facebook-connected-<?php echo esc_attr( $id ); ?>">
+
+						<th scope="row" class="titledesc">
+							<?php echo esc_html( $item['label'] ); ?>
+						</th>
+
+						<td class="forminp">
+
+							<?php if ( $item['url'] ) : ?>
+
+								<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank">
+
+									<?php echo esc_html( $item['value'] ); ?>
+
+									<span
+										class="dashicons dashicons-external"
+										style="margin-right: 8px; vertical-align: bottom; text-decoration: none;"
+									></span>
+
+								</a>
+
+							<?php elseif ( is_numeric( $item['value'] ) ) : ?>
+
+								<code><?php echo esc_html( $item['value'] ); ?></code>
+
+							<?php elseif ( ! empty( $item['value'] ) ) : ?>
+
+								<?php echo esc_html( $item['value'] ); ?>
+
+							<?php else : ?>
+
+								<?php echo '-' ?>
+
+							<?php endif; ?>
+
+						</td>
+					</tr>
+
+				<?php endforeach; ?>
+
+			</tbody>
+		</table>
+
+		<?php
+
 		parent::render();
 	}
 
