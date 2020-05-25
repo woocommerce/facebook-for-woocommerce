@@ -35,6 +35,22 @@ class Connection extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Connection', 'facebook-for-woocommerce' );
 		$this->title = __( 'Connection', 'facebook-for-woocommerce' );
 
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+	}
+
+
+	/**
+	 * Enqueue the assets.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function enqueue_assets() {
+
+		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) {
+			return;
+		}
+
+		wp_enqueue_style( 'wc-facebook-admin-connection-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-connection.css', [], \WC_Facebookcommerce::VERSION );
 	}
 
 
