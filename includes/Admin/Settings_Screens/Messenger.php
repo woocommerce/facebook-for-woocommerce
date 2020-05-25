@@ -44,6 +44,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Enqueues the assets.
 	 *
+	 * @internal
+	 *
 	 * @since 2.0.0-dev.1
 	 */
 	public function enqueue_assets() {
@@ -61,6 +63,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 	/**
 	 * Renders the custom greeting field.
+	 *
+	 * @internal
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -122,6 +126,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 	/**
 	 * Sanitizes the message greeting field value on save.
+	 *
+	 * @internal
 	 *
 	 * @since 2.0.0-dev.1
 	 *
