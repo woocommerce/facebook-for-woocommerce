@@ -57,7 +57,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
 		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
 		$sync_remaining_items_string = _n_noop( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 'facebook-for-woocommerce' );
