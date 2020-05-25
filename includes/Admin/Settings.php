@@ -38,6 +38,7 @@ class Settings {
 	public function __construct() {
 
 		$this->screens = [
+			Settings_Screens\Connection::ID => new Settings_Screens\Connection(),
 		];
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
