@@ -965,12 +965,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} else {
 
-			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
-
-			if ( $fb_product_id ) {
-				$this->delete_product_item( $product_id );
-			}
-
+			$this->delete_product_item( $product_id );
 			$this->delete_product_group( $product_id );
 		}
 
