@@ -959,9 +959,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} elseif ( $product->is_type( 'variable' ) ) {
 
-			$product_ids = array_merge( [ $product_id ], $product->get_children() );
-
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product_ids );
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product->get_children() );
 
 		} else {
 
