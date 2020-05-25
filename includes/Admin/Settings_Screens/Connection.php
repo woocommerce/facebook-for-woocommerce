@@ -103,7 +103,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'url'   => 'https://facebook.com/products',
 			],
 			'business-manager' => [
-				'label' => __( 'Business manager', 'facebook-for-woocommerce' ),
+				'label' => __( 'Business Manager account', 'facebook-for-woocommerce' ),
 				'value' => facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id(),
 			],
 		];
