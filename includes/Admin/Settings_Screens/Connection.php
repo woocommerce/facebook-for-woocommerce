@@ -71,6 +71,17 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
+		/**
+		 * Build the basic static elements.
+		 *
+		 * At a minimum, we display their raw ID. If they have an API resource, we replace that ID with whatever data
+		 * we can get our hands on, with an external link if possible. Current abilities:
+		 *
+		 * + Page: just the ID
+		 * + Pixel: just the ID
+		 * + Catalog: name, general link to the user's catalog manager (we can't link to a specific catalog)
+		 * + Ad account: not currently available
+		 */
 		$static_items = [
 			'page' => [
 				'label' => __( 'Page', 'facebook-for-woocommerce' ),
@@ -90,6 +101,20 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'value' => facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id(),
 			],
 		];
+
+		// if the catalog ID is set, try and get its name for display
+		if ( $static_items['catalog']['value'] ) {
+
+			try {
+
+				$response = facebook_for_woocommerce()->get_api()->get_catalog( $static_items['catalog']['value'] );
+
+				if ( $name = $response->get_name() ) {
+					$static_items['catalog']['value'] = $name;
+				}
+
+			} catch ( SV_WC_API_Exception $exception ) {}
+		}
 
 		?>
 
