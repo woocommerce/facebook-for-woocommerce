@@ -54,6 +54,12 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Background::process_items() */
 	public function test_process_items() {
 
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
 		$job = $this->get_test_job();
 
 		// mock the API to return an successful response
@@ -73,7 +79,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 				$this->assertEquals( 2, count( $item ) );
 
 				// assert the first position is one of the product IDs
-				$this->assertContains( $item[0], [ 1, 2, 3 ] );
+				$this->assertContains( $item[0], [ Sync::PRODUCT_INDEX_PREFIX . 1, Sync::PRODUCT_INDEX_PREFIX . 2, Sync::PRODUCT_INDEX_PREFIX . 3 ] );
 
 				// assert the second position is one of the accepted sync methods
 				$this->assertContains( $item[1], [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ] );
@@ -338,11 +344,11 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$product = new \WC_Product_Simple();
 		$product->save();
 
-		$item = [ $product->get_id(), Sync::ACTION_DELETE ];
+		$retailer_id = "wc_post_id_{$product->get_id()}";
 
-		$result = $this->get_background()->process_item( $item, null );
+		$result = $this->get_background()->process_item( [ $retailer_id, Sync::ACTION_DELETE ], null );
 
-		$this->assertEquals( "wc_post_id_{$product->get_id()}", $result['retailer_id'] );
+		$this->assertEquals( $retailer_id, $result['retailer_id'] );
 		$this->assertEquals( Sync::ACTION_DELETE, $result['method'] );
 	}
 
@@ -401,7 +407,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$product = new \WC_Product_Simple();
 		$product->save();
 
-		$request = $this->get_background()->process_item( [ $product, $method ], null );
+		$request = $this->get_background()->process_item( [ Sync::PRODUCT_INDEX_PREFIX . $product->get_id(), $method ], null );
 
 		$this->assertEquals( [ 'filtered' => true ], $request );
 	}
