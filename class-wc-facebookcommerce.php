@@ -257,6 +257,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Response.php';
 				}
 
+				if ( ! class_exists( API\Business_Manager\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Request.php';
+				}
+
+				if ( ! class_exists( API\Business_Manager\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Response.php';
+				}
+
 				if ( ! class_exists( API\Catalog\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Request.php';
 				}
