@@ -320,12 +320,12 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param \WC_Product $product product object
+	 * @param string $retailer product retailer ID
 	 */
-	private function process_item_delete( $product ) {
+	private function process_item_delete( $retailer_id ) {
 
 		$request = [
-			'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+			'retailer_id' => $retailer_id,
 			'method'      => Sync::ACTION_DELETE,
 		];
 
@@ -335,9 +335,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		 * @since 2.0.0-dev.1
 		 *
 		 * @param array $request request data
-		 * @param \WC_Product $product product object
+		 * @param string $retailer product retailer ID
 		 */
-		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $product );
+		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $retailer_id );
 	}
 
 
