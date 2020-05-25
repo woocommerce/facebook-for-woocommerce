@@ -82,6 +82,9 @@ class Connection extends Admin\Abstract_Settings_Screen {
 		 * + Catalog: name, general link to the user's catalog manager (we can't link to a specific catalog)
 		 * + Business manager: name, full URL
 		 * + Ad account: not currently available
+		 *
+		 * TODO: add pixel & ad account API retrieval when we gain the ads_management permission
+		 * TODO: add the page name and link when we gain the manage_pages permission
 		 */
 		$static_items = [
 			'page' => [
