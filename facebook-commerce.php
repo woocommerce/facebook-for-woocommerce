@@ -961,6 +961,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $product->get_children() );
 
+			$this->delete_product_group( $product_id );
+
 		} else {
 
 			$fb_product_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
@@ -968,9 +970,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			if ( $fb_product_id ) {
 				$this->delete_product_item( $product_id );
 			}
-		}
 
-		$this->delete_product_group( $product_id );
+			$this->delete_product_group( $product_id );
+		}
 
 		$this->enable_product_sync_delay_admin_notice();
 	}
