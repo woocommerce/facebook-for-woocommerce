@@ -427,7 +427,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_settings_url( $plugin_id = null ) {
 
-			return admin_url( 'admin.php?page=' . \SkyVerge\WooCommerce\Facebook\Admin\Settings::PAGE_ID );
+			return admin_url( 'admin.php?page=wc-facebook' );
 		}
 
 
