@@ -9,6 +9,13 @@ class MessengerTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
+	public function _before() {
+
+		require_once 'includes/Admin/Abstract_Settings_Screen.php';
+		require_once 'includes/Admin/Settings_Screens/Messenger.php';
+	}
+
+
 	/**
 	 * @see \Messenger::sanitize_messenger_greeting()
 	 *
