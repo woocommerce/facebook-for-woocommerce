@@ -110,6 +110,8 @@ class Connection {
 				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
 			}
 
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
