@@ -19,6 +19,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		require_once 'includes/Admin/Settings.php';
 		require_once 'includes/Admin/Abstract_Settings_Screen.php';
+		require_once 'includes/Admin/Settings_Screens/Messenger.php';
 	}
 
 
@@ -59,7 +60,10 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Admin\Settings::get_screens() */
 	public function test_get_screens() {
 
-		$this->assertSame( [], $this->get_setting_handler()->get_screens() );
+		$screens = $this->get_setting_handler()->get_screens();
+
+		$this->assertArrayHasKey( 'messenger', $screens );
+		$this->assertInstanceOf( Admin\Settings_Screens\Messenger::class, $screens['messenger'] );
 	}
 
 
@@ -103,7 +107,9 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Admin\Settings::get_tabs() */
 	public function test_get_tabs() {
 
-		$this->assertSame( [], $this->get_setting_handler()->get_tabs() );
+		$tabs = $this->get_setting_handler()->get_tabs();
+
+		$this->assertArrayHasKey( 'messenger', $tabs );
 	}
 
 
