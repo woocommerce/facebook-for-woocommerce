@@ -42,6 +42,8 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Enqueue the assets.
 	 *
+	 * @internal
+	 *
 	 * @since 2.0.0-dev.1
 	 */
 	public function enqueue_assets() {
@@ -211,7 +213,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @param bool $is_connected whether the plugin is connected
 	 */
-	public function render_facebook_box( $is_connected ) {
+	private function render_facebook_box( $is_connected ) {
 
 		if ( $is_connected ) {
 			$title = __( 'Reach the Right People and Sell More Online', 'facebook-for-woocommerce' );
