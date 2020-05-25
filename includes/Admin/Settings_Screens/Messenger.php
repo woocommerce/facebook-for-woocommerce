@@ -172,8 +172,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				'id'       => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
 				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
-				'label'    => ' ',
-				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
+				'desc'     => __( 'Enable and customize Facebook Messenger on your store', 'facebook-for-woocommerce' ),
 				'default'  => 'no',
 			],
 
