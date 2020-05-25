@@ -33,18 +33,20 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Product sync', 'facebook-for-woocommerce' );
 		$this->title = __( 'Product sync', 'facebook-for-woocommerce' );
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		add_action( 'woocommerce_admin_field_product_sync_title', [ $this, 'render_title' ] );
 	}
 
 
 	/**
-	 * Enqueues the scripts.
+	 * Enqueues the assets.
+	 *
+	 * @internal
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_assets() {
 
 		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
 		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
