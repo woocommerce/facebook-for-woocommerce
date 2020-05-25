@@ -111,13 +111,11 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$processed = 0;
 		$requests  = [];
 
-		foreach ( $data as $prefixed_product_id => $method ) {
-
-			$product_id = (int) str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_product_id );
+		foreach ( $data as $item_id => $method ) {
 
 			try {
 
-				$requests[] = $this->process_item( [ $product_id, $method ], $job );
+				$requests[] = $this->process_item( [ $item_id, $method ], $job );
 
 			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
 
