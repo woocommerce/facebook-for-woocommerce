@@ -3466,8 +3466,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 */
 		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
 
-		// TODO: update to SV_WC_Helper::str_truncate() when frameworked {CW 2020-01-22}
-		return substr( $greeting, 0, \SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger::get_greeting_max_characters() );
+		return Framework\SV_WC_Helper::str_truncate( $greeting, $this->get_greeting_max_characters(), '' );
+	}
+
+
+	/**
+	 * Gets the maximum number of characters allowed in the messenger greeting.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return int
+	 */
+	public function get_greeting_max_characters() {
+
+		$default = 80;
+
+		/**
+		 * Filters the maximum number of characters allowed in the messenger greeting.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param int $max the maximum number of characters allowed in the messenger greeting
+		 * @param \WC_Facebookcommerce_Integration $integration Deprecated: the integration instance
+		 */
+		$max = (int) apply_filters( 'wc_facebook_messenger_greeting_max_characters', $default, $this );
+
+		return $max < 1 ? $default : $max;
 	}
 
 

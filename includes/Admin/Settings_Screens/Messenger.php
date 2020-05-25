@@ -62,7 +62,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	public function render_greeting_field( $field ) {
 
 		$chars         = max( 0, strlen( $field['value'] ) );
-		$max_chars     = self::get_greeting_max_characters();
+		$max_chars     = facebook_for_woocommerce()->get_integration()->get_greeting_max_characters();
 		$field_id      = $field['id'];
 		$counter_class = $field_id . '-characters-count';
 
@@ -96,7 +96,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 					style="<?php echo esc_attr( $field['css'] ); ?>"
 					class="<?php echo esc_attr( $field['class'] ); ?>"
 					placeholder="<?php echo esc_attr( $field['placeholder'] ); ?>"
-					maxlength="<?php echo esc_attr( self::get_greeting_max_characters() ); ?>"
+					maxlength="<?php echo esc_attr( $max_chars ); ?>"
 				><?php echo esc_textarea( $field['value'] ); // WPCS: XSS ok. ?></textarea>
 
 				<span
@@ -125,7 +125,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
-		return SV_WC_Helper::str_truncate( $value, self::get_greeting_max_characters(), '' );
+		return SV_WC_Helper::str_truncate( $value, facebook_for_woocommerce()->get_integration()->get_greeting_max_characters(), '' );
 	}
 
 
@@ -138,7 +138,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_settings() {
 
-		$messenger_locales = [];
+		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
 
 		// tries matching with WordPress locale, otherwise English, otherwise first available language
 		if ( isset( $messenger_locales[ get_locale() ] ) ) {
@@ -206,31 +206,6 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 
 	/**
-	 * Gets the maximum number of characters allowed in the messenger greeting.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return int
-	 */
-	public static function get_greeting_max_characters() {
-
-		$default = 80;
-
-		/**
-		 * Filters the maximum number of characters allowed in the messenger greeting.
-		 *
-		 * @since 2.0.0-dev.1
-		 *
-		 * @param int $max the maximum number of characters allowed in the messenger greeting
-		 * @param \WC_Facebookcommerce_Integration $integration Deprecated: the integration instance
-		 */
-		$max = (int) apply_filters( 'wc_facebook_messenger_greeting_max_characters', $default, facebook_for_woocommerce()->get_integration() );
-
-		return $max < 1 ? $default : $max;
-	}
-
-
-	/**
 	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
 	 *
 	 * @since 2.0.0-dev.1
@@ -242,7 +217,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		return sprintf(
 			/* translators: Placeholder: %d - maximum number of allowed characters */
 			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-			self::get_greeting_max_characters()
+			facebook_for_woocommerce()->get_integration()->get_greeting_max_characters()
 		);
 	}
 
