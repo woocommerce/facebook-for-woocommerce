@@ -75,6 +75,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Renders the custom title.
 	 *
+	 * @internal
+	 *
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param array $field field data
@@ -202,6 +204,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	public function get_disconnected_message() {
 
 		return sprintf(
+			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 			__( 'Please %1$sconnect to Facebook%2$s to enable and manage product sync.', 'facebook-for-woocommerce' ),
 			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
 		);
