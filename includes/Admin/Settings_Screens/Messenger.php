@@ -69,7 +69,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	public function render_greeting_field( $field ) {
 
 		$chars         = max( 0, strlen( $field['value'] ) );
-		$max_chars     = facebook_for_woocommerce()->get_integration()->get_greeting_max_characters();
+		$max_chars     = facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters();
 		$field_id      = $field['id'];
 		$counter_class = $field_id . '-characters-count';
 
@@ -132,7 +132,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
 
-		return SV_WC_Helper::str_truncate( $value, facebook_for_woocommerce()->get_integration()->get_greeting_max_characters(), '' );
+		return SV_WC_Helper::str_truncate( $value, facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters(), '' );
 	}
 
 
@@ -223,7 +223,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		return sprintf(
 			/* translators: Placeholder: %d - maximum number of allowed characters */
 			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-			facebook_for_woocommerce()->get_integration()->get_greeting_max_characters()
+			facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters()
 		);
 	}
 
