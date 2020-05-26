@@ -56,7 +56,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 		$job = $this->get_test_job();
 
-		// mock the API to return an successful response
+		// mock the API to return a successful response
 		$api = $this->make( API::class, [
 			'send_item_updates' => new API\Catalog\Send_Item_Updates\Response( json_encode( [ 'handles' => [ 'handle' ] ] ) ),
 		] );
@@ -453,4 +453,3 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 
 }
-
