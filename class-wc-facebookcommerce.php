@@ -48,6 +48,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
 		private $admin;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Admin\Settings */
+		private $admin_settings;
+
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
@@ -137,6 +140,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+
+				// load admin handlers, before admin_init
+				if ( is_admin() ) {
+
+					require_once __DIR__ . '/includes/Admin/Settings.php';
+					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+
+					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
+				}
 			}
 		}
 
@@ -398,7 +410,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_settings_url( $plugin_id = null ) {
 
-			return admin_url( 'admin.php?page=wc-settings&tab=integration&section=' . self::INTEGRATION_ID );
+			return admin_url( 'admin.php?page=wc-facebook' );
 		}
 
 
@@ -479,11 +491,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function is_plugin_settings() {
 
-			$page    = Framework\SV_WC_Helper::get_requested_value( 'page' );
-			$tab     = Framework\SV_WC_Helper::get_requested_value( 'tab' );
-			$section = Framework\SV_WC_Helper::get_requested_value( 'section' );
-
-			return is_admin() && 'wc-settings' === $page && 'integration' === $tab && self::INTEGRATION_ID === $section;
+			return is_admin() && \SkyVerge\WooCommerce\Facebook\Admin\Settings::PAGE_ID === Framework\SV_WC_Helper::get_requested_value( 'page' );
 		}
 
 
