@@ -64,6 +64,7 @@ class API extends Framework\SV_WC_API_Base {
 
 		if ( $response && $response->has_api_error() ) {
 
+			$code    = $response->get_api_error_code();
 			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
 
 			/**
@@ -82,12 +83,27 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
-			if ( in_array( $response->get_api_error_code(), [ 4, 17, 32, 613, 80004 ], true ) ) {
-				throw new API\Exceptions\Request_Limit_Reached( $message, $response->get_api_error_code() );
+			if ( in_array( $code, [ 4, 17, 32, 613, 80004 ], true ) ) {
+				throw new API\Exceptions\Request_Limit_Reached( $message, $code );
 			}
 
-			throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
+			/**
+			 * Handle invalid token errors
+			 *
+			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
+			 */
+			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, [ 10, 102, 190 ], false ) ) {
+				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+			} else {
+				// this was an unrelated error, so the OAuth connection may still be valid
+				delete_transient( 'wc_facebook_connection_invalid' );
+			}
+
+			throw new Framework\SV_WC_API_Exception( $message, $code );
 		}
+
+		// if we get this far we're connected, so delete any invalid connection flag
+		delete_transient( 'wc_facebook_connection_invalid' );
 	}
 
 
