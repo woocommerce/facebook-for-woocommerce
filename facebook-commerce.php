@@ -60,16 +60,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const SETTING_ACCESS_TOKEN = 'access_token';
 
 	/** @var string the "enable product sync" setting ID */
-	const SETTING_ENABLE_PRODUCT_SYNC = 'enable_product_sync';
+	const SETTING_ENABLE_PRODUCT_SYNC = 'wc_facebook_enable_product_sync';
 
 	/** @var string the excluded product category IDs setting ID */
-	const SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS = 'excluded_product_category_ids';
+	const SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS = 'wc_facebook_excluded_product_category_ids';
 
 	/** @var string the excluded product tag IDs setting ID */
-	const SETTING_EXCLUDED_PRODUCT_TAG_IDS = 'excluded_product_tag_ids';
+	const SETTING_EXCLUDED_PRODUCT_TAG_IDS = 'wc_facebook_excluded_product_tag_ids';
 
 	/** @var string the product description mode setting ID */
-	const SETTING_PRODUCT_DESCRIPTION_MODE = 'product_description_mode';
+	const SETTING_PRODUCT_DESCRIPTION_MODE = 'wc_facebook_product_description_mode';
 
 	/** @var string the scheduled resync offset setting ID */
 	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
@@ -776,8 +776,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
-		excludedCategoryIDs: <?php echo json_encode( $this->get_excluded_product_category_ids() ); ?>,
-		excludedTagIDs: <?php echo json_encode( $this->get_excluded_product_tag_ids() ); ?>,
 	};
 
 	</script>
@@ -2438,23 +2436,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 
-		$term_query = new \WP_Term_Query( [
-			'taxonomy'   => 'product_cat',
-			'hide_empty' => false,
-			'fields'     => 'id=>name',
-		] );
-
-		$product_categories = $term_query->get_terms();
-
-		$term_query = new \WP_Term_Query( [
-			'taxonomy'     => 'product_tag',
-			'hide_empty'   => false,
-			'hierarchical' => false,
-			'fields'       => 'id=>name',
-		] );
-
-		$product_tags = $term_query->get_terms();
-
 		$form_fields = [
 
 			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
@@ -2491,66 +2472,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			[
 				'type'  => 'create_ad',
 			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_product_sync_title_html() */
-			[
-				'type'  => 'product_sync_title',
-				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-			],
-
-			self::SETTING_ENABLE_PRODUCT_SYNC => [
-				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
-				'type'    => 'checkbox',
-				'class'   => 'product-sync-field toggle-fields-group',
-				'label'   => ' ',
-				'default' => 'yes',
-			],
-
-			self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [
-				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
-				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select product-sync-field',
-				'css'               => 'min-width: 300px;',
-				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
-				'default'           => [],
-				'options'           => is_array( $product_categories ) ? $product_categories : [],
-				'custom_attributes' => [
-					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
-				],
-			],
-
-			self::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [
-				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
-				'type'              => 'multiselect',
-				'class'             => 'wc-enhanced-select product-sync-field',
-				'css'               => 'min-width: 300px;',
-				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
-				'default'           => [],
-				'options'           => is_array( $product_tags ) ? $product_tags : [],
-				'custom_attributes' => [
-					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
-				],
-			],
-
-			self::SETTING_PRODUCT_DESCRIPTION_MODE => [
-				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
-				'type'     => 'select',
-				'class'   => 'product-sync-field',
-				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
-				'default'  => self::PRODUCT_DESCRIPTION_MODE_STANDARD,
-				'options'  => [
-					self::PRODUCT_DESCRIPTION_MODE_STANDARD => __( 'Standard description', 'facebook-for-woocommerce' ),
-					self::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
-				],
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_resync_schedule_html() */
-			/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
-			//self::SETTING_SCHEDULED_RESYNC_OFFSET => [
-			//	'title' => __( 'Force daily resync at', 'facebook-for-woocommerce' ),
-			//	'class' => 'product-sync-field resync-schedule-fieldset',
-			//	'type'  => 'resync_schedule',
-			//],
 
 			[
 				'title' => __( 'Debug', 'facebook-for-woocommerce' ),
@@ -3340,7 +3261,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int[] $category_ids the configured excluded product category IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (array) apply_filters( 'wc_facebook_excluded_product_category_ids', $this->get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] ), $this );
+		return (array) apply_filters( 'wc_facebook_excluded_product_category_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] ), $this );
 	}
 
 
@@ -3361,7 +3282,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int[] $tag_ids the configured excluded product tag IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', $this->get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] ), $this );
+		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] ), $this );
 	}
 
 
@@ -3382,7 +3303,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $mode the configured product description mode
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		$mode = (string) apply_filters( 'wc_facebook_product_description_mode', $this->get_option( self::SETTING_PRODUCT_DESCRIPTION_MODE, self::PRODUCT_DESCRIPTION_MODE_STANDARD ), $this );
+		$mode = (string) apply_filters( 'wc_facebook_product_description_mode', get_option( self::SETTING_PRODUCT_DESCRIPTION_MODE, self::PRODUCT_DESCRIPTION_MODE_STANDARD ), $this );
 
 		$valid_modes = [
 			self::PRODUCT_DESCRIPTION_MODE_STANDARD,
@@ -3711,7 +3632,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether product sync is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_PRODUCT_SYNC ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === get_option( self::SETTING_ENABLE_PRODUCT_SYNC ), $this );
 	}
 
 

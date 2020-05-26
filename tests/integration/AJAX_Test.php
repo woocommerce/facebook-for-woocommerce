@@ -217,14 +217,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$category                    = wp_insert_term( 'Another excluded category', 'product_cat' );
 		$this->excluded_categories[] = $category['term_id'];
 
-		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
-
-		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS ] = $this->excluded_categories;
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		$this->integration->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $this->excluded_categories );
 	}
 
 
@@ -239,14 +232,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$tag                   = wp_insert_term( 'Another excluded tag', 'product_tag' );
 		$this->excluded_tags[] = $tag['term_id'];
 
-		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
-
-		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS ] = $this->excluded_tags;
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		$this->integration->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $this->excluded_tags );
 	}
 
 
