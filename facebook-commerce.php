@@ -972,6 +972,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				}
 			}
 
+			// enqueue variations to be deleted in the background
 			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $retailer_ids );
 
 			$this->delete_product_group( $product_id );
