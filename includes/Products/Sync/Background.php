@@ -111,13 +111,11 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$processed = 0;
 		$requests  = [];
 
-		foreach ( $data as $prefixed_product_id => $method ) {
-
-			$product_id = (int) str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_product_id );
+		foreach ( $data as $item_id => $method ) {
 
 			try {
 
-				$requests[] = $this->process_item( [ $product_id, $method ], $job );
+				$requests[] = $this->process_item( [ $item_id, $method ], $job );
 
 			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
 
@@ -169,22 +167,16 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	public function process_item( $item, $job ) {
 
-		list( $product_id, $method ) = $item;
-
-		$product = wc_get_product( $product_id );
-
-		if ( ! $product instanceof \WC_Product ) {
-			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
-		}
+		list( $item_id, $method ) = $item;
 
 		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
 			throw new Framework\SV_WC_Plugin_Exception( "Invalid sync request method: {$method}." );
 		}
 
 		if ( Sync::ACTION_UPDATE === $method ) {
-			$request = $this->process_item_update( $product );
+			$request = $this->process_item_update( $item_id );
 		} else {
-			$request = $this->process_item_delete( $product );
+			$request = $this->process_item_delete( $item_id );
 		}
 
 		return $request;
@@ -196,11 +188,18 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param \WC_Product $product product object
+	 * @param string $prefixed_product_id prefixed product ID
 	 * @return array
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
-	private function process_item_update( $product ) {
+	private function process_item_update( $prefixed_product_id ) {
+
+		$product_id = (int) str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_product_id );
+		$product    = wc_get_product( $product_id );
+
+		if ( ! $product instanceof \WC_Product ) {
+			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
+		}
 
 		if ( $product->is_type( 'variation' ) ) {
 			$product_data = $this->prepare_product_variation_data( $product );
@@ -313,12 +312,12 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param \WC_Product $product product object
+	 * @param string $retailer product retailer ID
 	 */
-	private function process_item_delete( $product ) {
+	private function process_item_delete( $retailer_id ) {
 
 		$request = [
-			'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+			'retailer_id' => $retailer_id,
 			'method'      => Sync::ACTION_DELETE,
 		];
 
@@ -328,9 +327,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		 * @since 2.0.0-dev.1
 		 *
 		 * @param array $request request data
-		 * @param \WC_Product $product product object
+		 * @param string $retailer product retailer ID
 		 */
-		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $product );
+		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $retailer_id );
 	}
 
 
