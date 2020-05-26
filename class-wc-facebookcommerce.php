@@ -251,6 +251,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API.php';
 				}
 
+				if ( ! class_exists( API\Traits\Rate_Limited_Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Request.php';
+				}
+
 				if ( ! class_exists( API\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Request.php';
 				}
