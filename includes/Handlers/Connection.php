@@ -225,7 +225,7 @@ class Connection {
 	 */
 	public function get_disconnect_url() {
 
-		return '';
+		return wp_nonce_url( add_query_arg( 'action', self::ACTION_DISCONNECT, admin_url( 'admin.php' ) ), self::ACTION_DISCONNECT );
 	}
 
 
