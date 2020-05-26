@@ -31,8 +31,6 @@
 	clear: both;
 }
 
-/* adjusts widths of the products table, same as WooCommerce categories and tags */
-#facebook_sync_enabled,
-#facebook_catalog_visibility {
-	width: 11% !important;
+.notice .button.js-wc-plugin-framework-notice-dismiss {
+	margin-left: 10px;
 }
