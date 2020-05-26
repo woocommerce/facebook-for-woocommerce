@@ -1724,7 +1724,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			sprintf(
 				'Products may be out of Sync with Facebook due to your recent ' . $action_name . '.' .
 				' <a href="%s&fb_force_resync=true&remove_sticky=true">Re-Sync them with FB.</a>',
-				WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL
+				facebook_for_woocommerce()->get_settings_url()
 			)
 		);
 	}
@@ -1776,7 +1776,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				),
 				'<strong>',
 				'</strong>',
-				'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
+				'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
 				'</a>'
 			);
 
@@ -2318,6 +2318,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Processes and saves options.
+	 *
+	 * TODO: remove this or move it to the new settings processing
 	 *
 	 * @internal
 	 *
