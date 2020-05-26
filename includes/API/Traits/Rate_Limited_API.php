@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\Traits;
 
+use SkyVerge\WooCommerce\Facebook\API\Response;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -45,6 +47,23 @@ trait Rate_Limited_API {
 	public function get_rate_limit_delay( $rate_limit_id ) {
 
 		return (int) get_option( "wc_facebook_rate_limit_${rate_limit_id}", 0 );
+	}
+
+
+	/**
+	 * Uses the response object and the array of headers to get information about the API usage
+	 * and calculate the next delay for requests of the same type.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param Rate_Limited_Response $response API response object
+	 * @param array $headers API response headers
+	 * @return int
+	 */
+	protected function calculate_rate_limit_delay( $response, $headers ) {
+
+		// TODO: Implement calculate_rate_limit_delay() method.
+		return $response->get_rate_limit_estimated_time_to_regain_access( $headers );
 	}
 
 
