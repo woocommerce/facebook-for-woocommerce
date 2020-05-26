@@ -2,7 +2,6 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Tests\API;
 
-use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\API\Traits\Rate_Limited_Response;
 
@@ -15,9 +14,6 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	/** @var API */
-	protected $api;
-
 
 	public function _before() {
 
@@ -27,7 +23,7 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
 		// create an instance of the API and load all the request and response classes
-		$this->api = facebook_for_woocommerce()->get_api();
+		facebook_for_woocommerce()->get_api();
 	}
 
 
