@@ -38,11 +38,24 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 
 
 	/**
+	 * Sets the request parameters.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $params request parameters
+	 */
+	public function set_params( $params ) {
+
+		$this->params = $params;
+	}
+
+
+	/**
 	 * Sets the request data.
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $data
+	 * @param array $data request data
 	 */
 	public function set_data( $data ) {
 

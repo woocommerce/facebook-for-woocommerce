@@ -139,7 +139,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
 				}
 
-				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
@@ -197,6 +197,21 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-info wc-facebook-migrate-notice',
 				] );
 			}
+
+			// if the connection is otherwise invalid, but there is an access token
+			if ( get_transient( 'wc_facebook_connection_invalid' ) && $this->get_connection_handler()->is_connected() ) {
+
+				$message = sprintf(
+					/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag */
+					__( '%1$sHeads up!%2$s Your connection to Facebook is no longer valid. Please %3$sclick here%4$s to securely reconnect your account and continue syncing products.', 'facebook-for-woocommerce' ),
+					'<strong>', '</strong>',
+					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+				);
+
+				$this->get_admin_notice_handler()->add_admin_notice( $message, 'connection_invalid', [
+					'notice_class' => 'notice-error',
+				] );
+			}
 		}
 
 
@@ -250,6 +265,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API.php';
 				}
 
+				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
 				if ( ! class_exists( API\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Request.php';
 				}
@@ -274,8 +293,28 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
+				if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Request.php';
+				}
+
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
 				}
 
 				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
@@ -284,6 +323,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Request.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Response.php';
 				}
 
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {

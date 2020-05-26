@@ -45,6 +45,9 @@ class API extends Framework\SV_WC_API_Base {
 		$this->request_headers = [
 			'Authorization' => "Bearer {$access_token}",
 		];
+
+		$this->set_request_content_type_header( 'application/json' );
+		$this->set_request_accept_header( 'application/json' );
 	}
 
 
@@ -64,6 +67,7 @@ class API extends Framework\SV_WC_API_Base {
 
 		if ( $response && $response->has_api_error() ) {
 
+			$code    = $response->get_api_error_code();
 			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
 
 			/**
@@ -82,12 +86,46 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
-			if ( in_array( $response->get_api_error_code(), [ 4, 17, 32, 613, 80004 ], true ) ) {
-				throw new API\Exceptions\Request_Limit_Reached( $message, $response->get_api_error_code() );
+			if ( in_array( $code, [ 4, 17, 32, 613, 80004 ], true ) ) {
+				throw new API\Exceptions\Request_Limit_Reached( $message, $code );
 			}
 
-			throw new Framework\SV_WC_API_Exception( $message, $response->get_api_error_code() );
+			/**
+			 * Handle invalid token errors
+			 *
+			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
+			 */
+			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, [ 10, 102, 190 ], false ) ) {
+				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+			} else {
+				// this was an unrelated error, so the OAuth connection may still be valid
+				delete_transient( 'wc_facebook_connection_invalid' );
+			}
+
+			throw new Framework\SV_WC_API_Exception( $message, $code );
 		}
+
+		// if we get this far we're connected, so delete any invalid connection flag
+		delete_transient( 'wc_facebook_connection_invalid' );
+	}
+
+
+	/**
+	 * Gets the FBE installation IDs.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $external_business_id external business ID
+	 * @return API\FBE\Installation\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_installation_ids( $external_business_id ) {
+
+		$request = new API\FBE\Installation\Read\Request( $external_business_id );
+
+		$this->set_response_handler( API\FBE\Installation\Read\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
@@ -158,7 +196,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $catalog_id catalog ID
 	 * @param array $requests array of prefixed product IDs to create, update or remove
 	 * @param bool $allow_upsert whether to allow updates to insert new items
-	 * @return Response
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
@@ -204,8 +242,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id product group ID
+	 * @param array $data product group data
 	 * @return Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
@@ -241,6 +279,26 @@ class API extends Framework\SV_WC_API_Base {
 		] );
 
 		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a list of Product Items in the given Product Group.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @param int $limit max number of results returned per page of data
+	 * @return API\Catalog\Product_Group\Products\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
+
+		$request = new API\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
+
+		$this->set_response_handler( API\Catalog\Product_Group\Products\Read\Response::class );
 
 		return $this->perform_request( $request );
 	}
@@ -339,6 +397,43 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the next page of results for a paginated response.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param API\Response $response previous response object
+	 * @param int $additional_pages number of additional pages of results to retrieve
+	 * @return API\Response|null
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function next( API\Response $response, $additional_pages = null ) {
+
+		$next_response = null;
+
+		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
+		if ( ( null === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
+
+			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+
+			$request = $this->get_new_request( [
+				'path'   => isset( $components['path'] ) ? $components['path'] : '',
+				'method' => 'GET',
+				'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : [],
+			] );
+
+			$this->set_response_handler( get_class( $response ) );
+
+			$next_response = $this->perform_request( $request );
+
+			// this is the n + 1 page of results for the original response
+			$next_response->set_pages_retrieved( $response->get_pages_retrieved() + 1 );
+		}
+
+		return $next_response;
+	}
+
+
+	/**
 	 * Stores an option with the delay, in seconds, for requests with the given rate limit ID.
 	 *
 	 * @since 2.0.0-dev.1
@@ -390,6 +485,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 *     @type string $path request path
 	 *     @type string $method request method
+	 *     @type array $params request parameters
 	 * }
 	 * @return Request
 	 */
@@ -398,11 +494,17 @@ class API extends Framework\SV_WC_API_Base {
 		$defaults = [
 			'path'   => '/',
 			'method' => 'GET',
+			'params' => [],
 		];
 
-		$args = wp_parse_args( $args, $defaults );
+		$args    = wp_parse_args( $args, $defaults );
+		$request = new Request( $args['path'], $args['method'] );
 
-		return new Request( $args['path'], $args['method'] );
+		if ( $args['params'] ) {
+			$request->set_params( $args['params'] );
+		}
+
+		return $request;
 	}
 
 

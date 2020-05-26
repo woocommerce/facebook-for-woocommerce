@@ -109,6 +109,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	public function process_items( $job, $data, $items_per_batch = null ) {
 
 		$processed = 0;
+		$requests  = [];
 
 		foreach ( $data as $prefixed_product_id => $method ) {
 
@@ -116,7 +117,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 			try {
 
-				$this->process_item( [ $product_id, $method ], $job );
+				$requests[] = $this->process_item( [ $product_id, $method ], $job );
 
 			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
 
@@ -132,6 +133,25 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			// job limits reached
 			if ( ( $items_per_batch && $processed >= $items_per_batch ) || $this->time_exceeded() || $this->memory_exceeded() ) {
 				break;
+			}
+		}
+
+		// send item updates to Facebook and update the job with the returned array of batch handles
+		if ( ! empty( $requests ) ) {
+
+			try {
+
+				$handles = $this->send_item_updates( $requests );
+
+				$job->handles = ! isset( $job->handles ) || ! is_array( $job->handles ) ? $handles : array_merge( $job->handles, $handles );
+
+				$job = $this->update_job( $job );
+
+			} catch ( Framework\SV_WC_API_Exception $e ) {
+
+				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %s: %s' ), $job->id, $e->getMessage() );
+
+				facebook_for_woocommerce()->log( $message );
 			}
 		}
 	}
@@ -188,8 +208,14 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$product_data = $this->prepare_product_data( $product );
 		}
 
+		// extract the retailer_id
+		$retailer_id = $product_data['retailer_id'];
+
+		// retailer_id cannot be included in the data object
+		unset( $product_data['retailer_id'] );
+
 		$request = [
-			'retailer_id' => $product_data['retailer_id'],
+			'retailer_id' => $retailer_id,
 			'method'      => Sync::ACTION_UPDATE,
 			'data'        => $product_data,
 		];
@@ -313,10 +339,16 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $requests
+	 * @param array $requests sync requests
+	 * @return array
+	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function send_item_updates( $requests ) {
-		// TODO
+	private function send_item_updates( array $requests ) {
+
+		$catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
+		$response   = facebook_for_woocommerce()->get_api()->send_item_updates( $catalog_id, $requests, true );
+
+		return $response->get_handles();
 	}
 
 
