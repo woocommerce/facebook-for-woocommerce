@@ -96,4 +96,20 @@ trait Rate_Limited_Response {
 	}
 
 
+	/**
+	 * Gets the number of seconds until calls will no longer be throttled.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $headers response headers
+	 * @return int|null
+	 */
+	public function get_rate_limit_estimated_time_to_regain_access( $headers ) {
+
+		$usage_data = $this->get_usage_data( $headers );
+
+		return ! empty( $usage_data['estimated_time_to_regain_access'] ) ? (int) $usage_data['estimated_time_to_regain_access'] : null;
+	}
+
+
 }
