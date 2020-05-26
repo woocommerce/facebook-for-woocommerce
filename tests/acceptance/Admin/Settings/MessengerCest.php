@@ -20,11 +20,11 @@ class MessengerCest {
 
 
 	/**
-	 * Test that the Messenger fields are present and save.
+	 * Test that the Messenger fields are present.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
-	public function try_messenger_fields( AcceptanceTester $I ) {
+	public function try_messenger_fields_present( AcceptanceTester $I ) {
 
 		$I->wantTo( 'Test that the Messenger fields are present' );
 
@@ -39,6 +39,16 @@ class MessengerCest {
 
 		$I->see( 'Colors', 'th.titledesc' );
 		$I->seeElement( 'input[type=text].colorpick.messenger-field#' . \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX );
+	}
+
+
+	/**
+	 * Test that the Messenger fields are saved correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_messenger_fields_saved( AcceptanceTester $I ) {
 
 		$I->wantTo( 'Test that the Messenger fields are saved correctly' );
 
