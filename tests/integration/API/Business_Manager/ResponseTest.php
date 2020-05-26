@@ -43,7 +43,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see API\Catalog\Response::get_url() */
+	/** @see API\Business_Manager\Response::get_url() */
 	public function test_get_url() {
 
 		$data = [
