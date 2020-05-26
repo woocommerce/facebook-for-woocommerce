@@ -124,4 +124,34 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Rate_Limited_Response::get_rate_limit_estimated_time_to_regain_access()
+	 *
+	 * @param array $headers response headers
+	 * @param int|null $value expected value
+	 *
+	 * @dataProvider provider_get_rate_limit_estimated_time_to_regain_access
+	 */
+	public function test_get_rate_limit_estimated_time_to_regain_access( $headers, $value ) {
+
+		$response = new Response( '' );
+
+		$this->assertEquals( $value, $response->get_rate_limit_estimated_time_to_regain_access( $headers ) );
+	}
+
+
+	/** @see test_get_rate_limit_estimated_time_to_regain_access() */
+	public function provider_get_rate_limit_estimated_time_to_regain_access() {
+
+		return [
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 ],
+			[ [ 'x-business-use-case-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 ],
+			[ [ 'X-App-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 ],
+			[ [ 'x-app-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 ],
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ], 'X-App-Usage' => [ 'call_count' => 39, 'total_time' => 35, 'total_cputime' => 36, 'estimated_time_to_regain_access' => 20 ] ], 15 ],
+			[ [], null ],
+		];
+	}
+
+
 }
