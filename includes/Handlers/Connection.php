@@ -189,6 +189,22 @@ class Connection {
 
 
 	/**
+	 * Gets the URL to manage the connection.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_manage_url() {
+
+		$app_id      = self::CLIENT_ID;
+		$business_id = $this->get_external_business_id();
+
+		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}";
+	}
+
+
+	/**
 	 * Gets the URL for disconnecting.
 	 *
 	 * @since 2.0.0-dev.1

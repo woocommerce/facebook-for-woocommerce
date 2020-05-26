@@ -146,6 +146,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 					require_once __DIR__ . '/includes/Admin/Settings.php';
 					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
 
@@ -255,6 +256,22 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Response.php';
+				}
+
+				if ( ! class_exists( API\Business_Manager\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Request.php';
+				}
+
+				if ( ! class_exists( API\Business_Manager\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {

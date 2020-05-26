@@ -258,8 +258,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->init_pixel();
 
-			$this->init_form_fields();
-
 			if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
 				include_once 'includes/fbutils.php';
 			}
@@ -2411,264 +2409,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Initializes the settings form fields.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 2.0.0-dev.1
 	 *
 	 * @internal
 	 */
 	public function init_form_fields() {
 
-		$form_fields = [
-
-			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
-			[
-				'type'  => 'manage_connection_title',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_facebook_page_name_html() */
-			self::SETTING_FACEBOOK_PAGE_ID => [
-				'type'    => 'facebook_page_name',
-				'default' => '',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_facebook_pixel_id_html() */
-			self::SETTING_FACEBOOK_PIXEL_ID => [
-				'type'    => 'facebook_pixel_id',
-				'default' => '',
-			],
-
-			self::SETTING_ENABLE_ADVANCED_MATCHING => [
-				'title'       => __( 'Use Advanced Matching', 'facebook-for-woocommerce' ),
-				'description' => sprintf(
-					/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-					__( 'Improve the ability to match site visitors to people on Facebook by passing additional site visitor information (such as email address or phone number). %1$sLearn more%2$s.', 'facebook-for-woocommerce' ),
-					'<a href="https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching" target="_blank">',
-					'</a>'
-				),
-				'type'        => 'checkbox',
-				'label'       => ' ',
-				'default'     => 'yes',
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
-			[
-				'type'  => 'create_ad',
-			],
-
-			[
-				'title' => __( 'Debug', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-			],
-
-			self::SETTING_ENABLE_DEBUG_MODE => [
-				'title'    => __( 'Enable debug mode', 'facebook-for-woocommerce' ),
-				'type'     => 'checkbox',
-				'label'    => __( 'Log plugin events for debugging', 'facebook-for-woocommerce' ),
-				'desc_tip' => __( 'Only enable this if you are experiencing problems with the plugin.', 'facebook-for-woocommerce' ),
-				'default'  => 'no',
-			],
-
-		];
-
-		$this->form_fields = $form_fields;
-	}
-
-
-	/**
-	 * Gets the "Manage connection" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_title_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_manage_connection_title_html( $key, array $args = [] ) {
-
-		$key         = $this->get_field_key( $key );
-		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
-
-		ob_start();
-
-		?>
-		</table>
-		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
-			<?php esc_html_e( 'Connection', 'facebook-for-woocommerce' ); ?>
-			<a
-				id="woocommerce-facebook-settings-manage-connection"
-				class="button"
-				href="<?php echo esc_url( $connect_url ); ?>"
-				style="vertical-align: middle; margin-left: 20px;"
-			><?php esc_html_e( 'Manage connection', 'facebook-for-woocommerce' ); ?></a>
-		</h3>
-		<?php // if ( empty( $this->get_page_name() ) ) : ?>
-		<?php
-/**
-			<div id="connection-message-invalid">
-				<p style="color: #DC3232;">
-					<?php esc_html_e( 'Your connection has expired.', 'facebook-for-woocommerce' ); ?>
-					<strong>
-						<?php esc_html_e( 'Please click Manage connection > Advanced Options > Update Token to refresh your connection to Facebook.', 'facebook-for-woocommerce' ); ?>
-					</strong>
-				</p>
-			</div>
-			<div id="connection-message-refresh" style="display: none;">
-				<p>
-					<?php esc_html_e( 'Your access token has been updated.', 'facebook-for-woocommerce' ); ?>
-					<strong>
-						<?php esc_html_e( 'Please refresh the page.', 'facebook-for-woocommerce' ); ?>
-					</strong>
-				</p>
-			</div>
- */
-		?>
-		<?php // endif; ?>
-		<table class="form-table">
-		<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Gets the "Facebook page" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_settings_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_facebook_page_name_html( $key, array $args = [] ) {
-
-		$key       = $this->get_field_key( $key );
-		// $page_name = $this->get_page_name();
-		// $page_url  = $this->get_page_url();
-
-		ob_start();
-
-		/*?>
-		<tr valign="top">
-			<th scope="row" class="titledesc">
-				<?php esc_html_e( 'Facebook page', 'facebook-for-woocommerce' ); ?>
-			</th>
-			<td class="forminp">
-				<?php if ( $page_name ) : ?>
-
-					<?php if ( $page_url ) : ?>
-
-						<a
-							href="<?php echo esc_url( $page_url ); ?>"
-							target="_blank"
-							style="text-decoration: none;">
-							<?php echo esc_html( $page_name ); ?>
-							<span
-								class="dashicons dashicons-external"
-								style="margin-right: 8px; vertical-align: bottom;"
-							></span>
-						</a>
-
-					<?php else : ?>
-
-						<?php echo esc_html( $page_name ); ?>
-
-					<?php endif; ?>
-
-				<?php else : ?>
-
-					&mdash;
-
-				<?php endif;*/ ?>
-				<input
-					type="hidden"
-					name="<?php echo esc_attr( $key ); ?>"
-					id="<?php echo esc_attr( $key ); ?>"
-					value="<?php echo esc_attr( $this->get_facebook_page_id() ); ?>"
-				/>
-				<?php /*
-			</td>
-		</tr>
-		<?php */
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Gets the "Facebook Pixel" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_settings_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_facebook_pixel_id_html( $key, array $args = [] ) {
-
-		$key      = $this->get_field_key( $key );
-		$pixel_id = $this->get_facebook_pixel_id();
-
-		ob_start();
-
-		?>
-		<tr valign="top">
-			<th scope="row" class="titledesc">
-				<?php esc_html_e( 'Pixel', 'facebook-for-woocommerce' ); ?>
-			</th>
-			<td class="forminp">
-				<?php if ( $pixel_id ) : ?>
-					<code style="padding: 4px 8px; color: #333;"><?php echo esc_html( $pixel_id ); ?></code>
-				<?php else : ?>
-					&mdash;
-				<?php endif; ?>
-				<input
-					type="hidden"
-					name="<?php echo esc_attr( $key ); ?>"
-					id="<?php echo esc_attr( $key ); ?>"
-					value="<?php echo esc_attr( $pixel_id ); ?>"
-				/>
-			</td>
-		</tr>
-		<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Gets the "Create ad" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_settings_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_create_ad_html( $key, array $args = [] ) {
-
-		$create_ad_url = sprintf( 'https://www.facebook.com/ads/dia/redirect/?settings_id=%s&version=2&entry_point=admin_panel', rawurlencode( $this->get_external_merchant_settings_id() ) );
-
-		ob_start();
-
-		?>
-		<tr valign="top">
-			<th class="forminp" colspan="2">
-				<a
-					class="button button-primary"
-					target="_blank"
-					href="<?php echo esc_url( $create_ad_url ); ?>"
-				><?php esc_html_e( 'Create ad', 'facebook-for-woocommerce' ); ?></a>
-			</th>
-		</tr>
-		<?php
-
-		return ob_get_clean();
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
@@ -3675,7 +3422,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether debug mode is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
 	}
 
 
@@ -3904,72 +3651,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		facebook_for_woocommerce()->get_message_handler()->show_messages();
 
-		$access_token   = facebook_for_woocommerce()->get_connection_handler()->get_access_token();
-		$page_name      = $this->get_page_name();
-		$can_manage     = current_user_can( 'manage_woocommerce' );
-		$pre_setup      = empty( $this->get_facebook_page_id() ) || empty( $access_token );
-		$apikey_invalid = ! $pre_setup && $access_token && ! $page_name;
-		$connect_url    = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
-
-		$remove_http_active     = is_plugin_active( 'remove-http/remove-http.php' );
-		$https_will_be_stripped = $remove_http_active && ! get_option( 'factmaven_rhttp' )['external'];
-
-		if ( $https_will_be_stripped ) {
-
-			$this->display_sticky_message(
-				__( 'You\'re using Remove HTTP which has incompatibilities with our extension. Please disable it, or select the "Ignore external links" option on the Remove HTTP settings page.' )
-			);
-		}
-
 		?>
-
-		<h2><?php esc_html_e( 'Facebook', 'facebook-for-woocommerce' ); ?></h2>
-
-		<p>
-			<?php esc_html_e( 'Control how WooCommerce integrates with your Facebook store.', 'facebook-for-woocommerce' ); ?>
-		</p>
-
-		<div><input type="hidden" name="section" value="<?php echo esc_attr( $this->id ); ?>" /></div>
-
-		<div id="fbsetup" <?php echo $this->is_configured() ? 'style="display: none"' : ''; ?>>
-			<div class="wrapper">
-				<header>
-					<div class="help-center">
-						<a href="https://www.facebook.com/business/help/900699293402826" target="_blank">Help Center <i class="help-center-icon"></i></a>
-					</div>
-				</header>
-
-				<div class="content">
-					<h1 id="setup_h1"><?php esc_html_e( 'Grow your business on Facebook', 'facebook-for-woocommerce' ); ?></h1>
-
-					<h2>
-						<?php esc_html_e( 'Use this WooCommerce and Facebook integration to:', 'facebook-for-woocommerce' ); ?>
-					</h2>
-
-					<ul>
-						<li id="setup_l1"><?php esc_html_e( 'Easily install a tracking pixel', 'facebook-for-woocommerce' ); ?></li>
-						<li id="setup_l2"><?php esc_html_e( 'Upload your products and create a shop', 'facebook-for-woocommerce' ); ?></li>
-						<li id="setup_l3"><?php esc_html_e( 'Create dynamic ads with your products and pixel', 'facebook-for-woocommerce' ); ?></li>
-					</ul>
-
-					<span
-						<?php $external_merchant_settings_id = $this->get_external_merchant_settings_id(); ?>
-						<?php echo ( ! $can_manage || $apikey_invalid || ! isset( $external_merchant_settings_id ) ) ? ' style="pointer-events: none;"' : ''; ?>>
-
-						<a href="<?php echo esc_url( $connect_url ); ?>" class="btn pre-setup" id="cta_button">
-							<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
-						</a>
-
-					</span>
-
-					<?php
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo $this->get_nux_message_ifexist();
-					?>
-
-				</div>
-			</div>
-		</div>
 
 		<div id="integration-settings" <?php echo ! $this->is_configured() ? 'style="display: none"' : ''; ?>>
 			<table class="form-table"><?php $this->generate_settings_html( $this->get_form_fields() ); ?></table>
