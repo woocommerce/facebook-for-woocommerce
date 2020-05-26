@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\API\Business_Manager;
 use SkyVerge\WooCommerce\Facebook\API\Business_Manager\Request;
 
 /**
- * Tests the API\Catalog\Send_Item_Updates\Request class.
+ * Tests the API\Business_Manager\Request class.
  */
 class RequestTest extends \Codeception\TestCase\WPTestCase {
 
