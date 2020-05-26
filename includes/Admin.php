@@ -550,10 +550,7 @@ class Admin {
 
 					Products::enable_sync_for_products( $products );
 
-					// re-sync each product
-					foreach ( $products as $product ) {
-						facebook_for_woocommerce()->get_integration()->on_product_publish( $product->get_id() );
-					}
+					$this->resync_products( $products );
 
 				} elseif ( 'facebook_exclude' === $action ) {
 
@@ -563,6 +560,38 @@ class Admin {
 		}
 
 		return $redirect;
+	}
+
+
+	/**
+	 * Re-syncs the given products.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param \WC_Product $products
+	 */
+	private function resync_products( array $products ) {
+
+		$integration = facebook_for_woocommerce()->get_integration();
+
+		// re-sync each product
+		foreach ( $products as $product ) {
+
+			if ( $product->is_type( 'variable' ) ) {
+
+				// create product group and schedule product variations to be synced in the background
+				$integration->on_product_publish( $product->get_id() );
+
+			} elseif ( $integration->product_should_be_synced( $product ) ) {
+
+				// schedule simple products to be updated or deleted from the catalog in the background
+				if ( Products::product_should_be_deleted( $product ) ) {
+					facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $product->get_id() ] );
+				} else {
+					facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $product->get_id() ] );
+				}
+			}
+		}
 	}
 
 

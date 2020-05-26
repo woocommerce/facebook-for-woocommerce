@@ -204,8 +204,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id product group ID
+	 * @param array $data product group data
 	 * @return Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
@@ -241,6 +241,26 @@ class API extends Framework\SV_WC_API_Base {
 		] );
 
 		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a list of Product Items in the given Product Group.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @param int $limit max number of results returned per page of data
+	 * @return API\Catalog\Product_Group\Products\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
+
+		$request = new API\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
+
+		$this->set_response_handler( API\Catalog\Product_Group\Products\Read\Response::class );
 
 		return $this->perform_request( $request );
 	}
@@ -339,6 +359,43 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the next page of results for a paginated response.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param API\Response $response previous response object
+	 * @param int $additional_pages number of additional pages of results to retrieve
+	 * @return API\Response|null
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function next( API\Response $response, $additional_pages = null ) {
+
+		$next_response = null;
+
+		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
+		if ( ( null === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
+
+			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+
+			$request = $this->get_new_request( [
+				'path'   => isset( $components['path'] ) ? $components['path'] : '',
+				'method' => 'GET',
+				'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : [],
+			] );
+
+			$this->set_response_handler( get_class( $response ) );
+
+			$next_response = $this->perform_request( $request );
+
+			// this is the n + 1 page of results for the original response
+			$next_response->set_pages_retrieved( $response->get_pages_retrieved() + 1 );
+		}
+
+		return $next_response;
+	}
+
+
+	/**
 	 * Stores an option with the delay, in seconds, for requests with the given rate limit ID.
 	 *
 	 * @since 2.0.0-dev.1
@@ -390,6 +447,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 *     @type string $path request path
 	 *     @type string $method request method
+	 *     @type array $params request parameters
 	 * }
 	 * @return Request
 	 */
@@ -398,11 +456,17 @@ class API extends Framework\SV_WC_API_Base {
 		$defaults = [
 			'path'   => '/',
 			'method' => 'GET',
+			'params' => [],
 		];
 
-		$args = wp_parse_args( $args, $defaults );
+		$args    = wp_parse_args( $args, $defaults );
+		$request = new Request( $args['path'], $args['method'] );
 
-		return new Request( $args['path'], $args['method'] );
+		if ( $args['params'] ) {
+			$request->set_params( $args['params'] );
+		}
+
+		return $request;
 	}
 
 

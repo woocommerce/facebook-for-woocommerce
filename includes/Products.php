@@ -142,6 +142,22 @@ class Products {
 
 
 	/**
+	 * Determines whether the given product should be removed from the catalog.
+	 *
+	 * A product should be removed if it is no longer in stock and the user has opted-in to hide products that are out of stock.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function product_should_be_deleted( \WC_Product $product ) {
+
+		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock();
+	}
+
+
+	/**
 	 * Determines whether a product is enabled to be synced in Facebook.
 	 *
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
