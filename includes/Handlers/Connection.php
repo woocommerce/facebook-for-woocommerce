@@ -167,6 +167,8 @@ class Connection {
 				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
 			}
 
+			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
@@ -240,6 +242,22 @@ class Connection {
 	public function get_connect_url() {
 
 		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters() ), self::OAUTH_URL );
+	}
+
+
+	/**
+	 * Gets the URL to manage the connection.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_manage_url() {
+
+		$app_id      = self::CLIENT_ID;
+		$business_id = $this->get_external_business_id();
+
+		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}";
 	}
 
 

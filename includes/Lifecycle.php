@@ -40,6 +40,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.1',
 			'1.11.0',
 			'1.11.3',
+			'2.0.0',
 		];
 	}
 
@@ -231,6 +232,17 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
 			$handler->dispatch();
 		}
+	}
+
+
+	/**
+	 * Upgrades to version 2.0.0
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	protected function upgrade_to_2_0_0() {
+
+		update_option( 'wc_facebook_has_connected_fbe_2', 'no' );
 	}
 
 

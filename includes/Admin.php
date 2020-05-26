@@ -22,6 +22,16 @@ defined( 'ABSPATH' ) or exit;
 class Admin {
 
 
+	/** @var string the "sync and show" sync mode slug */
+	const SYNC_MODE_SYNC_AND_SHOW = 'sync_and_show';
+
+	/** @var string the "sync and show" sync mode slug */
+	const SYNC_MODE_SYNC_AND_HIDE = 'sync_and_hide';
+
+	/** @var string the "sync disabled" sync mode slug */
+	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
+
+
 	/**
 	 * Admin constructor.
 	 *
@@ -47,17 +57,13 @@ class Admin {
 		// add admin notification in case of site URL change
 		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
 
-		// add admin notice to inform that product sync has changed
-		add_action( 'admin_notices', [ $this, 'add_product_sync_delay_notice' ] );
-		// add admin notice to inform that the catalog visibility setting was removed
-		add_action( 'admin_notices', [ $this, 'add_catalog_visibility_settings_removed_notice' ] );
+		// add admin notice to inform that disabled products may need to be deleted manually
+		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
+
 		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
 		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
 		// add admin notice to inform sync has been automatically disabled for virtual products
 		add_action( 'admin_notices', [ $this, 'add_disabled_virtual_products_sync_notice' ] );
-
-		// handle dismissal of special notices
-		add_action( 'wc_' . $plugin->get_id(). '_dismiss_notice', [ $this, 'handle_dismiss_notice' ], 10, 2 );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -120,33 +126,8 @@ class Admin {
 
 			if ( facebook_for_woocommerce()->is_plugin_settings() ) {
 
-				wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-
-				/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
-				$sync_remaining_items_string = _n_noop( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 'facebook-for-woocommerce' );
-
-				wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
-					'ajax_url'                        => admin_url( 'admin-ajax.php' ),
-					'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
-					'set_product_visibility_nonce'    => wp_create_nonce( 'set-products-visibility' ),
-					'i18n'                            => [
-						/* translators: Placeholders %s - html code for a spinner icon */
-						'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
-						'confirm_sync_test'             => esc_html__( 'Launch Test?', 'facebook-for-woocommerce' ),
-						'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
-						'sync_in_progress'              => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
-						'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
-						'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
-						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
-						'integration_test_sucessful'    => sprintf( esc_html__( '%1$sStatus:%2$s Test Pass.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
-						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
-						'integration_test_in_progress'  => sprintf( esc_html__( '%1$sStatus:%2$s Integration test in progress...', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
-						/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag */
-						'integration_test_failed'       => sprintf( esc_html__( '%1$sStatus:%2$s Test Fail.', 'facebook-for-woocommerce' ), '<strong>', '</strong>' ),
-						'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
-						'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
-					],
-				] );
+				wp_enqueue_style( 'woocommerce_admin_styles' );
+				wp_enqueue_script( 'wc-enhanced-select' );
 			}
 		}
 	}
@@ -164,8 +145,7 @@ class Admin {
 	 */
 	public function add_product_list_table_columns( $columns ) {
 
-		$columns['facebook_sync_enabled']       = __( 'FB Sync Enabled', 'facebook-for-woocommerce' );
-		// $columns['facebook_catalog_visibility'] = __( 'FB Catalog Visibility', 'facebook-for-woocommerce' );
+		$columns['facebook_sync'] = __( 'Facebook sync', 'facebook-for-woocommerce' );
 
 		return $columns;
 	}
@@ -183,75 +163,24 @@ class Admin {
 	public function add_product_list_table_columns_content( $column ) {
 		global $post;
 
-		if ( 'facebook_sync_enabled' === $column ) :
+		if ( 'facebook_sync' !== $column ) {
+			return;
+		}
 
-			$product = wc_get_product( $post );
+		$product = wc_get_product( $post );
 
-			if ( $product && Products::product_should_be_synced( $product ) ) :
-				esc_html_e( 'Enabled', 'facebook-for-woocommerce' );
-			else :
-				esc_html_e( 'Disabled', 'facebook-for-woocommerce' );
-			endif;
+		if ( $product && Products::product_should_be_synced( $product ) ) {
 
-		elseif ( 'facebook_catalog_visibility' === $column ) :
+			if ( Products::is_product_visible( $product ) ) {
+				esc_html_e( 'Sync and show', 'facebook-for-woocommerce' );
+			} else {
+				esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' );
+			}
 
-			$integration         = facebook_for_woocommerce()->get_integration();
-			$product             = wc_get_product( $post );
-			$fb_product          = new \WC_Facebook_Product( $post );
-			$fb_product_group_id = $integration && $product && $integration->get_product_fbid( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product );
+		} else {
 
-			if ( ! $fb_product_group_id ) :
-
-				?>
-				<span
-					class="facebook-for-woocommerce-product-visibility-toggle"
-					style="cursor:default;"
-					title="<?php
-					/* translators: Points to a product that was never synced with Facebook */
-					esc_attr_e( 'Never synced with Facebook.', 'facebook-for-woocommerce' ); ?>"
-				>&ndash;</span>
-				<?php
-
-			else :
-
-				$is_sync_enabled = Products::product_should_be_synced( $product );
-				$is_visible      = Products::is_product_visible( $product );
-				$is_hidden       = ! $is_visible;
-
-				if ( $is_sync_enabled ) {
-					/* translators: Action to hide a product (currently synced with Facebook) from the Facebook catalog */
-					$visible_tooltip_text = __( 'Hide from Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
-					/* translators: Action to publish a product (currently synced with Facebook) in the Facebook catalog */
-					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Currently synced with Facebook.', 'facebook-for-woocommerce' );
-				} else {
-					/* translators: Action to hide a product (currently not synced with Facebook) from the Facebook catalog */
-					$visible_tooltip_text = __( 'Hide from Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
-					/* translators: Action to publish a product (currently not synced with Facebook) in the Facebook catalog */
-					$hidden_tooltip_text  = __( 'Publish in Facebook catalog. Not synced with Facebook.', 'facebook-for-woocommerce' );
-				}
-
-				?>
-				<button
-					id="facebook-for-woocommerce-product-visibility-show-<?php echo esc_attr( $post->ID ); ?>"
-					class="button button-primary button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-show"
-					style="<?php echo $is_hidden ? 'display:block;' : 'display:none;'; ?>"
-					data-action="show"
-					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $hidden_tooltip_text ); ?>"
-				><?php esc_html_e( 'Show', 'facebook-for-woocommerce' ); ?></button>
-				<button
-					id="facebook-for-woocommerce-product-visibility-hide-<?php echo esc_attr( $post->ID ); ?>"
-					class="button button-large facebook-for-woocommerce-product-visibility-toggle facebook-for-woocommerce-product-visibility-hide"
-					style="<?php echo $is_visible ? 'display:block;' : 'display:none;'; ?>"
-					data-action="hide"
-					data-product-id="<?php echo esc_attr( $post->ID ); ?>"
-					title="<?php echo esc_attr( $visible_tooltip_text ); ?>"
-				><?php esc_html_e( 'Hide', 'facebook-for-woocommerce' ); ?></button>
-				<?php
-
-			endif;
-
-		endif;
+			esc_html_e( 'Do not sync', 'facebook-for-woocommerce' );
+		}
 	}
 
 
@@ -555,6 +484,8 @@ class Admin {
 				} elseif ( 'facebook_exclude' === $action ) {
 
 					Products::disable_sync_for_products( $products );
+
+					self::add_product_disabled_sync_notice( count( $products ) );
 				}
 			}
 		}
@@ -619,7 +550,7 @@ class Admin {
 						/* translators: Placeholders: %1$s - Facebook for Woocommerce, %2$s - opening HTML <a> link tag, %3$s - closing HTML </a> link tag */
 						'<p>' . esc_html__( '%1$s: One or more of your products is using a checkout URL that may be different than your shop checkout URL. %2$sRe-sync your products to update checkout URLs on Facebook%3$s.', 'facebook-for-woocommerce' ) . '</p>',
 						'<strong>' . esc_html__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ) . '</strong>',
-						'<a href="' . esc_url( WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL ) . '">',
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
 						'</a>'
 					); ?>
 				</div>
@@ -632,86 +563,50 @@ class Admin {
 
 
 	/**
-	 * Prints a notice on products page to inform users about changes in product sync.
+	 * Adds a transient so an informational notice is displayed on the next page load.
 	 *
-	 * @internal
+	 * @since 2.0.0-dev.1
 	 *
-	 * @since 1.11.0
+	 * @param int $count number of products
 	 */
-	public function add_product_sync_delay_notice() {
-		global $current_screen;
+	public static function add_product_disabled_sync_notice( $count = 1 ) {
 
-		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_sync_delay_notice_' . get_current_user_id();
-
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) && get_transient( $transient_name ) ) {
-
-			if ( isset( $_GET['message'] ) || isset( $_GET['trashed'] ) || isset( $_GET['deleted'] ) ) {
-
-				facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
-					sprintf(
-						/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-						esc_html__( '%1$sHeads up!%2$s Product sync is temporarily changed as we migrate to a more secure experience. An automated sync from Facebook will run every hour to update the catalog with any changes you\'ve made. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
-						'<strong>',
-						'</strong>',
-						'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#faq-security" target="_blank">',
-						'</a>'
-					)
-					. '</p><p>' // close notice paragraph and open a new one for the button
-					. '<button class="button notice-dismiss-permanently" type="button">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</button>',
-					'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay',
-					[ 'notice_class' => 'notice-info' ]
-				);
-			}
-
-			delete_transient( $transient_name );
+		if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-disabled-sync' ) ) {
+			set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id(), $count, MINUTE_IN_SECONDS );
 		}
 	}
 
 
 	/**
-	 * Handles dismissed notices.
+	 * Adds a message for after a product or set of products get excluded from sync.
 	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param string $message_id the dismissed notice ID
-	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 * @since 2.0.0-dev.1
 	 */
-	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+	public function maybe_show_product_disabled_sync_notice() {
 
-		// undismiss product sync delay notice unless 'permanently' is included in the request
-		if ( ! SV_WC_Helper::get_requested_value( 'permanently' ) && 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-sync-delay' === $message_id ) {
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id();
+		$message_id     = 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-disabled-sync';
 
-			facebook_for_woocommerce()->get_admin_notice_handler()->undismiss_notice( $message_id, $user_id );
-		}
-	}
+		if ( ( $count = get_transient( $transient_name ) ) && ( SV_WC_Helper::is_current_screen( 'edit-product' ) || SV_WC_Helper::is_current_screen( 'product' ) ) ) {
 
+			$message = sprintf(
+				_n( '%1$sHeads up!%2$s If this product was previously visible in Facebook, you may need to %3$sdelete it from the Facebook catalog%4$s to completely hide it from customer view.', '%1$sHeads up!%2$s If these products were previously visible in Facebook, you may need to %3$sdelete them from the Facebook catalog%4$s to completely hide them from customer view.', $count, 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>',
+				'<a href="https://www.facebook.com/business/help/428079314773256" target="_blank">', '</a>'
+			);
 
-	/**
-	 * Prints a notice on products page to inform users that catalog visibility settings were removed.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 */
-	public function add_catalog_visibility_settings_removed_notice() {
-		global $current_screen;
-
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) {
+			$message .= '<a class="button js-wc-plugin-framework-notice-dismiss">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</a>';
 
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
-				sprintf(
-					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-					esc_html__( '%1$sHeads up!%2$s Catalog visibility settings have been temporarily removed as we migrate to a more secure experience. To remove products from your Facebook catalog, please disable syncing to Facebook for the product. %3$sLearn more%4$s', 'facebook-for-woocommerce' ),
-					'<strong>',
-					'</strong>',
-					'<a href="https://docs.woocommerce.com/document/facebook-for-woocommerce/#section-10" target="_blank">', // TODO: add link to FAQ entry {WV 2020-03-30}
-					'</a>'
-				),
-				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-catalog-visibility-settings-removed',
-				[ 'notice_class' => 'notice-info' ]
+				$message,
+				$message_id,
+				[
+					'dismissible'  => false, // we add our own dismiss button
+					'notice_class' => 'notice-info',
+				]
 			);
+
+			delete_transient( $transient_name );
 		}
 	}
 
@@ -806,10 +701,18 @@ class Admin {
 
 		// all products have sync enabled unless explicitly disabled
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
+		$is_visible = ( $visibility = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true ) ) ? wc_string_to_bool( $visibility ) : true;
+
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
 		$image_source = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+
+		if ( $sync_enabled ) {
+			$sync_mode = $is_visible ? self::SYNC_MODE_SYNC_AND_SHOW : self::SYNC_MODE_SYNC_AND_HIDE;
+		} else {
+			$sync_mode = self::SYNC_MODE_SYNC_DISABLED;
+		}
 
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
@@ -817,10 +720,15 @@ class Admin {
 			<div class='options_group'>
 				<?php
 
-				woocommerce_wp_checkbox( [
-					'id'          => 'fb_sync_enabled',
-					'label'       => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-					'value'       => wc_bool_to_string( (bool) $sync_enabled ),
+				woocommerce_wp_select( [
+					'id'      => 'wc_facebook_sync_mode',
+					'label'   => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+					'options' => [
+						self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
+						self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
+						self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
+					],
+					'value' => $sync_mode,
 				] );
 
 				woocommerce_wp_textarea_input( [
@@ -902,19 +810,32 @@ class Admin {
 			return;
 		}
 
-		$sync_enabled = $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$sync_enabled = 'no' !== $this->get_product_variation_meta( $variation, Products::SYNC_ENABLED_META_KEY, $parent );
+		$is_visible = ( $visibility = $this->get_product_variation_meta( $variation, Products::VISIBILITY_META_KEY, $parent ) ) ? wc_string_to_bool( $visibility ) : true;
+
 		$description  = $this->get_product_variation_meta( $variation, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $parent );
 		$price        = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_PRICE, $parent );
 		$image_url    = $this->get_product_variation_meta( $variation, \WC_Facebook_Product::FB_PRODUCT_IMAGE, $parent );
 		$image_source = $variation->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY );
 
-		woocommerce_wp_checkbox( [
-			'id'            => "variable_fb_sync_enabled$index",
-			'name'          => "variable_fb_sync_enabled[$index]",
-			'label'         => __( 'Include in Facebook sync', 'facebook-for-woocommerce' ),
-			'value'         => wc_bool_to_string( 'no' !== $sync_enabled ),
-			'class'         => 'checkbox js-variable-fb-sync-toggle',
-			'wrapper_class' => 'fb-sync-enabled-field hide_if_variation_virtual',
+		if ( $sync_enabled ) {
+			$sync_mode = $is_visible ? self::SYNC_MODE_SYNC_AND_SHOW : self::SYNC_MODE_SYNC_AND_HIDE;
+		} else {
+			$sync_mode = self::SYNC_MODE_SYNC_DISABLED;
+		}
+
+		woocommerce_wp_select( [
+			'id'      => "variable_facebook_sync_mode$index",
+			'name'    => "variable_facebook_sync_mode[$index]",
+			'label'   => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+			'options' => [
+				self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
+				self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
+				self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
+			],
+			'value'         => $sync_mode,
+			'class'         => 'js-variable-fb-sync-toggle',
+			'wrapper_class' => 'hide_if_variation_virtual form-row form-row-full',
 		] );
 
 		woocommerce_wp_textarea_input( [
@@ -1014,10 +935,14 @@ class Admin {
 			return;
 		}
 
+		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? $_POST['variable_facebook_sync_mode'][ $index ] : self::SYNC_MODE_SYNC_DISABLED;
+		$sync_enabled = self::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( ! $variation->is_virtual() && isset( $_POST['variable_fb_sync_enabled'][ $index ] ) && 'yes' === $_POST['variable_fb_sync_enabled'][ $index ] ) {
+		if ( $sync_enabled && ! $variation->is_virtual() ) {
 
 			Products::enable_sync_for_products( [ $variation ] );
+			Products::set_product_visibility( $variation, self::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
 
 			$posted_param = 'variable_' . \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION;
 			$description  = isset( $_POST[ $posted_param ][ $index ] ) ? sanitize_text_field( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
@@ -1057,7 +982,7 @@ class Admin {
 		global $current_screen;
 
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-settings' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook' ], true ) ) {
 			return;
 		}
 
@@ -1144,6 +1069,54 @@ class Admin {
 			endif;
 
 		endif;
+	}
+
+
+	/** Deprecated methods ********************************************************************************************/
+
+
+	/**
+	 * No-op: Prints a notice on products page to inform users about changes in product sync.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 */
+	public function add_product_sync_delay_notice() {
+
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+	}
+
+
+	/**
+	 * No-op: Handles dismissed notices.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 *
+	 * @param string $message_id the dismissed notice ID
+	 * @param int $user_id the ID of the user the noticed was dismissed for
+	 */
+	public function handle_dismiss_notice( $message_id, $user_id = null ) {
+
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+	}
+
+
+	/**
+	 * No-op: Prints a notice on products page to inform users that catalog visibility settings were removed.
+	 *
+	 * @internal
+	 *
+	 * @since 1.11.0
+	 * @deprecated 2.0.0-dev.1
+	 */
+	public function add_catalog_visibility_settings_removed_notice() {
+
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
