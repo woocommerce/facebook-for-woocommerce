@@ -46,7 +46,7 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 
 		$response = new Response( '' );
 
-		$this->assertEquals( $value, $response->get_rate_limit_usage($headers) );
+		$this->assertEquals( $value, $response->get_rate_limit_usage( $headers ) );
 	}
 
 
@@ -59,6 +59,36 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 			[ [ 'X-App-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
 			[ [ 'x-app-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
 			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ], 'X-App-Usage' => [ 'call_count' => 39, 'total_time' => 35, 'total_cputime' => 36 ] ], 28 ],
+			[ [], 0 ],
+		];
+	}
+
+
+	/**
+	 * @see Rate_Limited_Response::get_rate_limit_total_time()
+	 *
+	 * @param array $headers response headers
+	 * @param int $value expected value
+	 *
+	 * @dataProvider provider_get_rate_limit_total_time
+	 */
+	public function test_get_rate_limit_total_time( $headers, $value ) {
+
+		$response = new Response( '' );
+
+		$this->assertEquals( $value, $response->get_rate_limit_total_time( $headers ) );
+	}
+
+
+	/** @see test_get_rate_limit_total_time() */
+	public function provider_get_rate_limit_total_time() {
+
+		return [
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 25 ],
+			[ [ 'x-business-use-case-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 25 ],
+			[ [ 'X-App-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 25 ],
+			[ [ 'x-app-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 25 ],
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ], 'X-App-Usage' => [ 'call_count' => 39, 'total_time' => 35, 'total_cputime' => 36 ] ], 25 ],
 			[ [], 0 ],
 		];
 	}
