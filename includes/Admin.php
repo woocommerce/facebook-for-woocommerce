@@ -730,14 +730,14 @@ class Admin {
 				<?php
 
 				woocommerce_wp_select( [
-					'id' => 'wc_facebook_sync_mode',
-					'label' => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+					'id'      => 'wc_facebook_sync_mode',
+					'label'   => __( 'Facebook sync', 'facebook-for-woocommerce' ),
 					'options' => [
 						self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
 						self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
 						self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
 					],
-					'value'   => $sync_mode,
+					'value' => $sync_mode,
 				] );
 
 				woocommerce_wp_textarea_input( [
@@ -834,17 +834,17 @@ class Admin {
 		}
 
 		woocommerce_wp_select( [
-			'id'            => "variable_facebook_sync_mode$index",
-			'name'          => "variable_facebook_sync_mode[$index]",
-			'label'         => __( 'Facebook sync', 'facebook-for-woocommerce' ),
+			'id'      => "variable_facebook_sync_mode$index",
+			'name'    => "variable_facebook_sync_mode[$index]",
+			'label'   => __( 'Facebook sync', 'facebook-for-woocommerce' ),
 			'options' => [
 				self::SYNC_MODE_SYNC_AND_SHOW => __( 'Sync and show in catalog', 'facebook-for-woocommerce' ),
 				self::SYNC_MODE_SYNC_AND_HIDE => __( 'Sync and hide in catalog', 'facebook-for-woocommerce' ),
 				self::SYNC_MODE_SYNC_DISABLED => __( 'Do not sync', 'facebook-for-woocommerce' ),
 			],
 			'value'         => $sync_mode,
-			'class'         => 'checkbox js-variable-fb-sync-toggle',
-			'wrapper_class' => 'hide_if_variation_virtual',
+			'class'         => 'js-variable-fb-sync-toggle',
+			'wrapper_class' => 'hide_if_variation_virtual form-row form-row-full',
 		] );
 
 		woocommerce_wp_textarea_input( [
