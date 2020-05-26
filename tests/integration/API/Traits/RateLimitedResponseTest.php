@@ -94,4 +94,34 @@ class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Rate_Limited_Response::get_rate_limit_total_cpu_time()
+	 *
+	 * @param array $headers response headers
+	 * @param int $value expected value
+	 *
+	 * @dataProvider provider_get_rate_limit_total_cpu_time
+	 */
+	public function test_get_rate_limit_total_cpu_time( $headers, $value ) {
+
+		$response = new Response( '' );
+
+		$this->assertEquals( $value, $response->get_rate_limit_total_cpu_time( $headers ) );
+	}
+
+
+	/** @see test_get_rate_limit_total_cpu_time() */
+	public function provider_get_rate_limit_total_cpu_time() {
+
+		return [
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 26 ],
+			[ [ 'x-business-use-case-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 26 ],
+			[ [ 'X-App-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 26 ],
+			[ [ 'x-app-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 26 ],
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ], 'X-App-Usage' => [ 'call_count' => 39, 'total_time' => 35, 'total_cputime' => 36 ] ], 26 ],
+			[ [], 0 ],
+		];
+	}
+
+
 }
