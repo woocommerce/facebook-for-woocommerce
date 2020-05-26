@@ -936,20 +936,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	/** @see \WC_Facebookcommerce_Integration::init_form_fields() */
-	public function test_init_form_fields() {
-
-		$this->integration->init_form_fields();
-
-		$fields = $this->integration->get_form_fields();
-
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, $fields );
-	}
-
-
 	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
 	public function test_validate_resync_schedule_field_resync_disabled() {
 

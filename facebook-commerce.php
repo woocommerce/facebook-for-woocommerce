@@ -258,8 +258,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$this->init_pixel();
 
-			$this->init_form_fields();
-
 			if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
 				include_once 'includes/fbutils.php';
 			}
@@ -2431,29 +2429,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Initializes the settings form fields.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 2.0.0-dev.1
 	 *
 	 * @internal
 	 */
 	public function init_form_fields() {
 
-		$form_fields = [
-
-			[
-				'title' => __( 'Debug', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-			],
-
-			self::SETTING_ENABLE_DEBUG_MODE => [
-				'title'    => __( 'Enable debug mode', 'facebook-for-woocommerce' ),
-				'type'     => 'checkbox',
-				'label'    => __( 'Log plugin events for debugging', 'facebook-for-woocommerce' ),
-				'desc_tip' => __( 'Only enable this if you are experiencing problems with the plugin.', 'facebook-for-woocommerce' ),
-				'default'  => 'no',
-			],
-
-		];
-
-		$this->form_fields = $form_fields;
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
@@ -3460,7 +3442,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether debug mode is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
 	}
 
 
