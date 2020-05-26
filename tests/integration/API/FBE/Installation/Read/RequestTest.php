@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\API\FBE\Installation\Read;
 use SkyVerge\WooCommerce\Facebook\API\FBE\Installation\Read\Request;
 
 /**
- * Tests the API\Pages\Read\Request class.
+ * Tests the API\FBE\Installation\Read\Request class.
  */
 class RequestTest extends \Codeception\TestCase\WPTestCase {
 
