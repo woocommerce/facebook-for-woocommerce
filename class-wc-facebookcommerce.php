@@ -136,7 +136,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
 				}
 
-				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection();
+				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
 			}
 		}
 
@@ -254,6 +254,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Request.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\FBE\Installation\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Response.php';
 				}
 
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
