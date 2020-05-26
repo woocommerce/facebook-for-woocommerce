@@ -38,6 +38,7 @@ class Settings {
 	public function __construct() {
 
 		$this->screens = [
+			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
 		];
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );

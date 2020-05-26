@@ -63,21 +63,6 @@ class IntegrationSettingsCest {
 
 
 	/**
-	 * Test that the Product sync section is present.
-	 *
-	 * @param AcceptanceTester $I tester instance
-	 */
-	public function try_product_sync_section_present( AcceptanceTester $I ) {
-
-		$I->amOnIntegrationSettingsPage();
-
-		$I->wantTo( 'Test that the Product sync section is present' );
-
-		$I->see( 'Product sync', 'h3.wc-settings-sub-title' );
-	}
-
-
-	/**
 	 * Test that the Messenger section is present.
 	 *
 	 * @param AcceptanceTester $I tester instance
@@ -114,39 +99,6 @@ class IntegrationSettingsCest {
 		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING );
 
 		$I->see( 'Create ad', 'a.button' );
-	}
-
-
-	/**
-	 * Test that the Product sync fields are present.
-	 *
-	 * @param AcceptanceTester $I tester instance
-	 */
-	public function try_product_sync_fields_present( AcceptanceTester $I ) {
-
-		$I->amOnIntegrationSettingsPage();
-
-		$I->wantTo( 'Test that the Product sync fields are present' );
-
-		//$I->see( 'Sync products', 'a.button' );
-
-		$I->see( 'Enable product sync', 'th.titledesc' );
-		$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
-
-		$I->see( 'Exclude categories from sync', 'th.titledesc' );
-		$I->seeElement( 'select.wc-enhanced-select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS );
-
-		$I->see( 'Exclude tags from sync', 'th.titledesc' );
-		$I->seeElement( 'select.wc-enhanced-select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS );
-
-		$I->see( 'Product description sync', 'th.titledesc' );
-		$I->seeElement( 'select' . self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
-
-		//$I->see( 'Force daily resync at', 'th.titledesc' );
-		//$I->seeElement( 'input[type=checkbox]' . self::FIELD_PREFIX . 'scheduled_resync_enabled' );
-		//$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_hours' );
-		//$I->seeElement( 'input[type=number]' . self::FIELD_PREFIX . 'scheduled_resync_minutes' );
-		//$I->seeElement( 'select' . self::FIELD_PREFIX . 'scheduled_resync_meridiem' );
 	}
 
 
@@ -207,44 +159,6 @@ class IntegrationSettingsCest {
 			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING => true,
 		];
 
-		$I->submitForm( '#mainform', $form, 'save' );
-		$I->waitForText( 'Your settings have been saved.' );
-
-		$I->seeInFormFields( '#mainform', $form );
-	}
-
-
-	/**
-	 * Test that the Product sync fields are saved correctly.
-	 *
-	 * @param AcceptanceTester $I tester instance
-	 * @throws Exception
-	 */
-	public function try_product_sync_fields_saved( AcceptanceTester $I ) {
-
-		// save a product category and a product tag to exclude from facebook sync
-		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
-		list( $excluded_tag_id, $excluded_tag_taxonomy_id )           = $I->haveTermInDatabase( 'Excluded Tag', 'product_tag' );
-
-		$I->amOnIntegrationSettingsPage();
-
-		$I->wantTo( 'Test that the Product sync fields are saved correctly' );
-
-		// select excluded categories/tags because submitForm can't set hidden elements
-		$I->selectOption( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_category_taxonomy_id );
-		$I->selectOption( self::FIELD_PREFIX . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tag_taxonomy_id );
-
-		$form = [
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC                  => true,
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS . '[]' => [ (string) $excluded_category_taxonomy_id ],
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS . '[]'      => [ (string) $excluded_tag_taxonomy_id ],
-			'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_' . WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE             => WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT,
-
-			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_enabled'  => true,
-			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_hours'    => '10',
-			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_minutes'  => '30',
-			//'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_scheduled_resync_meridiem' => 'pm',
-		];
 		$I->submitForm( '#mainform', $form, 'save' );
 		$I->waitForText( 'Your settings have been saved.' );
 
