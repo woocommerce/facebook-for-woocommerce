@@ -4276,6 +4276,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $product_group_id ) {
 
+			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
 			$pg_result = $this->fbgraph->delete_product_group( $product_group_id );
 
 			\WC_Facebookcommerce_Utils::log( $pg_result );
