@@ -39,6 +39,8 @@ class Settings {
 
 		$this->screens = [
 			Settings_Screens\Connection::ID => new Settings_Screens\Connection(),
+			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
+			Settings_Screens\Messenger::ID => new Settings_Screens\Messenger(),
 		];
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
