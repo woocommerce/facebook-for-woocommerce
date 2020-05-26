@@ -29,7 +29,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-	/** @see API\Catalog\Response::get_name() */
+	/** @see API\Business_Manager\Response::get_name() */
 	public function test_get_name() {
 
 		$data = [
