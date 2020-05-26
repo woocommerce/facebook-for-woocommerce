@@ -188,6 +188,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			if ( get_transient( 'wc_facebook_connection_invalid' ) && $this->get_connection_handler()->is_connected() ) {
 
 				$message = sprintf(
+					/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag */
 					__( '%1$sHeads up!%2$s Your connection to Facebook is no longer valid. Please %3$sclick here%4$s to securely reconnect your account and continue syncing products.', 'facebook-for-woocommerce' ),
 					'<strong>', '</strong>',
 					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
