@@ -2465,6 +2465,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @see \WC_Settings_API::process_admin_options()
 	 *
+	 * TODO: remove this or move it to the new settings processing
+	 *
 	 * @internal
 	 *
 	 * @since 1.10.0

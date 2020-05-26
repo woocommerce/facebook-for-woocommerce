@@ -7,6 +7,8 @@
  * @package FacebookCommerce
  */
 
+// TODO: check if we still need this file
+
 var fb_sync_no_response_count = 0;
 var fb_show_advanced_options  = false;
 
