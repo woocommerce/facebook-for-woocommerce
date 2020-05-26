@@ -64,4 +64,20 @@ trait Rate_Limited_Response {
 	}
 
 
+	/**
+	 * Gets the percentage of total time allotted for query processing.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $headers response headers
+	 * @return int
+	 */
+	public function get_rate_limit_total_time( $headers ) {
+
+		$usage_data = $this->get_usage_data( $headers );
+
+		return (int) $usage_data['total_time'] ?: 0;
+	}
+
+
 }
