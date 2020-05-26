@@ -34,4 +34,18 @@ trait Rate_Limited_API {
 	}
 
 
+	/**
+	 * Gets the number of seconds before a new request with the given rate limit ID can be made.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $rate_limit_id request ID for rate limiting
+	 * @return int
+	 */
+	public function get_rate_limit_delay( $rate_limit_id ) {
+
+		return (int) get_option( "wc_facebook_rate_limit_${rate_limit_id}", 0 );
+	}
+
+
 }
