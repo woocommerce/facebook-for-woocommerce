@@ -339,7 +339,6 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param \stdClass|object $job
 	 * @param array $requests sync requests
 	 * @return array
 	 * @throws Framework\SV_WC_API_Exception
