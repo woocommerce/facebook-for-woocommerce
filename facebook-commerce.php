@@ -614,44 +614,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $fb_product_group_id ) {
 
 			?>
-				<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
-				<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
-				target="_blank">
-					<?php echo esc_html( $fb_product_group_id ); ?>
-				</a>
-				<p/>
-			<?php
 
-			if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) {
+			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?> <a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
+			                                                                           target="_blank"><?php echo esc_html( $fb_product_group_id ); ?></a>
 
-				?>
-					<p><?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
-				<?php
+			<?php if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) : ?>
 
-				$children = $woo_product->get_children();
+				<?php if ( $product_item_ids_by_variation_id = $this->get_variation_product_item_ids( $woo_product, $fb_product_group_id ) ) : ?>
 
-				foreach ( $children as $child_id ) {
+					<p>
+						<?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
 
-					$fb_product_item_id = $this->get_product_fbid(
-						self::FB_PRODUCT_ITEM_ID,
-						$child_id
-					);
+						<?php foreach ( $product_item_ids_by_variation_id as $variation_id => $product_item_id ) : ?>
 
-					?>
-						<?php echo esc_html( $child_id ); ?>:
-						<a href="https://facebook.com/<?php echo esc_attr( $fb_product_item_id ); ?>"
-						target="_blank">
-							<?php echo esc_html( $fb_product_item_id ); ?>
-						</a><br/>
-					<?php
-				}
+							<?php echo esc_html( $variation_id ); ?>: <a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>"
+							                                             target="_blank"><?php echo esc_html( $product_item_id ); ?></a><br/>
 
-				?>
+						<?php endforeach; ?>
 					</p>
-				<?php
-			}
 
-			?>
+				<?php endif; ?>
+
+			<?php endif; ?>
+
 				<?php /* ?>
 				<?php echo esc_html__( 'Visible:', 'facebook-for-woocommerce' ); ?>
 				<input name="<?php echo esc_attr( Products::VISIBILITY_META_KEY ); ?>"
@@ -685,6 +670,94 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		?>
 			</span>
 		<?php
+	}
+
+
+	/**
+	 * Gets a list of Product Item IDs indexed by the ID of the variation.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @return array
+	 */
+	private function get_variation_product_item_ids( $product, $product_group_id ) {
+
+		$product_item_ids_by_variation_id = [];
+		$missing_product_item_ids         = [];
+
+		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored
+		foreach ( $product->get_children() as $variation_id ) {
+
+			if ( $variation = wc_get_product( $variation_id ) ) {
+
+				if ( $product_item_id = $variation->get_meta( self::FB_PRODUCT_ITEM_ID ) ) {
+
+					$product_item_ids_by_variation_id[ $variation_id ] = $product_item_id;
+
+				} else {
+
+					$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
+
+					$missing_product_item_ids[ $retailer_id ] = $variation;
+
+					$product_item_ids_by_variation_id[ $variation_id ] = null;
+				}
+			}
+		}
+
+		// use the Graph API to try to find and store the product item IDs for variations that don't have a value yet
+		if ( $missing_product_item_ids ) {
+
+			$product_item_ids = $this->find_variation_product_item_ids( $product_group_id );
+
+			foreach ( $missing_product_item_ids as $retailer_id => $variation ) {
+
+				if ( isset( $product_item_ids[ $retailer_id ] ) ) {
+
+					$variation->update_meta_data( self::FB_PRODUCT_ITEM_ID, $product_item_ids[ $retailer_id ] );
+					$variation->save_meta_data();
+
+					$product_item_ids_by_variation_id[ $variation->get_id() ] = $product_item_ids[ $retailer_id ];
+				}
+			}
+		}
+
+		return $product_item_ids_by_variation_id;
+	}
+
+
+	/**
+	 * Uses the Graph API to return a list of Product Item IDs indexed by the variation's retailer ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @return array
+	 */
+	private function find_variation_product_item_ids( $product_group_id ) {
+
+		$product_item_ids = [];
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api()->get_product_group_products( $product_group_id );
+
+			do {
+
+				$product_item_ids = array_merge( $product_item_ids, $response->get_ids() );
+
+			// get up to two additional pages of results
+			} while ( $response = facebook_for_woocommerce()->get_api()->next( $response, 2 ) );
+
+		} catch ( Framework\SV_WC_API_Exception $e ) {
+
+			$message = sprintf( 'There was an error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() );
+
+			facebook_for_woocommerce()->log( $message );
+		}
+
+		return $product_item_ids;
 	}
 
 

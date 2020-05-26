@@ -56,6 +56,18 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::set_params() */
+	public function test_set_params() {
+
+		$request = new Request( null, null, null );
+		$params  = [ 'fields' => 'id' ];
+
+		$request->set_params( $params );
+
+		$this->assertEquals( $params, $request->get_params() );
+	}
+
+
 	/** @see Request::set_data() */
 	public function test_set_data() {
 

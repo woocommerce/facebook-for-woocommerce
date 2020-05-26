@@ -236,6 +236,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API.php';
 				}
 
+				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
 				if ( ! class_exists( API\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Request.php';
 				}
@@ -250,6 +254,22 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
 				}
 
 				if ( ! class_exists( API\Pages\Read\Request::class ) ) {

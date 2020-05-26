@@ -294,16 +294,36 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_product_group_products() */
+	public function test_get_product_group_products() {
+
+		$product_group_id = '1234';
+		$limit            = 42;
+
+		$request_params   = [
+			'fields' => 'id,retailer_id',
+			'limit'  => $limit,
+		];
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_product_group_products( $product_group_id, $limit );
+
+		$this->assertInstanceOf( API\Catalog\Product_Group\Products\Read\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$product_group_id}/products", $api->get_request()->get_path() );
+		$this->assertEquals( $request_params, $api->get_request()->get_params() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Catalog\Product_Group\Products\Read\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::find_product_item() */
 	public function test_find_product_item() {
-
-		if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
-			require_once 'includes/API/Catalog/Product_Item/Find/Request.php';
-		}
-
-		if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
-			require_once 'includes/API/Catalog/Product_Item/Response.php';
-		}
 
 		$catalog_id  = '123456';
 		$retailer_id = '456';
@@ -393,6 +413,80 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::next() */
+	public function test_next() {
+
+		$response_data = [
+			'paging' => [
+				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+			],
+		];
+
+		$request_args = [
+			'path'   => '/1234/products',
+			'method' => 'GET',
+			'params' => [
+				'fields' => 'id,retailer_id',
+				'limit'  => 1000,
+				'after'  => 'ABCD',
+			],
+		];
+
+		$response      = $this->tester->get_paginated_response( $response_data );
+		$next_response = $this->tester->get_paginated_response();
+
+		$api = $this->make( API::class, [
+			'perform_request' => function( API\Request $request ) use ( $request_args, $next_response ) {
+
+				$this->assertEquals( $request_args['path'],   $request->get_path() );
+				$this->assertEquals( $request_args['method'], $request->get_method() );
+				$this->assertEquals( $request_args['params'], $request->get_params() );
+
+				return $next_response;
+			},
+		] );
+
+		$this->assertSame( $next_response, $api->next( $response ) );
+		$this->assertEquals( $next_response->get_pages_retrieved(), $response->get_pages_retrieved() + 1 );
+	}
+
+
+	/** @see API::next() */
+	public function test_next_when_there_is_no_next_page() {
+
+		$response = $this->tester->get_paginated_response();
+
+		$api = $this->make( API::class, [
+			'perform_request' => Codeception\Stub\Expected::never(),
+		] );
+
+		$this->assertNull( $api->next( $response ) );
+	}
+
+
+	/** @see API::next() */
+	public function test_next_when_enough_pages_have_been_retrieved() {
+
+		$response_data = [
+			'paging' => [
+				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+			],
+		];
+
+		$additional_pages = 2;
+		$pages_retrieved  = 3; // the first page from the original response and two more using next()
+
+		$response = $this->tester->get_paginated_response( $response_data );
+		$response->set_pages_retrieved( $pages_retrieved );
+
+		$api = $this->make( API::class, [
+			'perform_request' => Codeception\Stub\Expected::never(),
+		] );
+
+		$this->assertNull( $api->next( $response, $additional_pages ) );
+	}
+
+
 	/** @see API::set_rate_limit_delay() */
 	public function test_set_rate_limit_delay() {
 
@@ -415,14 +509,15 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see API::get_new_request()
 	 *
-	 * @param array $args
-	 * @param string $expected_path
-	 * @param string $expected_method
+	 * @param array $args test case
+	 * @param string $expected_path expected request path
+	 * @param string $expected_method expected request method
+	 * @param string $expected_params optional array of expected requested parameters
 	 * @throws ReflectionException
 	 *
 	 * @dataProvider provider_get_new_request
 	 */
-	public function test_get_new_request( $args, $expected_path, $expected_method ) {
+	public function test_get_new_request( $args, $expected_path, $expected_method, $expected_params = [] ) {
 
 		$api = new API( 'fake-token' );
 
@@ -435,13 +530,20 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( $expected_path, $request->get_path() );
 		$this->assertEquals( $expected_method, $request->get_method() );
+		$this->assertEquals( $expected_params, $request->get_params() );
 	}
 
 
 	/** @see test_get_new_request() */
 	public function provider_get_new_request() {
 
+		$params = [
+			'fields' => 'id',
+			'limit'  => 100,
+		];
+
 		return [
+			[ [ 'path' => '/me', 'method' => 'GET', 'params' => $params ], '/me', 'GET', $params ],
 			[ [ 'path' => '/me', 'method' => 'GET' ], '/me', 'GET' ],
 			[ [ 'path' => '/1234/products', 'method' => 'GET' ], '/1234/products', 'GET' ],
 			[ [ 'path' => '/1234/batch', 'method' => 'POST' ], '/1234/batch', 'POST' ],
