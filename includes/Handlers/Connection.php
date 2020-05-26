@@ -151,11 +151,13 @@ class Connection {
 
 			$this->disconnect();
 
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Uninstall successful', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
 			facebook_for_woocommerce()->log( sprintf( 'Uninstall failed: %s', $exception->getMessage() ) );
 
+			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Uninstall unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
