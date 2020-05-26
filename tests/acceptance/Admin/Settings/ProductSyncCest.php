@@ -1,6 +1,6 @@
 <?php
 
-class Product_Sync_Cest {
+class ProductSyncCest {
 
 
 	public function _before( AcceptanceTester $I ) {
