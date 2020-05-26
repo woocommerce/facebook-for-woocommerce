@@ -165,6 +165,13 @@ class Connection {
 	}
 
 
+	/**
+	 * Disconnect the plugin.
+	 *
+	 * Deletes local asset data.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
 	private function disconnect() {
 
 		$this->update_access_token( '' );
