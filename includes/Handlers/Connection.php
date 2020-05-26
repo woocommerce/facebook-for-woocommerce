@@ -34,6 +34,9 @@ class Connection {
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
+	/** @var string the action callback for the disconnection */
+	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
+
 	/** @var string the WordPress option name where the external business ID is stored */
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
@@ -56,6 +59,8 @@ class Connection {
 	public function __construct() {
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
+
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
 	}
 
 
@@ -133,6 +138,15 @@ class Connection {
 	 */
 	public function handle_disconnect() {
 
+		check_admin_referer( self::ACTION_DISCONNECT );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
+		}
+
+		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+		exit;
+	}
 	}
 
 
