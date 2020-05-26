@@ -1,0 +1,67 @@
+<?php
+
+namespace SkyVerge\WooCommerce\Facebook\Tests\API;
+
+use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\API\Response;
+use SkyVerge\WooCommerce\Facebook\API\Traits\Rate_Limited_Response;
+
+/**
+ * Tests the API\Traits\Rate_Limited_Response trait.
+ */
+class RateLimitedResponseTest extends \Codeception\TestCase\WPTestCase {
+
+
+	/** @var \IntegrationTester */
+	protected $tester;
+
+	/** @var API */
+	protected $api;
+
+
+	public function _before() {
+
+		parent::_before();
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		$this->api = facebook_for_woocommerce()->get_api();
+	}
+
+
+	/** Test methods **************************************************************************************************/
+
+
+	/**
+	 * @see Rate_Limited_Response::get_rate_limit_usage()
+	 *
+	 * @param array $headers response headers
+	 * @param int $value expected value
+	 *
+	 * @dataProvider provider_get_rate_limit_usage
+	 */
+	public function test_get_rate_limit_usage( $headers, $value ) {
+
+		$response = new Response( '' );
+
+		$this->assertEquals( $value, $response->get_rate_limit_usage($headers) );
+	}
+
+
+	/** @see test_get_rate_limit_usage() */
+	public function provider_get_rate_limit_usage() {
+
+		return [
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
+			[ [ 'x-business-use-case-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
+			[ [ 'X-App-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
+			[ [ 'x-app-usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ] ], 28 ],
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26 ], 'X-App-Usage' => [ 'call_count' => 39, 'total_time' => 35, 'total_cputime' => 36 ] ], 28 ],
+			[ [], 0 ],
+		];
+	}
+
+
+}
