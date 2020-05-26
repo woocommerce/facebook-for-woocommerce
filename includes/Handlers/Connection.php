@@ -144,9 +144,31 @@ class Connection {
 			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
 		}
 
+		try {
+
+			$response = facebook_for_woocommerce()->get_api()->get_user();
+			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
+
+			$this->disconnect();
+
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Uninstall failed: %s', $exception->getMessage() ) );
+
+		}
+
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
 		exit;
 	}
+
+
+	private function disconnect() {
+
+		$this->update_access_token( '' );
+		$this->update_business_manager_id( '' );
+
+		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
 	}
 
 

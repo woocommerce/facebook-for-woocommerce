@@ -273,6 +273,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
+				if ( ! class_exists( API\User\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Request.php';
+				}
+
+				if ( ! class_exists( API\User\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Response.php';
+				}
+
+				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
+				}
+
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
 				}
