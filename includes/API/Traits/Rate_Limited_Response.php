@@ -39,9 +39,17 @@ trait Rate_Limited_Response {
 
 			$usage_data = $headers['X-Business-Use-Case-Usage'];
 
+		} elseif ( ! empty( $headers['x-business-use-case-usage'] ) ) {
+
+			$usage_data = $headers['x-business-use-case-usage'];
+
 		} elseif ( ! empty( $headers['X-App-Usage'] ) ) {
 
 			$usage_data = $headers['X-App-Usage'];
+
+		} elseif ( ! empty( $headers['x-app-usage'] ) ) {
+
+			$usage_data = $headers['x-app-usage'];
 		}
 
 		return $usage_data;
@@ -60,7 +68,7 @@ trait Rate_Limited_Response {
 
 		$usage_data = $this->get_usage_data( $headers );
 
-		return (int) $usage_data['call_count'] ?: 0;
+		return isset( $usage_data['call_count'] ) ? (int) $usage_data['call_count'] : 0;
 	}
 
 
@@ -76,7 +84,7 @@ trait Rate_Limited_Response {
 
 		$usage_data = $this->get_usage_data( $headers );
 
-		return (int) $usage_data['total_time'] ?: 0;
+		return isset( $usage_data['total_time'] ) ? (int) $usage_data['total_time'] : 0;
 	}
 
 
@@ -92,7 +100,7 @@ trait Rate_Limited_Response {
 
 		$usage_data = $this->get_usage_data( $headers );
 
-		return (int) $usage_data['total_cputime'] ?: 0;
+		return isset( $usage_data['total_cputime'] ) ? (int) $usage_data['total_cputime'] : 0;
 	}
 
 
