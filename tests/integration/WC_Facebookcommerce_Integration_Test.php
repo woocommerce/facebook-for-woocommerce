@@ -491,6 +491,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_messenger_locale() */
 	public function test_get_messenger_locale() {
 
+		update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, 'locale' );
+
 		$this->assertEquals( 'locale', $this->integration->get_messenger_locale() );
 	}
 
@@ -508,6 +510,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 	/** @see \WC_Facebookcommerce_Integration::get_messenger_greeting() */
 	public function test_get_messenger_greeting() {
+
+		update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING, 'How can we help you?' );
 
 		$this->assertEquals( 'How can we help you?', $this->integration->get_messenger_greeting() );
 	}
@@ -551,6 +555,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 	/** @see \WC_Facebookcommerce_Integration::get_messenger_color_hex() */
 	public function test_get_messenger_color_hex() {
+
+		update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX, '#123' );
 
 		$this->assertEquals( '#123', $this->integration->get_messenger_color_hex() );
 	}
@@ -830,9 +836,11 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::is_messenger_enabled() */
 	public function test_is_messenger_enabled() {
 
+		update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'yes' );
+
 		$this->assertTrue( $this->integration->is_messenger_enabled() );
 
-		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'no' );
+		update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'no' );
 
 		$this->assertFalse( $this->integration->is_messenger_enabled() );
 	}
@@ -938,10 +946,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING, $fields );
-		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX, $fields );
 		$this->assertArrayHasKey( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, $fields );
 	}
 
@@ -1049,53 +1053,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	/**
-	 * @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field()
-	 *
-	 * @dataProvider validate_messenger_greeting_field_provider
-	 *
-	 * @param null|string $value value to validate
-	 * @param string $expected expected result
-	 * @param bool $exception whether an exception is expected
-	 */
-	public function test_validate_messenger_greeting_field( $value, $expected, $exception = false ) {
-
-		$integration = $this->integration;
-
-		$fields = $integration->get_form_fields();
-		$key    = \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING;
-		$field  = $fields[ $key ];
-
-		if ( $exception ) {
-
-			$this->expectException( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception::class );
-
-			$integration->get_field_value( $key, $field, [ $integration->get_field_key( $key ) => $value ] );
-
-		} else {
-
-			$this->assertSame( $expected, $integration->get_field_value( $key, $field, [ $integration->get_field_key( $key ) => $value ] ) );
-		}
-	}
-
-
-	/**
-	 * Provider for test_validate_messenger_greeting_field()
-	 *
-	 * @return array
-	 */
-	public function validate_messenger_greeting_field_provider() {
-
-		return [
-			[ null, '' ],
-			[ 'This is a valid value', 'This is a valid value' ],
-			[ 'This is a valid value that is exactly the max length and should still get saved.', 'This is a valid value that is exactly the max length and should still get saved.' ],
-			[ 'This is a valid value with spèciäl characters and should still get saved okay???', 'This is a valid value with spèciäl characters and should still get saved okay???' ],
-			[ 'This is a valid value that exceeds the max length and should definitely not get saved.', '', true ],
-		];
-	}
-
-
 	/** Helper methods ************************************************************************************************/
 
 
@@ -1125,12 +1082,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$defaults = [
 			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID              => 'facebook-page-id',
 			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID             => 'facebook-pixel-id',
-			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE              => 'locale',
-			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING            => 'How can we help you?',
-			\WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX           => '#123',
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING      => 'yes',
 			\WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC           => 'yes',
-			\WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER              => 'yes',
 		];
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', array_merge( $defaults, $settings ) );

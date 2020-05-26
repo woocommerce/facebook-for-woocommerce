@@ -75,19 +75,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const SETTING_SCHEDULED_RESYNC_OFFSET = 'scheduled_resync_offset';
 
 	/** @var string the "enable messenger" setting ID */
-	const SETTING_ENABLE_MESSENGER = 'enable_messenger';
+	const SETTING_ENABLE_MESSENGER = 'wc_facebook_enable_messenger';
 
 	/** @var string the messenger locale setting ID */
-	const SETTING_MESSENGER_LOCALE = 'messenger_locale';
+	const SETTING_MESSENGER_LOCALE = 'wc_facebook_messenger_locale';
 
 	/** @var string the messenger greeting setting ID */
-	const SETTING_MESSENGER_GREETING = 'messenger_greeting';
+	const SETTING_MESSENGER_GREETING = 'wc_facebook_messenger_greeting';
 
 	/** @var string the messenger color HEX setting ID */
-	const SETTING_MESSENGER_COLOR_HEX = 'messenger_color_hex';
+	const SETTING_MESSENGER_COLOR_HEX = 'wc_facebook_messenger_color_hex';
 
 	/** @var string the "debug mode" setting ID */
-	const SETTING_ENABLE_DEBUG_MODE = 'enable_debug_mode';
+	const SETTING_ENABLE_DEBUG_MODE = 'wc_facebook_enable_debug_mode';
 
 	/** @var string the standard product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_STANDARD = 'standard';
@@ -2436,24 +2436,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 
-		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
-
-		// tries matching with WordPress locale, otherwise English, otherwise first available language
-		if ( isset( $messenger_locales[ get_locale() ] ) ) {
-			$default_locale = get_locale();
-		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
-			$default_locale = 'en_US';
-		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
-			$default_locale = key( $messenger_locales );
-		} else {
-			// fallback to English in case of invalid/empty filtered list of languages
-			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
-			$default_locale    = 'en_US';
-		}
-
-		$default_messenger_greeting = __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' );
-		$default_messenger_color    = '#0084ff';
-
 		$form_fields = [
 
 			/** @see \WC_Facebookcommerce_Integration::generate_manage_connection_title_html() */
@@ -2489,56 +2471,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			/** @see \WC_Facebookcommerce_Integration::generate_create_ad_html() */
 			[
 				'type'  => 'create_ad',
-			],
-
-			[
-				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'type'  => 'title',
-			],
-
-			self::SETTING_ENABLE_MESSENGER => [
-				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
-				'type'     => 'checkbox',
-				'class'    => 'messenger-field toggle-fields-group',
-				'label'    => ' ',
-				'desc_tip' => __( 'Enable and customize Facebook Messenger on your store.', 'facebook-for-woocommerce' ),
-				'default'  => 'no',
-			],
-
-			self::SETTING_MESSENGER_LOCALE => [
-				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
-				'type'    => 'select',
-				'class'   => 'wc-enhanced-select messenger-field',
-				'default' => $default_locale,
-				'options' => $messenger_locales,
-				'custom_attributes' => [
-					'data-default' => $default_locale,
-				],
-			],
-
-			/** @see \WC_Facebookcommerce_Integration::generate_messenger_greeting_html() */
-			/** @see \WC_Facebookcommerce_Integration::validate_messenger_greeting_field() */
-			self::SETTING_MESSENGER_GREETING => [
-				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'              => 'messenger_greeting',
-				'class'             => 'messenger-field',
-				'default'           => $default_messenger_greeting,
-				'css'               => 'max-width: 400px; margin-bottom: 10px',
-				'custom_attributes' => [
-					'maxlength'    => $this->get_messenger_greeting_max_characters(),
-					'data-default' => $default_messenger_greeting,
-				],
-			],
-
-			self::SETTING_MESSENGER_COLOR_HEX => [
-				'title'             => __( 'Colors', 'facebook-for-woocommerce' ),
-				'type'              => 'color',
-				'class'             => 'messenger-field',
-				'default'           => $default_messenger_color,
-				'css'               => 'width: 6em;',
-				'custom_attributes' => [
-					'data-default' => $default_messenger_color,
-				],
 			],
 
 			[
@@ -3053,94 +2985,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	/**
-	 * Gets the "Messenger greeting" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_textarea_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_messenger_greeting_html( $key, array $args = [] ) {
-
-		// TODO replace strlen() here with Framework helper method to account for multibyte characters {FN 2020-01-30}
-		$chars         = max( 0, strlen( $this->get_messenger_greeting() ) );
-		$max_chars     = max( 0, $this->get_messenger_greeting_max_characters() );
-		$field_id      = $this->get_field_key( $key );
-		$counter_class = $field_id . '-characters-count';
-
-		wc_enqueue_js( "
-			jQuery( document ).ready( function( $ ) {
-				$( 'span." . esc_js( $counter_class ) . "' ).insertAfter( 'textarea#" . esc_js( $field_id ) . "' );
-			} );
-		" );
-
-		ob_start();
-
-		?>
-		<span
-			style="display: none; font-family: monospace; font-size: 0.9em;"
-			class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
-		><?php echo esc_html( $chars . ' / ' . $max_chars ); ?> <span style="display:none;"><?php echo esc_html( $this->get_messenger_greeting_long_warning_text() ); ?></span></span>
-		<?php
-
-		$counter = ob_get_clean();
-
-		return $this->generate_textarea_html( $key, $args ) . $counter;
-	}
-
-
-	/**
-	 * Validates the Messenger greeting field.
-	 *
-	 * @see \WC_Settings_API::validate_textarea_field()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param string $value field submitted value
-	 * @throws \Exception on validation errors
-	 * @return string some HTML allowed
-	 */
-	protected function validate_messenger_greeting_field( $key, $value ) {
-
-		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
-
-		$max_chars    = $this->get_messenger_greeting_max_characters();
-		$value_length = function_exists( 'mb_strlen' ) ? mb_strlen( $value, Framework\SV_WC_Helper::MB_ENCODING ) : strlen( $value );
-
-		if ( $value_length > $max_chars ) {
-
-			throw new Framework\SV_WC_Plugin_Exception( sprintf(
-				$this->get_messenger_greeting_long_warning_text() . ' %s',
-				__( "The greeting hasn't been updated.", 'facebook-for-woocommerce' )
-			) );
-		}
-
-		return $value;
-	}
-
-
-	/**
-	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return string
-	 */
-	private function get_messenger_greeting_long_warning_text() {
-
-		return sprintf(
-			/* translators: Placeholder: %d - maximum number of allowed characters */
-			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-			$this->get_messenger_greeting_max_characters()
-		);
-	}
-
-
 	/** Getter methods ************************************************************************************************/
 
 
@@ -3520,7 +3364,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $locale the configured Facebook messenger locale
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_messenger_locale', $this->get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
+		return (string) apply_filters( 'wc_facebook_messenger_locale', get_option( self::SETTING_MESSENGER_LOCALE, 'en_US' ), $this );
 	}
 
 
@@ -3541,10 +3385,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $greeting the configured Facebook messenger greeting
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', $this->get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
+		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
 
-		// TODO: update to SV_WC_Helper::str_truncate() when frameworked {CW 2020-01-22}
-		return substr( $greeting, 0, $this->get_messenger_greeting_max_characters() );
+		return Framework\SV_WC_Helper::str_truncate( $greeting, $this->get_messenger_greeting_max_characters(), '' );
 	}
 
 
@@ -3592,7 +3435,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $hex the configured Facebook messenger color hex
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_messenger_color_hex', $this->get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
+		return (string) apply_filters( 'wc_facebook_messenger_color_hex', get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
 	}
 
 
@@ -3831,7 +3674,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether the Facebook messenger is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_messenger_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_MESSENGER ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_messenger_enabled', 'yes' === get_option( self::SETTING_ENABLE_MESSENGER ), $this );
 	}
 
 
