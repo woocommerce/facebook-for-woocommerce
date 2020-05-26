@@ -991,7 +991,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param \WP_post $post
 	 */
 	public function fb_change_product_published_status( $new_status, $old_status, $post ) {
-		global $post;
 
 		if ( ! $post ) {
 			return;
@@ -1001,7 +1000,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product = wc_get_product( $post->ID );
 
-		// bail if this product isn't enabled for sync
+		// bail if we couldn't retrieve a valid product object or the product isn't enabled for sync
+		//
+		// Note that while moving a variable product to the trash, this method is called for each one of the
+		// variations before it gets called with the variable product. As a result, Products::product_should_be_synced()
+		// always returns false for the variable product (since all children are in the trash at that point).
+		// This causes update_fb_visibility() to be called on simple products and product variations only.
 		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
 			return;
 		}
@@ -1010,7 +1014,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// change from trash status -> publish status
 		// no need to update for change from trash <-> unpublish status
 		if ( ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' ) ) {
-			$this->update_fb_visibility( $post->ID, $visibility );
+			$this->update_fb_visibility( $product, $visibility );
 		}
 	}
 
@@ -4266,7 +4270,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Helper function to update FB visibility.
 	 *
-	 * @param int $product_id product ID
+	 * @param int|\WC_Product $product_id product ID or product object
 	 * @param string $visibility visibility
 	 */
 	function update_fb_visibility( $product_id, $visibility ) {
@@ -4276,7 +4280,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$product = wc_get_product( $product_id );
+		$product = $product_id instanceof \WC_Product ? $product_id : wc_get_product( $product_id );
 
 		// bail if product isn't found
 		if ( ! $product instanceof \WC_Product ) {
@@ -4285,22 +4289,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$should_set_visible = $visibility === self::FB_SHOP_PRODUCT_VISIBLE;
 
-		if ( ! $product->is_type( 'variable' ) ) {
+		if ( $product->is_type( 'variation' ) ) {
 
-			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
+			Products::set_product_visibility( $product, $should_set_visible );
 
-			if ( ! $fb_product_item_id ) {
-				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
-				 return;
-			}
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $product->get_id() ] );
 
-			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
-
-			if ( $this->check_api_result( $set_visibility ) ) {
-				Products::set_product_visibility( $product, $should_set_visible );
-			}
-
-		} else {
+		} elseif ( $product->is_type( 'variable' ) ) {
 
 			// parent product
 			Products::set_product_visibility( $product, $should_set_visible );
@@ -4326,6 +4321,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			// sync product with all variations
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+
+		} else {
+
+			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
+
+			if ( ! $fb_product_item_id ) {
+				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
+				 return;
+			}
+
+			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
+
+			if ( $this->check_api_result( $set_visibility ) ) {
+				Products::set_product_visibility( $product, $should_set_visible );
+			}
 		}
 	}
 
@@ -4353,7 +4363,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} else {
 			// - product never published to Facebook, new status is not publish
 			// - product new status is not publish but may have been published before
-			$this->update_fb_visibility( $wp_id, $visibility );
+			$this->update_fb_visibility( $product, $visibility );
 		}
 	}
 
