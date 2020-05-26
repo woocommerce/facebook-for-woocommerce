@@ -13,7 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\API\Catalog;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Send_Item_Updates API response object
+ * Catalog API response object
  *
  * @since 2.0.0-dev.1
  */
