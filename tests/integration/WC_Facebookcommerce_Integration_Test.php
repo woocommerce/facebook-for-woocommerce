@@ -462,33 +462,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
-	public function test_get_scheduled_resync_offset() {
-
-		//$this->assertEquals( HOUR_IN_SECONDS, $this->integration->get_scheduled_resync_offset() );
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
-	public function test_get_scheduled_resync_offset_not_set() {
-
-		//$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
-
-		//$this->assertNull( $this->integration->get_scheduled_resync_offset() );
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::get_scheduled_resync_offset() */
-	public function test_get_scheduled_resync_offset_filter() {
-
-		//add_filter( 'wc_facebook_scheduled_resync_offset', function() {
-		//	return HOUR_IN_SECONDS * 2;
-		//} );
-
-		//$this->assertEquals( HOUR_IN_SECONDS * 2, $this->integration->get_scheduled_resync_offset() );
-	}
-
-
 	/** @see \WC_Facebookcommerce_Integration::get_messenger_locale() */
 	public function test_get_messenger_locale() {
 
@@ -751,17 +724,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	/** @see \WC_Facebookcommerce_Integration::is_advanced_matching_enabled() */
-	public function test_is_advanced_matching_enabled() {
-
-		$this->assertTrue( $this->integration->is_advanced_matching_enabled() );
-
-		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'no' );
-
-		$this->assertFalse( $this->integration->is_advanced_matching_enabled() );
-	}
-
-
 	/** @see \WC_Facebookcommerce_Integration::is_use_s2s_enabled() */
 	public function test_is_use_s2s_enabled() {
 		//For now we are testing that the class returns the default value
@@ -859,28 +821,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
-	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
-	public function test_is_scheduled_resync_enabled() {
-
-		//$this->assertTrue( $this->integration->is_scheduled_resync_enabled() );
-
-		//$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET, '' );
-
-		//$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::is_scheduled_resync_enabled() */
-	public function test_is_scheduled_resync_enabled_filter() {
-
-		//add_filter( 'wc_facebook_is_scheduled_resync_enabled', function() {
-		//	return false;
-		//} );
-
-		//$this->assertFalse( $this->integration->is_scheduled_resync_enabled() );
-	}
-
-
 	/** @see \WC_Facebookcommerce_Integration::is_messenger_enabled() */
 	public function test_is_messenger_enabled() {
 
@@ -911,7 +851,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		// defaults to false
 		$this->assertFalse( $this->integration->is_debug_mode_enabled() );
 
-		$this->integration->update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, 'yes' );
+		update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE, 'yes' );
 
 		$this->assertTrue( $this->integration->is_debug_mode_enabled() );
 	}
@@ -925,165 +865,6 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		} );
 
 		$this->assertTrue( $this->integration->is_debug_mode_enabled() );
-	}
-
-
-	/**
-	 * @see \WC_Facebookcommerce_Integration::ajax_save_fb_settings()
-	 *
-	 * @param string $setting the ID of the setting being tested
-	 * @param string $param the name of the submitted param
-	 * @param string $submitted the value submitted
-	 * @param string $expected the value that should be stored
-	 *
-	 * @dataProvider provider_ajax_save_fb_settings();
-	 */
-	public function test_ajax_save_fb_settings( $setting, $param, $submitted, $expected = null ) {
-
-		// force wp_send_json() to call wp_die()
-		add_filter( 'wp_doing_ajax', '__return_true' );
-
-		// disable wp_die()
-		add_filter( 'wp_die_ajax_handler', function() { return '__return_false'; } );
-
-		// login as administrator
-		$user = new WP_User( wp_insert_user( [ 'user_login' => 'admin_' . wp_rand(), 'user_pass' => 'password' ] ) );
-		$user->add_role( 'administrator' );
-
-		wp_set_current_user( $user->ID );
-
-		// bypass nonce verification, setup plugin flag, and add submitted param
-		$_REQUEST[ '_wpnonce' ]               = wp_create_nonce( 'wc_facebook_settings_jsx' );
-		$_REQUEST['facebook_for_woocommerce'] = true;
-		$_REQUEST[ $param ]                   = $submitted;
-
-		// some settings won't be set unless an access is already stored
-		$this->integration->update_page_access_token( 'abc123' );
-
-		$this->integration->ajax_save_fb_settings();
-
-		$this->assertEquals( null === $expected ? $submitted : $expected, $this->integration->get_option( $setting ) );
-	}
-
-
-	/** @see test_ajax_save_fb_settings() */
-	public function provider_ajax_save_fb_settings() {
-
-		return [
-			[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,        'pixel_id',                                    '9876'               ],
-			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'pixel_use_pii',                               'true'       , 'yes' ],
-			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING, 'pixel_use_pii',                               'not-bool'   , 'no'  ],
-			[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,         'page_id',                                     '8765'               ],
-			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,         'is_messenger_chat_plugin_enabled',            'true'       , 'yes' ],
-			[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,         'is_messenger_chat_plugin_enabled',            'not-bool'   , 'no'  ],
-			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,       'msger_chat_customization_greeting_text_code', 'Hello!'             ],
-			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,         'msger_chat_customization_locale',             'de_DE'              ],
-			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,      'msger_chat_customization_theme_color_code',   '#ee23fc'            ],
-			[ \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,      'msger_chat_customization_theme_color_code',   'not-a-color', ''    ],
-		];
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
-	public function test_validate_resync_schedule_field_resync_disabled() {
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		//];
-
-		//$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
-	public function test_validate_resync_schedule_field_empty_resync_time() {
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		//];
-
-		//$this->assertEquals( '', $this->integration->validate_resync_schedule_field( '', '' ) );
-	}
-
-
-	/**
-	 * @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field()
-	 */
-	public function test_validate_resync_schedule_field_invalid_resync_time() {
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '30',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		//];
-
-		//$this->expectException( \Exception::class );
-		//$this->expectExceptionMessage( 'Invalid resync schedule time: 30:00 am' );
-
-		//$this->integration->validate_resync_schedule_field( '', '' );
-	}
-
-
-	/**
-	 * @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field()
-	 */
-	public function test_validate_resync_schedule_field_invalid_resync_meridiem() {
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '20',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		//];
-
-		//$this->expectException( \Exception::class );
-		//$this->expectExceptionMessage( 'Invalid resync schedule time: 20:00 am' );
-
-		//$this->integration->validate_resync_schedule_field( '', '' );
-	}
-
-
-	/** @see \WC_Facebookcommerce_Integration::validate_resync_schedule_field() */
-	public function test_validate_resync_schedule_field_valid_resync_times() {
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'am',
-		//];
-
-		//$this->assertEquals( 10 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '10',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '00',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
-		//];
-
-		//$this->assertEquals( 22 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '6',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-		//	'woocommerce_facebookcommerce_scheduled_resync_meridiem' => 'pm',
-		//];
-
-		//$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
-
-		//$_POST = [
-		//	'woocommerce_facebookcommerce_scheduled_resync_enabled'  => 1,
-		//	'woocommerce_facebookcommerce_scheduled_resync_hours'    => '18',
-		//	'woocommerce_facebookcommerce_scheduled_resync_minutes'  => '',
-		//];
-
-		//$this->assertEquals( 18 * HOUR_IN_SECONDS, $this->integration->validate_resync_schedule_field( '', '' ) );
 	}
 
 
