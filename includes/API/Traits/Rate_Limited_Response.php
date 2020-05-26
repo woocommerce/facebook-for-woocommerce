@@ -29,7 +29,6 @@ trait Rate_Limited_Response {
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param array $headers response headers
-	 *
 	 * @return array
 	 */
 	private function get_usage_data( $headers ) {
@@ -46,6 +45,22 @@ trait Rate_Limited_Response {
 		}
 
 		return $usage_data;
+	}
+
+
+	/**
+	 * Gets the percentage of calls made by the app over a rolling one hour period.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $headers response headers
+	 * @return int
+	 */
+	public function get_rate_limit_usage( $headers ) {
+
+		$usage_data = $this->get_usage_data( $headers );
+
+		return (int) $usage_data['call_count'] ?: 0;
 	}
 
 
