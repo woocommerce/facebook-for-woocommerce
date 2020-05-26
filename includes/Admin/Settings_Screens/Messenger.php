@@ -166,9 +166,6 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 			$default_locale    = 'en_US';
 		}
 
-		$default_messenger_greeting = __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' );
-		$default_messenger_color    = '#0084ff';
-
 		return [
 
 			[
@@ -198,7 +195,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
 				'type'              => 'messenger_greeting',
 				'class'             => 'messenger-field',
-				'default'           => $default_messenger_greeting,
+				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
 				'css'               => 'width: 100%; max-width: 400px; margin-bottom: 10px',
 			],
 
@@ -207,7 +204,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				'title'             => __( 'Colors', 'facebook-for-woocommerce' ),
 				'type'              => 'color',
 				'class'             => 'messenger-field ', // the extra space is necessary
-				'default'           => $default_messenger_color,
+				'default'           => '#0084ff',
 				'css'               => 'width: 6em;',
 			],
 

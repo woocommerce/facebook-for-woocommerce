@@ -296,23 +296,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 
 			add_action( 'admin_notices', array( $this, 'checks' ) );
-			add_action(
-				'woocommerce_update_options_integration_facebookcommerce',
-				array( $this, 'process_admin_options' )
-			);
+
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
-
-			add_action(
-				'wp_ajax_ajax_save_fb_settings',
-				array( $this, 'ajax_save_fb_settings' ),
-				self::FB_PRIORITY_MID
-			);
-
-			add_action(
-				'wp_ajax_ajax_delete_fb_settings',
-				array( $this, 'ajax_delete_fb_settings' ),
-				self::FB_PRIORITY_MID
-			);
 
 			add_action(
 				'wp_ajax_ajax_sync_all_fb_products',
@@ -1449,206 +1434,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Saves settings via AJAX (to preserve window context for onboarding).
 	 *
 	 * @internal
+	 *
+	 * @deprecated 2.0.0-dev.1
 	 */
 	public function ajax_save_fb_settings() {
 
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'save settings', true );
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-
-		if ( ! isset( $_REQUEST['facebook_for_woocommerce'] ) ) {
-			// This is not a request from our plugin,
-			// some other handler or plugin probably
-			// wants to handle it and wp_die() after.
-			return;
-		}
-
-		\WC_Facebookcommerce_Utils::log( 'Saving settings via AJAX' );
-
-		// listen for a feed migrated event for FBE 1.5
-		if ( isset( $_REQUEST['feed_migrated'] ) ) {
-
-			$this->set_feed_migrated( wc_string_to_bool( $_REQUEST['feed_migrated'] ) );
-
-			// don't save anything else if already connected
-			if ( $this->get_external_merchant_settings_id() ) {
-				wp_send_json_success();
-			}
-		}
-
-		if ( isset( $_REQUEST['api_key'] ) ) {
-
-			$api_key = sanitize_text_field( wp_unslash( $_REQUEST['api_key'] ) );
-
-			if ( ctype_alnum( $api_key ) ) {
-				$this->update_page_access_token( $api_key );
-			}
-		}
-
-		if ( isset( $_REQUEST['external_merchant_settings_id'] ) ) {
-
-			$external_merchant_settings_id = sanitize_text_field( wp_unslash( $_REQUEST['external_merchant_settings_id'] ) );
-
-			if ( is_numeric( $external_merchant_settings_id ) ) {
-				$this->update_external_merchant_settings_id( $external_merchant_settings_id );
-			}
-		}
-
-		if ( isset( $_REQUEST['product_catalog_id'] ) ) {
-
-			$product_catalog_id = sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) );
-
-			if ( ctype_digit( $product_catalog_id ) ) {
-
-				if ( ! empty( $this->get_product_catalog_id() ) && $_REQUEST['product_catalog_id'] !== $this->get_product_catalog_id() ) {
-					$this->reset_all_products();
-				}
-
-				$this->update_product_catalog_id( sanitize_text_field( wp_unslash( $_REQUEST['product_catalog_id'] ) ) );
-			}
-		}
-
-		if ( isset( $_REQUEST['pixel_id'] ) ) {
-
-			$pixel_id = sanitize_text_field( wp_unslash( $_REQUEST['pixel_id'] ) );
-
-			if ( ctype_digit( $pixel_id ) ) {
-
-				// to prevent race conditions with pixel-only settings, only save a pixel if we already have an access token
-				if ( $this->get_external_merchant_settings_id() ) {
-
-					if ( $this->get_facebook_pixel_id() !== $pixel_id ) {
-						$this->update_pixel_install_time( time() );
-					}
-
-					$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
-
-				} else {
-
-					WC_Facebookcommerce_Utils::log( 'Got pixel-only settings, doing nothing' );
-
-					wp_send_json_error();
-				}
-			}
-		}
-
-		if ( isset( $_REQUEST['pixel_use_pii'] ) ) {
-			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['pixel_use_pii'] ) ) );
-		}
-
-		if ( isset( $_REQUEST['page_id'] ) ) {
-
-			$page_id = sanitize_text_field( wp_unslash( $_REQUEST['page_id'] ) );
-
-			if ( ctype_digit( $page_id ) ) {
-				$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ] = $page_id;
-			}
-		}
-
-		if ( isset( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) {
-			$this->settings[ self::SETTING_ENABLE_MESSENGER ] = wc_bool_to_string( wc_clean( wp_unslash( $_REQUEST['is_messenger_chat_plugin_enabled'] ) ) );
-		}
-
-		if ( isset( $_REQUEST['facebook_jssdk_version'] ) ) {
-			$this->update_js_sdk_version( sanitize_text_field( wp_unslash( $_REQUEST['facebook_jssdk_version'] ) ) );
-		}
-
-		if ( ! empty( $_REQUEST['msger_chat_customization_greeting_text_code'] ) ) {
-			$this->settings[ self::SETTING_MESSENGER_GREETING ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_greeting_text_code'] ) );
-		}
-
-		if ( isset( $_REQUEST['msger_chat_customization_locale'] ) ) {
-			$this->settings[ self::SETTING_MESSENGER_LOCALE ] = sanitize_text_field( wp_unslash( $_REQUEST['msger_chat_customization_locale'] ) );
-		}
-
-		if ( ! empty( $_REQUEST['msger_chat_customization_theme_color_code'] ) ) {
-			$this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] = sanitize_hex_color( wp_unslash( $_REQUEST['msger_chat_customization_theme_color_code'] ) );
-		}
-
-		/** This filter is defined by WooCommerce in includes/abstracts/abstract-wc-settings-api.php */
-		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ) );
-
-		WC_Facebookcommerce_Utils::log( 'Settings saved!' );
-
-		wp_send_json_success();
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 	/**
 	 * Delete all settings via AJAX
-	 **/
+	 *
+	 * @deprecated 2.0.0-dev.1
+	 */
 	function ajax_delete_fb_settings() {
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		if ( ! WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'delete settings', false ) ) {
-			return;
-		}
 
-		// Do not allow reset in the middle of product sync
-		$currently_syncing = get_transient( self::FB_SYNC_IN_PROGRESS );
-		if ( $currently_syncing ) {
-			wp_send_json(
-				'A Facebook product sync is currently in progress.
-        Deleting settings during product sync may cause errors.'
-			);
-			return;
-		}
-
-		if ( isset( $_REQUEST ) ) {
-			$ems = $this->get_external_merchant_settings_id();
-			if ( $ems ) {
-				WC_Facebookcommerce_Utils::fblog(
-					'Deleted all settings!',
-					array(),
-					false,
-					$ems
-				);
-			}
-
-			$this->init_settings();
-			$this->update_page_access_token( '' );
-			$this->update_product_catalog_id( '' );
-			$this->set_feed_migrated( false );
-
-			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = '';
-			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = 'no';
-			$this->settings[ self::SETTING_FACEBOOK_PAGE_ID ]         = '';
-			$this->settings[ self::SETTING_USE_S2S ] = false;
-			$this->settings[ self::SETTING_ACCESS_TOKEN ] = '';
-
-			unset( $this->settings[ self::SETTING_ENABLE_MESSENGER ] );
-			unset( $this->settings[ self::SETTING_MESSENGER_GREETING ] );
-			unset( $this->settings[ self::SETTING_MESSENGER_LOCALE ] );
-			unset( $this->settings[ self::SETTING_MESSENGER_COLOR_HEX ] );
-
-			$this->update_external_merchant_settings_id( '' );
-			$this->update_pixel_install_time( 0 );
-			$this->update_feed_id( '' );
-			$this->update_upload_id( '' );
-			$this->settings['upload_end_time'] = '';
-
-			WC_Facebookcommerce_Pixel::set_pixel_id( 0 );
-
-			update_option(
-				$this->get_option_key(),
-				apply_filters(
-					'woocommerce_settings_api_sanitized_fields_' . $this->id,
-					$this->settings
-				)
-			);
-
-			// Clean up old  messages
-			delete_transient( 'facebook_plugin_api_error' );
-			delete_transient( 'facebook_plugin_api_success' );
-			delete_transient( 'facebook_plugin_api_warning' );
-			delete_transient( 'facebook_plugin_api_info' );
-			delete_transient( 'facebook_plugin_api_sticky' );
-
-			$this->reset_all_products();
-
-			WC_Facebookcommerce_Utils::log( 'Settings deleted' );
-			echo 'Settings Deleted';
-
-		}
-
-		wp_die();
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 	/**
@@ -2516,295 +2317,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Gets the "Sync products" field HTML.
-	 *
-	 * @see \WC_Settings_API::generate_title_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string|int $key field key or index
-	 * @param array $args associative array of field arguments
-	 * @return string HTML
-	 */
-	protected function generate_product_sync_title_html( $key, array $args = [] ) {
-
-		$key = $this->get_field_key( $key );
-
-		ob_start();
-
-		?>
-		</table>
-		<h3 class="wc-settings-sub-title" id="<?php echo esc_attr( $key ); ?>">
-
-			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
-
-			<?php if ( $this->get_page_name() ) : ?>
-				<a
-					id="woocommerce-facebook-settings-sync-products"
-					class="button product-sync-field"
-					href="#"
-					style="vertical-align: middle; margin-left: 20px;"
-				><?php esc_html_e( 'Sync products', 'facebook-for-woocommerce' ); ?></a>
-			<?php endif; ?>
-
-		</h3>
-		<div><p id="sync_progress" style="display: none"></p></div>
-		<table class="form-table">
-		<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
 	 * Processes and saves options.
-	 *
-	 * @see \WC_Settings_API::process_admin_options()
 	 *
 	 * @internal
 	 *
 	 * @since 1.10.0
+	 * @deprecate 2.0.0-dev.1
 	 */
 	public function process_admin_options() {
 
-		$current_resync_offset = $this->get_scheduled_resync_offset();
-
-		parent::process_admin_options();
-
-		$saved_resync_offset = $this->get_scheduled_resync_offset();
-
-		if ( null === $saved_resync_offset || ! $this->is_product_sync_enabled()  ) {
-			$this->unschedule_resync();
-		} elseif ( $saved_resync_offset !== $current_resync_offset || false === $this->is_resync_scheduled() ) {
-			$this->schedule_resync( $saved_resync_offset );
-		}
-
-		// when settings are saved, if there are excluded categories/terms we can exclude corresponding products from sync
-		$product_cats    = $product_tags = [];
-		$product_cat_ids = $this->get_excluded_product_category_ids();
-		$product_tag_ids = $this->get_excluded_product_tag_ids();
-
-		$disable_sync_for_products = [];
-
-		// get all products belonging to excluded categories
-		if ( ! empty( $product_cat_ids ) ) {
-
-			foreach ( $product_cat_ids as $tag_id ) {
-
-				$term = get_term_by( 'id', $tag_id, 'product_cat' );
-
-				if ( $term instanceof \WP_Term ) {
-					$product_cats[] = $term->slug;
-				}
-			}
-
-			if ( ! empty( $product_cats ) ) {
-
-				$disable_sync_for_products = wc_get_products( [
-					'category' => $product_cats,
-					'limit'    => -1,
-					'return'   => 'ids',
-				] );
-			}
-		}
-
-		// get all products belonging to excluded tags
-		if ( ! empty( $product_tag_ids ) ) {
-
-			foreach ( $product_tag_ids as $tag_id ) {
-
-				$term = get_term_by( 'id', $tag_id, 'product_tag' );
-
-				if ( $term instanceof \WP_Term ) {
-					$product_tags[] = $term->slug;
-				}
-			}
-
-			if ( ! empty( $product_tags ) ) {
-
-				$disable_sync_for_products = array_merge( wc_get_products( [
-					'tag'    => $product_tags,
-					'limit'  => -1,
-					'return' => 'ids',
-				] ), $disable_sync_for_products );
-			}
-		}
-
-		if ( ! empty( $disable_sync_for_products ) ) {
-
-			// disable sync for found products that match any excluded term
-			Products::disable_sync_for_products( wc_get_products( [
-				'limit'   => -1,
-				'include' => array_unique( $disable_sync_for_products ),
-			] ) );
-		}
-	}
-
-
-    /**
-	 * Generates the force resync fieldset HTML.
-	 *
-	 * @see \WC_Settings_API::generate_settings_html()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string $key field key
-	 * @param array $data field data
-	 * @return string HTML
-	 */
-	protected function generate_resync_schedule_html( $key, array $data ) {
-
-		$fieldset_key       = $this->get_field_key( $key );
-		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
-		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
-		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
-		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
-
-		// check if the sites uses 12-hours or 24-hours time format
-		$time_format = wc_time_format();
-		// TODO replace these string search functions with Framework string helpers {FN 2020-01-31}
-		$is_12_hours = ( false !== strpos( $time_format, 'g' ) || false !== strpos( $time_format, 'h' ) );
-		// default to 24-hours format if no hour specifier is found on the string
-		$is_24_hours = ! $is_12_hours;
-
-		if ( $this->is_scheduled_resync_enabled() ) {
-			try {
-				$offset         = $this->get_scheduled_resync_offset();
-				$resync_time    = ( new DateTime( 'today' ) )->add( new DateInterval( "PT${offset}S" ) );
-				$resync_hours   = $is_24_hours ? $resync_time->format( 'G' ) : $resync_time->format( 'g' );
-				$resync_minutes = $resync_time->format( 'i' );
-			} catch ( \Exception $e ) {}
-		}
-
-		// default to 23:00
-		if ( empty( $resync_hours ) ) {
-			$resync_hours    = $is_24_hours ? '23' : '11';
-			$resync_minutes  = '00';
-			$resync_meridiem = $is_24_hours ? '' : 'pm';
-		}
-
-		$defaults  = [
-			'title'    => '',
-			'disabled' => false,
-			'class'    => '',
-			'css'      => '',
-			'desc_tip' => false,
-		];
-
-		$data = wp_parse_args( $data, $defaults );
-
-		ob_start();
-		?>
-		<tr valign="top">
-			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $fieldset_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); ?></label>
-			</th>
-			<td class="forminp">
-				<fieldset class="<?php echo esc_attr( $data['class'] ); ?>">
-					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<input
-						class="toggle-fields-group resync-schedule-field"
-						<?php disabled( $data['disabled'], true ); ?>
-						type="checkbox"
-						name="<?php echo esc_attr( $enabled_field_key ); ?>"
-						id="<?php echo esc_attr( $enabled_field_key ); ?>"
-						style="<?php echo esc_attr( $data['css'] ); ?>"
-						value="1"
-						<?php checked( $this->is_scheduled_resync_enabled() ); ?>
-					/>
-					<input
-						class="input-number regular-input resync-schedule-field"
-						type="number"
-						min="0"
-						max="<?php echo $is_24_hours ? 24 : 12; ?>"
-						name="<?php echo esc_attr( $hours_field_key ); ?>"
-						id="<?php echo esc_attr( $hours_field_key ); ?>"
-						style="<?php echo esc_attr( $data['css'] ); ?>"
-						value="<?php echo ! empty( $resync_hours ) ? esc_attr( $resync_hours ) : ''; ?>"
-						<?php disabled( $data['disabled'], true ); ?>
-					/>
-					<strong>:</strong>
-					<input
-						class="input-number regular-input resync-schedule-field"
-						type="number"
-						min="0"
-						max="59"
-						name="<?php echo esc_attr( $minutes_field_key ); ?>"
-						id="<?php echo esc_attr( $minutes_field_key ); ?>"
-						style="<?php echo esc_attr( $data['css'] ); ?>"
-						value="<?php echo ! empty( $resync_minutes ) ? esc_attr( $resync_minutes ) : ''; ?>"
-						<?php disabled( $data['disabled'], true ); ?>
-					/>
-					<?php if ( ! $is_24_hours ) : ?>
-
-						<select
-							class="resync-schedule-field"
-							name="<?php echo esc_attr( $meridiem_field_key ); ?>"
-							id="<?php echo esc_attr( $meridiem_field_key ); ?>"
-							style="<?php echo esc_attr( $data['css'] ); ?>"
-							<?php disabled( $data['disabled'], true ); ?>>
-							<option
-								<?php selected( true, $this->get_scheduled_resync_offset() < 12 * HOUR_IN_SECONDS, true ); ?>
-								value="am">
-								<?php esc_html_e( 'am', 'facebook-for-woocommerce' ); ?>
-							</option>
-							<option
-								<?php selected( true, $this->get_scheduled_resync_offset() >= 12 * HOUR_IN_SECONDS || ( ! empty( $resync_meridiem ) && 'pm' === $resync_meridiem ), true ); ?>
-								value="pm">
-								<?php esc_html_e( 'pm', 'facebook-for-woocommerce' ); ?>
-							</option>
-						</select>
-
-					<?php endif; ?>
-					<br/>
-				</fieldset>
-			</td>
-		</tr>
-		<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Validates force resync field.
-	 *
-	 * @internal
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param string $key field key
-	 * @param string $value posted value
-	 * @return int|string timestamp or empty string
-	 * @throws \Exception
-	 */
-	public function validate_resync_schedule_field( $key, $value ) {
-
-		$enabled_field_key  = $this->get_field_key( 'scheduled_resync_enabled' );
-		$hours_field_key    = $this->get_field_key( 'scheduled_resync_hours' );
-		$minutes_field_key  = $this->get_field_key( 'scheduled_resync_minutes' );
-		$meridiem_field_key = $this->get_field_key( 'scheduled_resync_meridiem' );
-
-		// if not enabled or time is empty, return a blank string
-		if ( empty( $_POST[ $enabled_field_key ] ) || empty( $_POST[ $hours_field_key ] ) ) {
-			return '';
-		}
-
-		$posted_hours    = (int) sanitize_text_field( wp_unslash( $_POST[ $hours_field_key ] ) );
-		$posted_minutes  = (int) sanitize_text_field( wp_unslash( $_POST[ $minutes_field_key ] ) );
-		$posted_minutes  = str_pad( $posted_minutes, 2, '0', STR_PAD_LEFT );
-		$posted_meridiem = ! empty( $_POST[ $meridiem_field_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meridiem_field_key ] ) ) : '';
-
-		// attempts to parse the time (not using date_create_from_format because it considers 30:00 to be a valid time)
-		$parsed_time = strtotime( "$posted_hours:$posted_minutes $posted_meridiem" );
-
-		if ( false === $parsed_time ) {
-			throw new \Exception( "Invalid resync schedule time: $posted_hours:$posted_minutes $posted_meridiem" );
-		}
-
-		$midnight = ( new DateTime() )->setTimestamp( $parsed_time )->setTime( 0,0,0 );
-
-		return $parsed_time - $midnight->getTimestamp();
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
@@ -3147,26 +2669,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Returns null if no offset is configured.
 	 *
 	 * @since 1.10.0
+	 * @deprecated 2.0.0-dev.1
 	 *
 	 * @return int|null
 	 */
 	public function get_scheduled_resync_offset() {
 
-		/**
-		 * Filters the configured scheduled re-sync offset.
-		 *
-		 * @since 1.10.0
-		 *
-		 * @param int|null $offset the configured scheduled re-sync offset in seconds
-		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
-		 */
-		$offset = (int) apply_filters( 'wc_facebook_scheduled_resync_offset', $this->get_option( self::SETTING_SCHEDULED_RESYNC_OFFSET, null ), $this );
-
-		if ( ! $offset ) {
-			$offset = null;
-		}
-
-		return $offset;
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
 	}
 
 
@@ -3208,7 +2717,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $greeting the configured Facebook messenger greeting
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', get_option( self::SETTING_MESSENGER_GREETING, '' ), $this );
+		$greeting = (string) apply_filters( 'wc_facebook_messenger_greeting', get_option( self::SETTING_MESSENGER_GREETING, __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ) ), $this );
 
 		return Framework\SV_WC_Helper::str_truncate( $greeting, $this->get_messenger_greeting_max_characters(), '' );
 	}
@@ -3258,7 +2767,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $hex the configured Facebook messenger color hex
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_messenger_color_hex', get_option( self::SETTING_MESSENGER_COLOR_HEX, '' ), $this );
+		return (string) apply_filters( 'wc_facebook_messenger_color_hex', get_option( self::SETTING_MESSENGER_COLOR_HEX, '#0084ff' ), $this );
 	}
 
 
@@ -3386,21 +2895,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-	/**
-	 * Sets whether the feed has been migrated from FBE 1 to FBE 1.5.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param bool $is_migrated whether the feed has been migrated from FBE 1 to FBE 1.5
-	 */
-	private function set_feed_migrated( $is_migrated ) {
-
-		$this->feed_migrated = (bool) $is_migrated;
-
-		update_option( 'wc_facebook_feed_migrated', wc_bool_to_string( $this->feed_migrated ) );
-	}
-
-
 	/** Conditional methods *******************************************************************************************/
 
 
@@ -3434,7 +2928,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether advanced matching is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_advanced_matching_enabled', 'yes' === $this->get_option( self::SETTING_ENABLE_ADVANCED_MATCHING ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_advanced_matching_enabled', true, $this );
 	}
 
 
@@ -3463,20 +2957,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Determines whether the scheduled re-sync is enabled.
 	 *
 	 * @since 1.10.0
+	 * @deprecated 2.0.0-dev.1
 	 *
 	 * @return bool
 	 */
 	public function is_scheduled_resync_enabled() {
 
-		/**
-		 * Filters whether the scheduled re-sync is enabled.
-		 *
-		 * @since 1.10.0
-		 *
-		 * @param bool $is_enabled whether the scheduled re-sync is enabled
-		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
-		 */
-		return (bool) apply_filters( 'wc_facebook_is_scheduled_resync_enabled', $this->get_scheduled_resync_offset(), $this );
+		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+
+		return false;
 	}
 
 
