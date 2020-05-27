@@ -317,6 +317,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( self::$isEnabled ) {
 
+				// TODO: make sure this won't create duplicated events, since the event_id is not sent
 				$script = $this->pixel->get_event_script( 'AddToCart', [
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_type' => 'product',
@@ -373,6 +374,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'currency'     => get_woocommerce_currency(),
 				];
 
+				// TODO: make sure this won't create duplicated events, since the event_id is not sent
 				$script = $this->pixel->get_conditional_one_time_event_script( 'AddToCart', $params, 'added_to_cart' );
 
 				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
