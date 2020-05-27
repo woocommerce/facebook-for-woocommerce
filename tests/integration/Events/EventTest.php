@@ -2,6 +2,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Events;
 
+use Hoa\Stream\Test\Unit\IStream\In;
 use IntegrationTester;
 
 /**
@@ -72,8 +73,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		];
 
 		$event  = new Event( $data );
-		$method = new \ReflectionMethod( Event::class, 'prepare_data' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( Event::class, 'prepare_data' );
 		$method->invoke( $event, $data );
 
 		$data = $event->get_data();
@@ -115,8 +115,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		];
 
 		$event  = new Event( $data );
-		$method = new \ReflectionMethod( Event::class, 'prepare_user_data' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( Event::class, 'prepare_user_data' );
 		$method->invoke( $event, $data );
 
 		$data = $event->get_data();
