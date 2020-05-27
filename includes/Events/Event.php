@@ -31,9 +31,11 @@ class Event {
 	/**
 	 * Constructor.
 	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters
+	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $data
+	 * @param array $data event data
 	 */
 	public function __construct( $data ) {
 
@@ -44,9 +46,12 @@ class Event {
 	/**
 	 * Provides defaults for properties if not already defined.
 	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/server-event
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/custom-data
+	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $data
+	 * @param array $data event data
 	 */
 	protected function prepare_data( $data ) {
 
@@ -65,9 +70,11 @@ class Event {
 	/**
 	 * Provides defaults for user properties if not already defined.
 	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/user-data
+	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param array $data
+	 * @param array $data user data
 	 */
 	protected function prepare_user_data( $data ) {
 
