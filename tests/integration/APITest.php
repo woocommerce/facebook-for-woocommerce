@@ -479,6 +479,13 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::send_pixel_events() */
+	public function test_send_pixel_events() {
+
+		// TODO: implement
+	}
+
+
 	/** @see API::next() */
 	public function test_next() {
 
