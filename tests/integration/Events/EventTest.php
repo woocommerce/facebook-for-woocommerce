@@ -218,10 +218,12 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_data() */
 	public function test_get_data() {
 
-		$data  = [ 'test' => 'test' ];
-		$event = new Event( $data );
+		$data   = [ 'test' => 'test' ];
+		$event  = new Event( $data );
+		$actual = $event->get_data();
 
-		$this->assertEquals( $data, $event->get_data() );
+		$this->assertArrayHasKey( 'test', $actual );
+		$this->assertEquals( 'test', $actual['test'] );
 	}
 
 
@@ -251,8 +253,10 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		$user_data = [ 'user' => 'user' ];
 		$data      = [ 'user_data' => $user_data ];
 		$event     = new Event( $data );
+		$actual    = $event->get_user_data();
 
-		$this->assertEquals( $user_data, $event->get_user_data() );
+		$this->assertArrayHasKey( 'user', $actual );
+		$this->assertEquals( 'user', $actual['user'] );
 	}
 
 
