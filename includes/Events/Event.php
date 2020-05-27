@@ -118,8 +118,7 @@ class Event {
 	 */
 	protected function get_client_ip() {
 
-		// TODO: implement
-		return '';
+		return \WC_Geolocation::get_ip_address();
 	}
 
 

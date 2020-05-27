@@ -2,6 +2,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Events;
 
+use IntegrationTester;
+
 /**
  * Tests the Event class.
  */
@@ -76,7 +78,11 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_client_ip() */
 	public function test_get_client_ip() {
 
-		// TODO: implement
+		$method    = IntegrationTester::getMethod( Event::class, 'get_client_ip' );
+		$client_ip = $method->invoke( new Event() );
+
+		$this->assertNotEmpty( $client_ip );
+		$this->assertNotEmpty( rest_is_ip_address( $client_ip ) );
 	}
 
 
