@@ -264,7 +264,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				],
 			];
 
-			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event    = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$pixel_id = facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id();
+
+			// send the event S2S
+			try {
+
+				facebook_for_woocommerce()->get_api()->send_pixel_events( $pixel_id, [ $event ] );
+
+			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
+
+				if ( facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
+				}
+			}
 
 			$this->pixel->inject_event( 'AddToCart', [
 				'content_ids'  => $this->get_cart_content_ids(),
