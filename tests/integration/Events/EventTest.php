@@ -35,21 +35,101 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::__construct() */
 	public function test_constructor() {
 
-		// TODO: implement
+		$data = [];
+
+		$event = new Event( $data );
+		$data  = $event->get_data();
+
+		$this->assertIsArray( $data );
+		$this->assertNotEmpty( $data );
+		$this->assertArrayHasKey( 'user_data', $data );
 	}
 
 
-	/** @see Event::prepare_data() */
-	public function test_prepare_data() {
+	/**
+	 * @see Event::prepare_data()
+	 *
+	 * @dataProvider provider_prepare_data
+	 *
+	 * @param string $property property to test
+	 * @param string|array $expected expected value
+	 * @throws \ReflectionException
+	 */
+	public function test_prepare_data( $property, $expected ) {
 
-		// TODO: implement
+		$data = [
+			'event_time'       => '1234',
+			'event_id'         => 'event-id',
+			'event_source_url' => 'current-url',
+			'custom_data'      => [],
+			'custom_thing'     => 'Custom thing',
+		];
+
+		$event  = new Event( $data );
+		$method = new \ReflectionMethod( Event::class, 'prepare_data' );
+		$method->setAccessible( true );
+		$method->invoke( $event, $data );
+
+		$data = $event->get_data();
+
+		$this->assertSame( $expected, $data[ $property ] );
 	}
 
 
-	/** @see Event::prepare_user_data() */
-	public function test_prepare_user_data() {
+	/** @see test_prepare_data */
+	public function provider_prepare_data() {
 
-		// TODO: implement
+		return [
+			'event time'        => [ 'event_time',       '1234' ],
+			'event id'          => [ 'event_id',         'event-id' ],
+			'event source url'  => [ 'event_source_url', 'current-url' ],
+			'custom property'   => [ 'custom_thing',     'Custom thing' ],
+			'event custom data' => [ 'custom_data',      [] ],
+		];
+	}
+
+
+	/**
+	 * @see Event::prepare_user_data()
+	 *
+	 * @dataProvider provider_prepare_user_data
+	 *
+	 * @param string $property property to test
+	 * @param string|array $expected expected value
+	 * @throws \ReflectionException
+	 */
+	public function test_prepare_user_data( $property, $expected ) {
+
+		$data = [
+			'client_ip_address' => '123.123.1234',
+			'client_user_agent' => '007',
+			'click_id'          => 'Clicky',
+			'browser_id'        => 'Netscape Navigator',
+			'custom_thing'      => 'Custom thing',
+		];
+
+		$event  = new Event( $data );
+		$method = new \ReflectionMethod( Event::class, 'prepare_user_data' );
+		$method->setAccessible( true );
+		$method->invoke( $event, $data );
+
+		$data = $event->get_data();
+		$data = $data['user_data'];
+
+		$this->assertSame( $expected, $data[ $property ] );
+	}
+
+
+	/** @see test_prepare_user_data */
+	public function provider_prepare_user_data() {
+
+		return [
+			'client ip address' => [ 'client_ip_address', '123.123.1234' ],
+			'client user agent' => [ 'client_user_agent', '007' ],
+			'click id'          => [ 'click_id',          'Clicky' ],
+			'browser id'        => [ 'browser_id',        'Netscape Navigator' ],
+			'custom property'   => [ 'custom_thing',      'Custom thing' ],
+		];
 	}
 
 
