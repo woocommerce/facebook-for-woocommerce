@@ -131,8 +131,7 @@ class Event {
 	 */
 	protected function get_client_user_agent() {
 
-		// TODO: implement
-		return '';
+		return ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
 

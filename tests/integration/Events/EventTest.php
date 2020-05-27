@@ -89,7 +89,11 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_client_user_agent() */
 	public function test_get_client_user_agent() {
 
-		// TODO: implement
+		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040803 Firefox/0.9.3';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_client_user_agent' );
+
+		$this->assertNotEmpty( $method->invoke( new Event() ) );
 	}
 
 
