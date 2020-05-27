@@ -247,6 +247,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
+				if ( ! class_exists( API\Traits\Rate_Limited_API::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_API.php';
+				}
+
 				if ( ! class_exists( API::class ) ) {
 					require_once __DIR__ . '/includes/API.php';
 				}
