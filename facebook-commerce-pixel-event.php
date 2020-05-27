@@ -398,6 +398,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
 
+			if ( isset( $params['event_name'] ) ) {
+				unset( $params['event_name'] );
+			}
+
 			return sprintf(
 				"/* %s Facebook Integration Event Tracking */\n" .
 				"fbq('%s', '%s', %s);",
