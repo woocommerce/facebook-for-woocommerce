@@ -176,8 +176,7 @@ class Event {
 	 */
 	protected function get_browser_id() {
 
-		// TODO: implement
-		return '';
+		return ! empty( $_COOKIE['_fbp'] ) ? $_COOKIE['_fbp'] : '';
 	}
 
 

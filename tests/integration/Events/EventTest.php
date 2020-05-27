@@ -125,7 +125,11 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_browser_id() */
 	public function test_get_browser_id() {
 
-		// TODO: implement
+		$_COOKIE['_fbp'] = 'fb.2.1577994917604.1910581703';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_browser_id' );
+
+		$this->assertEquals( $_COOKIE['_fbp'], $method->invoke( new Event() ) );
 	}
 
 
