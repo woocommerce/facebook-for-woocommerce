@@ -59,11 +59,16 @@ class Event {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $data
+	 * @param array $data
 	 */
 	protected function prepare_user_data( $data ) {
 
-		// TODO: implement
+		$this->data['user_data'] = wp_parse_args( $data, [
+			'client_ip_address' => $this->get_client_ip(),
+			'client_user_agent' => $this->get_client_user_agent(),
+			'click_id'          => $this->get_click_id(),
+			'browser_id'        => $this->get_browser_id(),
+		] );
 	}
 
 
