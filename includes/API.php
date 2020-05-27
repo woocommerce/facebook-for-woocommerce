@@ -407,9 +407,13 @@ class API extends Framework\SV_WC_API_Base {
 	 * @return Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function send_pixel_events( $pixel_id, $events ) {
+	public function send_pixel_events( $pixel_id, array $events ) {
 
-		// TODO: implement send_pixel_events
+		$request = new API\Pixel\Events\Request( $pixel_id, $events );
+
+		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
