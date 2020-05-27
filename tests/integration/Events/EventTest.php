@@ -136,35 +136,52 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_data() */
 	public function test_get_data() {
 
-		// TODO: implement
+		$data  = [ 'test' => 'test' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( $data, $event->get_data() );
 	}
 
 
 	/** @see Event::get_id() */
 	public function test_get_id() {
 
-		// TODO: implement
+		$data  = [ 'event_id' => 'test-id' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( 'test-id', $event->get_id() );
 	}
 
 
 	/** @see Event::get_name() */
 	public function test_get_name() {
 
-		// TODO: implement
+		$data  = [ 'event_name' => 'test-name' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( 'test-name', $event->get_name() );
 	}
 
 
 	/** @see Event::get_user_data() */
 	public function test_get_user_data() {
 
-		// TODO: implement
+		$user_data = [ 'user' => 'user' ];
+		$data      = [ 'user_data' => $user_data ];
+		$event     = new Event( $data );
+
+		$this->assertEquals( $user_data, $event->get_user_data() );
 	}
 
 
 	/** @see Event::get_custom_data() */
 	public function test_get_custom_data() {
 
-		// TODO: implement
+		$custom_data = [ 'test' => 'test' ];
+		$data        = [ 'custom_data' => $custom_data ];
+		$event       = new Event( $data );
+
+		$this->assertEquals( $custom_data, $event->get_custom_data() );
 	}
 
 
