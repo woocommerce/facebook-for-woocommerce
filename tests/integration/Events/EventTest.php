@@ -67,14 +67,9 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_current_url() */
 	public function test_get_current_url() {
 
-		$event = new Event();
+		$method = IntegrationTester::getMethod( Event::class, 'get_current_url' );
 
-		$reflection = new \ReflectionClass( $event );
-		$method     = $reflection->getMethod( 'get_current_url' );
-
-		$method->setAccessible( true );
-
-		$this->assertNotEmpty( $method->invoke( $event ) );
+		$this->assertNotEmpty( $method->invoke( new Event() ) );
 	}
 
 

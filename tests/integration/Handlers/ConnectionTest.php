@@ -298,11 +298,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	public function test_get_connect_parameters_extras() {
 
 		$connection = $this->get_connection();
-		$reflection = new \ReflectionClass( $connection );
-		$method     = $reflection->getMethod( 'get_connect_parameters_extras' );
 
-		$method->setAccessible( true );
-
+		$method = IntegrationTester::getMethod( Connection::class, 'get_connect_parameters_extras' );
 		$extras = $method->invoke( $connection );
 
 		$this->assertIsArray( $extras );
@@ -339,11 +336,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		facebook_for_woocommerce()->get_integration()->update_external_merchant_settings_id( '1234' );
 
 		$connection = $this->get_connection();
-		$reflection = new \ReflectionClass( $connection );
-		$method     = $reflection->getMethod( 'get_connect_parameters_extras' );
 
-		$method->setAccessible( true );
-
+		$method = IntegrationTester::getMethod( Connection::class, 'get_connect_parameters_extras' );
 		$extras = $method->invoke( $connection );
 
 		$this->assertArrayHasKey( 'merchant_settings_id', $extras['setup'] );
