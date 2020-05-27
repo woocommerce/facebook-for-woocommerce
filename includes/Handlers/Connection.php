@@ -50,17 +50,74 @@ class Connection {
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
+	/** @var \WC_Facebookcommerce */
+	private $plugin;
+
 
 	/**
 	 * Constructs a new Connection.
 	 *
 	 * @since 2.0.0-dev.1
 	 */
-	public function __construct() {
+	public function __construct( \WC_Facebookcommerce $plugin ) {
+
+		$this->plugin = $plugin;
+
+		add_action( 'admin_init', [ $this, 'refresh_installation_data' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+	}
+
+
+	/**
+	 * Refreshes the connected installation data.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function refresh_installation_data() {
+
+		// bail if not connected
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
+		// only refresh once a day
+		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
+			return;
+		}
+
+		$integration = $this->get_plugin()->get_integration();
+
+		try {
+
+			$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
+
+			if ( $response->get_page_id() ) {
+				$integration->update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $response->get_page_id() ) );
+			}
+
+			if ( $response->get_pixel_id() ) {
+				$integration->update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $response->get_pixel_id() ) );
+			}
+
+			if ( $response->get_catalog_id() ) {
+				$integration->update_product_catalog_id( sanitize_text_field( $response->get_catalog_id() ) );
+			}
+
+			if ( $response->get_business_manager_id() ) {
+				$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
+			}
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			if ( $integration->is_debug_mode_enabled() ) {
+				$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
+			}
+		}
+
+		set_transient( 'wc_facebook_connection_refresh', time(), DAY_IN_SECONDS );
 	}
 
 
@@ -114,6 +171,8 @@ class Connection {
 			if ( ! empty( $asset_ids['business_manager_id'] ) ) {
 				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
 			}
+
+			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
 
@@ -455,6 +514,17 @@ class Connection {
 				'business' => [
 					'name' => $this->get_business_name(),
 				],
+				'page_shop' => [
+					'enabled'               => true,
+					'visible_product_count' => facebook_for_woocommerce()->get_integration()->get_product_count(),
+				],
+				'messenger_chat' => [
+					'enabled' => true,
+					'domains' => home_url(),
+				],
+				'ig_shopping' => [
+					'enabled' => true,
+				],
 			],
 			'repeat' => false,
 		];
@@ -505,6 +575,19 @@ class Connection {
 	public function is_connected() {
 
 		return (bool) $this->get_access_token();
+	}
+
+
+	/**
+	 * Gets the plugin instance.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return \WC_Facebookcommerce
+	 */
+	public function get_plugin() {
+
+		return $this->plugin;
 	}
 
 

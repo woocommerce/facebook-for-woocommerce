@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\API\Business_Manager;
 use SkyVerge\WooCommerce\Facebook\API;
 
 /**
- * Tests the API\Catalog\Send_Item_Updates\Response class.
+ * Tests the API\Business_Manager\Response class.
  */
 class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
@@ -29,7 +29,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-	/** @see API\Catalog\Response::get_name() */
+	/** @see API\Business_Manager\Response::get_name() */
 	public function test_get_name() {
 
 		$data = [
@@ -43,7 +43,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see API\Catalog\Response::get_url() */
+	/** @see API\Business_Manager\Response::get_url() */
 	public function test_get_url() {
 
 		$data = [
@@ -58,4 +58,3 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 
 }
-

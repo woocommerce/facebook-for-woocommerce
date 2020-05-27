@@ -394,7 +394,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_connection() {
 
-		return new Connection();
+		return new Connection( facebook_for_woocommerce() );
 	}
 
 

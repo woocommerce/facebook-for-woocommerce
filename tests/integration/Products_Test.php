@@ -251,14 +251,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$this->excluded_category = $category['term_id'];
 
-		$settings = [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $this->excluded_category ]
-		];
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		facebook_for_woocommerce()->get_integration()->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
 	}
 
 
