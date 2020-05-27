@@ -41,7 +41,13 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::__construct() */
 	public function test_constructor() {
 
-		// TODO: implement
+		$property = new \ReflectionProperty( Event::class, 'data' );
+		$property->setAccessible( true );
+
+		$data  = [ 'test' => 'test' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( $data, $property->getValue( $event ) );
 	}
 
 
