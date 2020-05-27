@@ -18,6 +18,10 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	protected function _before() {
 
 		parent::_before();
+
+		if ( ! class_exists( Event::class ) ) {
+			require_once 'includes/Events/Event.php';
+		}
 	}
 
 
@@ -63,7 +67,14 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::get_current_url() */
 	public function test_get_current_url() {
 
-		// TODO: implement
+		$event = new Event();
+
+		$reflection = new \ReflectionClass( $event );
+		$method     = $reflection->getMethod( 'get_current_url' );
+
+		$method->setAccessible( true );
+
+		$this->assertNotEmpty( $method->invoke( $event ) );
 	}
 
 

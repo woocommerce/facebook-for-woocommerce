@@ -35,7 +35,7 @@ class Event {
 	 *
 	 * @param $data
 	 */
-	public function __construct( $data ) {
+	public function __construct( $data = [] ) {
 
 		// TODO: implement
 	}
@@ -90,8 +90,22 @@ class Event {
 	 */
 	protected function get_current_url() {
 
-		// TODO: implement
-		return '';
+		if ( wp_doing_ajax() ) {
+
+			$url = $_SERVER['HTTP_REFERER'];
+
+		} else {
+
+			/**
+			 * Instead of relying on the HTTP_HOST server var, we use home_url(),
+			 * so that we get the host configured in site options.
+			 * Additionally, this automatically uses the correct domain when
+			 * using Forward with the WooCommerce Dev Helper plugin.
+			 */
+			$url = home_url() . $_SERVER['REQUEST_URI'];
+		}
+
+		return $url;
 	}
 
 
