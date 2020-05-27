@@ -19,7 +19,9 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		require_once 'includes/Events/Event.php';
+		if ( ! class_exists( Event::class ) ) {
+			require_once 'includes/Events/Event.php';
+		}
 
 		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\API\Request::class ) ) {
 			require_once 'includes/API/Request.php';
