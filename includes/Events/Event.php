@@ -46,11 +46,19 @@ class Event {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $data
+	 * @param array $data
 	 */
 	protected function prepare_data( $data ) {
 
-		// TODO: implement
+		$this->data = wp_parse_args( $data, [
+			'event_time'       => time(),
+			'event_id'         => $this->generate_event_id(),
+			'event_source_url' => $this->get_current_url(),
+			'custom_data'      => [],
+			'user_data'        => [],
+		] );
+
+		$this->prepare_user_data( $this->data['user_data'] );
 	}
 
 
