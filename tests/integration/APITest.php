@@ -209,6 +209,47 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_user() */
+	public function test_get_user() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_user();
+
+		$this->assertInstanceOf( API\User\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/me', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\User\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::delete_user_permission() */
+	public function test_delete_user_permission() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$user_id    = '1234';
+		$permission = 'permission';
+
+		$api->delete_user_permission( $user_id, $permission );
+
+		$this->assertInstanceOf( API\User\Permissions\Delete\Request::class, $api->get_request() );
+		$this->assertEquals( 'DELETE', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$user_id}/permissions/{$permission}", $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::get_page() */
 	public function test_get_page() {
 

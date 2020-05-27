@@ -187,6 +187,47 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a user object from Facebook.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_user( $user_id = '' ) {
+
+		$request = new API\User\Request( $user_id );
+
+		$this->set_response_handler( API\User\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Delete's a user's API permission.
+	 *
+	 * This is their form of "revoke".
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @param string $permission permission to delete
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function delete_user_permission( $user_id, $permission ) {
+
+		$request = new API\User\Permissions\Delete\Request( $user_id, $permission );
+
+		$this->set_response_handler( API\User\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Uses the Catalog Batch API to update or remove items from catalog.
 	 *
 	 * @see Sync::create_or_update_products()
