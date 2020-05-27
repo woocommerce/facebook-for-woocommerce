@@ -279,13 +279,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$this->pixel->inject_event( 'AddToCart', [
-				'content_ids'  => $this->get_cart_content_ids(),
-				'content_type' => 'product',
-				'contents'     => $this->get_cart_contents(),
-				'value'        => $this->get_cart_total(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			// add the event ID to prevent duplication
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( 'AddToCart', $event_data );
 		}
 
 
