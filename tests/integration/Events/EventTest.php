@@ -2,6 +2,9 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Events;
 
+use Hoa\Stream\Test\Unit\IStream\In;
+use IntegrationTester;
+
 /**
  * Tests the Event class.
  */
@@ -18,6 +21,10 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	protected function _before() {
 
 		parent::_before();
+
+		if ( ! class_exists( Event::class ) ) {
+			require_once 'includes/Events/Event.php';
+		}
 	}
 
 
@@ -66,8 +73,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		];
 
 		$event  = new Event( $data );
-		$method = new \ReflectionMethod( Event::class, 'prepare_data' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( Event::class, 'prepare_data' );
 		$method->invoke( $event, $data );
 
 		$data = $event->get_data();
@@ -109,8 +115,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		];
 
 		$event  = new Event( $data );
-		$method = new \ReflectionMethod( Event::class, 'prepare_user_data' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( Event::class, 'prepare_user_data' );
 		$method->invoke( $event, $data );
 
 		$data = $event->get_data();
@@ -136,77 +141,133 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::generate_event_id() */
 	public function test_generate_event_id() {
 
-		// TODO: implement
+		$method  = IntegrationTester::getMethod( Event::class, 'generate_event_id' );
+		$pattern = '/[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}/';
+
+		$this->assertRegExp( $pattern, $method->invoke( new Event() ) );
 	}
 
 
 	/** @see Event::get_current_url() */
 	public function test_get_current_url() {
 
-		// TODO: implement
+		$method = IntegrationTester::getMethod( Event::class, 'get_current_url' );
+
+		$this->assertNotEmpty( $method->invoke( new Event() ) );
 	}
 
 
 	/** @see Event::get_client_ip() */
 	public function test_get_client_ip() {
 
-		// TODO: implement
+		$method    = IntegrationTester::getMethod( Event::class, 'get_client_ip' );
+		$client_ip = $method->invoke( new Event() );
+
+		$this->assertNotEmpty( $client_ip );
+		$this->assertNotEmpty( rest_is_ip_address( $client_ip ) );
 	}
 
 
 	/** @see Event::get_client_user_agent() */
 	public function test_get_client_user_agent() {
 
-		// TODO: implement
+		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040803 Firefox/0.9.3';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_client_user_agent' );
+
+		$this->assertNotEmpty( $method->invoke( new Event() ) );
 	}
 
 
 	/** @see Event::get_click_id() */
-	public function test_get_click_id() {
+	public function test_get_click_id_from_cookie() {
 
-		// TODO: implement
+		$_COOKIE['_fbc'] = 'fb.1.1554763741205.AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_click_id' );
+
+		$this->assertEquals( $_COOKIE['_fbc'], $method->invoke( new Event() ) );
+	}
+
+
+	/** @see Event::get_click_id() */
+	public function test_get_click_id_from_query() {
+
+		$_REQUEST['fbclid'] = 'AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_click_id' );
+
+		$click_id = $method->invoke( new Event() );
+
+		$this->assertStringContainsString( 'fb.1.', $click_id );
+		$this->assertStringContainsString( '.AbCdEfGhIjKlMnOpQrStUvWxYz1234567890', $click_id );
 	}
 
 
 	/** @see Event::get_browser_id() */
 	public function test_get_browser_id() {
 
-		// TODO: implement
+		$_COOKIE['_fbp'] = 'fb.2.1577994917604.1910581703';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_browser_id' );
+
+		$this->assertEquals( $_COOKIE['_fbp'], $method->invoke( new Event() ) );
 	}
 
 
 	/** @see Event::get_data() */
 	public function test_get_data() {
 
-		// TODO: implement
+		$data   = [ 'test' => 'test' ];
+		$event  = new Event( $data );
+		$actual = $event->get_data();
+
+		$this->assertArrayHasKey( 'test', $actual );
+		$this->assertEquals( 'test', $actual['test'] );
 	}
 
 
 	/** @see Event::get_id() */
 	public function test_get_id() {
 
-		// TODO: implement
+		$data  = [ 'event_id' => 'test-id' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( 'test-id', $event->get_id() );
 	}
 
 
 	/** @see Event::get_name() */
 	public function test_get_name() {
 
-		// TODO: implement
+		$data  = [ 'event_name' => 'test-name' ];
+		$event = new Event( $data );
+
+		$this->assertEquals( 'test-name', $event->get_name() );
 	}
 
 
 	/** @see Event::get_user_data() */
 	public function test_get_user_data() {
 
-		// TODO: implement
+		$user_data = [ 'user' => 'user' ];
+		$data      = [ 'user_data' => $user_data ];
+		$event     = new Event( $data );
+		$actual    = $event->get_user_data();
+
+		$this->assertArrayHasKey( 'user', $actual );
+		$this->assertEquals( 'user', $actual['user'] );
 	}
 
 
 	/** @see Event::get_custom_data() */
 	public function test_get_custom_data() {
 
-		// TODO: implement
+		$custom_data = [ 'test' => 'test' ];
+		$data        = [ 'custom_data' => $custom_data ];
+		$event       = new Event( $data );
+
+		$this->assertEquals( $custom_data, $event->get_custom_data() );
 	}
 
 

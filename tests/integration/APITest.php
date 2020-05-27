@@ -612,11 +612,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$api = new API( 'fake-token' );
 
-		$reflection = new \ReflectionClass( $api );
-		$method     = $reflection->getMethod( 'get_new_request' );
-
-		$method->setAccessible( true );
-
+		$method  = IntegrationTester::getMethod( API::class, 'get_new_request' );
 		$request = $method->invokeArgs( $api, [ $args ] );
 
 		$this->assertEquals( $expected_path, $request->get_path() );
