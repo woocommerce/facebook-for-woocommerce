@@ -37,7 +37,7 @@ class Event {
 	 *
 	 * @param array $data event data
 	 */
-	public function __construct( $data ) {
+	public function __construct( $data = [] ) {
 
 		$this->prepare_data( $data );
 	}
@@ -88,7 +88,9 @@ class Event {
 
 
 	/**
-	 * Generates a unique ID for the event.
+	 * Generates a UUIDv4 unique ID for the event.
+	 *
+	 * @see https://stackoverflow.com/a/15875555
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -96,8 +98,38 @@ class Event {
 	 */
 	protected function generate_event_id() {
 
-		// TODO: implement
-		return '';
+		try {
+			$data = random_bytes( 16 );
+
+			$data[6] = chr( ord( $data[6] ) & 0x0f | 0x40 ); // set version to 0100
+			$data[8] = chr( ord( $data[8] ) & 0x3f | 0x80 ); // set bits 6-7 to 10
+
+			return vsprintf( '%s%s-%s-%s-%s-%s%s%s', str_split( bin2hex( $data ), 4 ) );
+
+		} catch ( \Exception $e ) {
+
+			// fall back to mt_rand if random_bytes is unavailable
+			return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+
+				// 32 bits for "time_low"
+				mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+				// 16 bits for "time_mid"
+				mt_rand( 0, 0xffff ),
+
+				// 16 bits for "time_hi_and_version",
+				// four most significant bits holds version number 4
+				mt_rand( 0, 0x0fff ) | 0x4000,
+
+				// 16 bits, 8 bits for "clk_seq_hi_res",
+				// 8 bits for "clk_seq_low",
+				// two most significant bits holds zero and one for variant DCE1.1
+				mt_rand( 0, 0x3fff ) | 0x8000,
+
+				// 48 bits for "node"
+				mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+			);
+		}
 	}
 
 
@@ -110,8 +142,22 @@ class Event {
 	 */
 	protected function get_current_url() {
 
-		// TODO: implement
-		return '';
+		if ( wp_doing_ajax() ) {
+
+			$url = $_SERVER['HTTP_REFERER'];
+
+		} else {
+
+			/**
+			 * Instead of relying on the HTTP_HOST server var, we use home_url(),
+			 * so that we get the host configured in site options.
+			 * Additionally, this automatically uses the correct domain when
+			 * using Forward with the WooCommerce Dev Helper plugin.
+			 */
+			$url = home_url() . $_SERVER['REQUEST_URI'];
+		}
+
+		return $url;
 	}
 
 
@@ -124,8 +170,7 @@ class Event {
 	 */
 	protected function get_client_ip() {
 
-		// TODO: implement
-		return '';
+		return \WC_Geolocation::get_ip_address();
 	}
 
 
@@ -138,13 +183,14 @@ class Event {
 	 */
 	protected function get_client_user_agent() {
 
-		// TODO: implement
-		return '';
+		return ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
 
 	/**
 	 * Gets the click ID from the cookie or the query parameter.
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/fbp-and-fbc#fbp-and-fbc-parameters
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -152,8 +198,24 @@ class Event {
 	 */
 	protected function get_click_id() {
 
-		// TODO: implement
-		return '';
+		$click_id = '';
+
+		if ( ! empty( $_COOKIE['_fbc'] ) ) {
+
+			$click_id = $_COOKIE['_fbc'];
+
+		} elseif ( ! empty( $_REQUEST['fbclid'] ) ) {
+
+			// generate the click ID based on the query parameter
+			$version         = 'fb';
+			$subdomain_index = 1;
+			$creation_time   = time();
+			$fbclid          = $_REQUEST['fbclid'];
+
+			$click_id = "{$version}.{$subdomain_index}.{$creation_time}.{$fbclid}";
+		}
+
+		return $click_id;
 	}
 
 
@@ -166,8 +228,7 @@ class Event {
 	 */
 	protected function get_browser_id() {
 
-		// TODO: implement
-		return '';
+		return ! empty( $_COOKIE['_fbp'] ) ? $_COOKIE['_fbp'] : '';
 	}
 
 
