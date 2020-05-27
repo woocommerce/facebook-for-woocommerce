@@ -225,7 +225,7 @@ class Connection {
 
 
 	/**
-	 * Disconnect the plugin.
+	 * Disconnects the plugin.
 	 *
 	 * Deletes local asset data.
 	 *
