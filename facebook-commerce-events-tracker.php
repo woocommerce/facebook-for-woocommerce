@@ -253,6 +253,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			$event_data = [
+				'event_name'  => 'AddToCart',
+				'custom_data' => [
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+
 			$this->pixel->inject_event( 'AddToCart', [
 				'content_ids'  => $this->get_cart_content_ids(),
 				'content_type' => 'product',
