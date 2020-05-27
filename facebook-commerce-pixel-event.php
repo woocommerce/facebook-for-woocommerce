@@ -398,8 +398,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
 
+			// do not send the event name in the params
 			if ( isset( $params['event_name'] ) ) {
 				unset( $params['event_name'] );
+			}
+
+			// if custom data is set, send only the custom data
+			if ( isset( $params['custom_data'] ) ) {
+				$params = $params['custom_data'];
 			}
 
 			return sprintf(
