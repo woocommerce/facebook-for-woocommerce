@@ -279,8 +279,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			// add the event ID to prevent duplication
+			// send the event ID to prevent duplication
 			$event_data['event_id'] = $event->get_id();
+
+			// store the ID in the session to be sent in AJAX JS event tracking as well
+			WC()->session->set( 'add_to_cart_event_id', $event->get_id() );
 
 			$this->pixel->inject_event( 'AddToCart', $event_data );
 		}
@@ -317,14 +320,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( self::$isEnabled ) {
 
-				// TODO: make sure this won't create duplicated events, since the event_id is not sent
-				$script = $this->pixel->get_event_script( 'AddToCart', [
+				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				] );
+				];
+
+				// send the event ID to prevent duplication
+				if ( ! empty ( $event_id = WC()->session->get( 'add_to_cart_event_id' ) ) ) {
+
+					$params['event_id'] = $event_id;
+				}
+
+				$script = $this->pixel->get_event_script( 'AddToCart', $params );
 
 				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
 			}
@@ -374,7 +384,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'currency'     => get_woocommerce_currency(),
 				];
 
-				// TODO: make sure this won't create duplicated events, since the event_id is not sent
+				// send the event ID to prevent duplication
+				if ( ! empty ( $event_id = WC()->session->get( 'add_to_cart_event_id' ) ) ) {
+
+					$params['event_id'] = $event_id;
+				}
+
 				$script = $this->pixel->get_conditional_one_time_event_script( 'AddToCart', $params, 'added_to_cart' );
 
 				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
