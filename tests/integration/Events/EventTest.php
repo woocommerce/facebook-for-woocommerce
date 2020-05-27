@@ -62,7 +62,10 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Event::generate_event_id() */
 	public function test_generate_event_id() {
 
-		// TODO: implement
+		$method  = IntegrationTester::getMethod( Event::class, 'generate_event_id' );
+		$pattern = '/[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}/';
+
+		$this->assertRegExp( $pattern, $method->invoke( new Event() ) );
 	}
 
 
