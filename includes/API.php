@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
+use SkyVerge\WooCommerce\Facebook\Events\Event;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
