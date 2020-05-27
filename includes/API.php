@@ -397,6 +397,22 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Sends Pixel events.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $pixel_id pixel ID
+	 * @param Event[] $events events to send
+	 * @return Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function send_pixel_events( $pixel_id, $events ) {
+
+		// TODO: implement send_pixel_events
+	}
+
+
+	/**
 	 * Gets the next page of results for a paginated response.
 	 *
 	 * @since 2.0.0-dev.1
