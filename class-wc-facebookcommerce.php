@@ -274,6 +274,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Response.php';
 				}
 
+				if ( ! class_exists( API\Pixel\Events\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pixel/Events/Request.php';
+				}
+
 				if ( ! class_exists( API\Business_Manager\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Business_Manager/Request.php';
 				}
