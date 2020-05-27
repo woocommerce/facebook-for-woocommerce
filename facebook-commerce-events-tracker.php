@@ -283,7 +283,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$event_data['event_id'] = $event->get_id();
 
 			// store the ID in the session to be sent in AJAX JS event tracking as well
-			WC()->session->set( 'add_to_cart_event_id', $event->get_id() );
+			WC()->session->set( 'facebook_for_woocommerce_add_to_cart_event_id', $event->get_id() );
 
 			$this->pixel->inject_event( 'AddToCart', $event_data );
 		}
@@ -329,7 +329,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				];
 
 				// send the event ID to prevent duplication
-				if ( ! empty ( $event_id = WC()->session->get( 'add_to_cart_event_id' ) ) ) {
+				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
 
 					$params['event_id'] = $event_id;
 				}
@@ -385,7 +385,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				];
 
 				// send the event ID to prevent duplication
-				if ( ! empty ( $event_id = WC()->session->get( 'add_to_cart_event_id' ) ) ) {
+				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
 
 					$params['event_id'] = $event_id;
 				}
