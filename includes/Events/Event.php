@@ -37,7 +37,7 @@ class Event {
 	 */
 	public function __construct( $data ) {
 
-		// TODO: implement
+		$this->prepare_data( $data );
 	}
 
 
