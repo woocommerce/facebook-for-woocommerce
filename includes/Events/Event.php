@@ -138,14 +138,32 @@ class Event {
 	/**
 	 * Gets the click ID from the cookie or the query parameter.
 	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/fbp-and-fbc#fbp-and-fbc-parameters
+	 *
 	 * @since 2.0.0-dev.1
 	 *
 	 * @return string
 	 */
 	protected function get_click_id() {
 
-		// TODO: implement
-		return '';
+		$click_id = '';
+
+		if ( ! empty( $_COOKIE['_fbc'] ) ) {
+
+			$click_id = $_COOKIE['_fbc'];
+
+		} elseif ( ! empty( $_REQUEST['fbclid'] ) ) {
+
+			// generate the click ID based on the query parameter
+			$version         = 'fb';
+			$subdomain_index = 1;
+			$creation_time   = time();
+			$fbclid          = $_REQUEST['fbclid'];
+
+			$click_id = "{$version}.{$subdomain_index}.{$creation_time}.{$fbclid}";
+		}
+
+		return $click_id;
 	}
 
 

@@ -98,9 +98,27 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Event::get_click_id() */
-	public function test_get_click_id() {
+	public function test_get_click_id_from_cookie() {
 
-		// TODO: implement
+		$_COOKIE['_fbc'] = 'fb.1.1554763741205.AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_click_id' );
+
+		$this->assertEquals( $_COOKIE['_fbc'], $method->invoke( new Event() ) );
+	}
+
+
+	/** @see Event::get_click_id() */
+	public function test_get_click_id_from_query() {
+
+		$_REQUEST['fbclid'] = 'AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+
+		$method = IntegrationTester::getMethod( Event::class, 'get_click_id' );
+
+		$click_id = $method->invoke( new Event() );
+
+		$this->assertStringContainsString( 'fb.1.', $click_id );
+		$this->assertStringContainsString( '.AbCdEfGhIjKlMnOpQrStUvWxYz1234567890', $click_id );
 	}
 
 
