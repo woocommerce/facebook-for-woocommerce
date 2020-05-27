@@ -400,18 +400,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 			// do not send the event name in the params
 			if ( isset( $params['event_name'] ) ) {
+
+				$event_name = $params['event_name'];
 				unset( $params['event_name'] );
 			}
 
 			// if possible, send the event ID to avoid duplication
 			// @see https://developers.facebook.com/docs/marketing-api/server-side-api/deduplicate-pixel-and-server-side-events#deduplication-best-practices
 			if ( isset( $params['event_id'] ) ) {
+
 				$event_id = $params['event_id'];
 				unset( $params['event_id'] );
 			}
 
 			// if custom data is set, send only the custom data
 			if ( isset( $params['custom_data'] ) ) {
+
 				$params = $params['custom_data'];
 			}
 
