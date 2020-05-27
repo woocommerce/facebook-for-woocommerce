@@ -403,25 +403,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see API::set_rate_limit_delay() */
-	public function test_set_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::get_rate_limit_delay() */
-	public function test_get_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::calculate_rate_limit_delay() */
-	public function test_calculate_rate_limit_delay() {
-
-		// TODO
-	}
-
-
 	/**
 	 * @see API::get_new_request()
 	 *
