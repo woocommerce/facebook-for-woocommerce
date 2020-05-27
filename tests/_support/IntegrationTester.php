@@ -86,4 +86,22 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Use reflection to make a method public so we can test it.
+	 *
+	 * @param string $class_name class name
+	 * @param string $method_name method name
+	 * @return ReflectionMethod
+	 * @throws ReflectionException
+	 */
+	public static function getMethod( $class_name, $method_name ) {
+
+		$class  = new ReflectionClass( $class_name );
+		$method = $class->getMethod( $method_name );
+		$method->setAccessible( true );
+
+		return $method;
+	}
+
+
 }
