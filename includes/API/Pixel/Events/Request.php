@@ -60,7 +60,23 @@ class Request extends API\Request {
 				continue;
 			}
 
-			$data['data'][] = $event->get_data();
+			$event_data = $event->get_data();
+
+			if ( isset( $event_data['user_data']['click_id'] ) ) {
+
+				$event_data['user_data']['fbc'] = $event_data['user_data']['click_id'];
+
+				unset( $event_data['user_data']['click_id'] );
+			}
+
+			if ( isset( $event_data['user_data']['browser_id'] ) ) {
+
+				$event_data['user_data']['fbp'] = $event_data['user_data']['browser_id'];
+
+				unset( $event_data['user_data']['browser_id'] );
+			}
+
+			$data['data'][] = array_filter( $event_data );
 		}
 
 		return $data;
