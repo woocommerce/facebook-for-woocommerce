@@ -79,7 +79,15 @@ class Request extends API\Request {
 			$data['data'][] = array_filter( $event_data );
 		}
 
-		return $data;
+		/**
+		 * Filters the Pixel event API request data.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $data request data
+		 * @param Request $request request object
+		 */
+		return apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this);
 	}
 
 
