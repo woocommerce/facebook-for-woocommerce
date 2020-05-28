@@ -73,7 +73,8 @@ class AJAX {
 		check_admin_referer( Product_Sync::ACTION_GET_SYNC_STATUS, 'nonce' );
 
 		$remaining_products = 0;
-		$jobs               = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs( [
+		
+		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs( [
 			'status' => 'processing',
 		] );
 
