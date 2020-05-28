@@ -28,6 +28,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/** @var string the sync products action */
 	const ACTION_SYNC_PRODUCTS = 'wc_facebook_sync_products';
 
+	/** @var string the get sync status action */
+	const ACTION_GET_SYNC_STATUS = 'wc_facebook_get_sync_status';
+
 
 	/**
 	 * Connection constructor.
@@ -63,13 +66,14 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 		wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
-		/* translators: Placeholders %1$s - opening <strong> html tag, %2$s closing </strong> html tag, {count} number of remaining items */
-		$sync_remaining_items_string = _n_noop( '%1$sProgress:%2$s {count} item remaining.', '%1$sProgress:%2$s {count} items remaining.', 'facebook-for-woocommerce' );
+		/* translators: Placeholders: {count} number of remaining items */
+		$sync_remaining_items_string = _n_noop( '{count} item remaining.', '{count} items remaining.', 'facebook-for-woocommerce' );
 
 		wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
 			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 			'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
+			'sync_status_nonce'               => wp_create_nonce( self::ACTION_GET_SYNC_STATUS ),
 			'sync_in_progress'                => Sync::is_sync_in_progress(),
 			'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
 			'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),

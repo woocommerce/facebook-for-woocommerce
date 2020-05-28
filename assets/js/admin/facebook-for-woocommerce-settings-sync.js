@@ -219,6 +219,9 @@ jQuery( document ).ready( function( $ ) {
 
 		facebook_for_woocommerce_settings_sync.sync_in_progress = true;
 
+		if ( ! window.syncStatusInterval ) {
+			window.syncStatusInterval = setInterval( getSyncStatus, 10000 );
+		}
 	}
 
 	/**
@@ -232,6 +235,10 @@ jQuery( document ).ready( function( $ ) {
 
 		facebook_for_woocommerce_settings_sync.sync_in_progress = false;
 
+		clearInterval( window.syncStatusInterval );
+
+		window.syncStatusInterval = null;
+
 		toggleSettingOptions( true );
 
 		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'all' ).css( 'opacity', '1' );
@@ -241,6 +248,36 @@ jQuery( document ).ready( function( $ ) {
 		} else {
 			$( '#sync_progress' ).hide();
 		}
+	}
+
+	/**
+	 * Gets the current sync status.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	function getSyncStatus() {
+
+		if ( ! facebook_for_woocommerce_settings_sync.sync_in_progress ) {
+			return;
+		}
+
+		$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+			action: 'wc_facebook_get_sync_status',
+			nonce:  facebook_for_woocommerce_settings_sync.sync_status_nonce,
+		}, function ( response ) {
+
+			console.log( response );
+
+			if ( response.success ) {
+
+				if ( response.data > 0 ) {
+					syncInProgress( response.data );
+				} else {
+					clearSyncInProgress();
+				}
+			}
+
+		} );
 	}
 
 } );
