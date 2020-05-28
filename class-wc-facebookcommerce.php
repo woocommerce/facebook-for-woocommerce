@@ -176,22 +176,51 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// inform users that they need to connect to FBE 2.0 if they've upgraded from FBE 1.x
-			if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && ! $this->get_connection_handler()->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
+			// inform users that they need to connect
+			if ( ! $this->get_connection_handler()->is_connected() ) {
 
-				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
+				$message    = '';
+				$message_id = '';
 
-				$message = sprintf(
-					__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
-					'<strong>', '</strong>',
-					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
-					'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
-				);
+				//  to FBE 2.0 if they've upgraded from FBE 1.x
+				if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && $this->get_integration()->get_external_merchant_settings_id() ) {
 
-				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v2_0', [
-					'dismissible'  => false,
-					'notice_class' => 'notice-info wc-facebook-migrate-notice',
-				] );
+					$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
+
+					$message = sprintf(
+						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+						'<strong>', '</strong>',
+						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
+						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+					);
+
+					$message_id = 'migrate_to_v2_0';
+
+				// otherwise, a general getting started message
+				} elseif ( ! $this->is_plugin_settings() ) {
+
+					$message = sprintf(
+					/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
+						esc_html__(
+							'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
+							'facebook-for-woocommerce'
+						),
+						'<strong>',
+						'</strong>',
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
+						'</a>'
+					);
+
+					$message_id = 'get_started';
+				}
+
+				if ( $message ) {
+
+					$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_' . $message_id, [
+						'dismissible'  => false,
+						'notice_class' => 'notice-info',
+					] );
+				}
 			}
 
 			// if the connection is otherwise invalid, but there is an access token
@@ -207,6 +236,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->get_admin_notice_handler()->add_admin_notice( $message, 'connection_invalid', [
 					'notice_class' => 'notice-error',
 				] );
+			}
+
+			if ( ! $this->get_connection_handler()->is_connected() ) {
+
 			}
 		}
 
