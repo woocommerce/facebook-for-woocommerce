@@ -219,13 +219,36 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$content_type = 'product';
 			}
 
-			$this->pixel->inject_event( 'ViewContent', [
-				'content_name' => $product->get_title(),
-				'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
-				'content_type' => $content_type,
-				'value'        => $product->get_price(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$categories = \WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
+
+			$event_data = [
+				'event_name'  => 'ViewContent',
+				'custom_data' => [
+					'content_name'     => $product->get_title(),
+					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+					'content_type'     => $content_type,
+					'content_category' => $categories['name'],
+					'value'            => $product->get_price(),
+					'currency'         => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+
+			try {
+
+				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
+
+				$event_data['event_id'] = $event->get_id();
+
+			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
+
+				if ( facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
+				}
+			}
+
+			$this->pixel->inject_event( 'ViewContent', $event_data );
 		}
 
 
