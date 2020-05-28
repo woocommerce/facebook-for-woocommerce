@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c4d079562fc7d3f9770d4c416ad76bb",
+    "content-hash": "7da9ad0bbddf58c0a302451b9640cd17",
     "packages": [
         {
             "name": "composer/installers",
@@ -204,6 +204,57 @@
                 "issues": "https://github.com/skyverge/wc-plugin-framework/issues"
             },
             "time": "2020-01-23T21:50:44+00:00"
+        },
+        {
+            "name": "techcrunch/wp-async-task",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/techcrunch/wp-async-task.git",
+                "reference": "9bdbbf9df4ff5179711bb58b9a2451296f6753dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/techcrunch/wp-async-task/zipball/9bdbbf9df4ff5179711bb58b9a2451296f6753dc",
+                "reference": "9bdbbf9df4ff5179711bb58b9a2451296f6753dc",
+                "shasum": ""
+            },
+            "require-dev": {
+                "10up/wp_mock": "dev-master",
+                "phpunit/phpunit": "*@stable"
+            },
+            "type": "wordpress-plugin",
+            "autoload": {
+                "classmap": [
+                    "wp-async-task.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Khadiwala",
+                    "role": "developer"
+                },
+                {
+                    "name": "Nicolas Vincent",
+                    "role": "developer"
+                },
+                {
+                    "name": "Eric Mann",
+                    "email": "eric.mann@10up.com",
+                    "role": "developer"
+                },
+                {
+                    "name": "John P. Bloch",
+                    "email": "john.bloch@10up.com",
+                    "role": "developer"
+                }
+            ],
+            "description": "Run asynchronous tasks for long-running operations in WordPress",
+            "time": "2016-03-10T17:37:13+00:00"
         }
     ],
     "packages-dev": [
@@ -2205,6 +2256,61 @@
             ],
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "time": "2020-02-18T18:59:58+00:00"
+        },
+        {
+            "name": "phpoption/phpoption",
+            "version": "1.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schmittjoh/php-option.git",
+                "reference": "4acfd6a4b33a509d8c88f50e5222f734b6aeebae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/4acfd6a4b33a509d8c88f50e5222f734b6aeebae",
+                "reference": "4acfd6a4b33a509d8c88f50e5222f734b6aeebae",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5.9 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.3",
+                "phpunit/phpunit": "^4.8.35 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpOption\\": "src/PhpOption/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Johannes M. Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                },
+                {
+                    "name": "Graham Campbell",
+                    "email": "graham@alt-three.com"
+                }
+            ],
+            "description": "Option Type for PHP",
+            "keywords": [
+                "language",
+                "option",
+                "php",
+                "type"
+            ],
+            "time": "2020-03-21T18:07:53+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -4887,6 +4993,80 @@
             "time": "2019-06-13T22:48:21+00:00"
         },
         {
+            "name": "vlucas/phpdotenv",
+            "version": "v4.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vlucas/phpdotenv.git",
+                "reference": "539bb6927c101a5605d31d11a2d17185a2ce2bf1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/539bb6927c101a5605d31d11a2d17185a2ce2bf1",
+                "reference": "539bb6927c101a5605d31d11a2d17185a2ce2bf1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5.9 || ^7.0 || ^8.0",
+                "phpoption/phpoption": "^1.7.2",
+                "symfony/polyfill-ctype": "^1.9"
+            },
+            "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.3",
+                "ext-filter": "*",
+                "ext-pcre": "*",
+                "phpunit/phpunit": "^4.8.35 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "suggest": {
+                "ext-filter": "Required to use the boolean validator.",
+                "ext-pcre": "Required to use most of the library."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dotenv\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Graham Campbell",
+                    "email": "graham@alt-three.com",
+                    "homepage": "https://gjcampbell.co.uk/"
+                },
+                {
+                    "name": "Vance Lucas",
+                    "email": "vance@vancelucas.com",
+                    "homepage": "https://vancelucas.com/"
+                }
+            ],
+            "description": "Loads environment variables from `.env` to `getenv()`, `$_ENV` and `$_SERVER` automagically.",
+            "keywords": [
+                "dotenv",
+                "env",
+                "environment"
+            ],
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/vlucas/phpdotenv",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-05-02T14:08:57+00:00"
+        },
+        {
             "name": "voku/portable-ascii",
             "version": "1.4.10",
             "source": {
@@ -7115,7 +7295,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "techcrunch/wp-async-task": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

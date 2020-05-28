@@ -18,6 +18,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		include_once 'facebook-commerce-pixel-event.php';
 	}
 
+	if ( ! class_exists( 'WC_Facebookcommerce_ServerEventSender' ) ) {
+		include_once 'facebook-server-event-sender.php';
+	}
+
 	class WC_Facebookcommerce_EventsTracker {
 		private $pixel;
 		private static $isEnabled = true;
@@ -70,6 +74,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
+
+			//Adds the send_tracked_event method to the wp_footer action
+			add_action( 'wp_footer' ,  [ $this, 'send_tracked_events' ] , 10, 2);
+		}
+
+		public function send_tracked_events(){
+			do_action( 'wc_facebook_send_server_event', WC_Facebookcommerce_ServerEventSender::get_instance()->get_tracked_events(), WC_Facebookcommerce_ServerEventSender::get_instance()->get_num_tracked_events() );
 		}
 
 		public function apply_filters() {

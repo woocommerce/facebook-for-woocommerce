@@ -22,21 +22,57 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) {
 }
 
 final class WC_Facebookcommerce_ServerEventSender {
-  /*
-   * Sends an Event to Facebook and returns the response
-   * @param Event event object to send
-   * @param string pixel_id associated pixel
-   * @param string access_token required to send the request
-   * @param string agent plugin identifier
+
+  private static $instance = null;
+  private $tracked_events = [];
+
+  /**
+   * Returns an instance of this class
+  */
+  public static function get_instance() {
+    if (self::$instance == null) {
+      self::$instance = new WC_Facebookcommerce_ServerEventSender();
+    }
+
+    return self::$instance;
+  }
+
+  /**
+   * Adds an event to the list of tracked events
+  */
+  public function track($event) {
+    $this->tracked_events[] = $event;
+  }
+
+  /**
+   * Adds an event to the list of tracked events
+   * @return array
+  */
+  public function get_tracked_events() {
+    return $this->tracked_events;
+  }
+
+  /**
+   * Returns the amount of tracked events
+   * @return int
+  */
+  public function get_num_tracked_events(){
+    return count( $this->tracked_events );
+  }
+
+  /**
+   * Sends events to Facebook and returns the response
+   * @param array Array of events to send
+   * @return EventResponse Response of the request
    */
-  public static function send_event($event) {
+  public static function send( $events ) {
     try{
-      $pixel_id =  WC_Facebookcommerce_Pixel::get_pixel_id();
       $agent =  WC_Facebookcommerce_Pixel::get_agent();
+      $pixel_id =  WC_Facebookcommerce_Pixel::get_pixel_id();
       $access_token =  WC_Facebookcommerce_Pixel::get_access_token();
       $api = Api::init(null, null, $access_token);
       $request = (new EventRequest($pixel_id))
-                    ->setEvents(array($event))
+                    ->setEvents( $events )
                     ->setPartnerAgent($agent);
       $response = $request->execute();
       return $response;

@@ -20,6 +20,12 @@
 
 defined( 'ABSPATH' ) or exit;
 
+if (! class_exists( 'WC_Facebook_Loader' )):
+
+if ( ! class_exists( 'WC_Facebook_ServerEventAsyncTask' ) ) {
+	include_once 'facebook-server-event-async-task.php';
+}
+
 /**
  * The plugin loader class.
  *
@@ -108,6 +114,8 @@ class WC_Facebook_Loader {
 		$this->load_framework();
 
 		$this->register_autoloader_for_facebook_business_sdk();
+
+		new WC_Facebook_ServerEventAsyncTask();
 
 		require_once( plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php' );
 
@@ -389,3 +397,5 @@ class WC_Facebook_Loader {
 
 // fire it up!
 WC_Facebook_Loader::instance();
+
+endif;

@@ -11,6 +11,7 @@
 
 # composer packages
 /vendor
+/wp-content
 
 # Tests
 codeception.yml
