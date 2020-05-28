@@ -224,8 +224,17 @@ class Admin {
 	 */
 	public function filter_products_by_sync_enabled( $query_vars ) {
 
+		$valid_values = [
+			self::SYNC_MODE_SYNC_AND_SHOW,
+			self::SYNC_MODE_SYNC_AND_HIDE,
+			self::SYNC_MODE_SYNC_DISABLED,
+		];
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_REQUEST['fb_sync_enabled'] ) && in_array( $_REQUEST['fb_sync_enabled'], [ 'yes', 'no' ], true ) ) {
+		if ( isset( $_REQUEST['fb_sync_enabled'] ) && in_array( $_REQUEST['fb_sync_enabled'], $valid_values, true ) ) {
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter_value = $_REQUEST['fb_sync_enabled'];
 
 			// by default use an "AND" clause if multiple conditions exist for a meta query
 			if ( ! empty( $query_vars['meta_query'] ) ) {
@@ -234,13 +243,15 @@ class Admin {
 				$query_vars['meta_query'] = [];
 			}
 
-			// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( 'yes' === $_REQUEST['fb_sync_enabled'] ) {
+			if ( self::SYNC_MODE_SYNC_AND_SHOW === $filter_value ) {
 
+				// when checking for products with sync enabled we need to check both "yes" and meta not set, this requires adding an "OR" clause
 				$query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $query_vars );
 
-				// since we record enabled status on child variations, we may need to query variable products found for their children to exclude them from query results
+				// only get visible products (both "yes" and meta not set)
+				$query_vars = $this->add_query_vars_to_find_visible_products( $query_vars );
+
+				// since we record enabled status and visibility on child variations, we need to query variable products found for their children to exclude them from query results
 				$exclude_products = [];
 				$found_ids        = get_posts( array_merge( $query_vars, [ 'fields' => 'ids' ] ) );
 				$found_products   = empty( $found_ids ) ? [] : wc_get_products( [
@@ -252,7 +263,9 @@ class Admin {
 				/** @var \WC_Product[] $found_products */
 				foreach ( $found_products as $product ) {
 
-					if ( ! Products::is_sync_enabled_for_product( $product ) ) {
+					if ( ! Products::is_sync_enabled_for_product( $product )
+					     || ! Products::is_product_visible( $product ) ) {
+
 						$exclude_products[] = $product->get_id();
 					}
 				}
@@ -265,7 +278,13 @@ class Admin {
 					}
 				}
 
-			} else {
+			} elseif ( self::SYNC_MODE_SYNC_AND_HIDE === $filter_value ) {
+
+				// TODO: implement
+
+			} else  {
+
+				// self::SYNC_MODE_SYNC_DISABLED
 
 				$integration             = facebook_for_woocommerce()->get_integration();
 				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
@@ -313,15 +332,31 @@ class Admin {
 	 */
 	private function add_query_vars_to_find_products_with_sync_enabled( array $query_vars ) {
 
-		$query_vars['meta_query']['relation'] = 'OR';
-		$query_vars['meta_query'][]           = [
-			'key'   => Products::SYNC_ENABLED_META_KEY,
-			'value' => 'yes',
+		$meta_query = [
+			'relation' => 'OR',
+			[
+				'key'   => Products::SYNC_ENABLED_META_KEY,
+				'value' => 'yes',
+			],
+			[
+				'key'     => Products::SYNC_ENABLED_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
 		];
-		$query_vars['meta_query'][]           = [
-			'key'     => Products::SYNC_ENABLED_META_KEY,
-			'compare' => 'NOT EXISTS',
-		];
+
+		if ( empty( $query_vars['meta_query'] ) ) {
+
+			$query_vars['meta_query'] = $meta_query;
+
+		} elseif ( is_array( $query_vars['meta_query'] ) ) {
+
+			$original_meta_query      = $query_vars['meta_query'];
+			$query_vars['meta_query'] = [
+				'relation' => 'AND',
+				$original_meta_query,
+				$meta_query,
+			];
+		}
 
 		// check whether the product belongs to an excluded product category or tag
 		$query_vars = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars );
@@ -372,6 +407,79 @@ class Admin {
 			} elseif ( $tax_query && is_array( $query_vars ) ) {
 				$query_vars['tax_query'][] = $tax_query;
 			}
+		}
+
+		return $query_vars;
+	}
+
+
+	/**
+	 * Adds query vars to limit the results to visible products.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $query_vars
+	 * @return array
+	 */
+	private function add_query_vars_to_find_visible_products( array $query_vars ) {
+
+		$visibility_meta_query = [
+			'relation' => 'OR',
+			[
+				'key'   => Products::VISIBILITY_META_KEY,
+				'value' => 'yes',
+			],
+			[
+				'key'     => Products::VISIBILITY_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		if ( empty( $query_vars['meta_query'] ) ) {
+
+			$query_vars['meta_query'] = $visibility_meta_query;
+
+		} elseif ( is_array( $query_vars['meta_query'] ) ) {
+
+			$enabled_meta_query = $query_vars['meta_query'];
+			$query_vars['meta_query'] = [
+				'relation' => 'AND',
+				$enabled_meta_query,
+				$visibility_meta_query,
+			];
+		}
+
+		return $query_vars;
+	}
+
+
+	/**
+	 * Adds query vars to limit the results to hidden products.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $query_vars
+	 * @return array
+	 */
+	private function add_query_vars_to_find_hidden_products( array $query_vars ) {
+
+		$visibility_meta_query = [
+			'key'   => Products::VISIBILITY_META_KEY,
+			'value' => 'no',
+		];
+
+		if ( empty( $query_vars['meta_query'] ) ) {
+
+			$query_vars['meta_query'] = $visibility_meta_query;
+
+		} elseif ( is_array( $query_vars['meta_query'] ) ) {
+
+			$enabled_meta_query = $query_vars['meta_query'];
+			$query_vars['meta_query'] = [
+				'relation' => 'AND',
+				$enabled_meta_query,
+				$visibility_meta_query,
+			];
 		}
 
 		return $query_vars;
