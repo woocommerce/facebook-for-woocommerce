@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Events\Event;
+
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 	if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
@@ -634,6 +636,35 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'{ em: event.detail.inputs.filter(ele => ele.name.includes("email"))[0].value }'
 				);
 			}
+		}
+
+
+		/**
+		 * Sends an API event.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param Event $event event object
+		 * @return bool
+		 */
+		protected function send_api_event( Event $event ) {
+
+			try {
+
+				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
+
+				$success = true;
+
+			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
+
+				$success = false;
+
+				if ( facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
+				}
+			}
+
+			return $success;
 		}
 
 
