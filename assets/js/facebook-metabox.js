@@ -60,7 +60,7 @@ function fb_reset_product(wp_id) {
 function fb_delete_product(wp_id) {
 	if (confirm(
 		'Are you sure you want to delete this product on Facebook? If you only want to "hide" the product, ' +
-		'uncheck the "Visible" checkbox and hit "Update". If you delete a product on Facebook and hit "Update" after, ' +
+		'change the "Facebook sync" setting to "Sync and hide" and hit "Update". If you delete a product on Facebook and hit "Update" after, ' +
 		'this product will be recreated. To permanently remove this product from Facebook, hit "OK" and close the window.' +
 		'This will not delete the product from WooCommerce.'
 	)) {
