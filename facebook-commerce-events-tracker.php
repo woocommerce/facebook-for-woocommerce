@@ -513,6 +513,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
 					$content->quantity = $quantity;
+					$content->item_price = floatval($item->get_total());
 
 					$contents[] = $content;
 					$num_items += $quantity;
@@ -524,7 +525,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
 				'contents'     => wp_json_encode( $contents ),
 				'content_type' => $content_type,
-				'value'        => $order->get_total(),
+				'value'        => floatval($order->get_total()),
 				'currency'     => get_woocommerce_currency(),
 			] );
 
@@ -554,7 +555,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
 				$this->pixel->inject_event( 'Subscribe', [
 					'sign_up_fee' => $subscription->get_sign_up_fee(),
-					'value'       => $subscription->get_total(),
+					'value'       => floatval($subscription->get_total()),
 					'currency'    => get_woocommerce_currency(),
 				] );
 			}
@@ -660,6 +661,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 					$content->id       = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $item['data'] );
 					$content->quantity = $item['quantity'];
+					$content->item_price = floatval($item['data']->get_price());
 
 					$cart_contents[] = $content;
 				}
@@ -672,11 +674,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets the cart total.
 		 *
-		 * @return float|int
+		 * @return float
 		 */
 		private function get_cart_total() {
-
-			return WC()->cart ? WC()->cart->total : 0;
+			return WC()->cart ? floatval(WC()->cart->total) : 0.0;
 		}
 
 

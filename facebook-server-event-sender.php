@@ -61,6 +61,13 @@ final class WC_Facebookcommerce_ServerEventSender {
   }
 
   /**
+   * Deletes the tracked events
+  */
+  public function untrack_events(){
+    $this->tracked_events = array();
+  }
+
+  /**
    * Sends events to Facebook and returns the response
    * @param array Array of events to send
    * @return EventResponse Response of the request

@@ -34,6 +34,46 @@ class IntegrationTester extends \Codeception\Actor {
 		return $product;
 	}
 
+	public function create_product_category(){
+		$result = wp_insert_term(
+			'New Category', // the term
+			'product_cat', // the taxonomy
+			array(
+				'description'=> 'Category description',
+				'slug' => 'new-category'
+			)
+		);
+		return $result['term_id'];
+	}
+
+	/**
+	 * Gets a new order object
+	 *
+	 * @return \WC_Order
+	 */
+	public function get_order() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		return $order;
+	}
+
+	/**
+	 * Associates product and order
+	 *
+	 */
+	public function associate_order_and_product( $order, $product, $num_items = 1 ) {
+		$order_item_product = new \WC_Order_Item_Product();
+		$order_item_product->set_product_id( $product->get_id() );
+		$order_item_product->set_quantity($num_items);
+		$order_item_product->set_total( $num_items*$product->get_price() );
+		$order_item_product->set_subtotal( $num_items*$product->get_price() );
+		$order_item_product->save();
+		$order->add_item( $order_item_product );
+		$order->set_total( $order_item_product->get_total() );
+		$order->save();
+	}
 
 	/**
 	 * Gets a new variable product object, with variations.

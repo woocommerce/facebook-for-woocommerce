@@ -107,13 +107,14 @@ class WC_Facebookcommerce_ServerEventFactory {
     if (!empty($data['contents'])) {
       $contents = array();
       foreach(json_decode($data['contents']) as $content) {
-        $contents[] = array(
-          'id' => $content->id,
-          'quantity' => $content->quantity
+        $contents[] = new Content(array(
+            'product_id' => $content->id,
+            'quantity' => $content->quantity,
+            'item_price' => $content->item_price
+          )
         );
       }
-
-      $custom_data->setContents(new Content($contents));
+      $custom_data->setContents($contents);
     }
 
     return $event;
