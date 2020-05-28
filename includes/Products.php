@@ -267,9 +267,28 @@ class Products {
 		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
 
-			if ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
+			if ( $product->is_type( 'variable' ) ) {
+
+				// assume variable products are not visible until a visible child is found
+				$is_visible = false;
+
+				foreach ( $product->get_children() as $child_id ) {
+
+					$child_product = wc_get_product( $child_id );
+
+					if ( $child_product && self::is_product_visible( $child_product ) ) {
+
+						$is_visible = true;
+						break;
+					}
+				}
+
+			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
+
 				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+
 			} else {
+
 				$is_visible = true;
 			}
 
