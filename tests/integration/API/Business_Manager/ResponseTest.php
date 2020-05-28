@@ -16,13 +16,11 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 	public function _before() {
 
-		if ( ! class_exists( API\Response::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Response.php';
-		}
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
-		if ( ! class_exists( API\Business_Manager\Response::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Business_Manager/Response.php';
-		}
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 
