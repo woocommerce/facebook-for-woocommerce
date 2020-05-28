@@ -70,9 +70,9 @@ class Response extends API\Response  {
 	 */
 	public function get_page_id() {
 
-		$page_id = current( $this->get_profiles() );
+		$pages = $this->get_data()->pages;
 
-		return $page_id ?: '';
+		return ! empty( $pages ) && is_array( $pages ) ? current( $pages ) : '';
 	}
 
 
