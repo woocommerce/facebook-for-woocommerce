@@ -172,7 +172,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 
 				if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-					$this->actually_inject_search_event();
+					add_action( 'woocommerce_before_shop_loop', array( $this, 'actually_inject_search_event' ) );
 				} else {
 					add_action( 'wp_head', array( $this, 'actually_inject_search_event' ), 11 );
 				}
