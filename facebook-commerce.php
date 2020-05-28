@@ -3406,10 +3406,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return $fb_id;
 		}
 
-		if ( ! isset( $this->settings['upload_end_time'] ) ) {
-			return null;
-		}
-
 		if ( ! $woo_product ) {
 			$woo_product = new WC_Facebook_Product( $wp_id );
 		}
