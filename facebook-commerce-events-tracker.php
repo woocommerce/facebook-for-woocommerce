@@ -319,6 +319,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'event_name'  => 'AddToCart',
 				'custom_data' => [
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
@@ -373,6 +374,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
@@ -429,6 +431,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
@@ -770,6 +773,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			return wp_json_encode( array_unique( array_merge( ... $product_ids ) ) );
+		}
+
+
+		/**
+		 * Gets all content names from cart.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return string JSON data
+		 */
+		private function get_cart_content_names() {
+
+			$product_names = [];
+
+			if ( $cart = WC()->cart ) {
+
+				foreach ( $cart->get_cart() as $item ) {
+
+					if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
+
+						$product_names[] = $item['data']->get_name();
+					}
+				}
+			}
+
+			return wp_json_encode( array_unique( $product_names ) );
 		}
 
 
