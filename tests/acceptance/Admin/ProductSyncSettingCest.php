@@ -2,6 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\Admin;
 
 class ProductSyncSettingCest {
 
@@ -71,7 +72,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook sync', '.form-field' );
 		$I->see( 'Facebook Description', '.form-field' );
 		$I->see( 'Facebook Product Image', '.form-field' );
 		$I->see( 'Facebook Price', '.form-field' );
@@ -91,7 +92,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->seeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 	}
 
 
@@ -108,7 +109,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
 	}
 
 
@@ -127,12 +128,49 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
-		$I->checkOption( '#fb_sync_enabled' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->seeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
+	}
+
+
+	/**
+	 * Test that the "excluded categories" modal displays when required.
+	 *
+	 * @param AcceptanceTester $I
+	 * @throws Exception
+	 */
+	public function try_field_enable_with_excluded_category( AcceptanceTester $I ) {
+
+		// have an excluded category
+		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded category', 'product_cat' );
+		$I->haveFacebookForWooCommerceSettingsInDatabase( [
+			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $excluded_category_id ]
+		] );
+
+		// add the product to the excluded category
+		wp_add_object_terms( $this->sync_disabled_product->get_id(), [ $excluded_category_id ], 'product_cat' );
+
+		$I->amEditingPostWithId( $this->sync_disabled_product->get_id() );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
+		$I->click( 'Update' );
+
+		$I->waitForElementVisible( '#wc-backbone-modal-dialog' );
+		$I->see( 'This product belongs to a category or tag that is excluded from the Facebook catalog sync', '#wc-backbone-modal-dialog' );
+		$I->see( 'Go to Settings', '#wc-backbone-modal-dialog' );
+		$I->see( 'Cancel', '#wc-backbone-modal-dialog' );
+
+		$I->click( 'Cancel', '#wc-backbone-modal-dialog' );
+
+		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
 	}
 
 
@@ -151,12 +189,50 @@ class ProductSyncSettingCest {
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
 		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
-		$I->uncheckOption( '#fb_sync_enabled' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 		$I->click( 'Update' );
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
+		$I->see( 'If this product was previously visible in Facebook', '.notice' );
+	}
+
+
+	/**
+	 * Test that the "disabled sync" notice does not display if it has been dismissed.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_field_disable_dismiss_notice( AcceptanceTester $I ) {
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
+		$I->click( 'Update' );
+
+		$I->waitForText( 'Product updated', 20  );
+		$I->waitForText( 'If this product was previously visible in Facebook' );
+		$I->click( '.js-wc-plugin-framework-notice-dismiss' );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Sync and show in catalog' );
+		$I->click( 'Update' );
+		$I->waitForText( 'Product updated', 20  );
+
+		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		// remove WP admin bar and WooCommerce Admin bar to fix "Element is not clickable" issue
+		$I->executeJS( 'jQuery("#wpadminbar,#woocommerce-embedded-root").remove();' );
+		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
+		$I->click( 'Update' );
+		$I->waitForText( 'Product updated', 20  );
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
 
@@ -184,7 +260,7 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15  );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
@@ -220,7 +296,7 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
@@ -256,7 +332,7 @@ class ProductSyncSettingCest {
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
+		$I->see( 'Facebook sync', '.form-field' );
 		$I->see( 'Facebook Description', '.form-field' );
 		$I->see( 'Facebook Product Image', '.form-field' );
 		$I->see( 'Facebook Price', '.form-field' );
@@ -283,15 +359,15 @@ class ProductSyncSettingCest {
 		$I->scrollTo( '#publish', 0, -200 );
 		$I->click( '#publish' );
 
-		$I->waitForText( 'Product updated' );
+		$I->waitForText( 'Product updated', 15 );
 
 		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
 		$I->click( '#_virtual' );
 
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
-		$I->see( 'Include in Facebook sync', '.form-field' );
-		$I->dontSeeCheckboxIsChecked( '#fb_sync_enabled' );
+		$I->see( 'Facebook sync', '.form-field' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
 	}
 
 

@@ -133,16 +133,16 @@ class Sync {
 
 
 	/**
-	 * Adds the given product IDs to the requests array to be deleted.
+	 * Adds the given retailer IDs to the requests array to be deleted.
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param int[] $product_ids
+	 * @param int[] $retailer retailer IDs to delete
 	 */
-	public function delete_products( array $product_ids ) {
+	public function delete_products( array $retailer_ids ) {
 
-		foreach ( $product_ids as $product_id ) {
-			$this->requests[ $this->get_product_index( $product_id ) ] = self::ACTION_DELETE;
+		foreach ( $retailer_ids as $retailer_id ) {
+			$this->requests[ $retailer_id ] = self::ACTION_DELETE;
 		}
 	}
 
@@ -158,9 +158,12 @@ class Sync {
 
 		if ( ! empty( $this->requests ) ) {
 
-			return facebook_for_woocommerce()->get_products_sync_background_handler()->create_job( [
-				'requests' => $this->requests
-			] );
+			$job_handler = facebook_for_woocommerce()->get_products_sync_background_handler();
+			$job         = $job_handler->create_job( [ 'requests' => $this->requests ] );
+
+			$job_handler->dispatch();
+
+			return $job;
 		}
 	}
 

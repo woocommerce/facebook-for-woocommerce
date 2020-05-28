@@ -1,6 +1,7 @@
 <?php
 
 use Codeception\Stub;
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -53,15 +54,24 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Background::process_items() */
 	public function test_process_items() {
 
-		$requests = [
-			Sync::PRODUCT_INDEX_PREFIX . '1' => Sync::ACTION_UPDATE,
-			Sync::PRODUCT_INDEX_PREFIX . '2' => Sync::ACTION_UPDATE,
-			Sync::PRODUCT_INDEX_PREFIX . '3' => Sync::ACTION_DELETE,
-		];
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
-		$job = $this->get_test_job( [ 'requests' => $requests ] );
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 
-		$background = Stub::make( Background::class, [
+		$job = $this->get_test_job();
+
+		// mock the API to return a successful response
+		$api = $this->make( API::class, [
+			'send_item_updates' => new API\Catalog\Send_Item_Updates\Response( json_encode( [ 'handles' => [ 'handle' ] ] ) ),
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$background = $this->make( Background::class, [
 			'start_time'   => time(),
 			'process_item' => function( $item, $job ) {
 
@@ -69,14 +79,80 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 				$this->assertEquals( 2, count( $item ) );
 
 				// assert the first position is one of the product IDs
-				$this->assertContains( $item[0], [ 1, 2, 3 ] );
+				$this->assertContains( $item[0], [ Sync::PRODUCT_INDEX_PREFIX . 1, Sync::PRODUCT_INDEX_PREFIX . 2, Sync::PRODUCT_INDEX_PREFIX . 3 ] );
 
 				// assert the second position is one of the accepted sync methods
 				$this->assertContains( $item[1], [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ] );
 			},
 		] );
 
-		$background->process_items( $job, $requests );
+		$background->process_items( $job, $job->requests );
+	}
+
+
+	/** @see Background::process_items() */
+	public function test_process_items_sends_item_updates() {
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
+		$job = $this->get_test_job();
+
+		// mock the API to return an successful response
+		$api = $this->make( API::class, [
+			'send_item_updates' => new API\Catalog\Send_Item_Updates\Response( json_encode( [ 'handles' => [ 'handle' ] ] ) ),
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$background = $this->make( Background::class, [
+			'start_time'   => time(),
+			'process_item' => [ 'request' ],
+		] );
+
+		$background->process_items( $job, $job->requests );
+
+		// test that process_items() updates the job with the batch handles returned by send_item_updates()
+		$this->assertEquals( [ 'handle' ], $job->handles );
+	}
+
+
+	/** @see Background::process_items() */
+	public function test_process_items_when_send_item_updates_throws_an_exception() {
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
+
+		$job = $this->get_test_job();
+
+		// mock the API to throw an exception
+		$api = $this->make( API::class, [
+			'send_item_updates' => static function() {
+				throw new Framework\SV_WC_API_Exception();
+			},
+		] );
+
+		$property = new ReflectionProperty( WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$background = $this->make( Background::class, [
+			'start_time'   => time(),
+			'process_item' => [ 'request' ],
+		] );
+
+		$background->process_items( $job, $job->requests );
+
+		// test that process_items() does not update the job with an array of batch handles if send_item_updates() throws an exception
+		$this->assertFalse( isset( $job->handles ) );
 	}
 
 
@@ -132,7 +208,6 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertIsString( $data['name'] );
 		$this->assertIsInt( $data['price'] );
 		$this->assertIsString( $data['product_type'] );
-		$this->assertIsString( $data['retailer_id'] );
 		$this->assertIsString( $data['retailer_product_group_id'] );
 		$this->assertIsInt( $data['sale_price'] );
 		$this->assertIsString( $data['url'] );
@@ -269,11 +344,11 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$product = new \WC_Product_Simple();
 		$product->save();
 
-		$item = [ $product->get_id(), Sync::ACTION_DELETE ];
+		$retailer_id = "wc_post_id_{$product->get_id()}";
 
-		$result = $this->get_background()->process_item( $item, null );
+		$result = $this->get_background()->process_item( [ $retailer_id, Sync::ACTION_DELETE ], null );
 
-		$this->assertEquals( "wc_post_id_{$product->get_id()}", $result['retailer_id'] );
+		$this->assertEquals( $retailer_id, $result['retailer_id'] );
 		$this->assertEquals( Sync::ACTION_DELETE, $result['method'] );
 	}
 
@@ -332,7 +407,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$product = new \WC_Product_Simple();
 		$product->save();
 
-		$request = $this->get_background()->process_item( [ $product, $method ], null );
+		$request = $this->get_background()->process_item( [ Sync::PRODUCT_INDEX_PREFIX . $product->get_id(), $method ], null );
 
 		$this->assertEquals( [ 'filtered' => true ], $request );
 	}
@@ -371,7 +446,11 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$defaults = [
 			'id'       => uniqid(),
 			'status'   => 'queued',
-			'requests' => [],
+			'requests' => [
+				Sync::PRODUCT_INDEX_PREFIX . '1' => Sync::ACTION_UPDATE,
+				Sync::PRODUCT_INDEX_PREFIX . '2' => Sync::ACTION_UPDATE,
+				Sync::PRODUCT_INDEX_PREFIX . '3' => Sync::ACTION_DELETE,
+			],
 			'progress' => 0,
 		];
 
@@ -380,4 +459,3 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 
 }
-

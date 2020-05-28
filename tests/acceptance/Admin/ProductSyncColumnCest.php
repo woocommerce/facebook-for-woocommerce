@@ -40,7 +40,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column is present' );
 
-		$I->see( 'FB Sync Enabled', 'table.wp-list-table th' );
+		$I->see( 'Facebook sync', 'table.wp-list-table th' );
 	}
 
 
@@ -61,7 +61,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column is not present if the plugin is not connected or ready' );
 
-		$I->dontSee( 'FB Sync Enabled', 'table.wp-list-table th' );
+		$I->dontSee( 'Facebook sync', 'table.wp-list-table th' );
 	}
 
 
@@ -90,7 +90,26 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct value for a sync-enabled product' );
 
-		$this->seeColumnHasValue( $I, 'Enabled' );
+		$this->seeColumnHasValue( $I, 'Sync and show' );
+	}
+
+
+	/**
+	 * Test that the column shows the correct value for a product that has sync enabled but hidden.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_column_displays_sync_enabled_hidden( AcceptanceTester $I ) {
+
+		// enable sync for the product before viewing the Products page
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product ] );
+		\SkyVerge\WooCommerce\Facebook\Products::set_product_visibility( $this->product, false );
+
+		$I->amOnProductsPage();
+
+		$I->wantTo( 'Test that the column displays the correct value for a sync-enabled but hidden product' );
+
+		$this->seeColumnHasValue( $I, 'Sync and hide' );
 	}
 
 
@@ -108,7 +127,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct value for a sync-disabled product' );
 
-		$this->seeColumnHasValue( $I, 'Disabled' );
+		$this->seeColumnHasValue( $I, 'Do not sync' );
 	}
 
 
@@ -123,7 +142,7 @@ class ProductSyncColumnCest {
 
 		$I->wantTo( 'Test that the column displays the correct value for a product with no sync setting set' );
 
-		$this->seeColumnHasValue( $I, 'Enabled' );
+		$this->seeColumnHasValue( $I, 'Sync and show' );
 	}
 
 

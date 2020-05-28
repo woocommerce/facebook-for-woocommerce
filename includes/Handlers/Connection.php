@@ -34,6 +34,9 @@ class Connection {
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
+	/** @var string the action callback for the disconnection */
+	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
+
 	/** @var string the WordPress option name where the external business ID is stored */
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
@@ -63,6 +66,8 @@ class Connection {
 		add_action( 'admin_init', [ $this, 'refresh_installation_data' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
+
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
 	}
 
 
@@ -169,6 +174,8 @@ class Connection {
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
+			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
@@ -192,6 +199,46 @@ class Connection {
 	 */
 	public function handle_disconnect() {
 
+		check_admin_referer( self::ACTION_DISCONNECT );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
+		}
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api()->get_user();
+			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
+
+			$this->disconnect();
+
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Uninstall successful', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Uninstall failed: %s', $exception->getMessage() ) );
+
+			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Uninstall unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
+		}
+
+		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+		exit;
+	}
+
+
+	/**
+	 * Disconnects the plugin.
+	 *
+	 * Deletes local asset data.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	private function disconnect() {
+
+		$this->update_access_token( '' );
+		$this->update_business_manager_id( '' );
+
+		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
 	}
 
 
@@ -246,6 +293,22 @@ class Connection {
 
 
 	/**
+	 * Gets the URL to manage the connection.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_manage_url() {
+
+		$app_id      = self::CLIENT_ID;
+		$business_id = $this->get_external_business_id();
+
+		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}";
+	}
+
+
+	/**
 	 * Gets the URL for disconnecting.
 	 *
 	 * @since 2.0.0-dev.1
@@ -254,7 +317,7 @@ class Connection {
 	 */
 	public function get_disconnect_url() {
 
-		return '';
+		return wp_nonce_url( add_query_arg( 'action', self::ACTION_DISCONNECT, admin_url( 'admin.php' ) ), self::ACTION_DISCONNECT );
 	}
 
 
