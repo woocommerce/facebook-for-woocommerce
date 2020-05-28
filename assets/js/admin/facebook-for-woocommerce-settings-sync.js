@@ -147,4 +147,91 @@ jQuery( document ).ready( function( $ ) {
 		}
 	} );
 
+	// handle the sync button click
+	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
+
+		event.preventDefault();
+
+		if ( confirm( facebook_for_woocommerce_settings_sync.i18n.confirm_sync ) ) {
+
+			syncInProgress();
+
+			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+				action: 'wc_facebook_sync_products',
+				nonce:  facebook_for_woocommerce_settings_sync.sync_products_nonce,
+			}, function ( response ) {
+
+				console.log( response );
+
+				if ( ! response.success ) {
+
+					let error = facebook_for_woocommerce_settings_sync.i18n.general_error;
+
+					if ( response.data && response.data.length > 0 ) {
+						error = response.data;
+					}
+
+					clearSyncInProgress( error );
+				}
+
+			} ).fail( function() {
+
+				clearSyncInProgress( facebook_for_woocommerce_settings_sync.i18n.general_error );
+
+			} );
+		}
+
+	} );
+
+	/**
+	 * Sets the UI as sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param count number of items remaining
+	 */
+	function syncInProgress( count = null ) {
+
+		toggleSettingOptions( false );
+
+		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+
+		let message = facebook_for_woocommerce_settings_sync.i18n.sync_in_progress;
+
+		if ( count ) {
+
+			if ( count > 1 ) {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_plural;
+			} else {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_singular
+			}
+
+			message = message.replace( '{count}', count );
+		}
+
+		// set products sync status
+		$( '#sync_progress' ).show().html( message ).css( 'color', 'inherit' );
+
+	}
+
+	/**
+	 * Clears any UI for sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param error message to display
+	 */
+	function clearSyncInProgress( error = '' ) {
+
+		toggleSettingOptions( true );
+
+		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'all' ).css( 'opacity', '1' );
+
+		if ( error ) {
+			$( '#sync_progress' ).show().html( error ).css( 'color', '#DC3232' );
+		} else {
+			$( '#sync_progress' ).hide();
+		}
+	}
+
 } );

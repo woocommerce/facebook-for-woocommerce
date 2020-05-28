@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
 /**
@@ -23,6 +24,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 	/** @var string screen ID */
 	const ID = 'product_sync';
+
+	/** @var string the sync products action */
+	const ACTION_SYNC_PRODUCTS = 'wc_facebook_sync_products';
 
 
 	/**
@@ -65,13 +69,14 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
 			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+			'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
 			'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
 			'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),
 			'i18n'                            => [
 				/* translators: Placeholders %s - html code for a spinner icon */
 				'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
 				'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
-				'sync_in_progress'              => sprintf( esc_html__( 'Syncing... Keep this browser open until sync is complete. %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
+				'sync_in_progress'              => sprintf( esc_html__( 'Syncing... %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
 				'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
 				'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
 				'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
