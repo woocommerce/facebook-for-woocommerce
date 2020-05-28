@@ -551,7 +551,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'custom_data' => [
 					'num_items'    => $this->get_cart_num_items(),
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
