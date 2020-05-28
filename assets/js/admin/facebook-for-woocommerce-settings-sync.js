@@ -147,6 +147,11 @@ jQuery( document ).ready( function( $ ) {
 		}
 	} );
 
+	// mark as in-progress if syncing when the page is loaded
+	if ( facebook_for_woocommerce_settings_sync.sync_in_progress ) {
+		syncInProgress();
+	}
+
 	// handle the sync button click
 	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
 
@@ -212,6 +217,8 @@ jQuery( document ).ready( function( $ ) {
 		// set products sync status
 		$( '#sync_progress' ).show().html( message ).css( 'color', 'inherit' );
 
+		facebook_for_woocommerce_settings_sync.sync_in_progress = true;
+
 	}
 
 	/**
@@ -222,6 +229,8 @@ jQuery( document ).ready( function( $ ) {
 	 * @param error message to display
 	 */
 	function clearSyncInProgress( error = '' ) {
+
+		facebook_for_woocommerce_settings_sync.sync_in_progress = false;
 
 		toggleSettingOptions( true );
 

@@ -70,6 +70,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
 			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 			'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
+			'sync_in_progress'                => Sync::is_sync_in_progress(),
 			'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
 			'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),
 			'i18n'                            => [
