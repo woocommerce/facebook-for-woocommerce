@@ -237,18 +237,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
 
-			try {
+			$this->send_api_event( $event );
 
-				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
-
-				$event_data['event_id'] = $event->get_id();
-
-			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
-
-				if ( facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
-					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
-				}
-			}
+			$event_data['event_id'] = $event->get_id();
 
 			$this->pixel->inject_event( 'ViewContent', $event_data );
 		}
