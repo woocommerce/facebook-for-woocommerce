@@ -545,13 +545,25 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$this->pixel->inject_event( 'InitiateCheckout', [
-				'num_items'    => $this->get_cart_num_items(),
-				'content_ids'  => $this->get_cart_content_ids(),
-				'content_type' => 'product',
-				'value'        => $this->get_cart_total(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$event_name = 'InitiateCheckout';
+			$event_data = [
+				'event_name'  => $event_name,
+				'custom_data' => [
+					'num_items'    => $this->get_cart_num_items(),
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_type' => 'product',
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( $event_name, $event_data );
 		}
 
 
