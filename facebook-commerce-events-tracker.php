@@ -221,13 +221,27 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$content_type = 'product';
 			}
 
-			$this->pixel->inject_event( 'ViewContent', [
-				'content_name' => $product->get_title(),
-				'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
-				'content_type' => $content_type,
-				'value'        => $product->get_price(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
+
+			$event_data = [
+				'event_name'  => 'ViewContent',
+				'custom_data' => [
+					'content_name'     => $product->get_title(),
+					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+					'content_type'     => $content_type,
+					'content_category' => $categories['name'],
+					'value'            => $product->get_price(),
+					'currency'         => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( 'ViewContent', $event_data );
 		}
 
 
