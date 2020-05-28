@@ -113,7 +113,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_view_category_event() {
 			global $wp_query;
-			if ( ! self::$isEnabled ) {
+
+			if ( ! self::$isEnabled || ! is_product_category() ) {
 				return;
 			}
 
@@ -143,19 +144,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$categories =
-			WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
+			$categories = WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
 
-			$this->pixel->inject_event(
-				'ViewCategory',
-				array(
+			$event_name = 'ViewCategory';
+			$event_data = [
+				'event_name' => $event_name,
+				'custom_data' => [
 					'content_name'     => $categories['name'],
 					'content_category' => $categories['categories'],
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
-				),
-				'trackCustom'
-			);
+				],
+			];
+
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( $event_name, $event_data, 'trackCustom' );
 		}
 
 		/**
