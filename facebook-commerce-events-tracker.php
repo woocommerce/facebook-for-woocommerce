@@ -113,7 +113,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_view_category_event() {
 			global $wp_query;
-			if ( ! self::$isEnabled ) {
+
+			if ( ! self::$isEnabled || ! is_product_category() ) {
 				return;
 			}
 
