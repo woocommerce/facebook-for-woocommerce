@@ -22,6 +22,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Response extends Framework\SV_WC_API_JSON_Response {
 
 
+	use Traits\Rate_Limited_Response;
+
+
 	/**
 	 * Gets the response ID.
 	 *

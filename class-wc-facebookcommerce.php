@@ -257,12 +257,24 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
-				if ( ! class_exists( API::class ) ) {
-					require_once __DIR__ . '/includes/API.php';
+				if ( ! class_exists( API\Traits\Rate_Limited_API::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_API.php';
+				}
+
+				if ( ! class_exists( API\Traits\Rate_Limited_Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Request.php';
+				}
+
+				if ( ! class_exists( API\Traits\Rate_Limited_Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Response.php';
 				}
 
 				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
 					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
 				}
 
 				if ( ! class_exists( API\Request::class ) ) {
@@ -289,18 +301,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
-				if ( ! class_exists( API\User\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Request.php';
-				}
-
-				if ( ! class_exists( API\User\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Response.php';
-				}
-
-				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
-				}
-
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Request.php';
 				}
@@ -325,12 +325,16 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
 				}
 
-				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				if ( ! class_exists( API\User\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Request.php';
 				}
 
-				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				if ( ! class_exists( API\User\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Response.php';
+				}
+
+				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
 				}
 
 				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
@@ -343,6 +347,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\FBE\Installation\Read\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
 				}
 
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
