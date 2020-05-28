@@ -401,7 +401,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			// do not send the event name in the params
 			if ( isset( $params['event_name'] ) ) {
 
-				$event_name = $params['event_name'];
 				unset( $params['event_name'] );
 			}
 
