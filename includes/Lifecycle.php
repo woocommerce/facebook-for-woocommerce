@@ -243,6 +243,32 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	protected function upgrade_to_2_0_0() {
 
 		update_option( 'wc_facebook_has_connected_fbe_2', 'no' );
+
+		$settings = get_option( 'woocommerce_facebookcommerce_settings' );
+
+		if ( is_array( $settings ) ) {
+
+			$settings_map = [
+				'facebook_pixel_id'             => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
+				'facebook_page_id'              => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+				'enable_product_sync'           => \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
+				'excluded_product_category_ids' => \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS,
+				'excluded_product_tag_ids'      => \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS,
+				'product_description_mode'      => \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE,
+				'enable_messenger'              => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+				'messenger_locale'              => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
+				'messenger_greeting'            => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
+				'messenger_color_hex'           => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
+				'enable_debug_mode'             => \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
+			];
+
+			foreach ( $settings_map as $old_name => $new_name ) {
+
+				if ( ! empty( $settings[ $old_name ] ) ) {
+					update_option( $new_name, $settings[ $old_name ] );
+				}
+			}
+		}
 	}
 
 
