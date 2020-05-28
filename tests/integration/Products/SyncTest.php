@@ -15,6 +15,55 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Sync::create_or_update_all_products() */
+	public function test_create_or_update_all_products() {
+
+		// create a variable product with three variations and define their prices
+		$variable_product = $this->tester->get_variable_product( 3 );
+
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+			$variation->set_regular_price( 4.99 );
+			$variation->save();
+		}
+
+		// create a variable product with three variations but no price
+		$this->tester->get_variable_product( 3 );
+
+		// create a simple product with price
+		$simple_product = $this->tester->get_product();
+		$simple_product->set_regular_price( 10 );
+		$simple_product->save();
+
+		// add all eligible products to the sync queue
+		$sync = $this->get_sync();
+
+		$sync->create_or_update_all_products();
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		$requests = $requests_property->getValue( $sync );
+
+		// test that create_or_update_all_products() added the three variations with price to the sync queue
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$index = Sync::PRODUCT_INDEX_PREFIX . $variation_id;
+
+			$this->assertArrayHasKey( $index, $requests );
+			$this->assertEquals( 'UPDATE', $requests[ $index ] );
+		}
+
+		// test that create_or_update_all_products() added the simple product with price to the sync queue
+		$this->assertArrayHasKey( Sync::PRODUCT_INDEX_PREFIX . $simple_product->get_id(), $requests );
+		$this->assertEquals( 'UPDATE', $requests[ Sync::PRODUCT_INDEX_PREFIX . $simple_product->get_id() ] );
+
+		// test no other products or variations were added
+		$this->assertEquals( count( $variable_product->get_children() ) + 1, count( $requests ) );
+	}
+
+
 	/** @see Sync::create_or_update_products() */
 	public function test_create_or_update_products() {
 
@@ -42,27 +91,22 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
      *
      * @dataProvider provider_delete_products()
      */
-    public function test_delete_products( $product_ids ) {
-
-        // TODO: remove when this file is included in the main plugin class {WV 2020-05-19}
-	    if ( ! class_exists( Sync::class ) ) {
-            require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/Products/Sync.php';
-	    }
+    public function test_delete_products( $retailer_ids ) {
 
         $sync = new Sync();
 
-        $sync->delete_products( $product_ids );
+        $sync->delete_products( $retailer_ids );
 
         $requests_property = new ReflectionProperty( Sync::class, 'requests' );
         $requests_property->setAccessible( true );
 
         $requests = $requests_property->getValue( $sync );
 
-        foreach ( $product_ids as $product_id ) {
-            $this->assertEquals( Sync::ACTION_DELETE, $requests["p-{$product_id}"] );
+        foreach ( $retailer_ids as $retailer_id ) {
+            $this->assertEquals( Sync::ACTION_DELETE, $requests[ $retailer_id ] );
         }
 
-        $this->assertEquals( count( $requests ), count( $product_ids ) );
+        $this->assertEquals( count( $requests ), count( $retailer_ids ) );
     }
 
 
@@ -71,7 +115,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
         return [
             [ [] ],
-            [ [ 1, 2, 3, 4 ] ],
+            [ [ "wc_post_id_1", "wc_post_id_2", "sku_3" ] ],
         ];
 	}
 

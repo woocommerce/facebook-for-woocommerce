@@ -48,6 +48,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Admin admin handler instance */
 		private $admin;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Admin\Settings */
+		private $admin_settings;
+
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
@@ -95,10 +98,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
-				if ( ! defined( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL' ) ) {
-					define( 'WOOCOMMERCE_FACEBOOK_PLUGIN_SETTINGS_URL', admin_url( 'admin.php?page=wc-settings&tab=integration&section=facebookcommerce' ) );
-				}
-
 				include_once 'facebook-commerce.php';
 
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
@@ -137,6 +136,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
+
+				// load admin handlers, before admin_init
+				if ( is_admin() ) {
+
+					require_once __DIR__ . '/includes/Admin/Settings.php';
+					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+
+					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
+				}
 			}
 		}
 
@@ -165,9 +176,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// TODO: should we remove the Esternal Merchant Settings ID value from the database when we complete a connection using FBE 2.0? {WV 2020-05-14}
-			//  if the site has the old FBE 1.0 external settings ID option stored, inform users that they need to connect to FBE 2.0
-			if ( ! $this->connection_handler->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
+			// inform users that they need to connect to FBE 2.0 if they've upgraded from FBE 1.x
+			if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && ! $this->get_connection_handler()->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
 
 				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
 
@@ -251,16 +261,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_API.php';
 				}
 
-				if ( ! class_exists( API::class ) ) {
-					require_once __DIR__ . '/includes/API.php';
-				}
-
 				if ( ! class_exists( API\Traits\Rate_Limited_Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Request.php';
 				}
 
 				if ( ! class_exists( API\Traits\Rate_Limited_Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Response.php';
+				}
+
+				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
 				}
 
 				if ( ! class_exists( API\Request::class ) ) {
@@ -271,12 +285,60 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Response.php';
 				}
 
-				if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
+				if ( ! class_exists( API\Business_Manager\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Request.php';
+				}
+
+				if ( ! class_exists( API\Business_Manager\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Business_Manager/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Response.php';
+				}
+
+				if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
+				}
+
+				if ( ! class_exists( API\User\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Request.php';
+				}
+
+				if ( ! class_exists( API\User\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Response.php';
+				}
+
+				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
 				}
 
 				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
@@ -287,16 +349,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Request.php';
 				}
 
-				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
-				}
-
 				if ( ! class_exists( API\FBE\Installation\Read\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
 				}
 
 				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
@@ -445,7 +503,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_settings_url( $plugin_id = null ) {
 
-			return admin_url( 'admin.php?page=wc-settings&tab=integration&section=' . self::INTEGRATION_ID );
+			return admin_url( 'admin.php?page=wc-facebook' );
 		}
 
 
@@ -526,11 +584,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function is_plugin_settings() {
 
-			$page    = Framework\SV_WC_Helper::get_requested_value( 'page' );
-			$tab     = Framework\SV_WC_Helper::get_requested_value( 'tab' );
-			$section = Framework\SV_WC_Helper::get_requested_value( 'section' );
-
-			return is_admin() && 'wc-settings' === $page && 'integration' === $tab && self::INTEGRATION_ID === $section;
+			return is_admin() && \SkyVerge\WooCommerce\Facebook\Admin\Settings::PAGE_ID === Framework\SV_WC_Helper::get_requested_value( 'page' );
 		}
 
 

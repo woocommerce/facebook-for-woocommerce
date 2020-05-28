@@ -137,7 +137,23 @@ class Products {
 		// define the product to check terms on
 		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
 
-		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+		return ! $product->is_virtual() && self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+	}
+
+
+	/**
+	 * Determines whether the given product should be removed from the catalog.
+	 *
+	 * A product should be removed if it is no longer in stock and the user has opted-in to hide products that are out of stock.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function product_should_be_deleted( \WC_Product $product ) {
+
+		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock();
 	}
 
 
@@ -250,7 +266,14 @@ class Products {
 
 		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
-			self::$products_visibility[ $product->get_id() ] = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+
+			if ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
+				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+			} else {
+				$is_visible = true;
+			}
+
+			self::$products_visibility[ $product->get_id() ] = $is_visible;
 		}
 
 		return self::$products_visibility[ $product->get_id() ];

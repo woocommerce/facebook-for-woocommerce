@@ -64,8 +64,7 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$columns = $this->admin->add_product_list_table_columns( [] );
 
 		$this->assertIsArray( $columns );
-		$this->assertArrayHasKey( 'facebook_sync_enabled', $columns );
-		// $this->assertArrayHasKey( 'facebook_catalog_visibility', $columns );
+		$this->assertArrayHasKey( 'facebook_sync', $columns );
 	}
 
 
@@ -115,15 +114,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$excluded_categories = [ 1, 2, 3 ];
 		$excluded_tags       = [ 4, 5, 6 ];
 
-		$options = [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => $excluded_categories,
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => $excluded_tags,
-		];
-
-		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );
-
-		// force integration to load settings from the database
-		$this->integration->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_categories );
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tags );
 
 		$vars = $this->admin->filter_products_by_sync_enabled( [] );
 
@@ -149,15 +141,8 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$excluded_categories = [ 1, 2, 3 ];
 		$excluded_tags       = [ 4, 5, 6 ];
 
-		$options = [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => $excluded_categories,
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS      => $excluded_tags,
-		];
-
-		update_option( 'woocommerce_' . WC_Facebookcommerce::INTEGRATION_ID . '_settings', $options );
-
-		// force integration to load settings from the database
-		$this->integration->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_categories );
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tags );
 
 		$vars = $this->admin->filter_products_by_sync_enabled( [] );
 

@@ -43,7 +43,7 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync enables sync for a standard product' );
 
@@ -52,7 +52,9 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( 'Enabled', 'table.wp-list-table td' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' );
+
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
 
@@ -70,7 +72,7 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync enables sync for a standard product when using the secondary dropdown at the bottom of the list table' );
 
@@ -79,7 +81,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction2' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( 'Enabled', 'table.wp-list-table td' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' );
 	}
 
 
@@ -107,7 +109,7 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Excluded category', 'table.wp-list-table td' );
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a product in an excluded category' );
 
@@ -123,7 +125,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( 'Cancel', '#wc-backbone-modal-dialog' );
 
 		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -151,7 +153,7 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Excluded tag', 'table.wp-list-table td' );
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a product with an excluded tag' );
 
@@ -167,7 +169,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( 'Cancel', '#wc-backbone-modal-dialog' );
 
 		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -189,7 +191,7 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a virtual product' );
 
@@ -199,7 +201,7 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -217,7 +219,7 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->see( 'Enabled', 'table.wp-list-table td' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product' );
 
@@ -226,7 +228,21 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
+
+		$I->waitForText( 'If this product was previously visible in Facebook' );
+		$I->click( '.notice .js-wc-plugin-framework-notice-dismiss' );
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product ] );
+
+		$I->amOnProductsPage();
+
+		$I->click( "#cb-select-{$this->product->get_id()}" );
+		$I->selectOption( '[name=action]', 'Exclude from Facebook sync' );
+		$I->click( '#doaction' );
+		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
+
+		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
 
 
@@ -244,7 +260,7 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->see( 'Enabled', 'table.wp-list-table td' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product when using the secondary dropdown at the bottom of the list table' );
 
@@ -253,7 +269,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction2' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( 'Disabled', 'table.wp-list-table td' );
+		$I->see( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -299,7 +315,7 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$variable_product->get_id()}:not(:checked)" );
 
 		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
-		$I->see( 'Enabled', 'table.wp-list-table td' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' );
 
 		$variable_product = wc_get_product( $variable_product );
 		$variation_ids    = $variable_product->get_children();

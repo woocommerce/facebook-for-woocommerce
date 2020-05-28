@@ -48,6 +48,9 @@ class API extends Framework\SV_WC_API_Base {
 		$this->request_headers = [
 			'Authorization' => "Bearer {$access_token}",
 		];
+
+		$this->set_request_content_type_header( 'application/json' );
+		$this->set_request_accept_header( 'application/json' );
 	}
 
 
@@ -149,6 +152,85 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a business manager object from Facebook.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $business_manager_id business manager ID
+	 * @return API\Business_Manager\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_business_manager( $business_manager_id ) {
+
+		$request = new API\Business_Manager\Request( $business_manager_id );
+
+		$this->set_response_handler( API\Business_Manager\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a Catalog object from Facebook.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $catalog_id catalog ID
+	 * @return API\Catalog\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_catalog( $catalog_id ) {
+
+		$request = new API\Catalog\Request( $catalog_id );
+
+		$this->set_response_handler( API\Catalog\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a user object from Facebook.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_user( $user_id = '' ) {
+
+		$request = new API\User\Request( $user_id );
+
+		$this->set_response_handler( API\User\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Delete's a user's API permission.
+	 *
+	 * This is their form of "revoke".
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @param string $permission permission to delete
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function delete_user_permission( $user_id, $permission ) {
+
+		$request = new API\User\Permissions\Delete\Request( $user_id, $permission );
+
+		$this->set_response_handler( API\User\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Uses the Catalog Batch API to update or remove items from catalog.
 	 *
 	 * @see Sync::create_or_update_products()
@@ -158,7 +240,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $catalog_id catalog ID
 	 * @param array $requests array of prefixed product IDs to create, update or remove
 	 * @param bool $allow_upsert whether to allow updates to insert new items
-	 * @return Response
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
@@ -204,8 +286,8 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param string $product_group_id
-	 * @param array $data
+	 * @param string $product_group_id product group ID
+	 * @param array $data product group data
 	 * @return Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
@@ -241,6 +323,26 @@ class API extends Framework\SV_WC_API_Base {
 		] );
 
 		$this->set_response_handler( Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a list of Product Items in the given Product Group.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $product_group_id product group ID
+	 * @param int $limit max number of results returned per page of data
+	 * @return API\Catalog\Product_Group\Products\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
+
+		$request = new API\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
+
+		$this->set_response_handler( API\Catalog\Product_Group\Products\Read\Response::class );
 
 		return $this->perform_request( $request );
 	}
@@ -339,6 +441,43 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the next page of results for a paginated response.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param API\Response $response previous response object
+	 * @param int $additional_pages number of additional pages of results to retrieve
+	 * @return API\Response|null
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function next( API\Response $response, $additional_pages = null ) {
+
+		$next_response = null;
+
+		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
+		if ( ( null === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
+
+			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+
+			$request = $this->get_new_request( [
+				'path'   => isset( $components['path'] ) ? $components['path'] : '',
+				'method' => 'GET',
+				'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : [],
+			] );
+
+			$this->set_response_handler( get_class( $response ) );
+
+			$next_response = $this->perform_request( $request );
+
+			// this is the n + 1 page of results for the original response
+			$next_response->set_pages_retrieved( $response->get_pages_retrieved() + 1 );
+		}
+
+		return $next_response;
+	}
+
+
+	/**
 	 * Returns a new request object.
 	 *
 	 * @since 2.0.0-dev.1
@@ -348,6 +487,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 *     @type string $path request path
 	 *     @type string $method request method
+	 *     @type array $params request parameters
 	 * }
 	 * @return Request
 	 */
@@ -356,11 +496,17 @@ class API extends Framework\SV_WC_API_Base {
 		$defaults = [
 			'path'   => '/',
 			'method' => 'GET',
+			'params' => [],
 		];
 
-		$args = wp_parse_args( $args, $defaults );
+		$args    = wp_parse_args( $args, $defaults );
+		$request = new Request( $args['path'], $args['method'] );
 
-		return new Request( $args['path'], $args['method'] );
+		if ( $args['params'] ) {
+			$request->set_params( $args['params'] );
+		}
+
+		return $request;
 	}
 
 
