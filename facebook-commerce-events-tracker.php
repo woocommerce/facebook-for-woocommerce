@@ -183,7 +183,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers Search for result pages
 		 */
 		public function actually_inject_search_event() {
-			if ( ! self::$isEnabled ) {
+			global $wp_query;
+
+			if ( ! self::$isEnabled || empty( $_GET['post_type'] ) || 'product' !== $_GET['post_type'] ) {
 				return;
 			}
 
