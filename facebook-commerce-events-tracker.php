@@ -219,7 +219,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$content_type = 'product';
 			}
 
-			$categories = \WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
+			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
 
 			$event_data = [
 				'event_name'  => 'ViewContent',
