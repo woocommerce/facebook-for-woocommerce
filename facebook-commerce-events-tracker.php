@@ -189,12 +189,48 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$this->pixel->inject_event(
-				'Search',
-				array(
+			// if any product is a variant, fire the pixel with
+			// content_type: product_group
+			$content_type = 'product';
+			$product_ids  = [];
+			$total_value  = 0.00;
+
+			foreach ( $wp_query->posts as $post ) {
+
+				$product = wc_get_product( $post );
+
+				if ( ! $product instanceof \WC_Product ) {
+					continue;
+				}
+
+				$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+				$total_value += (float) $product->get_price();
+
+				if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
+					$content_type = 'product_group';
+				}
+			}
+
+			$event_name = 'Search';
+			$event_data = [
+				'event_name'  => $event_name,
+				'custom_data' => [
+					'content_type'  => $content_type,
+					'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'search_string' => get_search_query(),
-				)
-			);
+					'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
+					'currency'      => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( $event_name, $event_data );
 		}
 
 
