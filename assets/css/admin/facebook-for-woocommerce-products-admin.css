@@ -34,3 +34,8 @@
 .notice .button.js-wc-plugin-framework-notice-dismiss {
 	margin-left: 10px;
 }
+
+/* adjusts widths of the products table, same as WooCommerce categories and tags */
+.column-facebook_sync {
+	width: 11% !important;
+}
