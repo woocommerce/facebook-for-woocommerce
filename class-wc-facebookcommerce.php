@@ -32,9 +32,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var string the integration ID */
 		const INTEGRATION_ID = 'facebookcommerce';
 
-		/** @var string the integration class name (including namespaces) */
-		const INTEGRATION_CLASS = '\\WC_Facebookcommerce_Integration';
-
 
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
@@ -68,6 +65,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
 		private $connection_handler;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Integrations\Integrations integrations handler */
+		private $integrations;
 
 
 		/**
@@ -123,9 +123,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
-
-				// register the WooCommerce integration
-				add_filter( 'woocommerce_integrations', [ $this, 'add_woocommerce_integration' ] );
 
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
 
@@ -236,28 +233,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-error',
 				] );
 			}
-		}
-
-
-		/**
-		 * Adds a Facebook integration to WooCommerce.
-		 *
-		 * @internal
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string[] $integrations class names
-		 * @return string[]
-		 */
-		public function add_woocommerce_integration( $integrations = [] ) {
-
-			if ( ! class_exists( self::INTEGRATION_CLASS ) ) {
-				include_once __DIR__ . '/facebook-commerce.php';
-			}
-
-			$integrations[ self::INTEGRATION_ID ] = self::INTEGRATION_CLASS;
-
-			return $integrations;
 		}
 
 
@@ -521,20 +496,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_integration() {
 
 			if ( null === $this->integration ) {
-
-				$integrations = null === WC()->integrations ? [] : WC()->integrations->get_integrations();
-				$integration  = self::INTEGRATION_CLASS;
-
-				if ( isset( $integrations[ self::INTEGRATION_ID ] ) && $integrations[ self::INTEGRATION_ID ] instanceof $integration ) {
-
-					$this->integration = $integrations[ self::INTEGRATION_ID ];
-
-				} else {
-
-					$this->add_woocommerce_integration();
-
-					$this->integration = new $integration();
-				}
+				$this->integration = new WC_Facebookcommerce_Integration();
 			}
 
 			return $this->integration;
