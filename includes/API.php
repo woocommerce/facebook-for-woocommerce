@@ -27,6 +27,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class API extends Framework\SV_WC_API_Base {
 
 
+	use API\Traits\Rate_Limited_API;
+
+
 	/** @var string URI used for the request */
 	protected $request_uri = 'https://graph.facebook.com/v7.0';
 
@@ -182,6 +185,47 @@ class API extends Framework\SV_WC_API_Base {
 		$request = new API\Catalog\Request( $catalog_id );
 
 		$this->set_response_handler( API\Catalog\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a user object from Facebook.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_user( $user_id = '' ) {
+
+		$request = new API\User\Request( $user_id );
+
+		$this->set_response_handler( API\User\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Delete's a user's API permission.
+	 *
+	 * This is their form of "revoke".
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $user_id user ID. Defaults to the currently authenticated user
+	 * @param string $permission permission to delete
+	 * @return API\User\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function delete_user_permission( $user_id, $permission ) {
+
+		$request = new API\User\Permissions\Delete\Request( $user_id, $permission );
+
+		$this->set_response_handler( API\User\Response::class );
 
 		return $this->perform_request( $request );
 	}
@@ -451,48 +495,6 @@ class API extends Framework\SV_WC_API_Base {
 		}
 
 		return $next_response;
-	}
-
-
-	/**
-	 * Stores an option with the delay, in seconds, for requests with the given rate limit ID.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $rate_limit_id
-	 * @param int $delay
-	 */
-	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
-
-		// TODO: Implement set_rate_limit_delay() method.
-	}
-
-
-	/**
-	 * Gets the number of seconds before a new request with the given rate limit ID can be made again
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $rate_limit_id
-	 * @return int
-	 */
-	public function get_rate_limit_delay( $rate_limit_id ) {
-
-		// TODO: Implement get_rate_limit_delay() method.
-	}
-
-
-	/**
-	 * Uses the information in a Rate_Limited_Response object to calculate the next delay for requests of the same type.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param Rate_Limited_Response $response
-	 * @return int
-	 */
-	protected function calculate_rate_limit_delay( $response ) {
-
-		// TODO: Implement calculate_rate_limit_delay() method.
 	}
 
 

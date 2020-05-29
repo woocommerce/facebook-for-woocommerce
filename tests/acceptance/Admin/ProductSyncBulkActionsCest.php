@@ -99,9 +99,8 @@ class ProductSyncBulkActionsCest {
 
 		// have an excluded category
 		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded category', 'product_cat' );
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $excluded_category_id ]
-		] );
+
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $excluded_category_id ] );
 
 		// add the product to the excluded category
 		wp_add_object_terms( $this->product->get_id(), [ $excluded_category_id ], 'product_cat' );
@@ -143,9 +142,8 @@ class ProductSyncBulkActionsCest {
 
 		// have an excluded tag
 		list( $excluded_tag_id, $excluded_tag_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded tag', 'product_tag' );
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS => [ $excluded_tag_id ]
-		] );
+
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [ $excluded_tag_id ] );
 
 		// add the excluded tag to the product
 		wp_add_object_terms( $this->product->get_id(), [ $excluded_tag_id ], 'product_tag' );

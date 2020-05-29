@@ -37,13 +37,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::handle_disconnect() */
-	public function test_handle_disconnect() {
-
-		$this->assertNull( $this->get_connection()->handle_disconnect() );
-	}
-
-
 	/** @see Connection::create_system_user_token() */
 	public function test_create_system_user_token() {
 

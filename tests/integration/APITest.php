@@ -209,6 +209,47 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_user() */
+	public function test_get_user() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_user();
+
+		$this->assertInstanceOf( API\User\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/me', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\User\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::delete_user_permission() */
+	public function test_delete_user_permission() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$user_id    = '1234';
+		$permission = 'permission';
+
+		$api->delete_user_permission( $user_id, $permission );
+
+		$this->assertInstanceOf( API\User\Permissions\Delete\Request::class, $api->get_request() );
+		$this->assertEquals( 'DELETE', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$user_id}/permissions/{$permission}", $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::get_page() */
 	public function test_get_page() {
 
@@ -255,10 +296,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see API::send_item_updates() */
 	public function test_send_item_updates() {
-
-		if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
-			require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
-		}
 
 		$catalog_id   = '123456';
 		$requests     = [
@@ -575,25 +612,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		] );
 
 		$this->assertNull( $api->next( $response, $additional_pages ) );
-	}
-
-
-	/** @see API::set_rate_limit_delay() */
-	public function test_set_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::get_rate_limit_delay() */
-	public function test_get_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::calculate_rate_limit_delay() */
-	public function test_calculate_rate_limit_delay() {
-
-		// TODO
 	}
 
 
