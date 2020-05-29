@@ -415,6 +415,10 @@ class Admin {
 			}
 		}
 
+		if ( isset( $query_vars['meta_query'] ) && empty( $query_vars['meta_query'] ) ) {
+			unset( $query_vars['meta_query'] );
+		}
+
 		return $query_vars;
 	}
 
