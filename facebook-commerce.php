@@ -3405,6 +3405,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return null;
 		}
 
+		// do not make find requests for virtual products
+		if ( $woo_product->woo_product->is_virtual() ) {
+			return null;
+		}
+
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
 		$product_fbid_result = $this->fbgraph->get_facebook_id(
