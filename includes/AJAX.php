@@ -80,6 +80,7 @@ class AJAX {
 
 		if ( ! empty( $jobs ) ) {
 
+			// there should only be one processing job at a time, pluck the latest to convey status
 			$job = $jobs[0];
 
 			$remaining_products = ! empty( $job->total ) ? $job->total : count( $job->requests );
