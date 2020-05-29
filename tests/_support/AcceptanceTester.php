@@ -40,20 +40,24 @@ class AcceptanceTester extends \Codeception\Actor {
 	 * Creates a product in the database.
 	 *
 	 * @param array $args {
+	 *     @type string $title        product title
 	 *     @type float  $price        product price
 	 *     @type string $description  product description
 	 *     @type string $type         product type
-	 *     @type bool   $sync_enabled whether the product should have sync enabled
+	 *     @type bool   $sync_enabled whether the product should have sync enabled (ignored for variable products)
+	 *     @type bool   $visible      whether the product should be set to visible (ignored for variable products)
 	 * }
 	 * @return \WC_Product
 	 */
 	public function haveProductInDatabase( array $args = [] ) {
 
 		$args = wp_parse_args( $args, [
+			'title'        => 'Product',
 			'price'        => 1.00,
 			'description'  => 'This is a test product',
 			'type'         => 'simple',
-			'sync_enabled' => false,
+			'sync_enabled' => true,
+			'visible'      => true,
 		] );
 
 		if ( 'variable' === $args['type'] ) {
@@ -64,13 +68,21 @@ class AcceptanceTester extends \Codeception\Actor {
 
 		/** @var \WC_Product $product */
 		$product = new $class();
+		$product->set_name( (string) $args['title'] );
 		$product->set_price( (float) $args['price'] );
 		$product->set_description( (string) $args['description'] );
 
 		$product->save();
 
-		if ( ! empty( $args['sync_enabled'] ) ) {
-			Facebook\Products::enable_sync_for_products( [ $product ] );
+		if ( 'variable' !== $args['type'] ) {
+
+			if ( ! empty( $args['sync_enabled'] ) ) {
+				Facebook\Products::enable_sync_for_products( [ $product ] );
+			} else {
+				Facebook\Products::disable_sync_for_products( [ $product ] );
+			}
+
+			Facebook\Products::set_product_visibility( $product, $args['visible'] );
 		}
 
 		return $product;

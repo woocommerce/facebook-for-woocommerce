@@ -28,6 +28,12 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$this->add_settings();
 
 		$this->integration->init_settings();
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 
@@ -552,19 +558,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 
 	/** @see \WC_Facebookcommerce_Integration::get_page() */
-	public function test_get_page() {
+	public function test_get_page_method() {
 
-		if ( ! class_exists( API\Response::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Response.php';
-		}
-
-		if ( ! class_exists( API\Pages\Read\Response::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Pages/Read/Response.php';
-		}
-
-		if ( ! class_exists( API::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API.php';
-		}
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '1234' );
 
 		$response_data = [ 'name' => 'Test Page', 'link' => 'https://example.org' ];
 		$response      = new API\Pages\Read\Response( json_encode( $response_data ) );
@@ -582,10 +578,9 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 * @param API $api API stub
 	 * @param string $access_token configured access token
 	 * @param array $expected_result expected return value
+	 * @throws ReflectionException
 	 */
 	private function check_get_page( $api, $access_token, $expected_result ) {
-
-		facebook_for_woocommerce()->get_connection_handler()->update_access_token( $access_token );
 
 		// replace the API instance with our stub
 		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
