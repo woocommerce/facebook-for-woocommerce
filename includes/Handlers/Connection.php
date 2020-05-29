@@ -300,7 +300,7 @@ class Connection {
 	 */
 	public function get_manage_url() {
 
-		$app_id      = self::CLIENT_ID;
+		$app_id      = $this->get_client_id();
 		$business_id = $this->get_external_business_id();
 
 		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}";
@@ -482,7 +482,7 @@ class Connection {
 		 * @param array $parameters connection parameters
 		 */
 		return apply_filters( 'wc_facebook_connection_parameters', [
-			'client_id'     => self::CLIENT_ID,
+			'client_id'     => $this->get_client_id(),
 			'redirect_uri'  => $this->get_proxy_url(),
 			'state'         => $this->get_redirect_url(),
 			'display'       => 'page',
@@ -576,6 +576,26 @@ class Connection {
 	public function is_connected() {
 
 		return (bool) $this->get_access_token();
+	}
+
+
+	/**
+	 * Gets the client ID for connection.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_client_id() {
+
+		/**
+		 * Filters the client ID.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $client_id the client ID
+		 */
+		return apply_filters( 'wc_facebook_connection_client_id', self::CLIENT_ID );
 	}
 
 
