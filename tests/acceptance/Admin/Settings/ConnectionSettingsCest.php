@@ -2,7 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 
-class ConnectionCest {
+class ConnectionSettingsCest {
 
 
 	public function _before( AcceptanceTester $I ) {
