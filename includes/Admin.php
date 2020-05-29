@@ -344,50 +344,42 @@ class Admin {
 
 				// self::SYNC_MODE_SYNC_DISABLED
 
+				// products to be included in the QUERY, not in the sync
+				$include_products = [];
+				$found_ids        = [];
+
 				$integration             = facebook_for_woocommerce()->get_integration();
 				$excluded_categories_ids = $integration ? $integration->get_excluded_product_category_ids() : [];
 				$excluded_tags_ids       = $integration ? $integration->get_excluded_product_tag_ids() : [];
 
-				// instead of handling the categories/tags, we will exclude products that have sync enabled
+				// get the product IDs from all products in excluded taxonomies
 				if ( $excluded_categories_ids || $excluded_tags_ids ) {
 
-					// find the IDs of products that have sync enabled
-					$products_query_vars = [
-						'post_type'              => 'product',
-						'post_status'            => ! empty( $query_vars['post_status'] ) ? $query_vars['post_status'] : 'any',
-						'no_found_rows'          => true,
-						'update_post_meta_cache' => false,
-						'update_post_term_cache' => false,
-						'fields'                 => 'ids',
-						'nopaging'               => true,
-					];
+					$tax_query_vars   = $this->maybe_add_tax_query_for_excluded_taxonomies( $query_vars, true );
+					$include_products = array_merge( $include_products, get_posts( array_merge( $tax_query_vars, [ 'fields' => 'ids' ] ) ) );
+				}
 
-					$products_query_vars = $this->add_query_vars_to_find_products_with_sync_enabled( $products_query_vars );
-
-					// exclude products that have sync enabled from the current query
-					$query_vars['post__not_in'] = get_posts( $products_query_vars );
-
-					$found_ids = [];
-
-				} else {
-
-					$query_vars['meta_query'][] = [
+				$excluded_products = get_posts( [
+					'fields'     => 'ids',
+					'limit'      => -1,
+					'post_type'  => 'product',
+					'meta_query' => [[
 						'key'   => Products::SYNC_ENABLED_META_KEY,
 						'value' => 'no',
-					];
+					]]
+				] );
 
-					$found_ids = get_posts( array_merge( $query_vars, [ 'fields' => 'ids' ] ) );
-				}
+				$include_products = array_unique( array_merge( $include_products, $excluded_products ));
 
 				// since we record enabled status and visibility on child variations,
 				// we need to include variable products with excluded children
 				$excluded_variations = get_posts( [
-					'limit'      => - 1,
+					'limit'      => -1,
 					'post_type'  => 'product_variation',
-					'meta_query' => [
+					'meta_query' => [[
 						'key'   => Products::SYNC_ENABLED_META_KEY,
 						'value' => 'no',
-					]
+					]]
 				] );
 
 				/** @var \WP_Post[] $excluded_variations */
@@ -471,14 +463,15 @@ class Admin {
 
 
 	/**
-	 * Adds a tax query to filter out products in excluded product categories and product tags.
+	 * Adds a tax query to filter in/out products in excluded product categories and product tags.
 	 *
 	 * @since 1.10.0
 	 *
 	 * @param array $query_vars product query vars for the edit screen
+	 * @param bool $in whether we want to return products in excluded categories and tags or not
 	 * @return array
 	 */
-	private function maybe_add_tax_query_for_excluded_taxonomies( $query_vars ) {
+	private function maybe_add_tax_query_for_excluded_taxonomies( $query_vars, $in  = false ) {
 
 		$integration = facebook_for_woocommerce()->get_integration();
 
@@ -492,7 +485,7 @@ class Admin {
 					'taxonomy' => 'product_cat',
 					'terms'    => $excluded_categories_ids,
 					'field'    => 'term_id',
-					'operator' => 'NOT IN',
+					'operator' => $in ? 'IN' : 'NOT IN',
 				];
 			}
 
@@ -503,8 +496,12 @@ class Admin {
 					'taxonomy' => 'product_tag',
 					'terms'    => $excluded_tags_ids,
 					'field'    => 'term_id',
-					'operator' => 'NOT IN',
+					'operator' => $in ? 'IN' : 'NOT IN',
 				];
+			}
+
+			if ( count( $tax_query ) > 1 ) {
+				$tax_query['relation'] = $in ? 'OR' : 'AND';
 			}
 
 			if ( $tax_query && empty( $query_vars['tax_query'] ) ) {
