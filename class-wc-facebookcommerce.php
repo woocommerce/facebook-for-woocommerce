@@ -96,6 +96,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function init() {
 
+			add_action( 'init', [ $this, 'get_integration' ] );
+
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				include_once 'facebook-commerce.php';
