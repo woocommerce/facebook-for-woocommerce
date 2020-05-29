@@ -181,7 +181,7 @@ class Connection {
 
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
 
-			facebook_for_woocommerce()->get_message_handler()->add_error( __( 'Connection unsuccessful. Please try again.', 'facebook-for-woocommerce' ) );
+			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );

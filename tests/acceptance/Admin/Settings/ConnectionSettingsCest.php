@@ -96,4 +96,26 @@ class ConnectionSettingsCest {
 	}
 
 
+	/**
+	 * Test that the connection failure message displays correctly.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws Exception
+	 */
+	public function try_connection_failure_notice( AcceptanceTester $I ) {
+
+		$I->haveTransientInDatabase( 'wc_facebook_connection_failed', time() );
+
+		$I->amOnAdminPage('admin.php?page=wc-facebook' );
+
+		$I->waitForText( 'It looks like there was a problem with reconnecting your site to Facebook' );
+
+		$I->dontHaveTransientInDatabase( 'wc_facebook_connection_failed' );
+
+		$I->amOnAdminPage('admin.php?page=wc-facebook' );
+
+		$I->dontSee( 'It looks like there was a problem with reconnecting your site to Facebook' );
+	}
+
+
 }
