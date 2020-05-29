@@ -32,9 +32,7 @@ class ProductVariationSyncSettingCest {
 		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => '1234',
-		] );
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '1234' );
 
 		$product_objects = $I->haveVariableProductInDatabase();
 
