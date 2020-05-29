@@ -87,32 +87,104 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertTrue( (bool) has_action( 'request', [ $this->admin, 'filter_products_by_sync_enabled' ] ) );
 
-		$_REQUEST['fb_sync_enabled'] = 'yes';
+		$_REQUEST['fb_sync_enabled'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
 
 		$vars = $this->admin->filter_products_by_sync_enabled( [] );
 
 		$this->assertArrayHasKey( 'meta_query', $vars );
 		$this->assertIsArray( $vars['meta_query'] );
 		$this->assertArrayHasKey( 'relation', $vars['meta_query'] );
-		$this->assertEquals( 'OR', $vars['meta_query']['relation'] );
+		// sync enabled AND visible
+		$this->assertEquals( 'AND', $vars['meta_query']['relation'] );
 
-		$_REQUEST['fb_sync_enabled'] = 'no';
+		$this->assertArrayHasKey( 0, $vars['meta_query'] );
+		$this->assertIsArray( $vars['meta_query'][0] );
+		$this->assertArrayHasKey( 'relation', $vars['meta_query'][0] );
+		// sync enabled set to yes or not set
+		$this->assertEquals( 'OR', $vars['meta_query'][0]['relation'] );
+		$this->assertArrayHasKey( 0, $vars['meta_query'][0] );
+		$this->assertIsArray( $vars['meta_query'][0][0] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][0][0] );
+		$this->assertEquals( '_wc_facebook_sync_enabled', $vars['meta_query'][0][0]['key'] );
+		$this->assertArrayHasKey( 1, $vars['meta_query'][0] );
+		$this->assertIsArray( $vars['meta_query'][0][1] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][0][1] );
+		$this->assertEquals( '_wc_facebook_sync_enabled', $vars['meta_query'][0][1]['key'] );
+
+		$this->assertArrayHasKey( 1, $vars['meta_query'] );
+		$this->assertIsArray( $vars['meta_query'][1] );
+		$this->assertArrayHasKey( 'relation', $vars['meta_query'][1] );
+		// visibility set to yes or not set
+		$this->assertEquals( 'OR', $vars['meta_query'][1]['relation'] );
+		$this->assertArrayHasKey( 0, $vars['meta_query'][1] );
+		$this->assertIsArray( $vars['meta_query'][1][0] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][1][0] );
+		$this->assertEquals( 'fb_visibility', $vars['meta_query'][1][0]['key'] );
+		$this->assertArrayHasKey( 1, $vars['meta_query'][1] );
+		$this->assertIsArray( $vars['meta_query'][1][1] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][1][1] );
+		$this->assertEquals( 'fb_visibility', $vars['meta_query'][1][1]['key'] );
+
+		$_REQUEST['fb_sync_enabled'] = Admin::SYNC_MODE_SYNC_AND_HIDE;
 
 		$vars = $this->admin->filter_products_by_sync_enabled( [] );
 
 		$this->assertArrayHasKey( 'meta_query', $vars );
 		$this->assertIsArray( $vars['meta_query'] );
-		$this->assertArrayNotHasKey( 'relation', $vars );
+		$this->assertArrayHasKey( 'relation', $vars['meta_query'] );
+		// sync enabled AND hidden
+		$this->assertEquals( 'AND', $vars['meta_query']['relation'] );
+
+		$this->assertArrayHasKey( 0, $vars['meta_query'] );
+		$this->assertIsArray( $vars['meta_query'][0] );
+		$this->assertArrayHasKey( 'relation', $vars['meta_query'][0] );
+		// sync enabled set to yes or not set
+		$this->assertEquals( 'OR', $vars['meta_query'][0]['relation'] );
+		$this->assertArrayHasKey( 0, $vars['meta_query'][0] );
+		$this->assertIsArray( $vars['meta_query'][0][0] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][0][0] );
+		$this->assertEquals( '_wc_facebook_sync_enabled', $vars['meta_query'][0][0]['key'] );
+		$this->assertArrayHasKey( 1, $vars['meta_query'][0] );
+		$this->assertIsArray( $vars['meta_query'][0][1] );
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][0][1] );
+		$this->assertEquals( '_wc_facebook_sync_enabled', $vars['meta_query'][0][1]['key'] );
+
+		$this->assertArrayHasKey( 1, $vars['meta_query'] );
+		$this->assertIsArray( $vars['meta_query'][1] );
+		$this->assertArrayNotHasKey( 'relation', $vars['meta_query'][1] );
+		// visibility set to no
+		$this->assertArrayHasKey( 'key', $vars['meta_query'][1] );
+		$this->assertEquals( 'fb_visibility', $vars['meta_query'][1]['key'] );
+
+		$_REQUEST['fb_sync_enabled'] = Admin::SYNC_MODE_SYNC_DISABLED;
+
+		$sync_disabled_product = new \WC_Product_Simple();
+		$sync_disabled_product->save();
+		Facebook\Products::disable_sync_for_products( [ $sync_disabled_product ] );
+
+		$vars = $this->admin->filter_products_by_sync_enabled( [] );
+
+		// sync disabled products are filtered using post__in, so if there are no products with
+		// sync disabled, the query is pretty empty
+		$this->assertArrayNotHasKey( 'meta_query', $vars );
+		$this->assertArrayHasKey( 'post__in', $vars );
+		$this->assertContains( $sync_disabled_product->get_id(), $vars['post__in'] );
 	}
 
 
 	/** @see Facebook\Admin::filter_products_by_sync_enabled */
 	public function test_filter_products_by_sync_enabled_checks_taxonomies() {
 
-		$_REQUEST['fb_sync_enabled'] = 'yes';
+		$_REQUEST['fb_sync_enabled'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
 
-		$excluded_categories = [ 1, 2, 3 ];
-		$excluded_tags       = [ 4, 5, 6 ];
+		$cat = wp_insert_term( 'excluded', 'product_cat' );
+		$tag = wp_insert_term( 'excluded', 'product_tag' );
+
+		$cat_term_taxonomy_id = $cat['term_taxonomy_id'];
+		$tag_term_taxonomy_id = $tag['term_taxonomy_id'];
+
+		$excluded_categories = [ 1, 2, 3, $cat_term_taxonomy_id ];
+		$excluded_tags       = [ 4, 5, 6, $tag_term_taxonomy_id ];
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_categories );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tags );
@@ -120,38 +192,61 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 		$vars = $this->admin->filter_products_by_sync_enabled( [] );
 
 		$this->assertArrayHasKey( 'tax_query', $vars );
+		$this->assertIsArray( $vars['tax_query'] );
+		$this->assertArrayHasKey( 'relation', $vars['tax_query'] );
+		// not in an excluded category AND not in an excluded tag
+		$this->assertEquals( 'AND', $vars['tax_query']['relation'] );
 
+		$this->assertArrayHasKey( 0, $vars['tax_query'] );
+		$this->assertIsArray( $vars['tax_query'][0] );
+		$this->assertArrayHasKey( 'taxonomy', $vars['tax_query'][0] );
 		$this->assertEquals( 'product_cat', $vars['tax_query'][0]['taxonomy'] );
-		$this->assertEquals( 'term_id', $vars['tax_query'][0]['field'] );
+		$this->assertArrayHasKey( 'operator', $vars['tax_query'][0] );
 		$this->assertEquals( 'NOT IN', $vars['tax_query'][0]['operator'] );
-		$this->assertSame( $excluded_categories, $vars['tax_query'][0]['terms'] );
+		$this->assertArrayHasKey( 'terms', $vars['tax_query'][0] );
+		$this->assertIsArray( $vars['tax_query'][0]['terms'] );
+		$this->assertContains( 1, $vars['tax_query'][0]['terms'] );
+		$this->assertContains( 2, $vars['tax_query'][0]['terms'] );
+		$this->assertContains( 3, $vars['tax_query'][0]['terms'] );
+		$this->assertContains( $cat_term_taxonomy_id, $vars['tax_query'][0]['terms'] );
 
+		$this->assertArrayHasKey( 1, $vars['tax_query'] );
+		$this->assertIsArray( $vars['tax_query'][1] );
+		$this->assertArrayHasKey( 'taxonomy', $vars['tax_query'][1] );
 		$this->assertEquals( 'product_tag', $vars['tax_query'][1]['taxonomy'] );
-		$this->assertEquals( 'term_id', $vars['tax_query'][1]['field'] );
+		$this->assertArrayHasKey( 'operator', $vars['tax_query'][1] );
 		$this->assertEquals( 'NOT IN', $vars['tax_query'][1]['operator'] );
-		$this->assertSame( $excluded_tags, $vars['tax_query'][1]['terms'] );
-	}
+		$this->assertArrayHasKey( 'terms', $vars['tax_query'][1] );
+		$this->assertIsArray( $vars['tax_query'][1]['terms'] );
+		$this->assertContains( 4, $vars['tax_query'][1]['terms'] );
+		$this->assertContains( 5, $vars['tax_query'][1]['terms'] );
+		$this->assertContains( 6, $vars['tax_query'][1]['terms'] );
+		$this->assertContains( $tag_term_taxonomy_id, $vars['tax_query'][1]['terms'] );
 
+		$_REQUEST['fb_sync_enabled'] = Admin::SYNC_MODE_SYNC_DISABLED;
 
-	/** @see Facebook\Admin::filter_products_by_sync_enabled */
-	public function test_filter_products_by_sync_disabled_checks_taxonomies() {
+		$sync_disabled_product = new \WC_Product_Simple();
+		$sync_disabled_product->save();
+		Facebook\Products::disable_sync_for_products( [ $sync_disabled_product ] );
 
-		$_REQUEST['fb_sync_enabled'] = 'no';
+		$excluded_category_product = new \WC_Product_Simple();
+		$excluded_category_product->save();
+		wp_set_object_terms( $excluded_category_product->get_id(), $cat_term_taxonomy_id, 'product_cat' );
 
-		$excluded_categories = [ 1, 2, 3 ];
-		$excluded_tags       = [ 4, 5, 6 ];
+		$excluded_tag_product = new \WC_Product_Simple();
+		$excluded_tag_product->save();
+		wp_set_object_terms( $excluded_tag_product->get_id(), $tag_term_taxonomy_id, 'product_tag' );
 
-		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $excluded_categories );
-		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $excluded_tags );
+		$vars = $this->admin->filter_products_by_sync_enabled( [ 'post_type' => 'product' ] );
 
-		$vars = $this->admin->filter_products_by_sync_enabled( [] );
-
-		// if terms are excluded, products are filtered using post__not_in, that way
-		// we overcome the limitation of not being able to use the same query to
-		// retrieve products that have a meta key OR belong to a particular taxonmy
+		// sync disabled products are filtered using post__in, so if there are no products with
+		// sync disabled or in excluded taxonomies, the query is pretty empty
 		$this->assertArrayNotHasKey( 'tax_query', $vars );
-		$this->assertEmpty( $vars['meta_query'] );
-		$this->assertArrayHasKey( 'post__not_in', $vars );
+		$this->assertArrayNotHasKey( 'meta_query', $vars );
+		$this->assertArrayHasKey( 'post__in', $vars );
+		$this->assertContains( $sync_disabled_product->get_id(), $vars['post__in'] );
+		$this->assertContains( $excluded_category_product->get_id(), $vars['post__in'] );
+		$this->assertContains( $excluded_tag_product->get_id(), $vars['post__in'] );
 	}
 
 
