@@ -333,7 +333,7 @@ class Admin {
 					$variable_product = wc_get_product( $variation_post->post_parent );
 
 					// we need this check because we only want products with ALL variations hidden
-					if ( Products::is_sync_enabled_for_product( $variable_product )
+					if ( $variable_product instanceof \WC_Product && Products::is_sync_enabled_for_product( $variable_product )
 					     && ! Products::is_product_visible( $variable_product ) ) {
 
 						$include_products[] = $variable_product->get_id();
