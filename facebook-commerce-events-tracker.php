@@ -130,11 +130,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// if any product is a variant, fire the pixel with
 			// content_type: product_group
 			$content_type = 'product';
-			$product_ids  = array();
+			$product_ids  = [];
+			$contents     = [];
+
 			foreach ( $products as $product ) {
+
 				if ( ! $product ) {
 					continue;
 				}
+
+				$contents[] = [
+					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+					'quantity' => 1, // consider category results a quantity of 1
+				];
+
 				$product_ids = array_merge(
 					$product_ids,
 					WC_Facebookcommerce_Utils::get_fb_content_ids( $product )
@@ -154,6 +163,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_category' => $categories['categories'],
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
+					'contents'         => $contents,
 				],
 			];
 
