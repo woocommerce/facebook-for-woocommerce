@@ -270,6 +270,7 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( response.success ) {
 
+				// the returned data represents the number of products remaining
 				if ( response.data > 0 ) {
 					syncInProgress( response.data );
 				} else {
