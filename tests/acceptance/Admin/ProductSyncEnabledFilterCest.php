@@ -33,19 +33,28 @@ class ProductSyncEnabledFilterCest {
 	public function _before( AcceptanceTester $I ) {
 
 		// save some generic products
-		$this->visible_included_product     = $I->haveProductInDatabase();
-		$this->hidden_included_product      = $I->haveProductInDatabase();
-		$this->sync_disabled_product        = $I->haveProductInDatabase();
-
-		// enable/disable sync and set visibility for the products
-		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->visible_included_product ] );
-		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->hidden_included_product ] );
-		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->sync_disabled_product ] );
-		\SkyVerge\WooCommerce\Facebook\Products::set_product_visibility( $this->hidden_included_product, false );
+		$this->visible_included_product = $I->haveProductInDatabase( [
+			'title'        => 'visible included product',
+			'sync_enabled' => true,
+			'visible'      => true
+		] );
+		$this->hidden_included_product  = $I->haveProductInDatabase( [
+			'title'        => 'hidden included product',
+			'sync_enabled' => true,
+			'visible'      => false
+		] );
+		$this->sync_disabled_product    = $I->haveProductInDatabase( [
+			'title'        => 'sync disabled product',
+			'sync_enabled' => false
+		] );
 
 		// create generic products
-		$this->product_in_excluded_category = $I->haveProductInDatabase();
-		$this->product_in_excluded_tag      = $I->haveProductInDatabase();
+		$this->product_in_excluded_category = $I->haveProductInDatabase( [
+			'title' => 'product in excluded category'
+		] );
+		$this->product_in_excluded_tag      = $I->haveProductInDatabase( [
+			'title' => 'product in excluded tag'
+		] );
 
 		// save a product category and a product tag to exclude from facebook sync
 		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded Category', 'product_cat' );
@@ -54,6 +63,7 @@ class ProductSyncEnabledFilterCest {
 		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 
+		// configure the category and tag as excluded from facebook sync
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $excluded_category_id ] );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [ $excluded_tag_id ] );
 
@@ -69,6 +79,7 @@ class ProductSyncEnabledFilterCest {
 
 		// save a variable product with visible, hidden, and excluded variations
 		$result = $I->haveVariableProductInDatabase( [
+			'title'      => 'variable product with visible included variations',
 			'attributes' => [
 				'color' => [ 'red', 'green', 'black' ]
 			],
@@ -95,6 +106,7 @@ class ProductSyncEnabledFilterCest {
 
 		// save a variable product with only hidden variations
 		$result = $I->haveVariableProductInDatabase( [
+			'title'      => 'variable product with only hidden included variations',
 			'attributes' => [
 				'color' => [ 'red', 'green', 'black' ]
 			],
@@ -115,6 +127,7 @@ class ProductSyncEnabledFilterCest {
 
 		// save a variable product with only excluded variations
 		$result = $I->haveVariableProductInDatabase( [
+			'title'      => 'variable product with only excluded variations',
 			'attributes' => [
 				'color' => [ 'red', 'green', 'black' ]
 			],
