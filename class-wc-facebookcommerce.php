@@ -111,6 +111,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
+				require_once __DIR__ . '/includes/Events/Event.php';
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
@@ -330,6 +331,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Response.php';
+				}
+
+				if ( ! class_exists( API\Pixel\Events\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pixel/Events/Request.php';
 				}
 
 				if ( ! class_exists( API\Business_Manager\Request::class ) ) {

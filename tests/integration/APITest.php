@@ -516,6 +516,31 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::send_pixel_events() */
+	public function test_send_pixel_events() {
+
+		$pixel_id = '123456';
+
+		$events = [
+			new \SkyVerge\WooCommerce\Facebook\Events\Event( [ 'event_name' => 'Test' ] ),
+		];
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->send_pixel_events( $pixel_id, $events );
+
+		$this->assertInstanceOf( SkyVerge\WooCommerce\Facebook\API\Pixel\Events\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( "/{$pixel_id}/events", $api->get_request()->get_path() );
+		$this->assertArrayHasKey( 'data', $api->get_request()->get_data() );
+
+		$this->assertInstanceOf( Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::next() */
 	public function test_next() {
 
@@ -605,11 +630,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$api = new API( 'fake-token' );
 
-		$reflection = new \ReflectionClass( $api );
-		$method     = $reflection->getMethod( 'get_new_request' );
-
-		$method->setAccessible( true );
-
+		$method  = IntegrationTester::getMethod( API::class, 'get_new_request' );
 		$request = $method->invokeArgs( $api, [ $args ] );
 
 		$this->assertEquals( $expected_path, $request->get_path() );

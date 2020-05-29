@@ -593,8 +593,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		$property->setValue( $this->integration, null );
 
 		// make \WC_Facebookcommerce_Integration::get_page() accessible
-		$method = new ReflectionMethod( \WC_Facebookcommerce_Integration::class, 'get_page' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( \WC_Facebookcommerce_Integration::class, 'get_page' );
 
 		$this->assertEquals( $expected_result, $method->invoke( $this->integration ) );
 	}
@@ -787,8 +786,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			return $sync_enabled;
 		} );
 
-		$method = new ReflectionMethod( $this->integration, 'product_should_be_synced' );
-		$method->setAccessible( true );
+		$method = IntegrationTester::getMethod( \WC_Facebookcommerce_Integration::class, 'product_should_be_synced' );
 
 		$this->assertSame( $should_be_synced, $method->invoke( $this->integration, $product ) );
 	}
