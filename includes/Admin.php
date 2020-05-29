@@ -662,7 +662,10 @@ class Admin {
 					'</a>'
 				),
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-disabled-virtual-products-sync',
-				[ 'notice_class' => 'notice-info' ]
+				[
+					'notice_class'            => 'notice-info',
+					'always_show_on_settings' => false,
+				]
 			);
 		}
 	}
