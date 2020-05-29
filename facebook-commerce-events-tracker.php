@@ -201,6 +201,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// content_type: product_group
 			$content_type = 'product';
 			$product_ids  = [];
+			$contents     = [];
 			$total_value  = 0.00;
 
 			foreach ( $wp_query->posts as $post ) {
@@ -212,6 +213,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 
 				$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+				$contents[] = [
+					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+					'quantity' => 1, // consider the search results a quantity of 1
+				];
 
 				$total_value += (float) $product->get_price();
 
@@ -226,6 +232,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'custom_data' => [
 					'content_type'  => $content_type,
 					'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
+					'contents'      => $contents,
 					'search_string' => get_search_query(),
 					'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
 					'currency'      => get_woocommerce_currency(),
