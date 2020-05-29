@@ -653,6 +653,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				],
 			];
 
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
 			$this->pixel->inject_event( $event_name, $event_data );
 
 			$this->inject_subscribe_event( $order_id );
