@@ -188,6 +188,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
 
 					$message = sprintf(
+						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag, %5$s - opening link HTML tag, %6$s - closing link HTML tag */
 						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
 						'<strong>', '</strong>',
 						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
@@ -200,7 +201,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				} elseif ( ! $this->is_plugin_settings() ) {
 
 					$message = sprintf(
-					/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
+						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
 						esc_html__(
 							'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
 							'facebook-for-woocommerce'
@@ -236,10 +237,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->get_admin_notice_handler()->add_admin_notice( $message, 'connection_invalid', [
 					'notice_class' => 'notice-error',
 				] );
-			}
-
-			if ( ! $this->get_connection_handler()->is_connected() ) {
-
 			}
 		}
 
