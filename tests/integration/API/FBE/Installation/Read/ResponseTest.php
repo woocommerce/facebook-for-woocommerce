@@ -13,7 +13,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	protected $data = '{"data":[{"business_manager_id":"1234","pixel_id":"5678","profiles":["123"],"catalog_id":"456"}]}';
+	protected $data = '{"data":[{"business_manager_id":"1234","pixel_id":"5678","profiles":["123"],"catalog_id":"456","pages":["123"]}]}';
 
 
 	public function _before() {

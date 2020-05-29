@@ -14,6 +14,9 @@ class NoticesCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
+		// prevent API calls
+		$I->haveTransientInDatabase( 'wc_facebook_connection_refresh', time() );
+
 		$I->loginAsAdmin();
 	}
 
@@ -52,6 +55,8 @@ class NoticesCest {
 	 * @see \WC_Facebookcommerce::add_admin_notices()
 	 */
 	public function try_invalid_connection_notice_valid_connection( AcceptanceTester $I ) {
+
+		$I->dontHaveTransientInDatabase( 'wc_facebook_connection_invalid' );
 
 		$I->haveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_ACCESS_TOKEN, '12345' );
 

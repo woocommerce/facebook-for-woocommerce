@@ -26,6 +26,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class API extends Framework\SV_WC_API_Base {
 
 
+	use API\Traits\Rate_Limited_API;
+
+
 	/** @var string URI used for the request */
 	protected $request_uri = 'https://graph.facebook.com/v7.0';
 
@@ -471,48 +474,6 @@ class API extends Framework\SV_WC_API_Base {
 		}
 
 		return $next_response;
-	}
-
-
-	/**
-	 * Stores an option with the delay, in seconds, for requests with the given rate limit ID.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $rate_limit_id
-	 * @param int $delay
-	 */
-	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
-
-		// TODO: Implement set_rate_limit_delay() method.
-	}
-
-
-	/**
-	 * Gets the number of seconds before a new request with the given rate limit ID can be made again
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $rate_limit_id
-	 * @return int
-	 */
-	public function get_rate_limit_delay( $rate_limit_id ) {
-
-		// TODO: Implement get_rate_limit_delay() method.
-	}
-
-
-	/**
-	 * Uses the information in a Rate_Limited_Response object to calculate the next delay for requests of the same type.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param Rate_Limited_Response $response
-	 * @return int
-	 */
-	protected function calculate_rate_limit_delay( $response ) {
-
-		// TODO: Implement calculate_rate_limit_delay() method.
 	}
 
 

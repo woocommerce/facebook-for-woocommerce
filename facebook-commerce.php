@@ -45,10 +45,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const OPTION_PIXEL_INSTALL_TIME = 'wc_facebook_pixel_install_time';
 
 	/** @var string the facebook page ID setting ID */
-	const SETTING_FACEBOOK_PAGE_ID = 'facebook_page_id';
+	const SETTING_FACEBOOK_PAGE_ID = 'wc_facebook_page_id';
 
 	/** @var string the facebook pixel ID setting ID */
-	const SETTING_FACEBOOK_PIXEL_ID = 'facebook_pixel_id';
+	const SETTING_FACEBOOK_PIXEL_ID = 'wc_facebook_pixel_id';
 
 	/** @var string the "enable advanced matching" setting ID */
 	const SETTING_ENABLE_ADVANCED_MATCHING = 'enable_advanced_matching';
@@ -330,12 +330,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			add_action(
 				'wp_ajax_ajax_schedule_force_resync',
 				array( $this, 'ajax_schedule_force_resync' ),
-				self::FB_PRIORITY_MID
-			);
-
-			add_action(
-				'wp_ajax_ajax_update_fb_option',
-				array( $this, 'ajax_update_fb_option' ),
 				self::FB_PRIORITY_MID
 			);
 
@@ -632,6 +626,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<?php
 
+		} elseif ( $woo_product->woo_product->is_virtual() ) {
+
+			printf(
+				/* translators: Placeholders: %1$s - opening HTML <a> tag, %2$s - closing HTML </a> tag */
+				esc_html__( 'Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %1$sClick here to read more about Facebook\'s policy%2$s.', 'facebook-for-woocommerce' ),
+				'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
+				'</a>'
+			);
+
 		} else {
 
 			?>
@@ -837,15 +840,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
 		];
-		wp_enqueue_script(
-			'wc_facebook_settings_jsx',
-			plugins_url(
-				'/assets/js/facebook-settings.min.js',
-				__FILE__
-			),
-			[],
-			\WC_Facebookcommerce::PLUGIN_VERSION
-		);
 		wp_localize_script(
 			'wc_facebook_settings_jsx',
 			'wc_facebook_settings_jsx',
@@ -1771,25 +1765,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->display_errors();
 		}
 
-		// check required fields
-		if ( ! $this->is_configured() ) {
-
-			$message = sprintf(
-				/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-				esc_html__(
-					'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
-					'facebook-for-woocommerce'
-				),
-				'<strong>',
-				'</strong>',
-				'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-				'</a>'
-			);
-
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->get_message_html( $message, 'info' );
-		}
-
 		$this->maybe_display_facebook_api_messages();
 	}
 
@@ -2554,7 +2529,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $page_id the configured Facebook page ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_page_id', $this->get_option( self::SETTING_FACEBOOK_PAGE_ID, '' ), $this );
+		return (string) apply_filters( 'wc_facebook_page_id', get_option( self::SETTING_FACEBOOK_PAGE_ID, '' ), $this );
 	}
 
 
@@ -2575,7 +2550,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $pixel_id the configured Facebook pixel ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_pixel_id', $this->get_option( self::SETTING_FACEBOOK_PIXEL_ID, '' ), $this );
+		return (string) apply_filters( 'wc_facebook_pixel_id', get_option( self::SETTING_FACEBOOK_PIXEL_ID, '' ), $this );
 	}
 
 	/**
@@ -2957,7 +2932,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $is_enabled whether product sync is enabled
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === get_option( self::SETTING_ENABLE_PRODUCT_SYNC ), $this );
+		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === get_option( self::SETTING_ENABLE_PRODUCT_SYNC, 'yes' ), $this );
 	}
 
 
@@ -3415,10 +3390,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return $fb_id;
 		}
 
-		if ( ! isset( $this->settings['upload_end_time'] ) ) {
-			return null;
-		}
-
 		if ( ! $woo_product ) {
 			$woo_product = new WC_Facebook_Product( $wp_id );
 		}
@@ -3543,25 +3514,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		wc_deprecated_function( __METHOD__, '1.10.0' );
 		die;
-	}
-
-
-	function ajax_update_fb_option() {
-
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'update fb options', true );
-
-		if ( isset( $_POST ) && ! empty( $_POST['option'] ) && isset( $_POST['option_value'] ) ) {
-
-			$option_name  = sanitize_text_field( wp_unslash( $_POST['option'] ) );
-			$option_value = sanitize_text_field( wp_unslash( $_POST['option_value'] ) );
-
-			if ( stripos( $option_name, 'fb_' ) === 0  ) {
-				update_option( $option_name, $option_value );
-			}
-		}
-
-		wp_die();
 	}
 
 

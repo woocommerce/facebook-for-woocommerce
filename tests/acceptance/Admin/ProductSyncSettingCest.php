@@ -41,10 +41,7 @@ class ProductSyncSettingCest {
 		 */
 		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
-
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			\WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => '1234',
-		] );
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '1234' );
 
 		// save two generic products
 		$this->sync_enabled_product  = $I->haveProductInDatabase();
@@ -148,9 +145,8 @@ class ProductSyncSettingCest {
 
 		// have an excluded category
 		list( $excluded_category_id, $excluded_category_taxonomy_id ) = $I->haveTermInDatabase( 'Excluded category', 'product_cat' );
-		$I->haveFacebookForWooCommerceSettingsInDatabase( [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $excluded_category_id ]
-		] );
+
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $excluded_category_id ] );
 
 		// add the product to the excluded category
 		wp_add_object_terms( $this->sync_disabled_product->get_id(), [ $excluded_category_id ], 'product_cat' );

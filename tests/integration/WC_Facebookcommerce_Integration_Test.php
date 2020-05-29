@@ -365,6 +365,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::get_facebook_page_id() */
 	public function test_get_facebook_page_id() {
 
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+
 		$this->assertEquals( 'facebook-page-id', $this->integration->get_facebook_page_id() );
 	}
 
@@ -382,6 +384,8 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 	/** @see \WC_Facebookcommerce_Integration::get_facebook_pixel_id() */
 	public function test_get_facebook_pixel_id() {
+
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, 'facebook-pixel-id' );
 
 		$this->assertEquals( 'facebook-pixel-id', $this->integration->get_facebook_pixel_id() );
 	}
@@ -695,14 +699,14 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	 * @see \WC_Facebookcommerce_Integration::is_configured()
 	 *
 	 * @param string $access_token Facebook access token
-	 * @param string $page_id Facebok page ID
+	 * @param string $page_id Facebook page ID
 	 * @param bool $expected whether Facebook for WooCommerce is configured or not
 	 *
 	 * @dataProvider provider_is_configured()
 	 */
 	public function test_is_configured( $access_token, $page_id, $expected ) {
 
-		$this->add_settings( [ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID => $page_id ] );
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
 
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( $access_token );
 

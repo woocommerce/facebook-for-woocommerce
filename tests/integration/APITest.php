@@ -297,10 +297,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @see API::send_item_updates() */
 	public function test_send_item_updates() {
 
-		if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
-			require_once 'includes/API/Catalog/Send_Item_Updates/Request.php';
-		}
-
 		$catalog_id   = '123456';
 		$requests     = [
 			[ '1234' => Sync::ACTION_UPDATE ],
@@ -591,25 +587,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		] );
 
 		$this->assertNull( $api->next( $response, $additional_pages ) );
-	}
-
-
-	/** @see API::set_rate_limit_delay() */
-	public function test_set_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::get_rate_limit_delay() */
-	public function test_get_rate_limit_delay() {
-
-		// TODO
-	}
-
-	/** @see API::calculate_rate_limit_delay() */
-	public function test_calculate_rate_limit_delay() {
-
-		// TODO
 	}
 
 

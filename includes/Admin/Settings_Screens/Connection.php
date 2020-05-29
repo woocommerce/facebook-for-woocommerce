@@ -238,7 +238,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 					'url'   => 'https://www.facebook.com/ad_center/create/ad/?entry_point=facebook_ads_extension&page_id=' . facebook_for_woocommerce()->get_integration()->get_facebook_page_id(),
 				],
 				'manage' => [
-					'label' => __( 'Manage', 'facebook-for-woocommerce' ),
+					'label' => __( 'Manage Connection', 'facebook-for-woocommerce' ),
 					'type'  => 'secondary',
 					'url'   => facebook_for_woocommerce()->get_connection_handler()->get_manage_url(),
 				],
@@ -259,12 +259,14 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 		<div id="wc-facebook-connection-box">
 
+			<div class="logo"></div>
+
 			<h1><?php echo esc_html( $title ); ?></h1>
 			<h2><?php echo esc_html( $subtitle ); ?></h2>
 
 			<ul class="benefits">
-				<?php foreach ( $benefits as $benefit ) : ?>
-					<li><?php echo esc_html( $benefit ); ?></li>
+				<?php foreach ( $benefits as $key => $benefit ) : ?>
+					<li class="benefit benefit-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $benefit ); ?></li>
 				<?php endforeach; ?>
 			</ul>
 

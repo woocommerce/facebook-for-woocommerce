@@ -15,6 +15,55 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Sync::create_or_update_all_products() */
+	public function test_create_or_update_all_products() {
+
+		// create a variable product with three variations and define their prices
+		$variable_product = $this->tester->get_variable_product( 3 );
+
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+			$variation->set_regular_price( 4.99 );
+			$variation->save();
+		}
+
+		// create a variable product with three variations but no price
+		$this->tester->get_variable_product( 3 );
+
+		// create a simple product with price
+		$simple_product = $this->tester->get_product();
+		$simple_product->set_regular_price( 10 );
+		$simple_product->save();
+
+		// add all eligible products to the sync queue
+		$sync = $this->get_sync();
+
+		$sync->create_or_update_all_products();
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		$requests = $requests_property->getValue( $sync );
+
+		// test that create_or_update_all_products() added the three variations with price to the sync queue
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$index = Sync::PRODUCT_INDEX_PREFIX . $variation_id;
+
+			$this->assertArrayHasKey( $index, $requests );
+			$this->assertEquals( 'UPDATE', $requests[ $index ] );
+		}
+
+		// test that create_or_update_all_products() added the simple product with price to the sync queue
+		$this->assertArrayHasKey( Sync::PRODUCT_INDEX_PREFIX . $simple_product->get_id(), $requests );
+		$this->assertEquals( 'UPDATE', $requests[ Sync::PRODUCT_INDEX_PREFIX . $simple_product->get_id() ] );
+
+		// test no other products or variations were added
+		$this->assertEquals( count( $variable_product->get_children() ) + 1, count( $requests ) );
+	}
+
+
 	/** @see Sync::create_or_update_products() */
 	public function test_create_or_update_products() {
 

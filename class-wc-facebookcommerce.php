@@ -176,22 +176,49 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// inform users that they need to connect to FBE 2.0 if they've upgraded from FBE 1.x
-			if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && ! $this->get_connection_handler()->is_connected() && $this->get_integration()->get_external_merchant_settings_id() ) {
+			// inform users that they need to connect
+			if ( ! $this->get_connection_handler()->is_connected() ) {
 
-				$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
+				$message    = '';
+				$message_id = '';
 
-				$message = sprintf(
-					__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
-					'<strong>', '</strong>',
-					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
-					'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
-				);
+				//  to FBE 2.0 if they've upgraded from FBE 1.x
+				if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && $this->get_integration()->get_external_merchant_settings_id() ) {
 
-				$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v2_0', [
-					'dismissible'  => false,
-					'notice_class' => 'notice-info wc-facebook-migrate-notice',
-				] );
+					$message = sprintf(
+						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
+						__( '%1$sHeads up!%2$s You\'re ready to migrate to a more secure, reliable Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!', 'facebook-for-woocommerce' ),
+						'<strong>', '</strong>',
+						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+					);
+
+					$message_id = 'migrate_to_v2_0';
+
+				// otherwise, a general getting started message
+				} elseif ( ! $this->is_plugin_settings() ) {
+
+					$message = sprintf(
+						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
+						esc_html__(
+							'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
+							'facebook-for-woocommerce'
+						),
+						'<strong>',
+						'</strong>',
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
+						'</a>'
+					);
+
+					$message_id = 'get_started';
+				}
+
+				if ( $message ) {
+
+					$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_' . $message_id, [
+						'dismissible'  => false,
+						'notice_class' => 'notice-info',
+					] );
+				}
 			}
 
 			// if the connection is otherwise invalid, but there is an access token
@@ -238,6 +265,26 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 
+		/**
+		 * Logs an API request.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $request request data
+		 * @param array $response response data
+		 * @param null $log_id log ID
+		 */
+		public function log_api_request( $request, $response, $log_id = null ) {
+
+			// bail if logging isn't enabled
+			if ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) {
+				return;
+			}
+
+			parent::log_api_request( $request, $response, $log_id );
+		}
+
+
 		/** Getter methods ********************************************************************************************/
 
 
@@ -257,12 +304,24 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
-				if ( ! class_exists( API::class ) ) {
-					require_once __DIR__ . '/includes/API.php';
+				if ( ! class_exists( API\Traits\Rate_Limited_API::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_API.php';
+				}
+
+				if ( ! class_exists( API\Traits\Rate_Limited_Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Request.php';
+				}
+
+				if ( ! class_exists( API\Traits\Rate_Limited_Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Rate_Limited_Response.php';
 				}
 
 				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
 					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
+				if ( ! class_exists( API::class ) ) {
+					require_once __DIR__ . '/includes/API.php';
 				}
 
 				if ( ! class_exists( API\Request::class ) ) {
@@ -289,18 +348,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Response.php';
 				}
 
-				if ( ! class_exists( API\User\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Request.php';
-				}
-
-				if ( ! class_exists( API\User\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Response.php';
-				}
-
-				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
-				}
-
 				if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Request.php';
 				}
@@ -325,12 +372,16 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
 				}
 
-				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				if ( ! class_exists( API\User\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Request.php';
 				}
 
-				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
+				if ( ! class_exists( API\User\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Response.php';
+				}
+
+				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
 				}
 
 				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
@@ -343,6 +394,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\FBE\Installation\Read\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/FBE/Installation/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
 				}
 
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {
