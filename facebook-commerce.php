@@ -1766,7 +1766,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function checks() {
 
 		// TODO improve this by checking the settings page with Framework method and ensure error notices are displayed under the Integration sections {FN 2020-01-30}
-		if ( isset( $_GET['page'], $_GET['section'] ) && 'wc-settings' === $_GET['page'] && \WC_Facebookcommerce::INTEGRATION_ID === $_GET['section'] ) {
+		if ( isset( $_GET['page'] ) && 'wc-facebook' === $_GET['page'] ) {
 			$this->display_errors();
 		}
 
