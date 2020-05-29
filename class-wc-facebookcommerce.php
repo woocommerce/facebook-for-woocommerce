@@ -265,6 +265,26 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 
+		/**
+		 * Logs an API request.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param array $request request data
+		 * @param array $response response data
+		 * @param null $log_id log ID
+		 */
+		public function log_api_request( $request, $response, $log_id = null ) {
+
+			// bail if logging isn't enabled
+			if ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) {
+				return;
+			}
+
+			parent::log_api_request( $request, $response, $log_id );
+		}
+
+
 		/** Getter methods ********************************************************************************************/
 
 
