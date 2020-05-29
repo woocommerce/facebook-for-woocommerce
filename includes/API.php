@@ -137,7 +137,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param $page_id page ID
+	 * @param string $page_id page ID
 	 * @return API\Pages\Read\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
