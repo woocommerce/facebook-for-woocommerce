@@ -80,9 +80,14 @@ class AJAX {
 
 		if ( ! empty( $jobs ) ) {
 
-			foreach ( $jobs as $job ) {
-				$remaining_products = $job->total - $job->progress;
+			$job = $jobs[0];
+
+			$remaining_products = ! empty( $job->total ) ? $job->total : count( $job->requests );
+
+			if ( ! empty( $job->progress ) ) {
+				$remaining_products -= $job->progress;
 			}
+
 		}
 
 		wp_send_json_success( $remaining_products );
