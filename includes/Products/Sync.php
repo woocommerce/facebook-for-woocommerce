@@ -182,4 +182,21 @@ class Sync {
 	}
 
 
+	/**
+	 * Determines whether a sync is currently in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public static function is_sync_in_progress() {
+
+		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs( [
+			'status' => 'processing',
+		] );
+
+		return ! empty( $jobs );
+	}
+
+
 }

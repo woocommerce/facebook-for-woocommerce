@@ -831,15 +831,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),
 		];
-		wp_enqueue_script(
-			'wc_facebook_settings_jsx',
-			plugins_url(
-				'/assets/js/facebook-settings.min.js',
-				__FILE__
-			),
-			[],
-			\WC_Facebookcommerce::PLUGIN_VERSION
-		);
 		wp_localize_script(
 			'wc_facebook_settings_jsx',
 			'wc_facebook_settings_jsx',

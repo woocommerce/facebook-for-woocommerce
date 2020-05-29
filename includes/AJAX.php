@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -33,6 +35,63 @@ class AJAX {
 
 		// maybe output a modal prompt when setting excluded terms
 		add_action( 'wp_ajax_facebook_for_woocommerce_set_excluded_terms_prompt', [ $this, 'handle_set_excluded_terms_prompt' ] );
+
+		// sync all products via AJAX
+		add_action( 'wp_ajax_wc_facebook_sync_products', [ $this, 'sync_products' ] );
+
+		// get the current sync status
+		add_action( 'wp_ajax_wc_facebook_get_sync_status', [ $this, 'get_sync_status' ] );
+	}
+
+
+	/**
+	 * Syncs all products via AJAX.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function sync_products() {
+
+		check_admin_referer( Product_Sync::ACTION_SYNC_PRODUCTS, 'nonce' );
+
+		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+
+		wp_send_json_success();
+	}
+
+
+	/**
+	 * Gets the current sync status.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function get_sync_status() {
+
+		check_admin_referer( Product_Sync::ACTION_GET_SYNC_STATUS, 'nonce' );
+
+		$remaining_products = 0;
+		
+		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs( [
+			'status' => 'processing',
+		] );
+
+		if ( ! empty( $jobs ) ) {
+
+			// there should only be one processing job at a time, pluck the latest to convey status
+			$job = $jobs[0];
+
+			$remaining_products = ! empty( $job->total ) ? $job->total : count( $job->requests );
+
+			if ( ! empty( $job->progress ) ) {
+				$remaining_products -= $job->progress;
+			}
+
+		}
+
+		wp_send_json_success( $remaining_products );
 	}
 
 
