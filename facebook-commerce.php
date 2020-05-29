@@ -967,8 +967,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// bail if not enabled for sync
-		if ( ! Products::product_should_be_synced( $product ) ) {
+		/**
+		 * bail if not enabled for sync, except if explicitly deleting from the metabox
+		 * @see ajax_delete_fb_product()
+		 */
+		if ( ( ! is_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
+		     && ! Products::product_should_be_synced( $product ) ) {
+
 			return;
 		}
 
