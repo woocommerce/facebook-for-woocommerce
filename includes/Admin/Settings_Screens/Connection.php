@@ -36,6 +36,37 @@ class Connection extends Admin\Abstract_Settings_Screen {
 		$this->title = __( 'Connection', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		add_action( 'admin_notices', [ $this, 'add_notices' ] );
+	}
+
+
+	/**
+	 * Adds admin notices.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function add_notices() {
+
+		// display a notice if the connection has previously failed
+		if ( get_transient( 'wc_facebook_connection_failed' ) ) {
+
+			$message = sprintf(
+				/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag, %5$s - <a> tag, %6$s - </a> tag */
+				__( '%1$sHeads up!%2$s It looks like there was a problem with reconnecting your site to Facebook. Please %3$sclick here%4$s to try again, or %5$sget in touch with our support team%6$s for assistance.', 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>',
+				'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>',
+				'<a href="' . esc_url( facebook_for_woocommerce()->get_support_url() ) . '" target="_blank">', '</a>'
+			);
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice( $message, 'wc_facebook_connection_failed', [
+				'notice_class' => 'error',
+			] );
+
+			delete_transient( 'wc_facebook_connection_failed' );
+		}
 	}
 
 
