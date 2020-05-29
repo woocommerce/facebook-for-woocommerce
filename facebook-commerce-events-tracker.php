@@ -559,6 +559,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				],
 			];
 
+			// if there is only one item in the cart, send its first category
+			if ( ( $cart = WC()->cart ) && count( $cart->get_cart() ) === 1 ) {
+
+				$item = current( $cart->get_cart() );
+
+				if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
+
+					$categories = \WC_Facebookcommerce_Utils::get_product_categories( $item['data']->get_id() );
+
+					$event_data['custom_data']['content_category'] = $categories['name'];
+				}
+			}
+
 			$event = new Event( $event_data );
 
 			$this->send_api_event( $event );
