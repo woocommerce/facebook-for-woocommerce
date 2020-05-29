@@ -585,7 +585,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_purchase_event( $order_id ) {
 
-			if ( ! self::$isEnabled || $this->pixel->is_last_event( 'Purchase' ) ) {
+			$event_name = 'Purchase';
+
+			if ( ! self::$isEnabled || $this->pixel->is_last_event( $event_name ) ) {
 				return;
 			}
 
@@ -639,7 +641,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$this->pixel->inject_event( 'Purchase', [
+			$this->pixel->inject_event( $event_name, [
 				'num_items'    => $num_items,
 				'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
 				'contents'     => wp_json_encode( $contents ),
