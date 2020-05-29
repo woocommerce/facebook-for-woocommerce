@@ -185,14 +185,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				//  to FBE 2.0 if they've upgraded from FBE 1.x
 				if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && $this->get_integration()->get_external_merchant_settings_id() ) {
 
-					$docs_url = 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
-
 					$message = sprintf(
-						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag, %5$s - opening link HTML tag, %6$s - closing link HTML tag */
-						__( '%1$sHeads up!%2$s Facebook for WooCommerce is migrating to a more secure connection experience. Please %3$sclick here%4$s to securely reconnect your account. %5$sLearn more%6$s.', 'facebook-for-woocommerce' ),
+						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
+						__( '%1$sHeads up!%2$s You\'re ready to migrate to a more secure, reliable Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!', 'facebook-for-woocommerce' ),
 						'<strong>', '</strong>',
-						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>',
-						'<a href="' . esc_url( $docs_url ) . '" target="_blank">', '</a>'
+						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
 					);
 
 					$message_id = 'migrate_to_v2_0';
