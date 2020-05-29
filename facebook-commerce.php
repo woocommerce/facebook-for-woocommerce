@@ -632,6 +632,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<?php
 
+		} elseif ( $woo_product->woo_product->is_virtual() ) {
+
+			printf(
+				/* translators: Placeholders: %1$s - opening HTML <a> tag, %2$s - closing HTML </a> tag */
+				esc_html__( 'Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %1$sClick here to read more about Facebook\'s policy%2$s.', 'facebook-for-woocommerce' ),
+				'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
+				'</a>'
+			);
+
 		} else {
 
 			?>
