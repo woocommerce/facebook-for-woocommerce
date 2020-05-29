@@ -132,6 +132,9 @@ class AJAX {
 						// try with categories first, since we have already IDs
 						$has_excluded_terms = ! empty( $product_cats ) && array_intersect( $product_cats, $integration->get_excluded_product_category_ids() );
 
+						// the form post can send an array with empty items, so filter them out
+						$product_tags = array_filter( $product_tags );
+
 						// try next with tags, but WordPress only gives us tag names
 						if ( ! $has_excluded_terms && ! empty( $product_tags ) ) {
 
@@ -139,13 +142,19 @@ class AJAX {
 
 							foreach ( $product_tags as $product_tag_name_or_id ) {
 
-								if ( $term = get_term_by( 'name', $product_tag_name_or_id, 'product_tag' ) ) {
+								$term = get_term_by( 'name', $product_tag_name_or_id, 'product_tag' );
+
+								if ( $term instanceof \WP_Term ) {
 
 									$product_tag_ids[] = $term->term_id;
 
-								} elseif ( $term = get_term( (int) $product_tag_name_or_id, 'product_tag' ) ) {
+								} else {
 
-									$product_tag_ids[] = $term->term_id;
+									$term = get_term( (int) $product_tag_name_or_id, 'product_tag' );
+
+									if ( $term instanceof \WP_Term ) {
+										$product_tag_ids[] = $term->term_id;
+									}
 								}
 							}
 
