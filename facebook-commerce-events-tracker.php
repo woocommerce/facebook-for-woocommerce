@@ -641,14 +641,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$this->pixel->inject_event( $event_name, [
-				'num_items'    => $num_items,
-				'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
-				'contents'     => wp_json_encode( $contents ),
-				'content_type' => $content_type,
-				'value'        => $order->get_total(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$event_data = [
+				'event_name'  => $event_name,
+				'custom_data' => [
+					'num_items'    => $num_items,
+					'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
+					'contents'     => wp_json_encode( $contents ),
+					'content_type' => $content_type,
+					'value'        => $order->get_total(),
+					'currency'     => get_woocommerce_currency(),
+				],
+			];
+
+			$this->pixel->inject_event( $event_name, $event_data );
 
 			$this->inject_subscribe_event( $order_id );
 
