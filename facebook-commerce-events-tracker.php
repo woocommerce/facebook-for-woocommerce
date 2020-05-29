@@ -315,13 +315,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$this->pixel->inject_event( 'AddToCart', [
-				'content_ids'  => $this->get_cart_content_ids(),
-				'content_type' => 'product',
-				'contents'     => $this->get_cart_contents(),
-				'value'        => $this->get_cart_total(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$event_data = [
+				'event_name'  => 'AddToCart',
+				'custom_data' => [
+					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
+					'content_type' => 'product',
+					'contents'     => $this->get_cart_contents(),
+					'value'        => $this->get_cart_total(),
+					'currency'     => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			// send the event ID to prevent duplication
+			$event_data['event_id'] = $event->get_id();
+
+			// store the ID in the session to be sent in AJAX JS event tracking as well
+			WC()->session->set( 'facebook_for_woocommerce_add_to_cart_event_id', $event->get_id() );
+
+			$this->pixel->inject_event( 'AddToCart', $event_data );
 		}
 
 
@@ -356,13 +372,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( self::$isEnabled ) {
 
-				$script = $this->pixel->get_event_script( 'AddToCart', [
+				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				] );
+				];
+
+				// send the event ID to prevent duplication
+				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
+
+					$params['event_id'] = $event_id;
+				}
+
+				$script = $this->pixel->get_event_script( 'AddToCart', $params );
 
 				$fragments['div.wc-facebook-pixel-event-placeholder'] = '<div class="wc-facebook-pixel-event-placeholder">' . $script . '</div>';
 			}
@@ -406,11 +431,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
+					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				];
+
+				// send the event ID to prevent duplication
+				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
+
+					$params['event_id'] = $event_id;
+				}
 
 				$script = $this->pixel->get_conditional_one_time_event_script( 'AddToCart', $params, 'added_to_cart' );
 
@@ -741,6 +773,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			return wp_json_encode( array_unique( array_merge( ... $product_ids ) ) );
+		}
+
+
+		/**
+		 * Gets all content names from cart.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @return string JSON data
+		 */
+		private function get_cart_content_names() {
+
+			$product_names = [];
+
+			if ( $cart = WC()->cart ) {
+
+				foreach ( $cart->get_cart() as $item ) {
+
+					if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
+
+						$product_names[] = $item['data']->get_name();
+					}
+				}
+			}
+
+			return wp_json_encode( array_unique( $product_names ) );
 		}
 
 
