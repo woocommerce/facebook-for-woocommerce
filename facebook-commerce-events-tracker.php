@@ -616,7 +616,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			$content_type  = 'product';
-			$num_items     = 0;
 			$contents      = [];
 			$product_ids   = [ [] ];
 			$product_names = [ [] ];
@@ -639,14 +638,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					$content->quantity = $quantity;
 
 					$contents[] = $content;
-					$num_items += $quantity;
 				}
 			}
 
 			$event_data = [
 				'event_name'  => $event_name,
 				'custom_data' => [
-					'num_items'    => $num_items,
 					'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
 					'content_name' => wp_json_encode( array_merge( ... $product_names ) ),
 					'contents'     => wp_json_encode( $contents ),
