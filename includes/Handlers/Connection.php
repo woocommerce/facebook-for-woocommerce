@@ -175,7 +175,7 @@ class Connection {
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 
-			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful', 'facebook-for-woocommerce' ) );
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
