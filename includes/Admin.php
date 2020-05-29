@@ -590,9 +590,10 @@ class Admin {
 		if ( ( $count = get_transient( $transient_name ) ) && ( SV_WC_Helper::is_current_screen( 'edit-product' ) || SV_WC_Helper::is_current_screen( 'product' ) ) ) {
 
 			$message = sprintf(
-				_n( '%1$sHeads up!%2$s If this product was previously visible in Facebook, you may need to %3$sdelete it from the Facebook catalog%4$s to completely hide it from customer view.', '%1$sHeads up!%2$s If these products were previously visible in Facebook, you may need to %3$sdelete them from the Facebook catalog%4$s to completely hide them from customer view.', $count, 'facebook-for-woocommerce' ),
+				/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - <a> tag */
+				_n( '%1$sHeads up!%2$s If this product was previously visible in Facebook, you may need to delete it from the %3$sFacebook catalog%4$s to completely hide it from customer view.', '%1$sHeads up!%2$s If these products were previously visible in Facebook, you may need to delete them from the %3$sFacebook catalog%4$s to completely hide them from customer view.', $count, 'facebook-for-woocommerce' ),
 				'<strong>', '</strong>',
-				'<a href="https://www.facebook.com/business/help/428079314773256" target="_blank">', '</a>'
+				'<a href="https://facebook.com/products" target="_blank">', '</a>'
 			);
 
 			$message .= '<a class="button js-wc-plugin-framework-notice-dismiss">' . esc_html__( "Don't show this notice again", 'facebook-for-woocommerce' ) . '</a>';
