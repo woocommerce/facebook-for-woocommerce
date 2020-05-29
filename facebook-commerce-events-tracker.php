@@ -618,7 +618,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$content_type  = 'product';
 			$contents      = [];
 			$product_ids   = [ [] ];
-			$product_names = [ [] ];
+			$product_names = [];
 
 			foreach ( $order->get_items() as $item ) {
 
@@ -645,7 +645,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'event_name'  => $event_name,
 				'custom_data' => [
 					'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
-					'content_name' => wp_json_encode( array_merge( ... $product_names ) ),
+					'content_name' => wp_json_encode( $product_names ),
 					'contents'     => wp_json_encode( $contents ),
 					'content_type' => $content_type,
 					'value'        => $order->get_total(),
