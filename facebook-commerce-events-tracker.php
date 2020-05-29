@@ -615,16 +615,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$content_type = 'product';
-			$num_items    = 0;
-			$contents     = [];
-			$product_ids  = [ [] ];
+			$content_type  = 'product';
+			$num_items     = 0;
+			$contents      = [];
+			$product_ids   = [ [] ];
+			$product_names = [ [] ];
 
 			foreach ( $order->get_items() as $item ) {
 
 				if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : null ) {
 
-					$product_ids[] = \WC_Facebookcommerce_Utils::get_fb_content_ids( $product );
+					$product_ids[]   = \WC_Facebookcommerce_Utils::get_fb_content_ids( $product );
+					$product_names[] = $product->get_name();
 
 					if ( 'product_group' !== $content_type && $product->is_type( 'variable' ) ) {
 						$content_type = 'product_group';
@@ -646,6 +648,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'custom_data' => [
 					'num_items'    => $num_items,
 					'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
+					'content_name' => wp_json_encode( array_merge( ... $product_names ) ),
 					'contents'     => wp_json_encode( $contents ),
 					'content_type' => $content_type,
 					'value'        => $order->get_total(),
