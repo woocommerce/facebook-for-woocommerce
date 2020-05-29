@@ -130,11 +130,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// if any product is a variant, fire the pixel with
 			// content_type: product_group
 			$content_type = 'product';
-			$product_ids  = array();
+			$product_ids  = [];
+			$contents     = [];
+
 			foreach ( $products as $product ) {
+
 				if ( ! $product ) {
 					continue;
 				}
+
+				$contents[] = [
+					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+					'quantity' => 1, // consider category results a quantity of 1
+				];
+
 				$product_ids = array_merge(
 					$product_ids,
 					WC_Facebookcommerce_Utils::get_fb_content_ids( $product )
@@ -154,6 +163,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_category' => $categories['categories'],
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
+					'contents'         => $contents,
 				],
 			];
 
@@ -201,6 +211,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// content_type: product_group
 			$content_type = 'product';
 			$product_ids  = [];
+			$contents     = [];
 			$total_value  = 0.00;
 
 			foreach ( $wp_query->posts as $post ) {
@@ -212,6 +223,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 
 				$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+				$contents[] = [
+					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+					'quantity' => 1, // consider the search results a quantity of 1
+				];
 
 				$total_value += (float) $product->get_price();
 
@@ -226,6 +242,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'custom_data' => [
 					'content_type'  => $content_type,
 					'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
+					'contents'      => $contents,
 					'search_string' => get_search_query(),
 					'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
 					'currency'      => get_woocommerce_currency(),
@@ -275,6 +292,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_name'     => $product->get_title(),
 					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type'     => $content_type,
+					'contents'         => [
+						[
+							'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+							'quantity' => 1,
+						]
+					],
 					'content_category' => $categories['name'],
 					'value'            => $product->get_price(),
 					'currency'         => get_woocommerce_currency(),
@@ -558,6 +581,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'currency'     => get_woocommerce_currency(),
 				],
 			];
+
+			// if there is only one item in the cart, send its first category
+			if ( ( $cart = WC()->cart ) && count( $cart->get_cart() ) === 1 ) {
+
+				$item = current( $cart->get_cart() );
+
+				if ( isset( $item['data'] ) && $item['data'] instanceof \WC_Product ) {
+
+					$categories = \WC_Facebookcommerce_Utils::get_product_categories( $item['data']->get_id() );
+
+					if ( ! empty( $categories['name'] ) ) {
+						$event_data['custom_data']['content_category'] = $categories['name'];
+					}
+				}
+			}
 
 			$event = new Event( $event_data );
 
