@@ -113,7 +113,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_view_category_event() {
 			global $wp_query;
-			if ( ! self::$isEnabled ) {
+
+			if ( ! self::$isEnabled || ! is_product_category() ) {
 				return;
 			}
 
@@ -143,19 +144,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$categories =
-			WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
+			$categories = WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
 
-			$this->pixel->inject_event(
-				'ViewCategory',
-				array(
+			$event_name = 'ViewCategory';
+			$event_data = [
+				'event_name' => $event_name,
+				'custom_data' => [
 					'content_name'     => $categories['name'],
 					'content_category' => $categories['categories'],
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
-				),
-				'trackCustom'
-			);
+				],
+			];
+
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( $event_name, $event_data, 'trackCustom' );
 		}
 
 		/**
@@ -172,7 +180,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 
 				if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-					$this->actually_inject_search_event();
+					add_action( 'woocommerce_before_shop_loop', array( $this, 'actually_inject_search_event' ) );
 				} else {
 					add_action( 'wp_head', array( $this, 'actually_inject_search_event' ), 11 );
 				}
@@ -183,16 +191,54 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers Search for result pages
 		 */
 		public function actually_inject_search_event() {
-			if ( ! self::$isEnabled ) {
+			global $wp_query;
+
+			if ( ! self::$isEnabled || empty( $_GET['post_type'] ) || 'product' !== $_GET['post_type'] ) {
 				return;
 			}
 
-			$this->pixel->inject_event(
-				'Search',
-				array(
+			// if any product is a variant, fire the pixel with
+			// content_type: product_group
+			$content_type = 'product';
+			$product_ids  = [];
+			$total_value  = 0.00;
+
+			foreach ( $wp_query->posts as $post ) {
+
+				$product = wc_get_product( $post );
+
+				if ( ! $product instanceof \WC_Product ) {
+					continue;
+				}
+
+				$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+				$total_value += (float) $product->get_price();
+
+				if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
+					$content_type = 'product_group';
+				}
+			}
+
+			$event_name = 'Search';
+			$event_data = [
+				'event_name'  => $event_name,
+				'custom_data' => [
+					'content_type'  => $content_type,
+					'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'search_string' => get_search_query(),
-				)
-			);
+					'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
+					'currency'      => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( $event_name, $event_data );
 		}
 
 
@@ -221,13 +267,27 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$content_type = 'product';
 			}
 
-			$this->pixel->inject_event( 'ViewContent', [
-				'content_name' => $product->get_title(),
-				'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
-				'content_type' => $content_type,
-				'value'        => $product->get_price(),
-				'currency'     => get_woocommerce_currency(),
-			] );
+			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
+
+			$event_data = [
+				'event_name'  => 'ViewContent',
+				'custom_data' => [
+					'content_name'     => $product->get_title(),
+					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+					'content_type'     => $content_type,
+					'content_category' => $categories['name'],
+					'value'            => $product->get_price(),
+					'currency'         => get_woocommerce_currency(),
+				],
+			];
+
+			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+
+			$this->send_api_event( $event );
+
+			$event_data['event_id'] = $event->get_id();
+
+			$this->pixel->inject_event( 'ViewContent', $event_data );
 		}
 
 
