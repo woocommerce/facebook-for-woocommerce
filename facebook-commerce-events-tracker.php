@@ -591,7 +591,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 					$categories = \WC_Facebookcommerce_Utils::get_product_categories( $item['data']->get_id() );
 
-					$event_data['custom_data']['content_category'] = $categories['name'];
+					if ( ! empty( $categories['name'] ) ) {
+						$event_data['custom_data']['content_category'] = $categories['name'];
+					}
 				}
 			}
 
