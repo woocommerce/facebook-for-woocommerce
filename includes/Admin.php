@@ -1068,7 +1068,6 @@ class Admin {
 			'rows'          => 5,
 			'value'         => $description,
 			'class'         => 'enable-if-sync-enabled',
-			'style'         => 'max-width: 80%;',
 			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
 		] );
 
