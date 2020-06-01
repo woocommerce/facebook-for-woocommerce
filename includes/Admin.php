@@ -957,6 +957,7 @@ class Admin {
 					'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
 					'cols'        => 40,
 					'rows'        => 20,
+					'style'       => 'width: 80%;',
 					'value'       => $description,
 					'class'       => 'enable-if-sync-enabled',
 				] );
@@ -1067,6 +1068,7 @@ class Admin {
 			'rows'          => 5,
 			'value'         => $description,
 			'class'         => 'enable-if-sync-enabled',
+			'style'         => 'max-width: 80%;',
 			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
 		] );
 
