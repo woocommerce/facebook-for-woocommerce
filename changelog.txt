@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 1.11.4-dev.1
+ * Fix - Do not sync variations for draft variable products created by duplicating products
+
 2020.05.20 - version 1.11.3
  * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
  * Tweak - Hide Facebook options for virtual products and virtual variations
