@@ -290,12 +290,12 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
-	 * Tests that the retailer ID field uses the product SKU if avaiable.
+	 * Tests that the retailer ID field uses the product SKU if available.
 	 *
 	 * @see Background::process_item()
 	 *
 	 * @param string $sku product SKU
-	 * @param string $reatiler_id expected retailer ID
+	 * @param string $retailer_id expected retailer ID
 	 *
 	 * @dataProvider provider_process_item_update_request_retailer_id_generation
 	 */
