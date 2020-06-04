@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.3
+Stable tag: 1.11.4-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.nn.nn - version 1.11.4-dev.1 =
+ * Fix - Do not sync variations for draft variable products created by duplicating products
 
 = 2020.05.20 - version 1.11.3 =
  * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
