@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.4-dev.1
+Stable tag: 1.11.4
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 1.11.4-dev.1 =
+= 2020.06.04 - version 1.11.4 =
  * Fix - Do not sync variations for draft variable products created by duplicating products
  * Fix - Do not log an error when the product is null on add to cart redirect
 
