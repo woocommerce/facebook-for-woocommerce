@@ -161,6 +161,51 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Facebook\Products::disable_sync_for_products_with_terms()
+	 *
+	 * @param int $term_id the ID of the term to look for
+	 * @param string $taxonomy the name of the taxonomy to look for
+	 * @param bool $set_term whether to add the term to the test product
+	 * @param bool $is_synced_enabled whether sync should be enabled for the product or not
+	 *
+	 * @dataProvider provider_disable_sync_for_products_with_terms
+	 */
+	public function test_disable_sync_for_products_with_terms( $term_id, $taxonomy, $set_term, $is_sync_enabled ) {
+
+		$product = $this->get_product();
+
+		if ( $set_term ) {
+			wp_set_object_terms( $product->get_id(), $term_id, $taxonomy );
+		}
+
+		Facebook\Products::enable_sync_for_products( [ $product ] );
+		Facebook\Products::disable_sync_for_products_with_terms( [ 'taxonomy' => $taxonomy, 'include' => [ $term_id ] ] );
+
+		// get a fresh product object to ensure the status is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $is_sync_enabled, Facebook\Products::is_sync_enabled_for_product( $product ) );
+	}
+
+
+	public function provider_disable_sync_for_products_with_terms() {
+
+		$category = wp_insert_term( 'product_cat_test', 'product_cat' );
+		$tag      = wp_insert_term( 'product_tag_test', 'product_tag' );
+
+		return [
+			// the product has the term
+			[ $category['term_id'], 'product_cat', true, false ],
+			[ $tag['term_id'],      'product_tag', true, false ],
+
+			// the product does not have the term
+			[ $category['term_id'], 'product_cat', false, true ],
+			[ $tag['term_id'],      'product_tag', false, true ],
+		];
+	}
+
+
 	/** @see Facebook\Products::is_sync_enabled_for_product() for products that don't have a preference set */
 	public function test_is_sync_enabled_for_product_defaults() {
 
