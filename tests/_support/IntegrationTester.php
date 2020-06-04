@@ -1,5 +1,6 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\API;
 
 /**
  * Inherited Methods
@@ -68,6 +69,38 @@ class IntegrationTester extends \Codeception\Actor {
 		$product->save();
 
 		return $product;
+	}
+
+
+	/**
+	 * Gets an instance of an anonymous API\Response subclass that uses the API\Traits\Paginated_Response trait.
+	 *
+	 * @return API\Response
+	 */
+	public function get_paginated_response( $response_data = [] ) {
+
+		return new class( json_encode( $response_data ) ) extends API\Response {
+
+			use API\Traits\Paginated_Response;
+		};
+	}
+
+
+	/**
+	 * Use reflection to make a method public so we can test it.
+	 *
+	 * @param string $class_name class name
+	 * @param string $method_name method name
+	 * @return ReflectionMethod
+	 * @throws ReflectionException
+	 */
+	public static function getMethod( $class_name, $method_name ) {
+
+		$class  = new ReflectionClass( $class_name );
+		$method = $class->getMethod( $method_name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 
 

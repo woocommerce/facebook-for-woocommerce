@@ -1,5 +1,6 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 class ProductVariationSyncSettingCest {
@@ -24,8 +25,14 @@ class ProductVariationSyncSettingCest {
 	 */
     public function _before( AcceptanceTester $I ) {
 
-	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '1234' );
-	    $I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+		/**
+		 * Set these in the database so that the product processing hooks are properly set
+		 * @see \WC_Facebookcommerce_Integration::__construct()
+		 */
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+
+		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '1234' );
 
 		$product_objects = $I->haveVariableProductInDatabase();
 
@@ -43,7 +50,7 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_unchecked_if_sync_disabled_in_parent( AcceptanceTester $I ) {
+	public function try_select_if_sync_disabled_in_parent( AcceptanceTester $I ) {
 
 		// \SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products() won't set a meta for variable products, only for the variations
 		// This tests the behavior for variable products modified using an older version that can still have the meta set
@@ -52,9 +59,9 @@ class ProductVariationSyncSettingCest {
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
-		$I->wantTo( 'Test that the field is unchecked if sync is disabled in parent' );
+		$I->wantTo( 'Test that the field is correct if sync is disabled in parent' );
 
-		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
 	}
 
 
@@ -64,7 +71,7 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_checked_if_sync_enabled_in_parent( AcceptanceTester $I ) {
+	public function try_select_if_sync_enabled_in_parent( AcceptanceTester $I ) {
 
 		// \SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products() won't set a meta for variable products, only for the variations
 		// This tests the behavior for variable products modified using an older version that can still have the meta set
@@ -73,9 +80,31 @@ class ProductVariationSyncSettingCest {
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
-		$I->wantTo( 'Test that the field is checked if sync is enabled in parent' );
+		$I->wantTo( 'Test that the field is correct if sync is enabled in parent' );
 
-		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and show in catalog' );
+	}
+
+
+	/**
+	 * Tests that the field is checked if sync is enabled in parent.
+	 *
+	 * @param AcceptanceTester $I
+	 * @throws \Exception
+	 */
+	public function try_select_if_sync_enabled_and_hidden_in_parent( AcceptanceTester $I ) {
+
+		// \SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products() won't set a meta for variable products, only for the variations
+		// This tests the behavior for variable products modified using an older version that can still have the meta set
+		$this->variable_product->update_meta_data( \SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY, 'yes' );
+		$this->variable_product->update_meta_data( \SkyVerge\WooCommerce\Facebook\Products::VISIBILITY_META_KEY, 'no' );
+		$this->variable_product->save();
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the field is correct if sync is enabled but hidden in parent' );
+
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and hide in catalog' );
 	}
 
 
@@ -85,15 +114,15 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_unchecked_sync_disabled( AcceptanceTester $I ) {
+	public function try_select_sync_disabled( AcceptanceTester $I ) {
 
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
-		$I->wantTo( 'Test that the field is unchecked when sync is disabled' );
+		$I->wantTo( 'Test that the field is correct when sync is disabled' );
 
-		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
 	}
 
 
@@ -103,15 +132,34 @@ class ProductVariationSyncSettingCest {
 	 * @param AcceptanceTester $I
 	 * @throws \Exception
 	 */
-	public function try_field_is_checked_sync_enabled( AcceptanceTester $I ) {
+	public function try_select_sync_enabled( AcceptanceTester $I ) {
 
 		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
-		$I->wantTo( 'Test that the field is checked when sync is enabled' );
+		$I->wantTo( 'Test that the field is correct when sync is enabled' );
 
-		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and show in catalog' );
+	}
+
+
+	/**
+	 * Tests that the field is checked when sync is enabled.
+	 *
+	 * @param AcceptanceTester $I
+	 * @throws \Exception
+	 */
+	public function try_select_sync_enabled_hidden( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $this->product_variation ] );
+		\SkyVerge\WooCommerce\Facebook\Products::set_product_visibility( $this->product_variation, false );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that the field is correct when sync is enabled but hidden' );
+
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and hide in catalog' );
 	}
 
 
@@ -173,9 +221,9 @@ class ProductVariationSyncSettingCest {
 
 		$I->wantTo( 'Test that sync can be enabled for a variation' );
 
-		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
 
-		$I->click( "#variable_fb_sync_enabled{$index}" );
+		$I->selectOption( "#variable_facebook_sync_mode{$index}", 'Sync and show in catalog' );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
 		$I->selectOption( sprintf( self::FIELD_IMAGE_SOURCE, $index ), Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT );
 		$I->fillField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
@@ -186,12 +234,42 @@ class ProductVariationSyncSettingCest {
 
 		$index = $I->openVariationMetabox( $this->product_variation );
 
-		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
 
-		$I->seeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and show in catalog' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ), 'Test description.' );
 		$I->seeOptionIsSelected( sprintf( self::FIELD_IMAGE_SOURCE, $index ), 'Use parent image' );
 		$I->seeInField( sprintf( '#variable_%s%s', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ), '12.34' );
+	}
+
+
+	/**
+	 * Tests that the sync can be enabled but hidden for a variation.
+	 *
+	 * @param AcceptanceTester $I
+	 * @throws \Exception
+	 */
+	public function try_sync_can_be_enabled_and_hidden_for_a_variation( AcceptanceTester $I ) {
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product_variation ] );
+
+		$index = $I->amEditingProductVariation( $this->product_variation );
+
+		$I->wantTo( 'Test that sync can be enabled but hidden for a variation' );
+
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
+
+		$I->selectOption( "#variable_facebook_sync_mode{$index}", 'Sync and hide in catalog' );
+
+		$I->click( [ 'css' => '.save-variation-changes' ] );
+
+		$I->wait( 4 );
+
+		$index = $I->openVariationMetabox( $this->product_variation );
+
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
+
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and hide in catalog' );
 	}
 
 
@@ -209,9 +287,9 @@ class ProductVariationSyncSettingCest {
 
 		$I->wantTo( 'Test that sync can be disabled for a variation' );
 
-		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
 
-		$I->click( "#variable_fb_sync_enabled{$index}" );
+		$I->selectOption( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
 
 		$I->click( [ 'css' => '.save-variation-changes' ] );
 
@@ -219,9 +297,9 @@ class ProductVariationSyncSettingCest {
 
 		$index = $I->openVariationMetabox( $this->product_variation );
 
-		$I->waitForElementVisible( "#variable_fb_sync_enabled{$index}", 5 );
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}", 5 );
 
-		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $index ) );
 		$I->seeElement( sprintf( self::FIELD_IMAGE_SOURCE . ':disabled', $index ) );
 		$I->seeElement( sprintf( '#variable_%s%s:disabled', WC_Facebook_Product::FB_PRODUCT_PRICE, $index ) );
@@ -265,7 +343,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->click( "[name='variable_is_virtual[{$index}]']" );
 
-		$I->dontSeeElement( "#variable_fb_sync_enabled{$index}" );
+		$I->dontSeeElement( "#variable_facebook_sync_mode{$index}" );
 		$I->dontSeeElement( "#variable_fb_product_description{$index}" );
 		$I->dontSeeElement( ".variable_fb_product_image_source{$index}_field" );
 		$I->dontSeeElement( "#variable_fb_product_image{$index}" );
@@ -275,7 +353,7 @@ class ProductVariationSyncSettingCest {
 
 		$I->click( "[name='variable_is_virtual[{$index}]']" );
 
-		$I->seeElement( "#variable_fb_sync_enabled{$index}" );
+		$I->seeElement( "#variable_facebook_sync_mode{$index}" );
 		$I->seeElement( "#variable_fb_product_description{$index}" );
 		$I->seeElement( ".variable_fb_product_image_source{$index}_field" );
 		$I->seeElement( "#variable_fb_product_image{$index}" );
@@ -311,8 +389,8 @@ class ProductVariationSyncSettingCest {
 		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
 		$I->click( "[name='variable_is_virtual[{$index}]']" );
 
-		$I->seeElement( "#variable_fb_sync_enabled{$index}" );
-		$I->dontSeeCheckboxIsChecked( "#variable_fb_sync_enabled{$index}" );
+		$I->seeElement( "#variable_facebook_sync_mode{$index}" );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
 	}
 
 

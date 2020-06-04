@@ -9,12 +9,6 @@
 
 jQuery( document ).ready( function( $ ) {
 
-	// run script only on Facebook Settings page
-	if ( $( 'input[name="section"][value="facebookcommerce"]' ).closest( 'form' ).length === 0 ) {
-		return;
-	}
-
-
 	/**
 	 * Gets any new excluded categories being added.
 	 *
@@ -22,11 +16,11 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedCategoriesAdded() {
 
-		const newCategoryIDs = $( '#woocommerce_facebookcommerce_excluded_product_category_ids' ).val();
+		const newCategoryIDs = $( '#wc_facebook_excluded_product_category_ids' ).val();
 		let oldCategoryIDs   = [];
 
-		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedCategoryIDs ) {
-			oldCategoryIDs = window.facebookAdsToolboxConfig.excludedCategoryIDs;
+		if ( window.facebook_for_woocommerce_settings_sync && window.facebook_for_woocommerce_settings_sync.excluded_category_ids ) {
+			oldCategoryIDs = window.facebook_for_woocommerce_settings_sync.excluded_category_ids;
 		}
 
 		// return IDs that are in the new value that were not in the saved value
@@ -41,11 +35,11 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function getExcludedTagsAdded() {
 
-		const newTagIDs = $( '#woocommerce_facebookcommerce_excluded_product_tag_ids' ).val();
+		const newTagIDs = $( '#wc_facebook_excluded_product_tag_ids' ).val();
 		let oldTagIDs   = [];
 
-		if ( window.facebookAdsToolboxConfig && window.facebookAdsToolboxConfig.excludedTagIDs ) {
-			oldTagIDs = window.facebookAdsToolboxConfig.excludedTagIDs;
+		if ( window.facebook_for_woocommerce_settings_sync && window.facebook_for_woocommerce_settings_sync.excluded_tag_ids ) {
+			oldTagIDs = window.facebook_for_woocommerce_settings_sync.excluded_tag_ids;
 		}
 
 		// return IDs that are in the new value that were not in the saved value
@@ -56,12 +50,11 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Toggles availability of input in setting groups.
 	 *
-	 * @param {Object[]} $elements group of jQuery elements (fields or buttons) to toggle
 	 * @param {boolean} enable whether fields in this group should be enabled or not
 	 */
-	function toggleSettingOptions( $elements, enable ) {
+	function toggleSettingOptions( enable ) {
 
-		$( $elements ).each( function() {
+		$( '.product-sync-field' ).each( function() {
 
 			let $element = $( this );
 
@@ -77,52 +70,33 @@ jQuery( document ).ready( function( $ ) {
 		} );
 	}
 
+	$( '.woocommerce-help-tip' ).tipTip( {
+		'attribute': 'data-tip',
+		'fadeIn': 50,
+		'fadeOut': 50,
+		'delay': 200
+	} );
+
+	if ( $( 'form.wc-facebook-settings' ).hasClass( 'disconnected' ) ) {
+		toggleSettingOptions( false );
+	}
 
 	// toggle availability of options withing field groups
-	$( 'input[type="checkbox"].toggle-fields-group' ).on( 'change', function ( e ) {
-		if ( $( this ).hasClass( 'product-sync-field' ) ) {
-			toggleSettingOptions( $( '.product-sync-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
-		} else if ( $( this ).hasClass( 'messenger-field' ) ) {
-			toggleSettingOptions( $( '.messenger-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
-		} else if ( $( this ).hasClass( 'resync-schedule-field' ) ) {
-			toggleSettingOptions( $( '.resync-schedule-field' ).not( '.toggle-fields-group' ), $( this ).is( ':checked' ) );
+	$( 'input#wc_facebook_enable_product_sync' ).on( 'change', function ( e ) {
+
+		if ( $( 'form.wc-facebook-settings' ).hasClass( 'disconnected' ) ) {
+			$( this ).css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+			return;
 		}
-	} ).trigger( 'change' );
 
-
-	// adds a leading zero to time picker fields
-	$( '#woocommerce_facebookcommerce_scheduled_resync_hours, #woocommerce_facebookcommerce_scheduled_resync_minutes' ).on( 'input change keyup keydown keypress click', function() {
-
-		let value = $( this ).val();
-
-		if ( ! isNaN( value ) && 1 === value.length && value < 10 ) {
-			$( this ).val( value.padStart( 2, '0' ) );
-		}
+		toggleSettingOptions( $( this ).is( ':checked' ) );
 
 	} ).trigger( 'change' );
-
-
-	// adds a character counter on the Messenger greeting textarea
-	$( 'textarea#woocommerce_facebookcommerce_messenger_greeting' ).on( 'focus change keyup keydown keypress', function() {
-
-		const maxChars = parseInt( window.facebookAdsToolboxConfig.messengerGreetingMaxCharacters, 10 );
-		let chars      = $( this ).val().length,
-		    $counter   = $( 'span.characters-counter' ),
-			$warning   = $counter.find( 'span' );
-
-		$counter.html( chars + ' / ' + maxChars + '<br/>' ).append( $warning ).css( 'display', 'block' );
-
-		if ( chars > maxChars ) {
-			$counter.css( 'color', '#DC3232' ).find( 'span' ).show();
-		} else {
-			$counter.css( 'color', '#999999' ).find( 'span' ).hide();
-		}
-	} );
 
 
 	let submitSettingsSave = false;
 
-	$( '.woocommerce-save-button' ).on( 'click', function ( e ) {
+	$( 'input[name="save_product_sync_settings"]' ).on( 'click', function ( e ) {
 
 		if ( ! submitSettingsSave ) {
 			e.preventDefault();
@@ -159,47 +133,9 @@ jQuery( document ).ready( function( $ ) {
 
 						blockModal();
 
-						// the user has an option to hide all the affected products from Facebook while adding the exclusion though
-						if ( $( this ).hasClass( 'hide-products' ) ) {
+						submitSettingsSave = true;
+						$submitButton.trigger( 'click' );
 
-							let product_cats = [], product_tags = [];
-
-							$( categoriesAdded ).each( function() {
-								product_cats.push( {
-									term_id:    this,
-									taxonomy:   'product_cat',
-									visibility: false
-								} );
-							} );
-
-							$( tagsAdded ).each( function() {
-								product_tags.push( {
-									term_id:    this,
-									taxonomy:   'product_tag',
-									visibility: false
-								} );
-							} );
-
-							$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
-								action:             'facebook_for_woocommerce_set_products_visibility',
-								security:           facebook_for_woocommerce_settings_sync.set_product_visibility_nonce,
-								product_categories: product_cats,
-								product_tags:       product_tags,
-							}, function ( response ) {
-
-								if ( ! response || ! response.success ) {
-									console.log( response )
-								}
-
-								submitSettingsSave = true;
-								$submitButton.trigger( 'click' );
-							} );
-
-						} else {
-
-							submitSettingsSave = true;
-							$submitButton.trigger( 'click' );
-						}
 					} );
 
 				} else {
@@ -217,5 +153,139 @@ jQuery( document ).ready( function( $ ) {
 			$submitButton.trigger( 'click' );
 		}
 	} );
+
+	// mark as in-progress if syncing when the page is loaded
+	if ( facebook_for_woocommerce_settings_sync.sync_in_progress ) {
+		syncInProgress();
+	}
+
+	// handle the sync button click
+	$( '#woocommerce-facebook-settings-sync-products' ).click( function( event ) {
+
+		event.preventDefault();
+
+		if ( confirm( facebook_for_woocommerce_settings_sync.i18n.confirm_sync ) ) {
+
+			syncInProgress();
+
+			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+				action: 'wc_facebook_sync_products',
+				nonce:  facebook_for_woocommerce_settings_sync.sync_products_nonce,
+			}, function ( response ) {
+
+				console.log( response );
+
+				if ( ! response.success ) {
+
+					let error = facebook_for_woocommerce_settings_sync.i18n.general_error;
+
+					if ( response.data && response.data.length > 0 ) {
+						error = response.data;
+					}
+
+					clearSyncInProgress( error );
+				}
+
+			} ).fail( function() {
+
+				clearSyncInProgress( facebook_for_woocommerce_settings_sync.i18n.general_error );
+
+			} );
+		}
+
+	} );
+
+	/**
+	 * Sets the UI as sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param count number of items remaining
+	 */
+	function syncInProgress( count = null ) {
+
+		toggleSettingOptions( false );
+
+		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+
+		let message = facebook_for_woocommerce_settings_sync.i18n.sync_in_progress;
+
+		if ( count ) {
+
+			if ( count > 1 ) {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_plural;
+			} else {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_singular
+			}
+
+			message = message.replace( '{count}', count );
+		}
+
+		// set products sync status
+		$( '#sync_progress' ).show().html( message ).css( 'color', 'inherit' );
+
+		facebook_for_woocommerce_settings_sync.sync_in_progress = true;
+
+		if ( ! window.syncStatusInterval ) {
+			window.syncStatusInterval = setInterval( getSyncStatus, 10000 );
+		}
+	}
+
+	/**
+	 * Clears any UI for sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param error message to display
+	 */
+	function clearSyncInProgress( error = '' ) {
+
+		facebook_for_woocommerce_settings_sync.sync_in_progress = false;
+
+		clearInterval( window.syncStatusInterval );
+
+		window.syncStatusInterval = null;
+
+		toggleSettingOptions( true );
+
+		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'all' ).css( 'opacity', '1' );
+
+		if ( error ) {
+			$( '#sync_progress' ).show().html( error ).css( 'color', '#DC3232' );
+		} else {
+			$( '#sync_progress' ).hide();
+		}
+	}
+
+	/**
+	 * Gets the current sync status.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	function getSyncStatus() {
+
+		if ( ! facebook_for_woocommerce_settings_sync.sync_in_progress ) {
+			return;
+		}
+
+		$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
+			action: 'wc_facebook_get_sync_status',
+			nonce:  facebook_for_woocommerce_settings_sync.sync_status_nonce,
+		}, function ( response ) {
+
+			console.log( response );
+
+			if ( response.success ) {
+
+				// the returned data represents the number of products remaining
+				if ( response.data > 0 ) {
+					syncInProgress( response.data );
+				} else {
+					clearSyncInProgress();
+				}
+			}
+
+		} );
+	}
 
 } );

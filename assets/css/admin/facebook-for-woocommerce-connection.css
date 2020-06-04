@@ -1,0 +1,73 @@
+#wc-facebook-connection-box {
+	width: 50%;
+	min-width: 720px;
+	color: rgb( 5, 5, 5 );
+	background: white url( '../../images/background.png' ) no-repeat;
+	background-position: right 30px center;
+	padding: 10px 15px 20px;
+	box-shadow: 0 0 3px rgba( 0, 0, 0, 0.2 );
+	margin-bottom: 20px;
+}
+
+#wc-facebook-connection-box .logo {
+	width: 40px;
+	height: 40px;
+	background-image: url( '../../images/logo.png' );
+	background-size: 100%;
+	margin-bottom: 10px;
+}
+
+#wc-facebook-connection-box h1 {
+	font-weight: bold;
+	font-size: 1.5em;
+}
+#wc-facebook-connection-box h2 {
+	font-size: 1.1em;
+	color: rgb(162, 162, 162);
+	margin: 0;
+}
+
+#wc-facebook-connection-box .benefits {
+	padding-top: 10px;
+	margin-bottom: 20px;
+}
+
+#wc-facebook-connection-box .benefits .benefit {
+	margin: 0 0 6px 0;
+	padding-top: 5px;
+	padding-left: 35px;
+	min-height: 26px;
+	background-size: 26px;
+	background-repeat: no-repeat;
+}
+
+#wc-facebook-connection-box .benefits .benefit-0 {
+	background-image: url( '../../images/icon-0.png' );
+}
+
+#wc-facebook-connection-box .benefits .benefit-1 {
+	background-image: url( '../../images/icon-1.png' );
+}
+
+#wc-facebook-connection-box .benefits .benefit-2 {
+	background-image: url( '../../images/icon-2.png' );
+}
+
+#wc-facebook-connection-box .button {
+	color: rgb( 5, 5, 5 );
+	background-color: rgb( 228, 230, 235 );
+	border: none;
+	border-radius: 6px;
+	padding: 4px 4em;
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+#wc-facebook-connection-box .button.button-primary {
+	color: white;
+	background-color: rgb( 24, 119, 242 );
+}
+
+#wc-facebook-connection-box .uninstall {
+	vertical-align: middle;
+}

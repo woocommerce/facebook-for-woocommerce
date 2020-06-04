@@ -11,11 +11,6 @@
 	padding-top: 10px;
 }
 
-.woocommerce_variation .fb-sync-enabled-field .checkbox {
-	margin-top: 2px !important;
-	margin-right: 5px !important;
-}
-
 .woocommerce_variation .fb-product-image-source-field {
 	margin: 1em 0;
 }
@@ -36,8 +31,11 @@
 	clear: both;
 }
 
+.notice .button.js-wc-plugin-framework-notice-dismiss {
+	margin-left: 10px;
+}
+
 /* adjusts widths of the products table, same as WooCommerce categories and tags */
-#facebook_sync_enabled,
-#facebook_catalog_visibility {
+.column-facebook_sync {
 	width: 11% !important;
 }

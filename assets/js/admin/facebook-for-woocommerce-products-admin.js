@@ -16,45 +16,6 @@ jQuery( document ).ready( function( $ ) {
 	// products list edit screen
 	if ( 'edit-product' === pagenow ) {
 
-
-		let visibilityToggles = $( '.facebook-for-woocommerce-product-visibility-toggle' );
-
-		// init visibility toggles tooltips
-		visibilityToggles.tipTip( {
-			attribute:  'title',
-			edgeOffset: 5,
-			fadeIn:     50,
-			fadeOut:    50,
-			delay:      200
-		} );
-
-		// handle FB Catalog Visibility buttons
-		visibilityToggles.on( 'click', function( e ) {
-			e.preventDefault();
-
-			let action     = $( this ).data( 'action' ),
-			    visibility = 'show' === action ? 'yes' : 'no',
-			    productID  = parseInt( $( this ).data( 'product-id' ), 10 );
-
-			if ( 'show' === action ) {
-				$( this ).hide().next( 'button' ).show();
-			} else if ( 'hide' === action ) {
-				$( this ).hide().prev( 'button' ).show();
-			}
-
-			$.post( facebook_for_woocommerce_products_admin.ajax_url, {
-				action:   'facebook_for_woocommerce_set_products_visibility',
-				security: facebook_for_woocommerce_products_admin.set_product_visibility_nonce,
-				products: [
-					{
-						product_id: productID,
-						visibility: visibility
-					}
-				]
-			} );
-		} );
-
-
 		// handle bulk actions
 		let submitProductBulkAction = false;
 
@@ -69,7 +30,6 @@ jQuery( document ).ready( function( $ ) {
 			let $submitButton    = $( this ),
 				chosenBulkAction = $submitButton.prev( 'select' ).val();
 
-			// TODO: also check `'facebook_exclude' === chosenBulkAction` once Catalog Visibility settings are available again {WV 2020-04-20}
 			if ( 'facebook_include' === chosenBulkAction ) {
 
 				let products = [];
@@ -94,28 +54,6 @@ jQuery( document ).ready( function( $ ) {
 						new $.WCBackboneModal.View( {
 							target: 'facebook-for-woocommerce-modal',
 							string: response.data
-						} );
-
-						// exclude from sync: offer to handle product visibility
-						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
-
-							blockModal();
-
-							if ( $( this ).hasClass( 'hide-products' ) ) {
-
-								$.each( products, function() {
-
-									let $toggle = $( '#post-' + this ).find( 'td.facebook_catalog_visibility button.facebook-for-woocommerce-product-visibility-hide' );
-
-									if ( $toggle.is( ':visible' ) ) {
-										$toggle.trigger( 'click' );
-									}
-								} );
-							}
-
-							// submit form after modal prompt action
-							submitProductBulkAction = true;
-							$submitButton.trigger( 'click' );
 						} );
 
 					} else {
@@ -154,24 +92,24 @@ jQuery( document ).ready( function( $ ) {
 
 
 		// toggle Facebook settings fields for simple products
-		const syncEnabledCheckbox   = $( '#fb_sync_enabled' );
-		const facebookSettingsPanel = syncEnabledCheckbox.closest( '.woocommerce_options_panel' );
+		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
+		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
 
-		syncEnabledCheckbox.on( 'click', function() {
-			toggleFacebookSettings( $( this ).prop( 'checked' ), facebookSettingsPanel );
+		syncModeSelect.on( 'change', function() {
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
 		} );
 
-		toggleFacebookSettings( syncEnabledCheckbox.prop( 'checked' ), facebookSettingsPanel );
+		toggleFacebookSettings( syncModeSelect.val() !== 'sync_disabled', facebookSettingsPanel );
 
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
-			toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
 		} );
 
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
 
 			$( '.js-variable-fb-sync-toggle' ).each( function () {
-				toggleFacebookSettings( $( this ).prop( 'checked' ), $( this ).closest( '.wc-metabox-content' ) );
+				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
 			} );
 		} );
 
@@ -204,13 +142,12 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			let $submitButton    = $( this ),
-				$visibleCheckbox = $( 'input[name="fb_visibility"]' ),
 				productID        = parseInt( $( 'input#post_ID' ).val(), 10 ),
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				syncEnabled      = $( 'input#fb_sync_enabled' ).prop( 'checked' ),
-				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).is( ':checked' );
+				syncEnabled      = $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
+				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).val() !== 'sync_disabled';
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
@@ -234,7 +171,7 @@ jQuery( document ).ready( function( $ ) {
 				}, function( response ) {
 
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
-					if ( response && ! response.success && ( syncEnabled || ( ! syncEnabled && $visibleCheckbox.length && $visibleCheckbox.is( ':checked' ) ) ) ) {
+					if ( response && ! response.success && syncEnabled ) {
 
 						// close existing modals
 						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
@@ -243,20 +180,6 @@ jQuery( document ).ready( function( $ ) {
 						new $.WCBackboneModal.View( {
 							target: 'facebook-for-woocommerce-modal',
 							string: response.data
-						} );
-
-						// exclude from sync: offer to handle product visibility
-						$( '.facebook-for-woocommerce-toggle-product-visibility' ).on( 'click', function( e) {
-
-							blockModal();
-
-							if ( $( this ).hasClass( 'hide-products' ) ) {
-								$visibleCheckbox.prop( 'checked', false );
-							}
-
-							// no modal displayed: submit form as normal
-							submitProductSave = true;
-							$submitButton.trigger( 'click' );
 						} );
 
 					} else {
@@ -274,25 +197,6 @@ jQuery( document ).ready( function( $ ) {
 				$submitButton.trigger( 'click' );
 			}
 
-		} );
-	}
-
-
-	// product list screen or individual product edit screen
-	if ( 'product' === pagenow || 'edit-product' === pagenow ) {
-
-		// handle the "Do not show this notice again" button
-		$( '.js-wc-plugin-framework-admin-notice' ).on( 'click', '.notice-dismiss-permanently', function() {
-
-			var $notice = $( this ).closest( '.js-wc-plugin-framework-admin-notice' );
-
-			$.get( ajaxurl, {
-				action:      'wc_plugin_framework_' + $( $notice ).data( 'plugin-id' ) + '_dismiss_notice',
-				messageid:   $( $notice ).data( 'message-id' ),
-				permanently: true
-			} );
-
-			$notice.fadeOut();
 		} );
 	}
 

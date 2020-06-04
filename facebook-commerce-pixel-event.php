@@ -17,6 +17,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		const SETTINGS_KEY = 'facebook_config';
 		const PIXEL_ID_KEY = 'pixel_id';
 		const USE_PII_KEY  = 'use_pii';
+		const USE_S2S_KEY= 'use_s2s';
+		const ACCESS_TOKEN_KEY = 'access_token';
 
 		/** @var string cache key for pixel script block output  */
 		const PIXEL_RENDER     = 'pixel_render';
@@ -396,14 +398,51 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
 
-			return sprintf(
-				"/* %s Facebook Integration Event Tracking */\n" .
-				"fbq('%s', '%s', %s);",
-				WC_Facebookcommerce_Utils::getIntegrationName(),
-				esc_js( $method ),
-				esc_js( $event_name ),
-				json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
-			);
+			// do not send the event name in the params
+			if ( isset( $params['event_name'] ) ) {
+
+				unset( $params['event_name'] );
+			}
+
+			// if possible, send the event ID to avoid duplication
+			// @see https://developers.facebook.com/docs/marketing-api/server-side-api/deduplicate-pixel-and-server-side-events#deduplication-best-practices
+			if ( isset( $params['event_id'] ) ) {
+
+				$event_id = $params['event_id'];
+				unset( $params['event_id'] );
+			}
+
+			// if custom data is set, send only the custom data
+			if ( isset( $params['custom_data'] ) ) {
+
+				$params = $params['custom_data'];
+			}
+
+			if ( ! empty( $event_id ) ) {
+
+				$event = sprintf(
+					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('%s', '%s', %s, %s);",
+					WC_Facebookcommerce_Utils::getIntegrationName(),
+					esc_js( $method ),
+					esc_js( $event_name ),
+					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
+					json_encode( [ 'eventID' => $event_id ], JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				);
+
+			} else {
+
+				$event = sprintf(
+					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('%s', '%s', %s);",
+					WC_Facebookcommerce_Utils::getIntegrationName(),
+					esc_js( $method ),
+					esc_js( $event_name ),
+					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				);
+			}
+
+			return $event;
 		}
 
 
@@ -504,6 +543,48 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			update_option( self::SETTINGS_KEY, $fb_options );
 		}
 
+		public static function get_use_s2s() {
+			$fb_options = self::get_options();
+			if ( ! $fb_options ) {
+				return false;
+			}
+			return isset( $fb_options[ self::USE_S2S_KEY ] ) ?
+				 $fb_options[ self::USE_S2S_KEY ] : false;
+		}
+
+		public static function set_use_s2s( $use_s2s ) {
+			$fb_options = self::get_options();
+
+			if ( isset( $fb_options[ self::USE_S2S_KEY ] )
+			  && $fb_options[ self::USE_S2S_KEY ] == $use_s2s ) {
+				return;
+			}
+
+			$fb_options[ self::USE_S2S_KEY ] = $use_s2s;
+			update_option( self::SETTINGS_KEY, $fb_options );
+		}
+
+		public static function get_access_token() {
+			$fb_options = self::get_options();
+			if ( ! $fb_options ) {
+				return '';
+			}
+			return isset( $fb_options[ self::ACCESS_TOKEN_KEY ] ) ?
+				 $fb_options[ self::ACCESS_TOKEN_KEY ] : '';
+		}
+
+		public static function set_access_token( $access_token ) {
+			$fb_options = self::get_options();
+
+			if ( isset( $fb_options[ self::ACCESS_TOKEN_KEY ] )
+			  && $fb_options[ self::ACCESS_TOKEN_KEY ] == $access_token ) {
+				return;
+			}
+
+			$fb_options[ self::ACCESS_TOKEN_KEY ] = $access_token;
+			update_option( self::SETTINGS_KEY, $fb_options );
+		}
+
 		private static function get_version_info() {
 			global $wp_version;
 
@@ -528,6 +609,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 				array(
 					self::PIXEL_ID_KEY => '0',
 					self::USE_PII_KEY  => 0,
+					self::USE_S2S_KEY => false,
+					self::ACCESS_TOKEN_KEY => '',
 				)
 			);
 		}

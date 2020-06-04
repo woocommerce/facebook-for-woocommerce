@@ -39,7 +39,9 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/AJAX.php';
+		if ( ! class_exists( AJAX::class ) ) {
+			require_once 'includes/AJAX.php';
+		}
 
 		$this->integration = facebook_for_woocommerce()->get_integration();
 
@@ -47,7 +49,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$this->integration->api_key            = '1234';
 		$this->integration->product_catalog_id = '1234';
 
-		$this->get_products_to_be_excluded = self::getMethod( AJAX::class, 'get_products_to_be_excluded' );
+		$this->get_products_to_be_excluded = IntegrationTester::getMethod( AJAX::class, 'get_products_to_be_excluded' );
 
 		$this->ajax = new AJAX();
 
@@ -215,14 +217,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$category                    = wp_insert_term( 'Another excluded category', 'product_cat' );
 		$this->excluded_categories[] = $category['term_id'];
 
-		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
-
-		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS ] = $this->excluded_categories;
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		$this->integration->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, $this->excluded_categories );
 	}
 
 
@@ -237,32 +232,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 		$tag                   = wp_insert_term( 'Another excluded tag', 'product_tag' );
 		$this->excluded_tags[] = $tag['term_id'];
 
-		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
-
-		$settings[ \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS ] = $this->excluded_tags;
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		$this->integration->init_settings();
-	}
-
-
-	/**
-	 * Use reflection to make a method public so we can test it.
-	 *
-	 * @param string $class_name class name
-	 * @param string $method_name method name
-	 * @return ReflectionMethod
-	 * @throws ReflectionException
-	 */
-	protected static function getMethod( $class_name, $method_name ) {
-
-		$class  = new ReflectionClass( $class_name );
-		$method = $class->getMethod( $method_name );
-		$method->setAccessible( true );
-
-		return $method;
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS, $this->excluded_tags );
 	}
 
 
