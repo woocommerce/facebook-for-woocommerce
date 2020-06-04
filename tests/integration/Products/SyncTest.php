@@ -77,6 +77,37 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Sync::create_or_update_all_products() */
+	public function test_create_or_update_all_products_excludes_variations_with_unpublished_parents() {
+
+		// create a variable product with three variations and define their prices
+		$variable_product = $this->tester->get_variable_product( 3 );
+
+		// wp_insert_post() considers the post empty if the status is the only change (!!)
+		$variable_product->set_name( 'Draft Variable' );
+		$variable_product->set_status( 'draft' );
+		$variable_product->save();
+
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+			$variation->set_regular_price( 4.99 );
+			$variation->save();
+		}
+
+		// add all eligible products to the sync queue
+		$requests = $this->create_or_update_all_products();
+
+		// test that create_or_update_all_products() didn't include any of the variations
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$index = Sync::PRODUCT_INDEX_PREFIX . $variation_id;
+
+			$this->assertArrayNotHasKey( $index, $requests );
+		}
+	}
+
+
 	/** @see Sync::create_or_update_products() */
 	public function test_create_or_update_products() {
 
