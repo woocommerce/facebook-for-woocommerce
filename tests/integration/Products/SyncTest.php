@@ -37,14 +37,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		$simple_product->save();
 
 		// add all eligible products to the sync queue
-		$sync = $this->get_sync();
-
-		$sync->create_or_update_all_products();
-
-		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
-		$requests_property->setAccessible( true );
-
-		$requests = $requests_property->getValue( $sync );
+		$requests = $this->create_or_update_all_products();
 
 		// test that create_or_update_all_products() added the three variations with price to the sync queue
 		foreach ( $variable_product->get_children() as $variation_id ) {
@@ -61,6 +54,26 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
 		// test no other products or variations were added
 		$this->assertEquals( count( $variable_product->get_children() ) + 1, count( $requests ) );
+	}
+
+
+	/**
+	 * Uses the Sync handler to add all eligible product IDs to the requests array to be created or updated.
+	 *
+	 * Returns an array of UPDATE requests.
+	 *
+	 * @return array
+	 */
+	private function create_or_update_all_products() {
+
+		$sync = $this->get_sync();
+
+		$sync->create_or_update_all_products();
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		return $requests_property->getValue( $sync );
 	}
 
 
