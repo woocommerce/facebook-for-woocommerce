@@ -13,7 +13,7 @@
  * Version: 2.0.0-dev.1
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.5.0
- * WC tested up to: 4.1.0
+ * WC tested up to: 4.2.0
  *
  * @package FacebookCommerce
  */
