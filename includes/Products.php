@@ -121,6 +121,51 @@ class Products {
 
 
 	/**
+	 * Disables sync for products that belong to the given category or tag.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $args {
+	 *     @type string|array $taxonomy product_cat or product_tag
+	 *     @type string|array $include array or comma/space-separated string of term IDs to include
+	 * }
+	 */
+	public static function disable_sync_for_products_with_terms( array $args ) {
+
+		$args = wp_parse_args( $args, [
+			'taxonomy' => 'product_cat',
+			'include'  => [],
+		] );
+
+		$products = [];
+
+		// get all products belonging to the given terms
+		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
+
+			$terms = get_terms( [
+				'taxonomy'   => $args['taxonomy'],
+				'fields'     => 'slugs',
+				'include'    => array_map( 'intval', $args['include'] ),
+			] );
+
+			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+
+				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
+
+				$products = wc_get_products( [
+					$taxonomy => $terms,
+					'limit'   => -1,
+				] );
+			}
+		}
+
+		if ( ! empty( $products ) ) {
+			Products::disable_sync_for_products( $products );
+		}
+	}
+
+
+	/**
 	 * Determines whether the given product should be synced.
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
