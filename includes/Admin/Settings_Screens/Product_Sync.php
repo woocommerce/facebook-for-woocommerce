@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
@@ -122,6 +123,52 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		<table class="form-table">
 
 		<?php
+	}
+
+
+	/**
+	 * Saves the Product Sync settings.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function save() {
+
+		$integration = facebook_for_woocommerce()->get_integration();
+
+		$previous_product_cat_ids = $integration->get_excluded_product_category_ids();
+		$previous_product_tag_ids = $integration->get_excluded_product_tag_ids();
+
+		parent::save();
+
+		// when settings are saved, if there are new excluded categories/terms we should exclude corresponding products from sync
+		$new_product_cat_ids = array_diff( $integration->get_excluded_product_category_ids(), $previous_product_cat_ids );
+		$new_product_tag_ids = array_diff( $integration->get_excluded_product_tag_ids(), $previous_product_tag_ids );
+
+		$this->disable_sync_for_excluded_products( $new_product_cat_ids, $new_product_tag_ids );
+	}
+
+
+	/**
+	 * Disables sync for products that belong to any of the given categories or tags.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $product_cat_ids IDs of excluded categories
+	 * @param array $product_tag_ids IDs of excluded tags
+	 */
+	private function disable_sync_for_excluded_products( $product_cat_ids, $product_tag_ids ) {
+
+		// disable sync for all products belonging to excluded categories
+		Products::disable_sync_for_products_with_terms( [
+			'taxonomy'   => 'product_cat',
+			'include'    => $product_cat_ids,
+		] );
+
+		// disable sync for all products belonging to excluded tags
+		Products::disable_sync_for_products_with_terms( [
+			'taxonomy'   => 'product_tag',
+			'include'    => $product_tag_ids,
+		] );
 	}
 
 
