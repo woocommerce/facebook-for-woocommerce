@@ -41,6 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 1.11.4-dev.1 =
  * Fix - Do not sync variations for draft variable products created by duplicating products
+ * Fix - Do not log an error when the product is null on add to cart redirect
 
 = 2020.05.20 - version 1.11.3 =
  * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
