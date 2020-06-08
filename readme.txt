@@ -43,7 +43,6 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Tweak - Show Facebook options for virtual products and variations
  * Tweak - Hide "Sync and show" option for virtual products and variations
  * Tweak - On upgrade, automatically set sync-enabled and visible virtual products and virtual variations to Sync and hide
- * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
  * Fix - Use the plugin version instead of a timestamp as the version number for enqueued scripts and stylesheets
 
 = 2020.06.04 - version 1.11.4 =
