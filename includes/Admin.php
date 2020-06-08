@@ -62,8 +62,8 @@ class Admin {
 
 		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
 		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
-		// add admin notice to inform sync has been automatically disabled for virtual products
-		add_action( 'admin_notices', [ $this, 'add_disabled_virtual_products_sync_notice' ] );
+		// add admin notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations
+		add_action( 'admin_notices', [ $this, 'add_handled_virtual_products_variations_notice' ] );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -856,13 +856,13 @@ class Admin {
 
 
 	/**
-	 * Prints a notice to inform sync has been automatically disabled for virtual products.
+	 * Prints a notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations.
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.3-dev.2
+	 * @since 2.0.0-dev.1
 	 */
-	public function add_disabled_virtual_products_sync_notice() {
+	public function add_handled_virtual_products_variations_notice() {
 
 		if ( 'yes' === get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) &&
 		     'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_skipped', 'no' ) ) {
