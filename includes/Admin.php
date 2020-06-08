@@ -60,7 +60,7 @@ class Admin {
 		// add admin notice to inform that disabled products may need to be deleted manually
 		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
 
-		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
+		// add admin notice if the user is enabling sync for virtual products using the bulk action
 		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
 		// add admin notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations
 		add_action( 'admin_notices', [ $this, 'add_handled_virtual_products_variations_notice' ] );
@@ -828,7 +828,7 @@ class Admin {
 
 
 	/**
-	 * Prints a notice on products page to inform users that the virtual products selected for the Include bulk action will NOT have sync enabled.
+	 * Prints a notice on products page to inform users that the virtual products selected for the Include bulk action will have sync enabled, but will be hidden.
 	 *
 	 * @internal
 	 *
@@ -841,11 +841,12 @@ class Admin {
 
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 				sprintf(
-					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %3$sClick here to read more about Facebook\'s policy%4$s.', 'facebook-for-woocommerce' ),
-					'<strong>',
-					'</strong>',
-					'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
+					/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
+					esc_html__( '%2%s%1$s%3$s products could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit some product types (like virtual products). You may still advertise Virtual products on Facebook.', 'facebook-for-woocommerce' ),
+					1, // TODO: grab number
+					'<a href="#">', // TODO: add link
+					'</a>',
+					'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 					'</a>'
 				),
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
