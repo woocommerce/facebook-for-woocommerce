@@ -49,13 +49,6 @@ class Admin_Test extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-	/** @see Facebook\Admin::validate_cart_url() */
-	public function test_validate_cart_url() {
-
-		$this->assertTrue( (bool) has_action( 'admin_notices', [ $this->admin, 'validate_cart_url' ] ) );
-	}
-
-
 	/** @see Facebook\Admin::add_product_list_table_column() */
 	public function test_add_product_list_table_columns() {
 
