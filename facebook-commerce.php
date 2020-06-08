@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
@@ -874,15 +875,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED;
-		$sync_enabled = \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode && ! $product->is_virtual();
+		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : Admin::SYNC_MODE_SYNC_DISABLED;
+		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
+
+		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
+			// force to Sync and hide
+			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
+		}
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
 			if ( $sync_enabled ) {
 
 				Products::enable_sync_for_products( [ $product ] );
-				Products::set_product_visibility( $product, \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
+				Products::set_product_visibility( $product, Admin::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
 
 				$this->save_product_settings( $product );
 
@@ -890,7 +896,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				// if previously enabled, add a notice on the next page load
 				if ( Products::is_sync_enabled_for_product( $product ) ) {
-					\SkyVerge\WooCommerce\Facebook\Admin::add_product_disabled_sync_notice();
+					Admin::add_product_disabled_sync_notice();
 				}
 
 				Products::disable_sync_for_products( [ $product ] );
