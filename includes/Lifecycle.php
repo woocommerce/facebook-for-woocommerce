@@ -269,6 +269,9 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 				}
 			}
 		}
+
+		// deletes an option that is not longer used to generate an admin notice
+		delete_option( 'fb_cart_url' );
 	}
 
 
