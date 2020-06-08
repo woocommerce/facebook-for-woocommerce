@@ -10,7 +10,7 @@
 
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
-use SkyVerge\WooCommerce\Facebook\Utilities\Background_Disable_Virtual_Products_Sync;
+use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -54,8 +54,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
 		private $product_feed;
 
-		/** @var Background_Disable_Virtual_Products_Sync instance */
-		protected $background_disable_virtual_products_sync;
+		/** @var Background_Handle_Virtual_Products_Variations instance */
+		protected $background_handle_virtual_products_variations;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
 		private $products_sync_handler;
@@ -130,9 +130,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
 
-					require_once __DIR__ . '/includes/Utilities/Background_Disable_Virtual_Products_Sync.php';
+					require_once __DIR__ . '/includes/Utilities/Background_Handle_Virtual_Products_Variations.php';
 
-					$this->background_disable_virtual_products_sync = new Background_Disable_Virtual_Products_Sync();
+					$this->background_handle_virtual_products_variations = new Background_Handle_Virtual_Products_Variations();
 				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
@@ -437,15 +437,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Gets the background disable virtual products sync handler instance.
+		 * Gets the background handle virtual products and variations handler instance.
 		 *
-		 * @since 1.11.3-dev.2
+		 * @since 2.0.0-dev.1
 		 *
-		 * @return Background_Disable_Virtual_Products_Sync
+		 * @return Background_Handle_Virtual_Products_Variations
 		 */
-		public function get_background_disable_virtual_products_sync_instance() {
+		public function get_background_handle_virtual_products_variations_instance() {
 
-			return $this->background_disable_virtual_products_sync;
+			return $this->background_handle_virtual_products_variations;
 		}
 
 
