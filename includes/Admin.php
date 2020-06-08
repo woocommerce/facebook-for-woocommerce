@@ -644,69 +644,69 @@ class Admin {
 
 			if ( ! empty( $product_ids ) ) {
 
-				if ( 'facebook_include' === $action ) {
+				/** @var \WC_Product[] $enabling_sync_virtual_products virtual products that are being included */
+				$enabling_sync_virtual_products = [];
+				/** @var \WC_Product_Variation[] $enabling_sync_virtual_variations virtual variations that are being included */
+				$enabling_sync_virtual_variations = [];
 
-					/** @var \WC_Product[] $enabling_sync_virtual_products virtual products that are being included */
-					$enabling_sync_virtual_products = [];
-					/** @var \WC_Product_Variation[] $enabling_sync_virtual_variations virtual variations that are being included */
-					$enabling_sync_virtual_variations = [];
+				foreach ( $product_ids as $product_id ) {
 
-					foreach ( $product_ids as $product_id ) {
+					if ( $product = wc_get_product( $product_id ) ) {
 
-						if ( $product = wc_get_product( $product_id ) ) {
+						$products[] = $product;
 
-							$products[] = $product;
+						if ( 'facebook_include' === $action ) {
 
-							if ( 'facebook_include' === $action ) {
+							if ( $product->is_virtual() && ! Products::is_sync_enabled_for_product( $product ) ) {
 
-								if ( $product->is_virtual() && ! Products::is_sync_enabled_for_product( $product ) ) {
+								$enabling_sync_virtual_products[ $product->get_id() ] = $product;
 
-									$enabling_sync_virtual_products[ $product->get_id() ] = $product;
+							} else {
 
-								} else {
+								if ( $product->is_type( 'variable' ) ) {
 
-									if ( $product->is_type( 'variable' ) ) {
+									// collect the virtual variations
+									foreach ( $product->get_children() as $variation_id ) {
 
-										// collect the virtual variations
-										foreach ( $product->get_children() as $variation_id ) {
+										$variation = wc_get_product( $variation_id );
 
-											$variation = wc_get_product( $variation_id );
+										if ( $variation && $variation->is_virtual() && ! Products::is_sync_enabled_for_product( $variation ) ) {
 
-											if ( $variation && $variation->is_virtual() && ! Products::is_sync_enabled_for_product( $variation ) ) {
-
-												$enabling_sync_virtual_products[ $product->get_id() ]     = $product;
-												$enabling_sync_virtual_variations[ $variation->get_id() ] = $variation;
-											}
+											$enabling_sync_virtual_products[ $product->get_id() ]     = $product;
+											$enabling_sync_virtual_variations[ $variation->get_id() ] = $variation;
 										}
 									}
 								}
 							}
 						}
 					}
+				}
 
-					if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
+				if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
 
-						// display notice if enabling sync for virtual products or variations
-						if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync' ) ) {
+					// display notice if enabling sync for virtual products or variations
+					if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync' ) ) {
 
-							set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
-						}
+						set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
+					}
 
-						// set visibility for virtual products
-						foreach ( $enabling_sync_virtual_products as $product ) {
+					// set visibility for virtual products
+					foreach ( $enabling_sync_virtual_products as $product ) {
 
-							// do not set visibility for variable products
-							if ( ! $product->is_type( 'variable' ) ) {
-								Products::set_product_visibility( $product, false );
-							}
-						}
-
-						// set visibility for virtual variations
-						foreach ( $enabling_sync_virtual_variations as $variation ) {
-
-							Products::set_product_visibility( $variation, false );
+						// do not set visibility for variable products
+						if ( ! $product->is_type( 'variable' ) ) {
+							Products::set_product_visibility( $product, false );
 						}
 					}
+
+					// set visibility for virtual variations
+					foreach ( $enabling_sync_virtual_variations as $variation ) {
+
+						Products::set_product_visibility( $variation, false );
+					}
+				}
+
+				if ( 'facebook_include' === $action ) {
 
 					Products::enable_sync_for_products( $products );
 
