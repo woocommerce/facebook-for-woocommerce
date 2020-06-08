@@ -91,6 +91,39 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Toggles (shows/hides) Sync and show option and changes the select value if needed.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param {boolean} show whether the Sync and show option should be displayed or not
+		 * @param {jQuery} $select the sync mode select
+		 */
+		function toggleSyncAndShowOption( show, $select ) {
+
+			if ( ! show ) {
+
+				// hide Sync and show option
+				$select.find( 'option[value=\'sync_and_show\']' ).hide();
+
+				if ( 'sync_and_show' === $select.val() ) {
+					// change selected option to Sync and hide
+					$select.val( 'sync_and_hide' );
+				}
+
+			} else {
+
+				// show Sync and Show option
+				$select.find( 'option[value=\'sync_and_show\']' ).show();
+
+				// restore originally selected option
+				if ( $select.prop( 'original' ) ) {
+					$select.val( $select.prop( 'original' ) );
+				}
+			}
+		}
+
+
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
@@ -100,35 +133,16 @@ jQuery( document ).ready( function( $ ) {
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
 			syncModeSelect.prop( 'original', $( this ).val() );
 
-		} ).trigger( 'change' );;
+		} ).trigger( 'change' );
 
 		$( '#_virtual' ).on( 'change', function () {
-
-			// hide/show Sync and show option
-			if ( $( this ).prop( 'checked' ) ) {
-
-				syncModeSelect.find( 'option[value=\'sync_and_show\']' ).hide();
-
-				if ( 'sync_and_show' === syncModeSelect.val() ) {
-					// change selected option to Sync and hide
-					syncModeSelect.val( 'sync_and_hide' );
-				}
-
-			} else {
-
-				syncModeSelect.find( 'option[value=\'sync_and_show\']' ).show();
-
-				// restore originally selected option
-				if ( syncModeSelect.prop( 'original' ) ) {
-					syncModeSelect.val( syncModeSelect.prop( 'original' ) );
-				}
-			}
-
+			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
 		} ).trigger( 'change' );
 
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+			$( this ).prop( 'original', $( this ).val() );
 		} );
 
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
@@ -136,6 +150,11 @@ jQuery( document ).ready( function( $ ) {
 			$( '.js-variable-fb-sync-toggle' ).each( function () {
 				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
 			} );
+
+			$( '.variable_is_virtual' ).on( 'change', function () {
+				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
+				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
+			} ).trigger('change');
 		} );
 
 		// show/hide Custom Image URL setting
