@@ -61,7 +61,9 @@ class Admin {
 		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
 
 		// add admin notice if the user is enabling sync for virtual products using the bulk action
-		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
+		add_action( 'admin_notices', [ $this, 'maybe_add_enabling_virtual_products_sync_notice' ] );
+		add_filter( 'request',       [ $this, 'filter_virtual_products_affected_enabling_sync' ] );
+
 		// add admin notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations
 		add_action( 'admin_notices', [ $this, 'add_handled_virtual_products_variations_notice' ] );
 
@@ -685,7 +687,10 @@ class Admin {
 					if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
 
 						// display notice if enabling sync for virtual products or variations
-						$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
+						if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync' ) ) {
+
+							set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
+						}
 
 						// set visibility for virtual products
 						foreach ( $enabling_sync_virtual_products as $product ) {
@@ -845,17 +850,18 @@ class Admin {
 	 *
 	 * @since 1.11.3-dev.2
 	 */
-	public function add_enabling_virtual_products_sync_notice() {
-		global $current_screen;
+	public function maybe_add_enabling_virtual_products_sync_notice() {
 
-		if ( isset( $_GET['enabling_virtual_products_sync'] ) && isset( $current_screen->id ) && 'edit-product' === $current_screen->id ) {
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id();
+
+		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && ( $affected_products = get_transient( $transient_name ) ) ) {
 
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 				sprintf(
 					/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
 					esc_html__( '%2%s%1$s%3$s products could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit some product types (like virtual products). You may still advertise Virtual products on Facebook.', 'facebook-for-woocommerce' ),
-					1, // TODO: grab number
-					'<a href="#">', // TODO: add link
+					count( $affected_products ),
+					'<a href="' . add_query_arg( [ 'facebook_show_affected_products' => 1 ] ) . '">',
 					'</a>',
 					'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 					'</a>'
@@ -864,6 +870,29 @@ class Admin {
 				[ 'notice_class' => 'notice-info' ]
 			);
 		}
+	}
+
+
+	/**
+	 * Tweaks the query to show a filtered view with the affected products.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $query_vars product query vars for the edit screen
+	 * @return array
+	 */
+	public function filter_virtual_products_affected_enabling_sync( $query_vars ) {
+
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id();
+
+		if ( isset( $_GET['facebook_show_affected_products'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && $affected_products = get_transient( $transient_name ) ) {
+
+			$query_vars['post__in'] = array_column( $affected_products, 'id' );
+		}
+
+		return $query_vars;
 	}
 
 
