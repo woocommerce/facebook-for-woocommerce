@@ -96,10 +96,35 @@ jQuery( document ).ready( function( $ ) {
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
 
 		syncModeSelect.on( 'change', function() {
-			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
-		} );
 
-		toggleFacebookSettings( syncModeSelect.val() !== 'sync_disabled', facebookSettingsPanel );
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
+			syncModeSelect.prop( 'original', $( this ).val() );
+
+		} ).trigger( 'change' );;
+
+		$( '#_virtual' ).on( 'change', function () {
+
+			// hide/show Sync and show option
+			if ( $( this ).prop( 'checked' ) ) {
+
+				syncModeSelect.find( 'option[value=\'sync_and_show\']' ).hide();
+
+				if ( 'sync_and_show' === syncModeSelect.val() ) {
+					// change selected option to Sync and hide
+					syncModeSelect.val( 'sync_and_hide' );
+				}
+
+			} else {
+
+				syncModeSelect.find( 'option[value=\'sync_and_show\']' ).show();
+
+				// restore originally selected option
+				if ( syncModeSelect.prop( 'original' ) ) {
+					syncModeSelect.val( syncModeSelect.prop( 'original' ) );
+				}
+			}
+
+		} ).trigger( 'change' );
 
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
@@ -130,6 +155,7 @@ jQuery( document ).ready( function( $ ) {
 			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
 			$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 		} );
+
 
 		let submitProductSave = false;
 
