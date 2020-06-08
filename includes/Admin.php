@@ -1157,8 +1157,13 @@ class Admin {
 		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? $_POST['variable_facebook_sync_mode'][ $index ] : self::SYNC_MODE_SYNC_DISABLED;
 		$sync_enabled = self::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
+		if ( self::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $variation->is_virtual() ) {
+			// force to Sync and hide
+			$sync_mode = self::SYNC_MODE_SYNC_AND_HIDE;
+		}
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( $sync_enabled && ! $variation->is_virtual() ) {
+		if ( $sync_enabled ) {
 
 			Products::enable_sync_for_products( [ $variation ] );
 			Products::set_product_visibility( $variation, self::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
