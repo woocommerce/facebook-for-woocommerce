@@ -128,7 +128,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
 
-				if ( 'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) ) {
+				if ( 'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
 
 					require_once __DIR__ . '/includes/Utilities/Background_Handle_Virtual_Products_Variations.php';
 

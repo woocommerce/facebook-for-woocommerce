@@ -88,7 +88,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 		// job complete! :)
 		if ( $this->count_remaining_products() === 0 ) {
 
-			update_option( 'wc_facebook_sync_virtual_products_disabled', 'yes' );
+			update_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'yes' );
 
 			$this->complete_job( $job );
 		}
