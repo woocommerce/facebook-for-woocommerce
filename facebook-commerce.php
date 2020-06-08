@@ -141,6 +141,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the API flag to set a product as not visible in the Facebook shop */
 	const FB_SHOP_PRODUCT_HIDDEN = 'staging';
 
+	/** @var string @deprecated  */
 	const FB_CART_URL = 'fb_cart_url';
 
 	const FB_MESSAGE_DISPLAY_TIME = 180;
@@ -2053,12 +2054,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again.", 'facebook-for-woocommerce' ) );
 		}
 
-		// Cache the cart URL to display a warning in case it changes later
-		$cart_url = get_option( self::FB_CART_URL );
-		if ( $cart_url != wc_get_cart_url() ) {
-			update_option( self::FB_CART_URL, wc_get_cart_url() );
-		}
-
 		// Get all published posts. First unsynced then already-synced.
 		$post_ids_new = WC_Facebookcommerce_Utils::get_wp_posts(
 			self::FB_PRODUCT_GROUP_ID,
@@ -2209,12 +2204,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 
 			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again.", 'facebook-for-woocommerce' ) );
-		}
-
-		// Cache the cart URL to display a warning in case it changes later
-		$cart_url = get_option( self::FB_CART_URL );
-		if ( $cart_url != wc_get_cart_url() ) {
-			update_option( self::FB_CART_URL, wc_get_cart_url() );
 		}
 
 		if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) {

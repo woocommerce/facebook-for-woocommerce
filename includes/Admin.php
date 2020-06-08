@@ -54,9 +54,6 @@ class Admin {
 		// may trigger the modal to open to warn the merchant about a conflict with the current product terms
 		add_action( 'admin_footer', [ $this, 'validate_product_excluded_terms' ] );
 
-		// add admin notification in case of site URL change
-		add_action( 'admin_notices', [ $this, 'validate_cart_url' ] );
-
 		// add admin notice to inform that disabled products may need to be deleted manually
 		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
 
@@ -744,36 +741,16 @@ class Admin {
 	/**
 	 * Prints a notice on products page in case the current cart URL is not the original sync URL.
 	 *
+     * TODO remove this deprecated method by version 3.0.0 or by June 2021 {FN 2020-06-09}
+     *
 	 * @internal
 	 *
-	 * TODO: update this method to use the notice handler once we framework the plugin {CW 2020-01-09}
-	 *
 	 * @since 1.10.0
+     * @deprecated 2.0.0-dev.1
 	 */
 	public function validate_cart_url() {
-		global $current_screen;
 
-		if ( isset( $current_screen->id ) && in_array( $current_screen->id, [ 'edit-product', 'product' ], true ) ) :
-
-			$cart_url = get_option( \WC_Facebookcommerce_Integration::FB_CART_URL, '' );
-
-			if ( ! empty( $cart_url ) && $cart_url !== wc_get_cart_url() ) :
-
-				?>
-				<div class="notice notice-warning">
-					<?php printf(
-						/* translators: Placeholders: %1$s - Facebook for Woocommerce, %2$s - opening HTML <a> link tag, %3$s - closing HTML </a> link tag */
-						'<p>' . esc_html__( '%1$s: One or more of your products is using a checkout URL that may be different than your shop checkout URL. %2$sRe-sync your products to update checkout URLs on Facebook%3$s.', 'facebook-for-woocommerce' ) . '</p>',
-						'<strong>' . esc_html__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ) . '</strong>',
-						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-						'</a>'
-					); ?>
-				</div>
-				<?php
-
-			endif;
-
-		endif;
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
