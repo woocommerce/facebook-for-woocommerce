@@ -327,17 +327,17 @@ class ProductVariationSyncSettingCest {
 
 
 	/**
-	 * Test that the sync is automatically disabled when saving virtual variations.
+	 * Test that the setting is automatically set to Sync and hide when saving virtual variations.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 *
 	 * @throws Exception
 	 */
-	public function try_sync_disabled_saving_virtual_variations( AcceptanceTester $I ) {
+	public function try_saving_virtual_variations( AcceptanceTester $I ) {
 
 		$index = $I->amEditingProductVariation( $this->product_variation );
 
-		$I->wantTo( 'Test that the sync is automatically disabled when saving virtual variations' );
+		$I->wantTo( 'Test that the setting is automatically set to Sync and hide when saving virtual variations' );
 
 		$I->waitForElementVisible( "#variable_description{$index}" );
 
@@ -351,11 +351,8 @@ class ProductVariationSyncSettingCest {
 
 		$I->waitForElementVisible( "#variable_description{$index}" );
 
-		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
-		$I->click( "[name='variable_is_virtual[{$index}]']" );
-
 		$I->seeElement( "#variable_facebook_sync_mode{$index}" );
-		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Do not sync' );
+		$I->seeOptionIsSelected( "#variable_facebook_sync_mode{$index}", 'Sync and hide' );
 	}
 
 
