@@ -856,16 +856,21 @@ class Admin {
 
 		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && ( $affected_products = get_transient( $transient_name ) ) ) {
 
-			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
-				sprintf(
-					/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
-					esc_html__( '%2%s%1$s%3$s products could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit some product types (like virtual products). You may still advertise Virtual products on Facebook.', 'facebook-for-woocommerce' ),
+			$message = sprintf( esc_html(
+				/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
+				_n( '%2$s%1$s product%3$s could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit some product types (like virtual products). You may still advertise Virtual products on Facebook.',
+					'%2$s%1$s products%3$s could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit some product types (like virtual products). You may still advertise Virtual products on Facebook.',
 					count( $affected_products ),
-					'<a href="' . add_query_arg( [ 'facebook_show_affected_products' => 1 ] ) . '">',
-					'</a>',
-					'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
-					'</a>'
-				),
+					'facebook-for-woocommerce' ) ),
+				count( $affected_products ),
+				'<a href="' . add_query_arg( [ 'facebook_show_affected_products' => 1 ] ) . '">',
+				'</a>',
+				'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
+				'</a>'
+			);
+
+			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
+				$message,
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
 				[ 'notice_class' => 'notice-info' ]
 			);
