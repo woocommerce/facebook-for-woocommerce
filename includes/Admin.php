@@ -922,7 +922,7 @@ class Admin {
 					'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 					'</a>'
 				),
-				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-disabled-virtual-products-sync',
+				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-updated-virtual-products-sync',
 				[
 					'notice_class'            => 'notice-info',
 					'always_show_on_settings' => false,
