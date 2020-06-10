@@ -1,3 +1,7 @@
+#woocommerce-product-data .fb-product-image-source-field .wc-radios {
+	width: auto;
+}
+
 /* added #woocommerce-product-data to increase selector specificity */
 #woocommerce-product-data .fb-product-image-source-field .wc-radios li {
 	margin-bottom: 0;
