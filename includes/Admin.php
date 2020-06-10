@@ -687,6 +687,7 @@ class Admin {
 					// display notice if enabling sync for virtual products or variations
 					if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync' ) ) {
 
+						$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
 						set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
 					}
 
@@ -854,7 +855,7 @@ class Admin {
 
 		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id();
 
-		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && ( $affected_products = get_transient( $transient_name ) ) ) {
+		if ( isset( $_GET['enabling_virtual_products_sync'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && ( $affected_products = get_transient( $transient_name ) ) ) {
 
 			$message = sprintf( esc_html(
 				/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
