@@ -685,8 +685,8 @@ class Admin {
 				if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
 
 					// display notice if enabling sync for virtual products or variations
-					$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
-					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
+					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_show_notice_' . get_current_user_id(), true, 15 * MINUTE_IN_SECONDS );
+					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
 
 					// set visibility for virtual products
 					foreach ( $enabling_sync_virtual_products as $product ) {
@@ -850,9 +850,10 @@ class Admin {
 	 */
 	public function maybe_add_enabling_virtual_products_sync_notice() {
 
-		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id();
+		$show_notice_transient_name       = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_show_notice_' . get_current_user_id();
+		$affected_products_transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
 
-		if ( isset( $_GET['enabling_virtual_products_sync'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && ( $affected_products = get_transient( $transient_name ) ) ) {
+		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && get_transient( $show_notice_transient_name ) && ( $affected_products = get_transient( $affected_products_transient_name ) ) ) {
 
 			$message = sprintf( esc_html(
 				/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
@@ -871,11 +872,12 @@ class Admin {
 				$message,
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
 				[
-					'dismissible'             => false,
-					'always_show_on_settings' => true,
-					'notice_class'            => 'notice-info',
+					'dismissible'  => false,
+					'notice_class' => 'notice-info',
 				]
 			);
+
+			delete_transient( $show_notice_transient_name );
 		}
 	}
 
@@ -892,7 +894,7 @@ class Admin {
 	 */
 	public function filter_virtual_products_affected_enabling_sync( $query_vars ) {
 
-		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id();
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
 
 		if ( isset( $_GET['facebook_show_affected_products'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && $affected_products = get_transient( $transient_name ) ) {
 
