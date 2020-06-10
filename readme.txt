@@ -41,6 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 2.0.0-dev.1 =
  * Fix - Use the plugin version instead of a timestamp as the version number for enqueued scripts and stylesheets
+ * Fix - Use the short description of the parent product for product variations that don't have a description or Facebook description
 
 = 2020.06.04 - version 1.11.4 =
  * Fix - Do not sync variations for draft variable products created by duplicating products

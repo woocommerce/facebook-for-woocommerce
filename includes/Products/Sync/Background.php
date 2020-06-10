@@ -248,7 +248,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			throw new Framework\SV_WC_Plugin_Exception( "No parent product found with ID equal to {$product->get_parent_id()}." );
 		}
 
-		$fb_parent_product = new \WC_Facebook_Product( $parent_product );
+		$fb_parent_product = new \WC_Facebook_Product( $parent_product->get_id() );
 		$fb_product        = new \WC_Facebook_Product( $product->get_id(), $fb_parent_product );
 
 		$data = $fb_product->prepare_product();
