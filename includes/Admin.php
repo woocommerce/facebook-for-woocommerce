@@ -741,12 +741,12 @@ class Admin {
 	/**
 	 * Prints a notice on products page in case the current cart URL is not the original sync URL.
 	 *
-     * TODO remove this deprecated method by version 3.0.0 or by June 2021 {FN 2020-06-09}
-     *
+	 * TODO remove this deprecated method by version 3.0.0 or by June 2021 {FN 2020-06-09}
+	 *
 	 * @internal
 	 *
 	 * @since 1.10.0
-     * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0-dev.1
 	 */
 	public function validate_cart_url() {
 
