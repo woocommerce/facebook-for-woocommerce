@@ -1270,10 +1270,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'retailer_id' => $retailer_id,
 		);
 
-		// Default visibility on create = published
-		$woo_product->fb_visibility = true;
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
-
 		if ( $variants ) {
 			$product_group_data['variants'] =
 			$woo_product->prepare_variants_for_group();
@@ -1292,7 +1288,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $create_product_group_result ) {
 			$decode_result       = WC_Facebookcommerce_Utils::decode_json( $create_product_group_result['body'] );
 			$fb_product_group_id = $decode_result->id;
-			// update_post_meta is actually more of a create_or_update
+
 			update_post_meta(
 				$woo_product->get_id(),
 				self::FB_PRODUCT_GROUP_ID,
@@ -1312,14 +1308,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	function create_product_item( $woo_product, $retailer_id, $product_group_id ) {
-		// Default visibility on create = published
-		$woo_product->fb_visibility = true;
+
 		$product_data               = $woo_product->prepare_product( $retailer_id );
 		if ( ! $product_data['price'] ) {
 			return 0;
 		}
-
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
 
 		$product_result = $this->check_api_result(
 			$this->fbgraph->create_product_item(
@@ -3446,8 +3439,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					$fbid_type,
 					$fb_id
 				);
-
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, true );
 
 				return $fb_id;
 			}
