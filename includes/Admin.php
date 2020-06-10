@@ -685,11 +685,8 @@ class Admin {
 				if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
 
 					// display notice if enabling sync for virtual products or variations
-					if ( ! facebook_for_woocommerce()->get_admin_notice_handler()->is_notice_dismissed( 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync' ) ) {
-
-						$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
-						set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
-					}
+					$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
+					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_enabling_virtual_products_sync_notice_' . get_current_user_id(), $enabling_sync_virtual_products, 15 * MINUTE_IN_SECONDS );
 
 					// set visibility for virtual products
 					foreach ( $enabling_sync_virtual_products as $product ) {
