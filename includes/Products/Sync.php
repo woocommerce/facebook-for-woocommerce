@@ -82,12 +82,21 @@ class Sync {
 			'posts_per_page' => -1,
 		];
 
-		foreach ( get_posts( $args ) as $post_id => $post_parent ) {
-
-			$product_ids[] = $post_id;
+		foreach ( get_posts( $args ) as $post_id => $parent_id ) {
 
 			if ( 'product_variation' === get_post_type( $post_id ) ) {
-				$parent_product_ids[] = $post_parent;
+
+				// keep track of all parents to remove them from the list of products to sync
+				$parent_product_ids[] = $parent_id;
+
+				// include variations with published parents only
+				if ( 'publish' === get_post_status( $parent_id ) ) {
+					$product_ids[] = $post_id;
+				}
+
+			} else {
+
+				$product_ids[] = $post_id;
 			}
 		}
 

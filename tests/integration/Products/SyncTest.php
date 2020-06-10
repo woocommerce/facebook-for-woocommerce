@@ -37,14 +37,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		$simple_product->save();
 
 		// add all eligible products to the sync queue
-		$sync = $this->get_sync();
-
-		$sync->create_or_update_all_products();
-
-		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
-		$requests_property->setAccessible( true );
-
-		$requests = $requests_property->getValue( $sync );
+		$requests = $this->create_or_update_all_products();
 
 		// test that create_or_update_all_products() added the three variations with price to the sync queue
 		foreach ( $variable_product->get_children() as $variation_id ) {
@@ -61,6 +54,57 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
 		// test no other products or variations were added
 		$this->assertEquals( count( $variable_product->get_children() ) + 1, count( $requests ) );
+	}
+
+
+	/**
+	 * Uses the Sync handler to add all eligible product IDs to the requests array to be created or updated.
+	 *
+	 * Returns an array of UPDATE requests.
+	 *
+	 * @return array
+	 */
+	private function create_or_update_all_products() {
+
+		$sync = $this->get_sync();
+
+		$sync->create_or_update_all_products();
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		return $requests_property->getValue( $sync );
+	}
+
+
+	/** @see Sync::create_or_update_all_products() */
+	public function test_create_or_update_all_products_excludes_variations_with_unpublished_parents() {
+
+		// create a variable product with three variations and define their prices
+		$variable_product = $this->tester->get_variable_product( 3 );
+
+		// wp_insert_post() considers the post empty if the status is the only change (!!)
+		$variable_product->set_name( 'Draft Variable' );
+		$variable_product->set_status( 'draft' );
+		$variable_product->save();
+
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+			$variation->set_regular_price( 4.99 );
+			$variation->save();
+		}
+
+		// add all eligible products to the sync queue
+		$requests = $this->create_or_update_all_products();
+
+		// test that create_or_update_all_products() didn't include any of the variations
+		foreach ( $variable_product->get_children() as $variation_id ) {
+
+			$index = Sync::PRODUCT_INDEX_PREFIX . $variation_id;
+
+			$this->assertArrayNotHasKey( $index, $requests );
+		}
 	}
 
 
