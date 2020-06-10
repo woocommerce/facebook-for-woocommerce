@@ -870,7 +870,11 @@ class Admin {
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 				$message,
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
-				[ 'dismissible' => false, 'notice_class' => 'notice-info' ]
+				[
+					'dismissible'             => false,
+					'always_show_on_settings' => true,
+					'notice_class'            => 'notice-info',
+				]
 			);
 		}
 	}
