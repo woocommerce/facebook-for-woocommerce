@@ -935,7 +935,7 @@ class Admin {
 					'cols'        => 40,
 					'rows'        => 20,
 					'value'       => $description,
-					'class'       => 'enable-if-sync-enabled',
+					'class'       => 'short enable-if-sync-enabled',
 				] );
 
 				woocommerce_wp_radio( [
