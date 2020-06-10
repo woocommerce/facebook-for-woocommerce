@@ -2299,7 +2299,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 *
 	 * @since 1.10.0
-	 * @deprecate 2.0.0-dev.1
+	 * @deprecated 2.0.0-dev.1
 	 */
 	public function process_admin_options() {
 
