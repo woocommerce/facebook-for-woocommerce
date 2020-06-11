@@ -8,6 +8,7 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
@@ -627,15 +628,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<?php
 
-		} elseif ( $woo_product->woo_product->is_virtual() ) {
-
-			printf(
-				/* translators: Placeholders: %1$s - opening HTML <a> tag, %2$s - closing HTML </a> tag */
-				esc_html__( 'Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %1$sClick here to read more about Facebook\'s policy%2$s.', 'facebook-for-woocommerce' ),
-				'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
-				'</a>'
-			);
-
 		} else {
 
 			?>
@@ -875,15 +867,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED;
-		$sync_enabled = \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode && ! $product->is_virtual();
+		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : Admin::SYNC_MODE_SYNC_DISABLED;
+		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
+
+		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
+			// force to Sync and hide
+			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
+		}
 
 		if ( ! $product->is_type( 'variable' ) ) {
 
 			if ( $sync_enabled ) {
 
 				Products::enable_sync_for_products( [ $product ] );
-				Products::set_product_visibility( $product, \SkyVerge\WooCommerce\Facebook\Admin::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
+				Products::set_product_visibility( $product, Admin::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );
 
 				$this->save_product_settings( $product );
 
@@ -891,7 +888,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				// if previously enabled, add a notice on the next page load
 				if ( Products::is_sync_enabled_for_product( $product ) ) {
-					\SkyVerge\WooCommerce\Facebook\Admin::add_product_disabled_sync_notice();
+					Admin::add_product_disabled_sync_notice();
 				}
 
 				Products::disable_sync_for_products( [ $product ] );
@@ -1274,10 +1271,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'retailer_id' => $retailer_id,
 		);
 
-		// Default visibility on create = published
-		$woo_product->fb_visibility = true;
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
-
 		if ( $variants ) {
 			$product_group_data['variants'] =
 			$woo_product->prepare_variants_for_group();
@@ -1296,7 +1289,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $create_product_group_result ) {
 			$decode_result       = WC_Facebookcommerce_Utils::decode_json( $create_product_group_result['body'] );
 			$fb_product_group_id = $decode_result->id;
-			// update_post_meta is actually more of a create_or_update
+
 			update_post_meta(
 				$woo_product->get_id(),
 				self::FB_PRODUCT_GROUP_ID,
@@ -1316,14 +1309,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	function create_product_item( $woo_product, $retailer_id, $product_group_id ) {
-		// Default visibility on create = published
-		$woo_product->fb_visibility = true;
+
 		$product_data               = $woo_product->prepare_product( $retailer_id );
 		if ( ! $product_data['price'] ) {
 			return 0;
 		}
-
-		update_post_meta( $woo_product->get_id(), Products::VISIBILITY_META_KEY, true );
 
 		$product_result = $this->check_api_result(
 			$this->fbgraph->create_product_item(
@@ -3399,11 +3389,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return null;
 		}
 
-		// do not make find requests for virtual products
-		if ( $woo_product->woo_product->is_virtual() ) {
-			return null;
-		}
-
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
 		$product_fbid_result = $this->fbgraph->get_facebook_id(
@@ -3443,8 +3428,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					$fbid_type,
 					$fb_id
 				);
-
-				update_post_meta( $wp_id, Products::VISIBILITY_META_KEY, true );
 
 				return $fb_id;
 			}

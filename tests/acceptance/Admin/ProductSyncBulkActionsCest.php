@@ -18,6 +18,8 @@ class ProductSyncBulkActionsCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
+		$I->dontHavePostInDatabase( [ 'post_type' => 'product' ], true );
+
 		// save a generic product
 		$this->product = $I->haveProductInDatabase();
 
@@ -44,6 +46,8 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync enables sync for a standard product' );
 
@@ -53,6 +57,8 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->dontSee( 'If this product was previously visible in Facebook', '.notice' );
 	}
@@ -73,6 +79,8 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync enables sync for a standard product when using the secondary dropdown at the bottom of the list table' );
 
@@ -82,6 +90,8 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -109,6 +119,8 @@ class ProductSyncBulkActionsCest {
 
 		$I->see( 'Excluded category', 'table.wp-list-table td' );
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a product in an excluded category' );
 
@@ -125,6 +137,8 @@ class ProductSyncBulkActionsCest {
 
 		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 	}
 
 
@@ -152,6 +166,8 @@ class ProductSyncBulkActionsCest {
 
 		$I->see( 'Excluded tag', 'table.wp-list-table td' );
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a product with an excluded tag' );
 
@@ -168,17 +184,19 @@ class ProductSyncBulkActionsCest {
 
 		$I->waitForElementNotVisible( '#wc-backbone-modal-dialog' );
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 	}
 
 
 	/**
-	 * Test that the Include in Facebook sync does not enable sync for a virtual product.
+	 * Test that the Include in Facebook sync enables sync for a virtual product, but hides it.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 *
 	 * @throws Exception
 	 */
-	public function try_include_bulk_action_virtual( AcceptanceTester $I ) {
+	public function try_include_bulk_action_virtual_product( AcceptanceTester $I ) {
 
 		// disable sync for the product before viewing the Products page
 		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $this->product ] );
@@ -190,16 +208,21 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
-		$I->wantTo( 'Test that the Include in Facebook sync does not enable sync for a virtual product' );
+		$I->wantTo( 'Test that the Include in Facebook sync enables sync for a virtual product, but hides it' );
 
 		$I->click( "#cb-select-{$this->product->get_id()}" );
 		$I->selectOption( '[name=action]', 'Include in Facebook sync' );
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
-		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice.is-dismissible' );
+
+		$I->see( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 	}
 
 
@@ -218,6 +241,8 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product' );
 
@@ -227,6 +252,8 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 
 		$I->waitForText( 'If this product was previously visible in Facebook' );
 		$I->click( '.notice .js-wc-plugin-framework-notice-dismiss' );
@@ -259,6 +286,8 @@ class ProductSyncBulkActionsCest {
 		$I->amOnProductsPage();
 
 		$I->see( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 
 		$I->wantTo( 'Test that the Exclude from Facebook sync disables sync for a standard product when using the secondary dropdown at the bottom of the list table' );
 
@@ -268,11 +297,13 @@ class ProductSyncBulkActionsCest {
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
 		$I->see( 'Do not sync', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 	}
 
 
 	/**
-	 * Test that the Include in Facebook sync only enables sync for non-virtual variations.
+	 * Test that the Include in Facebook sync enables sync for non-virtual variations, but hides them.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 *
@@ -305,15 +336,17 @@ class ProductSyncBulkActionsCest {
 
 		$I->amOnProductsPage();
 
-		$I->wantTo( 'Test that the Include in Facebook sync only enables sync for non-virtual variations' );
+		$I->wantTo( 'Test that the Include in Facebook sync enables sync for non-virtual variations, but hides them' );
 
 		$I->click( "#cb-select-{$variable_product->get_id()}" );
 		$I->selectOption( '[name=action]', 'Include in Facebook sync' );
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$variable_product->get_id()}:not(:checked)" );
 
-		$I->see( 'Heads up! Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. Click here to read more about Facebook\'s policy.', 'div.notice.is-dismissible' );
-		$I->see( 'Sync and show', 'table.wp-list-table td' );
+		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice.is-dismissible' );
+		$I->see( 'Sync and show', 'table.wp-list-table td' ); // because it has non-virtual variations
+		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
+		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
 
 		$variable_product = wc_get_product( $variable_product );
 		$variation_ids    = $variable_product->get_children();
@@ -322,16 +355,24 @@ class ProductSyncBulkActionsCest {
 
 			$variation = wc_get_product( $variation_id );
 
-			$meta_criteria = [
+			$enabled_meta_criteria = [
 				'post_id'    => $variation_id,
 				'meta_key'   => '_wc_facebook_sync_enabled',
 				'meta_value' => 'yes',
 			];
 
+			$visibility_meta_criteria = [
+				'post_id'    => $variation_id,
+				'meta_key'   => 'fb_visibility',
+				'meta_value' => 'no',
+			];
+
 			if ( ! $variation->is_virtual() ) {
-				$I->seePostMetaInDatabase( $meta_criteria );
+				$I->seePostMetaInDatabase( $enabled_meta_criteria );
+				$I->dontSeePostMetaInDatabase( $visibility_meta_criteria );
 			} else {
-				$I->dontSeePostMetaInDatabase( $meta_criteria );
+				$I->seePostMetaInDatabase( $enabled_meta_criteria );
+				$I->seePostMetaInDatabase( $visibility_meta_criteria );
 			}
 		}
 	}

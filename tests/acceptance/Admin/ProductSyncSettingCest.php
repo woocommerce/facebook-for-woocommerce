@@ -304,49 +304,17 @@ class ProductSyncSettingCest {
 
 
 	/**
-	 * Test that the tab is hidden for virtual products.
-	 *
-	 * @param AcceptanceTester $I tester instance
-	 * @throws Exception
-	 */
-	public function try_tab_hidden_virtual_products( AcceptanceTester $I ) {
-
-		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
-
-		$I->wantTo( 'Test that the tab is hidden when the product is made virtual' );
-
-		// checkOption does not work here for some reason
-		$I->click( '#_virtual' );
-
-		$I->dontSee( 'Facebook', '.fb_commerce_tab_options' );
-
-		$I->wantTo( 'Test that the tab and fields are shown when the product is made non virtual' );
-
-		$I->click( '#_virtual' );
-
-		$I->waitForElementVisible( '.fb_commerce_tab_options' );
-
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
-
-		$I->see( 'Facebook sync', '.form-field' );
-		$I->see( 'Facebook Description', '.form-field' );
-		$I->see( 'Facebook Product Image', '.form-field' );
-		$I->see( 'Facebook Price', '.form-field' );
-	}
-
-
-	/**
-	 * Test that the sync is automatically disabled when saving virtual products.
+	 * Test that the setting is automatically set to Sync and hide when saving virtual products.
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 *
 	 * @throws Exception
 	 */
-	public function try_sync_disabled_saving_virtual_products( AcceptanceTester $I ) {
+	public function try_saving_virtual_products( AcceptanceTester $I ) {
 
 		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
 
-		$I->wantTo( 'Test that the sync is automatically disabled when saving virtual products' );
+		$I->wantTo( 'Test that the setting is automatically set to Sync and hide when saving virtual products' );
 
 		// checkOption does not work here for some reason
 		$I->click( '#_virtual' );
@@ -357,13 +325,10 @@ class ProductSyncSettingCest {
 
 		$I->waitForText( 'Product updated', 15 );
 
-		// uncheck the Virtual checkbox just so we can see the value of the sync enabled checkbox
-		$I->click( '#_virtual' );
-
 		$I->click( 'Facebook', '.fb_commerce_tab_options' );
 
 		$I->see( 'Facebook sync', '.form-field' );
-		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Do not sync' );
+		$I->seeOptionIsSelected( '#wc_facebook_sync_mode', 'Sync and hide' );
 	}
 
 

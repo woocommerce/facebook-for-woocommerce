@@ -39,7 +39,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.0',
 			'1.10.1',
 			'1.11.0',
-			'1.11.3',
 			'2.0.0',
 		];
 	}
@@ -220,27 +219,19 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 
 	/**
-	 * Upgrades to version 1.11.3.
-	 *
-	 * @since 1.11.3-dev.2
-	 */
-	protected function upgrade_to_1_11_3() {
-
-		if ( $handler = $this->get_plugin()->get_background_disable_virtual_products_sync_instance() ) {
-
-			// create_job() expects an non-empty array of attributes
-			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
-			$handler->dispatch();
-		}
-	}
-
-
-	/**
 	 * Upgrades to version 2.0.0
 	 *
 	 * @since 2.0.0-dev.1
 	 */
 	protected function upgrade_to_2_0_0() {
+
+		// handle sync enabled and visible virtual products and variations
+		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
+
+			// create_job() expects an non-empty array of attributes
+			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
+			$handler->dispatch();
+		}
 
 		update_option( 'wc_facebook_has_connected_fbe_2', 'no' );
 

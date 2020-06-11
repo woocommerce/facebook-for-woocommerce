@@ -57,10 +57,12 @@ class Admin {
 		// add admin notice to inform that disabled products may need to be deleted manually
 		add_action( 'admin_notices', [ $this, 'maybe_show_product_disabled_sync_notice' ] );
 
-		// add admin notice if the user attempted to enable sync for virtual products using the bulk action
-		add_action( 'admin_notices', [ $this, 'add_enabling_virtual_products_sync_notice' ] );
-		// add admin notice to inform sync has been automatically disabled for virtual products
-		add_action( 'admin_notices', [ $this, 'add_disabled_virtual_products_sync_notice' ] );
+		// add admin notice if the user is enabling sync for virtual products using the bulk action
+		add_action( 'admin_notices', [ $this, 'maybe_add_enabling_virtual_products_sync_notice' ] );
+		add_filter( 'request',       [ $this, 'filter_virtual_products_affected_enabling_sync' ] );
+
+		// add admin notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations
+		add_action( 'admin_notices', [ $this, 'add_handled_virtual_products_variations_notice' ] );
 
 		// add columns for displaying Facebook sync enabled/disabled and catalog visibility status
 		add_filter( 'manage_product_posts_columns',       [ $this, 'add_product_list_table_columns' ] );
@@ -639,52 +641,64 @@ class Admin {
 
 			if ( ! empty( $product_ids ) ) {
 
-				$is_enabling_sync_virtual_products   = false;
-				$is_enabling_sync_virtual_variations = false;
+				/** @var \WC_Product[] $enabling_sync_virtual_products virtual products that are being included */
+				$enabling_sync_virtual_products = [];
+				/** @var \WC_Product_Variation[] $enabling_sync_virtual_variations virtual variations that are being included */
+				$enabling_sync_virtual_variations = [];
 
 				foreach ( $product_ids as $product_id ) {
 
 					if ( $product = wc_get_product( $product_id ) ) {
 
+						$products[] = $product;
+
 						if ( 'facebook_include' === $action ) {
 
-							if ( $product->is_virtual() ) {
+							if ( $product->is_virtual() && ! Products::is_sync_enabled_for_product( $product ) ) {
 
-								$is_enabling_sync_virtual_products = true;
+								$enabling_sync_virtual_products[ $product->get_id() ] = $product;
 
 							} else {
 
-								// products with virtual variations are also added to the list,
-								// because they may have non-virtual variations as well
-								$products[] = $product;
-
 								if ( $product->is_type( 'variable' ) ) {
 
-									// check if the product has virtual variations, to display notice
+									// collect the virtual variations
 									foreach ( $product->get_children() as $variation_id ) {
 
 										$variation = wc_get_product( $variation_id );
 
-										if ( $variation && $variation->is_virtual() ) {
+										if ( $variation && $variation->is_virtual() && ! Products::is_sync_enabled_for_product( $variation ) ) {
 
-											$is_enabling_sync_virtual_variations = true;
-											break;
+											$enabling_sync_virtual_products[ $product->get_id() ]     = $product;
+											$enabling_sync_virtual_variations[ $variation->get_id() ] = $variation;
 										}
 									}
 								}
 							}
-						} else {
-
-							// add the product to the list of products to disable sync from
-							$products[] = $product;
 						}
 					}
 				}
 
-				// display notice if enabling sync for virtual products or variations
-				if ( $is_enabling_sync_virtual_products || $is_enabling_sync_virtual_variations ) {
+				if ( ! empty( $enabling_sync_virtual_products ) || ! empty( $enabling_sync_virtual_variations ) ) {
 
-					$redirect = add_query_arg( [ 'enabling_virtual_products_sync' => 1 ], $redirect );
+					// display notice if enabling sync for virtual products or variations
+					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_show_notice_' . get_current_user_id(), true, 15 * MINUTE_IN_SECONDS );
+					set_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id(), array_keys( $enabling_sync_virtual_products ), 15 * MINUTE_IN_SECONDS );
+
+					// set visibility for virtual products
+					foreach ( $enabling_sync_virtual_products as $product ) {
+
+						// do not set visibility for variable products
+						if ( ! $product->is_type( 'variable' ) ) {
+							Products::set_product_visibility( $product, false );
+						}
+					}
+
+					// set visibility for virtual variations
+					foreach ( $enabling_sync_virtual_variations as $variation ) {
+
+						Products::set_product_visibility( $variation, false );
+					}
 				}
 
 				if ( 'facebook_include' === $action ) {
@@ -805,55 +819,91 @@ class Admin {
 
 
 	/**
-	 * Prints a notice on products page to inform users that the virtual products selected for the Include bulk action will NOT have sync enabled.
+	 * Prints a notice on products page to inform users that the virtual products selected for the Include bulk action will have sync enabled, but will be hidden.
 	 *
 	 * @internal
 	 *
 	 * @since 1.11.3-dev.2
 	 */
-	public function add_enabling_virtual_products_sync_notice() {
-		global $current_screen;
+	public function maybe_add_enabling_virtual_products_sync_notice() {
 
-		if ( isset( $_GET['enabling_virtual_products_sync'] ) && isset( $current_screen->id ) && 'edit-product' === $current_screen->id ) {
+		$show_notice_transient_name       = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_show_notice_' . get_current_user_id();
+		$affected_products_transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
+
+		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && get_transient( $show_notice_transient_name ) && ( $affected_products = get_transient( $affected_products_transient_name ) ) ) {
+
+			$message = sprintf( esc_html(
+				/* translators: Placeholders: %1$s - number of affected products, %2$s opening HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag, %5$s - closing HTML </a> tag */
+				_n( '%2$s%1$s product%3$s or some of its variations could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit selling some product types (like virtual products). You may still advertise Virtual products on Facebook.',
+					'%2$s%1$s products%3$s or some of their variations could not be updated to show in the Facebook catalog — %4$sFacebook Commerce Policies%5$s prohibit selling some product types (like virtual products). You may still advertise Virtual products on Facebook.',
+					count( $affected_products ),
+					'facebook-for-woocommerce' ) ),
+				count( $affected_products ),
+				'<a href="' . add_query_arg( [ 'facebook_show_affected_products' => 1 ] ) . '">',
+				'</a>',
+				'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
+				'</a>'
+			);
 
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
-				sprintf(
-					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we can\'t include virtual products in your catalog sync. %3$sClick here to read more about Facebook\'s policy%4$s.', 'facebook-for-woocommerce' ),
-					'<strong>',
-					'</strong>',
-					'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
-					'</a>'
-				),
+				$message,
 				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-enabling-virtual-products-sync',
-				[ 'notice_class' => 'notice-info' ]
+				[
+					'dismissible'  => false,
+					'notice_class' => 'notice-info',
+				]
 			);
+
+			delete_transient( $show_notice_transient_name );
 		}
 	}
 
 
 	/**
-	 * Prints a notice to inform sync has been automatically disabled for virtual products.
+	 * Tweaks the query to show a filtered view with the affected products.
 	 *
 	 * @internal
 	 *
-	 * @since 1.11.3-dev.2
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $query_vars product query vars for the edit screen
+	 * @return array
 	 */
-	public function add_disabled_virtual_products_sync_notice() {
+	public function filter_virtual_products_affected_enabling_sync( $query_vars ) {
 
-		if ( 'yes' === get_option( 'wc_facebook_sync_virtual_products_disabled', 'no' ) &&
-		     'yes' !== get_option( 'wc_facebook_sync_virtual_products_disabled_skipped', 'no' ) ) {
+		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
+
+		if ( isset( $_GET['facebook_show_affected_products'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && $affected_products = get_transient( $transient_name ) ) {
+
+			$query_vars['post__in'] = $affected_products;
+		}
+
+		return $query_vars;
+	}
+
+
+	/**
+	 * Prints a notice to inform sync mode has been automatically set to Sync and hide for virtual products and variations.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function add_handled_virtual_products_variations_notice() {
+
+		if ( 'yes' === get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) &&
+		     'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_skipped', 'no' ) ) {
 
 			facebook_for_woocommerce()->get_admin_notice_handler()->add_admin_notice(
 				sprintf(
 					/* translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a> tag */
-					esc_html__( '%1$sHeads up!%2$s Facebook does not support selling virtual products, so we have removed any previously synced virtual products from the catalog sync going forward. %3$sClick here to read more about Facebook\'s policy%4$s.', 'facebook-for-woocommerce' ),
+					esc_html__( '%1$sHeads up!%2$s Facebook\'s %3$sCommerce Policies%4$s do not support selling virtual products, so we have hidden your synced Virtual products in your Facebook catalog. You may still advertise Virtual products on Facebook.', 'facebook-for-woocommerce' ),
 					'<strong>',
 					'</strong>',
-					'<a href="https://www.facebook.com/help/130910837313345" target="_blank">',
+					'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 					'</a>'
 				),
-				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-disabled-virtual-products-sync',
+				'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-updated-virtual-products-sync',
 				[
 					'notice_class'            => 'notice-info',
 					'always_show_on_settings' => false,
@@ -878,7 +928,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => [ 'show_if_simple', 'hide_if_virtual' ],
+			'class'  => [ 'show_if_simple' ],
 		];
 
 		return $tabs;
@@ -1031,7 +1081,7 @@ class Admin {
 			],
 			'value'         => $sync_mode,
 			'class'         => 'js-variable-fb-sync-toggle',
-			'wrapper_class' => 'hide_if_variation_virtual form-row form-row-full',
+			'wrapper_class' => 'form-row form-row-full',
 		] );
 
 		woocommerce_wp_textarea_input( [
@@ -1044,7 +1094,7 @@ class Admin {
 			'rows'          => 5,
 			'value'         => $description,
 			'class'         => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
+			'wrapper_class' => 'form-row form-row-full',
 		] );
 
 		woocommerce_wp_radio( [
@@ -1060,7 +1110,7 @@ class Admin {
 			],
 			'value'         => $image_source ?: Products::PRODUCT_IMAGE_SOURCE_PRODUCT,
 			'class'         => 'enable-if-sync-enabled js-fb-product-image-source',
-			'wrapper_class' => 'fb-product-image-source-field hide_if_variation_virtual',
+			'wrapper_class' => 'fb-product-image-source-field',
 		] );
 
 		woocommerce_wp_text_input( [
@@ -1069,7 +1119,7 @@ class Admin {
 			'label'         => __( 'Custom Image URL', 'facebook-for-woocommerce' ),
 			'value'         => $image_url,
 			'class'         => sprintf( 'enable-if-sync-enabled product-image-source-field show-if-product-image-source-%s', Products::PRODUCT_IMAGE_SOURCE_CUSTOM ),
-			'wrapper_class' => 'form-row form-row-full hide_if_variation_virtual',
+			'wrapper_class' => 'form-row form-row-full',
 		] );
 
 		woocommerce_wp_text_input( [
@@ -1084,7 +1134,7 @@ class Admin {
 			'description'   => __( 'Custom price for product on Facebook. Please enter in monetary decimal (.) format without thousand separators and currency symbols. If blank, product price will be used.', 'facebook-for-woocommerce' ),
 			'value'         => wc_format_decimal( $price ),
 			'class'         => 'enable-if-sync-enabled',
-			'wrapper_class' => 'form-row form-full hide_if_variation_virtual',
+			'wrapper_class' => 'form-row form-full',
 		] );
 	}
 
@@ -1134,8 +1184,13 @@ class Admin {
 		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? $_POST['variable_facebook_sync_mode'][ $index ] : self::SYNC_MODE_SYNC_DISABLED;
 		$sync_enabled = self::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
+		if ( self::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $variation->is_virtual() ) {
+			// force to Sync and hide
+			$sync_mode = self::SYNC_MODE_SYNC_AND_HIDE;
+		}
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( $sync_enabled && ! $variation->is_virtual() ) {
+		if ( $sync_enabled ) {
 
 			Products::enable_sync_for_products( [ $variation ] );
 			Products::set_product_visibility( $variation, self::SYNC_MODE_SYNC_AND_HIDE !== $sync_mode );

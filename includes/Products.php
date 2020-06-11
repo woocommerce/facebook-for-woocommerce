@@ -73,12 +73,6 @@ class Products {
 
 						if ( $product_variation instanceof \WC_Product ) {
 
-							if ( $enabled && $product_variation->is_virtual() ) {
-
-								// never enable sync for virtual variations
-								continue;
-							}
-
 							$product_variation->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 							$product_variation->save_meta_data();
 						}
@@ -182,7 +176,7 @@ class Products {
 		// define the product to check terms on
 		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
 
-		return ! $product->is_virtual() && self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
 	}
 
 
