@@ -149,6 +149,7 @@ jQuery( document ).ready( function( $ ) {
 
 			$( '.js-variable-fb-sync-toggle' ).each( function () {
 				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+				$( this ).prop( 'original', $( this ).val() );
 			} );
 
 			$( '.variable_is_virtual' ).on( 'change', function () {
