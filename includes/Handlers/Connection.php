@@ -327,6 +327,8 @@ class Connection {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
+	 * @link https://developers.facebook.com/docs/marketing-api/access/#access_token
+	 *
 	 * @return string[]
 	 */
 	public function get_scopes() {
@@ -335,6 +337,8 @@ class Connection {
 			'manage_business_extension',
 			'catalog_management',
 			'business_management',
+			'ads_management',
+			'ads_read',
 		];
 
 		/**
