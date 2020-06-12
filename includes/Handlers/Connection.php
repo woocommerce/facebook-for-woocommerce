@@ -451,8 +451,9 @@ class Connection {
 	public function get_redirect_url() {
 
 		$redirect_url = add_query_arg( [
-			'wc-api' => self::ACTION_CONNECT,
-			'nonce'  => wp_create_nonce( self::ACTION_CONNECT ),
+			'wc-api'               => self::ACTION_CONNECT,
+			'external_business_id' => $this->get_external_business_id(),
+			'nonce'                => wp_create_nonce( self::ACTION_CONNECT ),
 		], home_url( '/' ) );
 
 		/**
