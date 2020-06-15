@@ -797,10 +797,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			try {
 
-				// TODO: remove before releasing 2.0.0-dev.1
-				if ( apply_filters( 'wc_facebook_enable_s2s', false ) ) {
-					facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
-				}
+				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
 
 				$success = true;
 
