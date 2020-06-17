@@ -63,11 +63,57 @@ class Connection {
 
 		$this->plugin = $plugin;
 
+		add_action( 'init', [ $this, 'refresh_business_configuration' ] );
+
 		add_action( 'admin_init', [ $this, 'refresh_installation_data' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+	}
+
+
+	/**
+	 * Refreshes the local business configuration data with the latest from Facebook.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function refresh_business_configuration() {
+
+		// only refresh once an hour, or always on the settings pages
+		if ( get_transient( 'wc_facebook_business_configuration_refresh' ) && ! $this->get_plugin()->is_plugin_settings() ) {
+			return;
+		}
+
+		// bail if not connected
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
+		try {
+
+			$response = $this->get_plugin()->get_api()->get_business_configuration( $this->get_external_business_id() );
+
+			// update the messenger settings
+			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
+
+				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
+
+				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
+					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
+				}
+			}
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+				$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
+			}
+		}
+
+		set_transient( 'wc_facebook_business_configuration_refresh', time(), HOUR_IN_SECONDS );
 	}
 
 
@@ -240,6 +286,8 @@ class Connection {
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
+
+		delete_transient( 'wc_facebook_business_configuration_refresh' );
 	}
 
 
