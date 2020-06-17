@@ -34,7 +34,7 @@ class Response extends API\Response  {
 		$configuration = null;
 
 		if ( ! empty( $this->response_data->messenger_chat ) && is_object( $this->response_data->messenger_chat ) ) {
-			$configuration = new API\FBE\Configuration\Messenger( json_encode( $this->response_data->messenger_chat ) );
+			$configuration = new API\FBE\Configuration\Messenger( (array) $this->response_data->messenger_chat );
 		}
 
 		return $configuration;
