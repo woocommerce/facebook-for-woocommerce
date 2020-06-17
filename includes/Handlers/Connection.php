@@ -165,6 +165,7 @@ class Connection {
 			}
 
 			$this->update_access_token( $system_user_access_token );
+			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
 
 			$api = new \WC_Facebookcommerce_Graph_API( $merchant_access_token );
