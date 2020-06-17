@@ -460,6 +460,19 @@ class Connection {
 
 
 	/**
+	 * Gets the System User ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_system_user_id() {
+
+		return get_option( self::OPTION_SYSTEM_USER_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0-dev.1
