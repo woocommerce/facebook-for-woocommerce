@@ -43,6 +43,9 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
+	/** @var string the system user access token option name */
+	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
+
 	/** @var string the access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
@@ -586,6 +589,19 @@ class Connection {
 	public function update_business_manager_id( $value ) {
 
 		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
+	}
+
+
+	/**
+	 * Stores the given system user ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the ID
+	 */
+	public function update_system_user_id( $value ) {
+
+		update_option( self::OPTION_SYSTEM_USER_ID, $value );
 	}
 
 
