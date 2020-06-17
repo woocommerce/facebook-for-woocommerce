@@ -127,24 +127,6 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 
 	/**
-	 * Sanitizes the message greeting field value on save.
-	 *
-	 * @internal
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $value pre-sanitized value
-	 * @return string
-	 */
-	public function sanitize_messenger_greeting( $value ) {
-
-		$value = is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
-
-		return SV_WC_Helper::str_truncate( $value, facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters(), '' );
-	}
-
-
-	/**
 	 * Gets the screen settings.
 	 *
 	 * @since 2.0.0-dev.1
@@ -189,23 +171,6 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		$settings[] = [ 'type' => 'sectionend' ];
 
 		return $settings;
-	}
-
-
-	/**
-	 * Gets a warning text to be displayed when the Messenger greeting text exceeds the maximum length.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @return string
-	 */
-	private function get_messenger_greeting_long_warning_text() {
-
-		return sprintf(
-			/* translators: Placeholder: %d - maximum number of allowed characters */
-			__( 'The Messenger greeting must be %d characters or less.', 'facebook-for-woocommerce' ),
-			facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters()
-		);
 	}
 
 
