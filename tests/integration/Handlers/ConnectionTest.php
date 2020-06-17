@@ -229,6 +229,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_system_user_id() */
+	public function test_get_system_user_id() {
+
+		$system_user_id = 'system user id';
+
+		$this->get_connection()->update_system_user_id( $system_user_id );
+
+		$this->assertSame( $system_user_id, $this->get_connection()->get_system_user_id() );
+	}
+
+
 	/** @see Connection::get_proxy_url() */
 	public function test_get_proxy_url() {
 
@@ -357,6 +368,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_business_manager_id( $business_manager_id );
 
 		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
+	}
+
+
+	/** @see Connection::update_system_user_id() */
+	public function test_update_system_user_id() {
+
+		$system_user_id = 'system user id';
+
+		$this->get_connection()->update_system_user_id( $system_user_id );
+
+		$this->assertSame( $system_user_id, $this->get_connection()->get_system_user_id() );
 	}
 
 
