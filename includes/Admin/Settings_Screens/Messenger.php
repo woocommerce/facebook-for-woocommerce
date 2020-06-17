@@ -41,8 +41,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
-		add_action( 'woocommerce_admin_field_messenger_greeting', [ $this, 'render_greeting_field'] );
-		add_action( 'woocommerce_admin_settings_sanitize_option_wc_facebook_messenger_greeting', [ $this, 'sanitize_messenger_greeting' ], 10, 3 );
+		add_action( 'woocommerce_admin_field_messenger_locale',   [ $this, 'render_locale_field' ] );
+		add_action( 'woocommerce_admin_field_messenger_greeting', [ $this, 'render_greeting_field' ] );
 	}
 
 
@@ -55,14 +55,44 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
+		// TODO: empty for now, until we add more robust Messenger settings {CW 2020-06-17}
+	}
 
-		// only enqueue assets on this specific screen
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && self::ID !== $tab ) ) {
+
+	/**
+	 * Renders the custom locale field.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param array $field field data
+	 */
+	public function render_locale_field( $field ) {
+
+		if ( ! $this->remote_configuration ) {
 			return;
 		}
 
-		wp_enqueue_script( 'wc-facebook-admin-settings-messenger', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-settings-messenger.min.js', [ 'jquery', 'iris', 'wc-enhanced-select' ], \WC_Facebookcommerce::VERSION );
+		$configured_locale = $this->remote_configuration->get_default_locale();
+		$supported_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+
+		if ( ! empty( $supported_locales[ $configured_locale ] ) ) {
+			$configured_locale = $supported_locales[ $configured_locale ];
+		}
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?></label>
+			</th>
+			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
+				<p>
+					<?php echo esc_html( $configured_locale ); ?>
+				</p>
+			</td>
+		</tr>
+		<?php
 	}
 
 
@@ -77,52 +107,19 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render_greeting_field( $field ) {
 
-		$chars         = max( 0, strlen( $field['value'] ) );
-		$max_chars     = facebook_for_woocommerce()->get_integration()->get_messenger_greeting_max_characters();
-		$field_id      = $field['id'];
-		$counter_class = $field_id . '-characters-count';
-
-		// Custom attribute handling.
-		$custom_attributes = [];
-
-		if ( ! empty( $value['custom_attributes'] ) && is_array( $value['custom_attributes'] ) ) {
-			foreach ( $value['custom_attributes'] as $attribute => $attribute_value ) {
-				$custom_attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $attribute_value ) . '"';
-			}
-		}
-
-		// Description handling.
-		$field_description = \WC_Admin_Settings::get_field_description( $field );
-		$description       = $field_description['description'];
-		$tooltip_html      = $field_description['tooltip_html'];
-
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?> <?php echo $tooltip_html; // WPCS: XSS ok. ?></label>
+				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?></label>
 			</th>
 			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
-				<?php echo $description; // WPCS: XSS ok. ?>
-
-				<textarea
-					name="<?php echo esc_attr( $field['id'] ); ?>"
-					id="<?php echo esc_attr( $field['id'] ); ?>"
-					rows="3"
-					columns="20"
-					style="<?php echo esc_attr( $field['css'] ); ?>"
-					class="<?php echo esc_attr( $field['class'] ); ?>"
-					placeholder="<?php echo esc_attr( $field['placeholder'] ); ?>"
-					maxlength="<?php echo esc_attr( $max_chars ); ?>"
-				><?php echo esc_textarea( $field['value'] ); // WPCS: XSS ok. ?></textarea>
-
-				<span
-					style="display: none; font-family: monospace; font-size: 0.9em;"
-					class="<?php echo sanitize_html_class( $counter_class ); ?> characters-counter"
-				>
-					<?php echo esc_html( $chars . ' / ' . $max_chars ); ?>
-					<span style="display:none;"><?php echo esc_html( $this->get_messenger_greeting_long_warning_text() ); ?></span>
-				</span>
-
+				<p>
+					<?php printf(
+						/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
+						esc_html__( '%1$sClick here%2$s to manage your Messenger greeting and colors.', 'facebook-for-woocommerce' ),
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_manage_url() ) . '" target="_blank">', '</a>'
+					); ?>
+				</p>
 			</td>
 		</tr>
 		<?php
@@ -156,22 +153,9 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_settings() {
 
-		$messenger_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+		$is_enabled = $this->remote_configuration && $this->remote_configuration->is_enabled();
 
-		// tries matching with WordPress locale, otherwise English, otherwise first available language
-		if ( isset( $messenger_locales[ get_locale() ] ) ) {
-			$default_locale = get_locale();
-		} elseif ( isset( $messenger_locales[ 'en_US' ] ) ) {
-			$default_locale = 'en_US';
-		} elseif ( ! empty( $messenger_locales ) && is_array( $messenger_locales ) ) {
-			$default_locale = key( $messenger_locales );
-		} else {
-			// fallback to English in case of invalid/empty filtered list of languages
-			$messenger_locales = [ 'en_US' => _x( 'English (United States)', 'language', 'facebook-for-woocommerce' ) ];
-			$default_locale    = 'en_US';
-		}
-
-		return [
+		$settings = [
 
 			[
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
@@ -179,43 +163,32 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 			],
 
 			[
-				'id'       => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
-				'title'    => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
-				'type'     => 'checkbox',
-				'desc'     => __( 'Enable and customize Facebook Messenger on your store', 'facebook-for-woocommerce' ),
-				'default'  => 'no',
+				'id'      => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+				'title'   => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
+				'type'    => 'checkbox',
+				'desc'    => __( 'Enable and customize Facebook Messenger on your store', 'facebook-for-woocommerce' ),
+				'default' => 'no',
+				'value'   => $this->remote_configuration && $this->remote_configuration->is_enabled() ? 'yes' : 'no',
 			],
-
-			 [
-			 	'id'      => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
-				'title'   => __( 'Language', 'facebook-for-woocommerce' ),
-				'type'    => 'select',
-				'class'   => 'wc-enhanced-select messenger-field',
-				'default' => $default_locale,
-				'options' => $messenger_locales,
-			],
-
-			[
-				'id'                => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
-				'title'             => __( 'Greeting', 'facebook-for-woocommerce' ),
-				'type'              => 'messenger_greeting',
-				'class'             => 'messenger-field',
-				'default'           => __( "Hi! We're here to answer any questions you may have.", 'facebook-for-woocommerce' ),
-				'css'               => 'width: 100%; max-width: 400px; margin-bottom: 10px',
-			],
-
-			[
-				'id'                => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
-				'title'             => __( 'Colors', 'facebook-for-woocommerce' ),
-				'type'              => 'color',
-				'class'             => 'messenger-field ', // the extra space is necessary
-				'default'           => '#0084ff',
-				'css'               => 'width: 6em;',
-			],
-
-			[ 'type' => 'sectionend' ],
-
 		];
+
+		// only add the static configuration display if messenger is enabled
+		if ( $is_enabled ) {
+
+			$settings[] = [
+				'title' => __( 'Language', 'facebook-for-woocommerce' ),
+				'type'  => 'messenger_locale',
+			];
+
+			$settings[] = [
+				'title' => __( 'Greeting & Colors', 'facebook-for-woocommerce' ),
+				'type'  => 'messenger_greeting',
+			];
+		}
+
+		$settings[] = [ 'type' => 'sectionend' ];
+
+		return $settings;
 	}
 
 
