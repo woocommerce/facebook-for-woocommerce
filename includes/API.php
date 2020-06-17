@@ -232,6 +232,25 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the business configuration.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $external_business_id external business ID
+	 * @return API\FBE\Configuration\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_business_configuration( $external_business_id ) {
+
+		$request = new API\FBE\Configuration\Request( $external_business_id, 'GET' );
+
+		$this->set_response_handler( API\FBE\Configuration\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Uses the Catalog Batch API to update or remove items from catalog.
 	 *
 	 * @see Sync::create_or_update_products()
