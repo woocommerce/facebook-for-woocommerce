@@ -13,7 +13,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * The Messenger settings screen object.
@@ -23,6 +24,10 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 	/** @var string screen ID */
 	const ID = 'messenger';
+
+
+	/** @var null|Configuration\Messenger */
+	private $remote_configuration;
 
 
 	/**
@@ -245,6 +250,58 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 			__( 'Please %1$sconnect to Facebook%2$s to enable and manage Facebook Messenger.', 'facebook-for-woocommerce' ),
 			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
 		);
+	}
+
+
+	/**
+	 * Renders the settings page.
+	 *
+	 * This is overridden to pull the latest FBE configuration so the settings can be populated correctly.
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function render() {
+
+		// if not connected, don't try and retrieve any settings and just fall back to standard display
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			parent::render();
+			return;
+		}
+
+		$plugin = facebook_for_woocommerce();
+
+		try {
+
+			$response = $plugin->get_api()->get_business_configuration( $plugin->get_connection_handler()->get_external_business_id() );
+
+			$configuration = $response->get_messenger_configuration();
+
+			if ( ! $configuration ) {
+				throw new Framework\SV_WC_API_Exception( 'Could not retrieve latest messenger configuration' );
+			}
+
+			// set the remote configuration so other methods can use its values
+			$this->remote_configuration = $configuration;
+
+			parent::render();
+
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
+
+			?>
+			<div class="notice notice-error">
+				<p>
+					<?php printf(
+					/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
+						esc_html__( 'There was an error communicating with the Facebook Business Extension. %1$sClick here%2$s to manage your Messenger settings.', 'facebook-for-woocommerce' ),
+						'<a href="' . esc_url( $plugin->get_connection_handler()->get_manage_url() ) . '" target="_blank">', '</a>'
+					); ?>
+				</p>
+			</div>
+			<?php
+
+			// always log this error, regardless of debug setting
+			$plugin->log( 'Could not display messenger settings. ' . $exception->getMessage() );
+		}
 	}
 
 
