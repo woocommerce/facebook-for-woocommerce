@@ -289,6 +289,29 @@ class Connection {
 
 
 	/**
+	 * Gets the merchant access token.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_merchant_access_token() {
+
+		$access_token = get_option( self::OPTION_MERCHANT_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the merchant access token.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $access_token access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return apply_filters( 'wc_facebook_connection_merchant_access_token', $access_token, $this );
+	}
+
+
+	/**
 	 * Gets the URL to start the connection flow.
 	 *
 	 * @since 2.0.0-dev.1
