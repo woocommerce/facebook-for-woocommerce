@@ -99,10 +99,19 @@ class Connection {
 			// update the messenger settings
 			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
 
+				// store the local "enabled" setting
 				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
 
 				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
 					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
+				}
+
+				// if the site's domain is somehow missing from the allowed domains, re-add it
+				if ( ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
+
+					$messenger_configuration->add_domain( home_url( '/' ) );
+
+					$this->get_plugin()->get_api()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
 				}
 			}
 
