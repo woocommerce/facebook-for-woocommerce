@@ -57,6 +57,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_merchant_access_token() */
+	public function test_get_merchant_access_token() {
+
+		$access_token = 'access token';
+
+		$this->get_connection()->update_merchant_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_merchant_access_token() );
+	}
+
+
 	/** @see Connection::get_access_token() */
 	public function test_get_access_token_filter() {
 
@@ -357,6 +368,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_access_token( $access_token );
 
 		$this->assertSame( $access_token, $this->get_connection()->get_access_token() );
+	}
+
+
+	/** @see Connection::update_merchant_access_token() */
+	public function test_update_merchant_access_token() {
+
+		$access_token = 'access token';
+
+		$this->get_connection()->update_merchant_access_token( $access_token );
+
+		$this->assertSame( $access_token, $this->get_connection()->get_merchant_access_token() );
 	}
 
 
