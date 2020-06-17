@@ -158,9 +158,14 @@ class Connection {
 				throw new SV_WC_API_Exception( 'System User access token is missing' );
 			}
 
-			$access_token = $this->create_system_user_token( $access_token );
+			$system_user_id = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
+
+			if ( ! $system_user_id ) {
+				throw new SV_WC_API_Exception( 'System User ID is missing' );
+			}
 
 			$this->update_access_token( $system_user_access_token );
+			$this->update_system_user_id( $system_user_id );
 
 			$api = new \WC_Facebookcommerce_Graph_API( $merchant_access_token );
 
