@@ -46,6 +46,8 @@ class Connection {
 	/** @var string the access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
+	/** @var string the merchant access token option name */
+	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
@@ -574,6 +576,19 @@ class Connection {
 	public function update_access_token( $value ) {
 
 		update_option( self::OPTION_ACCESS_TOKEN, $value );
+	}
+
+
+	/**
+	 * Stores the given merchant access token.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the access token
+	 */
+	public function update_merchant_access_token( $value ) {
+
+		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
 	}
 
 
