@@ -82,8 +82,8 @@ class Connection {
 	 */
 	public function refresh_business_configuration() {
 
-		// only refresh once an hour, or always on the settings pages
-		if ( get_transient( 'wc_facebook_business_configuration_refresh' ) && ! $this->get_plugin()->is_plugin_settings() ) {
+		// only refresh once an hour
+		if ( get_transient( 'wc_facebook_business_configuration_refresh' ) ) {
 			return;
 		}
 
