@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -132,9 +133,20 @@ class Settings {
 
 		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
 
-		$screen->save();
+		try {
 
-		facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
+			$screen->save();
+
+			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
+				/* translators: Placeholders: %s - user-friendly error message */
+				__( 'Your settings could not be saved. %s', 'facebook-for-woocommerce' ),
+				$exception->getMessage()
+			) );
+		}
 	}
 
 
