@@ -390,6 +390,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/FBE/Configuration/Read/Response.php';
 				}
 
+				if ( ! class_exists( API\FBE\Configuration\Update\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/FBE/Configuration/Update/Request.php';
+				}
+
 				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
 				}
