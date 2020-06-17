@@ -141,9 +141,9 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
-			$access_token = ! empty( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : '';
+			$merchant_access_token = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 
-			if ( ! $access_token ) {
+			if ( ! $merchant_access_token ) {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
 			}
 
@@ -157,7 +157,7 @@ class Connection {
 
 			$this->update_access_token( $system_user_access_token );
 
-			$api = new \WC_Facebookcommerce_Graph_API( $access_token );
+			$api = new \WC_Facebookcommerce_Graph_API( $merchant_access_token );
 
 			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
 
