@@ -263,20 +263,6 @@ class Connection {
 
 
 	/**
-	 * Converts a temporary user token to a system user token via the Graph API.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $user_token
-	 * @return string
-	 */
-	public function create_system_user_token( $user_token ) {
-
-		return $user_token;
-	}
-
-
-	/**
 	 * Gets the API access token.
 	 *
 	 * @since 2.0.0-dev.1
