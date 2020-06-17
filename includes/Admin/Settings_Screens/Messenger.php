@@ -278,4 +278,64 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	}
 
 
+	/**
+	 * Saves the settings.
+	 *
+	 * This is overridden to pull the latest from FBE and update that remotely via API
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @throws Framework\SV_WC_Plugin_Exception
+	 */
+	public function save() {
+
+		$plugin               = facebook_for_woocommerce();
+		$external_business_id = $plugin->get_connection_handler()->get_external_business_id();
+
+		try {
+
+			// first get the latest configuration details
+			$response = $plugin->get_api()->get_business_configuration( $external_business_id );
+
+			$configuration = $response->get_messenger_configuration();
+
+			if ( ! $configuration ) {
+				throw new Framework\SV_WC_API_Exception( 'Could not retrieve latest messenger configuration' );
+			}
+
+			$update          = false;
+			$setting_enabled = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER ) );
+
+			// only consider updating if the setting has changed
+			if ( $setting_enabled !== $configuration->is_enabled() ) {
+				$update = true;
+			}
+
+			// also consider updating if the site's URL was removed from approved URLs
+			if ( ! in_array( home_url( '/' ), $configuration->get_domains(), true ) ) {
+				$update = true;
+			}
+
+			// make the API call if settings have changed
+			if ( $update ) {
+
+				$configuration->set_enabled( $setting_enabled );
+				$configuration->add_domain( home_url( '/' ) );
+
+				$plugin->get_api()->update_messenger_configuration( $external_business_id, $configuration );
+			}
+
+			// save any real settings
+			parent::save();
+
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
+
+			// always log this error, regardless of debug setting
+			$plugin->log( 'Could not update remote messenger settings. ' . $exception->getMessage() );
+
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Please try again.', 'facebook-for-woocommerce' ) );
+		}
+	}
+
+
 }
