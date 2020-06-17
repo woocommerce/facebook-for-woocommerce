@@ -252,6 +252,8 @@ class Connection {
 	private function disconnect() {
 
 		$this->update_access_token( '' );
+		$this->update_merchant_access_token( '' );
+		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
