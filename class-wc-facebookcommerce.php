@@ -227,7 +227,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				if (
 					   $this->get_integration()->get_external_merchant_settings_id()
 					&& $this->get_integration()->is_messenger_enabled()
-					&& ( '#0084ff' !== $this->get_integration()->get_messenger_color_hex() || 'Hi! How can we help you?' !== $this->get_integration()->get_messenger_greeting() )
+					&& ( '#0084ff' !== $this->get_integration()->get_messenger_color_hex() || ! in_array( $this->get_integration()->get_messenger_greeting(), [ 'Hi! How can we help you?', "Hi! We're here to answer any questions you may have.", '' ], true ) )
 				) {
 
 					$message = sprintf(
