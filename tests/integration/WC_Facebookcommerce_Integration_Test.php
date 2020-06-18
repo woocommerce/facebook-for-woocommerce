@@ -879,7 +879,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 		update_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, 'jkl012' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID, 'lorem123' );
 		update_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, 123 );
-		update_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, 'v2.9' );
+		$this->integration->update_js_sdk_version( 'v2.9' );
 
 		// TODO: remove once these properties are no longer set directly in the constructor
 		$this->integration->external_merchant_settings_id = null;
