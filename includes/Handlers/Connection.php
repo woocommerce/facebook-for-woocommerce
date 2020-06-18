@@ -43,10 +43,10 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
-	/** @var string the system user access token option name */
+	/** @var string the system user ID option name */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
-	/** @var string the access token option name */
+	/** @var string the system user access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
 	/** @var string the merchant access token option name */
