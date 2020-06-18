@@ -168,6 +168,7 @@ class Connection {
 			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
 
+			// TODO: use the system user access token once the fix for the fbe_installs endpoint is approved and deployed {WV 2020-06-17}
 			$api = new \WC_Facebookcommerce_Graph_API( $merchant_access_token );
 
 			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
