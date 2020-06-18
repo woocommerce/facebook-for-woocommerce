@@ -107,7 +107,7 @@ class Connection {
 				}
 
 				// if the site's domain is somehow missing from the allowed domains, re-add it
-				if ( ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
+				if ( $messenger_configuration->is_enabled() && ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
 
 					$messenger_configuration->add_domain( home_url( '/' ) );
 
