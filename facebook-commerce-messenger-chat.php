@@ -125,9 +125,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
 
 		public function __construct( $settings ) {
-			$this->enabled = isset( $settings['is_messenger_chat_plugin_enabled'] )
-				? $settings['is_messenger_chat_plugin_enabled']
-				: 'no';
 
 			$this->page_id = isset( $settings['fb_page_id'] )
 				? $settings['fb_page_id']
@@ -136,18 +133,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 			$this->jssdk_version = isset( $settings['facebook_jssdk_version'] )
 				? $settings['facebook_jssdk_version']
 				: '';
-
-			$this->greeting_text_code = isset( $settings['msger_chat_customization_greeting_text_code'] )
-				? $settings['msger_chat_customization_greeting_text_code']
-				: null;
-
-			$this->locale = isset( $settings['msger_chat_customization_locale'] )
-				? $settings['msger_chat_customization_locale']
-				: null;
-
-			$this->theme_color_code = isset( $settings['msger_chat_customization_theme_color_code'] )
-				? $settings['msger_chat_customization_theme_color_code']
-				: null;
 
 			add_action( 'wp_footer', array( $this, 'inject_messenger_chat_plugin' ) );
 		}
@@ -160,7 +145,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		 */
 		public function inject_messenger_chat_plugin() {
 
-			if ( $this->enabled === 'yes' ) :
+			if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) :
 
 				printf( "
 					<div
@@ -191,7 +176,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					",
 					esc_attr( $this->page_id ),
 					esc_js( $this->jssdk_version ?: 'v5.0' ),
-					esc_js( $this->locale ?: 'en_US' )
+					esc_js( facebook_for_woocommerce()->get_integration()->get_messenger_locale() ?: 'en_US' )
 				);
 
 			endif;
