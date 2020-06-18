@@ -218,6 +218,12 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				throw new Framework\SV_WC_API_Exception( 'Could not retrieve latest messenger configuration' );
 			}
 
+			update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $configuration->is_enabled() ) );
+
+			if ( $default_locale = $configuration->get_default_locale() ) {
+				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $default_locale );
+			}
+
 			// set the remote configuration so other methods can use its values
 			$this->remote_configuration = $configuration;
 
@@ -288,6 +294,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				$configuration->add_domain( home_url( '/' ) );
 
 				$plugin->get_api()->update_messenger_configuration( $external_business_id, $configuration );
+
+				delete_transient( 'wc_facebook_business_configuration_refresh' );
 			}
 
 			// save any real settings
