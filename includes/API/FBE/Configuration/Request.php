@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\API;
 
 /**
- * FBE API request object.
+ * FBE Configuration API request object.
  *
  * @since 2.0.0-dev.1
  */
