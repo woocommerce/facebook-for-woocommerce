@@ -378,6 +378,59 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Connection::has_previously_connected_fbe_2()
+	 *
+	 * @dataProvider provider_has_previously_connected_fbe_2
+	 *
+	 * @param string|null $option_value option value to set, or null to not set one
+	 * @param bool $expected_value expected result
+	 */
+	public function test_has_previously_connected_fbe_2( $option_value, $expected_value ) {
+
+		if ( $option_value ) {
+			update_option( 'wc_facebook_has_connected_fbe_2', $option_value );
+		}
+
+		$this->assertSame( $expected_value, $this->get_connection()->has_previously_connected_fbe_2() );
+	}
+
+
+	public function provider_has_previously_connected_fbe_2() {
+
+		return [
+			'not set'                  => [ null, false ],
+			'not previously connected' => [ 'no', false ],
+			'previously connected'     => [ 'yes', true ],
+		];
+	}
+
+
+	/**
+	 * @see Connection::has_previously_connected_fbe_1()
+	 *
+	 * @dataProvider provider_has_previously_connected_fbe_1
+	 *
+	 * @param string|null $option_value option value to set, or null to not set one
+	 * @param bool $expected_value expected result
+	 */
+	public function test_has_previously_connected_fbe_1( $option_value, $expected_value ) {
+
+		facebook_for_woocommerce()->get_integration()->update_external_merchant_settings_id( $option_value );
+
+		$this->assertSame( $expected_value, $this->get_connection()->has_previously_connected_fbe_1() );
+	}
+
+
+	public function provider_has_previously_connected_fbe_1() {
+
+		return [
+			'not previously connected' => [ '', false ],
+			'previously connected'     => [ '1234', true ],
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
