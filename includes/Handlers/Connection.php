@@ -43,6 +43,9 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
+	/** @var string the ad account ID option name */
+	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
+
 	/** @var string the system user ID option name */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
@@ -454,6 +457,19 @@ class Connection {
 
 
 	/**
+	 * Gets the ad account ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_ad_account_id() {
+
+		return get_option( self::OPTION_AD_ACCOUNT_ID, '' );
+	}
+
+
+	/**
 	 * Gets the System User ID value.
 	 *
 	 * @since 2.0.0-dev.1
@@ -596,6 +612,19 @@ class Connection {
 	public function update_business_manager_id( $value ) {
 
 		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
+	}
+
+
+	/**
+	 * Stores the given ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the ad account ID
+	 */
+	public function update_ad_account_id( $value ) {
+
+		update_option( self::OPTION_AD_ACCOUNT_ID, $value );
 	}
 
 
