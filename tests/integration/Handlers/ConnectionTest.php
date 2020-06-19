@@ -396,6 +396,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see test_has_previously_connected_fbe_2 */
 	public function provider_has_previously_connected_fbe_2() {
 
 		return [
@@ -422,6 +423,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see test_has_previously_connected_fbe_1 */
 	public function provider_has_previously_connected_fbe_1() {
 
 		return [
