@@ -262,6 +262,7 @@ class Connection {
 		$this->update_merchant_access_token( '' );
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
+		$this->update_ad_account_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
