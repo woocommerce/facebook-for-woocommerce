@@ -37,15 +37,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::create_system_user_token() */
-	public function test_create_system_user_token() {
-
-		$user_token = 'user token';
-
-		$this->assertEquals( $user_token, $this->get_connection()->create_system_user_token( $user_token ) );
-	}
-
-
 	/** @see Connection::get_access_token() */
 	public function test_get_access_token() {
 
@@ -229,6 +220,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_ad_account_id() */
+	public function test_get_ad_account_id() {
+
+		$ad_account_id = 'ad account id';
+
+		$this->get_connection()->update_ad_account_id( $ad_account_id );
+
+		$this->assertSame( $ad_account_id, $this->get_connection()->get_ad_account_id() );
+	}
+
+
 	/** @see Connection::get_system_user_id() */
 	public function test_get_system_user_id() {
 
@@ -368,6 +370,17 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_business_manager_id( $business_manager_id );
 
 		$this->assertSame( $business_manager_id, $this->get_connection()->get_business_manager_id() );
+	}
+
+
+	/** @see Connection::update_ad_account_id() */
+	public function test_update_ad_account_id() {
+
+		$ad_account_id = 'ad account id';
+
+		$this->get_connection()->update_ad_account_id( $ad_account_id );
+
+		$this->assertSame( $ad_account_id, $this->get_connection()->get_ad_account_id() );
 	}
 
 
