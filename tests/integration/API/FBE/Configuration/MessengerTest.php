@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\API\FBE\Configuration;
 use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration\Messenger;
 
 /**
- * Tests the API\FBE\Installation\Read\Response class.
+ * Tests the API\FBE\Configuration\Read\Response class.
  */
 class MessengerTest extends \Codeception\TestCase\WPTestCase {
 
