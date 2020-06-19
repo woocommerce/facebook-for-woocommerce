@@ -83,8 +83,10 @@ class Connection {
 	 * Refreshes the connected installation data.
 	 *
 	 * @since 2.0.0-dev.1
+	 *
+	 * @param bool $force whether to force the refresh
 	 */
-	public function refresh_installation_data() {
+	public function refresh_installation_data( $force = false ) {
 
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
@@ -92,7 +94,7 @@ class Connection {
 		}
 
 		// only refresh once a day
-		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
+		if ( ! $force && get_transient( 'wc_facebook_connection_refresh' ) ) {
 			return;
 		}
 
@@ -175,25 +177,7 @@ class Connection {
 			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
 
-			$api = new \WC_Facebookcommerce_Graph_API( $system_user_access_token );
-
-			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
-
-			if ( ! empty( $asset_ids['page_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $asset_ids['page_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['pixel_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $asset_ids['pixel_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['catalog_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $asset_ids['catalog_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['business_manager_id'] ) ) {
-				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
-			}
+			$this->refresh_installation_data( true );
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
