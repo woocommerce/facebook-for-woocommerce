@@ -582,6 +582,34 @@ class Connection {
 
 
 	/**
+	 * Determines whether the site has previously connected to FBE 2.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public function has_previously_connected_fbe_2() {
+
+		return 'yes' === get_option( 'wc_facebook_has_connected_fbe_2' );
+	}
+
+
+	/**
+	 * Determines whether the site has previously connected to FBE 1.x.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public function has_previously_connected_fbe_1() {
+
+		$integration = $this->get_plugin()->get_integration();
+
+		return $integration && $integration->get_external_merchant_settings_id();
+	}
+
+
+	/**
 	 * Gets the client ID for connection.
 	 *
 	 * @since 2.0.0-dev.1

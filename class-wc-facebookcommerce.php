@@ -176,14 +176,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// inform users that they need to connect
+			// inform users who are not connected to Facebook
 			if ( ! $this->get_connection_handler()->is_connected() ) {
 
-				$message    = '';
-				$message_id = '';
-
-				//  to FBE 2.0 if they've upgraded from FBE 1.x
-				if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && $this->get_integration()->get_external_merchant_settings_id() ) {
+				// users who've never connected to FBE 2 but have previously connected to FBE 1
+				if ( ! $this->get_connection_handler()->has_previously_connected_fbe_2() && $this->get_connection_handler()->has_previously_connected_fbe_1() ) {
 
 					$message = sprintf(
 						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
