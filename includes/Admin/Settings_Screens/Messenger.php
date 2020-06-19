@@ -150,7 +150,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 				'type'    => 'checkbox',
 				'desc'    => __( 'Enable and customize Facebook Messenger on your store', 'facebook-for-woocommerce' ),
 				'default' => 'no',
-				'value'   => $this->remote_configuration && $this->remote_configuration->is_enabled() ? 'yes' : 'no',
+				'value'   => $is_enabled ? 'yes' : 'no',
 			],
 		];
 
