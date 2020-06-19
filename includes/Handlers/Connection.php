@@ -118,6 +118,10 @@ class Connection {
 				$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
 			}
 
+			if ( $response->get_ad_account_id() ) {
+				$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
+			}
+
 		} catch ( SV_WC_API_Exception $exception ) {
 
 			if ( $integration->is_debug_mode_enabled() ) {
