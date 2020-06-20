@@ -37,15 +37,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::create_system_user_token() */
-	public function test_create_system_user_token() {
-
-		$user_token = 'user token';
-
-		$this->assertEquals( $user_token, $this->get_connection()->create_system_user_token( $user_token ) );
-	}
-
-
 	/** @see Connection::get_access_token() */
 	public function test_get_access_token() {
 
