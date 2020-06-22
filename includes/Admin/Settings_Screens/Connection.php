@@ -139,6 +139,10 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'label' => __( 'Business Manager account', 'facebook-for-woocommerce' ),
 				'value' => facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id(),
 			],
+			'ad-account' => [
+				'label' => __( 'Ad Manager account', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_connection_handler()->get_ad_account_id(),
+			],
 		];
 
 		// if the catalog ID is set, try and get its name for display

@@ -49,6 +49,19 @@ class Response extends API\Response  {
 
 
 	/**
+	 * Gets the ad account ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_ad_account_id() {
+
+		return ! empty( $this->get_data()->ad_account_id ) ? $this->get_data()->ad_account_id : '';
+	}
+
+
+	/**
 	 * Gets the catalog ID.
 	 *
 	 * @since 2.0.0-dev.1

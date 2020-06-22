@@ -43,6 +43,9 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
+	/** @var string the ad account ID option name */
+	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
+
 	/** @var string the system user ID option name */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
@@ -80,8 +83,10 @@ class Connection {
 	 * Refreshes the connected installation data.
 	 *
 	 * @since 2.0.0-dev.1
+	 *
+	 * @param bool $force whether to force the refresh
 	 */
-	public function refresh_installation_data() {
+	public function refresh_installation_data( $force = false ) {
 
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
@@ -89,7 +94,7 @@ class Connection {
 		}
 
 		// only refresh once a day
-		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
+		if ( ! $force && get_transient( 'wc_facebook_connection_refresh' ) ) {
 			return;
 		}
 
@@ -113,6 +118,10 @@ class Connection {
 
 			if ( $response->get_business_manager_id() ) {
 				$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
+			}
+
+			if ( $response->get_ad_account_id() ) {
+				$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
 			}
 
 		} catch ( SV_WC_API_Exception $exception ) {
@@ -168,25 +177,7 @@ class Connection {
 			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
 
-			$api = new \WC_Facebookcommerce_Graph_API( $system_user_access_token );
-
-			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
-
-			if ( ! empty( $asset_ids['page_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $asset_ids['page_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['pixel_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $asset_ids['pixel_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['catalog_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $asset_ids['catalog_id'] ) );
-			}
-
-			if ( ! empty( $asset_ids['business_manager_id'] ) ) {
-				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
-			}
+			$this->refresh_installation_data( true );
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
@@ -255,6 +246,7 @@ class Connection {
 		$this->update_merchant_access_token( '' );
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
+		$this->update_ad_account_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
@@ -454,6 +446,19 @@ class Connection {
 
 
 	/**
+	 * Gets the ad account ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_ad_account_id() {
+
+		return get_option( self::OPTION_AD_ACCOUNT_ID, '' );
+	}
+
+
+	/**
 	 * Gets the System User ID value.
 	 *
 	 * @since 2.0.0-dev.1
@@ -596,6 +601,19 @@ class Connection {
 	public function update_business_manager_id( $value ) {
 
 		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
+	}
+
+
+	/**
+	 * Stores the given ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the ad account ID
+	 */
+	public function update_ad_account_id( $value ) {
+
+		update_option( self::OPTION_AD_ACCOUNT_ID, $value );
 	}
 
 

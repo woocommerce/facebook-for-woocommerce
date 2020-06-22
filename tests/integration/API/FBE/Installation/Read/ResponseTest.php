@@ -13,7 +13,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	protected $data = '{"data":[{"business_manager_id":"1234","pixel_id":"5678","profiles":["123"],"catalog_id":"456","pages":["123"]}]}';
+	protected $data = '{"data":[{"business_manager_id":"1234","ad_account_id":"ad-account","pixel_id":"5678","profiles":["123"],"catalog_id":"456","pages":["123"]}]}';
 
 
 	public function _before() {
@@ -48,6 +48,15 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 		$response = new Response( $this->data );
 
 		$this->assertEquals( '1234', $response->get_business_manager_id() );
+	}
+
+
+	/** @see Response::get_ad_account_id() */
+	public function test_get_ad_account_id() {
+
+		$response = new Response( $this->data );
+
+		$this->assertEquals( 'ad-account', $response->get_ad_account_id() );
 	}
 
 
