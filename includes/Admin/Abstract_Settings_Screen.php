@@ -51,11 +51,12 @@ abstract class Abstract_Settings_Screen {
 			return;
 		}
 
-		$is_connected = facebook_for_woocommerce()->get_connection_handler()->is_connected();
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$is_connected       = $connection_handler->is_connected();
 
 		?>
 
-		<?php if ( ! $is_connected && $this->get_disconnected_message() ) : ?>
+		<?php if ( ! $is_connected && ! $connection_handler->has_previously_connected_fbe_1() && $this->get_disconnected_message() ) : ?>
 			<div class="notice notice-info"><p><?php echo wp_kses_post( $this->get_disconnected_message() ); ?></p></div>
 		<?php endif; ?>
 

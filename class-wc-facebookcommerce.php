@@ -176,14 +176,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			parent::add_admin_notices();
 
-			// inform users that they need to connect
+			// inform users who are not connected to Facebook
 			if ( ! $this->get_connection_handler()->is_connected() ) {
 
-				$message    = '';
-				$message_id = '';
-
-				//  to FBE 2.0 if they've upgraded from FBE 1.x
-				if ( 'no' === get_option( 'wc_facebook_has_connected_fbe_2' ) && $this->get_integration()->get_external_merchant_settings_id() ) {
+				// users who've never connected to FBE 2 but have previously connected to FBE 1
+				if ( ! $this->get_connection_handler()->has_previously_connected_fbe_2() && $this->get_connection_handler()->has_previously_connected_fbe_1() ) {
 
 					$message = sprintf(
 						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
@@ -192,7 +189,25 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">', '</a>'
 					);
 
-					$message_id = 'migrate_to_v2_0';
+					$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_migrate_to_v2_0', [
+						'dismissible'  => false,
+						'notice_class' => 'notice-info',
+					] );
+
+					// direct these users to the new plugin settings page
+					if ( ! $this->is_plugin_settings() ) {
+
+						$message = sprintf(
+							/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
+							__( 'For your convenience, the Facebook for WooCommerce settings are now located under %1$sWooCommerce > Facebook%2$s.', 'facebook-for-woocommerce' ),
+							'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">', '</a>'
+						);
+
+						$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_relocated_settings', [
+							'dismissible'  => true,
+							'notice_class' => 'notice-info',
+						] );
+					}
 
 				// otherwise, a general getting started message
 				} elseif ( ! $this->is_plugin_settings() ) {
@@ -209,13 +224,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						'</a>'
 					);
 
-					$message_id = 'get_started';
-				}
-
-				if ( $message ) {
-
-					$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_' . $message_id, [
-						'dismissible'  => false,
+					$this->get_admin_notice_handler()->add_admin_notice( $message, self::PLUGIN_ID . '_get_started', [
+						'dismissible'  => true,
 						'notice_class' => 'notice-info',
 					] );
 				}
