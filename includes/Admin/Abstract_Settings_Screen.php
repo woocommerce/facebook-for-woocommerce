@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -80,6 +82,8 @@ abstract class Abstract_Settings_Screen {
 	 * Saves the settings.
 	 *
 	 * @since 2.0.0-dev.1
+	 *
+	 * @throws SV_WC_Plugin_Exception
 	 */
 	public function save() {
 

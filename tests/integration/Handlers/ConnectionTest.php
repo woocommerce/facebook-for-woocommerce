@@ -344,6 +344,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'business', $extras['business_config'] );
 
 		$this->assertEquals( $connection->get_business_name(), $extras['business_config']['business']['name'] );
+
+		// messenger shouldn't be enabled by default
+		$this->assertArrayNotHasKey( 'messenger_chat', $extras['business_config'] );
 	}
 
 
@@ -352,6 +355,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		facebook_for_woocommerce()->get_integration()->update_external_merchant_settings_id( '1234' );
 
+		update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'yes' );
+
 		$connection = $this->get_connection();
 
 		$method = IntegrationTester::getMethod( Connection::class, 'get_connect_parameters_extras' );
@@ -359,6 +364,10 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'merchant_settings_id', $extras['setup'] );
 		$this->assertSame( '1234', $extras['setup']['merchant_settings_id'] );
+
+		$this->assertArrayHasKey( 'messenger_chat', $extras['business_config'] );
+		$this->assertTrue( $extras['business_config']['messenger_chat']['enabled'] );
+		$this->assertSame( home_url( '/' ), $extras['business_config']['messenger_chat']['domains'] );
 	}
 
 

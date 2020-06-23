@@ -71,11 +71,66 @@ class Connection {
 
 		$this->plugin = $plugin;
 
+		add_action( 'init', [ $this, 'refresh_business_configuration' ] );
+
 		add_action( 'admin_init', [ $this, 'refresh_installation_data' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+	}
+
+
+	/**
+	 * Refreshes the local business configuration data with the latest from Facebook.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.0-dev.1
+	 */
+	public function refresh_business_configuration() {
+
+		// only refresh once an hour
+		if ( get_transient( 'wc_facebook_business_configuration_refresh' ) ) {
+			return;
+		}
+
+		// bail if not connected
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
+		try {
+
+			$response = $this->get_plugin()->get_api()->get_business_configuration( $this->get_external_business_id() );
+
+			// update the messenger settings
+			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
+
+				// store the local "enabled" setting
+				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
+
+				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
+					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
+				}
+
+				// if the site's domain is somehow missing from the allowed domains, re-add it
+				if ( $messenger_configuration->is_enabled() && ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
+
+					$messenger_configuration->add_domain( home_url( '/' ) );
+
+					$this->get_plugin()->get_api()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
+				}
+			}
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+				$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
+			}
+		}
+
+		set_transient( 'wc_facebook_business_configuration_refresh', time(), HOUR_IN_SECONDS );
 	}
 
 
@@ -251,6 +306,8 @@ class Connection {
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
+
+		delete_transient( 'wc_facebook_business_configuration_refresh' );
 	}
 
 
@@ -568,23 +625,21 @@ class Connection {
 				'business' => [
 					'name' => $this->get_business_name(),
 				],
-				'page_shop' => [
-					'enabled'               => true,
-					'visible_product_count' => facebook_for_woocommerce()->get_integration()->get_product_count(),
-				],
-				'messenger_chat' => [
-					'enabled' => true,
-					'domains' => home_url(),
-				],
-				'ig_shopping' => [
-					'enabled' => true,
-				],
 			],
 			'repeat' => false,
 		];
 
 		if ( $external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id() ) {
 			$parameters['setup']['merchant_settings_id'] = $external_merchant_settings_id;
+		}
+
+		// if messenger was previously enabled
+		if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) {
+
+			$parameters['business_config']['messenger_chat'] = [
+				'enabled' => true,
+				'domains' => home_url( '/' ),
+			];
 		}
 
 		return $parameters;
