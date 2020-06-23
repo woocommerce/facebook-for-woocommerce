@@ -219,6 +219,29 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						'notice_class' => 'notice-info',
 					] );
 				}
+
+			// notices for those connected to FBE 2
+			} else {
+
+				// if upgraders had messenger enabled and one of the removed settings was customized, alert them to reconfigure
+				if (
+					   $this->get_integration()->get_external_merchant_settings_id()
+					&& $this->get_integration()->is_messenger_enabled()
+					&& ( '#0084ff' !== $this->get_integration()->get_messenger_color_hex() || ! in_array( $this->get_integration()->get_messenger_greeting(), [ 'Hi! How can we help you?', "Hi! We're here to answer any questions you may have.", '' ], true ) )
+				) {
+
+					$message = sprintf(
+					/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag */
+						__( '%1$sHeads up!%2$s If you\'ve customized your Facebook Messenger color or greeting settings, please update those settings again from the %3$sManage Connection%4$s area.', 'facebook-for-woocommerce' ),
+						'<strong>', '</strong>',
+						'<a href="' . esc_url( $this->get_connection_handler()->get_manage_url() ) . '" target="_blank">', '</a>'
+					);
+
+					$this->get_admin_notice_handler()->add_admin_notice( $message, 'update_messenger', [
+						'always_show_on_settings' => false,
+						'notice_class'            => 'notice-info',
+					] );
+				}
 			}
 
 			// if the connection is otherwise invalid, but there is an access token
