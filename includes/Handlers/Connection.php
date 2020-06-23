@@ -43,9 +43,17 @@ class Connection {
 	/** @var string the business manager ID option name */
 	const OPTION_BUSINESS_MANAGER_ID = 'wc_facebook_business_manager_id';
 
-	/** @var string the access token option name */
+	/** @var string the ad account ID option name */
+	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
+
+	/** @var string the system user ID option name */
+	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
+
+	/** @var string the system user access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
+	/** @var string the merchant access token option name */
+	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
@@ -75,8 +83,10 @@ class Connection {
 	 * Refreshes the connected installation data.
 	 *
 	 * @since 2.0.0-dev.1
+	 *
+	 * @param bool $force whether to force the refresh
 	 */
-	public function refresh_installation_data() {
+	public function refresh_installation_data( $force = false ) {
 
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
@@ -84,7 +94,7 @@ class Connection {
 		}
 
 		// only refresh once a day
-		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
+		if ( ! $force && get_transient( 'wc_facebook_connection_refresh' ) ) {
 			return;
 		}
 
@@ -108,6 +118,10 @@ class Connection {
 
 			if ( $response->get_business_manager_id() ) {
 				$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
+			}
+
+			if ( $response->get_ad_account_id() ) {
+				$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
 			}
 
 		} catch ( SV_WC_API_Exception $exception ) {
@@ -141,35 +155,29 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
-			$access_token = ! empty( $_GET['access_token'] ) ? sanitize_text_field( $_GET['access_token'] ) : '';
+			$merchant_access_token = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 
-			if ( ! $access_token ) {
+			if ( ! $merchant_access_token ) {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
 			}
 
-			$access_token = $this->create_system_user_token( $access_token );
+			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 
-			$this->update_access_token( $access_token );
-
-			$api = new \WC_Facebookcommerce_Graph_API( $access_token );
-
-			$asset_ids = $api->get_asset_ids( $this->get_external_business_id() );
-
-			if ( ! empty( $asset_ids['page_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $asset_ids['page_id'] ) );
+			if ( ! $system_user_access_token ) {
+				throw new SV_WC_API_Exception( 'System User access token is missing' );
 			}
 
-			if ( ! empty( $asset_ids['pixel_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $asset_ids['pixel_id'] ) );
+			$system_user_id = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
+
+			if ( ! $system_user_id ) {
+				throw new SV_WC_API_Exception( 'System User ID is missing' );
 			}
 
-			if ( ! empty( $asset_ids['catalog_id'] ) ) {
-				update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $asset_ids['catalog_id'] ) );
-			}
+			$this->update_access_token( $system_user_access_token );
+			$this->update_merchant_access_token( $merchant_access_token );
+			$this->update_system_user_id( $system_user_id );
 
-			if ( ! empty( $asset_ids['business_manager_id'] ) ) {
-				$this->update_business_manager_id( sanitize_text_field( $asset_ids['business_manager_id'] ) );
-			}
+			$this->refresh_installation_data( true );
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
@@ -235,25 +243,14 @@ class Connection {
 	private function disconnect() {
 
 		$this->update_access_token( '' );
+		$this->update_merchant_access_token( '' );
+		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
+		$this->update_ad_account_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
-	}
-
-
-	/**
-	 * Converts a temporary user token to a system user token via the Graph API.
-	 *
-	 * @since 2.0.0-dev.1
-	 *
-	 * @param string $user_token
-	 * @return string
-	 */
-	public function create_system_user_token( $user_token ) {
-
-		return $user_token;
 	}
 
 
@@ -277,6 +274,29 @@ class Connection {
 		 * @param Connection $connection connection handler instance
 		 */
 		return apply_filters( 'wc_facebook_connection_access_token', $access_token, $this );
+	}
+
+
+	/**
+	 * Gets the merchant access token.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_merchant_access_token() {
+
+		$access_token = get_option( self::OPTION_MERCHANT_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the merchant access token.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param string $access_token access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return apply_filters( 'wc_facebook_connection_merchant_access_token', $access_token, $this );
 	}
 
 
@@ -327,6 +347,8 @@ class Connection {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
+	 * @link https://developers.facebook.com/docs/marketing-api/access/#access_token
+	 *
 	 * @return string[]
 	 */
 	public function get_scopes() {
@@ -335,6 +357,8 @@ class Connection {
 			'manage_business_extension',
 			'catalog_management',
 			'business_management',
+			'ads_management',
+			'ads_read',
 		];
 
 		/**
@@ -422,6 +446,32 @@ class Connection {
 
 
 	/**
+	 * Gets the ad account ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_ad_account_id() {
+
+		return get_option( self::OPTION_AD_ACCOUNT_ID, '' );
+	}
+
+
+	/**
+	 * Gets the System User ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_system_user_id() {
+
+		return get_option( self::OPTION_SYSTEM_USER_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0-dev.1
@@ -451,8 +501,9 @@ class Connection {
 	public function get_redirect_url() {
 
 		$redirect_url = add_query_arg( [
-			'wc-api' => self::ACTION_CONNECT,
-			'nonce'  => wp_create_nonce( self::ACTION_CONNECT ),
+			'wc-api'               => self::ACTION_CONNECT,
+			'external_business_id' => $this->get_external_business_id(),
+			'nonce'                => wp_create_nonce( self::ACTION_CONNECT ),
 		], home_url( '/' ) );
 
 		/**
@@ -554,6 +605,32 @@ class Connection {
 
 
 	/**
+	 * Stores the given ID value.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the ad account ID
+	 */
+	public function update_ad_account_id( $value ) {
+
+		update_option( self::OPTION_AD_ACCOUNT_ID, $value );
+	}
+
+
+	/**
+	 * Stores the given system user ID.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the ID
+	 */
+	public function update_system_user_id( $value ) {
+
+		update_option( self::OPTION_SYSTEM_USER_ID, $value );
+	}
+
+
+	/**
 	 * Stores the given token value.
 	 *
 	 * @since 2.0.0-dev.1
@@ -563,6 +640,19 @@ class Connection {
 	public function update_access_token( $value ) {
 
 		update_option( self::OPTION_ACCESS_TOKEN, $value );
+	}
+
+
+	/**
+	 * Stores the given merchant access token.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param string $value the access token
+	 */
+	public function update_merchant_access_token( $value ) {
+
+		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
 	}
 
 
