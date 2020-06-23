@@ -23,7 +23,7 @@ class Connection {
 
 
 	/** @var string Facebook client identifier */
-	const CLIENT_ID = '1234';
+	const CLIENT_ID = '474166926521348';
 
 	/** @var string Facebook OAuth URL */
 	const OAUTH_URL = 'https://facebook.com/dialog/oauth';
