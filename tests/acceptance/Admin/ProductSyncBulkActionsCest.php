@@ -218,7 +218,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$this->product->get_id()}:not(:checked)" );
 
-		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice.is-dismissible' );
+		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice' );
 
 		$I->see( 'Sync and hide', 'table.wp-list-table td' );
 		$I->dontSee( 'Sync and show', 'table.wp-list-table td' );
@@ -343,7 +343,7 @@ class ProductSyncBulkActionsCest {
 		$I->click( '#doaction' );
 		$I->waitForElement( "#cb-select-{$variable_product->get_id()}:not(:checked)" );
 
-		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice.is-dismissible' );
+		$I->see( '1 product or some of its variations could not be updated to show in the Facebook catalog', 'div.notice' );
 		$I->see( 'Sync and show', 'table.wp-list-table td' ); // because it has non-virtual variations
 		$I->dontSee( 'Sync and hide', 'table.wp-list-table td' );
 		$I->dontSee( 'Do not sync', 'table.wp-list-table td' );
