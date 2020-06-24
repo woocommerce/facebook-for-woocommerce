@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -555,7 +556,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'additional_image_urls' => array_slice( $image_urls, 1 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
-				'brand'                 => $brand,
+				'brand'                 => SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),

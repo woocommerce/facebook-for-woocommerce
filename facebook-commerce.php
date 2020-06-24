@@ -10,6 +10,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
@@ -1791,7 +1792,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'description'  => strip_tags( $product_data['description'] ),
 				'id'           => $product_data['retailer_id'],
 				'image_link'   => $product_data['image_url'],
-				'brand'        => strip_tags( WC_Facebookcommerce_Utils::get_store_name() ),
+				'brand'        => SV_WC_Helper::str_truncate( strip_tags( WC_Facebookcommerce_Utils::get_store_name() ), 100 ),
 				'link'         => $product_data['url'],
 				'price'        => $product_data['price'] . ' ' . get_woocommerce_currency(),
 			];
