@@ -25,11 +25,28 @@ class IntegrationTester extends \Codeception\Actor {
 	/**
 	 * Gets a new product object.
 	 *
+	 * @param array $args {
+	 *     Key value pairs where the key is the name of a product prop, plus:
+	 *
+	 *     @type string $class name of the class to instantiate. Uses WC_Product as default.
+	 * }
 	 * @return \WC_Product
 	 */
-	public function get_product() {
+	public function get_product( $args = [] ) {
 
-		$product = new \WC_Product();
+		$class_name = isset( $args['class'] ) ? $args['class'] : \WC_Product::class;
+
+		unset( $args['class'] );
+
+		$product = new $class_name();
+
+		foreach ( $args as $prop => $value ) {
+
+			if ( $value && is_callable( [ $product, "set_{$prop}" ] ) ) {
+				$product->{"set_{$prop}"}( $value );
+			}
+		}
+
 		$product->save();
 
 		return $product;
