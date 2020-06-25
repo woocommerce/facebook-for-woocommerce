@@ -232,6 +232,38 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	/**
+	 * Sets the UI as sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param count number of items remaining
+	 */
+	function setProductSyncStatus( count = null ) {
+
+		toggleSettingOptions( false );
+
+		$( 'input#wc_facebook_enable_product_sync, input[name="save_product_sync_settings"]' ).css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+
+		let message = facebook_for_woocommerce_settings_sync.i18n.sync_in_progress;
+
+		if ( count ) {
+
+			if ( count > 1 ) {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_plural;
+			} else {
+				message = message + facebook_for_woocommerce_settings_sync.i18n.sync_remaining_items_singular
+			}
+
+			message = message.replace( '{count}', count );
+		}
+
+		// set products sync status
+		$( '#sync_progress' ).show().html( message ).css( 'color', 'inherit' );
+
+		facebook_for_woocommerce_settings_sync.sync_in_progress = true;
+	}
+
+	/**
 	 * Clears any UI for sync in progress.
 	 *
 	 * @since 2.0.0-dev.1
