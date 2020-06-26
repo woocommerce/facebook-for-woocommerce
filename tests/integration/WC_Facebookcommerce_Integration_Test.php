@@ -774,6 +774,34 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
+	public function test_on_product_publish_with_simple_product() {
+
+		$this->check_on_product_publish( $this->tester->get_product( [ 'status' => 'publish' ] ) );
+	}
+
+
+	/**
+	 * Tests that on_product_publish() delegates to the appropriate handler.
+	 *
+	 * @see \WC_Facebookcommerce_Integration::on_product_publish()
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	private function check_on_product_publish( \WC_Product $product ) {
+
+		// on_product_publish() expects the Facebook Page ID to be configured
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '123456' );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'on_simple_product_publish'   => $product->is_type( 'variable' ) ? Expected::never() : Expected::once(),
+			'on_variable_product_publish' => $product->is_type( 'variable' ) ? Expected::once()  : Expected::never(),
+		] );
+
+		$integration->on_product_publish( $product->get_id() );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
 	public function test_on_variable_product_publish() {
 
