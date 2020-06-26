@@ -1122,12 +1122,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->create_product_group( $woo_product, $retailer_id, true );
 		}
 
-		$child_products = $woo_product->get_children();
-
 		$variation_ids = [];
 
 		// scheduled update for each variation that should be synced
-		foreach ( $child_products as $variation_id ) {
+		foreach ( $woo_product->get_children() as $variation_id ) {
 
 			if ( ! $variation = wc_get_product( $variation_id ) ) {
 				continue;
