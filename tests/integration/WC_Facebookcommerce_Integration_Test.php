@@ -802,6 +802,16 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
+	public function test_on_product_publish_with_variable_product() {
+
+		$this->check_on_product_publish( $this->tester->get_variable_product( [
+			'children' => 3,
+			'status'   => 'publish',
+		] ) );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
 	public function test_on_variable_product_publish() {
 
