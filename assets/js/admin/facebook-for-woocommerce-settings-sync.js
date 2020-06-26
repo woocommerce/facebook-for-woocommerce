@@ -166,7 +166,9 @@ jQuery( document ).ready( function( $ ) {
 
 		if ( confirm( facebook_for_woocommerce_settings_sync.i18n.confirm_sync ) ) {
 
-			syncInProgress();
+			setProductSyncStatus();
+
+			let startTime = Date.now();
 
 			$.post( facebook_for_woocommerce_settings_sync.ajax_url, {
 				action: 'wc_facebook_sync_products',
@@ -184,6 +186,11 @@ jQuery( document ).ready( function( $ ) {
 					}
 
 					clearSyncInProgress( error );
+
+				} else {
+
+					// get the current sync status after a successful response but make sure to wait at least 10 seconds since the button was pressed
+					setTimeout( getSyncStatus, Math.max( 0, 10000 - ( Date.now() - startTime ) ) );
 				}
 
 			} ).fail( function() {
@@ -196,13 +203,29 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	/**
-	 * Sets the UI as sync in progress.
+	 * Sets the UI as sync in progress and starts an interval to check the background sync status.
 	 *
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param count number of items remaining
 	 */
 	function syncInProgress( count = null ) {
+
+		setProductSyncStatus( count );
+
+		if ( ! window.syncStatusInterval ) {
+			window.syncStatusInterval = setInterval( getSyncStatus, 10000 );
+		}
+	}
+
+	/**
+	 * Sets the UI as sync in progress.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param count number of items remaining
+	 */
+	function setProductSyncStatus( count = null ) {
 
 		toggleSettingOptions( false );
 
@@ -225,10 +248,6 @@ jQuery( document ).ready( function( $ ) {
 		$( '#sync_progress' ).show().html( message ).css( 'color', 'inherit' );
 
 		facebook_for_woocommerce_settings_sync.sync_in_progress = true;
-
-		if ( ! window.syncStatusInterval ) {
-			window.syncStatusInterval = setInterval( getSyncStatus, 10000 );
-		}
 	}
 
 	/**
