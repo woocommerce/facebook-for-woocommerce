@@ -112,7 +112,7 @@ class IntegrationTester extends \Codeception\Actor {
 
 
 	/**
-	 * Use reflection to make a method public so we can test it.
+	 * Uses reflection to make a method public so we can test it.
 	 *
 	 * @param string $class_name class name
 	 * @param string $method_name method name
@@ -126,6 +126,56 @@ class IntegrationTester extends \Codeception\Actor {
 		$method->setAccessible( true );
 
 		return $method;
+	}
+
+
+	/**
+	 * Uses reflection to make a property public so we can test it.
+	 *
+	 * Copied from Jilt for WooCommerce.
+	 *
+	 * @param string $class_name class name
+	 * @param string $property_name property name
+	 * @return ReflectionProperty
+	 * @throws ReflectionException
+	 */
+	public static function getProperty( $class_name, $property_name ) {
+
+		$property = new ReflectionProperty( $class_name, $property_name );
+		$property->setAccessible( true );
+
+		return $property;
+	}
+
+
+	/**
+	 * Uses reflection to get the value of a property.
+	 *
+	 * Copied from Jilt for WooCommerce.
+	 *
+	 * @param object $object object
+	 * @param string $property_name property name
+	 * @return mixed
+	 * @throws ReflectionException
+	 */
+	public function getPropertyValue( $object, $property_name, $class_name = null ) {
+
+		return $this->getProperty( $class_name ?: get_class( $object ), $property_name )->getValue( $object );
+	}
+
+
+	/**
+	 * Uses reflection to set the value of a property.
+	 *
+	 * @param object $object object
+	 * @param string $property_name property name
+	 * @param string $property_value property value
+	 * @return mixed
+	 * @throws ReflectionException
+	 */
+	public function setPropertyValue( $object, $property_name, $value, $class_name = null ) {
+
+		return $this->getProperty( $class_name ?: get_class( $object ), $property_name )->setValue( $object, $value );
 	}
 
 
