@@ -56,14 +56,21 @@ class IntegrationTester extends \Codeception\Actor {
 	/**
 	 * Gets a new variable product object, with variations.
 	 *
-	 * @param int|int[] $children array of variation IDs, if unspecified will generate the amount passed (default 3)
+	 * @param array $args {
+	 *     Any of the parameters accepted by get_product(), plus:
+	 *
+	 *     @type int|int[] $children array of variation IDs, if unspecified will generate the amount passed (default 3)
+	 * }
 	 * @return \WC_Product_Variable
 	 */
-	public function get_variable_product( $children = [] ) {
+	public function get_variable_product( $args = [] ) {
 
-		$product = new \WC_Product_Variable();
+		$children = isset( $args['children'] ) ? $args['children'] : [];
 
-		$product->save();
+		unset( $args['children'] );
+
+		/** @var \WC_Product_Variable */
+		$product = $this->get_product( array_merge( $args, [ 'class' => \WC_Product_Variable::class ] ) );
 
 		$variations = [];
 
@@ -74,9 +81,10 @@ class IntegrationTester extends \Codeception\Actor {
 
 			for ( $i = 0; $i < $total_variations; $i++ ) {
 
-				$variation = new \WC_Product_Variation();
-				$variation->set_parent_id( $product->get_id() );
-				$variation->save();
+				$variation = $this->get_product( array_merge( $args, [
+					'class'     => \WC_Product_Variation::class,
+					'parent_id' => $product->get_id(),
+				] ) );
 
 				$variations[] = $variation->get_id();
 			}

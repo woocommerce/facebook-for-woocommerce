@@ -19,7 +19,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	public function test_create_or_update_all_products() {
 
 		// create a variable product with three variations and define their prices
-		$variable_product = $this->tester->get_variable_product( 3 );
+		$variable_product = $this->tester->get_variable_product( [ 'children' => 3 ] );
 
 		foreach ( $variable_product->get_children() as $variation_id ) {
 
@@ -29,7 +29,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		}
 
 		// create a variable product with three variations but no price
-		$this->tester->get_variable_product( 3 );
+		$this->tester->get_variable_product( [ 'children' => 3 ] );
 
 		// create a simple product with price
 		$simple_product = $this->tester->get_product();
@@ -81,7 +81,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	public function test_create_or_update_all_products_excludes_variations_with_unpublished_parents() {
 
 		// create a variable product with three variations and define their prices
-		$variable_product = $this->tester->get_variable_product( 3 );
+		$variable_product = $this->tester->get_variable_product( [ 'children' => 3 ] );
 
 		// wp_insert_post() considers the post empty if the status is the only change (!!)
 		$variable_product->set_name( 'Draft Variable' );
