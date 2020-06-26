@@ -1084,6 +1084,34 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
+	public function test_on_variable_product_publish_with_out_of_stock_product_variations() {
+
+		$product = $this->tester->get_variable_product( [
+			'children'     => 3,
+			'status'       => 'publish',
+		] );
+
+		$excluded_variation_ids = array_slice( $product->get_children(), -2 );
+
+		foreach ( $excluded_variation_ids as $variation_id ) {
+
+			$variation = wc_get_product( $variation_id );
+
+			$variation->set_stock_status( 'outofstock' );
+			$variation->save();
+		}
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+
+		$this->check_on_variable_product_publish_does_not_sync_product_variations(
+			$product->get_id(),
+			$product,
+			$excluded_variation_ids
+		);
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_simple_product_publish() */
 	public function test_on_simple_product_publish() {
 
