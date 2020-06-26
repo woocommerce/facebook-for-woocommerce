@@ -799,6 +799,63 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
+	public function test_on_variable_product_publish_when_product_sync_is_disabled() {
+
+		$product = $this->tester->get_variable_product( [
+			'children' => 3,
+			'status'   => 'publish',
+		] );
+
+		add_filter( 'wc_facebook_is_product_sync_enabled', '__return_false' );
+
+		$this->check_on_variable_product_publish_does_not_sync_product_variations( $product->get_id(), $product );
+	}
+
+
+	/**
+	 * Tests that variable products and product variations are not synced.
+	 *
+	 * @param int $product_id product ID
+	 * @param \WC_Product_Variable $product variable product object
+	 * @param array $excluded_variation_ids IDs of variations that shouldn't be synced
+	 */
+	private function check_on_variable_product_publish_does_not_sync_product_variations( $product_id, \WC_Product_Variable $product = null, array $excluded_variation_ids = null ) {
+
+		$this->tester->setPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests', [] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'get_product_fbid'     => null,
+			// if $excluded_variation_ids is not empty, assume that at least one variation will be synced and the product group will be created
+			'create_product_group' => empty( $excluded_variation_ids ) ? Expected::never() : Expected::once(),
+			'update_product_group' => Expected::never(),
+			// may be called for outofstock parent products
+			'delete_product_item'  => null,
+		] );
+
+		$integration->on_variable_product_publish( $product_id );
+
+		if ( null === $excluded_variation_ids ) {
+			$excluded_variation_ids = $product ? $product->get_children() : [];
+		}
+
+		$requests = $this->tester->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
+
+		// make sure all variations that should be excluded are not in the sync requests array
+		if ( $excluded_variation_ids ) {
+
+			foreach ( $excluded_variation_ids as $variation_id ) {
+				$this->assertArrayNotHasKey( Sync::PRODUCT_INDEX_PREFIX . $variation_id, $requests );
+			}
+
+		// otherwise ensure no products were added to the sync requests array
+		} else {
+
+			$this->assertEmpty( $requests );
+		}
+	}
+
+
 	/**
 	 * @see product_should_be_synced
 	 *
