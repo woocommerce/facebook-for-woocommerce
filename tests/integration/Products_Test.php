@@ -43,6 +43,16 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
 	}
 
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_variation() {
+
+		$product = $this->get_variable_product();
+
+		foreach ( $product->get_children() as $child_id ) {
+			$this->assertTrue( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
+		}
+	}
+
 
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple_in_excluded_category() {
