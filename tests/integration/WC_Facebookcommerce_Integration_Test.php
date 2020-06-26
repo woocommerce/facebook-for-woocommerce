@@ -909,6 +909,21 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
+	public function test_on_variable_product_publish_with_out_of_stock_parent_product() {
+
+		$product = $this->tester->get_variable_product( [
+			'children'     => 3,
+			'status'       => 'publish',
+			'stock_status' => 'outofstock',
+		] );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+
+		$this->check_on_variable_product_publish_does_not_sync_product_variations( $product->get_id(), $product );
+	}
+
+
 	/**
 	 * @see product_should_be_synced
 	 *
