@@ -1,7 +1,9 @@
 <?php
 
+use Codeception\Stub\Expected;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -770,6 +772,32 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$this->assertFalse( $this->integration->is_product_sync_enabled() );
 	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::on_variable_product_publish() */
+	public function test_on_variable_product_publish() {
+
+		$product = $this->tester->get_variable_product( [
+			'children' => 3,
+			'status'   => 'publish',
+		] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'get_product_fbid'     => null,
+			'create_product_group' => Expected::once(),
+			'update_product_group' => Expected::never(),
+			'delete_product_item'  => Expected::never(),
+		] );
+
+		$integration->on_variable_product_publish( $product->get_id() );
+
+		$requests = $this->tester->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
+
+		foreach ( $product->get_children() as $variation_id ) {
+			$this->assertArrayHasKey( Sync::PRODUCT_INDEX_PREFIX . $variation_id, $requests );
+		}
+	}
+
 
 	/**
 	 * @see product_should_be_synced
