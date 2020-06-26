@@ -1124,11 +1124,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$child_products = $woo_product->get_children();
 
-		// scheduled update for each variation
-		foreach ( $child_products as $item_id ) {
+		$variation_ids = [];
 
-			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $item_id ] );
+		// scheduled update for each variation that should be synced
+		foreach ( $child_products as $variation_id ) {
+
+			if ( ! $variation = wc_get_product( $variation_id ) ) {
+				continue;
+			}
+
+			if ( $variation instanceof \WC_Product && $this->product_should_be_synced( $variation ) && ! $this->delete_on_out_of_stock( $variation_id, $variation ) ) {
+				$variation_ids[] = $variation_id;
+			}
 		}
+
+		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $variation_ids );
 	}
 
 
