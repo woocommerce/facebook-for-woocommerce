@@ -825,6 +825,22 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
+	public function test_on_product_delete_with_invalid_product_id() {
+
+		$this->tester->setPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests', [] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'delete_product_item' => Expected::never(),
+			'get_product_fbid'    => Expected::never(),
+		] );
+
+		$integration->on_product_delete( 0 );
+
+		$this->tester->assertProductsAreNotScheduledForDelete();
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
 	public function test_on_product_publish_with_simple_product() {
 
