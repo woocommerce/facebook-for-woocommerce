@@ -1211,27 +1211,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the product with the given ID should be synced.
 	 *
-	 * TODO: can we move this logic into Products::product_should_be_synced()? {WV 2020-05-22}
-	 *
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param \WC_Product|false $product product object
 	 */
 	public function product_should_be_synced( $product ) {
 
-		$should_be_synced = true;
-
-		if ( ! $this->is_product_sync_enabled() ) {
-			$should_be_synced = false;
-		}
+		$should_be_synced = $this->is_product_sync_enabled();
 
 		// can't sync if we don't have a valid product object
 		if ( $should_be_synced && ! $product instanceof \WC_Product ) {
-			$should_be_synced = false;
-		}
-
-		// only published product should be synced
-		if ( $should_be_synced && 'publish' !== get_post_status( $product->get_id() ) ) {
 			$should_be_synced = false;
 		}
 
