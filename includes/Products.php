@@ -162,9 +162,7 @@ class Products {
 	/**
 	 * Determines whether the given product should be synced.
 	 *
-	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
-	 * @see Products::is_sync_enabled_for_product()
-	 * @see Products::is_sync_excluded_for_product_terms()
+	 * @see Products::published_product_should_be_synced()
 	 *
 	 * @since 1.10.0
 	 *
@@ -173,7 +171,25 @@ class Products {
 	 */
 	public static function product_should_be_synced( \WC_Product $product ) {
 
-		$should_sync = 'publish' === $product->get_status() && self::is_sync_enabled_for_product( $product );
+		return 'publish' === $product->get_status() && self::published_product_should_be_synced( $product );
+	}
+
+
+	/**
+	 * Determines whether the given product should be synced assuming the product is published.
+	 *
+	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
+	 * @see Products::is_sync_enabled_for_product()
+	 * @see Products::is_sync_excluded_for_product_terms()
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function published_product_should_be_synced( \WC_Product $product ) {
+
+		$should_sync = self::is_sync_enabled_for_product( $product );
 
 		// exclude products that qualify to be removed from the catalog
 		if ( $should_sync && self::product_should_be_deleted( $product ) ) {
