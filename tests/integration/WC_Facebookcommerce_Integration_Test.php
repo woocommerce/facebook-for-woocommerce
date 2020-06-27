@@ -777,7 +777,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
 	public function test_on_product_delete_with_simple_product() {
 
-		$product = $this->tester->get_product( [ 'status' => 'publish' ] );
+		$product = $this->tester->get_product( [ 'status' => 'trash' ] );
 
 		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
 			'delete_product_item'  => Expected::once(),
@@ -797,6 +797,10 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			'status'   => 'publish',
 		] );
 
+		$product->set_name( 'Test Name' );
+		$product->set_status( 'trash' );
+		$product->save();
+
 		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
 			'delete_product_item' => Expected::never(),
 			// called from delete_product_group()
@@ -812,7 +816,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
 	public function test_on_product_delete_with_product_variation() {
 
-		$variation = $this->tester->get_product_variation( [ 'status' => 'publish' ] );
+		$variation = $this->tester->get_product_variation( [ 'status' => 'trash' ] );
 
 		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
 			'delete_product_item' => Expected::never(),
