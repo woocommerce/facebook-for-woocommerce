@@ -1229,6 +1229,44 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::update_fb_visibility() */
+	public function test_update_fb_visibility_with_invalid_product_id() {
+
+		$this->check_update_fb_visibility_does_not_sync_product_variation( 0 );
+	}
+
+
+	/**
+	 * Tests update_fb_visibility() does not schedule a product variation for sync.
+	 *
+	 * @see \WC_Facebookcommerce_Integration::update_fb_visibility()
+	 *
+	 * @param int $variation_id product variation ID
+	 * @param \WC_Product_Variation $variation product variation object
+	 */
+	private function check_update_fb_visibility_does_not_sync_product_variation( $variation_id, \WC_Product_Variation $variation = null ) {
+
+		// update_fb_visibility() expects the Facebook Page ID to be configured
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '123456' );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'get_product_fbid'     => Expected::never(),
+			'update_product_group' => Expected::never(),
+		] );
+
+		$integration->update_fb_visibility( $variation_id, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE );
+
+		$this->tester->assertProductsAreNotScheduledForSync( [ $variation_id ] );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::update_fb_visibility() */
+	public function test_update_fb_visibility_with_unpublished_product_variation() {
+
+		$this->check_update_fb_visibility_does_not_sync_product_variation( 0 );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::on_quick_and_bulk_edit_save()
 	 *
