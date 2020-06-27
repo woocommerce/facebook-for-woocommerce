@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
  * Inherited Methods
@@ -160,6 +161,28 @@ class IntegrationTester extends \Codeception\Actor {
 
 			$this->assertEmpty( $requests );
 		}
+	}
+
+
+	public function assertProductsAreScheduledForSync( $product_ids = [], $requests = null ) {
+
+		$this->assertSyncRequestsExist(
+			array_map( static function( $product_id ) {
+				return Sync::PRODUCT_INDEX_PREFIX . $product_id;
+			}, $product_ids ),
+			$requests
+		);
+	}
+
+
+	public function assertProductsAreNotScheduledForSync( $product_ids = [], $requests = null ) {
+
+		$this->assertSyncRequestsNotExist(
+			array_map( static function( $product_id ) {
+				return Sync::PRODUCT_INDEX_PREFIX . $product_id;
+			}, $product_ids ),
+			$requests
+		);
 	}
 
 

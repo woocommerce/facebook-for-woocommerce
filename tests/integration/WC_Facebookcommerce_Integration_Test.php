@@ -968,11 +968,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$integration->on_variable_product_publish( $product->get_id() );
 
-		$requests = $this->tester->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
-
-		foreach ( $product->get_children() as $variation_id ) {
-			$this->assertArrayHasKey( Sync::PRODUCT_INDEX_PREFIX . $variation_id, $requests );
-		}
+		$this->tester->assertProductsAreScheduledForSync( $product->get_children() );
 	}
 
 
@@ -1016,20 +1012,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 			$excluded_variation_ids = $product ? $product->get_children() : [];
 		}
 
-		$requests = $this->tester->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
-
-		// make sure all variations that should be excluded are not in the sync requests array
-		if ( $excluded_variation_ids ) {
-
-			foreach ( $excluded_variation_ids as $variation_id ) {
-				$this->assertArrayNotHasKey( Sync::PRODUCT_INDEX_PREFIX . $variation_id, $requests );
-			}
-
-		// otherwise ensure no products were added to the sync requests array
-		} else {
-
-			$this->assertEmpty( $requests );
-		}
+		$this->tester->assertProductsAreNotScheduledForSync( $excluded_variation_ids );
 	}
 
 
