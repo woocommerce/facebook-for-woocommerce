@@ -1084,6 +1084,22 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_simple_product_publish() */
+	public function test_on_simple_product_publish() {
+
+		$product = $this->tester->get_product( [ 'status'   => 'publish' ] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'get_product_fbid'      => Expected::once(),
+			'create_product_simple' => Expected::once(),
+		] );
+
+		$integration->on_simple_product_publish( $product->get_id() );
+
+		$this->tester->assertProductsAreScheduledForSync( $product->get_children() );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::product_should_be_synced()
 	 *
