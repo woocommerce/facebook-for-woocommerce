@@ -55,6 +55,17 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_with_outofstock_product() {
+
+		$product = $this->get_product( ['stock_status' => 'outofstock' ] );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+
+		$this->assertFalse( Facebook\Products::product_should_be_synced( $product ) );
+	}
+
+
+	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple_in_excluded_category() {
 
 		$product = $this->get_product();
