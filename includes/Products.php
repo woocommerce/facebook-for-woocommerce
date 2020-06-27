@@ -173,10 +173,31 @@ class Products {
 	 */
 	public static function product_should_be_synced( \WC_Product $product ) {
 
-		// define the product to check terms on
-		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
+		$should_sync = 'publish' === $product->get_status() && self::is_sync_enabled_for_product( $product );
 
-		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+		// exclude products that qualify to be removed from the catalog
+		if ( $should_sync && self::product_should_be_deleted( $product ) ) {
+			$should_sync = false;
+		}
+
+		// define the product to check terms on
+		if ( $should_sync ) {
+			$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
+		} else {
+			$terms_product = null;
+		}
+
+		// exclude products that are excluded from the store catalog or from search results
+		if ( $should_sync && ( ! $terms_product || has_term( [ 'exclude-from-catalog', 'exclude-from-search' ], 'product_visibility', $terms_product->get_id() ) ) ) {
+			$should_sync = false;
+		}
+
+		// exclude products that belong to one of the excluded terms
+		if ( $should_sync && ( ! $terms_product || self::is_sync_excluded_for_product_terms( $terms_product ) ) ) {
+			$should_sync = false;
+		}
+
+		return $should_sync;
 	}
 
 
