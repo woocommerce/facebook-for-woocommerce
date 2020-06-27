@@ -191,10 +191,6 @@ class Products {
 
 		$should_sync = self::is_sync_enabled_for_product( $product );
 
-		// exclude products that qualify to be removed from the catalog
-		if ( $should_sync && self::product_should_be_deleted( $product ) ) {
-			$should_sync = false;
-		}
 
 		// define the product to check terms on
 		if ( $should_sync ) {
