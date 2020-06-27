@@ -98,6 +98,22 @@ class IntegrationTester extends \Codeception\Actor {
 
 
 	/**
+	 * Gets a new product variation object.
+	 *
+	 * @param array $args {
+	 *     Key value pairs where the key is the name of a product prop
+	 * }
+	 * @return \WC_Product_Variation
+	 */
+	public function get_product_variation( $args = [] ) {
+
+		$parent_product = $this->get_variable_product( array_merge( $args, [ 'children' => 1 ] ) );
+
+		return wc_get_product( current( $parent_product->get_children() ) );
+	}
+
+
+	/**
 	 * Gets an instance of an anonymous API\Response subclass that uses the API\Traits\Paginated_Response trait.
 	 *
 	 * @return API\Response
