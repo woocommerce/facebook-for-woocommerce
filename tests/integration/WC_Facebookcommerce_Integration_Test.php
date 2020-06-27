@@ -1085,7 +1085,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 
 	/**
-	 * @see product_should_be_synced
+	 * @see \WC_Facebookcommerce_Integration::product_should_be_synced()
 	 *
 	 * @param bool $sync_enabled whether product sync is enabled at the plugin level
 	 * @param \WC_Product $product product object
