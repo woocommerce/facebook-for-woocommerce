@@ -1131,6 +1131,36 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_simple_product_publish() */
+	public function test_on_simple_product_publish_with_invalid_product_id() {
+
+		$this->check_on_simple_product_publish_does_not_sync_product( 0 );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::on_simple_product_publish() */
+	public function test_on_simple_product_publish_with_unpublished_product() {
+
+		$product = $this->tester->get_product( [ 'status'   => 'draft' ] );
+
+		$this->check_on_simple_product_publish_does_not_sync_product( $product->get_id() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::on_simple_product_publish() */
+	public function test_on_simple_product_publish_with_out_of_stock_product() {
+
+		$product = $this->tester->get_variable_product( [
+			'status'       => 'publish',
+			'stock_status' => 'outofstock',
+		] );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+
+		$this->check_on_simple_product_publish_does_not_sync_product( $product->get_id() );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::product_should_be_synced()
 	 *
