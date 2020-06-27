@@ -6,6 +6,7 @@ actor: IntegrationTester
 modules:
     enabled:
         - WPLoader
+        - Asserts
         - \Helper\Integration
     config:
         WPLoader:
