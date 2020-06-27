@@ -1208,6 +1208,48 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::on_quick_and_bulk_edit_save()
+	 *
+	 * @param string $status product status
+	 *
+	 * @dataProvider provider_test_on_quick_and_bulk_edit_save
+	 */
+	public function test_on_quick_and_bulk_edit_save( $status ) {
+
+		$product = $this->tester->get_product( [ 'status' => $status ] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'on_product_publish'   => 'publish' === $status ? Expected::once()  : Expected::never(),
+			'update_fb_visibility' => 'publish' === $status ? Expected::never() : Expected::once(),
+		] );
+
+		$integration->on_quick_and_bulk_edit_save( $product );
+	}
+
+
+	/** @see test_on_quick_and_bulk_edit_save */
+	public function provider_test_on_quick_and_bulk_edit_save() {
+
+		return [
+			'visible product' => [ 'publish' ],
+			'hidden product'  => [ 'draft' ],
+		];
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::on_quick_and_bulk_edit_save() */
+	public function test_on_quick_and_bulk_edit_save_with_invalid_product() {
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'on_product_publish'   => Expected::never(),
+			'update_fb_visibility' => Expected::never(),
+		] );
+
+		$integration->on_quick_and_bulk_edit_save( null );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::is_messenger_enabled() */
 	public function test_is_messenger_enabled() {
 
