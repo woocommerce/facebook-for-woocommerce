@@ -774,6 +774,21 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
+	public function test_on_product_delete_with_simple_product() {
+
+		$product = $this->tester->get_product( [ 'status' => 'publish' ] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'delete_product_item'  => Expected::once(),
+			// called from delete_product_item() and from delete_product_group()
+			'get_product_fbid'     => null,
+		] );
+
+		$integration->on_product_delete( $product->get_id() );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
 	public function test_on_product_publish_with_simple_product() {
 
