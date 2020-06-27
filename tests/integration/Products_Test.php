@@ -65,6 +65,35 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * Tests that product excluded from the store catalog or from search results should not be synced.
+	 *
+	 * @see Facebook\Products::product_should_be_synced()
+	 *
+	 * @param string $term product_visibility term
+	 *
+	 * @dataProvider provider_product_should_be_synced_with_product_excluded_from_catalog
+	 */
+	public function test_product_should_be_synced_with_excluded_products( $term ) {
+
+		$product = $this->get_product();
+
+		wp_set_object_terms( $product->get_id(), $term, 'product_visibility' );
+
+		$this->assertFalse( Facebook\Products::product_should_be_synced( $product ) );
+	}
+
+
+	/** @see test_product_should_be_synced_with_excluded_products() */
+	public function provider_product_should_be_synced_with_product_excluded_from_catalog() {
+
+		return [
+			[ 'exclude-from-catalog' ],
+			[ 'exclude-from-search' ],
+		];
+	}
+
+
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple_in_excluded_category() {
 
