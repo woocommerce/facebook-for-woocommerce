@@ -1208,6 +1208,27 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::update_fb_visibility() */
+	public function test_update_fb_visibility_with_product_variation() {
+
+		$product = $this->tester->get_product_variation( [
+			'status' => 'publish',
+		] );
+
+		// update_fb_visibility() expects the Facebook Page ID to be configured
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '123456' );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'get_product_fbid'     => Expected::never(),
+			'update_product_group' => Expected::never(),
+		] );
+
+		$integration->update_fb_visibility( $product->get_id(), \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE );
+
+		$this->tester->assertProductsAreScheduledForSync( [ $product->get_id() ] );
+	}
+
+
 	/**
 	 * @see \WC_Facebookcommerce_Integration::on_quick_and_bulk_edit_save()
 	 *
