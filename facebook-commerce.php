@@ -964,7 +964,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @see ajax_delete_fb_product()
 		 */
 		if ( ( ! is_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
-		     && ! Products::product_should_be_synced( $product ) ) {
+		     && ! Products::published_product_should_be_synced( $product ) ) {
 
 			return;
 		}
@@ -1027,7 +1027,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// variations before it gets called with the variable product. As a result, Products::product_should_be_synced()
 		// always returns false for the variable product (since all children are in the trash at that point).
 		// This causes update_fb_visibility() to be called on simple products and product variations only.
-		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
+		if ( ! $product instanceof \WC_Product || ! Products::published_product_should_be_synced( $product ) ) {
 			return;
 		}
 
@@ -3337,7 +3337,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function on_quick_and_bulk_edit_save( $product ) {
 
 		// bail if not a product or product is not enabled for sync
-		if ( ! $product instanceof \WC_Product || ! Products::product_should_be_synced( $product ) ) {
+		if ( ! $product instanceof \WC_Product || ! Products::published_product_should_be_synced( $product ) ) {
 			return;
 		}
 
