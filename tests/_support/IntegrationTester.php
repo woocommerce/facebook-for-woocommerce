@@ -127,6 +127,67 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/** Sync methods **************************************************************************************************/
+
+
+	public function assertSyncRequestsExist( $request_keys = [], $requests = null ) {
+
+		if ( null === $requests ) {
+			$requests = $this->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
+		}
+
+		foreach ( $request_keys as $request_key ) {
+			$this->assertArrayHasKey( $request_key, $requests );
+		}
+	}
+
+
+	public function assertSyncRequestsNotExist( $request_keys = [], $requests = null ) {
+
+		if ( null === $requests ) {
+			$requests = $this->getPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests' );
+		}
+
+		// make sure all given request keys are not in the sync requests array
+		if ( $request_keys ) {
+
+			foreach ( $request_keys as $request_key ) {
+				$this->assertArrayNotHasKey( $request_key, $requests );
+			}
+
+		// otherwise ensure no requests were added to the sync requests array
+		} else {
+
+			$this->assertEmpty( $requests );
+		}
+	}
+
+
+	public function assertProductsAreScheduledForDelete( $product_ids = [], $requests = null ) {
+
+		$this->assertSyncRequestsExist(
+			array_map( static function( $product_id ) {
+				return \WC_Facebookcommerce_Utils::get_fb_retailer_id( wc_get_product( $product_id ) );
+			}, $product_ids ),
+			$requests
+		);
+	}
+
+
+	public function assertProductsAreNotScheduledForDelete( $product_ids = [], $requests = null ) {
+
+		$this->assertSyncRequestsNotExist(
+			array_map( static function( $product_id ) {
+				return \WC_Facebookcommerce_Utils::get_fb_retailer_id( wc_get_product( $product_id ) );
+			}, $product_ids ),
+			$requests
+		);
+	}
+
+
+	/** Reflection methods **************************************************************************************************/
+
+
 	/**
 	 * Uses reflection to make a method public so we can test it.
 	 *
