@@ -841,6 +841,37 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/**
+	 * @see \WC_Facebookcommerce_Integration::fb_change_product_published_status()
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param \WP_post $post
+	 *
+	 * @dataProvider provider_fb_change_product_published_status
+	 */
+	public function test_fb_change_product_published_status( $new_status, $old_status ) {
+
+		$product = $this->tester->get_product( [ 'status' => $new_status ] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'update_fb_visibility' => Expected::once(),
+		] );
+
+		$integration->fb_change_product_published_status( $new_status, $old_status, get_post( $product->get_id() ) );
+	}
+
+
+	/** @see test_fb_change_product_published_status() */
+	public function provider_fb_change_product_published_status() {
+
+		return [
+			'publish'   => [ 'publish', 'trash' ],
+			'unpublish' => [ 'trash', 'publish' ],
+		];
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
 	public function test_on_product_publish_with_simple_product() {
 
