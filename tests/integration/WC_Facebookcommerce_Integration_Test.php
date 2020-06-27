@@ -789,6 +789,42 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 	}
 
 
+	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
+	public function test_on_product_delete_with_variable_product() {
+
+		$product = $this->tester->get_variable_product( [
+			'children' => 3,
+			'status'   => 'publish',
+		] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'delete_product_item' => Expected::never(),
+			// called from delete_product_group()
+			'get_product_fbid'    => Expected::once(),
+		] );
+
+		$integration->on_product_delete( $product->get_id() );
+
+		$this->tester->assertProductsAreScheduledForDelete( $product->get_children() );
+	}
+
+
+	/** @see \WC_Facebookcommerce_Integration::on_product_delete() */
+	public function test_on_product_delete_with_product_variation() {
+
+		$variation = $this->tester->get_product_variation( [ 'status' => 'publish' ] );
+
+		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
+			'delete_product_item' => Expected::never(),
+			'get_product_fbid'    => Expected::never(),
+		] );
+
+		$integration->on_product_delete( $variation->get_id() );
+
+		$this->tester->assertProductsAreScheduledForDelete( [ $variation->get_id() ] );
+	}
+
+
 	/** @see \WC_Facebookcommerce_Integration::on_product_publish() */
 	public function test_on_product_publish_with_simple_product() {
 
