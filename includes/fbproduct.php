@@ -123,47 +123,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		public function get_fb_price() {
-			// Cache the price in this object in case of multiple calls.
-			if ( $this->fb_price ) {
-				return $this->fb_price;
-			}
 
-			$price = get_post_meta(
-				$this->id,
-				self::FB_PRODUCT_PRICE,
-				true
-			);
-
-			if ( is_numeric( $price ) ) {
-				return intval( round( $price * 100 ) );
-			}
-
-			// If product is composite product, we rely on their pricing.
-			if ( class_exists( 'WC_Product_Composite' )
-			&& $this->woo_product->get_type() === 'composite' ) {
-				$price          = get_option( 'woocommerce_tax_display_shop' ) === 'incl'
-				? $this->woo_product->get_composite_price_including_tax()
-				: $this->woo_product->get_composite_price();
-				$this->fb_price = intval( round( $price * 100 ) );
-				return $this->fb_price;
-			}
-
-			// Get regular price: regular price doesn't include sales
-			$regular_price = floatval( $this->get_regular_price() );
-
-			// If it's a bookable product, the normal price is null/0.
-			if ( ! $regular_price &&
-			  class_exists( 'WC_Product_Booking' ) &&
-			  is_wc_booking_product( $this ) ) {
-				$product       = new WC_Product_Booking( $this->woo_product );
-				$regular_price = $product->get_display_cost();
-			}
-
-			// Get regular price plus tax, if it's set to display and taxable
-			// whether price includes tax is based on 'woocommerce_tax_display_shop'
-			$price          = $this->get_price_plus_tax( $regular_price );
-			$this->fb_price = intval( round( $price * 100 ) );
-			return $this->fb_price;
+			return Products::get_product_price( $this->woo_product );
 		}
 
 
