@@ -1,5 +1,6 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
@@ -104,6 +105,25 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
 			$this->assertArrayNotHasKey( $index, $requests );
 		}
+	}
+
+
+	/** @see Sync::create_or_update_all_products() */
+	public function test_create_or_update_all_products_with_hidden_product() {
+
+		$product = $this->tester->get_variable_product( [ 'children' => 1 ] );
+
+		$variation = wc_get_product( current( $product->get_children() ) );
+		$variation->set_regular_price( 4.99 );
+		$variation->save();
+
+		Products::enable_sync_for_products( [ $variation ] );
+		Products::set_product_visibility( $variation, false );
+
+		// add all eligible products to the sync queue
+		$requests = $this->create_or_update_all_products();
+
+		$this->tester->assertProductsAreScheduledForSync( [ $variation->get_id() ], $requests );
 	}
 
 
