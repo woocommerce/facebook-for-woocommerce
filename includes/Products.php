@@ -195,7 +195,6 @@ class Products {
 
 		$should_sync = self::is_sync_enabled_for_product( $product );
 
-
 		// define the product to check terms on
 		if ( $should_sync ) {
 			$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
