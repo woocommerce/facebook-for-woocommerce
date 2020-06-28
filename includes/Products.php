@@ -203,6 +203,11 @@ class Products {
 			$terms_product = null;
 		}
 
+		// allow simple or variable products (and their variations) with zero or empty price - exclude other product types with zero or empty price
+		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), [ 'simple', 'variable' ] ) ) ) ) {
+			$should_sync = false;
+		}
+
 		// exclude products that are excluded from the store catalog or from search results
 		if ( $should_sync && ( ! $terms_product || has_term( [ 'exclude-from-catalog', 'exclude-from-search' ], 'product_visibility', $terms_product->get_id() ) ) ) {
 			$should_sync = false;
