@@ -29,7 +29,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		}
 
 		// create a variable product with three variations but no price
-		$this->tester->get_variable_product( [ 'children' => 3 ] );
+		$no_price_variable_product = $this->tester->get_variable_product( [ 'children' => 3 ] );
 
 		// create a simple product with price
 		$simple_product = $this->tester->get_product();
@@ -39,8 +39,8 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		// add all eligible products to the sync queue
 		$requests = $this->create_or_update_all_products();
 
-		// test that create_or_update_all_products() added the three variations with price to the sync queue
-		foreach ( $variable_product->get_children() as $variation_id ) {
+		// test that create_or_update_all_products() added the three variations with price and three variations without price to the sync queue
+		foreach ( array_merge( $variable_product->get_children(), $no_price_variable_product->get_children() ) as $variation_id ) {
 
 			$index = Sync::PRODUCT_INDEX_PREFIX . $variation_id;
 
@@ -53,7 +53,7 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 'UPDATE', $requests[ Sync::PRODUCT_INDEX_PREFIX . $simple_product->get_id() ] );
 
 		// test no other products or variations were added
-		$this->assertEquals( count( $variable_product->get_children() ) + 1, count( $requests ) );
+		$this->assertEquals( 7, count( $requests ) );
 	}
 
 
@@ -68,12 +68,11 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 
 		$sync = $this->get_sync();
 
+		$this->tester->setPropertyValue( $sync, 'requests', [] );
+
 		$sync->create_or_update_all_products();
 
-		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
-		$requests_property->setAccessible( true );
-
-		return $requests_property->getValue( $sync );
+		return $this->tester->getPropertyValue( $sync, 'requests' );
 	}
 
 
