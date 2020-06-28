@@ -300,6 +300,19 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Products::get_product_price() */
+	public function test_get_product_price_filter() {
+
+		$product = $this->get_product();
+
+		add_filter( 'wc_facebook_product_price', static function() {
+			return 1234;
+		} );
+
+		$this->assertSame( 1234, Facebook\Products::get_product_price( $product ) );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
