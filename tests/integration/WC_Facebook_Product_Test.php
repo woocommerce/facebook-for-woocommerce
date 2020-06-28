@@ -1,5 +1,7 @@
 <?php
 
+use Codeception\Stub\Expected;
+
 /**
  * Tests the Facebook product class.
  */
@@ -27,6 +29,79 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/**
+	 * @see \WC_Facebook_Product::get_fb_price()
+	 *
+	 * @param float $product_price product price
+	 * @param string $tax_display incl or excl
+	 * @param float $expected_price expected facebook price
+	 *
+	 * @dataProvider data_provider_get_fb_price
+	 */
+	public function test_get_fb_price( $product_price, $tax_display, $expected_price ) {
+
+		$this->check_fb_price( $this->tester->get_product( [ 'regular_price' => $product_price ] ), $tax_display, $expected_price );
+	}
+
+
+	/**
+	 * Tests that the returned Facebook price matches the expected value.
+	 *
+	 * @param \WC_Product $product product object
+	 * @param string $tax_display incl or excl
+	 * @param float $expected_price expected facebook price
+	 */
+	private function check_fb_price( $product, $tax_display, $expected_price ) {
+
+		// create tax
+		\WC_Tax::_insert_tax_rate( [
+			'tax_rate_country'  => '',
+			'tax_rate_state'    => '',
+			'tax_rate'          => 10.000,
+			'tax_rate_name'     => 'TEST',
+			'tax_rate_priority' => 1,
+			'tax_rate_compound' => 0,
+			'tax_rate_shipping' => 1,
+			'tax_rate_order'    => 0,
+		] );
+
+		update_option( 'woocommerce_calc_taxes', 'yes' );
+		update_option( 'woocommerce_tax_display_shop', $tax_display );
+
+		$this->assertSame( $expected_price, ( new WC_Facebook_Product( $product->get_id() ) )->get_fb_price() );
+	}
+
+
+	/** @see test_get_fb_price() */
+	public function data_provider_get_fb_price() {
+
+		return [
+			'including taxes' => [ 19.99, 'incl', 2199 ],
+			'excluding taxes' => [ 19.99, 'excl', 1999 ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::get_fb_price()
+	 *
+	 * @param float $product_price product price
+	 * @param string $tax_display incl or excl
+	 *
+	 * @dataProvider data_provider_get_fb_price
+	 */
+	public function test_get_fb_price_from_meta( $product_price, $tax_display ) {
+
+		$product = $this->tester->get_product( [ 'regular_price' => wp_rand() ] );
+
+		$product->update_meta_data( WC_Facebook_Product::FB_PRODUCT_PRICE, $product_price );
+		$product->save_meta_data();
+
+		// current behavior is to return the stored price without modifications regardless of tax settings
+		$this->check_fb_price( $product, $tax_display, (int) round( $product_price * 100 ) );
+	}
 
 
 	/** @see \WC_Facebook_Product::get_fb_description() */
