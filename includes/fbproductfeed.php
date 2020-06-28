@@ -566,10 +566,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 					$woo_product = new WC_Facebook_Product( $wp_id );
 
-					if ( $woo_product->is_hidden() ) {
-						continue;
-					}
-
 					// skip if we don't have a valid product object
 					if ( ! $woo_product->woo_product instanceof \WC_Product ) {
 						continue;
