@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use WC_Facebook_Product;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -46,6 +48,8 @@ class Products {
 	/** @var array memoized array of visibility status for products */
 	private static $products_visibility = [];
 
+	/** @var array memoized array of prices for products */
+	private static $products_price = [];
 
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
@@ -368,6 +372,52 @@ class Products {
 		}
 
 		return self::$products_visibility[ $product->get_id() ];
+	}
+
+
+	/**
+	 * Gets the product price used for Facebook sync.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @param int $price product price in cents
+	 * @param \WC_Product $product product object
+	 * @return int
+	 */
+	public static function get_product_price( \WC_Product $product ) {
+
+		if ( ! isset( self::$products_price[ $product->get_id() ] ) ) {
+
+			if ( is_numeric( $facebook_price = $product->get_meta( WC_Facebook_Product::FB_PRODUCT_PRICE ) ) ) {
+
+				$price = $facebook_price;
+
+			} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
+
+				$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
+
+			} elseif ( class_exists( 'WC_Product_Booking' ) && function_exists( 'is_wc_booking_product' ) && is_wc_booking_product( $product ) ) {
+
+				$booking = new \WC_Product_Booking( $product );
+				$price   = wc_get_price_to_display( $booking, [ 'price' => $booking->get_display_cost() ] );
+
+			} else {
+
+				$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
+			}
+
+			self::$products_price[ $product->get_id() ] = (int) ( $price ? round( $price * 100 ) : 0 );
+		}
+
+		/**
+		 * Filters the product price used for Facebook sync.
+		 *
+		 * @since 2.0.0-dev.1
+		 *
+		 * @param int $price product price in cents
+		 * @param \WC_Product $product product object
+		 */
+		return (int) apply_filters( 'wc_facebook_product_price', self::$products_price[ $product->get_id() ], $product );
 	}
 
 
