@@ -61,7 +61,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @param string $term product_visibility term
 	 *
-	 * @dataProvider provider_product_should_be_synced_with_product_excluded_from_catalog
+	 * @dataProvider provider_product_should_be_synced_with_excluded_products
 	 */
 	public function test_product_should_be_synced_with_excluded_products( $term ) {
 
@@ -74,7 +74,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see test_product_should_be_synced_with_excluded_products() */
-	public function provider_product_should_be_synced_with_product_excluded_from_catalog() {
+	public function provider_product_should_be_synced_with_excluded_products() {
 
 		return [
 			[ 'exclude-from-catalog' ],
