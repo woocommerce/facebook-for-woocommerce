@@ -38,7 +38,11 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple() {
 
-		$product = $this->get_product();
+		// used the tester's method directly to set regular_price to 0
+		$product = $this->tester->get_product( [
+			'status'        => 'publish',
+			'regular_price' => 0,
+		] );
 
 		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
 	}
@@ -46,7 +50,11 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_variation() {
 
-		$product = $this->get_variable_product();
+		// used the tester's method directly to set regular_price to 0
+		$product = $this->tester->get_variable_product( [
+			'status'        => 'publish',
+			'regular_price' => 0,
+		] );
 
 		foreach ( $product->get_children() as $child_id ) {
 			$this->assertTrue( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
