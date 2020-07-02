@@ -48,6 +48,19 @@ class Event {
 
 
 	/**
+	 * Gets the agent string for pixel events.
+	 *
+	 * @return string
+	 */
+	public static function get_platform_identifier() {
+
+		$info = self::get_version_info();
+
+		return "{$info['source']}-{$info['version']}-{$info['pluginVersion']}";
+	}
+
+
+	/**
 	 * Constructor.
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters
