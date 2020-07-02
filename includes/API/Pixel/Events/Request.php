@@ -51,7 +51,8 @@ class Request extends API\Request {
 	public function get_data() {
 
 		$data = [
-			'data' => [],
+			'data'          => [],
+			'partner_agent' => Event::get_platform_identifier(),
 		];
 
 		foreach ( $this->events as $event ) {
