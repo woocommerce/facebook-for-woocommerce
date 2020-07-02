@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Events\Event;
+
 if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
@@ -459,7 +461,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		private static function build_params( $params = [], $event = '' ) {
 
-			$params = array_replace( self::get_version_info(), $params );
+			$params = array_replace( Event::get_version_info(), $params );
 
 			/**
 			 * Filters the parameters for the pixel code.
