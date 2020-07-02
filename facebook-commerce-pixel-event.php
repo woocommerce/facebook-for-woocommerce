@@ -82,13 +82,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		private function get_pixel_init_code() {
 
-			$version_info = self::get_version_info();
-			$agent_string = sprintf(
-				'%s-%s-%s',
-				$version_info['source'],
-				$version_info['version'],
-				$version_info['pluginVersion']
-			);
+			$agent_string = Event::get_platform_identifier();
 
 			/**
 			 * Filters Facebook Pixel init code.
