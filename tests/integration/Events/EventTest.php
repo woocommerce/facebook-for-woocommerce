@@ -39,6 +39,29 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Event::get_version_info() */
+	public function test_get_version_info() {
+
+		$version_info = [
+			'source'        => 'woocommerce',
+			'version'       => WC()->version,
+			'pluginVersion' => facebook_for_woocommerce()->get_version(),
+		];
+
+		$this->assertEquals( $version_info, Event::get_version_info() );
+	}
+
+
+	/** @see Event::get_platform_identifier() */
+	public function get_platform_identifier() {
+
+		$wc_version     = WC()->version;
+		$plugin_version = facebook_for_woocommerce()->get_version();
+
+		$this->assertEquals( "woocommerce-{$wc_version}-{$plugin_version}", Event::get_platform_identifier() );
+	}
+
+
 	/** @see Event::__construct() */
 	public function test_constructor() {
 
