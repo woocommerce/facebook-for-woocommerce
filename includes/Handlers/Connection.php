@@ -138,10 +138,8 @@ class Connection {
 	 * Refreshes the connected installation data.
 	 *
 	 * @since 2.0.0-dev.1
-	 *
-	 * @param bool $force whether to force the refresh
 	 */
-	public function refresh_installation_data( $force = false ) {
+	public function refresh_installation_data() {
 
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
@@ -149,7 +147,7 @@ class Connection {
 		}
 
 		// only refresh once a day
-		if ( ! $force && get_transient( 'wc_facebook_connection_refresh' ) ) {
+		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
 			return;
 		}
 
