@@ -138,10 +138,8 @@ class Connection {
 	 * Refreshes the connected installation data.
 	 *
 	 * @since 2.0.0-dev.1
-	 *
-	 * @param bool $force whether to force the refresh
 	 */
-	public function refresh_installation_data( $force = false ) {
+	public function refresh_installation_data() {
 
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
@@ -149,44 +147,55 @@ class Connection {
 		}
 
 		// only refresh once a day
-		if ( ! $force && get_transient( 'wc_facebook_connection_refresh' ) ) {
+		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
 			return;
 		}
 
-		$integration = $this->get_plugin()->get_integration();
-
 		try {
 
-			$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
-
-			if ( $response->get_page_id() ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $response->get_page_id() ) );
-			}
-
-			if ( $response->get_pixel_id() ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $response->get_pixel_id() ) );
-			}
-
-			if ( $response->get_catalog_id() ) {
-				update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $response->get_catalog_id() ) );
-			}
-
-			if ( $response->get_business_manager_id() ) {
-				$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
-			}
-
-			if ( $response->get_ad_account_id() ) {
-				$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
-			}
+			$this->update_installation_data();
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
-			if ( $integration->is_debug_mode_enabled() ) {
+			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
 				$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
 			}
 		}
 
 		set_transient( 'wc_facebook_connection_refresh', time(), DAY_IN_SECONDS );
+	}
+
+
+	/**
+	 * Retrieves and stores the connected installation data.
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @throws SV_WC_API_Exception
+	 */
+	private function update_installation_data() {
+
+		$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
+
+		if ( $response->get_page_id() ) {
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $response->get_page_id() ) );
+		}
+
+		if ( $response->get_pixel_id() ) {
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $response->get_pixel_id() ) );
+		}
+
+		if ( $response->get_catalog_id() ) {
+			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $response->get_catalog_id() ) );
+		}
+
+		if ( $response->get_business_manager_id() ) {
+			$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
+		}
+
+		if ( $response->get_ad_account_id() ) {
+			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
+		}
 	}
 
 
@@ -231,8 +240,7 @@ class Connection {
 			$this->update_access_token( $system_user_access_token );
 			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
-
-			$this->refresh_installation_data( true );
+			$this->update_installation_data();
 
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
