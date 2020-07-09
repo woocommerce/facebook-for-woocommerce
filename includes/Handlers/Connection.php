@@ -151,15 +151,13 @@ class Connection {
 			return;
 		}
 
-		$integration = $this->get_plugin()->get_integration();
-
 		try {
 
 			$this->update_installation_data();
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
-			if ( $integration->is_debug_mode_enabled() ) {
+			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
 				$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
 			}
 		}
