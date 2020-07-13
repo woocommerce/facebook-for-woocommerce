@@ -1301,10 +1301,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	function create_product_item( $woo_product, $retailer_id, $product_group_id ) {
 
-		$product_data               = $woo_product->prepare_product( $retailer_id );
-		if ( ! $product_data['price'] ) {
-			return 0;
-		}
+		$product_data = $woo_product->prepare_product( $retailer_id );
 
 		$product_result = $this->check_api_result(
 			$this->fbgraph->create_product_item(
