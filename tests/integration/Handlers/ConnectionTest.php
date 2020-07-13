@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Compatibility;
 
 /**
  * Tests the Connection class.
@@ -368,6 +369,31 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'messenger_chat', $extras['business_config'] );
 		$this->assertTrue( $extras['business_config']['messenger_chat']['enabled'] );
 		$this->assertSame( home_url( '/' ), $extras['business_config']['messenger_chat']['domains'] );
+	}
+
+
+	/**
+	 * @see Connection::get_timezone_string()
+	 *
+	 * @param string $stored_value stored timezone string
+	 * @param string $timezone_string expected timezone string
+	 * @dataProvider provider_test_get_timezone_string
+	 */
+	public function test_get_timezone_string( $stored_value, $timezone_string ) {
+
+		update_option( 'timezone_string', $stored_value );
+
+		$this->assertEquals( $timezone_string, IntegrationTester::getMethod( Connection::class, 'get_timezone_string' )->invoke( $this->get_connection() ) );
+	}
+
+
+	/** @see test_get_timezone_string() */
+	public function provider_test_get_timezone_string() {
+
+		return [
+			[ 'America/Bogota', 'America/Bogota' ],
+			[ 'America/Los_Angeles', 'America/Los_Angeles' ],
+		];
 	}
 
 
