@@ -625,7 +625,7 @@ class Connection {
 		$parameters = [
 			'setup' => [
 				'external_business_id' => $this->get_external_business_id(),
-				'timezone'             => wc_timezone_string(),
+				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 			],
