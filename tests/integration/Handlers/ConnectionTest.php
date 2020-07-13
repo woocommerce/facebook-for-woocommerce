@@ -315,6 +315,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_connect_parameters_extras() */
 	public function test_get_connect_parameters_extras() {
 
+		update_option( 'timezone_string', 'America/Los_Angeles' );
+
 		$connection = $this->get_connection();
 
 		$method = IntegrationTester::getMethod( Connection::class, 'get_connect_parameters_extras' );
@@ -338,7 +340,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayNotHasKey( 'merchant_settings_id', $extras['setup'] );
 
 		$this->assertEquals( $connection->get_external_business_id(), $extras['setup']['external_business_id'] );
-		$this->assertEquals( wc_timezone_string(), $extras['setup']['timezone'] );
+		$this->assertEquals( 'America/Los_Angeles', $extras['setup']['timezone'] );
 		$this->assertEquals( get_woocommerce_currency(), $extras['setup']['currency'] );
 		$this->assertEquals( 'ECOMMERCE', $extras['setup']['business_vertical'] );
 
