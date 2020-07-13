@@ -397,6 +397,89 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Connection::get_timezone_string()
+	 *
+	 * @param float $offset GMT offset
+	 * @param string $timezone_string expected timezone string
+	 * @dataProvider provider_test_get_timezone_string_from_offset
+	 */
+	public function test_get_timezone_string_from_offset( $offset, $timezone_string ) {
+
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_lt( '4.3.0' ) ) {
+			$this->markTestSkipped();
+		}
+
+		update_option( 'timezone_string', '' );
+		update_option( 'gmt_offset', $offset );
+
+		$this->assertEquals( $timezone_string, IntegrationTester::getMethod( Connection::class, 'get_timezone_string' )->invoke( $this->get_connection() ) );
+	}
+
+
+	/** @see test_get_timezone_string_from_offset() */
+	public function provider_test_get_timezone_string_from_offset() {
+
+		return [
+			[ -12,    'Etc\GMT-12' ],
+			[ -11.5,  'Etc\GMT-11' ],
+			[ -11,    'Etc\GMT-11' ],
+			[ -10.5,  'Etc\GMT-10' ],
+			[ -10,    'Etc\GMT-10' ],
+			[ -9.5,   'Etc\GMT-9' ],
+			[ -9,     'Etc\GMT-9' ],
+			[ -8.5,   'Etc\GMT-8' ],
+			[ -8,     'Etc\GMT-8' ],
+			[ -7.5,   'Etc\GMT-7' ],
+			[ -7,     'Etc\GMT-7' ],
+			[ -6.5,   'Etc\GMT-6' ],
+			[ -6,     'Etc\GMT-6' ],
+			[ -5.5,   'Etc\GMT-5' ],
+			[ -5,     'Etc\GMT-5' ],
+			[ -4.5,   'Etc\GMT-4' ],
+			[ -4,     'Etc\GMT-4' ],
+			[ -3.5,   'Etc\GMT-3' ],
+			[ -3,     'Etc\GMT-3' ],
+			[ -2.5,   'Etc\GMT-2' ],
+			[ -2,     'Etc\GMT-2' ],
+			[ -1.5,   'Etc\GMT-1' ],
+			[ -1,     'Etc\GMT-1' ],
+			[ -0.5,   'Etc\GMT-0' ],
+			[ +0,     'Etc\GMT+0' ],
+			[ +0.5,   'Etc\GMT+0' ],
+			[ +1,     'Etc\GMT+1' ],
+			[ +1.5,   'Etc\GMT+1' ],
+			[ +2,     'Etc\GMT+2' ],
+			[ +2.5,   'Etc\GMT+2' ],
+			[ +3,     'Etc\GMT+3' ],
+			[ +3.5,   'Etc\GMT+3' ],
+			[ +4,     'Etc\GMT+4' ],
+			[ +4.5,   'Etc\GMT+4' ],
+			[ +5,     'Etc\GMT+5' ],
+			[ +5.5,   'Etc\GMT+5' ],
+			[ +5.75,  'Etc\GMT+5' ],
+			[ +6,     'Etc\GMT+6' ],
+			[ +6.5,   'Etc\GMT+6' ],
+			[ +7,     'Etc\GMT+7' ],
+			[ +7.5,   'Etc\GMT+7' ],
+			[ +8,     'Etc\GMT+8' ],
+			[ +8.5,   'Etc\GMT+8' ],
+			[ +8.75,  'Etc\GMT+8' ],
+			[ +9,     'Etc\GMT+9' ],
+			[ +9.5,   'Etc\GMT+9' ],
+			[ +10,    'Etc\GMT+10' ],
+			[ +10.5,  'Etc\GMT+10' ],
+			[ +11,    'Etc\GMT+11' ],
+			[ +11.5,  'Etc\GMT+11' ],
+			[ +12,    'Etc\GMT+12' ],
+			[ +12.75, 'Etc\GMT+12' ],
+			[ +13,    'Etc\GMT+13' ],
+			[ +13.75, 'Etc\GMT+13' ],
+			[ +14,    'Etc\GMT+14' ],
+		];
+	}
+
+
 	/** @see Connection::update_business_manager_id() */
 	public function test_update_business_manager_id() {
 
