@@ -57,6 +57,8 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see test_build_event */
 	public function provider_build_event() {
 
+		$plugin_version = facebook_for_woocommerce()->get_version();
+
 		return [
 			'old_format'  => [
 				'AddToCart',
@@ -74,7 +76,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
-					'"pluginVersion": "2.0.0-dev.1",',
+					'"pluginVersion": "' . $plugin_version . '",',
 					'"content_ids": {',
 					'"content_type": "product",',
 					'"contents": {',
@@ -100,7 +102,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
-					'"pluginVersion": "2.0.0-dev.1",',
+					'"pluginVersion": "' . $plugin_version . '",',
 					'"content_ids": {',
 					'"content_type": "product",',
 					'"contents": {',
@@ -128,7 +130,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
-					'"pluginVersion": "2.0.0-dev.1",',
+					'"pluginVersion": "' . $plugin_version . '",',
 					'"content_ids": {',
 					'"content_type": "product",',
 					'"contents": {',
@@ -157,7 +159,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
-					'"pluginVersion": "2.0.0-dev.1",',
+					'"pluginVersion": "' . $plugin_version . '",',
 					'"content_ids": {',
 					'"content_type": "product",',
 					'"contents": {',
