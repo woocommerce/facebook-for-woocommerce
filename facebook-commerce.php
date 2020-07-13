@@ -1791,7 +1791,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'description'  => strip_tags( $product_data['description'] ),
 				'id'           => $product_data['retailer_id'],
 				'image_link'   => $product_data['image_url'],
-				'brand'        => strip_tags( WC_Facebookcommerce_Utils::get_store_name() ),
+				'brand'        => Framework\SV_WC_Helper::str_truncate( wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ), 100 ),
 				'link'         => $product_data['url'],
 				'price'        => $product_data['price'] . ' ' . get_woocommerce_currency(),
 			];

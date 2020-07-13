@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -541,10 +542,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 			$categories =
 			WC_Facebookcommerce_Utils::get_product_categories( $id );
-			$brand      = get_the_term_list( $id, 'product_brand', '', ', ' );
-			$brand      = is_wp_error( $brand ) || ! $brand
-			? WC_Facebookcommerce_Utils::get_store_name()
-			: WC_Facebookcommerce_Utils::clean_string( $brand );
+
+			$brand = get_the_term_list( $id, 'product_brand', '', ', ' );
+			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
 			$product_data = array(
 				'name'                  => WC_Facebookcommerce_Utils::clean_string(
@@ -555,7 +555,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'additional_image_urls' => array_slice( $image_urls, 1 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
-				'brand'                 => $brand,
+				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),
