@@ -665,7 +665,7 @@ class Connection {
 
 		$timezone = wc_timezone_string();
 
-		// convert +05:30 and +05:00 into Etc\GMT+5 - we ignore the minutes because Facebook does not allow minute offsets
+		// convert +05:30 and +05:00 into Etc/GMT+5 - we ignore the minutes because Facebook does not allow minute offsets
 		if ( preg_match( '/([+-])(\d{2}):\d{2}/', $timezone, $matches ) ) {
 
 			$hours    = (int) $matches[2];
