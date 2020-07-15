@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.0.0-dev.2 =
+= 2020.nn.nn - version 2.0.0-dev.3 =
  * Tweak - Show Facebook options for virtual products and variations
  * Tweak - Hide "Sync and show" option for virtual products and variations
  * Tweak - On upgrade, automatically set sync-enabled and visible virtual products and virtual variations to Sync and hide
