@@ -625,7 +625,7 @@ class Connection {
 		$parameters = [
 			'setup' => [
 				'external_business_id' => $this->get_external_business_id(),
-				'timezone'             => wc_timezone_string(),
+				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 			],
@@ -651,6 +651,28 @@ class Connection {
 		}
 
 		return $parameters;
+	}
+
+
+	/**
+	 * Gets the configured timezone string using values accepted by Facebook
+	 *
+	 * @since 2.0.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_timezone_string() {
+
+		$timezone = wc_timezone_string();
+
+		// convert +05:30 and +05:00 into Etc/GMT+5 - we ignore the minutes because Facebook does not allow minute offsets
+		if ( preg_match( '/([+-])(\d{2}):\d{2}/', $timezone, $matches ) ) {
+
+			$hours    = (int) $matches[2];
+			$timezone = "Etc/GMT{$matches[1]}{$hours}";
+		}
+
+		return $timezone;
 	}
 
 
