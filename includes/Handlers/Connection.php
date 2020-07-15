@@ -669,7 +669,7 @@ class Connection {
 		if ( preg_match( '/([+-])(\d{2}):\d{2}/', $timezone, $matches ) ) {
 
 			$hours    = (int) $matches[2];
-			$timezone = "Etc\GMT{$matches[1]}{$hours}";
+			$timezone = "Etc/GMT{$matches[1]}{$hours}";
 		}
 
 		return $timezone;
