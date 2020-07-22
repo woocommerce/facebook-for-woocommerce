@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 1.11.5-dev.1 =
+
 = 2020.06.04 - version 1.11.4 =
  * Fix - Do not sync variations for draft variable products created by duplicating products
  * Fix - Do not log an error when the product is null on add to cart redirect
