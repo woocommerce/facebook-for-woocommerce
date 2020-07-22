@@ -153,10 +153,10 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$regular_price = floatval( $this->get_regular_price() );
 
 			// If it's a bookable product, the normal price is null/0.
-			if ( ! $regular_price && class_exists( 'WC_Product_Booking' ) && is_wc_booking_product( $this ) ) {
+			if ( ! $regular_price && $this->is_bookable_product() ) {
 
 				$product       = new WC_Product_Booking( $this->woo_product );
-				$regular_price = $product->get_display_cost();
+				$regular_price = is_callable( [ $product, 'get_display_cost' ] ) ? $product->get_display_cost() : 0;
 			}
 
 			// Get regular price plus tax, if it's set to display and taxable
@@ -164,6 +164,21 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$price          = $this->get_price_plus_tax( $regular_price );
 			$this->fb_price = intval( round( $price * 100 ) );
 			return $this->fb_price;
+		}
+
+
+		/**
+		 * Determines whether the current product is a WooCommerce Bookings product.
+		 *
+		 * TODO: add an integration that filters the Facebook price instead {WV 2020-07-22}
+		 *
+		 * @since 1.11.5-dev.1
+		 *
+		 * @return bool
+		 */
+		private function is_bookable_product() {
+
+			return facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php') && class_exists( 'WC_Product_Booking' ) && is_callable( 'is_wc_booking_product' ) && is_wc_booking_product( $this );
 		}
 
 
