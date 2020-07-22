@@ -46,6 +46,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Tweak - Allow to bulk enable sync for virtual products, but automatically set them to Sync and hide
  * Fix - Use the plugin version instead of a timestamp as the version number for enqueued scripts and stylesheets
  * Fix - Use the short description of the parent product for product variations that don't have a description or Facebook description
+ * Fix - Prevent an error when YITH Booking and Appointment for WooCommerce plugin is active
 
 = 2020.06.04 - version 1.11.4 =
  * Fix - Do not sync variations for draft variable products created by duplicating products
