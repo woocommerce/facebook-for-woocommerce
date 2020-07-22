@@ -153,9 +153,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$regular_price = floatval( $this->get_regular_price() );
 
 			// If it's a bookable product, the normal price is null/0.
-			if ( ! $regular_price &&
-			  class_exists( 'WC_Product_Booking' ) &&
-			  is_wc_booking_product( $this ) ) {
+			if ( ! $regular_price && class_exists( 'WC_Product_Booking' ) && is_wc_booking_product( $this ) ) {
+
 				$product       = new WC_Product_Booking( $this->woo_product );
 				$regular_price = $product->get_display_cost();
 			}
