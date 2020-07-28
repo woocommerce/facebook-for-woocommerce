@@ -184,22 +184,36 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers Search for result pages (deduped)
 		 */
 		public function inject_search_event() {
+
 			if ( ! self::$isEnabled ) {
 				return;
 			}
 
-			if ( ! is_admin() && is_search() && get_search_query() !== '' ) {
+			if ( ! is_admin() && is_search() && get_search_query() !== '' && 'product' === get_query_var( 'post_type' ) ) {
+
 				if ( $this->pixel->is_last_event( 'Search' ) ) {
 					return;
 				}
 
-				if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-					add_action( 'woocommerce_before_shop_loop', array( $this, 'actually_inject_search_event' ) );
-				} else {
-					add_action( 'wp_head', array( $this, 'actually_inject_search_event' ), 11 );
-				}
+				// needs to run before wc_template_redirect, normally hooked with priority 10
+				add_action( 'template_redirect',            [ $this, 'send_search_event' ], 5 );
+				add_action( 'woocommerce_before_shop_loop', [ $this, 'actually_inject_search_event' ] );
 			}
 		}
+
+
+		/**
+		 * Sends a server-side Search event.
+		 *
+		 * @internal
+		 *
+		 * @since 2.0.0-dev.3
+		 */
+		public function send_search_event() {
+
+			$this->send_api_event( $this->get_search_event() );
+		}
+
 
 		/**
 		 * Creates an Event instance to track a search request.
