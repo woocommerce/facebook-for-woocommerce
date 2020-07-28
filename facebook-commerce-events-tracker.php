@@ -26,6 +26,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		const FB_PRIORITY_HIGH    = 2;
 		const FB_PRIORITY_LOW     = 11;
 
+		/** @var Event search event instance */
+		private $search_event;
+
+
 		public function __construct( $user_info ) {
 			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
 
@@ -196,6 +200,67 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 		}
+
+		/**
+		 * Creates an Event instance to track a search request.
+		 *
+		 * The event instance is stored in memory to return a single instance per request.
+		 *
+		 * @since 2.0.0-dev.3
+		 *
+		 * @return Event
+		 */
+		private function get_search_event() {
+			global $wp_query;
+
+			if ( null === $this->search_event ) {
+
+				// if any product is a variant, fire the pixel with content_type: product_group
+				$content_type = 'product';
+				$product_ids  = [];
+				$contents     = [];
+				$total_value  = 0.00;
+
+				foreach ( $wp_query->posts as $post ) {
+
+					$product = wc_get_product( $post );
+
+					if ( ! $product instanceof \WC_Product ) {
+						continue;
+					}
+
+					$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+					$contents[] = [
+						'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+						'quantity' => 1, // consider the search results a quantity of 1
+					];
+
+					$total_value += (float) $product->get_price();
+
+					if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
+						$content_type = 'product_group';
+					}
+				}
+
+				$event_data = [
+					'event_name'  => 'Search',
+					'custom_data' => [
+						'content_type'  => $content_type,
+						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
+						'contents'      => $contents,
+						'search_string' => get_search_query(),
+						'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
+						'currency'      => get_woocommerce_currency(),
+					],
+				];
+
+				$this->search_event = new Event( $event_data );
+			}
+
+			return $this->search_event;
+		}
+
 
 		/**
 		 * Triggers Search for result pages
