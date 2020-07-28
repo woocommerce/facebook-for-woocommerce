@@ -182,6 +182,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Triggers Search for result pages (deduped)
+		 *
+		 * @internal
 		 */
 		public function inject_search_event() {
 
@@ -278,6 +280,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Injects a Search event on result pages.
+		 *
+		 * @internal
 		 */
 		public function actually_inject_search_event() {
 
