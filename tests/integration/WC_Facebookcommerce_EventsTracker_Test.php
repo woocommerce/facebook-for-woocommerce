@@ -39,6 +39,20 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	}
 
 
+	/** @see WC_Facebookcommerce_EventsTracker::get_search_event() */
+	public function test_get_search_event_returns_same_instance() {
+		global $wp_query;
+
+		$wp_query->posts = [];
+
+		$tracker = $this->get_events_tracker();
+		$method  = $this->tester->getMethod( $tracker, 'get_search_event' );
+		$event   = $method->invoke( $tracker );
+
+		$this->assertSame( $event, $method->invoke( $tracker ) );
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
