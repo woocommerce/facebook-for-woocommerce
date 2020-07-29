@@ -1127,7 +1127,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// scheduled update for each variation that should be synced
 		foreach ( $woo_product->get_children() as $variation_id ) {
 
-			$variation = wc_get_product( $variation_id )
+			$variation = wc_get_product( $variation_id );
 
 			if ( $variation instanceof \WC_Product && $this->product_should_be_synced( $variation ) && ! $this->delete_on_out_of_stock( $variation_id, $variation ) ) {
 				$variation_ids[] = $variation_id;
