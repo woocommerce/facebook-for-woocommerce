@@ -390,9 +390,12 @@ class Products {
 	 */
 	public static function get_product_price( \WC_Product $product ) {
 
+		$facebook_price = $product->get_meta( WC_Facebook_Product::FB_PRODUCT_PRICE );
+
 		if ( ! isset( self::$products_price[ $product->get_id() ] ) ) {
 
-			if ( is_numeric( $facebook_price = $product->get_meta( WC_Facebook_Product::FB_PRODUCT_PRICE ) ) ) {
+			// use the user defined Facebook price if set
+			if ( is_numeric( $facebook_price ) ) {
 
 				$price = $facebook_price;
 
@@ -419,9 +422,10 @@ class Products {
 		 * @since 2.0.0-dev.1
 		 *
 		 * @param int $price product price in cents
+		 * @param float $facebook_price user defined facebook price
 		 * @param \WC_Product $product product object
 		 */
-		return (int) apply_filters( 'wc_facebook_product_price', self::$products_price[ $product->get_id() ], $product );
+		return (int) apply_filters( 'wc_facebook_product_price', self::$products_price[ $product->get_id() ], (float) $facebook_price, $product );
 	}
 
 
