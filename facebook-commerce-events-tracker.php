@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Events\Event;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -25,6 +26,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private static $isEnabled = true;
 		const FB_PRIORITY_HIGH    = 2;
 		const FB_PRIORITY_LOW     = 11;
+
+		/** @var Event search event instance */
+		private $search_event;
+
 
 		public function __construct( $user_info ) {
 			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
@@ -178,84 +183,116 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Triggers Search for result pages (deduped)
+		 *
+		 * @internal
 		 */
 		public function inject_search_event() {
+
 			if ( ! self::$isEnabled ) {
 				return;
 			}
 
-			if ( ! is_admin() && is_search() && get_search_query() !== '' ) {
+			if ( ! is_admin() && is_search() && '' !== get_search_query() && 'product' === get_query_var( 'post_type' ) ) {
+
 				if ( $this->pixel->is_last_event( 'Search' ) ) {
 					return;
 				}
 
-				if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-					add_action( 'woocommerce_before_shop_loop', array( $this, 'actually_inject_search_event' ) );
-				} else {
-					add_action( 'wp_head', array( $this, 'actually_inject_search_event' ), 11 );
-				}
+				// needs to run before wc_template_redirect, normally hooked with priority 10
+				add_action( 'template_redirect',            [ $this, 'send_search_event' ], 5 );
+				add_action( 'woocommerce_before_shop_loop', [ $this, 'actually_inject_search_event' ] );
 			}
 		}
 
+
 		/**
-		 * Triggers Search for result pages
+		 * Sends a server-side Search event.
+		 *
+		 * @internal
+		 *
+		 * @since 2.0.0-dev.3
 		 */
-		public function actually_inject_search_event() {
+		public function send_search_event() {
+
+			$this->send_api_event( $this->get_search_event() );
+		}
+
+
+		/**
+		 * Creates an Event instance to track a search request.
+		 *
+		 * The event instance is stored in memory to return a single instance per request.
+		 *
+		 * @since 2.0.0-dev.3
+		 *
+		 * @return Event
+		 */
+		private function get_search_event() {
 			global $wp_query;
 
-			if ( ! self::$isEnabled || empty( $_GET['post_type'] ) || 'product' !== $_GET['post_type'] ) {
-				return;
-			}
+			if ( null === $this->search_event ) {
 
-			// if any product is a variant, fire the pixel with
-			// content_type: product_group
-			$content_type = 'product';
-			$product_ids  = [];
-			$contents     = [];
-			$total_value  = 0.00;
+				// if any product is a variant, fire the pixel with content_type: product_group
+				$content_type = 'product';
+				$product_ids  = [];
+				$contents     = [];
+				$total_value  = 0.00;
 
-			foreach ( $wp_query->posts as $post ) {
+				foreach ( $wp_query->posts as $post ) {
 
-				$product = wc_get_product( $post );
+					$product = wc_get_product( $post );
 
-				if ( ! $product instanceof \WC_Product ) {
-					continue;
+					if ( ! $product instanceof \WC_Product ) {
+						continue;
+					}
+
+					$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
+
+					$contents[] = [
+						'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+						'quantity' => 1, // consider the search results a quantity of 1
+					];
+
+					$total_value += (float) $product->get_price();
+
+					if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
+						$content_type = 'product_group';
+					}
 				}
 
-				$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
-
-				$contents[] = [
-					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-					'quantity' => 1, // consider the search results a quantity of 1
+				$event_data = [
+					'event_name'  => 'Search',
+					'custom_data' => [
+						'content_type'  => $content_type,
+						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
+						'contents'      => $contents,
+						'search_string' => get_search_query(),
+						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
+						'currency'      => get_woocommerce_currency(),
+					],
 				];
 
-				$total_value += (float) $product->get_price();
-
-				if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
-					$content_type = 'product_group';
-				}
+				$this->search_event = new Event( $event_data );
 			}
 
-			$event_name = 'Search';
-			$event_data = [
-				'event_name'  => $event_name,
-				'custom_data' => [
-					'content_type'  => $content_type,
-					'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
-					'contents'      => $contents,
-					'search_string' => get_search_query(),
-					'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
-					'currency'      => get_woocommerce_currency(),
-				],
-			];
+			return $this->search_event;
+		}
 
-			$event = new Event( $event_data );
 
-			$this->send_api_event( $event );
+		/**
+		 * Injects a Search event on result pages.
+		 *
+		 * @internal
+		 */
+		public function actually_inject_search_event() {
 
-			$event_data['event_id'] = $event->get_id();
+			$event = $this->get_search_event();
 
-			$this->pixel->inject_event( $event_name, $event_data );
+			$this->pixel->inject_event( $event->get_name(), [
+				'event_id'    => $event->get_id(),
+				'event_name'  => $event->get_name(),
+				'custom_data' => $event->get_custom_data(),
+			] );
 		}
 
 
@@ -801,7 +838,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$success = true;
 
-			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
+			} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 				$success = false;
 
