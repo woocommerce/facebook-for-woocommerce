@@ -43,6 +43,16 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
 	}
 
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_variation() {
+
+		$product = $this->get_variable_product();
+
+		foreach ( $product->get_children() as $child_id ) {
+			$this->assertTrue( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
+		}
+	}
+
 
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple_in_excluded_category() {
@@ -267,23 +277,31 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Gets a new product object.
 	 *
+	 * @param array $args product configuration parameters
 	 * @return \WC_Product
 	 */
-	private function get_product() {
+	private function get_product( $args = [] ) {
 
-		return $this->tester->get_product();
+		return $this->tester->get_product( array_merge( $args,  [
+			'status'        => 'publish',
+			'regular_price' => 19.99,
+		] ) );
 	}
 
 
 	/**
 	 * Gets a new variable product object, with variations.
 	 *
+	 * @param array $args product configuration parameters
 	 * @param int|int[] $children array of variation IDs, if unspecified will generate the amount passed (default 3)
 	 * @return \WC_Product_Variable
 	 */
-	private function get_variable_product( $children = [] ) {
+	private function get_variable_product( $args = [] ) {
 
-		return $this->tester->get_variable_product( $children );
+		return $this->tester->get_variable_product( array_merge( $args,  [
+			'status'        => 'publish',
+			'regular_price' => 19.99,
+		] ) );
 	}
 
 
