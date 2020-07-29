@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Events\Event;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -266,7 +267,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 						'contents'      => $contents,
 						'search_string' => get_search_query(),
-						'value'         => \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper::number_format( $total_value ),
+						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					],
 				];
@@ -837,7 +838,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$success = true;
 
-			} catch ( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception $exception ) {
+			} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 				$success = false;
 
