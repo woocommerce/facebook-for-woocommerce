@@ -191,7 +191,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			if ( ! is_admin() && is_search() && get_search_query() !== '' && 'product' === get_query_var( 'post_type' ) ) {
+			if ( ! is_admin() && is_search() && '' !== get_search_query() && 'product' === get_query_var( 'post_type' ) ) {
 
 				if ( $this->pixel->is_last_event( 'Search' ) ) {
 					return;
