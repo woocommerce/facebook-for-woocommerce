@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Compatibility;
 
 /**
  * Tests the Connection class.
@@ -314,6 +315,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::get_connect_parameters_extras() */
 	public function test_get_connect_parameters_extras() {
 
+		update_option( 'timezone_string', 'America/Los_Angeles' );
+
 		$connection = $this->get_connection();
 
 		$method = IntegrationTester::getMethod( Connection::class, 'get_connect_parameters_extras' );
@@ -337,7 +340,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayNotHasKey( 'merchant_settings_id', $extras['setup'] );
 
 		$this->assertEquals( $connection->get_external_business_id(), $extras['setup']['external_business_id'] );
-		$this->assertEquals( wc_timezone_string(), $extras['setup']['timezone'] );
+		$this->assertEquals( 'America/Los_Angeles', $extras['setup']['timezone'] );
 		$this->assertEquals( get_woocommerce_currency(), $extras['setup']['currency'] );
 		$this->assertEquals( 'ECOMMERCE', $extras['setup']['business_vertical'] );
 
@@ -368,6 +371,114 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'messenger_chat', $extras['business_config'] );
 		$this->assertTrue( $extras['business_config']['messenger_chat']['enabled'] );
 		$this->assertSame( home_url( '/' ), $extras['business_config']['messenger_chat']['domains'] );
+	}
+
+
+	/**
+	 * @see Connection::get_timezone_string()
+	 *
+	 * @param string $stored_value stored timezone string
+	 * @param string $timezone_string expected timezone string
+	 * @dataProvider provider_test_get_timezone_string
+	 */
+	public function test_get_timezone_string( $stored_value, $timezone_string ) {
+
+		update_option( 'timezone_string', $stored_value );
+
+		$this->assertEquals( $timezone_string, IntegrationTester::getMethod( Connection::class, 'get_timezone_string' )->invoke( $this->get_connection() ) );
+	}
+
+
+	/** @see test_get_timezone_string() */
+	public function provider_test_get_timezone_string() {
+
+		return [
+			[ 'America/Bogota', 'America/Bogota' ],
+			[ 'America/Los_Angeles', 'America/Los_Angeles' ],
+		];
+	}
+
+
+	/**
+	 * @see Connection::get_timezone_string()
+	 *
+	 * @param float $offset GMT offset
+	 * @param string $timezone_string expected timezone string
+	 * @dataProvider provider_test_get_timezone_string_from_offset
+	 */
+	public function test_get_timezone_string_from_offset( $offset, $timezone_string ) {
+
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_lt( '4.3.0' ) ) {
+			$this->markTestSkipped();
+		}
+
+		update_option( 'timezone_string', '' );
+		update_option( 'gmt_offset', $offset );
+
+		$this->assertEquals( $timezone_string, IntegrationTester::getMethod( Connection::class, 'get_timezone_string' )->invoke( $this->get_connection() ) );
+	}
+
+
+	/** @see test_get_timezone_string_from_offset() */
+	public function provider_test_get_timezone_string_from_offset() {
+
+		return [
+			[ -12,    'Etc/GMT-12' ],
+			[ -11.5,  'Etc/GMT-11' ],
+			[ -11,    'Etc/GMT-11' ],
+			[ -10.5,  'Etc/GMT-10' ],
+			[ -10,    'Etc/GMT-10' ],
+			[ -9.5,   'Etc/GMT-9' ],
+			[ -9,     'Etc/GMT-9' ],
+			[ -8.5,   'Etc/GMT-8' ],
+			[ -8,     'Etc/GMT-8' ],
+			[ -7.5,   'Etc/GMT-7' ],
+			[ -7,     'Etc/GMT-7' ],
+			[ -6.5,   'Etc/GMT-6' ],
+			[ -6,     'Etc/GMT-6' ],
+			[ -5.5,   'Etc/GMT-5' ],
+			[ -5,     'Etc/GMT-5' ],
+			[ -4.5,   'Etc/GMT-4' ],
+			[ -4,     'Etc/GMT-4' ],
+			[ -3.5,   'Etc/GMT-3' ],
+			[ -3,     'Etc/GMT-3' ],
+			[ -2.5,   'Etc/GMT-2' ],
+			[ -2,     'Etc/GMT-2' ],
+			[ -1.5,   'Etc/GMT-1' ],
+			[ -1,     'Etc/GMT-1' ],
+			[ -0.5,   'Etc/GMT-0' ],
+			[ +0,     'Etc/GMT+0' ],
+			[ +0.5,   'Etc/GMT+0' ],
+			[ +1,     'Etc/GMT+1' ],
+			[ +1.5,   'Etc/GMT+1' ],
+			[ +2,     'Etc/GMT+2' ],
+			[ +2.5,   'Etc/GMT+2' ],
+			[ +3,     'Etc/GMT+3' ],
+			[ +3.5,   'Etc/GMT+3' ],
+			[ +4,     'Etc/GMT+4' ],
+			[ +4.5,   'Etc/GMT+4' ],
+			[ +5,     'Etc/GMT+5' ],
+			[ +5.5,   'Etc/GMT+5' ],
+			[ +5.75,  'Etc/GMT+5' ],
+			[ +6,     'Etc/GMT+6' ],
+			[ +6.5,   'Etc/GMT+6' ],
+			[ +7,     'Etc/GMT+7' ],
+			[ +7.5,   'Etc/GMT+7' ],
+			[ +8,     'Etc/GMT+8' ],
+			[ +8.5,   'Etc/GMT+8' ],
+			[ +8.75,  'Etc/GMT+8' ],
+			[ +9,     'Etc/GMT+9' ],
+			[ +9.5,   'Etc/GMT+9' ],
+			[ +10,    'Etc/GMT+10' ],
+			[ +10.5,  'Etc/GMT+10' ],
+			[ +11,    'Etc/GMT+11' ],
+			[ +11.5,  'Etc/GMT+11' ],
+			[ +12,    'Etc/GMT+12' ],
+			[ +12.75, 'Etc/GMT+12' ],
+			[ +13,    'Etc/GMT+13' ],
+			[ +13.75, 'Etc/GMT+13' ],
+			[ +14,    'Etc/GMT+14' ],
+		];
 	}
 
 

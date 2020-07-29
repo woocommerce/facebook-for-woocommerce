@@ -114,7 +114,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 		 *
 		 * + Page: just the ID
 		 * + Pixel: just the ID
-		 * + Catalog: name, general link to the user's catalog manager (we can't link to a specific catalog)
+		 * + Catalog: name, full URL
 		 * + Business manager: name, full URL
 		 * + Ad account: not currently available
 		 *
@@ -145,12 +145,14 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			],
 		];
 
-		// if the catalog ID is set, try and get its name for display
-		if ( $static_items['catalog']['value'] ) {
+		// if the catalog ID is set, update the URL and try to get its name for display
+		if ( $catalog_id = $static_items['catalog']['value'] ) {
+
+			$static_items['catalog']['url'] = "https://facebook.com/products/catalogs/{$catalog_id}";
 
 			try {
 
-				$response = facebook_for_woocommerce()->get_api()->get_catalog( $static_items['catalog']['value'] );
+				$response = facebook_for_woocommerce()->get_api()->get_catalog( $catalog_id );
 
 				if ( $name = $response->get_name() ) {
 					$static_items['catalog']['value'] = $name;

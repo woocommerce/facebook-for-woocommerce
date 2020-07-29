@@ -803,7 +803,7 @@ class WC_Facebookcommerce_Integration_Test extends \Codeception\TestCase\WPTestC
 
 		$integration = $this->make( \WC_Facebookcommerce_Integration::class, [
 			'delete_product_item' => Expected::never(),
-			// called from delete_product_group()
+			// get_product_fbid() is used to verify that delete_product_group() was called because we cannot set an expectation on private methods
 			'get_product_fbid'    => Expected::once(),
 		] );
 

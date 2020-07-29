@@ -29,6 +29,38 @@ class Event {
 
 
 	/**
+	 * Gets version information for pixel events.
+	 *
+	 * @return array {
+	 *     @type string source 'woocommerce'
+	 *     @type string version WooCommerce's version
+	 *     @type string pluginVersion Facebook for WooCommerce's version
+	 * }
+	 */
+	public static function get_version_info() {
+
+		return [
+			'source'        => 'woocommerce',
+			'version'       => WC()->version,
+			'pluginVersion' => facebook_for_woocommerce()->get_version(),
+		];
+	}
+
+
+	/**
+	 * Gets the agent string for pixel events.
+	 *
+	 * @return string
+	 */
+	public static function get_platform_identifier() {
+
+		$info = self::get_version_info();
+
+		return "{$info['source']}-{$info['version']}-{$info['pluginVersion']}";
+	}
+
+
+	/**
 	 * Constructor.
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters
