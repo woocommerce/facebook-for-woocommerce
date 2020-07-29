@@ -403,11 +403,6 @@ class Products {
 
 				$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
 
-			} elseif ( class_exists( 'WC_Product_Booking' ) && function_exists( 'is_wc_booking_product' ) && is_wc_booking_product( $product ) ) {
-
-				$booking = new \WC_Product_Booking( $product );
-				$price   = wc_get_price_to_display( $booking, [ 'price' => $booking->get_display_cost() ] );
-
 			} else {
 
 				$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
