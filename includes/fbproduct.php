@@ -366,6 +366,16 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $product_data;
 		}
 
+
+		/**
+		 * Determines whether a product should be excluded from all-products sync or the feed file.
+		 *
+		 * The plugin also avoids trying to get the Facebook ID of products where is_hidden() returns true.
+		 *
+		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
+		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
+		 * @see WC_Facebookcommerce_Integration::get_product_fbid()
+		 */
 		public function is_hidden() {
 			$wpid = $this->id;
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
@@ -381,12 +391,10 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'product_visibility',
 				$wpid
 			);
-			// fb_visibility === '': after initial sync by feed
-			// fb_visibility === false: set hidden on FB metadata
-			// Explicitly check whether flip 'hide' before.
-			return ( $hidden_from_catalog && $hidden_from_search ) ||
-			$this->fb_visibility === false || ! $this->get_fb_price();
+
+			return ( $hidden_from_catalog && $hidden_from_search ) || ! $this->get_fb_price();
 		}
+
 
 		public function get_price_plus_tax( $price ) {
 			$woo_product = $this->woo_product;
