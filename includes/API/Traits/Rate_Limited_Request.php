@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Rate limited request trait.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 trait Rate_Limited_Request {
 
@@ -23,7 +23,7 @@ trait Rate_Limited_Request {
 	/**
 	 * Gets the ID of this request for rate limiting purposes.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */

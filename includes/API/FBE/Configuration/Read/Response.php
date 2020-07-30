@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * FBE Configuration API read response object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends API\Response  {
 
@@ -25,7 +25,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the messenger configuration object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return null|API\FBE\Configuration\Messenger
 	 */

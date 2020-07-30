@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Request object for the Catalog API.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends API\Request  {
 
@@ -25,7 +25,7 @@ class Request extends API\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 */
@@ -38,7 +38,7 @@ class Request extends API\Request  {
 	/**
 	 * Gets the request parameters.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */

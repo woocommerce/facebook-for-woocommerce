@@ -51,7 +51,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function enqueue_assets() {
 
@@ -64,7 +64,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $field field data
 	 */
@@ -101,7 +101,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $field field data
 	 */
@@ -129,7 +129,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the screen settings.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -177,7 +177,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the "disconnected" message.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -196,7 +196,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 *
 	 * This is overridden to pull the latest FBE configuration so the settings can be populated correctly.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function render() {
 
@@ -254,7 +254,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 *
 	 * This is overridden to pull the latest from FBE and update that remotely via API
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 */

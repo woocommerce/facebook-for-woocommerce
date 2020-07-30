@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Request object for the API endpoint that returns a list of Product Items in a particular Product Group.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends API\Request {
 
@@ -25,7 +25,7 @@ class Request extends API\Request {
 	/**
 	 * Constructor for the Product Group Products read request.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id product group ID
 	 * @param int $limit max number of results returned

@@ -20,7 +20,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * API handler.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  *
  * @method Response perform_request( $request )
  */
@@ -40,7 +40,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function __construct( $access_token ) {
 
@@ -60,7 +60,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * Throws an exception if a rate limit or general API error is included in the response.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @throws Framework\SV_WC_API_Exception
 	 */
@@ -117,7 +117,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets the FBE installation IDs.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $external_business_id external business ID
 	 * @return API\FBE\Installation\Read\Response
@@ -136,7 +136,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a Page object from Facebook.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Pages\Read\Response
@@ -155,7 +155,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a business manager object from Facebook.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $business_manager_id business manager ID
 	 * @return API\Business_Manager\Response
@@ -174,7 +174,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a Catalog object from Facebook.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @return API\Catalog\Response
@@ -193,7 +193,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a user object from Facebook.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
 	 * @return API\User\Response
@@ -214,7 +214,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * This is their form of "revoke".
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
 	 * @param string $permission permission to delete
@@ -234,7 +234,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets the business configuration.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $external_business_id external business ID
 	 * @return API\FBE\Configuration\Read\Response
@@ -253,7 +253,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Updates the messenger configuration.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $external_business_id external business ID
 	 * @param API\FBE\Configuration\Messenger $configuration messenger configuration
@@ -277,7 +277,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @see Sync::create_or_update_products()
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @param array $requests array of prefixed product IDs to create, update or remove
@@ -301,7 +301,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Creates a Product Group object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @param array $data product group data
@@ -326,7 +326,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Updates the default product item and the available variation attributes of a product group.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id product group ID
 	 * @param array $data product group data
@@ -351,7 +351,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Deletes a Product Group object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id
 	 * @return Response
@@ -373,7 +373,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a list of Product Items in the given Product Group.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id product group ID
 	 * @param int $limit max number of results returned per page of data
@@ -393,7 +393,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Finds a Product Item using the Catalog ID and the Retailer ID of the product or product variation.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @param string $retailer_id retailer ID of the product
@@ -413,7 +413,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Creates a Product Item object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id parent product ID
 	 * @param array $data product data
@@ -438,7 +438,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Updates a Product Item object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_item_id product item ID
 	 * @param array $data product data
@@ -463,7 +463,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Deletes a Product Item object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_item_id product item ID
 	 * @return Response
@@ -485,7 +485,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Sends Pixel events.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $pixel_id pixel ID
 	 * @param Event[] $events events to send
@@ -505,7 +505,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets the next page of results for a paginated response.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param API\Response $response previous response object
 	 * @param int $additional_pages number of additional pages of results to retrieve
@@ -542,7 +542,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Returns a new request object.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $args {
 	 *     Optional. An array of request arguments.
@@ -575,7 +575,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Returns the plugin class instance associated with this API.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return \WC_Facebookcommerce
 	 */

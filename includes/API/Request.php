@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Base API request object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends Framework\SV_WC_API_JSON_Request {
 
@@ -28,7 +28,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $path endpoint route
 	 * @param string $method HTTP method
@@ -43,7 +43,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Sets the request parameters.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $params request parameters
 	 */
@@ -56,7 +56,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Sets the request data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $data request data
 	 */

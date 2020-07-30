@@ -18,7 +18,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Background job handler to change all sync enabled and visible virtual products and virtual product variations to Sync and hide.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Background_Job_Handler {
 
@@ -26,7 +26,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * Background job constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 
@@ -43,7 +43,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	 * This job continues to update products and product variations meta data until we run out of memory
 	 * or exceed the time limit. There is no list of items to loop over.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param object $job
 	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
@@ -100,7 +100,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * Counts the number of virtual products or product variations with sync enabled and visible.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -125,7 +125,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * Update rows in the postmeta table to hide in Catalog.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return int
 	 */
@@ -187,7 +187,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * No-op
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	protected function process_item( $item, $job ) {
 		// void

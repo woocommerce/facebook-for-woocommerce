@@ -117,7 +117,7 @@ class Products {
 	/**
 	 * Disables sync for products that belong to the given category or tag.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $args {
 	 *     @type string|array $taxonomy product_cat or product_tag
@@ -185,7 +185,7 @@ class Products {
 	 *
 	 * A product should be removed if it is no longer in stock and the user has opted-in to hide products that are out of stock.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \WC_Product $product
 	 * @return bool

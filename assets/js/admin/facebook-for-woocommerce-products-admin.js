@@ -94,7 +94,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Toggles (shows/hides) Sync and show option and changes the select value if needed.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param {boolean} show whether the Sync and show option should be displayed or not
 		 * @param {jQuery} $select the sync mode select

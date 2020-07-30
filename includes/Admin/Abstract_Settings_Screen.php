@@ -36,14 +36,14 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Renders the screen.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function render() {
 
 		/**
 		 * Filters the screen settings.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $settings settings
 		 */
@@ -81,7 +81,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Saves the settings.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @throws SV_WC_Plugin_Exception
 	 */
@@ -106,7 +106,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Gets the message to display when the plugin is disconnected.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -119,7 +119,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Gets the screen ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -132,7 +132,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Gets the screen label.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -141,7 +141,7 @@ abstract class Abstract_Settings_Screen {
 		/**
 		 * Filters the screen label.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $label screen label, for display
 		 */
@@ -152,7 +152,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Gets the screen title.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -161,7 +161,7 @@ abstract class Abstract_Settings_Screen {
 		/**
 		 * Filters the screen title.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $title screen title, for display
 		 */
@@ -172,7 +172,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Gets the screen description.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -181,7 +181,7 @@ abstract class Abstract_Settings_Screen {
 		/**
 		 * Filters the screen description.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $description screen description, for display
 		 */

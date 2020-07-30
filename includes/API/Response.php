@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Base API response object
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends Framework\SV_WC_API_JSON_Response {
 
@@ -28,7 +28,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	/**
 	 * Gets the response ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -43,7 +43,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	 *
 	 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#handling-errors
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return boolean
 	 */
@@ -56,7 +56,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	/**
 	 * Gets the API error type.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string|null
 	 */
@@ -69,7 +69,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	/**
 	 * Gets the API error message.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string|null
 	 */
@@ -82,7 +82,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	/**
 	 * Gets the API error code.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return int|null
 	 */

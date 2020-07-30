@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Event object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Event {
 
@@ -65,7 +65,7 @@ class Event {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $data event data
 	 */
@@ -81,7 +81,7 @@ class Event {
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/server-event
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/custom-data
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $data event data
 	 */
@@ -104,7 +104,7 @@ class Event {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/user-data
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $data user data
 	 */
@@ -124,7 +124,7 @@ class Event {
 	 *
 	 * @see https://stackoverflow.com/a/15875555
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -168,7 +168,7 @@ class Event {
 	/**
 	 * Gets the current URL.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -196,7 +196,7 @@ class Event {
 	/**
 	 * Gets the client IP address.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -209,7 +209,7 @@ class Event {
 	/**
 	 * Gets the client user agent.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -224,7 +224,7 @@ class Event {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/fbp-and-fbc#fbp-and-fbc-parameters
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -254,7 +254,7 @@ class Event {
 	/**
 	 * Gets the browser ID from the cookie.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -267,7 +267,7 @@ class Event {
 	/**
 	 * Gets the data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -280,7 +280,7 @@ class Event {
 	/**
 	 * Gets the event ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -293,7 +293,7 @@ class Event {
 	/**
 	 * Gets the event name.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -306,7 +306,7 @@ class Event {
 	/**
 	 * Gets the user data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -319,7 +319,7 @@ class Event {
 	/**
 	 * Gets the event custom data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */

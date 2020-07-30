@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Send_Item_Updates API response object
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 
@@ -25,7 +25,7 @@ class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 	/**
 	 * Gets the handles field from the response.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array|null
 	 */

@@ -21,7 +21,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.0.0-dev.3';
+		const VERSION = '2.0.0';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -279,7 +279,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Logs an API request.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $request request data
 		 * @param array $response response data
@@ -302,7 +302,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the API instance.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\API
 		 * @throws Framework\SV_WC_API_Exception
@@ -488,7 +488,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the background handle virtual products and variations handler instance.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return Background_Handle_Virtual_Products_Variations
 		 */
@@ -501,7 +501,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the products sync handler.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync
 		 */
@@ -514,7 +514,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the products sync background handler.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Products\Sync\Background
 		 */
@@ -527,7 +527,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the connection handler.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Handlers\Connection
 		 */

@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API\FBE\Installation;
 /**
  * FBE installation API read request object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends Installation\Request  {
 
@@ -25,7 +25,7 @@ class Request extends Installation\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $external_business_id external business_id
 	 */

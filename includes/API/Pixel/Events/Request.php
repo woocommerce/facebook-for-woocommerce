@@ -18,7 +18,7 @@ use SkyVerge\WooCommerce\Facebook\Events\Event;
 /**
  * Base S2S API request object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends API\Request {
 
@@ -44,7 +44,7 @@ class Request extends API\Request {
 	/**
 	 * Gets the request data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -83,7 +83,7 @@ class Request extends API\Request {
 		/**
 		 * Filters the Pixel event API request data.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $data request data
 		 * @param Request $request request object

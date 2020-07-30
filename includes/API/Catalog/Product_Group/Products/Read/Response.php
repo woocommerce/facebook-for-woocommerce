@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Response object for the API endpoint that returns a list of Product Items in a particular Product Group.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends API\Response {
 
@@ -28,7 +28,7 @@ class Response extends API\Response {
 	/**
 	 * Gets the Product Item IDs indexed by the retailer ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */

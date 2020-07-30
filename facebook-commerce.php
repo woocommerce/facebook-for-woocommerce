@@ -638,7 +638,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets a list of Product Item IDs indexed by the ID of the variation.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id product group ID
 	 * @return array
@@ -692,7 +692,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Uses the Graph API to return a list of Product Item IDs indexed by the variation's retailer ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $product_group_id product group ID
 	 * @return array
@@ -1211,7 +1211,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * TODO: can we move this logic into Products::product_should_be_synced()? {WV 2020-05-22}
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \WC_Product|false $product product object
 	 */
@@ -1431,21 +1431,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	public function ajax_save_fb_settings() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 	/**
 	 * Delete all settings via AJAX
 	 *
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	function ajax_delete_fb_settings() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 	/**
@@ -2271,13 +2271,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Initializes the settings form fields.
 	 *
 	 * @since 1.0.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 *
 	 * @internal
 	 */
 	public function init_form_fields() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
@@ -2289,11 +2289,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	public function process_admin_options() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
@@ -2636,13 +2636,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Returns null if no offset is configured.
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 *
 	 * @return int|null
 	 */
 	public function get_scheduled_resync_offset() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
@@ -2924,13 +2924,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Determines whether the scheduled re-sync is enabled.
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 *
 	 * @return bool
 	 */
 	public function is_scheduled_resync_enabled() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 
 		return false;
 	}
@@ -3087,7 +3087,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the array that holds the name and url of the configured Facebook page.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -3229,7 +3229,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Uses the Graph API to delete the Product Group associated with the given product.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param int $product_id product ID
 	 */
@@ -3615,13 +3615,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 *
 	 * @since 1.11.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 *
 	 * @param int $post_id the post ID
 	 */
 	public function on_product_trash( $post_id ) {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 

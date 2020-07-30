@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Rate limited API trait.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 trait Rate_Limited_API {
 
@@ -25,7 +25,7 @@ trait Rate_Limited_API {
 	/**
 	 * Stores the delay, in seconds, for requests with the given rate limit ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $rate_limit_id request ID for rate limiting
 	 * @param int $delay delay in seconds
@@ -39,7 +39,7 @@ trait Rate_Limited_API {
 	/**
 	 * Gets the number of seconds before a new request with the given rate limit ID can be made.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $rate_limit_id request ID for rate limiting
 	 * @return int
@@ -54,7 +54,7 @@ trait Rate_Limited_API {
 	 * Uses the response object and the array of headers to get information about the API usage
 	 * and calculate the next delay for requests of the same type.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param Rate_Limited_Response $response API response object
 	 * @param array $headers API response headers

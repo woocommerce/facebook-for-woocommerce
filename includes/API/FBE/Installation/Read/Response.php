@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * FBE Installation API read response object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends API\Response  {
 
@@ -25,7 +25,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the pixel ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -38,7 +38,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the business manager ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -51,7 +51,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the ad account ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -64,7 +64,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the catalog ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -77,7 +77,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the page ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -92,7 +92,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the profiles.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string[]
 	 */
@@ -105,7 +105,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the response data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return \stdClass
 	 */

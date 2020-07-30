@@ -172,7 +172,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 *
 		 * TODO: add an integration that filters the Facebook price instead {WV 2020-07-22}
 		 *
-		 * @since 2.0.0-dev.3
+		 * @since 2.0.0
 		 *
 		 * @return bool
 		 */

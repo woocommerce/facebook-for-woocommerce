@@ -533,7 +533,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * These will be things like pixel & page ID.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $external_business_id the connected external business ID
 		 * @return array

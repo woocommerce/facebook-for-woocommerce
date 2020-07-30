@@ -46,7 +46,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function add_notices() {
 
@@ -75,7 +75,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function enqueue_assets() {
 
@@ -92,7 +92,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Renders the screen.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function render() {
 
@@ -246,7 +246,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Renders the Facebook CTA box.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param bool $is_connected whether the plugin is connected
 	 */
@@ -340,7 +340,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the screen settings.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */

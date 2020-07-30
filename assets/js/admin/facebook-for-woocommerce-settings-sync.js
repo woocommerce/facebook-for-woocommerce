@@ -205,7 +205,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Sets the UI as sync in progress and starts an interval to check the background sync status.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param count number of items remaining
 	 */
@@ -221,7 +221,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Sets the UI as sync in progress.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param count number of items remaining
 	 */
@@ -253,7 +253,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Clears any UI for sync in progress.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param error message to display
 	 */
@@ -279,7 +279,7 @@ jQuery( document ).ready( function( $ ) {
 	/**
 	 * Gets the current sync status.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	function getSyncStatus() {
 

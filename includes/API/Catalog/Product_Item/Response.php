@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Response object for API requests that return a Product Item.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends API\Response {
 
@@ -25,7 +25,7 @@ class Response extends API\Response {
 	/**
 	 * Gets the Product Item group ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */

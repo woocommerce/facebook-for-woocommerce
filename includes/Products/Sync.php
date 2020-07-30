@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\Products;
 /**
  * The product sync handler.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Sync {
 
@@ -38,7 +38,7 @@ class Sync {
 	/**
 	 * Sync constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 
@@ -49,7 +49,7 @@ class Sync {
 	/**
 	 * Adds needed hooks to support product sync.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function add_hooks() {
 
@@ -67,7 +67,7 @@ class Sync {
 	 * @see \WC_Facebook_Product_Feed::get_product_ids()
 	 * @see \WC_Facebook_Product_Feed::write_product_feed_file()
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function create_or_update_all_products() {
 
@@ -129,7 +129,7 @@ class Sync {
 	/**
 	 * Adds the given product IDs to the requests array to be updated.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param int[] $product_ids
 	 */
@@ -144,7 +144,7 @@ class Sync {
 	/**
 	 * Adds the given retailer IDs to the requests array to be deleted.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param int[] $retailer retailer IDs to delete
 	 */
@@ -159,7 +159,7 @@ class Sync {
 	/**
 	 * Creates a background job to sync the products in the requests array.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return \stdClass|object|null
 	 */
@@ -180,7 +180,7 @@ class Sync {
 	/**
 	 * Gets the prefixed product ID used as the array index.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param $product_id
 	 * @return string
@@ -194,7 +194,7 @@ class Sync {
 	/**
 	 * Determines whether a sync is currently in progress.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */

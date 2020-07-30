@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * User API response object
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 

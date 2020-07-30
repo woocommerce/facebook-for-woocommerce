@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The messenger configuration object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Messenger {
 
@@ -52,7 +52,7 @@ class Messenger {
 	/**
 	 * Determines if messenger is enabled.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -65,7 +65,7 @@ class Messenger {
 	/**
 	 * Gets the default locale.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -78,7 +78,7 @@ class Messenger {
 	/**
 	 * Gets the domains that messenger is configured for.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string[]
 	 */
@@ -97,7 +97,7 @@ class Messenger {
 	/**
 	 * Sets whether messenger is enabled.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param bool $is_enabled whether messenger is enabled
 	 */
@@ -110,7 +110,7 @@ class Messenger {
 	/**
 	 * Sets the default locale.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $locale default locale
 	 */
@@ -123,7 +123,7 @@ class Messenger {
 	/**
 	 * Adds a domain to the list of approved domains.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $domain domain to add
 	 */
@@ -140,7 +140,7 @@ class Messenger {
 	/**
 	 * Sets the list of approved domains.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string[] $domains list of domains
 	 */

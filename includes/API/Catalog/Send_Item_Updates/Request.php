@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Request object for the Send Item Updates API request.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends API\Request  {
 
@@ -32,7 +32,7 @@ class Request extends API\Request  {
 	/**
 	 * Gets the ID of this request for rate limiting purposes.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -45,7 +45,7 @@ class Request extends API\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $catalog_id catalog ID
 	 */
@@ -58,7 +58,7 @@ class Request extends API\Request  {
 	/**
 	 * Sets the array of item update requests.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $requests item update requests
 	 */
@@ -71,7 +71,7 @@ class Request extends API\Request  {
 	/**
 	 * Gets the array of item update requests.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -84,7 +84,7 @@ class Request extends API\Request  {
 	/**
 	 * Sets whether updates for products that are not currently in the catalog should create new items.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param bool $allow_upsert whether to allow updates to insert new items
 	 */
@@ -97,7 +97,7 @@ class Request extends API\Request  {
 	/**
 	 * Gets whether updates for products that are not currently in the catalog should create new items.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -110,7 +110,7 @@ class Request extends API\Request  {
 	/**
 	 * Gets the request data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function get_data() {
 

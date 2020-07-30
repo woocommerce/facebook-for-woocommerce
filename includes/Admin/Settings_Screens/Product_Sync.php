@@ -53,7 +53,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function enqueue_assets() {
 
@@ -97,7 +97,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $field field data
 	 */
@@ -129,7 +129,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Saves the Product Sync settings.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function save() {
 
@@ -151,7 +151,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Disables sync for products that belong to any of the given categories or tags.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $product_cat_ids IDs of excluded categories
 	 * @param array $product_tag_ids IDs of excluded tags
@@ -175,7 +175,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the screen settings.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -263,7 +263,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the "disconnected" message.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */

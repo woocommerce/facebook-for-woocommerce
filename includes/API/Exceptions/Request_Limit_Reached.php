@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * Exception thrown in response to a rate limiting error.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request_Limit_Reached extends Framework\SV_WC_API_Exception {
 

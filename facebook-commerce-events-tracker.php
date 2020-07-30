@@ -210,7 +210,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 2.0.0-dev.3
+		 * @since 2.0.0
 		 */
 		public function send_search_event() {
 
@@ -223,7 +223,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * The event instance is stored in memory to return a single instance per request.
 		 *
-		 * @since 2.0.0-dev.3
+		 * @since 2.0.0
 		 *
 		 * @return Event
 		 */
@@ -825,7 +825,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Sends an API event.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param Event $event event object
 		 * @return bool
@@ -893,7 +893,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets all content names from cart.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @return string JSON data
 		 */

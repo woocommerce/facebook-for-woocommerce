@@ -521,7 +521,7 @@ class Admin {
 	/**
 	 * Adds query vars to limit the results to visible products.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $query_vars
 	 * @return array
@@ -561,7 +561,7 @@ class Admin {
 	/**
 	 * Adds query vars to limit the results to hidden products.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $query_vars
 	 * @return array
@@ -760,7 +760,7 @@ class Admin {
 	 * @internal
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	public function validate_cart_url() {
 
@@ -771,7 +771,7 @@ class Admin {
 	/**
 	 * Adds a transient so an informational notice is displayed on the next page load.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param int $count number of products
 	 */
@@ -786,7 +786,7 @@ class Admin {
 	/**
 	 * Adds a message for after a product or set of products get excluded from sync.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function maybe_show_product_disabled_sync_notice() {
 
@@ -864,7 +864,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $query_vars product query vars for the edit screen
 	 * @return array
@@ -887,7 +887,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function add_handled_virtual_products_variations_notice() {
 
@@ -1332,11 +1332,11 @@ class Admin {
 	 * @internal
 	 *
 	 * @since 1.11.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	public function add_product_sync_delay_notice() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
@@ -1346,14 +1346,14 @@ class Admin {
 	 * @internal
 	 *
 	 * @since 1.11.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 *
 	 * @param string $message_id the dismissed notice ID
 	 * @param int $user_id the ID of the user the noticed was dismissed for
 	 */
 	public function handle_dismiss_notice( $message_id, $user_id = null ) {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 
@@ -1363,11 +1363,11 @@ class Admin {
 	 * @internal
 	 *
 	 * @since 1.11.0
-	 * @deprecated 2.0.0-dev.1
+	 * @deprecated 2.0.0
 	 */
 	public function add_catalog_visibility_settings_removed_notice() {
 
-		wc_deprecated_function( __METHOD__, '2.0.0-dev.1' );
+		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 

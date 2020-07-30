@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Rate limited response trait.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 trait Rate_Limited_Response {
 
@@ -26,7 +26,7 @@ trait Rate_Limited_Response {
 	 * @see https://developers.facebook.com/docs/graph-api/overview/rate-limiting#headers-2
 	 * @see https://developers.facebook.com/docs/graph-api/overview/rate-limiting#headers
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $headers response headers
 	 * @return array
@@ -59,7 +59,7 @@ trait Rate_Limited_Response {
 	/**
 	 * Gets the percentage of calls made by the app over a rolling one hour period.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $headers response headers
 	 * @return int
@@ -75,7 +75,7 @@ trait Rate_Limited_Response {
 	/**
 	 * Gets the percentage of total time allotted for query processing.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $headers response headers
 	 * @return int
@@ -91,7 +91,7 @@ trait Rate_Limited_Response {
 	/**
 	 * Gets the percentage of CPU time allotted for query processing.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $headers response headers
 	 * @return int
@@ -107,7 +107,7 @@ trait Rate_Limited_Response {
 	/**
 	 * Gets the number of seconds until calls will no longer be throttled.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $headers response headers
 	 * @return int|null

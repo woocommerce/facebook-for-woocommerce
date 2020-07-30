@@ -18,7 +18,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * The background sync handler.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Background extends Framework\SV_WP_Background_Job_Handler {
 
@@ -36,7 +36,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Processes a job.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \stdClass|object $job
 	 * @param int|null $items_per_batch number of items to process in a single request (defaults to null for unlimited)
@@ -100,7 +100,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Processes multiple items.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \stdClass|object $job
 	 * @param array $data
@@ -158,7 +158,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Processes a single item.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param mixed $item
 	 * @param object|\stdClass $job
@@ -186,7 +186,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Processes an UPDATE sync request for the given product.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $prefixed_product_id prefixed product ID
 	 * @return array
@@ -222,7 +222,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		/**
 		 * Filters the data that will be included in a UPDATE sync request.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $request request data
 		 * @param \WC_Product $product product object
@@ -234,7 +234,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Prepares the data for a product variation to be included in a sync request.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return array
@@ -263,7 +263,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Normalizes product data to be included in a sync request.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return array
@@ -289,7 +289,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Prepares the product data to be included in a sync request.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return array
@@ -310,7 +310,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Processes a DELETE sync request for the given product.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $retailer product retailer ID
 	 */
@@ -324,7 +324,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		/**
 		 * Filters the data that will be included in a DELETE sync request.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $request request data
 		 * @param string $retailer product retailer ID
@@ -336,7 +336,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Sends item updates to Facebook.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param array $requests sync requests
 	 * @return array

@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Business Manager API response object
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 
@@ -23,7 +23,7 @@ class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 	/**
 	 * Gets the business manager name.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string|null
 	 */
@@ -36,7 +36,7 @@ class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 	/**
 	 * Gets the business manager name.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string|null
 	 */

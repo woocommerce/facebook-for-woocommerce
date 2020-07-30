@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
 /**
  * FBE Configuration update request object.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Request extends Configuration\Request  {
 
@@ -25,7 +25,7 @@ class Request extends Configuration\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $external_business_id external business ID
 	 */
@@ -43,7 +43,7 @@ class Request extends Configuration\Request  {
 	 *
 	 * Only the enabled and domains values are able to accept updates right now.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param Configuration\Messenger $configuration messenger configuration object
 	 */

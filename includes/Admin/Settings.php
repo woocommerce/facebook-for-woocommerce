@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Admin settings handler.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Settings {
 
@@ -34,7 +34,7 @@ class Settings {
 	/**
 	 * Settings constructor.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 
@@ -53,7 +53,7 @@ class Settings {
 	/**
 	 * Adds the Facebook menu item.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function add_menu_item() {
 
@@ -64,7 +64,7 @@ class Settings {
 	/**
 	 * Renders the settings page.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function render() {
 
@@ -109,7 +109,7 @@ class Settings {
 	/**
 	 * Saves the settings page.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function save() {
 
@@ -153,7 +153,7 @@ class Settings {
 	/**
 	 * Gets a settings screen object based on ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $screen_id desired screen ID
 	 * @return Abstract_Settings_Screen|null
@@ -169,7 +169,7 @@ class Settings {
 	/**
 	 * Gets the available screens.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return Abstract_Settings_Screen[]
 	 */
@@ -178,7 +178,7 @@ class Settings {
 		/**
 		 * Filters the admin settings screens.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $screens available screen objects
 		 */
@@ -198,7 +198,7 @@ class Settings {
 	/**
 	 * Gets the tabs.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -213,7 +213,7 @@ class Settings {
 		/**
 		 * Filters the admin settings tabs.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $tabs tab data, as $id => $label
 		 */

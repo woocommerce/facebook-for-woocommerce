@@ -49,7 +49,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function sync_products() {
 
@@ -66,7 +66,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function get_sync_status() {
 

@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) or exit;
  *
  * @link https://developers.facebook.com/docs/graph-api/using-graph-api/#paging
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 trait Paginated_Response {
 
@@ -33,7 +33,7 @@ trait Paginated_Response {
 	/**
 	 * Sets the number of pages retrieved from this response.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param int $pages_retrieved
 	 */
@@ -46,7 +46,7 @@ trait Paginated_Response {
 	/**
 	 * Gets the number of pages retrieved from this response.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return int
 	 */
@@ -59,7 +59,7 @@ trait Paginated_Response {
 	/**
 	 * Gets the response data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -72,7 +72,7 @@ trait Paginated_Response {
 	/**
 	 * Gets the pagination data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return object
 	 */
@@ -85,7 +85,7 @@ trait Paginated_Response {
 	/**
 	 * Gets the API endpoint for the next page of results.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -98,7 +98,7 @@ trait Paginated_Response {
 	/**
 	 * Gets the API endpoint for the previous page of results.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string
 	 */

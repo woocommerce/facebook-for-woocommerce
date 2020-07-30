@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The connection handler.
  *
- * @since 2.0.0-dev.1
+ * @since 2.0.0
  */
 class Connection {
 
@@ -65,7 +65,7 @@ class Connection {
 	/**
 	 * Constructs a new Connection.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
@@ -86,7 +86,7 @@ class Connection {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function refresh_business_configuration() {
 
@@ -137,7 +137,7 @@ class Connection {
 	/**
 	 * Refreshes the connected installation data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function refresh_installation_data() {
 
@@ -169,7 +169,7 @@ class Connection {
 	/**
 	 * Retrieves and stores the connected installation data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @throws SV_WC_API_Exception
 	 */
@@ -204,7 +204,7 @@ class Connection {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function handle_connect() {
 
@@ -265,7 +265,7 @@ class Connection {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	public function handle_disconnect() {
 
@@ -301,7 +301,7 @@ class Connection {
 	 *
 	 * Deletes local asset data.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 */
 	private function disconnect() {
 
@@ -322,7 +322,7 @@ class Connection {
 	/**
 	 * Gets the API access token.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -333,7 +333,7 @@ class Connection {
 		/**
 		 * Filters the API access token.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $access_token access token
 		 * @param Connection $connection connection handler instance
@@ -345,7 +345,7 @@ class Connection {
 	/**
 	 * Gets the merchant access token.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -356,7 +356,7 @@ class Connection {
 		/**
 		 * Filters the merchant access token.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $access_token access token
 		 * @param Connection $connection connection handler instance
@@ -368,7 +368,7 @@ class Connection {
 	/**
 	 * Gets the URL to start the connection flow.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -381,7 +381,7 @@ class Connection {
 	/**
 	 * Gets the URL to manage the connection.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -397,7 +397,7 @@ class Connection {
 	/**
 	 * Gets the URL for disconnecting.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -410,7 +410,7 @@ class Connection {
 	/**
 	 * Gets the scopes that will be requested during the connection flow.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @link https://developers.facebook.com/docs/marketing-api/access/#access_token
 	 *
@@ -429,7 +429,7 @@ class Connection {
 		/**
 		 * Filters the scopes that will be requested during the connection flow.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string[] $scopes connection scopes
 		 * @param Connection $connection connection handler instance
@@ -441,7 +441,7 @@ class Connection {
 	/**
 	 * Gets the stored external business ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -464,7 +464,7 @@ class Connection {
 		/**
 		 * Filters the external business ID.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $external_business_id stored external business ID
 		 * @param Connection $connection connection handler instance
@@ -476,7 +476,7 @@ class Connection {
 	/**
 	 * Gets the site's business name.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -489,7 +489,7 @@ class Connection {
 		 *
 		 * This is passed to Facebook when connecting. Defaults to the site name.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $business_name the shop's business name
 		 */
@@ -500,7 +500,7 @@ class Connection {
 	/**
 	 * Gets the business manager ID value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -513,7 +513,7 @@ class Connection {
 	/**
 	 * Gets the ad account ID value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -526,7 +526,7 @@ class Connection {
 	/**
 	 * Gets the System User ID value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -539,7 +539,7 @@ class Connection {
 	/**
 	 * Gets the proxy URL.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string URL
 	 */
@@ -548,7 +548,7 @@ class Connection {
 		/**
 		 * Filters the proxy URL.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $proxy_url the connection proxy URL
 		 */
@@ -559,7 +559,7 @@ class Connection {
 	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -574,7 +574,7 @@ class Connection {
 		/**
 		 * Filters the redirect URL where the user will return to after OAuth.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $redirect_url redirect URL
 		 * @param Connection $connection connection handler instance
@@ -586,7 +586,7 @@ class Connection {
 	/**
 	 * Gets the full set of connection parameters for starting OAuth.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array
 	 */
@@ -595,7 +595,7 @@ class Connection {
 		/**
 		 * Filters the connection parameters.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param array $parameters connection parameters
 		 */
@@ -616,7 +616,7 @@ class Connection {
 	 *
 	 * @see Connection::get_connect_parameters()
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return array associative array (to be converted to JSON encoded for connection purposes)
 	 */
@@ -657,7 +657,7 @@ class Connection {
 	/**
 	 * Gets the configured timezone string using values accepted by Facebook
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -679,7 +679,7 @@ class Connection {
 	/**
 	 * Stores the given ID value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $value the business manager ID
 	 */
@@ -692,7 +692,7 @@ class Connection {
 	/**
 	 * Stores the given ID value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $value the ad account ID
 	 */
@@ -705,7 +705,7 @@ class Connection {
 	/**
 	 * Stores the given system user ID.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $value the ID
 	 */
@@ -718,7 +718,7 @@ class Connection {
 	/**
 	 * Stores the given token value.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $value the access token
 	 */
@@ -731,7 +731,7 @@ class Connection {
 	/**
 	 * Stores the given merchant access token.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @param string $value the access token
 	 */
@@ -746,7 +746,7 @@ class Connection {
 	 *
 	 * A site is connected if there is an access token stored.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -759,7 +759,7 @@ class Connection {
 	/**
 	 * Determines whether the site has previously connected to FBE 2.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -772,7 +772,7 @@ class Connection {
 	/**
 	 * Determines whether the site has previously connected to FBE 1.x.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -787,7 +787,7 @@ class Connection {
 	/**
 	 * Gets the client ID for connection.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -796,7 +796,7 @@ class Connection {
 		/**
 		 * Filters the client ID.
 		 *
-		 * @since 2.0.0-dev.1
+		 * @since 2.0.0
 		 *
 		 * @param string $client_id the client ID
 		 */
@@ -807,7 +807,7 @@ class Connection {
 	/**
 	 * Gets the plugin instance.
 	 *
-	 * @since 2.0.0-dev.1
+	 * @since 2.0.0
 	 *
 	 * @return \WC_Facebookcommerce
 	 */
