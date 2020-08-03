@@ -606,7 +606,7 @@ class Connection {
 			'display'       => 'page',
 			'response_type' => 'code',
 			'scope'         => implode( ',', $this->get_scopes() ),
-			'extras'        => json_encode( $this->get_connect_parameters_extras(), JSON_UNESCAPED_SLASHES ),
+			'extras'        => json_encode( $this->get_connect_parameters_extras(), JSON_UNESCAPED_SLASHES ), // this is mainly to avoid escaping timezone identifiers improperly
 		] );
 	}
 
