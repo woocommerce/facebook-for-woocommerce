@@ -482,7 +482,7 @@ class Connection {
 	 */
 	public function get_business_name() {
 
-		$business_name = trim( html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES, 'UTF-8' ) );
+		$business_name = get_bloginfo( 'name' );
 
 		/**
 		 * Filters the shop's business name.
@@ -494,13 +494,13 @@ class Connection {
 		 *
 		 * @param string $business_name the shop's business name
 		 */
-		$business_name = trim( (string) apply_filters( 'wc_facebook_connection_business_name', $business_name ) );
+		$business_name = trim( (string) apply_filters( 'wc_facebook_connection_business_name', is_string( $business_name ) ? $business_name : '' ) );
 
 		if ( empty( $business_name ) ) {
-			$business_name = trim( html_entity_decode( get_bloginfo( 'url' ), ENT_QUOTES, 'UTF-8' ) );
+			$business_name = get_bloginfo( 'url' );
 		}
 
-		return $business_name;
+		return html_entity_decode( $business_name, ENT_QUOTES, 'UTF-8' );
 	}
 
 
