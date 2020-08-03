@@ -210,6 +210,23 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_business_name() */
+	public function test_get_business_name_empty() {
+
+		update_option( 'blogname', '' );
+
+		$this->assertSame( get_bloginfo( 'url' ), $this->get_connection()->get_business_name() );
+
+		update_option( 'blogname', 'Test Store' );
+
+		add_filter( 'wc_facebook_connection_business_name', function() {
+			return '';
+		} );
+
+		$this->assertSame( get_bloginfo( 'url' ), $this->get_connection()->get_business_name() );
+	}
+
+
 	/** @see Connection::get_business_manager_id() */
 	public function test_get_business_manager_id() {
 
