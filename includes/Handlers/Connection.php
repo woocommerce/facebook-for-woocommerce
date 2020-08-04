@@ -453,7 +453,7 @@ class Connection {
 
 			if ( ! is_string( $value ) ) {
 
-				$value = sanitize_title( get_bloginfo( 'name' ) ) . '-' . uniqid();
+				$value = uniqid( sanitize_title( $this->get_business_name() ) . '-', false );
 
 				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
 			}
@@ -482,18 +482,25 @@ class Connection {
 	 */
 	public function get_business_name() {
 
-		$business_name = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES, 'UTF-8' );
+		$business_name = get_bloginfo( 'name' );
 
 		/**
 		 * Filters the shop's business name.
 		 *
-		 * This is passed to Facebook when connecting. Defaults to the site name.
+		 * This is passed to Facebook when connecting.
+		 * Defaults to the site name. Should be non-empty, otherwise the site URL will be used as fallback.
 		 *
 		 * @since 2.0.0
 		 *
 		 * @param string $business_name the shop's business name
 		 */
-		return apply_filters( 'wc_facebook_connection_business_name', $business_name );
+		$business_name = trim( (string) apply_filters( 'wc_facebook_connection_business_name', is_string( $business_name ) ? $business_name : '' ) );
+
+		if ( empty( $business_name ) ) {
+			$business_name = get_bloginfo( 'url' );
+		}
+
+		return html_entity_decode( $business_name, ENT_QUOTES, 'UTF-8' );
 	}
 
 
