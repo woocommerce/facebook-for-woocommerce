@@ -8,9 +8,11 @@
 actor: AcceptanceTester
 modules:
     enabled:
+        - Asserts
         - WPDb
         - WPWebDriver
         - WPLoader
+        - WPFilesystem
         - \Helper\Acceptance
     config:
         WPDb:
@@ -44,3 +46,5 @@ modules:
           dbHost: "%ACCEPTANCE_DB_HOST%"
           dbUser: "%ACCEPTANCE_DB_USER%"
           dbPassword: "%ACCEPTANCE_DB_PASSWORD%"
+        WPFilesystem:
+          wpRootFolder: '%WP_ROOT_FOLDER%'

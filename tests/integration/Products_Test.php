@@ -43,6 +43,16 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
 	}
 
+	/** @see Facebook\Products::product_should_be_synced() */
+	public function test_product_should_be_synced_variation() {
+
+		$product = $this->get_variable_product();
+
+		foreach ( $product->get_children() as $child_id ) {
+			$this->assertTrue( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
+		}
+	}
+
 
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple_in_excluded_category() {
@@ -161,6 +171,51 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Facebook\Products::disable_sync_for_products_with_terms()
+	 *
+	 * @param int $term_id the ID of the term to look for
+	 * @param string $taxonomy the name of the taxonomy to look for
+	 * @param bool $set_term whether to add the term to the test product
+	 * @param bool $is_synced_enabled whether sync should be enabled for the product or not
+	 *
+	 * @dataProvider provider_disable_sync_for_products_with_terms
+	 */
+	public function test_disable_sync_for_products_with_terms( $term_id, $taxonomy, $set_term, $is_sync_enabled ) {
+
+		$product = $this->get_product();
+
+		if ( $set_term ) {
+			wp_set_object_terms( $product->get_id(), $term_id, $taxonomy );
+		}
+
+		Facebook\Products::enable_sync_for_products( [ $product ] );
+		Facebook\Products::disable_sync_for_products_with_terms( [ 'taxonomy' => $taxonomy, 'include' => [ $term_id ] ] );
+
+		// get a fresh product object to ensure the status is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $is_sync_enabled, Facebook\Products::is_sync_enabled_for_product( $product ) );
+	}
+
+
+	public function provider_disable_sync_for_products_with_terms() {
+
+		$category = wp_insert_term( 'product_cat_test', 'product_cat' );
+		$tag      = wp_insert_term( 'product_tag_test', 'product_tag' );
+
+		return [
+			// the product has the term
+			[ $category['term_id'], 'product_cat', true, false ],
+			[ $tag['term_id'],      'product_tag', true, false ],
+
+			// the product does not have the term
+			[ $category['term_id'], 'product_cat', false, true ],
+			[ $tag['term_id'],      'product_tag', false, true ],
+		];
+	}
+
+
 	/** @see Facebook\Products::is_sync_enabled_for_product() for products that don't have a preference set */
 	public function test_is_sync_enabled_for_product_defaults() {
 
@@ -222,23 +277,31 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Gets a new product object.
 	 *
+	 * @param array $args product configuration parameters
 	 * @return \WC_Product
 	 */
-	private function get_product() {
+	private function get_product( $args = [] ) {
 
-		return $this->tester->get_product();
+		return $this->tester->get_product( array_merge( $args,  [
+			'status'        => 'publish',
+			'regular_price' => 19.99,
+		] ) );
 	}
 
 
 	/**
 	 * Gets a new variable product object, with variations.
 	 *
+	 * @param array $args product configuration parameters
 	 * @param int|int[] $children array of variation IDs, if unspecified will generate the amount passed (default 3)
 	 * @return \WC_Product_Variable
 	 */
-	private function get_variable_product( $children = [] ) {
+	private function get_variable_product( $args = [] ) {
 
-		return $this->tester->get_variable_product( $children );
+		return $this->tester->get_variable_product( array_merge( $args,  [
+			'status'        => 'publish',
+			'regular_price' => 19.99,
+		] ) );
 	}
 
 
@@ -251,14 +314,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$this->excluded_category = $category['term_id'];
 
-		$settings = [
-			\WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS => [ $this->excluded_category ]
-		];
-
-		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $settings );
-
-		// ensure the settings are reloaded before tests
-		facebook_for_woocommerce()->get_integration()->init_settings();
+		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
 	}
 
 

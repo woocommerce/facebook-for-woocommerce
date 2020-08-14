@@ -4,6 +4,8 @@ extensions:
   config:
     tad\WPBrowser\Extension\Copier:
       files:
+#        if using Lando, add WooCommerce to the copied plugins
+#        /<your-path-here>/woocommerce: '%WP_ROOT_FOLDER%/wp-content/plugins/woocommerce'
         ./: '%WP_ROOT_FOLDER%/wp-content/plugins/facebook-for-woocommerce'
 params:
 - .env

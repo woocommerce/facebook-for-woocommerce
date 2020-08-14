@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use SkyVerge\WooCommerce\Facebook\Events\Event;
+
 if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
@@ -80,13 +82,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		private function get_pixel_init_code() {
 
-			$version_info = self::get_version_info();
-			$agent_string = sprintf(
-				'%s-%s-%s',
-				$version_info['source'],
-				$version_info['version'],
-				$version_info['pluginVersion']
-			);
+			$agent_string = Event::get_platform_identifier();
 
 			/**
 			 * Filters Facebook Pixel init code.
@@ -398,14 +394,51 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		public static function build_event( $event_name, $params, $method = 'track' ) {
 
-			return sprintf(
-				"/* %s Facebook Integration Event Tracking */\n" .
-				"fbq('%s', '%s', %s);",
-				WC_Facebookcommerce_Utils::getIntegrationName(),
-				esc_js( $method ),
-				esc_js( $event_name ),
-				json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
-			);
+			// do not send the event name in the params
+			if ( isset( $params['event_name'] ) ) {
+
+				unset( $params['event_name'] );
+			}
+
+			// if possible, send the event ID to avoid duplication
+			// @see https://developers.facebook.com/docs/marketing-api/server-side-api/deduplicate-pixel-and-server-side-events#deduplication-best-practices
+			if ( isset( $params['event_id'] ) ) {
+
+				$event_id = $params['event_id'];
+				unset( $params['event_id'] );
+			}
+
+			// if custom data is set, send only the custom data
+			if ( isset( $params['custom_data'] ) ) {
+
+				$params = $params['custom_data'];
+			}
+
+			if ( ! empty( $event_id ) ) {
+
+				$event = sprintf(
+					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('%s', '%s', %s, %s);",
+					WC_Facebookcommerce_Utils::getIntegrationName(),
+					esc_js( $method ),
+					esc_js( $event_name ),
+					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
+					json_encode( [ 'eventID' => $event_id ], JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				);
+
+			} else {
+
+				$event = sprintf(
+					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('%s', '%s', %s);",
+					WC_Facebookcommerce_Utils::getIntegrationName(),
+					esc_js( $method ),
+					esc_js( $event_name ),
+					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				);
+			}
+
+			return $event;
 		}
 
 
@@ -422,7 +455,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 */
 		private static function build_params( $params = [], $event = '' ) {
 
-			$params = array_replace( self::get_version_info(), $params );
+			$params = array_replace( Event::get_version_info(), $params );
 
 			/**
 			 * Filters the parameters for the pixel code.

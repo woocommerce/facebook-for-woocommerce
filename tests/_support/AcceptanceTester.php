@@ -40,20 +40,24 @@ class AcceptanceTester extends \Codeception\Actor {
 	 * Creates a product in the database.
 	 *
 	 * @param array $args {
+	 *     @type string $title        product title
 	 *     @type float  $price        product price
 	 *     @type string $description  product description
 	 *     @type string $type         product type
-	 *     @type bool   $sync_enabled whether the product should have sync enabled
+	 *     @type bool   $sync_enabled whether the product should have sync enabled (ignored for variable products)
+	 *     @type bool   $visible      whether the product should be set to visible (ignored for variable products)
 	 * }
 	 * @return \WC_Product
 	 */
 	public function haveProductInDatabase( array $args = [] ) {
 
 		$args = wp_parse_args( $args, [
+			'title'        => 'Product',
 			'price'        => 1.00,
 			'description'  => 'This is a test product',
 			'type'         => 'simple',
-			'sync_enabled' => false,
+			'sync_enabled' => true,
+			'visible'      => true,
 		] );
 
 		if ( 'variable' === $args['type'] ) {
@@ -64,13 +68,21 @@ class AcceptanceTester extends \Codeception\Actor {
 
 		/** @var \WC_Product $product */
 		$product = new $class();
+		$product->set_name( (string) $args['title'] );
 		$product->set_price( (float) $args['price'] );
 		$product->set_description( (string) $args['description'] );
 
 		$product->save();
 
-		if ( ! empty( $args['sync_enabled'] ) ) {
-			Facebook\Products::enable_sync_for_products( [ $product ] );
+		if ( 'variable' !== $args['type'] ) {
+
+			if ( ! empty( $args['sync_enabled'] ) ) {
+				Facebook\Products::enable_sync_for_products( [ $product ] );
+			} else {
+				Facebook\Products::disable_sync_for_products( [ $product ] );
+			}
+
+			Facebook\Products::set_product_visibility( $product, $args['visible'] );
 		}
 
 		return $product;
@@ -204,14 +216,32 @@ class AcceptanceTester extends \Codeception\Actor {
 		// matches elements that contain a hidden input field with value equal to the ID of the variation
 		$variation_container_xpath .= "[descendant::{$variation_id_xpath}]";
 
-		$this->waitForElementVisible( $variation_container_xpath, 5 );
-		$this->waitForElementNotVisible( '.blockOverlay', 5 );
+		$this->waitForElementVisible( $variation_container_xpath, 15 );
+		$this->waitForElementNotVisible( '.blockOverlay', 15 );
 		$this->scrollTo( $variation_container_xpath, 0, -200 );
 
 		$this->click( $variation_container_xpath );
 
 		// return the index of the variation
 		return (int) trim( str_replace( 'variable_post_id', '', $this->grabAttributeFrom( "//{$variation_id_xpath}", 'name' ) ), '[]' );
+	}
+
+
+	/**
+	 * Checks that a link with the given text is a Connect button.
+	 *
+	 * @param string $text button text
+	 * @param string $selector button selector
+	 */
+	public function seeConnectButton( $text, $selector ) {
+
+		$this->see( $text, $selector );
+
+		$button_url  = $this->grabAttributeFrom( $selector, 'href' );
+		$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url();
+
+		// compare URLs after removing the nonce parameter
+		$this->assertEquals( preg_replace( '/nonce[^&]+/', '', $button_url ), preg_replace( '/nonce[^&]+/', '', $connect_url ) );
 	}
 
 

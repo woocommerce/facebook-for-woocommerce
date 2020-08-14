@@ -2,6 +2,7 @@
 /.project
 /.settings
 /.idea
+*.code-workspace
 
 # npm packages
 /node_modules

@@ -115,6 +115,51 @@ class Products {
 
 
 	/**
+	 * Disables sync for products that belong to the given category or tag.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $args {
+	 *     @type string|array $taxonomy product_cat or product_tag
+	 *     @type string|array $include array or comma/space-separated string of term IDs to include
+	 * }
+	 */
+	public static function disable_sync_for_products_with_terms( array $args ) {
+
+		$args = wp_parse_args( $args, [
+			'taxonomy' => 'product_cat',
+			'include'  => [],
+		] );
+
+		$products = [];
+
+		// get all products belonging to the given terms
+		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
+
+			$terms = get_terms( [
+				'taxonomy'   => $args['taxonomy'],
+				'fields'     => 'slugs',
+				'include'    => array_map( 'intval', $args['include'] ),
+			] );
+
+			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+
+				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
+
+				$products = wc_get_products( [
+					$taxonomy => $terms,
+					'limit'   => -1,
+				] );
+			}
+		}
+
+		if ( ! empty( $products ) ) {
+			Products::disable_sync_for_products( $products );
+		}
+	}
+
+
+	/**
 	 * Determines whether the given product should be synced.
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
@@ -132,6 +177,22 @@ class Products {
 		$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
 
 		return self::is_sync_enabled_for_product( $product ) && $terms_product && ! self::is_sync_excluded_for_product_terms( $terms_product );
+	}
+
+
+	/**
+	 * Determines whether the given product should be removed from the catalog.
+	 *
+	 * A product should be removed if it is no longer in stock and the user has opted-in to hide products that are out of stock.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param \WC_Product $product
+	 * @return bool
+	 */
+	public static function product_should_be_deleted( \WC_Product $product ) {
+
+		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock();
 	}
 
 
@@ -244,7 +305,33 @@ class Products {
 
 		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
-			self::$products_visibility[ $product->get_id() ] = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+
+			if ( $product->is_type( 'variable' ) ) {
+
+				// assume variable products are not visible until a visible child is found
+				$is_visible = false;
+
+				foreach ( $product->get_children() as $child_id ) {
+
+					$child_product = wc_get_product( $child_id );
+
+					if ( $child_product && self::is_product_visible( $child_product ) ) {
+
+						$is_visible = true;
+						break;
+					}
+				}
+
+			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
+
+				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
+
+			} else {
+
+				$is_visible = true;
+			}
+
+			self::$products_visibility[ $product->get_id() ] = $is_visible;
 		}
 
 		return self::$products_visibility[ $product->get_id() ];

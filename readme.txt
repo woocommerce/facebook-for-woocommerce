@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 1.11.0
+Stable tag: 1.11.4
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,31 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.07.30 - version 2.0.0 =
+ * Tweak - Show Facebook options for virtual products and variations
+ * Tweak - Hide "Sync and show" option for virtual products and variations
+ * Tweak - On upgrade, automatically set sync-enabled and visible virtual products and virtual variations to Sync and hide
+ * Tweak - Allow to bulk enable sync for virtual products, but automatically set them to Sync and hide
+ * Fix - Use the plugin version instead of a timestamp as the version number for enqueued scripts and stylesheets
+ * Fix - Use the short description of the parent product for product variations that don't have a description or Facebook description
+ * Fix - Prevent an error when YITH Booking and Appointment for WooCommerce plugin is active
+
+= 2020.06.04 - version 1.11.4 =
+ * Fix - Do not sync variations for draft variable products created by duplicating products
+ * Fix - Do not log an error when the product is null on add to cart redirect
+
+= 2020.05.20 - version 1.11.3 =
+ * Tweak - Write product feed to a temporary file and rename it when done, to prevent Facebook from downloading an incomplete feed file
+ * Tweak - Hide Facebook options for virtual products and virtual variations
+ * Tweak - Do not allow merchant to bulk enable sync for virtual products
+ * Tweak - On upgrade, automatically disable sync for virtual products and virtual variations
+ * Tweak - When using checkboxes for tags, make sure the modal is displayed when trying to enable sync for a product with an excluded tag
+ * Fix - Prevent tracking of a duplicated purchase event in some circumstances such as when the customer reloads the "Thank You" page after completing an order
+ * Fix - Fix a JavaScript issue that was causing a notice to be displayed when bulk editing product variations
+
+= 2020.05.04 - version 1.11.2 =
+ * Misc - Add support for WooCommerce 4.1
 
 = 2020.04.27 - version 1.11.1 =
  * Fix - Fix integration with WPML

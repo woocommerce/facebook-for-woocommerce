@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -152,11 +153,10 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$regular_price = floatval( $this->get_regular_price() );
 
 			// If it's a bookable product, the normal price is null/0.
-			if ( ! $regular_price &&
-			  class_exists( 'WC_Product_Booking' ) &&
-			  is_wc_booking_product( $this ) ) {
+			if ( ! $regular_price && $this->is_bookable_product() ) {
+
 				$product       = new WC_Product_Booking( $this->woo_product );
-				$regular_price = $product->get_display_cost();
+				$regular_price = is_callable( [ $product, 'get_display_cost' ] ) ? $product->get_display_cost() : 0;
 			}
 
 			// Get regular price plus tax, if it's set to display and taxable
@@ -164,6 +164,21 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$price          = $this->get_price_plus_tax( $regular_price );
 			$this->fb_price = intval( round( $price * 100 ) );
 			return $this->fb_price;
+		}
+
+
+		/**
+		 * Determines whether the current product is a WooCommerce Bookings product.
+		 *
+		 * TODO: add an integration that filters the Facebook price instead {WV 2020-07-22}
+		 *
+		 * @since 2.0.0
+		 *
+		 * @return bool
+		 */
+		private function is_bookable_product() {
+
+			return facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php') && class_exists( 'WC_Product_Booking' ) && is_callable( 'is_wc_booking_product' ) && is_wc_booking_product( $this );
 		}
 
 
@@ -366,6 +381,16 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $product_data;
 		}
 
+
+		/**
+		 * Determines whether a product should be excluded from all-products sync or the feed file.
+		 *
+		 * The plugin also avoids trying to get the Facebook ID of products where is_hidden() returns true.
+		 *
+		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
+		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
+		 * @see WC_Facebookcommerce_Integration::get_product_fbid()
+		 */
 		public function is_hidden() {
 			$wpid = $this->id;
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
@@ -381,12 +406,10 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'product_visibility',
 				$wpid
 			);
-			// fb_visibility === '': after initial sync by feed
-			// fb_visibility === false: set hidden on FB metadata
-			// Explicitly check whether flip 'hide' before.
-			return ( $hidden_from_catalog && $hidden_from_search ) ||
-			$this->fb_visibility === false || ! $this->get_fb_price();
+
+			return ( $hidden_from_catalog && $hidden_from_search ) || ! $this->get_fb_price();
 		}
+
 
 		public function get_price_plus_tax( $price ) {
 			$woo_product = $this->woo_product;
@@ -541,10 +564,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 			$categories =
 			WC_Facebookcommerce_Utils::get_product_categories( $id );
-			$brand      = get_the_term_list( $id, 'product_brand', '', ', ' );
-			$brand      = is_wp_error( $brand ) || ! $brand
-			? WC_Facebookcommerce_Utils::get_store_name()
-			: WC_Facebookcommerce_Utils::clean_string( $brand );
+
+			$brand = get_the_term_list( $id, 'product_brand', '', ', ' );
+			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
 			$product_data = array(
 				'name'                  => WC_Facebookcommerce_Utils::clean_string(
@@ -555,7 +577,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'additional_image_urls' => array_slice( $image_urls, 1 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
-				'brand'                 => $brand,
+				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),

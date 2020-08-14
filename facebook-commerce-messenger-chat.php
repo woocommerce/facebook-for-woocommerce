@@ -125,9 +125,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
 
 		public function __construct( $settings ) {
-			$this->enabled = isset( $settings['is_messenger_chat_plugin_enabled'] )
-				? $settings['is_messenger_chat_plugin_enabled']
-				: 'no';
 
 			$this->page_id = isset( $settings['fb_page_id'] )
 				? $settings['fb_page_id']
@@ -136,18 +133,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 			$this->jssdk_version = isset( $settings['facebook_jssdk_version'] )
 				? $settings['facebook_jssdk_version']
 				: '';
-
-			$this->greeting_text_code = isset( $settings['msger_chat_customization_greeting_text_code'] )
-				? $settings['msger_chat_customization_greeting_text_code']
-				: null;
-
-			$this->locale = isset( $settings['msger_chat_customization_locale'] )
-				? $settings['msger_chat_customization_locale']
-				: null;
-
-			$this->theme_color_code = isset( $settings['msger_chat_customization_theme_color_code'] )
-				? $settings['msger_chat_customization_theme_color_code']
-				: null;
 
 			add_action( 'wp_footer', array( $this, 'inject_messenger_chat_plugin' ) );
 		}
@@ -160,16 +145,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		 */
 		public function inject_messenger_chat_plugin() {
 
-			if ( $this->enabled === 'yes' ) :
+			if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) :
 
 				printf( "
 					<div
 						attribution=\"fbe_woocommerce\"
 						class=\"fb-customerchat\"
 						page_id=\"%s\"
-						%s
-						%s
-						%s
 					></div>
 					<!-- Facebook JSSDK -->
 					<script>
@@ -193,14 +175,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					<div></div>
 					",
 					esc_attr( $this->page_id ),
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$this->theme_color_code ? 'theme_color="' . esc_attr( $this->theme_color_code ) . '"' : '',
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$this->greeting_text_code ? 'logged_in_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$this->greeting_text_code ? 'logged_out_greeting="' . esc_attr( $this->greeting_text_code ) . '"' : '',
 					esc_js( $this->jssdk_version ?: 'v5.0' ),
-					esc_js( $this->locale ?: 'en_US' )
+					esc_js( facebook_for_woocommerce()->get_integration()->get_messenger_locale() ?: 'en_US' )
 				);
 
 			endif;
