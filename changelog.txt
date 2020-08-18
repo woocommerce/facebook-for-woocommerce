@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.08.17 - version 2.0.1
+ * Fix - Ensure the configured business name is never empty when connecting to Facebook
+
 2020.07.30 - version 2.0.0
  * Tweak - Show Facebook options for virtual products and variations
  * Tweak - Hide "Sync and show" option for virtual products and variations
