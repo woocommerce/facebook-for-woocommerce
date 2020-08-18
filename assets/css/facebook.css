@@ -301,7 +301,7 @@
 	margin: 5px;
 }
 
-#integration-settings .resync-schedule-fieldset select {
+integration-settings .resync-schedule-fieldset select {
 	max-width: 75px !important;
 	vertical-align: middle !important;
 	line-height: 28px !important;
