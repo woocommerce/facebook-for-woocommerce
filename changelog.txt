@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 2.0.2-dev.1
+ * Fix - Update connection parameters to use an array to pass the Messenger domain
+
 2020.08.17 - version 2.0.1
  * Fix - Ensure the configured business name is never empty when connecting to Facebook
 
