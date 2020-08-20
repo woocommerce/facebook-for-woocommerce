@@ -1,6 +1,6 @@
 <?php
 
-use Codeception\Stub\Expected;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * Tests the Facebook product class.
@@ -29,6 +29,41 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
+	 * @param mixed $price the regular price for the product
+	 * @param bool $is_visible whether the product should visible in the Facebook Shop
+	 * @param string $visibility 'staging' or 'published'
+	 * @dataProvider provider_prepare_product_sets_product_visibility
+	 */
+	public function test_prepare_product_sets_product_visibility( $price, $is_visible, $visibility ) {
+
+		$product = $this->tester->get_product( [ 'regular_price' => $price ] );
+
+		Products::set_product_visibility( $product, $is_visible );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( $visibility, $data['visibility'] );
+	}
+
+
+	/** @see test_prepare_product_sets_product_visibility() */
+	public function provider_prepare_product_sets_product_visibility() {
+
+		return [
+			[ '',    true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+			[ 0.00,  true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+			[ 14.99, true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+
+			[ '',    false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+			[ 0.00,  false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+			[ 14.99, false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+		];
+	}
 
 
 	/**
