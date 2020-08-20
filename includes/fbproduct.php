@@ -543,11 +543,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),
-				'availability'          => $this->is_in_stock() ? 'in stock' :
-				'out of stock',
-				'visibility'            => ! $this->is_hidden()
-				? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
-				: \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
+				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
+				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
 			// Only use checkout URLs if they exist.
