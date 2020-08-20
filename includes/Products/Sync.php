@@ -108,16 +108,17 @@ class Sync {
 
 			$woo_product = new \WC_Facebook_Product( $product_id );
 
-			if ( $woo_product->is_hidden() ) {
+			// skip if we don't have a valid product object
+			if ( ! $woo_product->woo_product instanceof \WC_Product ) {
 				continue;
 			}
 
-			if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' && ! $woo_product->is_in_stock() ) {
+			if ( Products::product_should_be_deleted( $woo_product->woo_product ) ) {
 				continue;
 			}
 
 			// skip if not enabled for sync
-			if ( $woo_product->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 				continue;
 			}
 

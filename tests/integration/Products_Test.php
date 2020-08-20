@@ -38,7 +38,11 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_simple() {
 
-		$product = $this->get_product();
+		// used the tester's method directly to set regular_price to 0
+		$product = $this->tester->get_product( [
+			'status'        => 'publish',
+			'regular_price' => 0,
+		] );
 
 		$this->assertTrue( Facebook\Products::product_should_be_synced( $product ) );
 	}
@@ -46,11 +50,44 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::product_should_be_synced() */
 	public function test_product_should_be_synced_variation() {
 
-		$product = $this->get_variable_product();
+		// used the tester's method directly to set regular_price to 0
+		$product = $this->tester->get_variable_product( [
+			'status'        => 'publish',
+			'regular_price' => 0,
+		] );
 
 		foreach ( $product->get_children() as $child_id ) {
 			$this->assertTrue( Facebook\Products::product_should_be_synced( wc_get_product( $child_id ) ) );
 		}
+	}
+
+
+	/**
+	 * Tests that product excluded from the store catalog or from search results should not be synced.
+	 *
+	 * @see Facebook\Products::product_should_be_synced()
+	 *
+	 * @param string $term product_visibility term
+	 *
+	 * @dataProvider provider_product_should_be_synced_with_excluded_products
+	 */
+	public function test_product_should_be_synced_with_excluded_products( $term ) {
+
+		$product = $this->get_product();
+
+		wp_set_object_terms( $product->get_id(), $term, 'product_visibility' );
+
+		$this->assertFalse( Facebook\Products::product_should_be_synced( $product ) );
+	}
+
+
+	/** @see test_product_should_be_synced_with_excluded_products() */
+	public function provider_product_should_be_synced_with_excluded_products() {
+
+		return [
+			[ 'exclude-from-catalog' ],
+			[ 'exclude-from-search' ],
+		];
 	}
 
 
@@ -268,6 +305,19 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		Facebook\Products::set_product_visibility( $product, true );
 
 		$this->assertTrue( Facebook\Products::is_product_visible( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_price() */
+	public function test_get_product_price_filter() {
+
+		$product = $this->get_product();
+
+		add_filter( 'wc_facebook_product_price', static function() {
+			return 1234;
+		} );
+
+		$this->assertSame( 1234, Facebook\Products::get_product_price( $product ) );
 	}
 
 
