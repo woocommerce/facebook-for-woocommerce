@@ -1017,6 +1017,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		if ( ! $this->should_update_visibility_for_product_status_change( $new_status, $old_status ) ) {
+			return;
+		}
+
 		$visibility = $new_status === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
 
 		$product = wc_get_product( $post->ID );
@@ -1031,12 +1035,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// change from publish status -> unpublish status (e.g. trash, draft, etc.)
-		// change from trash status -> publish status
-		// no need to update for change from trash <-> unpublish status
-		if ( ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' ) ) {
-			$this->update_fb_visibility( $product, $visibility );
-		}
+		$this->update_fb_visibility( $product, $visibility );
+	}
+
+
+	/**
+	 * Determines whether the product visibility needs to be updated for the given status change.
+	 *
+	 * Change from publish status -> unpublish status (e.g. trash, draft, etc.)
+	 * Change from trash status -> publish status
+	 * No need to update for change from trash <-> unpublish status
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @return bool
+	 */
+	private function should_update_visibility_for_product_status_change( $new_status, $old_status ) {
+
+		return ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' );
 	}
 
 
