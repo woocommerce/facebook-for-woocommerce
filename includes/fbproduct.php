@@ -349,24 +349,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 *
 		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
 		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
+		 *
+		 * @deprecated 2.0.2-dev.1
 		 */
 		public function is_hidden() {
-			$wpid = $this->id;
-			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
-				$wpid = $this->get_parent_id();
-			}
-			$hidden_from_catalog = has_term(
-				'exclude-from-catalog',
-				'product_visibility',
-				$wpid
-			);
-			$hidden_from_search  = has_term(
-				'exclude-from-search',
-				'product_visibility',
-				$wpid
-			);
 
-			return ( $hidden_from_catalog && $hidden_from_search ) || ! $this->get_fb_price();
+			wc_deprecated_function( __METHOD__,  '2.0.2-dev.1', 'Products::product_should_be_synced()' );
+
+			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
 
 
