@@ -48,8 +48,6 @@ class Products {
 	/** @var array memoized array of visibility status for products */
 	private static $products_visibility = [];
 
-	/** @var array memoized array of prices for products */
-	private static $products_price = [];
 
 	/**
 	 * Sets the sync handling for products to enabled or disabled.
@@ -382,6 +380,9 @@ class Products {
 	/**
 	 * Gets the product price used for Facebook sync.
 	 *
+	 * TODO: Consider adding memoization, but ensure we can protect the implementation against price changes during the same request {WV-2020-08-20}
+	 *       See https://github.com/facebookincubator/facebook-for-woocommerce/pull/1468
+	 *
 	 * @since 2.0.0-dev.1
 	 *
 	 * @param int $price product price in cents
@@ -392,24 +393,21 @@ class Products {
 
 		$facebook_price = $product->get_meta( WC_Facebook_Product::FB_PRODUCT_PRICE );
 
-		if ( ! isset( self::$products_price[ $product->get_id() ] ) ) {
+		// use the user defined Facebook price if set
+		if ( is_numeric( $facebook_price ) ) {
 
-			// use the user defined Facebook price if set
-			if ( is_numeric( $facebook_price ) ) {
+			$price = $facebook_price;
 
-				$price = $facebook_price;
+		} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
 
-			} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
+			$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
 
-				$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
+		} else {
 
-			} else {
-
-				$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
-			}
-
-			self::$products_price[ $product->get_id() ] = (int) ( $price ? round( $price * 100 ) : 0 );
+			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
 		}
+
+		$price = (int) ( $price ? round( $price * 100 ) : 0 );
 
 		/**
 		 * Filters the product price used for Facebook sync.
@@ -420,7 +418,7 @@ class Products {
 		 * @param float $facebook_price user defined facebook price
 		 * @param \WC_Product $product product object
 		 */
-		return (int) apply_filters( 'wc_facebook_product_price', self::$products_price[ $product->get_id() ], (float) $facebook_price, $product );
+		return (int) apply_filters( 'wc_facebook_product_price', $price, (float) $facebook_price, $product );
 	}
 
 

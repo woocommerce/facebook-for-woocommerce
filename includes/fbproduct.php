@@ -347,29 +347,16 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		/**
 		 * Determines whether a product should be excluded from all-products sync or the feed file.
 		 *
-		 * The plugin also avoids trying to get the Facebook ID of products where is_hidden() returns true.
-		 *
 		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
 		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
-		 * @see WC_Facebookcommerce_Integration::get_product_fbid()
+		 *
+		 * @deprecated 2.0.2-dev.1
 		 */
 		public function is_hidden() {
-			$wpid = $this->id;
-			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
-				$wpid = $this->get_parent_id();
-			}
-			$hidden_from_catalog = has_term(
-				'exclude-from-catalog',
-				'product_visibility',
-				$wpid
-			);
-			$hidden_from_search  = has_term(
-				'exclude-from-search',
-				'product_visibility',
-				$wpid
-			);
 
-			return ( $hidden_from_catalog && $hidden_from_search ) || ! $this->get_fb_price();
+			wc_deprecated_function( __METHOD__,  '2.0.2-dev.1', 'Products::product_should_be_synced()' );
+
+			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
 
 
@@ -543,11 +530,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),
-				'availability'          => $this->is_in_stock() ? 'in stock' :
-				'out of stock',
-				'visibility'            => ! $this->is_hidden()
-				? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
-				: \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
+				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
+				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
 			// Only use checkout URLs if they exist.

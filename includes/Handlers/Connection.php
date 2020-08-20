@@ -653,7 +653,9 @@ class Connection {
 
 			$parameters['business_config']['messenger_chat'] = [
 				'enabled' => true,
-				'domains' => home_url( '/' ),
+				'domains' => [
+					home_url( '/' ),
+				],
 			];
 		}
 
