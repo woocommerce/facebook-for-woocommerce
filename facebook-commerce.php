@@ -572,11 +572,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		global $post;
 
 		$woo_product         = new WC_Facebook_Product( $post->ID );
-		$fb_product_group_id = $this->get_product_fbid(
-			self::FB_PRODUCT_GROUP_ID,
-			$post->ID,
-			$woo_product
-		);
+		$fb_product_group_id = null;
+
+		if ( $woo_product->woo_product instanceof \WC_Product && Products::product_should_be_synced( $woo_product->woo_product ) ) {
+			$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $woo_product );
+		}
 
 		?>
 			<span id="fb_metadata">
@@ -3368,12 +3368,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// if the product with ID equal to $wp_id is variable, $woo_product will be the first child
 		$woo_product = new WC_Facebook_Product( current( $products ) );
-
-		// This is a generalized function used elsewhere
-		// Cannot call is_hidden for VC_Product_Variable Object
-		if ( $woo_product->is_hidden() ) {
-			return null;
-		}
 
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
