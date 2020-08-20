@@ -152,6 +152,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// Get regular price: regular price doesn't include sales
 			$regular_price = floatval( $this->get_regular_price() );
 
+			// if product is a product bundle with individually priced items, we rely on their pricing.
+			if ( class_exists( 'WC_Product_Bundle' )
+			     && empty( $regular_price )
+			     && 'bundle' === $this->woo_product->get_type() ) {
+
+				$regular_price = $this->woo_product->get_bundle_price();
+			}
+
 			// If it's a bookable product, the normal price is null/0.
 			if ( ! $regular_price && $this->is_bookable_product() ) {
 
