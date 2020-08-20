@@ -896,6 +896,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				case 'simple':
 				case 'booking':
 				case 'external':
+				case 'composite':
 					$this->on_simple_product_publish( $wp_id );
 				break;
 
