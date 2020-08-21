@@ -39,8 +39,17 @@ class Commerce {
 	 */
 	public function get_default_google_product_category_id() {
 
-		// TODO: implement
-		return '';
+		$category_id = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, '' );
+
+		/**
+		 * Filters the plugin-level fallback Google product category ID.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param string $category_id default Google product category ID
+		 * @param Commerce $commerce commerce handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_commerce_default_google_product_category_id', $category_id, $this );
 	}
 
 
