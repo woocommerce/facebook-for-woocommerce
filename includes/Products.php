@@ -363,7 +363,7 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 */
-	public static function is_product_ready_for_commerce( $product ) {
+	public static function is_product_ready_for_commerce( \WC_Product $product ) {
 
 		// TODO: implement
 		return true;
@@ -378,7 +378,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return bool
 	 */
-	public static function is_commerce_enabled_for_product( $product )  {
+	public static function is_commerce_enabled_for_product( \WC_Product $product )  {
 
 		// TODO: implement
 		return true;
@@ -393,7 +393,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param bool $is_enabled whether or not Commerce is to be enabled
 	 */
-	public static function update_commerce_enabled_for_product( $product, $is_enabled ) {
+	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
 
 		// TODO: implement
 	}
@@ -409,7 +409,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_google_product_category_id( $product ) {
+	public static function get_google_product_category_id( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -424,7 +424,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param string $category_id the Google product category ID
 	 */
-	public static function update_google_product_category_id( $product, $category_id ) {
+	public static function update_google_product_category_id( \WC_Product $product, $category_id ) {
 
 		// TODO: implement
 	}
@@ -442,7 +442,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_gender( $product ) {
+	public static function get_product_gender( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -457,7 +457,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param string $gender the gender (`female`, `male`, or `unisex`)
 	 */
-	public static function update_product_gender( $product, $gender ) {
+	public static function update_product_gender( \WC_Product $product, $gender ) {
 
 		// TODO: implement
 	}
@@ -471,7 +471,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_color_attribute( $product ) {
+	public static function get_product_color_attribute( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -486,7 +486,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param string $attribute the attributed to be used to store the color
 	 */
-	public static function update_product_color_attribute( $product, $attribute ) {
+	public static function update_product_color_attribute( \WC_Product $product, $attribute ) {
 
 		// TODO: implement
 	}
@@ -502,7 +502,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_color( $product ) {
+	public static function get_product_color( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -517,7 +517,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_size_attribute( $product ) {
+	public static function get_product_size_attribute( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -532,7 +532,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param string $attribute the attributed to be used to store the size
 	 */
-	public static function update_product_size_attribute( $product, $attribute ) {
+	public static function update_product_size_attribute( \WC_Product $product, $attribute ) {
 
 		// TODO: implement
 	}
@@ -548,7 +548,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_size( $product ) {
+	public static function get_product_size( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -563,7 +563,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_pattern_attribute( $product ) {
+	public static function get_product_pattern_attribute( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -578,7 +578,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @param string $attribute the attributed to be used to store the pattern
 	 */
-	public static function update_product_pattern_attribute( $product, $attribute ) {
+	public static function update_product_pattern_attribute( \WC_Product $product, $attribute ) {
 
 		// TODO: implement
 	}
@@ -594,7 +594,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string
 	 */
-	public static function get_product_pattern( $product ) {
+	public static function get_product_pattern( \WC_Product $product ) {
 
 		// TODO: implement
 		return '';
@@ -609,7 +609,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return \WC_Product_Attribute[]
 	 */
-	public static function get_available_product_attributes( $product ) {
+	public static function get_available_product_attributes( \WC_Product $product ) {
 
 		// TODO: implement
 		return [];
@@ -624,7 +624,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return string[]
 	 */
-	public static function get_distinct_product_attributes( $product ) {
+	public static function get_distinct_product_attributes( \WC_Product $product ) {
 
 		// TODO: implement
 		return [];
