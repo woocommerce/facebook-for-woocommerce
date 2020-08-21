@@ -117,10 +117,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Events/Event.php';
+				require_once __DIR__ . '/includes/Commerce.php';
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
 
 				if ( is_ajax() ) {
 
