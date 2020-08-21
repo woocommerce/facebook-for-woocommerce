@@ -15,6 +15,15 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Commerce::get_default_google_product_category_id() */
+	public function test_get_default_google_product_category_id() {
+
+		update_option( Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, 'default' );
+
+		$this->assertSame( 'default', $this->get_commerce_handler()->get_default_google_product_category_id() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
