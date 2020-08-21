@@ -24,6 +24,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Commerce::get_default_google_product_category_id() */
 	public function test_get_default_google_product_category_id_filter() {
 
 		add_filter( 'wc_facebook_commerce_default_google_product_category_id', static function() {
@@ -32,6 +33,32 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 		} );
 
 		$this->assertSame( 'filtered', $this->get_commerce_handler()->get_default_google_product_category_id() );
+	}
+
+
+	/**
+	 * @see Commerce::update_default_google_product_category_id()
+	 *
+	 * @dataProvider provider_update_default_google_product_category_id
+	 */
+	public function test_update_default_google_product_category_id( $new_value, $stored_value ) {
+
+		$this->get_commerce_handler()->update_default_google_product_category_id( $new_value );
+
+		$this->assertSame( $stored_value, $this->get_commerce_handler()->get_default_google_product_category_id() );
+		$this->assertSame( $stored_value, $this->get_commerce_handler()->get_default_google_product_category_id() );
+	}
+
+
+	/** @see test_update_default_google_product_category_id */
+	public function provider_update_default_google_product_category_id() {
+
+		return [
+			[ 'category_id', 'category_id' ],
+			[ '12',          '12' ],
+			[ 12,            '' ],
+			[ null,          '' ]
+		];
 	}
 
 
