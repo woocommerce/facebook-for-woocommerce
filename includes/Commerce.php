@@ -62,7 +62,7 @@ class Commerce {
 	 */
 	public function update_default_google_product_category_id( $id ) {
 
-		// TODO: implement
+		update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, is_string( $id ) ? $id : '' );
 	}
 
 
