@@ -449,7 +449,7 @@ class Products {
 	 */
 	public static function is_product_ready_for_commerce( \WC_Product $product ) {
 
-		return $product->get_manage_stock()
+		return $product->managing_stock()
 			&& self::get_product_price( $product )
 			&& self::is_commerce_enabled_for_product( $product )
 			&& self::product_should_be_synced( $product );
