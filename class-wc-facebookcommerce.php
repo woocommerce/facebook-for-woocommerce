@@ -568,10 +568,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function get_commerce_handler() {
 
-			if ( null === $this->commerce_handler ) {
-				$this->commerce_handler = new \SkyVerge\WooCommerce\Facebook\Commerce();
-			}
-
 			return $this->commerce_handler;
 		}
 
