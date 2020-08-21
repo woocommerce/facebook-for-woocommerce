@@ -20,4 +20,8 @@ defined( 'ABSPATH' ) or exit;
 class Commerce {
 
 
+	/** @var string option that stores the plugin-level fallback Google product category ID */
+	const OPTION_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
+
+
 }
