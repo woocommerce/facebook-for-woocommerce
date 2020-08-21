@@ -24,6 +24,17 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	public function test_get_default_google_product_category_id_filter() {
+
+		add_filter( 'wc_facebook_commerce_default_google_product_category_id', static function() {
+
+			return 'filtered';
+		} );
+
+		$this->assertSame( 'filtered', $this->get_commerce_handler()->get_default_google_product_category_id() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
