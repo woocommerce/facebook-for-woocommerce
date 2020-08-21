@@ -562,7 +562,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the commerce handler instance.
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.1.0-dev.1
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Commerce commerce handler instance
 		 */
