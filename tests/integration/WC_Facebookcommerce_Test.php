@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
@@ -74,6 +75,13 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 	public function test_get_products_sync_background_handler() {
 
 		$this->assertInstanceOf( Background::class, facebook_for_woocommerce()-> get_products_sync_background_handler() );
+	}
+
+
+	/** @see \WC_Facebookcommerce::get_commerce_handler() */
+	public function test_get_commerce_handler() {
+
+		$this->assertInstanceOf( Commerce::class, facebook_for_woocommerce()->get_commerce_handler() );
 	}
 
 

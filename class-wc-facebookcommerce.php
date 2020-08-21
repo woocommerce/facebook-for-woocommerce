@@ -69,6 +69,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Integrations\Integrations integrations handler */
 		private $integrations;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
+		private $commerce_handler;
+
 
 		/**
 		 * Constructs the plugin.
@@ -114,10 +117,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Events/Event.php';
+				require_once __DIR__ . '/includes/Commerce.php';
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
 
 				if ( is_ajax() ) {
 
@@ -551,6 +556,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			return $this->integration;
+		}
+
+
+		/**
+		 * Gets the commerce handler instance.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Commerce commerce handler instance
+		 */
+		public function get_commerce_handler() {
+
+			return $this->commerce_handler;
 		}
 
 
