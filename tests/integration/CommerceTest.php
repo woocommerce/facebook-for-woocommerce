@@ -142,6 +142,23 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Commerce::is_connected()
+	 *
+	 * @param bool $filtered filtered value
+	 * @dataProvider provider_is_available_fitler
+	 */
+	public function test_is_connected_filter( bool $filtered ) {
+
+		add_filter( 'wc_facebook_commerce_is_connected', static function() use ( $filtered ) {
+
+			return $filtered;
+		} );
+
+		$this->assertSame( $filtered, $this->get_commerce_handler()->is_connected() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
