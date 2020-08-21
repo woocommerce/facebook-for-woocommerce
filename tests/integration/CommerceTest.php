@@ -90,6 +90,35 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Commerce::is_available()
+	 *
+	 * @param bool $filtered filtered value
+	 * @dataProvider provider_is_available_fitler
+	 */
+	public function test_is_available_filter( bool $filtered ) {
+
+		update_option( 'woocommerce_default_country', 'US:MA' );
+
+		add_filter( 'wc_facebook_commerce_is_available', static function() use ( $filtered ) {
+
+			return $filtered;
+		} );
+
+		$this->assertSame( $filtered, $this->get_commerce_handler()->is_available() );
+	}
+
+
+	/** @see test_is_available */
+	public function provider_is_available_fitler() {
+
+		return [
+			[ true ],
+			[ false ],
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
