@@ -39,6 +39,24 @@ class Products {
 	/** @var string product image source option to use the parent product image in Facebook */
 	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
 
+	/** @var string the meta key used to flag if Commerce is enabled for the product */
+	const COMMERCE_ENABLED_META_KEY = '_wc_facebook_commerce_enabled';
+
+	/** @var string the meta key used to store the Google product category ID for the product */
+	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
+
+	/** @var string the meta key used to store the product gender */
+	const GENDER_META_KEY = '_wc_facebook_gender';
+
+	/** @var string the meta key used to store the name of the color attribute for a product */
+	const COLOR_ATTRIBUTE_META_KEY = '_wc_facebook_color_attribute';
+
+	/** @var string the meta key used to store the name of the size attribute for a product */
+	const SIZE_ATTRIBUTE_META_KEY = '_wc_facebook_size_attribute';
+
+	/** @var string the meta key used to store the name of the pattern attribute for a product */
+	const PATTERN_ATTRIBUTE_META_KEY = '_wc_facebook_pattern_attribute';
+
 
 	/** @var array memoized array of sync enabled status for products */
 	private static $products_sync_enabled = [];
