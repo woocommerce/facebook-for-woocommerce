@@ -99,8 +99,17 @@ class Commerce {
 	 */
 	public function is_connected() {
 
-		// TODO: implement
-		return true;
+		$connected = (bool) strlen( facebook_for_woocommerce()->get_integration()->get_page_access_token() );
+
+		/**
+		 * Filters whether the site is connected.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param bool $connected whether the site is connected
+		 * @param Commerce $commerce commerce handler instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_commerce_is_connected', $connected, $this );
 	}
 
 
