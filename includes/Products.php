@@ -356,4 +356,279 @@ class Products {
 	}
 
 
+	/**
+	 * Determines whether the product meets all of the criteria needed for Commerce.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 */
+	public static function is_product_ready_for_commerce( $product ) {
+
+		// TODO: implement
+		return true;
+	}
+
+
+	/**
+	 * Determines whether Commerce is enabled for the product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return bool
+	 */
+	public static function is_commerce_enabled_for_product( $product )  {
+
+		// TODO: implement
+		return true;
+	}
+
+
+	/**
+	 * Enables or disables Commerce for a product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param bool $is_enabled whether or not Commerce is to be enabled
+	 */
+	public static function update_commerce_enabled_for_product( $product, $is_enabled ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the Google product category ID stored for the product.
+	 *
+	 * If the product is a variation, it will get this value from its parent.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_google_product_category_id( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Updates the stored Google product category ID for the product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $category_id the Google product category ID
+	 */
+	public static function update_google_product_category_id( $product, $category_id ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the stored gender for the product (`female`, `male`, or `unisex`).
+	 *
+	 * Defaults to `unisex` if not otherwise set.
+	 *
+	 * If the product is a variation, it will get this value from its parent.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_gender( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Updates the stored gender for the product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $gender the gender (`female`, `male`, or `unisex`)
+	 */
+	public static function update_product_gender( $product, $gender ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the configured color attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_color_attribute( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Updates the configured color attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $attribute the attributed to be used to store the color
+	 */
+	public static function update_product_color_attribute( $product, $attribute ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the stored color for a product.
+	 *
+	 * If the product is a variation and it doesn't have the color attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_color( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Gets the configured size attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_size_attribute( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Updates the configured size attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $attribute the attributed to be used to store the size
+	 */
+	public static function update_product_size_attribute( $product, $attribute ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the stored size for a product.
+	 *
+	 * If the product is a variation and it doesn't have the size attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_size( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Gets the configured pattern attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_pattern_attribute( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Updates the configured pattern attribute.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $attribute the attributed to be used to store the pattern
+	 */
+	public static function update_product_pattern_attribute( $product, $attribute ) {
+
+		// TODO: implement
+	}
+
+
+	/**
+	 * Gets the stored pattern for a product.
+	 *
+	 * If the product is a variation and it doesn't have the pattern attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_pattern( $product ) {
+
+		// TODO: implement
+		return '';
+	}
+
+
+	/**
+	 * Gets all product attributes that are valid for assignment for color, size, or pattern.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return \WC_Product_Attribute[]
+	 */
+	public static function get_available_product_attributes( $product ) {
+
+		// TODO: implement
+		return [];
+	}
+
+
+	/**
+	 * Gets the attributes that are set for the product's color, size, and pattern.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string[]
+	 */
+	public static function get_distinct_product_attributes( $product ) {
+
+		// TODO: implement
+		return [];
+	}
+
+
 }
