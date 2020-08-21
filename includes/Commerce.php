@@ -24,4 +24,8 @@ class Commerce {
 	const OPTION_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
 
 
+	/** @var Commerce\Orders the orders handler */
+	protected $orders;
+
+
 }
