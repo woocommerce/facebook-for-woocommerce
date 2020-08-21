@@ -68,14 +68,14 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	 * @see Commerce::is_available()
 	 *
 	 * @param string $country_state store country / state
-	 * @param bool $is_available whether commerce features should be available
+	 * @param bool $available whether commerce features should be available
 	 * @dataProvider provider_is_available
 	 */
-	public function test_is_available( $country_state, $is_available ) {
+	public function test_is_available( $country_state, $available ) {
 
 		update_option( 'woocommerce_default_country', $country_state );
 
-		$this->assertSame( $is_available, $this->get_commerce_handler()->is_available() );
+		$this->assertSame( $available, $this->get_commerce_handler()->is_available() );
 	}
 
 

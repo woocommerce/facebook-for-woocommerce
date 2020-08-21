@@ -82,7 +82,7 @@ class Commerce {
 		 *
 		 * @since 2.1.0-dev.1
 		 *
-		 * @param bool $is_available whether commerce features should be available
+		 * @param bool $available whether commerce features should be available
 		 * @param string $country country code
 		 * @param Commerce $commerce commerce handler instance
 		 */
