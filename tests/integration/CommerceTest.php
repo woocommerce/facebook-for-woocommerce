@@ -39,6 +39,8 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see Commerce::update_default_google_product_category_id()
 	 *
+	 * @param string $new_value new product category ID
+	 * @param string $stored_value expected stored value
 	 * @dataProvider provider_update_default_google_product_category_id
 	 */
 	public function test_update_default_google_product_category_id( $new_value, $stored_value ) {
