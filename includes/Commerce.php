@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Base handler for Commerce-specific functionality.
  *
- * @since 2.3.0-dev.1
+ * @since 2.1.0-dev.1
  */
 class Commerce {
 
@@ -33,7 +33,7 @@ class Commerce {
 	 *
 	 * This will be used when the category or product-level settings don’t override it.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.1.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -47,7 +47,7 @@ class Commerce {
 	/**
 	 * Updates the plugin-level fallback Google product category ID.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.1.0-dev.1
 	 *
 	 * @param string $id category ID
 	 */
@@ -60,7 +60,7 @@ class Commerce {
 	/**
 	 * Determines whether Commerce features should be available.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.1.0-dev.1
 	 *
 	 * @return bool whether Commerce features should be available
 	 */
@@ -74,7 +74,7 @@ class Commerce {
 	/**
 	 * Determines whether the site is connected.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.1.0-dev.1
 	 *
 	 * @return bool whether the site is connected
 	 */
@@ -88,7 +88,7 @@ class Commerce {
 	/**
 	 * Gets the orders handler instance.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.1.0-dev.1
 	 *
 	 * @return Commerce\Orders the orders handler instance
 	 */
