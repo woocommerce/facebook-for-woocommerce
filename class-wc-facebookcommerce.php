@@ -560,6 +560,23 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
+		 * Gets the commerce handler instance.
+		 *
+		 * @since 2.3.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Commerce commerce handler instance
+		 */
+		public function get_commerce_handler() {
+
+			if ( null === $this->commerce_handler ) {
+				$this->commerce_handler = new \SkyVerge\WooCommerce\Facebook\Commerce();
+			}
+
+			return $this->commerce_handler;
+		}
+
+
+		/**
 		 * Gets the settings page URL.
 		 *
 		 * @since 1.10.0
