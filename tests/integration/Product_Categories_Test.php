@@ -41,4 +41,13 @@ class Product_Categories_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Product_Categories::update_google_product_category_id() */
+	public function test_update_google_product_category_id() {
+
+		Product_Categories::update_google_product_category_id( $this->category_id, '3530' );
+
+		$this->assertEquals( '3530', get_term_meta( $this->category_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
+	}
+
+
 }
