@@ -69,6 +69,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Integrations\Integrations integrations handler */
 		private $integrations;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
+		private $commerce_handler;
+
 
 		/**
 		 * Constructs the plugin.
