@@ -609,6 +609,35 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Products::update_product_gender()
+	 *
+	 * @param string $gender gender
+	 *
+	 * @dataProvider provider_update_product_gender
+	 */
+	public function test_update_product_gender( $gender ) {
+
+		$product = $this->get_product();
+
+		Products::update_product_gender( $product, $gender );
+
+		$this->assertEquals( $gender, $product->get_meta( Products::GENDER_META_KEY ) );
+	}
+
+
+	/** @see test_update_product_gender */
+	public function provider_update_product_gender() {
+
+		return [
+			[ 'female' ],
+			[ 'male' ],
+			[ 'unisex' ],
+			[ '' ],
+		];
+	}
+
+
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
