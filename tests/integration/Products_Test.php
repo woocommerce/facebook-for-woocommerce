@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * Tests the Products class.
@@ -318,6 +319,50 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		} );
 
 		$this->assertSame( 1234, Facebook\Products::get_product_price( $product ) );
+	}
+
+
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::is_product_ready_for_commerce()
+	 *
+	 * @param bool $manage_stock_option WC general option to manage stock
+	 * @param bool $manage_stock_prop product property to manage stock
+	 * @param string $product_price product price
+	 * @param bool $commerce_enabled commerce enabled for product
+	 * @param bool $sync_enabled sync enabled for product
+	 * @param bool $expected_result the expected result
+	 *
+	 * @dataProvider provider_is_product_ready_for_commerce
+	 */
+	public function test_is_product_ready_for_commerce( $manage_stock_option, $manage_stock_prop, $product_price, $commerce_enabled, $sync_enabled, $expected_result ) {
+
+		$product = $this->get_product();
+
+		update_option( 'woocommerce_manage_stock', $manage_stock_option ? 'yes' : 'no' );
+		$product->set_manage_stock( $manage_stock_prop );
+		$product->set_regular_price( $product_price );
+		Products::update_commerce_enabled_for_product( $product, $commerce_enabled );
+		if ($sync_enabled) {
+			Products::enable_sync_for_products( [$product]);
+		} else {
+			Products::disable_sync_for_products( [$product]);
+		}
+
+		$this->assertEquals( $expected_result, Facebook\Products::is_product_ready_for_commerce( $product ) );
+	}
+
+
+	/** @see test_is_product_ready_for_commerce */
+	public function provider_is_product_ready_for_commerce() {
+
+		return [
+			[ true, true, '10.00', true, true, true ],
+			[ false, true, '10.00', true, true, false ],
+			[ true, false, '10.00', true, true, false ],
+			[ true, true, '0', true, true, false ],
+			[ true, true, '10.00', false, true, false ],
+			[ true, true, '10.00', true, false, false ],
+		];
 	}
 
 
