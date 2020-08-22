@@ -109,7 +109,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see test_is_available */
+	/** @see test_is_available_filter */
 	public function provider_is_available_filter() {
 
 		return [
