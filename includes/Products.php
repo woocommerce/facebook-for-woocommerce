@@ -466,8 +466,7 @@ class Products {
 	 */
 	public static function is_commerce_enabled_for_product( \WC_Product $product )  {
 
-		// TODO: implement
-		return true;
+		return wc_string_to_bool( $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
 	}
 
 
