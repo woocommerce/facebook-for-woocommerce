@@ -173,6 +173,24 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
+		 * Gets deprecated and removed hooks.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return array
+		 */
+		protected function get_deprecated_hooks() {
+
+			return [
+				'wc_facebook_page_access_token' => [
+					'version'     => '2.1.0-dev.1',
+					'replacement' => false,
+				],
+			];
+		}
+
+
+		/**
 		 * Adds the plugin admin notices.
 		 *
 		 * @since 1.11.0

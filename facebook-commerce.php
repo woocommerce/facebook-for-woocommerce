@@ -2324,6 +2324,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * Filters the Facebook page access token.
 		 *
 		 * @since 1.10.0
+		 * @deprecated 2.1.0-dev.1
 		 *
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
