@@ -369,6 +369,29 @@ class Connection {
 
 
 	/**
+	 * Gets the page access token.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_page_access_token() {
+
+		$access_token = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the page access token.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param string $access_token page access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_page_access_token', $access_token, $this );
+	}
+
+
+	/**
 	 * Gets the URL to start the connection flow.
 	 *
 	 * @since 2.0.0
