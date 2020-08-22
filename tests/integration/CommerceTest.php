@@ -126,7 +126,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_is_connected( $access_token, $is_connected ) {
 
-		facebook_for_woocommerce()->get_integration()->update_page_access_token( $access_token );
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $access_token );
 
 		$this->assertSame( $is_connected, $this->get_commerce_handler()->is_connected() );
 	}
