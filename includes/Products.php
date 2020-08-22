@@ -639,8 +639,17 @@ class Products {
 	 */
 	public static function get_product_gender( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		if ( $product->is_type( 'variation' ) ) {
+			$gender = get_post_meta( $product->get_parent_id(), self::GENDER_META_KEY, true );
+		} else {
+			$gender = $product->get_meta( self::GENDER_META_KEY );
+		}
+
+		if ( ! in_array( $gender, [ 'female', 'male', 'unisex' ] ) ) {
+			$gender = 'unisex';
+		}
+
+		return $gender;
 	}
 
 
