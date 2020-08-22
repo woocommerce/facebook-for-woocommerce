@@ -72,6 +72,15 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_page_access_token() */
+	public function test_get_page_access_token() {
+
+		update_option( Connection::OPTION_PAGE_ACCESS_TOKEN, '123456' );
+
+		$this->assertSame( '123456', $this->get_connection()->get_page_access_token() );
+	}
+
+
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
