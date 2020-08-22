@@ -480,7 +480,7 @@ class Products {
 	 */
 	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
 
-		// TODO: implement
+		$product->update_meta_data( Products::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
 	}
 
 
