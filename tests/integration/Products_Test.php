@@ -574,6 +574,41 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Products::get_product_gender
+	 *
+	 * @param string $meta_value meta value
+	 * @param string $expected_result expected result
+	 *
+	 * @dataProvider provider_get_product_gender
+	 */
+	public function test_get_product_gender( $meta_value, $expected_result ) {
+
+		$product = $this->get_product();
+		if ( null === $meta_value ) {
+			$product->delete_meta_data( Products::GENDER_META_KEY );
+		} else {
+			$product->update_meta_data( Products::GENDER_META_KEY, $meta_value );
+		}
+
+		$this->assertSame( $expected_result, Products::get_product_gender( $product ) );
+	}
+
+
+	/** @see test_get_product_gender */
+	public function provider_get_product_gender() {
+
+		return [
+			[ null, 'unisex' ],
+			[ 'female', 'female' ],
+			[ 'male', 'male' ],
+			[ 'unisex', 'unisex' ],
+			[ '', 'unisex' ],
+			[ 'invalid', 'unisex' ],
+		];
+	}
+
+
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
