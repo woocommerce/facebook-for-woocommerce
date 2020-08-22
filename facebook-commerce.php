@@ -24,7 +24,10 @@ require_once 'facebook-commerce-pixel-event.php';
 class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
-	/** @var string the WordPress option name where the page access token is stored */
+	/**
+	 * @var string the WordPress option name where the page access token is stored
+	 * @deprecated 2.1.0-dev.1
+	 */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
 	/** @var string the WordPress option name where the product catalog ID is stored */
