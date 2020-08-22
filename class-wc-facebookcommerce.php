@@ -110,6 +110,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
+				require_once __DIR__ . '/includes/Product_Categories.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
