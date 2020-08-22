@@ -104,9 +104,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
 
 
-	/** @var string|null the configured page access token */
-	private $page_access_token;
-
 	/** @var string|null the configured product catalog ID */
 	public $product_catalog_id;
 
