@@ -75,8 +75,18 @@ class Commerce {
 	 */
 	public function is_available() {
 
-		// TODO: implement
-		return true;
+		list( $country ) = explode( ':', get_option( 'woocommerce_default_country' ) );
+
+		/**
+		 * Filters whether Commerce features should be available.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param bool $available whether commerce features should be available
+		 * @param string $country country code
+		 * @param Commerce $commerce commerce handler instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_commerce_is_available', 'US' === $country, $country, $this );
 	}
 
 
@@ -89,8 +99,17 @@ class Commerce {
 	 */
 	public function is_connected() {
 
-		// TODO: implement
-		return true;
+		$connected = (bool) strlen( facebook_for_woocommerce()->get_integration()->get_page_access_token() );
+
+		/**
+		 * Filters whether the site is connected.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param bool $connected whether the site is connected
+		 * @param Commerce $commerce commerce handler instance
+		 */
+		return (bool) apply_filters( 'wc_facebook_commerce_is_connected', $connected, $this );
 	}
 
 

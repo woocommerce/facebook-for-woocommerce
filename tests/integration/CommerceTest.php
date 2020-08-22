@@ -64,6 +64,103 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Commerce::is_available()
+	 *
+	 * @param string $country_state store country / state
+	 * @param bool $available whether commerce features should be available
+	 * @dataProvider provider_is_available
+	 */
+	public function test_is_available( $country_state, $available ) {
+
+		update_option( 'woocommerce_default_country', $country_state );
+
+		$this->assertSame( $available, $this->get_commerce_handler()->is_available() );
+	}
+
+
+	/** @see test_is_available */
+	public function provider_is_available() {
+
+		return [
+			[ 'UK',    false ],
+			[ 'US',    true ],
+			[ 'US:MA', true ],
+			[ 'CA:QC', false ],
+			[ '',      false ],
+		];
+	}
+
+
+	/**
+	 * @see Commerce::is_available()
+	 *
+	 * @param bool $filtered filtered value
+	 * @dataProvider provider_is_available_filter
+	 */
+	public function test_is_available_filter( bool $filtered ) {
+
+		update_option( 'woocommerce_default_country', 'US:MA' );
+
+		add_filter( 'wc_facebook_commerce_is_available', static function() use ( $filtered ) {
+
+			return $filtered;
+		} );
+
+		$this->assertSame( $filtered, $this->get_commerce_handler()->is_available() );
+	}
+
+
+	/** @see test_is_available_filter */
+	public function provider_is_available_filter() {
+
+		return [
+			[ true ],
+			[ false ],
+		];
+	}
+
+
+	/**
+	 * @see Commerce::is_connected()
+	 *
+	 * @dataProvider provider_is_connected
+	 */
+	public function test_is_connected( $access_token, $is_connected ) {
+
+		facebook_for_woocommerce()->get_integration()->update_page_access_token( $access_token );
+
+		$this->assertSame( $is_connected, $this->get_commerce_handler()->is_connected() );
+	}
+
+
+	/** @see test_is_connected() */
+	public function provider_is_connected() {
+
+		return [
+			[ '123456', true ],
+			[ '',       false ],
+		];
+	}
+
+
+	/**
+	 * @see Commerce::is_connected()
+	 *
+	 * @param bool $filtered filtered value
+	 * @dataProvider provider_is_available_filter
+	 */
+	public function test_is_connected_filter( bool $filtered ) {
+
+		add_filter( 'wc_facebook_commerce_is_connected', static function() use ( $filtered ) {
+
+			return $filtered;
+		} );
+
+		$this->assertSame( $filtered, $this->get_commerce_handler()->is_connected() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
