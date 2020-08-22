@@ -9,9 +9,10 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -2306,18 +2307,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the page access token.
 	 *
+	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
+	 *
 	 * @since 1.10.0
+	 * @deprecated 2.1.0-dev.1
 	 *
 	 * @return string
 	 */
 	public function get_page_access_token() {
 
-		if ( ! is_string( $this->page_access_token ) ) {
+		wc_deprecated_function( __METHOD__, '2.1.0-dev.1', Connection::class . '::get_page_access_token()' );
 
-			$value = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
-
-			$this->page_access_token = is_string( $value ) ? $value : '';
-		}
+		$access_token = facebook_for_woocommerce()->get_connection_handler()->get_page_access_token();
 
 		/**
 		 * Filters the Facebook page access token.
@@ -2327,7 +2328,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $this->page_access_token : '', $this );
+		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $access_token : '', $this );
 	}
 
 
