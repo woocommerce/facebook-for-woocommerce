@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * Tests the Products class.
@@ -365,6 +366,33 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->excluded_category = $category['term_id'];
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
+	}
+
+
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_google_product_category_id()
+	 *
+	 * @param string $google_product_category_id Google product category ID
+	 *
+	 * @dataProvider provider_update_google_product_category_id
+	 */
+	public function test_update_google_product_category_id( $google_product_category_id ) {
+
+		$product = $this->get_product();
+
+		Products::update_google_product_category_id( $product, $google_product_category_id );
+
+		$this->assertEquals( $google_product_category_id, $product->get_meta( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY ) );
+	}
+
+
+	/** @see test_update_google_product_category_id */
+	public function provider_update_google_product_category_id() {
+
+		return [
+			[ '3350' ],
+			[ '' ],
+		];
 	}
 
 
