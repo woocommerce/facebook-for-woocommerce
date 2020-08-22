@@ -379,7 +379,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product = $this->get_product();
 
 		if ( ! empty( $meta_value ) ) {
-			$product->add_meta_data( Products::COMMERCE_ENABLED_META_KEY, $meta_value, true );
+			$product->update_meta_data( Products::COMMERCE_ENABLED_META_KEY, $meta_value, true );
 		} else {
 			$product->delete_meta_data( Products::COMMERCE_ENABLED_META_KEY );
 		}
@@ -392,9 +392,42 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	public function provider_is_commerce_enabled_for_product() {
 
 		return [
-			[ null, false ], // if a product does not have this meta set, Commerce is not enabled for it
 			[ 'yes',  true ],
+			[ true,  true ],
 			[ 'no', false ],
+			[ false, false ],
+			[ null, false ], // if a product does not have this meta set, Commerce is not enabled for it
+		];
+	}
+
+
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_commerce_enabled_for_product()
+	 *
+	 * @param bool $param_value param value
+	 * @param string $expected_meta_value the expected meta value
+	 *
+	 * @dataProvider provider_update_commerce_enabled_for_product
+	 */
+	public function test_update_commerce_enabled_for_product( $param_value, $expected_meta_value ) {
+
+		$product = $this->get_product();
+
+		Products::update_commerce_enabled_for_product( $product, $param_value );
+
+		$this->assertEquals( $expected_meta_value, $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
+	}
+
+
+	/** @see test_update_commerce_enabled_for_product */
+	public function provider_update_commerce_enabled_for_product() {
+
+		return [
+			[ true, 'yes' ],
+			[ 'yes', 'yes' ],
+			[ false,  'no' ],
+			[ 'no',  'no' ],
+			[ '', 'no' ],
 		];
 	}
 
