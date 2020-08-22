@@ -84,8 +84,10 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 
 		return [
 			[ 'UK',    false ],
+			[ 'US',    true ],
 			[ 'US:MA', true ],
 			[ 'CA:QC', false ],
+			[ '',      false ],
 		];
 	}
 
