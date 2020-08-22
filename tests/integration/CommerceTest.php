@@ -94,7 +94,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	 * @see Commerce::is_available()
 	 *
 	 * @param bool $filtered filtered value
-	 * @dataProvider provider_is_available_fitler
+	 * @dataProvider provider_is_available_filter
 	 */
 	public function test_is_available_filter( bool $filtered ) {
 
@@ -110,7 +110,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see test_is_available */
-	public function provider_is_available_fitler() {
+	public function provider_is_available_filter() {
 
 		return [
 			[ true ],
@@ -146,7 +146,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	 * @see Commerce::is_connected()
 	 *
 	 * @param bool $filtered filtered value
-	 * @dataProvider provider_is_available_fitler
+	 * @dataProvider provider_is_available_filter
 	 */
 	public function test_is_connected_filter( bool $filtered ) {
 
