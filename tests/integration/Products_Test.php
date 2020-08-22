@@ -366,6 +366,39 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product()
+	 *
+	 * @param string $meta_value meta value
+	 * @param bool $expected_result the expected result
+	 *
+	 * @dataProvider provider_is_commerce_enabled_for_product
+	 */
+	public function test_is_commerce_enabled_for_product( $meta_value, $expected_result ) {
+
+		$product = $this->get_product();
+
+		if ( ! empty( $meta_value ) ) {
+			$product->add_meta_data( Products::COMMERCE_ENABLED_META_KEY, $meta_value, true );
+		} else {
+			$product->delete_meta_data( Products::COMMERCE_ENABLED_META_KEY );
+		}
+
+		$this->assertEquals( $expected_result, Facebook\Products::is_commerce_enabled_for_product( $product ) );
+	}
+
+
+	/** @see test_is_commerce_enabled_for_product */
+	public function provider_is_commerce_enabled_for_product() {
+
+		return [
+			[ null, false ], // if a product does not have this meta set, Commerce is not enabled for it
+			[ 'yes',  true ],
+			[ 'no', false ],
+		];
+	}
+
+
 	/** Helper methods ************************************************************************************************/
 
 
