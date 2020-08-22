@@ -785,7 +785,7 @@ class Connection {
 	 */
 	public function update_page_access_token( $value ) {
 
-		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $value );
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
 	}
 
 
