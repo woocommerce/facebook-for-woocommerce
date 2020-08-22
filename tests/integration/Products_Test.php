@@ -341,7 +341,6 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		foreach ( $parent_product->get_children() as $child_product_id ) {
 
 			$product_variation = wc_get_product( $child_product_id );
-			codecept_debug($product_variation);
 			Products::update_google_product_category_id( $parent_product, '2' );
 
 			$this->assertEquals( '2', Products::get_google_product_category_id( $product_variation ) );
