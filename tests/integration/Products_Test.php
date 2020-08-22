@@ -336,13 +336,14 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Products::get_google_product_category_id() */
 	public function test_get_google_product_category_id_product_variation() {
 
-		$parent_product    = $this->get_variable_product();
+		$variable_product = $this->get_variable_product( [ 'children' => 2 ] );
+		Products::update_google_product_category_id( $variable_product, '2' );
+		$variable_product->save();
+		$variable_product = wc_get_product( $variable_product->get_id() );
 
-		foreach ( $parent_product->get_children() as $child_product_id ) {
+		foreach ( $variable_product->get_children() as $child_product_id ) {
 
 			$product_variation = wc_get_product( $child_product_id );
-			Products::update_google_product_category_id( $parent_product, '2' );
-
 			$this->assertEquals( '2', Products::get_google_product_category_id( $product_variation ) );
 		}
 	}
