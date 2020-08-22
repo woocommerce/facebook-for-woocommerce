@@ -777,6 +777,19 @@ class Connection {
 
 
 	/**
+	 * Stores the given page access token.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $value the access token
+	 */
+	public function update_page_access_token( $value ) {
+
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $value );
+	}
+
+
+	/**
 	 * Determines whether the site is connected.
 	 *
 	 * A site is connected if there is an access token stored.
