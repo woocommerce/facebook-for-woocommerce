@@ -2749,15 +2749,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the Facebook page access token.
 	 *
+	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
+	 *
 	 * @since 1.10.0
+	 * @deprecated 2.1.0-dev.1
 	 *
 	 * @param string $value page access token value
 	 */
 	public function update_page_access_token( $value ) {
 
-		$this->page_access_token = $this->sanitize_facebook_credential( $value );
+		wc_deprecated_function( __METHOD__, '2.1.0-dev.1', Connection::class . '::update_page_access_token()' );
 
-		update_option( self::OPTION_PAGE_ACCESS_TOKEN, $this->page_access_token );
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $value );
 	}
 
 
