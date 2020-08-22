@@ -78,7 +78,7 @@ class Commerce {
 		list( $country ) = explode( ':', get_option( 'woocommerce_default_country' ) );
 
 		/**
-		 * Filters whether Commerce features should be available
+		 * Filters whether Commerce features should be available.
 		 *
 		 * @since 2.1.0-dev.1
 		 *
