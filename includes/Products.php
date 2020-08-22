@@ -495,8 +495,107 @@ class Products {
 	 */
 	public static function get_google_product_category_id( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		// attempt to get from product or parent product metadata
+		if ( $product->is_type( 'variation' ) ) {
+			$google_product_category_id = get_post_meta( $product->get_parent_id(), self::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+		} else {
+			$google_product_category_id = $product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY );
+		}
+
+		// fallback to the highest category's Google product category ID
+		if ( empty( $google_product_category_id ) ) {
+
+			$google_product_category_id = self::get_google_product_category_id_from_highest_category( $product );
+		}
+
+		// fallback to plugin-level default Google product category ID
+		if ( empty( $google_product_category_id ) ) {
+
+			$google_product_category_id = facebook_for_woocommerce()->get_commerce_handler()->get_default_google_product_category_id();
+		}
+
+		return $google_product_category_id;
+	}
+
+
+	/**
+	 * Gets the stored Google product category ID from the highest category.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	private static function get_google_product_category_id_from_highest_category( \WC_Product $product ) {
+
+		$google_product_category_id = '';
+
+		// get all categories for the product
+		$categories = get_the_terms( $product->get_id(), 'product_cat' );
+
+		$categories_per_level = [];
+
+		// determine the level (depth) of each category
+		foreach ( $categories as $category ) {
+
+			$level           = 0;
+			$parent_category = $category;
+
+			while ( $parent_category->parent !== 0 ) {
+				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+				$level ++;
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				$categories_per_level[ $level ] = [];
+			}
+
+			$categories_per_level[ $level ][] = $category;
+		}
+
+		// sort descending by level
+		krsort( $categories_per_level );
+
+		// remove categories without a Google product category
+		foreach ( $categories_per_level as $level => $categories ) {
+
+			foreach ( $categories as $key => $category ) {
+
+				$google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
+				if ( empty( $google_product_category_id ) ) {
+					unset( $categories_per_level[ $level ][ $key ] );
+				}
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				unset ( $categories_per_level[ $level ] );
+			}
+		}
+
+		if ( ! empty( $categories_per_level ) ) {
+
+			// get highest level categories
+			$categories = current( $categories_per_level );
+
+			$google_product_category_id = '';
+
+			foreach ( $categories as $category ) {
+
+				$category_google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
+
+				if ( empty( $google_product_category_id && ! empty( $category_google_product_category_id ) ) ) {
+
+					$google_product_category_id = $category_google_product_category_id;
+
+				} elseif ( $google_product_category_id !== $category_google_product_category_id ) {
+
+					// conflicting Google product category IDs, discard them
+					$google_product_category_id = '';
+				}
+			}
+		}
+
+		return $google_product_category_id;
 	}
 
 
