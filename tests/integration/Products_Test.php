@@ -325,26 +325,29 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
-		$color_attribute = new WC_Product_Attribute();
-		$color_attribute->set_name( 'color' );
-		$color_attribute->set_options( [
-			'pink',
-			'blue',
-		] );
-		$color_attribute->set_variation( true );
-
-		$size_attribute = new WC_Product_Attribute();
-		$size_attribute->set_name( 'size' );
-		$size_attribute->set_options( [
-			'small',
-			'medium',
-			'large',
-		] );
-		$size_attribute->set_variation( false );
-
-		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
+		$product = $this->get_product( [ 'attributes' => self::create_product_attributes() ] );
 
 		$this->assertSame( $product->get_attributes(), Products::get_available_product_attributes( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_distinct_product_attributes() */
+	public function test_get_distinct_product_attributes() {
+
+		$attributes = self::create_product_attributes();
+		$product    = $this->get_product( [ 'attributes' => $attributes ] );
+
+		list( $color_attribute, $size_attribute, $pattern_attribute ) = $attributes;
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+		Products::update_product_size_attribute( $product, $size_attribute->get_name() );
+		Products::update_product_pattern_attribute( $product, $pattern_attribute->get_name() );
+
+		$this->assertSame( [
+			'color'   => Products::get_product_color_attribute( $product ),
+			'size'    => Products::get_product_size_attribute( $product ),
+			'pattern' => Products::get_product_pattern_attribute( $product ),
+		], Products::get_distinct_product_attributes( $product ) );
 	}
 
 
@@ -392,6 +395,41 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->excluded_category = $category['term_id'];
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
+	}
+
+
+	/**
+	 * Creates product attributes.
+	 */
+	private function create_product_attributes() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$size_attribute = new WC_Product_Attribute();
+		$size_attribute->set_name( 'size' );
+		$size_attribute->set_options( [
+			'small',
+			'medium',
+			'large',
+		] );
+		$size_attribute->set_variation( false );
+
+		$pattern_attribute = new WC_Product_Attribute();
+		$pattern_attribute->set_name( 'pattern' );
+		$pattern_attribute->set_options( [
+			'checked',
+			'floral',
+			'leopard',
+		] );
+		$pattern_attribute->set_variation( true );
+
+		return [ $color_attribute, $size_attribute, $pattern_attribute ];
 	}
 
 
