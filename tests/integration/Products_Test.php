@@ -680,7 +680,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$color_attribute = self::create_color_attribute();
 		$size_attribute  = self::create_size_attribute();
 
-		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
 		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
 		$product->save_meta_data();
@@ -874,7 +874,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$color_attribute = self::create_color_attribute();
 		$size_attribute  = self::create_size_attribute();
 
-		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
 		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
 		$product->save_meta_data();
@@ -885,11 +885,6 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_size_attribute( $product, $color_attribute->get_name() );
-
-		// get a fresh product object
-		$product = wc_get_product( $product->get_id() );
-
-		$this->assertSame( '', $product->get_meta( Products::SIZE_ATTRIBUTE_META_KEY ) );
 	}
 
 
@@ -959,6 +954,195 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 			$product_variation = wc_get_product( $child_id );
 			$this->assertSame( 'small | medium | large', Products::get_product_size( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern_attribute() */
+	public function test_get_product_pattern_attribute_configured_valid() {
+
+		$pattern_attribute = self::create_pattern_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $pattern_attribute->get_name(), Products::get_product_pattern_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern_attribute() */
+	public function test_get_product_pattern_attribute_configured_invalid() {
+
+		$pattern_attribute = self::create_pattern_attribute();
+
+		// create the product without attributes
+		$product = $this->get_product();
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', Products::get_product_pattern_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern_attribute() */
+	public function test_get_product_pattern_attribute_string_matching() {
+
+		$pattern_attribute = self::create_pattern_attribute( 'product pattern' );
+
+		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
+
+		$this->assertSame( $pattern_attribute->get_name(), Products::get_product_pattern_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern_attribute() */
+	public function test_get_product_pattern_attribute_variation() {
+
+		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $pattern_attribute ] );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( $pattern_attribute->get_name(), Products::get_product_pattern_attribute( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::update_product_pattern_attribute() */
+	public function test_update_product_pattern_attribute_valid() {
+
+		$pattern_attribute = self::create_pattern_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
+
+		Products::update_product_pattern_attribute( $product, $pattern_attribute->get_name() );
+
+		// get a fresh product object to ensure the meta is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $pattern_attribute->get_name(), $product->get_meta( Products::PATTERN_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_pattern_attribute() */
+	public function test_update_product_pattern_attribute_invalid() {
+
+		$pattern_attribute = self::create_pattern_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
+
+		$this->expectException( \Exception::class );
+
+		Products::update_product_pattern_attribute( $product, 'print' );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', $product->get_meta( Products::PATTERN_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_pattern_attribute() */
+	public function test_update_product_pattern_attribute_already_used() {
+
+		$color_attribute   = self::create_color_attribute();
+		$pattern_attribute = self::create_pattern_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $pattern_attribute ] ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->expectException( \Exception::class );
+
+		Products::update_product_pattern_attribute( $product, $color_attribute->get_name() );
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern() */
+	public function test_get_product_pattern_simple_product_single_value() {
+
+		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked' ] );
+
+		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+        $product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( 'checked', Products::get_product_pattern( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern() */
+	public function test_get_product_pattern_variation_with_attribute_set() {
+
+		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $pattern_attribute ] );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+
+			/**
+			 * Unlike the parent product which uses terms, variations are assigned specific attributes using name value pairs.
+			 * @see WC_Product_Variation::set_attributes()
+			 */
+			$product_variation->set_attributes( [ 'pattern' => 'checked' ] );
+			$product_variation->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+			$product_variation->save();
+
+			// get a fresh product object
+			$product_variation = wc_get_product( $child_id );
+
+			$this->assertSame( 'checked', Products::get_product_pattern( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::get_product_pattern() */
+	public function test_get_product_pattern_variation_without_attribute_set() {
+
+		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $pattern_attribute ] );
+		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( 'checked | floral | leopard', Products::get_product_pattern( $product_variation ) );
 		}
 	}
 
