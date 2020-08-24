@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * Tests the Products class.
@@ -318,6 +319,32 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		} );
 
 		$this->assertSame( 1234, Facebook\Products::get_product_price( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_available_product_attributes() */
+	public function test_get_available_product_attributes() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$size_attribute = new WC_Product_Attribute();
+		$size_attribute->set_name( 'size' );
+		$size_attribute->set_options( [
+			'small',
+			'medium',
+			'large',
+		] );
+		$size_attribute->set_variation( false );
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
+
+		$this->assertSame( $product->get_attributes(), Products::get_available_product_attributes( $product ) );
 	}
 
 
