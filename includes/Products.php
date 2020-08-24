@@ -709,30 +709,30 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the color
+	 * @param string $attribute_name the attribute to be used to store the color
 	 * @throws \Exception
 	 */
-	public static function update_product_color_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
-		$attribute_name = '';
+		$matching_attribute_name = '';
 		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
 
-			if ( $attribute === $attribute->get_name() ) {
-				$attribute_name = $attribute;
+			if ( $attribute_name === $attribute->get_name() ) {
+				$matching_attribute_name = $attribute;
 				break;
 			}
 		}
 
-		if ( empty( $attribute_name ) ) {
-			throw new \Exception( "The provided attribute name $attribute does not match any of the available attributes for the product {$product->get_name()}" );
+		if ( empty( $matching_attribute_name ) ) {
+			throw new \Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
-		if ( $attribute !== self::get_product_color_attribute( $product ) && in_array( $attribute, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new \Exception( "The provided attribute $attribute is already used for the product {$product->get_name()}" );
+		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new \Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
-		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute );
+		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute_name );
 		$product->save_meta_data();
 	}
 
@@ -775,9 +775,9 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the size
+	 * @param string $attribute_name the attribute to be used to store the size
 	 */
-	public static function update_product_size_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
 
 		// TODO: implement
 	}
@@ -821,9 +821,9 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the pattern
+	 * @param string $attribute_name the attribute to be used to store the pattern
 	 */
-	public static function update_product_pattern_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
 
 		// TODO: implement
 	}
