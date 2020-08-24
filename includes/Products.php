@@ -710,10 +710,30 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string $attribute the attributed to be used to store the color
+	 * @throws \Exception
 	 */
 	public static function update_product_color_attribute( \WC_Product $product, $attribute ) {
 
-		// TODO: implement
+		// check if the name matches an available attribute
+		$attribute_name = '';
+		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+			if ( $attribute === $attribute->get_name() ) {
+				$attribute_name = $attribute;
+				break;
+			}
+		}
+
+		if ( empty( $attribute_name ) ) {
+			throw new \Exception( "The provided attribute name $attribute does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute !== self::get_product_color_attribute( $product ) && in_array( $attribute, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new \Exception( "The provided attribute $attribute is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute );
+		$product->save_meta_data();
 	}
 
 
