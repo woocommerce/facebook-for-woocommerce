@@ -47,8 +47,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->get_commerce_handler()->update_default_google_product_category_id( $new_value );
 
-		$this->assertSame( $stored_value, $this->get_commerce_handler()->get_default_google_product_category_id() );
-		$this->assertSame( $stored_value, $this->get_commerce_handler()->get_default_google_product_category_id() );
+		$this->assertSame( $stored_value, get_option( Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID ) );
 	}
 
 
