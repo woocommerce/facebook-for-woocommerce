@@ -861,8 +861,34 @@ class Products {
 	 */
 	public static function get_product_pattern_attribute( \WC_Product $product ) {
 
-		// TODO: implement the validations
-		return $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$parent_product = wc_get_product( $product->get_parent_id() );
+
+			return self::get_product_pattern_attribute( $parent_product );
+		}
+
+		$meta_value     = $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
+		$attribute_name = '';
+
+		// check if an attribute with that name exists
+		if ( self::product_has_attribute( $product, $meta_value ) ) {
+			$attribute_name = $meta_value;
+		}
+
+		if ( empty( $attribute_name ) ) {
+			// try to find a matching attribute
+			foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+				if ( stripos( $attribute->get_name(), 'pattern' ) !== false ) {
+					$attribute_name = $attribute->get_name();
+					break;
+				}
+			}
+		}
+
+		return $attribute_name;
 	}
 
 
