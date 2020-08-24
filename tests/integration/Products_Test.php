@@ -750,7 +750,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color() */
 	public function test_get_product_color_variation_without_attribute_set() {
 
-		$color_attribute = self::create_color_attribute( true );
+		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $color_attribute ] );
