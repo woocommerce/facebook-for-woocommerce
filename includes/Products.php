@@ -695,8 +695,7 @@ class Products {
 	 */
 	public static function get_available_product_attributes( \WC_Product $product ) {
 
-		// TODO: implement
-		return [];
+		return $product->get_attributes();
 	}
 
 
