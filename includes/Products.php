@@ -764,8 +764,8 @@ class Products {
 	 */
 	public static function get_product_size_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		// TODO: implement the validations
+		return $product->get_meta( self::SIZE_ATTRIBUTE_META_KEY );
 	}
 
 
@@ -810,8 +810,8 @@ class Products {
 	 */
 	public static function get_product_pattern_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		// TODO: implement the validations
+		return $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
 	}
 
 
