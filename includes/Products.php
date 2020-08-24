@@ -680,12 +680,8 @@ class Products {
 		$attribute_name = '';
 
 		// check if an attribute with that name exists
-		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
-
-			if ( $meta_value === $attribute->get_name() ) {
-				$attribute_name = $meta_value;
-				break;
-			}
+		if ( self::product_has_attribute( $product, $meta_value ) ) {
+			$attribute_name = $meta_value;
 		}
 
 		if ( empty( $attribute_name ) ) {
@@ -715,16 +711,7 @@ class Products {
 	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
-		$matching_attribute_name = '';
-		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
-
-			if ( $attribute_name === $attribute->get_name() ) {
-				$matching_attribute_name = $attribute;
-				break;
-			}
-		}
-
-		if ( empty( $matching_attribute_name ) ) {
+		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
 			throw new \Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
@@ -868,6 +855,31 @@ class Products {
 	public static function get_available_product_attributes( \WC_Product $product ) {
 
 		return $product->get_attributes();
+	}
+
+
+	/**
+	 * Checks if the product has an attribute with the given name.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $attribute_name the attribute name
+	 * @return bool
+	 */
+	public static function product_has_attribute( \WC_Product $product, string $attribute_name ) {
+
+		$found = false;
+
+		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+			if ( $attribute_name === $attribute->get_name() ) {
+				$found = true;
+				break;
+			}
+		}
+
+		return $found;
 	}
 
 
