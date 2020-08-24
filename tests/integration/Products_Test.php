@@ -415,6 +415,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::update_commerce_enabled_for_product( $product, $param_value );
 
+		// get a fresh product object to ensure the status is stored
+		$product = wc_get_product( $product->get_id() );
+
 		$this->assertEquals( $expected_meta_value, $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
 	}
 
