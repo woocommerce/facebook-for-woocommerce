@@ -749,8 +749,19 @@ class Products {
 	 */
 	public static function get_product_color( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		$color_value     = '';
+		$color_attribute = self::get_product_color_attribute( $product );
+
+		if ( ! empty( $color_attribute ) ) {
+			$color_value = $product->get_attribute( $color_attribute );
+		}
+
+		if ( empty( $color_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$color_value    = self::get_product_color( $parent_product );
+		}
+
+		return $color_value;
 	}
 
 
