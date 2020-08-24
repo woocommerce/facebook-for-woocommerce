@@ -833,8 +833,19 @@ class Products {
 	 */
 	public static function get_product_size( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		$size_value     = '';
+		$size_attribute = self::get_product_size_attribute( $product );
+
+		if ( ! empty( $size_attribute ) ) {
+			$size_value = $product->get_attribute( $size_attribute );
+		}
+
+		if ( empty( $size_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$size_value     = self::get_product_size( $parent_product );
+		}
+
+		return $size_value;
 	}
 
 
