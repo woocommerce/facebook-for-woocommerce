@@ -668,8 +668,38 @@ class Products {
 	 */
 	public static function get_product_color_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$parent_product = wc_get_product( $product->get_parent_id() );
+
+			return self::get_product_color_attribute( $parent_product );
+		}
+
+		$meta_value     = $product->get_meta( self::COLOR_ATTRIBUTE_META_KEY );
+		$attribute_name = '';
+
+		// check if an attribute with that name exists
+		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+			if ( $meta_value === $attribute->get_name() ) {
+				$attribute_name = $meta_value;
+				break;
+			}
+		}
+
+		if ( empty( $attribute_name ) ) {
+			// try to find a matching attribute
+			foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+				if ( stripos( $attribute->get_name(), 'color' ) !== false || stripos( $attribute->get_name(), 'colour' ) !== false ) {
+					$attribute_name = $attribute->get_name();
+					break;
+				}
+			}
+		}
+
+		return $attribute_name;
 	}
 
 
