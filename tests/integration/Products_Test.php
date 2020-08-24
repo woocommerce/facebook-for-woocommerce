@@ -344,9 +344,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		Products::update_product_pattern_attribute( $product, $pattern_attribute->get_name() );
 
 		$this->assertSame( [
-			'color'   => Products::get_product_color_attribute( $product ),
-			'size'    => Products::get_product_size_attribute( $product ),
-			'pattern' => Products::get_product_pattern_attribute( $product ),
+			Products::get_product_color_attribute( $product ),
+			Products::get_product_size_attribute( $product ),
+			Products::get_product_pattern_attribute( $product ),
 		], Products::get_distinct_product_attributes( $product ) );
 	}
 
