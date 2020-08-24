@@ -929,8 +929,19 @@ class Products {
 	 */
 	public static function get_product_pattern( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		$pattern_value     = '';
+		$pattern_attribute = self::get_product_pattern_attribute( $product );
+
+		if ( ! empty( $pattern_attribute ) ) {
+			$pattern_value = $product->get_attribute( $pattern_attribute );
+		}
+
+		if ( empty( $pattern_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$pattern_value  = self::get_product_pattern( $parent_product );
+		}
+
+		return $pattern_value;
 	}
 
 
