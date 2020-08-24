@@ -769,6 +769,200 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Products::get_product_size_attribute() */
+	public function test_get_product_size_attribute_configured_valid() {
+
+		$size_attribute = self::create_size_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $size_attribute->get_name(), Products::get_product_size_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_size_attribute() */
+	public function test_get_product_size_attribute_configured_invalid() {
+
+		$size_attribute = self::create_size_attribute();
+
+		// create the product without attributes
+		$product = $this->get_product();
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', Products::get_product_size_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_size_attribute() */
+	public function test_get_product_size_attribute_string_matching() {
+
+		$size_attribute = self::create_size_attribute( 'product size' );
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+
+		$this->assertSame( $size_attribute->get_name(), Products::get_product_size_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_size_attribute() */
+	public function test_get_product_size_attribute_variation() {
+
+		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $size_attribute ] );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( $size_attribute->get_name(), Products::get_product_size_attribute( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::update_product_size_attribute() */
+	public function test_update_product_size_attribute_valid() {
+
+		$size_attribute = self::create_size_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+
+		Products::update_product_size_attribute( $product, $size_attribute->get_name() );
+
+		// get a fresh product object to ensure the meta is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $size_attribute->get_name(), $product->get_meta( Products::SIZE_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_size_attribute() */
+	public function test_update_product_size_attribute_invalid() {
+
+		$size_attribute = self::create_size_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+
+		$this->expectException( \Exception::class );
+
+		Products::update_product_size_attribute( $product, 'height' );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', $product->get_meta( Products::SIZE_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_size_attribute() */
+	public function test_update_product_size_attribute_already_used() {
+
+		$color_attribute = self::create_color_attribute();
+		$size_attribute  = self::create_size_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->expectException( \Exception::class );
+
+		Products::update_product_size_attribute( $product, $color_attribute->get_name() );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', $product->get_meta( Products::SIZE_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_size() */
+	public function test_get_product_size_simple_product_single_value() {
+
+		$size_attribute = self::create_size_attribute( 'size', [ 'small' ] );
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+        $product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( 'small', Products::get_product_size( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_size() */
+	public function test_get_product_size_variation_with_attribute_set() {
+
+		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $size_attribute ] );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+
+			/**
+			 * Unlike the parent product which uses terms, variations are assigned specific attributes using name value pairs.
+			 * @see WC_Product_Variation::set_attributes()
+			 */
+			$product_variation->set_attributes( [ 'size' => 'small' ] );
+			$product_variation->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+			$product_variation->save();
+
+			// get a fresh product object
+			$product_variation = wc_get_product( $child_id );
+
+			$this->assertSame( 'small', Products::get_product_size( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::get_product_size() */
+	public function test_get_product_size_variation_without_attribute_set() {
+
+		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $size_attribute ] );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( 'small | medium | large', Products::get_product_size( $product_variation ) );
+		}
+	}
+
+
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
