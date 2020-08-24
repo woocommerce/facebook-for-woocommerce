@@ -46,7 +46,7 @@ class Product_Categories {
 	 */
 	public static function update_google_product_category_id( $id, $category_id ) {
 
-		add_term_meta( $id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id, true );
+		update_term_meta( $id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
 	}
 
 
