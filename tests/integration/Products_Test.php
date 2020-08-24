@@ -574,6 +574,86 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_configured_valid() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+
+		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_configured_invalid() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		// create the product without attributes
+		$product = $this->get_product();
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+
+		$this->assertSame( '', Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_string_matching() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'product colour' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+
+		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_variation() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$product = $this->get_variable_product();
+		$product->set_variation_attributes( [ $color_attribute ] );
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product_variation ) );
+		}
+	}
+
+
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
