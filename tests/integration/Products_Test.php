@@ -575,6 +575,73 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/**
+	 * @see Products::get_product_gender
+	 *
+	 * @param string $meta_value meta value
+	 * @param string $expected_result expected result
+	 *
+	 * @dataProvider provider_get_product_gender
+	 */
+	public function test_get_product_gender( $meta_value, $expected_result ) {
+
+		$product = $this->get_product();
+		if ( null === $meta_value ) {
+			$product->delete_meta_data( Products::GENDER_META_KEY );
+		} else {
+			$product->update_meta_data( Products::GENDER_META_KEY, $meta_value );
+		}
+
+		$this->assertSame( $expected_result, Products::get_product_gender( $product ) );
+	}
+
+
+	/** @see test_get_product_gender */
+	public function provider_get_product_gender() {
+
+		return [
+			[ null, 'unisex' ],
+			[ 'female', 'female' ],
+			[ 'male', 'male' ],
+			[ 'unisex', 'unisex' ],
+			[ '', 'unisex' ],
+			[ 'invalid', 'unisex' ],
+		];
+	}
+
+
+	/**
+	 * @see Products::update_product_gender()
+	 *
+	 * @param string $gender gender
+	 *
+	 * @dataProvider provider_update_product_gender
+	 */
+	public function test_update_product_gender( $gender ) {
+
+		$product = $this->get_product();
+
+		Products::update_product_gender( $product, $gender );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertEquals( $gender, $product->get_meta( Products::GENDER_META_KEY ) );
+	}
+
+
+	/** @see test_update_product_gender */
+	public function provider_update_product_gender() {
+
+		return [
+			[ 'female' ],
+			[ 'male' ],
+			[ 'unisex' ],
+			[ '' ],
+		];
+	}
+
+
 	/** @see Facebook\Products::get_product_color_attribute() */
 	public function test_get_product_color_attribute_configured_valid() {
 
@@ -709,7 +776,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product->save();
 
 		// get a fresh product object
-        $product = wc_get_product( $product->get_id() );
+		$product = wc_get_product( $product->get_id() );
 
 		$this->assertSame( 'pink', Products::get_product_color( $product ) );
 	}
