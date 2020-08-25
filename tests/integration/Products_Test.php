@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
+use SkyVerge\WooCommerce\Facebook\Product_Categories;
 use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
@@ -319,6 +320,114 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		} );
 
 		$this->assertSame( 1234, Facebook\Products::get_product_price( $product ) );
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_simple_product() {
+
+		$product = $this->get_product();
+		Products::update_google_product_category_id( $product, '1' );
+
+		$this->assertEquals( '1', Products::get_google_product_category_id( $product ) );
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_variation() {
+
+		$variable_product = $this->get_variable_product( [ 'children' => 2 ] );
+		Products::update_google_product_category_id( $variable_product, '2' );
+		$variable_product->save();
+		$variable_product = wc_get_product( $variable_product->get_id() );
+
+		foreach ( $variable_product->get_children() as $child_product_id ) {
+
+			$product_variation = wc_get_product( $child_product_id );
+			$this->assertEquals( '2', Products::get_google_product_category_id( $product_variation ) );
+		}
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_single_category() {
+
+		$product         = $this->get_product();
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		Product_Categories::update_google_product_category_id( $parent_category['term_id'], '3' );
+		wp_set_post_terms( $product->get_id(), [ $parent_category['term_id'] ], 'product_cat' );
+
+		$this->assertEquals( '3', Products::get_google_product_category_id( $product ) );
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_multiple_categories() {
+
+		$product         = $this->get_product();
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		Product_Categories::update_google_product_category_id( $parent_category['term_id'], '4' );
+		$child_category = wp_insert_term( 'Pet Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+		Product_Categories::update_google_product_category_id( $child_category['term_id'], '5' );
+		wp_set_post_terms( $product->get_id(), [
+			$parent_category['term_id'],
+			$child_category['term_id'],
+		], 'product_cat' );
+
+		$this->assertEquals( '5', Products::get_google_product_category_id( $product ) );
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_conflicting_categories() {
+
+		$product         = $this->get_product();
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		Product_Categories::update_google_product_category_id( $parent_category['term_id'], '5' );
+		$child_category_1 = wp_insert_term( 'Cat Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+		Product_Categories::update_google_product_category_id( $child_category_1['term_id'], '6' );
+		$child_category_2 = wp_insert_term( 'Dog Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+		Product_Categories::update_google_product_category_id( $child_category_2['term_id'], '7' );
+		wp_set_post_terms( $product->get_id(), [
+			$parent_category['term_id'],
+			$child_category_1['term_id'],
+			$child_category_2['term_id'],
+		], 'product_cat' );
+
+		$this->assertEquals( '', Products::get_google_product_category_id( $product ) );
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_variation_multiple_categories() {
+
+		$variable_product = $this->get_variable_product( [ 'children' => 2 ] );
+
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		Product_Categories::update_google_product_category_id( $parent_category['term_id'], '8' );
+		$child_category = wp_insert_term( 'Pet Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+		Product_Categories::update_google_product_category_id( $child_category['term_id'], '9' );
+
+		wp_set_post_terms( $variable_product->get_id(), [
+			$parent_category['term_id'],
+			$child_category['term_id'],
+		], 'product_cat' );
+
+		foreach ( $variable_product->get_children() as $child_product_id ) {
+
+			$product_variation = wc_get_product( $child_product_id );
+			$this->assertEquals( '9', Products::get_google_product_category_id( $product_variation ) );
+		}
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_default() {
+
+		$product = $this->get_product();
+		facebook_for_woocommerce()->get_commerce_handler()->update_default_google_product_category_id( '10' );
+
+		$this->assertEquals( '10', Products::get_google_product_category_id( $product ) );
 	}
 
 
