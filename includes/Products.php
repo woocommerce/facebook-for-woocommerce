@@ -844,7 +844,7 @@ class Products {
 
 		if ( empty( $size_value ) && $product->is_type( 'variation' ) ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
-			$size_value     = self::get_product_size( $parent_product );
+			$size_value     = $parent_product instanceof \WC_Product ? self::get_product_size( $parent_product ) : '';
 		}
 
 		return $size_value;
