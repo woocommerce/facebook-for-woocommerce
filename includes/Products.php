@@ -940,7 +940,7 @@ class Products {
 
 		if ( empty( $pattern_value ) && $product->is_type( 'variation' ) ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
-			$pattern_value  = self::get_product_pattern( $parent_product );
+			$pattern_value  = $parent_product instanceof \WC_Product ? self::get_product_pattern( $parent_product ) : '';
 		}
 
 		return $pattern_value;
