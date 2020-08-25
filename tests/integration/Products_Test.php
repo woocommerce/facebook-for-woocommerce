@@ -857,7 +857,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_size_attribute( $product, 'height' );
 
@@ -882,7 +882,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		// get a fresh product object
 		$product = wc_get_product( $product->get_id() );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_size_attribute( $product, $color_attribute->get_name() );
 
