@@ -534,7 +534,15 @@ class Products {
 		$google_product_category_id = '';
 
 		// get all categories for the product
-		$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		if ( $product->is_type( 'variation' ) ) {
+
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : [];
+
+		} else {
+
+			$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		}
 
 		$categories_per_level = [];
 
