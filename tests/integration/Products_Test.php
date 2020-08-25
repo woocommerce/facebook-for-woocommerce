@@ -456,11 +456,11 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		Products::update_product_size_attribute( $product, $size_attribute->get_name() );
 		Products::update_product_pattern_attribute( $product, $pattern_attribute->get_name() );
 
-		$this->assertSame( [
+		$this->assertSame( array_filter( [
 			Products::get_product_color_attribute( $product ),
 			Products::get_product_size_attribute( $product ),
 			Products::get_product_pattern_attribute( $product ),
-		], Products::get_distinct_product_attributes( $product ) );
+		] ), Products::get_distinct_product_attributes( $product ) );
 	}
 
 

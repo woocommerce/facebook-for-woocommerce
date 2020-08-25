@@ -711,11 +711,11 @@ class Products {
 	 */
 	public static function get_distinct_product_attributes( \WC_Product $product ) {
 
-		return [
+		return array_filter( [
 			self::get_product_color_attribute( $product ),
 			self::get_product_size_attribute( $product ),
 			self::get_product_pattern_attribute( $product ),
-		];
+		] );
 	}
 
 
