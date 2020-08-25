@@ -449,8 +449,10 @@ class Products {
 	 */
 	public static function is_product_ready_for_commerce( \WC_Product $product ) {
 
-		// TODO: implement
-		return true;
+		return $product->managing_stock()
+			&& self::get_product_price( $product )
+			&& self::is_commerce_enabled_for_product( $product )
+			&& self::product_should_be_synced( $product );
 	}
 
 
@@ -464,8 +466,7 @@ class Products {
 	 */
 	public static function is_commerce_enabled_for_product( \WC_Product $product )  {
 
-		// TODO: implement
-		return true;
+		return wc_string_to_bool( $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
 	}
 
 
@@ -479,7 +480,8 @@ class Products {
 	 */
 	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
 
-		// TODO: implement
+		$product->update_meta_data( Products::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
+		$product->save_meta_data();
 	}
 
 
