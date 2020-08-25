@@ -748,7 +748,7 @@ class Products {
 
 		if ( empty( $color_value ) && $product->is_type( 'variation' ) ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
-			$color_value    = self::get_product_color( $parent_product );
+			$color_value    = $parent_product instanceof \WC_Product ? self::get_product_color( $parent_product ) : '';
 		}
 
 		return $color_value;
