@@ -664,6 +664,7 @@ class Products {
 	public static function update_product_gender( \WC_Product $product, $gender ) {
 
 		$product->update_meta_data( Products::GENDER_META_KEY, $gender );
+		$product->save_meta_data();
 	}
 
 

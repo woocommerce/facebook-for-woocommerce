@@ -622,6 +622,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::update_product_gender( $product, $gender );
 
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
 		$this->assertEquals( $gender, $product->get_meta( Products::GENDER_META_KEY ) );
 	}
 
