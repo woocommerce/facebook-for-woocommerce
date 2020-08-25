@@ -698,8 +698,7 @@ class Products {
 	 */
 	public static function get_available_product_attributes( \WC_Product $product ) {
 
-		// TODO: implement
-		return [];
+		return $product->get_attributes();
 	}
 
 
@@ -713,8 +712,11 @@ class Products {
 	 */
 	public static function get_distinct_product_attributes( \WC_Product $product ) {
 
-		// TODO: implement
-		return [];
+		return array_filter( [
+			self::get_product_color_attribute( $product ),
+			self::get_product_size_attribute( $product ),
+			self::get_product_pattern_attribute( $product ),
+		] );
 	}
 
 
