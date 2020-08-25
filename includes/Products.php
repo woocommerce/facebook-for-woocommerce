@@ -571,7 +571,7 @@ class Products {
 			}
 
 			if ( empty( $categories_per_level[ $level ] ) ) {
-				unset ( $categories_per_level[ $level ] );
+				unset( $categories_per_level[ $level ] );
 			}
 		}
 
