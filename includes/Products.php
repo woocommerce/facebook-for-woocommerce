@@ -499,7 +499,8 @@ class Products {
 
 		// attempt to get from product or parent product metadata
 		if ( $product->is_type( 'variation' ) ) {
-			$google_product_category_id = get_post_meta( $product->get_parent_id(), self::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+			$parent_product             = wc_get_product( $product->get_parent_id() );
+			$google_product_category_id = $parent_product instanceof \WC_Product ? $parent_product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY ) : null;
 		} else {
 			$google_product_category_id = $product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY );
 		}
