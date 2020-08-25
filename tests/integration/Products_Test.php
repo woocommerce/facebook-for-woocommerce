@@ -448,6 +448,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::update_google_product_category_id( $product, $google_product_category_id );
 
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
 		$this->assertEquals( $google_product_category_id, $product->get_meta( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY ) );
 	}
 
