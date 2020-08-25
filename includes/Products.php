@@ -639,8 +639,18 @@ class Products {
 	 */
 	public static function get_product_gender( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		if ( $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$gender         = $parent_product instanceof \WC_Product ? $parent_product->get_meta( self::GENDER_META_KEY ) : null;
+		} else {
+			$gender = $product->get_meta( self::GENDER_META_KEY );
+		}
+
+		if ( ! in_array( $gender, [ 'female', 'male', 'unisex' ] ) ) {
+			$gender = 'unisex';
+		}
+
+		return $gender;
 	}
 
 
@@ -654,7 +664,8 @@ class Products {
 	 */
 	public static function update_product_gender( \WC_Product $product, $gender ) {
 
-		// TODO: implement
+		$product->update_meta_data( Products::GENDER_META_KEY, $gender );
+		$product->save_meta_data();
 	}
 
 
