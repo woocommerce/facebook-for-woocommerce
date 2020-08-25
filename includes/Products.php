@@ -867,7 +867,7 @@ class Products {
 	 * @param string $attribute_name the attribute name
 	 * @return bool
 	 */
-	public static function product_has_attribute( \WC_Product $product, string $attribute_name ) {
+	public static function product_has_attribute( \WC_Product $product, $attribute_name ) {
 
 		$found = false;
 
