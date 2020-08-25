@@ -3,6 +3,7 @@
 use SkyVerge\WooCommerce\Facebook;
 use SkyVerge\WooCommerce\Facebook\Product_Categories;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the Products class.
@@ -662,7 +663,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_color_attribute( $product, 'colour' );
 
@@ -687,7 +688,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		// get a fresh product object
 		$product = wc_get_product( $product->get_id() );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_color_attribute( $product, $size_attribute->get_name() );
 
