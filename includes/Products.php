@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 use WC_Facebook_Product;
 
 defined( 'ABSPATH' ) or exit;
@@ -679,8 +680,36 @@ class Products {
 	 */
 	public static function get_product_color_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		$attribute_name = '';
+
+		if ( $product ) {
+
+			$meta_value = $product->get_meta( self::COLOR_ATTRIBUTE_META_KEY );
+
+			// check if an attribute with that name exists
+			if ( self::product_has_attribute( $product, $meta_value ) ) {
+				$attribute_name = $meta_value;
+			}
+
+			if ( empty( $attribute_name ) ) {
+				// try to find a matching attribute
+				foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+					if ( stripos( $attribute->get_name(), 'color' ) !== false || stripos( $attribute->get_name(), 'colour' ) !== false ) {
+						$attribute_name = $attribute->get_name();
+						break;
+					}
+				}
+			}
+		}
+
+		return $attribute_name;
 	}
 
 
@@ -690,11 +719,22 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the color
+	 * @param string $attribute_name the attribute to be used to store the color
+	 * @throws SV_WC_Plugin_Exception
 	 */
-	public static function update_product_color_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
-		// TODO: implement
+		// check if the name matches an available attribute
+		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute_name );
+		$product->save_meta_data();
 	}
 
 
@@ -710,8 +750,19 @@ class Products {
 	 */
 	public static function get_product_color( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		$color_value     = '';
+		$color_attribute = self::get_product_color_attribute( $product );
+
+		if ( ! empty( $color_attribute ) ) {
+			$color_value = $product->get_attribute( $color_attribute );
+		}
+
+		if ( empty( $color_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$color_value    = $parent_product instanceof \WC_Product ? self::get_product_color( $parent_product ) : '';
+		}
+
+		return $color_value;
 	}
 
 
@@ -725,8 +776,8 @@ class Products {
 	 */
 	public static function get_product_size_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		// TODO: implement the validations
+		return $product->get_meta( self::SIZE_ATTRIBUTE_META_KEY );
 	}
 
 
@@ -736,9 +787,9 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the size
+	 * @param string $attribute_name the attribute to be used to store the size
 	 */
-	public static function update_product_size_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
 
 		// TODO: implement
 	}
@@ -771,8 +822,8 @@ class Products {
 	 */
 	public static function get_product_pattern_attribute( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		// TODO: implement the validations
+		return $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
 	}
 
 
@@ -782,9 +833,9 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute the attributed to be used to store the pattern
+	 * @param string $attribute_name the attribute to be used to store the pattern
 	 */
-	public static function update_product_pattern_attribute( \WC_Product $product, $attribute ) {
+	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
 
 		// TODO: implement
 	}
@@ -818,6 +869,31 @@ class Products {
 	public static function get_available_product_attributes( \WC_Product $product ) {
 
 		return $product->get_attributes();
+	}
+
+
+	/**
+	 * Checks if the product has an attribute with the given name.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $attribute_name the attribute name
+	 * @return bool
+	 */
+	public static function product_has_attribute( \WC_Product $product, $attribute_name ) {
+
+		$found = false;
+
+		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+			if ( $attribute_name === $attribute->get_name() ) {
+				$found = true;
+				break;
+			}
+		}
+
+		return $found;
 	}
 
 

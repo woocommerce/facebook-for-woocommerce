@@ -3,6 +3,7 @@
 use SkyVerge\WooCommerce\Facebook;
 use SkyVerge\WooCommerce\Facebook\Product_Categories;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the Products class.
@@ -641,6 +642,200 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_configured_valid() {
+
+		$color_attribute = self::create_color_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_configured_invalid() {
+
+		$color_attribute = self::create_color_attribute();
+
+		// create the product without attributes
+		$product = $this->get_product();
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_string_matching() {
+
+		$color_attribute = self::create_color_attribute( 'product colour' );
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+
+		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color_attribute() */
+	public function test_get_product_color_attribute_variation() {
+
+		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $color_attribute ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::update_product_color_attribute() */
+	public function test_update_product_color_attribute_valid() {
+
+		$color_attribute = self::create_color_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+
+		// get a fresh product object to ensure the meta is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( $color_attribute->get_name(), $product->get_meta( Products::COLOR_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_color_attribute() */
+	public function test_update_product_color_attribute_invalid() {
+
+		$color_attribute = self::create_color_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+
+		Products::update_product_color_attribute( $product, 'colour' );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', $product->get_meta( Products::COLOR_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::update_product_color_attribute() */
+	public function test_update_product_color_attribute_already_used() {
+
+		$color_attribute = self::create_color_attribute();
+		$size_attribute  = self::create_size_attribute();
+
+		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
+		$product->save_meta_data();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+
+		Products::update_product_color_attribute( $product, $size_attribute->get_name() );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( '', $product->get_meta( Products::COLOR_ATTRIBUTE_META_KEY ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color() */
+	public function test_get_product_color_simple_product_single_value() {
+
+		$color_attribute = self::create_color_attribute( 'color', [ 'pink' ] );
+
+		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertSame( 'pink', Products::get_product_color( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_product_color() */
+	public function test_get_product_color_variation_with_attribute_set() {
+
+		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $color_attribute ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+
+			/**
+			 * Unlike the parent product which uses terms, variations are assigned specific attributes using name value pairs.
+			 * @see WC_Product_Variation::set_attributes()
+			 */
+			$product_variation->set_attributes( [ 'color' => 'pink' ] );
+			$product_variation->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+			$product_variation->save();
+
+			// get a fresh product object
+			$product_variation = wc_get_product( $child_id );
+
+			$this->assertSame( 'pink', Products::get_product_color( $product_variation ) );
+		}
+	}
+
+
+	/** @see Facebook\Products::get_product_color() */
+	public function test_get_product_color_variation_without_attribute_set() {
+
+		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+
+		$product = $this->get_variable_product();
+		$product->set_attributes( [ $color_attribute ] );
+		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
+		$product->save();
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$product_variation = wc_get_product( $child_id );
+			$this->assertSame( 'pink | blue', Products::get_product_color( $product_variation ) );
+		}
+	}
+
+
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
@@ -718,37 +913,72 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
+	 * Creates color attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	private function create_color_attribute( $name = 'color', $options = [ 'pink', 'blue' ], $variation = false ) {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( $name );
+		$color_attribute->set_options( $options );
+		$color_attribute->set_variation( $variation );
+
+		return $color_attribute;
+	}
+
+
+	/**
+	 * Creates size attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	private function create_size_attribute( $name = 'size', $options = [ 'small', 'medium', 'large' ], $variation = false ) {
+
+		$size_attribute = new WC_Product_Attribute();
+		$size_attribute->set_name( $name );
+		$size_attribute->set_options( $options );
+		$size_attribute->set_variation( $variation );
+
+		return $size_attribute;
+	}
+
+
+	/**
+	 * Creates pattern attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	private function create_pattern_attribute( $name = 'pattern', $options = [ 'checked', 'floral', 'leopard' ], $variation = false ) {
+
+		$pattern_attribute = new WC_Product_Attribute();
+		$pattern_attribute->set_name( $name );
+		$pattern_attribute->set_options( $options );
+		$pattern_attribute->set_variation( $variation );
+
+		return $pattern_attribute;
+	}
+
+
+	/**
 	 * Creates product attributes.
 	 */
 	private function create_product_attributes() {
 
-		$color_attribute = new WC_Product_Attribute();
-		$color_attribute->set_name( 'color' );
-		$color_attribute->set_options( [
-			'pink',
-			'blue',
-		] );
-		$color_attribute->set_variation( true );
-
-		$size_attribute = new WC_Product_Attribute();
-		$size_attribute->set_name( 'size' );
-		$size_attribute->set_options( [
-			'small',
-			'medium',
-			'large',
-		] );
-		$size_attribute->set_variation( false );
-
-		$pattern_attribute = new WC_Product_Attribute();
-		$pattern_attribute->set_name( 'pattern' );
-		$pattern_attribute->set_options( [
-			'checked',
-			'floral',
-			'leopard',
-		] );
-		$pattern_attribute->set_variation( true );
-
-		return [ $color_attribute, $size_attribute, $pattern_attribute ];
+		return [
+			self::create_color_attribute(),
+			self::create_size_attribute(),
+			self::create_pattern_attribute(),
+		];
 	}
 
 
