@@ -399,12 +399,35 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Products::get_google_product_category_id() */
+	public function test_get_google_product_category_id_product_variation_multiple_categories() {
+
+		$variable_product = $this->get_variable_product( [ 'children' => 2 ] );
+
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		Product_Categories::update_google_product_category_id( $parent_category['term_id'], '8' );
+		$child_category = wp_insert_term( 'Pet Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+		Product_Categories::update_google_product_category_id( $child_category['term_id'], '9' );
+
+		wp_set_post_terms( $variable_product->get_id(), [
+			$parent_category['term_id'],
+			$child_category['term_id'],
+		], 'product_cat' );
+
+		foreach ( $variable_product->get_children() as $child_product_id ) {
+
+			$product_variation = wc_get_product( $child_product_id );
+			$this->assertEquals( '9', Products::get_google_product_category_id( $product_variation ) );
+		}
+	}
+
+
+	/** @see Products::get_google_product_category_id() */
 	public function test_get_google_product_category_id_default() {
 
 		$product = $this->get_product();
-		facebook_for_woocommerce()->get_commerce_handler()->update_default_google_product_category_id( '7' );
+		facebook_for_woocommerce()->get_commerce_handler()->update_default_google_product_category_id( '10' );
 
-		$this->assertEquals( '7', Products::get_google_product_category_id( $product ) );
+		$this->assertEquals( '10', Products::get_google_product_category_id( $product ) );
 	}
 
 
