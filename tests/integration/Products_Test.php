@@ -1046,7 +1046,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_pattern_attribute( $product, 'print' );
 
@@ -1071,7 +1071,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		// get a fresh product object
 		$product = wc_get_product( $product->get_id() );
 
-		$this->expectException( \Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		Products::update_product_pattern_attribute( $product, $color_attribute->get_name() );
 	}
