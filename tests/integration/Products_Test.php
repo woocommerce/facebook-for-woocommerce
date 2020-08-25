@@ -461,9 +461,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 			Products::get_product_size_attribute( $product ),
 			Products::get_product_pattern_attribute( $product ),
 		] ), Products::get_distinct_product_attributes( $product ) );
-  }
-  
-  
+	}
+
+
 	/**
 	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_google_product_category_id()
 	 *
