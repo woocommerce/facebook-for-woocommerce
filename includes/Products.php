@@ -872,8 +872,36 @@ class Products {
 	 */
 	public static function get_product_pattern_attribute( \WC_Product $product ) {
 
-		// TODO: implement the validations
-		return $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		$attribute_name = '';
+
+		if ( $product ) {
+
+			$meta_value = $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
+
+			// check if an attribute with that name exists
+			if ( self::product_has_attribute( $product, $meta_value ) ) {
+				$attribute_name = $meta_value;
+			}
+
+			if ( empty( $attribute_name ) ) {
+				// try to find a matching attribute
+				foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+
+					if ( stripos( $attribute->get_name(), 'pattern' ) !== false ) {
+						$attribute_name = $attribute->get_name();
+						break;
+					}
+				}
+			}
+		}
+
+		return $attribute_name;
 	}
 
 
@@ -884,10 +912,21 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string $attribute_name the attribute to be used to store the pattern
+	 * @throws SV_WC_Plugin_Exception
 	 */
 	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
 
-		// TODO: implement
+		// check if the name matches an available attribute
+		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute_name !== self::get_product_pattern_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::PATTERN_ATTRIBUTE_META_KEY, $attribute_name );
+		$product->save_meta_data();
 	}
 
 
@@ -903,8 +942,19 @@ class Products {
 	 */
 	public static function get_product_pattern( \WC_Product $product ) {
 
-		// TODO: implement
-		return '';
+		$pattern_value     = '';
+		$pattern_attribute = self::get_product_pattern_attribute( $product );
+
+		if ( ! empty( $pattern_attribute ) ) {
+			$pattern_value = $product->get_attribute( $pattern_attribute );
+		}
+
+		if ( empty( $pattern_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$pattern_value  = $parent_product instanceof \WC_Product ? self::get_product_pattern( $parent_product ) : '';
+		}
+
+		return $pattern_value;
 	}
 
 
