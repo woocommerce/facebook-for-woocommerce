@@ -641,7 +641,7 @@ class Products {
 
 		if ( $product->is_type( 'variation' ) ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
-			$gender         = $parent_product->get_meta( self::GENDER_META_KEY );
+			$gender         = $parent_product instanceof \WC_Product ? $parent_product->get_meta( self::GENDER_META_KEY ) : null;
 		} else {
 			$gender = $product->get_meta( self::GENDER_META_KEY );
 		}
