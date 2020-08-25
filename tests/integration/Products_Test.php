@@ -461,6 +461,36 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 			Products::get_product_size_attribute( $product ),
 			Products::get_product_pattern_attribute( $product ),
 		] ), Products::get_distinct_product_attributes( $product ) );
+  }
+  
+  
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_google_product_category_id()
+	 *
+	 * @param string $google_product_category_id Google product category ID
+	 *
+	 * @dataProvider provider_update_google_product_category_id
+	 */
+	public function test_update_google_product_category_id( $google_product_category_id ) {
+
+		$product = $this->get_product();
+
+		Products::update_google_product_category_id( $product, $google_product_category_id );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertEquals( $google_product_category_id, $product->get_meta( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY ) );
+	}
+
+
+	/** @see test_update_google_product_category_id */
+	public function provider_update_google_product_category_id() {
+
+		return [
+			[ '3350' ],
+			[ '' ],
+		];
 	}
 
 

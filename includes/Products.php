@@ -512,7 +512,8 @@ class Products {
 	 */
 	public static function update_google_product_category_id( \WC_Product $product, $category_id ) {
 
-		// TODO: implement
+		$product->update_meta_data( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
+		$product->save_meta_data();
 	}
 
 
