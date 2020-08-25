@@ -640,7 +640,8 @@ class Products {
 	public static function get_product_gender( \WC_Product $product ) {
 
 		if ( $product->is_type( 'variation' ) ) {
-			$gender = get_post_meta( $product->get_parent_id(), self::GENDER_META_KEY, true );
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$gender         = $parent_product->get_meta( self::GENDER_META_KEY );
 		} else {
 			$gender = $product->get_meta( self::GENDER_META_KEY );
 		}
