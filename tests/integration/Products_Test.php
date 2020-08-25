@@ -409,6 +409,148 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::is_product_ready_for_commerce()
+	 *
+	 * @param bool $manage_stock_option WC general option to manage stock
+	 * @param bool $manage_stock_prop product property to manage stock
+	 * @param string $product_price product price
+	 * @param bool $commerce_enabled commerce enabled for product
+	 * @param bool $sync_enabled sync enabled for product
+	 * @param bool $expected_result the expected result
+	 *
+	 * @dataProvider provider_is_product_ready_for_commerce
+	 */
+	public function test_is_product_ready_for_commerce( $manage_stock_option, $manage_stock_prop, $product_price, $commerce_enabled, $sync_enabled, $expected_result ) {
+
+		$product = $this->get_product();
+
+		update_option( 'woocommerce_manage_stock', $manage_stock_option ? 'yes' : 'no' );
+		$product->set_manage_stock( $manage_stock_prop );
+		$product->set_regular_price( $product_price );
+		Products::update_commerce_enabled_for_product( $product, $commerce_enabled );
+		if ($sync_enabled) {
+			Products::enable_sync_for_products( [$product]);
+		} else {
+			Products::disable_sync_for_products( [$product]);
+		}
+
+		$this->assertEquals( $expected_result, Facebook\Products::is_product_ready_for_commerce( $product ) );
+	}
+
+
+	/** @see test_is_product_ready_for_commerce */
+	public function provider_is_product_ready_for_commerce() {
+
+		return [
+			[ true, true, '10.00', true, true, true ],
+			[ false, true, '10.00', true, true, false ],
+			[ true, false, '10.00', true, true, false ],
+			[ true, true, '0', true, true, false ],
+			[ true, true, '10.00', false, true, false ],
+			[ true, true, '10.00', true, false, false ],
+		];
+	}
+
+
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product()
+	 *
+	 * @param string $meta_value meta value
+	 * @param bool $expected_result the expected result
+	 *
+	 * @dataProvider provider_is_commerce_enabled_for_product
+	 */
+	public function test_is_commerce_enabled_for_product( $meta_value, $expected_result ) {
+
+		$product = $this->get_product();
+
+		if ( ! empty( $meta_value ) ) {
+			$product->update_meta_data( Products::COMMERCE_ENABLED_META_KEY, $meta_value, true );
+		} else {
+			$product->delete_meta_data( Products::COMMERCE_ENABLED_META_KEY );
+		}
+
+		$this->assertEquals( $expected_result, Facebook\Products::is_commerce_enabled_for_product( $product ) );
+	}
+
+
+	/** @see test_is_commerce_enabled_for_product */
+	public function provider_is_commerce_enabled_for_product() {
+
+		return [
+			[ 'yes',  true ],
+			[ true,  true ],
+			[ 'no', false ],
+			[ false, false ],
+			[ null, false ], // if a product does not have this meta set, Commerce is not enabled for it
+		];
+	}
+
+
+	/**
+	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_commerce_enabled_for_product()
+	 *
+	 * @param bool $param_value param value
+	 * @param string $expected_meta_value the expected meta value
+	 *
+	 * @dataProvider provider_update_commerce_enabled_for_product
+	 */
+	public function test_update_commerce_enabled_for_product( $param_value, $expected_meta_value ) {
+
+		$product = $this->get_product();
+
+		Products::update_commerce_enabled_for_product( $product, $param_value );
+
+		// get a fresh product object to ensure the status is stored
+		$product = wc_get_product( $product->get_id() );
+
+		$this->assertEquals( $expected_meta_value, $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
+	}
+
+
+	/** @see test_update_commerce_enabled_for_product */
+	public function provider_update_commerce_enabled_for_product() {
+
+		return [
+			[ true, 'yes' ],
+			[ 'yes', 'yes' ],
+			[ false,  'no' ],
+			[ 'no',  'no' ],
+			[ '', 'no' ],
+		];
+	}
+
+
+	/** @see Facebook\Products::get_available_product_attributes() */
+	public function test_get_available_product_attributes() {
+
+		$product = $this->get_product( [ 'attributes' => self::create_product_attributes() ] );
+
+		$this->assertSame( $product->get_attributes(), Products::get_available_product_attributes( $product ) );
+	}
+
+
+	/** @see Facebook\Products::get_distinct_product_attributes() */
+	public function test_get_distinct_product_attributes() {
+
+		$attributes = self::create_product_attributes();
+		$product    = $this->get_product( [ 'attributes' => $attributes ] );
+
+		list( $color_attribute, $size_attribute, $pattern_attribute ) = $attributes;
+
+		Products::update_product_color_attribute( $product, $color_attribute->get_name() );
+		Products::update_product_size_attribute( $product, $size_attribute->get_name() );
+		Products::update_product_pattern_attribute( $product, $pattern_attribute->get_name() );
+
+		$this->assertSame( array_filter( [
+			Products::get_product_color_attribute( $product ),
+			Products::get_product_size_attribute( $product ),
+			Products::get_product_pattern_attribute( $product ),
+		] ), Products::get_distinct_product_attributes( $product ) );
+	}
+
+
+	/**
 	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_google_product_category_id()
 	 *
 	 * @param string $google_product_category_id Google product category ID
@@ -420,6 +562,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product = $this->get_product();
 
 		Products::update_google_product_category_id( $product, $google_product_category_id );
+
+		// get a fresh product object
+		$product = wc_get_product( $product->get_id() );
 
 		$this->assertEquals( $google_product_category_id, $product->get_meta( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY ) );
 	}
@@ -479,6 +624,41 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->excluded_category = $category['term_id'];
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
+	}
+
+
+	/**
+	 * Creates product attributes.
+	 */
+	private function create_product_attributes() {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( 'color' );
+		$color_attribute->set_options( [
+			'pink',
+			'blue',
+		] );
+		$color_attribute->set_variation( true );
+
+		$size_attribute = new WC_Product_Attribute();
+		$size_attribute->set_name( 'size' );
+		$size_attribute->set_options( [
+			'small',
+			'medium',
+			'large',
+		] );
+		$size_attribute->set_variation( false );
+
+		$pattern_attribute = new WC_Product_Attribute();
+		$pattern_attribute->set_name( 'pattern' );
+		$pattern_attribute->set_options( [
+			'checked',
+			'floral',
+			'leopard',
+		] );
+		$pattern_attribute->set_variation( true );
+
+		return [ $color_attribute, $size_attribute, $pattern_attribute ];
 	}
 
 

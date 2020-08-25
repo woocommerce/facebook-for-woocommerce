@@ -32,8 +32,7 @@ class Product_Categories {
 	 */
 	public static function get_google_product_category_id( $category_id ) {
 
-		// TODO: implement
-		return '';
+		return get_term_meta( $category_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 	}
 
 
@@ -47,7 +46,7 @@ class Product_Categories {
 	 */
 	public static function update_google_product_category_id( $id, $category_id ) {
 
-		// TODO: implement
+		update_term_meta( $id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
 	}
 
 
