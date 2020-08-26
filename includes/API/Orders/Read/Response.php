@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\API\Orders\Read;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 
 /**
  * Orders API read response object.
@@ -20,6 +21,19 @@ use SkyVerge\WooCommerce\Facebook\API;
  * @since 2.1.0-dev.1
  */
 class Response extends API\Response {
+
+
+	/**
+	 * Gets an order object from the response data.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Orders\Order
+	 */
+	public function get_order() {
+
+		return new Order( json_decode( json_encode( $this->response_data ), true ) );
+	}
 
 
 }
