@@ -24,4 +24,22 @@ trait Idempotent_Request {
 	protected $idempotency_key;
 
 
+	/**
+	 * Gets the value of idempotency key.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_idempotency_key() {
+
+		if ( empty( $this->idempotency_key ) ) {
+
+			$this->idempotency_key = wp_generate_uuid4();
+		}
+
+		return $this->idempotency_key;
+	}
+
+
 }
