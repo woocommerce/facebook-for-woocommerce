@@ -45,6 +45,38 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_inventory() {
+
+		$product = $this->tester->get_product();
+
+		Products::enable_sync_for_products( [ $product ] );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'inventory', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_inventory() {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( '100', $data['inventory'] );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
 	public function test_prepare_product_ready_for_commerce_gender() {
 
 		$product = $this->tester->get_product( [

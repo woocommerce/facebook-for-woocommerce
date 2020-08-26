@@ -537,6 +537,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// add the Commerce values
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
 				$product_data['gender']    = Products::get_product_gender( $this->woo_product );
+				$product_data['inventory'] = (string) $this->woo_product->get_stock_quantity();
 			}
 
 			// Only use checkout URLs if they exist.
