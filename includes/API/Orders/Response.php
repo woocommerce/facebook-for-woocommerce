@@ -37,7 +37,7 @@ class Response extends API\Response {
 		$orders = [];
 
 		foreach ( $this->get_data() as $order_data ) {
-			$orders[] = new Order( $order_data );
+			$orders[] = new Order( json_decode( json_encode( $order_data ), true ) );
 		}
 
 		return $orders;
