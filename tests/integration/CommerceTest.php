@@ -160,6 +160,13 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Commerce::get_orders_handler() */
+	public function test_get_orders_handler() {
+
+		$this->assertInstanceOf( Commerce\Orders::class, $this->get_commerce_handler()->get_orders_handler() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
