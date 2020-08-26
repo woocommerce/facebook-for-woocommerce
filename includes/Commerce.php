@@ -37,7 +37,7 @@ class Commerce {
 
 		require_once __DIR__ . '/Commerce/Orders.php';
 
-		$this->orders = new \SkyVerge\WooCommerce\Facebook\Commerce\Orders();
+		$this->orders = new Commerce\Orders();
 	}
 
 
