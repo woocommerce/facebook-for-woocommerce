@@ -109,6 +109,21 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Order::get_estimated_payment_details() */
+	public function test_get_estimated_payment_details() {
+
+		$test_response_data = $this->get_test_response_data();
+		$order_handler      = new Order( $test_response_data );
+
+		$this->assertEquals( $test_response_data['estimated_payment_details'], $order_handler->get_estimated_payment_details() );
+
+		unset( $test_response_data['estimated_payment_details'] );
+		$order_handler = new Order( $test_response_data );
+
+		$this->assertEquals( [], $order_handler->get_estimated_payment_details() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
