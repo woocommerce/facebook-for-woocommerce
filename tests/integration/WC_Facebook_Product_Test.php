@@ -31,6 +31,122 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_gender() {
+
+		$product = $this->tester->get_product();
+
+		Products::enable_sync_for_products( [ $product ] );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'gender', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_inventory() {
+
+		$product = $this->tester->get_product();
+
+		Products::enable_sync_for_products( [ $product ] );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'inventory', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_google_product_category() {
+
+		$product = $this->tester->get_product();
+
+		Products::enable_sync_for_products( [ $product ] );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'google_product_category', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_google_product_category() {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_google_product_category_id( $product, '1234' );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( '1234', $data['google_product_category'] );
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
+	 * @dataProvider provider_prepare_product_ready_for_commerce_inventory
+	 *
+	 * @param int|string $woo_quantity WooCommerce stock quantity
+	 * @param int $facebook_expected expected Facebook inventory value
+	 */
+	public function test_prepare_product_ready_for_commerce_inventory( $woo_quantity, $facebook_expected ) {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => $woo_quantity,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( $facebook_expected, $data['inventory'] );
+	}
+
+
+	/** @see test_prepare_product_ready_for_commerce_inventory */
+	public function provider_prepare_product_ready_for_commerce_inventory() {
+
+		return [
+			'valid stock quantity'    => [ 4, 4 ],
+			'negative stock quantity' => [ -4, 0 ],
+			'invalid stock quantity'  => [ 'asdf', 0 ],
+		];
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_gender() {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_product_gender( $product, 'female' );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( 'female', $data['gender'] );
+	}
+
+
 	/**
 	 * @see \WC_Facebook_Product::prepare_product()
 	 *

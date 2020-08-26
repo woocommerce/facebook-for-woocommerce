@@ -534,6 +534,17 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
+			// add the Commerce values
+			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
+
+				$product_data['gender']    = Products::get_product_gender( $this->woo_product );
+				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
+
+				if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
+					$product_data['google_product_category'] = $google_product_category;
+				}
+			}
+
 			// Only use checkout URLs if they exist.
 			if ( $checkout_url ) {
 				  $product_data['checkout_url'] = $checkout_url;
