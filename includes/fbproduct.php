@@ -540,6 +540,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$product_data['gender']    = Products::get_product_gender( $this->woo_product );
 				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
 
+				// add the known attribute values
+				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
+				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
+				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
+
 				if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
 					$product_data['google_product_category'] = $google_product_category;
 				}
@@ -655,20 +660,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					}
 
 					switch ( $new_name ) {
-
-						case \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE:
-						case \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR:
-						case \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN:
-
-							$variant_data[] = [
-								'product_field' => $new_name,
-								'label'         => $label,
-								'options'       => $option_values,
-							];
-
-							$product_data[ $new_name ] = $option_values[0];
-
-						break;
 
 						case \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
 
