@@ -94,6 +94,21 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Order::get_shipping_address() */
+	public function test_get_shipping_address() {
+
+		$test_response_data = $this->get_test_response_data();
+		$order_handler      = new Order( $test_response_data );
+
+		$this->assertEquals( $test_response_data['shipping_address'], $order_handler->get_shipping_address() );
+
+		unset( $test_response_data['shipping_address'] );
+		$order_handler = new Order( $test_response_data );
+
+		$this->assertEquals( [], $order_handler->get_shipping_address() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
