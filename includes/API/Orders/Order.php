@@ -72,6 +72,7 @@ class Order {
 	 */
 	public function get_status() {
 
+		return ! empty( $this->data['order_status'] ) && ! empty( $this->data['order_status']['state'] ) ? $this->data['order_status']['state'] : '';
 	}
 
 
