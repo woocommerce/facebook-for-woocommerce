@@ -145,6 +145,7 @@ class Order {
 	 */
 	public function get_estimated_payment_details() {
 
+		return isset( $this->data['estimated_payment_details'] ) ? $this->data['estimated_payment_details'] : [];
 	}
 
 
