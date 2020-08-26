@@ -58,6 +58,39 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_google_product_category() {
+
+		$product = $this->tester->get_product();
+
+		Products::enable_sync_for_products( [ $product ] );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'google_product_category', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_google_product_category() {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_google_product_category_id( $product, '1234' );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( '1234', $data['google_product_category'] );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
 	public function test_prepare_product_ready_for_commerce_inventory() {
 
 		$product = $this->tester->get_product( [
