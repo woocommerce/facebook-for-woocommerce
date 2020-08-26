@@ -653,7 +653,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 						}
 					}
 
-					if ( \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER === $new_name ) {
+					if ( \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER === $new_name && ! isset( $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER ] ) ) {
 
 						// If we can't validate the gender, this will be null.
 						$product_data[ $new_name ] = \WC_Facebookcommerce_Utils::validateGender( $option_values[0] );
