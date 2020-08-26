@@ -160,6 +160,7 @@ class Order {
 	 */
 	public function get_buyer_details() {
 
+		return isset( $this->data['buyer_details'] ) ? $this->data['buyer_details'] : [];
 	}
 
 
