@@ -34,14 +34,10 @@ class Request extends API\Request  {
 
 		parent::__construct( "/{$remote_id}", 'GET' );
 
-		if ( ! empty( $fields ) ) {
-
-			$params['fields'] = is_array( $fields ) ? implode( ',', $fields ) : $fields;
-
-		} else {
+		if ( empty( $fields ) ) {
 
 			// request all top-level fields
-			$params['fields'] = implode( ',', [
+			$fields = implode( ',', [
 				'id',
 				'order_status',
 				'created',
@@ -55,7 +51,13 @@ class Request extends API\Request  {
 				'estimated_payment_details',
 				'buyer_details',
 			] );
+
+		} elseif ( is_array( $fields ) ) {
+
+			$fields = implode( ',', $fields );
 		}
+
+		$this->set_params( [ 'fields' => $fields ] );
 	}
 
 
