@@ -8,7 +8,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Orders\List;
+namespace SkyVerge\WooCommerce\Facebook\API\Orders;
 
 defined( 'ABSPATH' ) or exit;
 
