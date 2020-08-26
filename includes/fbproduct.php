@@ -622,6 +622,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// For each product field type, pull the single variant
 			foreach ( $variant_names as $original_variant_name ) {
 
+				// don't handle any attributes that are designated as Commerce attributes
+				if ( in_array( str_replace( array( 'attribute_' ), '', strtolower( $original_variant_name ) ), Products::get_distinct_product_attributes( $this->woo_product ), true ) ) {
+					continue;
+				}
+
 				// Retrieve label name for attribute
 				$label = wc_attribute_label( $original_variant_name, $product );
 
