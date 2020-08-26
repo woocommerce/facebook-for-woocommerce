@@ -29,6 +29,18 @@ class Commerce {
 
 
 	/**
+	 * Commerce handler constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function __construct() {
+
+		require_once __DIR__ . '/includes/Commerce/Orders.php';
+
+		$this->orders = new \SkyVerge\WooCommerce\Facebook\Commerce\Orders();
+	}
+
+	/**
 	 * Gets the plugin-level fallback Google product category ID.
 	 *
 	 * This will be used when the category or product-level settings don’t override it.
