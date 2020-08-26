@@ -467,7 +467,11 @@ class Products {
 	 */
 	public static function is_commerce_enabled_for_product( \WC_Product $product )  {
 
-		return wc_string_to_bool( $product->get_meta( Products::COMMERCE_ENABLED_META_KEY ) );
+		if ( $product->is_type( 'variation' ) ) {
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
 	}
 
 
