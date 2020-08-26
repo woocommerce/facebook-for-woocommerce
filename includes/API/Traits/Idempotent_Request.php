@@ -19,4 +19,9 @@ defined( 'ABSPATH' ) or exit;
  */
 trait Idempotent_Request {
 
+
+	/** @var string holds the request's idempotency key */
+	protected $idempotency_key;
+
+
 }
