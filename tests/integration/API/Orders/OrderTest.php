@@ -64,6 +64,21 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Order::get_channel() */
+	public function test_get_channel() {
+
+		$test_response_data = $this->get_test_response_data();
+		$order_handler      = new Order( $test_response_data );
+
+		$this->assertEquals( $test_response_data['channel'], $order_handler->get_channel() );
+
+		unset( $test_response_data['channel'] );
+		$order_handler = new Order( $test_response_data );
+
+		$this->assertEquals( '', $order_handler->get_channel() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
@@ -110,7 +125,7 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 			],
 			'ship_by_date'              => '2019-01-16',
 			'merchant_order_id'         => '46192',
-			'channel'                   => 'instagram',
+			'channel'                   => 'Instagram',
 			'selected_shipping_option'  => [
 				'name'                    => 'Standard',
 				'price'                   => [
