@@ -22,4 +22,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 class Request extends API\Request  {
 
 
+	use API\Traits\Idempotent_Request;
+
+
 }
