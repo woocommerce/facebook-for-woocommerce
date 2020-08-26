@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
+use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
@@ -49,11 +50,11 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param API\Orders\Order $remote_order Orders API order object
+	 * @param Order $remote_order Orders API order object
 	 * @return \WC_Order
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function create_local_order( $remote_order ) {
+	public function create_local_order( Order $remote_order ) {
 
 		// TODO: implement
 		return null;
@@ -65,11 +66,11 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param API\Orders\Order $remote_order Orders API order object
+	 * @param Order $remote_order Orders API order object
 	 * @param \WC_Order $local_order local order object
 	 * @return \WC_Order
 	 */
-	public function update_local_order( $remote_order, $local_order ) {
+	public function update_local_order( Order $remote_order, \WC_Order $local_order ) {
 
 		// TODO: implement
 		return $local_order;
@@ -133,7 +134,7 @@ class Orders {
 	 * @param string $carrier shipping carrier
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function fulfill_order( $order, $tracking_number, $carrier ) {
+	public function fulfill_order( \WC_Order $order, $tracking_number, $carrier ) {
 
 		// TODO: implement
 	}
@@ -162,7 +163,7 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function cancel_order( $order ) {
+	public function cancel_order( \WC_Order $order ) {
 
 		// TODO: implement
 	}
