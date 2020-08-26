@@ -403,6 +403,36 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product() */
+	public function test_is_commerce_enabled_for_variation() {
+
+		$product = $this->get_variable_product();
+
+		Products::update_commerce_enabled_for_product( $product, true );
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$variation = wc_get_product( $child_id );
+
+			$this->assertTrue( Facebook\Products::is_commerce_enabled_for_product( $variation ) );
+		}
+	}
+
+
+	/** @see \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product() */
+	public function test_is_commerce_disabled_for_variation() {
+
+		$product = $this->get_variable_product();
+
+		foreach ( $product->get_children() as $child_id ) {
+
+			$variation = wc_get_product( $child_id );
+
+			$this->assertFalse( Facebook\Products::is_commerce_enabled_for_product( $variation ) );
+		}
+	}
+
+
 	/**
 	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_commerce_enabled_for_product()
 	 *
