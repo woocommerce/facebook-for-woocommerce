@@ -40,6 +40,7 @@ class Commerce {
 		$this->orders = new \SkyVerge\WooCommerce\Facebook\Commerce\Orders();
 	}
 
+
 	/**
 	 * Gets the plugin-level fallback Google product category ID.
 	 *
@@ -130,11 +131,10 @@ class Commerce {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @return Commerce\Orders the orders handler instance
+	 * @return \SkyVerge\WooCommerce\Facebook\Commerce\Orders
 	 */
 	public function get_orders_handler() {
 
-		// TODO: implement
 		return $this->orders;
 	}
 
