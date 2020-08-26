@@ -20,4 +20,11 @@ defined( 'ABSPATH' ) or exit;
 class Orders {
 
 
+	/** @var string the fetch orders action */
+	const ACTION_FETCH_ORDERS = 'wc_facebook_commerce_fetch_orders';
+
+	/** @var string the meta key used to store the remote order ID */
+	const REMOTE_ID_META_KEY = '_wc_facebook_commerce_remote_id';
+
+
 }
