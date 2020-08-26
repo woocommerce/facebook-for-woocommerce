@@ -115,6 +115,7 @@ class Order {
 	 */
 	public function get_selected_shipping_option() {
 
+		return isset( $this->data['selected_shipping_option'] ) ? $this->data['selected_shipping_option'] : [];
 	}
 
 
