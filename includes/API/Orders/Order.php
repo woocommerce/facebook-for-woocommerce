@@ -33,4 +33,8 @@ class Order {
 	const STATUS_COMPLETED = 'COMPLETED';
 
 
+	/** @var array order data */
+	protected $data;
+
+
 }
