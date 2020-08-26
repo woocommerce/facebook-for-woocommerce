@@ -71,17 +71,64 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see \WC_Facebook_Product::prepare_product() */
-	public function test_prepare_product_ready_for_commerce_google_product_category() {
+	public function test_prepare_product_not_ready_for_commerce_color() {
+
+		$attribute = $this->tester->create_color_attribute();
 
 		$product = $this->tester->get_product( [
-			'status'         => 'publish',
-			'regular_price'  => '1.00',
-			'manage_stock'   => true,
-			'stock_quantity' => 100,
+			'attributes' => [ $attribute ],
 		] );
 
 		Products::enable_sync_for_products( [ $product ] );
-		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_product_color_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'color', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_size() {
+
+		$attribute = $this->tester->create_size_attribute();
+
+		$product = $this->tester->get_product( [
+			'attributes' => [ $attribute ],
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_product_size_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'size', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_not_ready_for_commerce_pattern() {
+
+		$attribute = $this->tester->create_pattern_attribute();
+
+		$product = $this->tester->get_product( [
+			'attributes' => [ $attribute ],
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_product_pattern_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertArrayNotHasKey( 'pattern', $data );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_google_product_category() {
+
+		$product = $this->get_product_ready_for_commerce();
+
 		Products::update_google_product_category_id( $product, '1234' );
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
@@ -130,20 +177,64 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see \WC_Facebook_Product::prepare_product() */
 	public function test_prepare_product_ready_for_commerce_gender() {
 
-		$product = $this->tester->get_product( [
-			'status'         => 'publish',
-			'regular_price'  => '1.00',
-			'manage_stock'   => true,
-			'stock_quantity' => 100,
-		] );
+		$product = $this->get_product_ready_for_commerce();
 
-		Products::enable_sync_for_products( [ $product ] );
-		Products::update_commerce_enabled_for_product( $product, true );
 		Products::update_product_gender( $product, 'female' );
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
 
 		$this->assertSame( 'female', $data['gender'] );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_color() {
+
+		$attribute = $this->tester->create_color_attribute();
+
+		$product = $this->get_product_ready_for_commerce( [ $attribute ] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_product_color_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( 'pink | blue', $data['color'] );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_size() {
+
+		$attribute = $this->tester->create_size_attribute();
+
+		$product = $this->get_product_ready_for_commerce( [ $attribute ] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_product_size_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( 'small | medium | large', $data['size'] );
+	}
+
+
+	/** @see \WC_Facebook_Product::prepare_product() */
+	public function test_prepare_product_ready_for_commerce_pattern() {
+
+		$attribute = $this->tester->create_pattern_attribute();
+
+		$product = $this->get_product_ready_for_commerce( [ $attribute ] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
+		Products::update_product_pattern_attribute( $product, $attribute->get_name() );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( 'checked | floral | leopard', $data['pattern'] );
 	}
 
 
@@ -380,6 +471,29 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 		$product->set_description( 'Standard Description.' );
 		$product->set_short_description( 'Short Description.' );
 		$product->save();
+
+		return $product;
+	}
+
+
+	/**
+	 * Gets a product that's ready for Commerce.
+	 *
+	 * @param \WC_Product_Attribute[] $attributes product attributes to set
+	 * @return \WC_Product
+	 */
+	private function get_product_ready_for_commerce( $attributes = [] ) {
+
+		$product = $this->tester->get_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+			'attributes'     => $attributes,
+		] );
+
+		Products::enable_sync_for_products( [ $product ] );
+		Products::update_commerce_enabled_for_product( $product, true );
 
 		return $product;
 	}
