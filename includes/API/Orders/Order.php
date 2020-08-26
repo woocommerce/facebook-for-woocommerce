@@ -100,6 +100,7 @@ class Order {
 	 */
 	public function get_channel() {
 
+		return ! empty( $this->data['channel'] ) ? $this->data['channel'] : '';
 	}
 
 
