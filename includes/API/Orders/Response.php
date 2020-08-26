@@ -25,4 +25,23 @@ class Response extends API\Response {
 	use API\Traits\Paginated_Response;
 
 
+	/**
+	 * Gets an array of order objects from the response data.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\API\Orders\Order[]
+	 */
+	public function get_orders() {
+
+		$orders = [];
+
+		foreach ( $this->get_data() as $order_data ) {
+			$orders[] = new Order( $order_data );
+		}
+
+		return $orders;
+	}
+
+
 }
