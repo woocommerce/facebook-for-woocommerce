@@ -72,6 +72,26 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_page_access_token() */
+	public function test_get_page_access_token() {
+
+		update_option( Connection::OPTION_PAGE_ACCESS_TOKEN, '123456' );
+
+		$this->assertSame( '123456', $this->get_connection()->get_page_access_token() );
+	}
+
+
+	/** @see Connection::get_page_access_token() */
+	public function test_get_page_access_token_filter() {
+
+		add_filter( 'wc_facebook_connection_page_access_token', static function() {
+			return 'filtered';
+		} );
+
+		$this->assertSame( 'filtered', $this->get_connection()->get_page_access_token() );
+	}
+
+
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
@@ -552,6 +572,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_merchant_access_token( $access_token );
 
 		$this->assertSame( $access_token, $this->get_connection()->get_merchant_access_token() );
+	}
+
+
+	/** @see Connection::update_page_access_token() */
+	public function test_update_page_access_token() {
+
+		$access_token = '123456';
+
+		$this->get_connection()->update_page_access_token( $access_token );
+
+		$this->assertSame( $access_token, get_option( Connection::OPTION_PAGE_ACCESS_TOKEN, '' ) );
+		$this->assertSame( $access_token, $this->get_connection()->get_page_access_token() );
 	}
 
 

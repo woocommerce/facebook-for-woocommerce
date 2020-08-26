@@ -55,6 +55,9 @@ class Connection {
 	/** @var string the merchant access token option name */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
+	/** @var string the page access token option name */
+	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
@@ -362,6 +365,29 @@ class Connection {
 		 * @param Connection $connection connection handler instance
 		 */
 		return apply_filters( 'wc_facebook_connection_merchant_access_token', $access_token, $this );
+	}
+
+
+	/**
+	 * Gets the page access token.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_page_access_token() {
+
+		$access_token = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the page access token.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param string $access_token page access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_page_access_token', $access_token, $this );
 	}
 
 
@@ -747,6 +773,19 @@ class Connection {
 	public function update_merchant_access_token( $value ) {
 
 		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
+	}
+
+
+	/**
+	 * Stores the given page access token.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $value the access token
+	 */
+	public function update_page_access_token( $value ) {
+
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
 	}
 
 

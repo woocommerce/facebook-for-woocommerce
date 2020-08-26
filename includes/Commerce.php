@@ -99,7 +99,7 @@ class Commerce {
 	 */
 	public function is_connected() {
 
-		$connected = (bool) strlen( facebook_for_woocommerce()->get_integration()->get_page_access_token() );
+		$connected = (bool) strlen( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() );
 
 		/**
 		 * Filters whether the site is connected.
