@@ -39,6 +39,16 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Order::get_status() */
+	public function test_get_status() {
+
+		$test_response_data = $this->get_test_response_data();
+		$order_handler      = new Order( $test_response_data );
+
+		$this->assertEquals( $test_response_data['order_status']['state'], $order_handler->get_status() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
