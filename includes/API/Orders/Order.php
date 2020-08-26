@@ -59,6 +59,7 @@ class Order {
 	 */
 	public function get_id() {
 
+		return ! empty( $this->data['id'] ) ? $this->data['id'] : '';
 	}
 
 
