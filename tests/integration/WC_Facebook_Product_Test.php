@@ -105,7 +105,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
 
-		$this->assertSame( '100', $data['inventory'] );
+		$this->assertSame( 100, $data['inventory'] );
 	}
 
 

@@ -538,7 +538,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
 
 				$product_data['gender']    = Products::get_product_gender( $this->woo_product );
-				$product_data['inventory'] = (string) $this->woo_product->get_stock_quantity();
+				$product_data['inventory'] = $this->woo_product->get_stock_quantity();
 
 				if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
 					$product_data['google_product_category'] = $google_product_category;
