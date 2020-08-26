@@ -712,7 +712,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
-		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+		$this->assertSame( 'product-colour', Products::get_product_color_attribute( $product ) );
 	}
 
 
@@ -906,7 +906,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
-		$this->assertSame( $size_attribute->get_name(), Products::get_product_size_attribute( $product ) );
+		$this->assertSame( 'product-size', Products::get_product_size_attribute( $product ) );
 	}
 
 
@@ -1095,7 +1095,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
-		$this->assertSame( $pattern_attribute->get_name(), Products::get_product_pattern_attribute( $product ) );
+		$this->assertSame( 'product-pattern', Products::get_product_pattern_attribute( $product ) );
 	}
 
 
