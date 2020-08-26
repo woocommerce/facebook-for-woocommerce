@@ -124,6 +124,21 @@ class OrderTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Order::get_buyer_details() */
+	public function test_get_buyer_details() {
+
+		$test_response_data = $this->get_test_response_data();
+		$order_handler      = new Order( $test_response_data );
+
+		$this->assertEquals( $test_response_data['buyer_details'], $order_handler->get_buyer_details() );
+
+		unset( $test_response_data['buyer_details'] );
+		$order_handler = new Order( $test_response_data );
+
+		$this->assertEquals( [], $order_handler->get_buyer_details() );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
