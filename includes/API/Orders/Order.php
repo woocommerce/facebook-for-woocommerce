@@ -130,6 +130,7 @@ class Order {
 	 */
 	public function get_shipping_address() {
 
+		return isset( $this->data['shipping_address'] ) ? $this->data['shipping_address'] : [];
 	}
 
 
