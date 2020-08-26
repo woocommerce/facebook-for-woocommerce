@@ -90,14 +90,21 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see \WC_Facebook_Product::prepare_product() */
-	public function test_prepare_product_ready_for_commerce_inventory() {
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
+	 * @dataProvider provider_prepare_product_ready_for_commerce_inventory
+	 *
+	 * @param int|string $woo_quantity WooCommerce stock quantity
+	 * @param int $facebook_expected expected Facebook inventory value
+	 */
+	public function test_prepare_product_ready_for_commerce_inventory( $woo_quantity, $facebook_expected ) {
 
 		$product = $this->tester->get_product( [
 			'status'         => 'publish',
 			'regular_price'  => '1.00',
 			'manage_stock'   => true,
-			'stock_quantity' => 100,
+			'stock_quantity' => $woo_quantity,
 		] );
 
 		Products::enable_sync_for_products( [ $product ] );
@@ -105,7 +112,18 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
 
-		$this->assertSame( 100, $data['inventory'] );
+		$this->assertSame( $facebook_expected, $data['inventory'] );
+	}
+
+
+	/** @see test_prepare_product_ready_for_commerce_inventory */
+	public function provider_prepare_product_ready_for_commerce_inventory() {
+
+		return [
+			'valid stock quantity'    => [ 4, 4 ],
+			'negative stock quantity' => [ -4, 0 ],
+			'invalid stock quantity'  => [ 'asdf', 0 ],
+		];
 	}
 
 
