@@ -645,7 +645,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color_attribute() */
 	public function test_get_product_color_attribute_configured_valid() {
 
-		$color_attribute = self::create_color_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
@@ -661,7 +661,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color_attribute() */
 	public function test_get_product_color_attribute_configured_invalid() {
 
-		$color_attribute = self::create_color_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
 
 		// create the product without attributes
 		$product = $this->get_product();
@@ -678,7 +678,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color_attribute() */
 	public function test_get_product_color_attribute_string_matching() {
 
-		$color_attribute = self::create_color_attribute( 'product colour' );
+		$color_attribute = $this->tester->create_color_attribute( 'product colour' );
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
@@ -689,7 +689,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color_attribute() */
 	public function test_get_product_color_attribute_variation() {
 
-		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+		$color_attribute = $this->tester->create_color_attribute( 'color', [ 'pink', 'blue' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $color_attribute ] );
@@ -710,7 +710,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_color_attribute() */
 	public function test_update_product_color_attribute_valid() {
 
-		$color_attribute = self::create_color_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
@@ -726,7 +726,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_color_attribute() */
 	public function test_update_product_color_attribute_invalid() {
 
-		$color_attribute = self::create_color_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
@@ -744,8 +744,8 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_color_attribute() */
 	public function test_update_product_color_attribute_already_used() {
 
-		$color_attribute = self::create_color_attribute();
-		$size_attribute  = self::create_size_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
+		$size_attribute  = $this->tester->create_size_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
@@ -769,7 +769,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color() */
 	public function test_get_product_color_simple_product_single_value() {
 
-		$color_attribute = self::create_color_attribute( 'color', [ 'pink' ] );
+		$color_attribute = $this->tester->create_color_attribute( 'color', [ 'pink' ] );
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
@@ -785,7 +785,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color() */
 	public function test_get_product_color_variation_with_attribute_set() {
 
-		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+		$color_attribute = $this->tester->create_color_attribute( 'color', [ 'pink', 'blue' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $color_attribute ] );
@@ -818,7 +818,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_color() */
 	public function test_get_product_color_variation_without_attribute_set() {
 
-		$color_attribute = self::create_color_attribute( 'color', [ 'pink', 'blue' ], true );
+		$color_attribute = $this->tester->create_color_attribute( 'color', [ 'pink', 'blue' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $color_attribute ] );
@@ -839,7 +839,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size_attribute() */
 	public function test_get_product_size_attribute_configured_valid() {
 
-		$size_attribute = self::create_size_attribute();
+		$size_attribute = $this->tester->create_size_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
@@ -855,7 +855,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size_attribute() */
 	public function test_get_product_size_attribute_configured_invalid() {
 
-		$size_attribute = self::create_size_attribute();
+		$size_attribute = $this->tester->create_size_attribute();
 
 		// create the product without attributes
 		$product = $this->get_product();
@@ -872,7 +872,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size_attribute() */
 	public function test_get_product_size_attribute_string_matching() {
 
-		$size_attribute = self::create_size_attribute( 'product size' );
+		$size_attribute = $this->tester->create_size_attribute( 'product size' );
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
@@ -883,7 +883,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size_attribute() */
 	public function test_get_product_size_attribute_variation() {
 
-		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+		$size_attribute = $this->tester->create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $size_attribute ] );
@@ -904,7 +904,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_size_attribute() */
 	public function test_update_product_size_attribute_valid() {
 
-		$size_attribute = self::create_size_attribute();
+		$size_attribute = $this->tester->create_size_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
@@ -920,7 +920,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_size_attribute() */
 	public function test_update_product_size_attribute_invalid() {
 
-		$size_attribute = self::create_size_attribute();
+		$size_attribute = $this->tester->create_size_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
@@ -938,8 +938,8 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_size_attribute() */
 	public function test_update_product_size_attribute_already_used() {
 
-		$color_attribute = self::create_color_attribute();
-		$size_attribute  = self::create_size_attribute();
+		$color_attribute = $this->tester->create_color_attribute();
+		$size_attribute  = $this->tester->create_size_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $size_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
@@ -958,7 +958,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size() */
 	public function test_get_product_size_simple_product_single_value() {
 
-		$size_attribute = self::create_size_attribute( 'size', [ 'small' ] );
+		$size_attribute = $this->tester->create_size_attribute( 'size', [ 'small' ] );
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 		$product->update_meta_data( Products::SIZE_ATTRIBUTE_META_KEY, $size_attribute->get_name() );
@@ -974,7 +974,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size() */
 	public function test_get_product_size_variation_with_attribute_set() {
 
-		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+		$size_attribute = $this->tester->create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $size_attribute ] );
@@ -1007,7 +1007,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_size() */
 	public function test_get_product_size_variation_without_attribute_set() {
 
-		$size_attribute = self::create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
+		$size_attribute = $this->tester->create_size_attribute( 'size', [ 'small', 'medium', 'large' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $size_attribute ] );
@@ -1028,7 +1028,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern_attribute() */
 	public function test_get_product_pattern_attribute_configured_valid() {
 
-		$pattern_attribute = self::create_pattern_attribute();
+		$pattern_attribute = $this->tester->create_pattern_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
@@ -1044,7 +1044,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern_attribute() */
 	public function test_get_product_pattern_attribute_configured_invalid() {
 
-		$pattern_attribute = self::create_pattern_attribute();
+		$pattern_attribute = $this->tester->create_pattern_attribute();
 
 		// create the product without attributes
 		$product = $this->get_product();
@@ -1061,7 +1061,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern_attribute() */
 	public function test_get_product_pattern_attribute_string_matching() {
 
-		$pattern_attribute = self::create_pattern_attribute( 'product pattern' );
+		$pattern_attribute = $this->tester->create_pattern_attribute( 'product pattern' );
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
@@ -1072,7 +1072,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern_attribute() */
 	public function test_get_product_pattern_attribute_variation() {
 
-		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+		$pattern_attribute = $this->tester->create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $pattern_attribute ] );
@@ -1093,7 +1093,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_pattern_attribute() */
 	public function test_update_product_pattern_attribute_valid() {
 
-		$pattern_attribute = self::create_pattern_attribute();
+		$pattern_attribute = $this->tester->create_pattern_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
@@ -1109,7 +1109,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_pattern_attribute() */
 	public function test_update_product_pattern_attribute_invalid() {
 
-		$pattern_attribute = self::create_pattern_attribute();
+		$pattern_attribute = $this->tester->create_pattern_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
@@ -1127,8 +1127,8 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::update_product_pattern_attribute() */
 	public function test_update_product_pattern_attribute_already_used() {
 
-		$color_attribute   = self::create_color_attribute();
-		$pattern_attribute = self::create_pattern_attribute();
+		$color_attribute   = $this->tester->create_color_attribute();
+		$pattern_attribute = $this->tester->create_pattern_attribute();
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute, $pattern_attribute ] ] );
 		$product->update_meta_data( Products::COLOR_ATTRIBUTE_META_KEY, $color_attribute->get_name() );
@@ -1147,7 +1147,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern() */
 	public function test_get_product_pattern_simple_product_single_value() {
 
-		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked' ] );
+		$pattern_attribute = $this->tester->create_pattern_attribute( 'pattern', [ 'checked' ] );
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 		$product->update_meta_data( Products::PATTERN_ATTRIBUTE_META_KEY, $pattern_attribute->get_name() );
@@ -1163,7 +1163,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern() */
 	public function test_get_product_pattern_variation_with_attribute_set() {
 
-		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+		$pattern_attribute = $this->tester->create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $pattern_attribute ] );
@@ -1196,7 +1196,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_product_pattern() */
 	public function test_get_product_pattern_variation_without_attribute_set() {
 
-		$pattern_attribute = self::create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
+		$pattern_attribute = $this->tester->create_pattern_attribute( 'pattern', [ 'checked', 'floral', 'leopard' ], true );
 
 		$product = $this->get_variable_product();
 		$product->set_attributes( [ $pattern_attribute ] );
@@ -1217,7 +1217,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_available_product_attributes() */
 	public function test_get_available_product_attributes() {
 
-		$product = $this->get_product( [ 'attributes' => self::create_product_attributes() ] );
+		$product = $this->get_product( [ 'attributes' => $this->tester->create_product_attributes() ] );
 
 		$this->assertSame( $product->get_attributes(), Products::get_available_product_attributes( $product ) );
 	}
@@ -1226,7 +1226,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	/** @see Facebook\Products::get_distinct_product_attributes() */
 	public function test_get_distinct_product_attributes() {
 
-		$attributes = self::create_product_attributes();
+		$attributes = $this->tester->create_product_attributes();
 		$product    = $this->get_product( [ 'attributes' => $attributes ] );
 
 		list( $color_attribute, $size_attribute, $pattern_attribute ) = $attributes;
@@ -1287,76 +1287,6 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$this->excluded_category = $category['term_id'];
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [ $this->excluded_category ] );
-	}
-
-
-	/**
-	 * Creates color attribute.
-	 *
-	 * @param string $name attribute name
-	 * @param string[] $options possible values for the attribute
-	 * @param bool $variation used for variations or not
-	 * @return \WC_Product_Attribute
-	 */
-	private function create_color_attribute( $name = 'color', $options = [ 'pink', 'blue' ], $variation = false ) {
-
-		$color_attribute = new WC_Product_Attribute();
-		$color_attribute->set_name( $name );
-		$color_attribute->set_options( $options );
-		$color_attribute->set_variation( $variation );
-
-		return $color_attribute;
-	}
-
-
-	/**
-	 * Creates size attribute.
-	 *
-	 * @param string $name attribute name
-	 * @param string[] $options possible values for the attribute
-	 * @param bool $variation used for variations or not
-	 * @return \WC_Product_Attribute
-	 */
-	private function create_size_attribute( $name = 'size', $options = [ 'small', 'medium', 'large' ], $variation = false ) {
-
-		$size_attribute = new WC_Product_Attribute();
-		$size_attribute->set_name( $name );
-		$size_attribute->set_options( $options );
-		$size_attribute->set_variation( $variation );
-
-		return $size_attribute;
-	}
-
-
-	/**
-	 * Creates pattern attribute.
-	 *
-	 * @param string $name attribute name
-	 * @param string[] $options possible values for the attribute
-	 * @param bool $variation used for variations or not
-	 * @return \WC_Product_Attribute
-	 */
-	private function create_pattern_attribute( $name = 'pattern', $options = [ 'checked', 'floral', 'leopard' ], $variation = false ) {
-
-		$pattern_attribute = new WC_Product_Attribute();
-		$pattern_attribute->set_name( $name );
-		$pattern_attribute->set_options( $options );
-		$pattern_attribute->set_variation( $variation );
-
-		return $pattern_attribute;
-	}
-
-
-	/**
-	 * Creates product attributes.
-	 */
-	private function create_product_attributes() {
-
-		return [
-			self::create_color_attribute(),
-			self::create_size_attribute(),
-			self::create_pattern_attribute(),
-		];
 	}
 
 
