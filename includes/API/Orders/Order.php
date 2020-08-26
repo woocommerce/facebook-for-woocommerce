@@ -37,4 +37,122 @@ class Order {
 	protected $data;
 
 
+	/**
+	 * Orders API order handler constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array $response_data response data from the API
+	 */
+	public function __construct( $response_data ) {
+
+	}
+
+
+	/**
+	 * Gets the order’s ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_id() {
+
+	}
+
+
+	/**
+	 * Gets the order’s status.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_status() {
+
+	}
+
+
+	/**
+	 * Gets the items' data.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#item
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_items() {
+
+	}
+
+
+	/**
+	 * Gets the channel name.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_channel() {
+
+	}
+
+
+	/**
+	 * Gets the shipping details.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#selected_shipping_option
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_selected_shipping_option() {
+
+	}
+
+
+	/**
+	 * Gets the shipping address.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#shipping_address
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_shipping_address() {
+
+	}
+
+
+	/**
+	 * Gets the payment details.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#estimated_payment_details
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_estimated_payment_details() {
+
+	}
+
+
+	/**
+	 * Gets the buyer details.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#buyer_details
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array
+	 */
+	public function get_buyer_details() {
+
+	}
+
+
 }
