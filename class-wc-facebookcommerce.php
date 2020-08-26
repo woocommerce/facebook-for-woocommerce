@@ -355,6 +355,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
 				}
 
+				if ( ! trait_exists( API\Traits\Idempotent_Request::class, false ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Idempotent_Request.php';
+				}
+
 				if ( ! class_exists( API::class ) ) {
 					require_once __DIR__ . '/includes/API.php';
 				}
