@@ -46,6 +46,7 @@ class Order {
 	 */
 	public function __construct( $response_data ) {
 
+		$this->data = $response_data;
 	}
 
 
