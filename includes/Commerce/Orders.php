@@ -145,11 +145,11 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param \WC_Order $refund order refund object
+	 * @param \WC_Order_Refund $refund order refund object
 	 * @param mixed $args
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function add_order_refund( $refund, $args ) {
+	public function add_order_refund( \WC_Order_Refund $refund, $args ) {
 
 		// TODO: implement
 	}
