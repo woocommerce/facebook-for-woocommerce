@@ -25,4 +25,20 @@ class Request extends API\Request  {
 	use API\Traits\Idempotent_Request;
 
 
+	/** @var string customer requested cancellation */
+	const REASON_CUSTOMER_REQUESTED = 'CUSTOMER_REQUESTED';
+
+	/** @var string out of stock cancellation */
+	const REASON_OUT_OF_STOCK = 'OUT_OF_STOCK';
+
+	/** @var string invalid address cancellation */
+	const REASON_INVALID_ADDRESS = 'INVALID_ADDRESS';
+
+	/** @var string suspicious order cancellation */
+	const REASON_SUSPICIOUS_ORDER = 'SUSPICIOUS_ORDER';
+
+	/** @var string other reason cancellation */
+	const REASON_OTHER = 'CANCEL_REASON_OTHER';
+
+
 }
