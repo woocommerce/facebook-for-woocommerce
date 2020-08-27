@@ -634,7 +634,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			return 'id,title,description,image_link,link,product_type,' .
 			'brand,price,availability,item_group_id,checkout_url,' .
 			'additional_image_link,sale_price_effective_date,sale_price,condition,' .
-			'visibility,default_product,variant' . PHP_EOL;
+			'visibility,gender,color,size,pattern,google_product_category,default_product,variant' . PHP_EOL;
 		}
 
 
@@ -739,6 +739,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$product_data['default_product'] = '';
 			}
 
+			$google_product_category = isset( $product_data['google_product_category'] ) ? $product_data['google_product_category'] : '';
+
 			return $product_data['retailer_id'] . ',' .
 			static::format_string_for_feed( $product_data['name'] ) . ',' .
 			static::format_string_for_feed( $product_data['description'] ) . ',' .
@@ -764,6 +766,11 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			) . ',' .
 			'new' . ',' .
 			$product_data['visibility'] . ',' .
+			$product_data['gender'] . ',' .
+			$product_data['color'] . ',' .
+			$product_data['size'] . ',' .
+			$product_data['pattern'] . ',' .
+			$google_product_category . ',' .
 			$product_data['default_product'] . ',' .
 			$product_data['variant'] . PHP_EOL;
 		}

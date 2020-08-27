@@ -143,6 +143,76 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Creates color attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	public function create_color_attribute( $name = 'color', $options = [ 'pink', 'blue' ], $variation = false ) {
+
+		$color_attribute = new WC_Product_Attribute();
+		$color_attribute->set_name( $name );
+		$color_attribute->set_options( $options );
+		$color_attribute->set_variation( $variation );
+
+		return $color_attribute;
+	}
+
+
+	/**
+	 * Creates size attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	public function create_size_attribute( $name = 'size', $options = [ 'small', 'medium', 'large' ], $variation = false ) {
+
+		$size_attribute = new WC_Product_Attribute();
+		$size_attribute->set_name( $name );
+		$size_attribute->set_options( $options );
+		$size_attribute->set_variation( $variation );
+
+		return $size_attribute;
+	}
+
+
+	/**
+	 * Creates pattern attribute.
+	 *
+	 * @param string $name attribute name
+	 * @param string[] $options possible values for the attribute
+	 * @param bool $variation used for variations or not
+	 * @return \WC_Product_Attribute
+	 */
+	public function create_pattern_attribute( $name = 'pattern', $options = [ 'checked', 'floral', 'leopard' ], $variation = false ) {
+
+		$pattern_attribute = new WC_Product_Attribute();
+		$pattern_attribute->set_name( $name );
+		$pattern_attribute->set_options( $options );
+		$pattern_attribute->set_variation( $variation );
+
+		return $pattern_attribute;
+	}
+
+
+	/**
+	 * Creates product attributes.
+	 */
+	public function create_product_attributes() {
+
+		return [
+			$this->create_color_attribute(),
+			$this->create_size_attribute(),
+			$this->create_pattern_attribute(),
+		];
+	}
+
+
 	/** Sync methods **************************************************************************************************/
 
 
