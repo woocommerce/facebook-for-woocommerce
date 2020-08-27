@@ -595,6 +595,25 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a single order based on its remote ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $remote_id remote order ID
+	 * @return API\Orders\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_order( $remote_id ) {
+
+		$request = new API\Orders\Read\Request( $remote_id );
+
+		$this->set_response_handler( API\Orders\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Returns a new request object.
 	 *
 	 * @since 2.0.0
