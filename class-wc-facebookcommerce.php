@@ -487,6 +487,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Orders/Read/Response.php';
 				}
 
+				if ( ! class_exists( API\Orders\Refund\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Refund/Request.php';
+				}
+
 				if ( ! class_exists( API\Orders\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Orders/Request.php';
 				}
