@@ -709,6 +709,30 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::acknowledge_order() */
+	public function test_acknowledge_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->acknowledge_order( '335211597203390', '64241' );
+
+		$this->assertInstanceOf( API\Orders\Acknowledge\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390', $api->get_request()->get_path() );
+		$expected_data = [
+			'merchant_order_reference' => '64241',
+			'idempotency_key'          => $api->get_request()->get_idempotency_key(),
+		];
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
 	/**
 	 * @see API::get_new_request()
 	 *
