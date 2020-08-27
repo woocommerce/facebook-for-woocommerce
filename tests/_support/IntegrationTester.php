@@ -151,12 +151,22 @@ class IntegrationTester extends \Codeception\Actor {
 	 * @param bool $variation used for variations or not
 	 * @return \WC_Product_Attribute
 	 */
-	public function create_color_attribute( $name = 'color', $options = [ 'pink', 'blue' ], $variation = false ) {
+	public function create_color_attribute( $name = 'color', $options = [ 'pink', 'blue' ], $variation = false, $taxonomy = false ) {
 
 		$color_attribute = new WC_Product_Attribute();
 		$color_attribute->set_name( $name );
 		$color_attribute->set_options( $options );
 		$color_attribute->set_variation( $variation );
+
+		if ( $taxonomy ) {
+
+			// create the taxonomy attribute
+			wc_create_attribute( [ $color_attribute->get_name() ] );
+
+			foreach ( $options as $option ) {
+				wp_insert_term( $option, $color_attribute->get_name() );
+			}
+		}
 
 		return $color_attribute;
 	}
@@ -170,12 +180,22 @@ class IntegrationTester extends \Codeception\Actor {
 	 * @param bool $variation used for variations or not
 	 * @return \WC_Product_Attribute
 	 */
-	public function create_size_attribute( $name = 'size', $options = [ 'small', 'medium', 'large' ], $variation = false ) {
+	public function create_size_attribute( $name = 'size', $options = [ 'small', 'medium', 'large' ], $variation = false, $taxonomy = false ) {
 
 		$size_attribute = new WC_Product_Attribute();
 		$size_attribute->set_name( $name );
 		$size_attribute->set_options( $options );
 		$size_attribute->set_variation( $variation );
+
+		if ( $taxonomy ) {
+
+			// create the taxonomy attribute
+			wc_create_attribute( [ $size_attribute->get_name() ] );
+
+			foreach ( $options as $option ) {
+				wp_insert_term( $option, $size_attribute->get_name() );
+			}
+		}
 
 		return $size_attribute;
 	}
@@ -189,12 +209,22 @@ class IntegrationTester extends \Codeception\Actor {
 	 * @param bool $variation used for variations or not
 	 * @return \WC_Product_Attribute
 	 */
-	public function create_pattern_attribute( $name = 'pattern', $options = [ 'checked', 'floral', 'leopard' ], $variation = false ) {
+	public function create_pattern_attribute( $name = 'pattern', $options = [ 'checked', 'floral', 'leopard' ], $variation = false, $taxonomy = false ) {
 
 		$pattern_attribute = new WC_Product_Attribute();
 		$pattern_attribute->set_name( $name );
 		$pattern_attribute->set_options( $options );
 		$pattern_attribute->set_variation( $variation );
+
+		if ( $taxonomy ) {
+
+			// create the taxonomy attribute
+			wc_create_attribute( [ $pattern_attribute->get_name() ] );
+
+			foreach ( $options as $option ) {
+				wp_insert_term( $option, $pattern_attribute->get_name() );
+			}
+		}
 
 		return $pattern_attribute;
 	}
