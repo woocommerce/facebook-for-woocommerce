@@ -623,7 +623,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			foreach ( $variant_names as $original_variant_name ) {
 
 				// don't handle any attributes that are designated as Commerce attributes
-				if ( in_array( str_replace( array( 'attribute_' ), '', strtolower( $original_variant_name ) ), Products::get_distinct_product_attributes( $this->woo_product ), true ) ) {
+				if ( in_array( str_replace( 'attribute_', '', strtolower( $original_variant_name ) ), Products::get_distinct_product_attributes( $this->woo_product ), true ) ) {
 					continue;
 				}
 

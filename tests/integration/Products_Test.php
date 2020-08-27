@@ -712,7 +712,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $color_attribute ] ] );
 
-		$this->assertSame( $color_attribute->get_name(), Products::get_product_color_attribute( $product ) );
+		$this->assertSame( 'product-colour', Products::get_product_color_attribute( $product ) );
 	}
 
 
@@ -906,7 +906,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $size_attribute ] ] );
 
-		$this->assertSame( $size_attribute->get_name(), Products::get_product_size_attribute( $product ) );
+		$this->assertSame( 'product-size', Products::get_product_size_attribute( $product ) );
 	}
 
 
@@ -1095,7 +1095,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->get_product( [ 'attributes' => [ $pattern_attribute ] ] );
 
-		$this->assertSame( $pattern_attribute->get_name(), Products::get_product_pattern_attribute( $product ) );
+		$this->assertSame( 'product-pattern', Products::get_product_pattern_attribute( $product ) );
 	}
 
 
@@ -1270,6 +1270,38 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 			Products::get_product_size_attribute( $product ),
 			Products::get_product_pattern_attribute( $product ),
 		] ), Products::get_distinct_product_attributes( $product ) );
+	}
+
+
+	/**
+	 * @see Products::product_has_attribute()
+	 *
+	 * @param string $attribute_name attribute name to check
+	 * @param bool $expected expected result
+	 *
+	 * @dataProvider provider_product_has_attribute
+	 */
+	public function test_product_has_attribute( $attribute_name, $expected ) {
+
+		$color_attribute = $this->tester->create_color_attribute( 'color', [ 'red', 'blue' ], false, true );
+		$size_attribute  = $this->tester->create_size_attribute( 'Custom attribute' );
+
+		$product = $this->get_product( [
+			'attributes' => [ $color_attribute, $size_attribute ],
+		] );
+
+		$this->assertSame( $expected, Products::product_has_attribute( $product, $attribute_name ) );
+	}
+
+
+	/** @see test_product_has_attribute */
+	public function provider_product_has_attribute() {
+
+		return [
+			'taxonomy attribute' => [ 'color', true ],
+			'custom attribute'   => [ 'custom-attribute', true ],
+			'missing attribute'  => [ 'missing', false ],
+		];
 	}
 
 
