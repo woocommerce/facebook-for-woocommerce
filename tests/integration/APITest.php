@@ -800,6 +800,61 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::add_order_refund() */
+	public function test_add_order_refund() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$sample_refund_data = [
+			'items'       => [
+				[
+					'retailer_id'        => '45251',
+					'item_refund_amount' => [
+						'amount'   => '50.00',
+						'currency' => 'USD',
+					],
+				],
+				[
+					'retailer_id'          => '45252',
+					'item_refund_quantity' => 2,
+				],
+			],
+			'reason_code' => API\Orders\Refund\Request::REASON_BUYERS_REMORSE,
+			'reason_text' => 'Optional description of the reason',
+			'shipping'    => [
+				'shipping_refund' => [
+					'amount'   => '10.00',
+					'currency' => 'USD',
+				],
+			],
+			'deductions'  => [
+				[
+					'deduction_type'   => 'RETURN_SHIPPING',
+					'deduction_amount' => [
+						'amount'   => '5.00',
+						'currency' => 'USD',
+					],
+				],
+			],
+		];
+
+		$api->add_order_refund( '335211597203390', $sample_refund_data );
+
+		$this->assertInstanceOf( API\Orders\Refund\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/refunds', $api->get_request()->get_path() );
+		$expected_data = $sample_refund_data;
+		$expected_data['idempotency_key'] = $api->get_request()->get_idempotency_key();
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
 	/**
 	 * @see API::get_new_request()
 	 *
