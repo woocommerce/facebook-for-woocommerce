@@ -44,4 +44,22 @@ class Request extends API\Request  {
 	const REASON_OTHER = 'REFUND_REASON_OTHER';
 
 
+	/**
+	 * API request constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param array $data refund data
+	 */
+	public function __construct( $remote_id, $data ) {
+
+		parent::__construct( "/{$remote_id}/refunds", 'POST' );
+
+		$data['idempotency_key'] = $this->get_idempotency_key();
+
+		$this->set_data( $data );
+	}
+
+
 }
