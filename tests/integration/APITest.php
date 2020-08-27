@@ -733,6 +733,46 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::fulfill_order() */
+	public function test_fulfill_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$fulfillment_data = [
+			'items'         => [
+				[
+					'retailer_id' => 'FB_product_1238',
+					'quantity'    => 1,
+				],
+				[
+					'retailer_id' => 'FB_product_5624',
+					'quantity'    => 2,
+				],
+			],
+			'tracking_info' => [
+				'tracking_number'      => 'ship 1',
+				'carrier'              => 'FEDEX',
+				'shipping_method_name' => '2 Day Fedex',
+			],
+		];
+
+		$api->fulfill_order( '335211597203390', $fulfillment_data );
+
+		$this->assertInstanceOf( API\Orders\Fulfillment\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/shipments', $api->get_request()->get_path() );
+		$expected_data = $fulfillment_data;
+		$expected_data['idempotency_key'] = $api->get_request()->get_idempotency_key();
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
 	/**
 	 * @see API::get_new_request()
 	 *
