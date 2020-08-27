@@ -633,6 +633,46 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_new_orders() */
+	public function test_get_new_orders() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_new_orders( '1234' );
+
+		$this->assertInstanceOf( API\Orders\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/1234/commerce_orders', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+		$expected_params = [
+			'state'  => implode( ',', [
+				API\Orders\Order::STATUS_PROCESSING,
+				API\Orders\Order::STATUS_CREATED,
+			] ),
+			'fields' => implode( ',', [
+				'id',
+				'order_status',
+				'created',
+				'last_updated',
+				'items',
+				'ship_by_date',
+				'merchant_order_id',
+				'channel',
+				'selected_shipping_option',
+				'shipping_address',
+				'estimated_payment_details',
+				'buyer_details',
+			] ),
+		];
+		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Orders\Response::class, $api->get_response() );
+	}
+
+
 	/**
 	 * @see API::get_new_request()
 	 *
