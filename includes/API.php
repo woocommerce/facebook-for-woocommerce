@@ -634,6 +634,28 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Issues a fulfillment request for the given order.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/fulfillment-api#attach_shipment
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param array $fulfillment_data fulfillment data to be sent on the request
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function fulfill_order( $remote_id, $fulfillment_data ) {
+
+		$request = new API\Orders\Fulfillment\Request( $remote_id, $fulfillment_data );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Returns a new request object.
 	 *
 	 * @since 2.0.0
