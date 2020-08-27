@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Events\Event;
@@ -564,6 +565,31 @@ class API extends Framework\SV_WC_API_Base {
 		}
 
 		return $next_response;
+	}
+
+
+	/**
+	 * Gets all new orders.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $page_id page ID
+	 * @return API\Orders\Response
+	 */
+	public function get_new_orders( $page_id ) {
+
+		$request_args = [
+			'state' => [
+				Order::STATUS_PROCESSING,
+				Order::STATUS_CREATED,
+			]
+		];
+
+		$request = new API\Orders\Request( $page_id, $request_args );
+
+		$this->set_response_handler( API\Orders\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 
