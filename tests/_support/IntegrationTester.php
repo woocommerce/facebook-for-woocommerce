@@ -129,6 +129,21 @@ class IntegrationTester extends \Codeception\Actor {
 
 
 	/**
+	 * Gets an instance of an anonymous API\Request subclass that uses the API\Traits\Idempotent_Request trait.
+	 *
+	 * @param string $path the request path
+	 * @return API\Request
+	 */
+	public function get_idempotent_request( $path ) {
+
+		return new class( $path, 'POST' ) extends API\Request {
+
+			use API\Traits\Idempotent_Request;
+		};
+	}
+
+
+	/**
 	 * Creates color attribute.
 	 *
 	 * @param string $name attribute name
