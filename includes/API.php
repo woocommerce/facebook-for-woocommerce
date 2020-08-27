@@ -614,6 +614,26 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Acknowledges the given order.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param string $merchant_order_reference WC order ID
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function acknowledge_order( $remote_id, $merchant_order_reference ) {
+
+		$request = new API\Orders\Acknowledge\Request( $remote_id, $merchant_order_reference );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Returns a new request object.
 	 *
 	 * @since 2.0.0
