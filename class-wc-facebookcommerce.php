@@ -475,6 +475,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Orders/Acknowledge/Request.php';
 				}
 
+				if ( ! class_exists( API\Orders\Fulfillment\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Fulfillment/Request.php';
+				}
+
 				if ( ! class_exists( API\Orders\Read\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Orders/Read/Request.php';
 				}
