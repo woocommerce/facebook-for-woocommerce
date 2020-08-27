@@ -50,15 +50,15 @@ class Request extends API\Request  {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param string $remote_id remote order ID
-	 * @param array $data refund data
+	 * @param array $refund_data refund data
 	 */
-	public function __construct( $remote_id, $data ) {
+	public function __construct( $remote_id, $refund_data ) {
 
 		parent::__construct( "/{$remote_id}/refunds", 'POST' );
 
-		$data['idempotency_key'] = $this->get_idempotency_key();
+		$refund_data['idempotency_key'] = $this->get_idempotency_key();
 
-		$this->set_data( $data );
+		$this->set_data( $refund_data );
 	}
 
 
