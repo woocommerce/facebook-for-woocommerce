@@ -40,8 +40,21 @@ class Orders {
 	 */
 	public function find_local_order( $remote_id ) {
 
-		// TODO: implement
-		return null;
+		$order_id_array = get_posts( [
+			'post_type'   => 'shop_order',
+			'nopaging'    => true,
+			'numberposts' => 1,
+			'fields'      => 'ids',
+			'post_status' => 'any',
+			'meta_key'    => self::REMOTE_ID_META_KEY,
+			'meta_value'  => $remote_id,
+		] );
+
+		if ( ! empty( $order_id_array ) ) {
+			$order_id = current( $order_id_array );
+		}
+
+		return ! empty( $order_id ) ? wc_get_order( $order_id ) : null;
 	}
 
 
