@@ -575,6 +575,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Orders\Response
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	public function get_new_orders( $page_id ) {
 
