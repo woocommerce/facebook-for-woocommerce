@@ -55,6 +55,13 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \WC_Facebookcommerce::get_api() */
+	public function test_get_api_with_access_token() {
+
+		$this->assertSame( 'new_access_token', facebook_for_woocommerce()->get_api( 'new_access_token' )->get_access_token() );
+	}
+
+
 	/** @see \WC_Facebookcommerce::get_connection_handler() */
 	public function test_get_connection_handler() {
 
