@@ -991,7 +991,7 @@ class Products {
 
 		foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
 
-			// taxonomy attributes have a slugged name, but custom attributes do not so we check the attribute key first
+			// taxonomy attributes have a slugged name, but custom attributes do not so we check the attribute key
 			if ( $attribute_name === $slug ) {
 				$found = true;
 				break;
