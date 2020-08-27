@@ -41,6 +41,8 @@ class API extends Framework\SV_WC_API_Base {
 	 * Constructor.
 	 *
 	 * @since 2.0.0
+	 *
+	 * @param string $access_token access token to use for API requests
 	 */
 	public function __construct( $access_token ) {
 
