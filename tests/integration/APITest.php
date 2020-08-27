@@ -46,6 +46,24 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see API::get_access_token() */
+	public function test_get_access_token() {
+
+		$this->assertEquals( 'access_token', ( new API( 'access_token' ) )->get_access_token() );
+	}
+
+
+	/** @see API::set_access_token() */
+	public function test_set_access_token() {
+
+		$api = new API( 'access_token' );
+
+		$api->set_access_token( 'new_access_token' );
+
+		$this->assertEquals( 'new_access_token', $api->get_access_token() );
+	}
+
+
 	/**
 	 * @see API::do_post_parse_response_validation()
 	 *
