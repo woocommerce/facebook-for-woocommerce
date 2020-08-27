@@ -703,10 +703,10 @@ class Products {
 
 			if ( empty( $attribute_name ) ) {
 				// try to find a matching attribute
-				foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
 
 					if ( stripos( $attribute->get_name(), 'color' ) !== false || stripos( $attribute->get_name(), 'colour' ) !== false ) {
-						$attribute_name = $attribute->get_name();
+						$attribute_name = $slug;
 						break;
 					}
 				}
@@ -799,10 +799,10 @@ class Products {
 
 			if ( empty( $attribute_name ) ) {
 				// try to find a matching attribute
-				foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
 
 					if ( stripos( $attribute->get_name(), 'size' ) !== false ) {
-						$attribute_name = $attribute->get_name();
+						$attribute_name = $slug;
 						break;
 					}
 				}
@@ -895,10 +895,10 @@ class Products {
 
 			if ( empty( $attribute_name ) ) {
 				// try to find a matching attribute
-				foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
 
 					if ( stripos( $attribute->get_name(), 'pattern' ) !== false ) {
-						$attribute_name = $attribute->get_name();
+						$attribute_name = $slug;
 						break;
 					}
 				}
@@ -989,9 +989,10 @@ class Products {
 
 		$found = false;
 
-		foreach ( self::get_available_product_attributes( $product ) as $attribute ) {
+		foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
 
-			if ( $attribute_name === $attribute->get_name() ) {
+			// taxonomy attributes have a slugged name, but custom attributes do not so we check the attribute key
+			if ( $attribute_name === $slug ) {
 				$found = true;
 				break;
 			}

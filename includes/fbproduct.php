@@ -767,12 +767,28 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 						$option_values = $this->get_grouped_product_option_names( $key, $option_values );
 					}
 
-					/**
-					 * For API approach, product_field need to start with 'custom_data:'
-					 * @link https://developers.facebook.com/docs/marketing-api/reference/product-variant/
-					 * Clean up variant name (e.g. pa_color should be color):
-					 */
-					$name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $name );
+					switch ( $name ) {
+
+						case Products::get_product_color_attribute( $this->woo_product ) :
+							$name = WC_Facebookcommerce_Utils::FB_VARIANT_COLOR;
+						break;
+
+						case Products::get_product_size_attribute( $this->woo_product ) :
+							$name = WC_Facebookcommerce_Utils::FB_VARIANT_SIZE;
+						break;
+
+						case Products::get_product_pattern_attribute( $this->woo_product ) :
+							$name = WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN;
+						break;
+
+						default:
+
+							/**
+							 * For API approach, product_field need to start with 'custom_data:'
+							 * @link https://developers.facebook.com/docs/marketing-api/reference/product-variant/
+							 */
+							$name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $name );
+					}
 
 					// for feed uploading, product field should remove prefix 'custom_data:'
 					if ( $feed_data ) {
