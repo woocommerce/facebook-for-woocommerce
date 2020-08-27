@@ -41,6 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 2.0.2-dev.1 =
  * Fix - Update connection parameters to use an array to pass the Messenger domain
+ * Fix - Ensure out-of-stock products are marked as such in Facebook when the feed file replacement is run
 
 = 2020.08.17 - version 2.0.1 =
  * Fix - Ensure the configured business name is never empty when connecting to Facebook
