@@ -58,6 +58,32 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the access token being used for API requests.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_access_token() {
+
+		return $this->access_token;
+	}
+
+
+	/**
+	 * Sets the access token to use for API requests.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $access_token access token to set
+	 */
+	public function set_access_token( $access_token ) {
+
+		$this->access_token = $access_token;
+	}
+
+
+	/**
 	 * Validates a response after it has been parsed and instantiated.
 	 *
 	 * Throws an exception if a rate limit or general API error is included in the response.
