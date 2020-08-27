@@ -27,8 +27,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
 		$order->save_meta_data();
 
-		$order = wc_get_order( $order->get_id() );
-
 		$this->assertInstanceOf( \WC_Order::class, $this->get_commerce_orders_handler()->find_local_order( $remote_id ) );
 		$this->assertEquals( $order->get_id(), $this->get_commerce_orders_handler()->find_local_order( $remote_id )->get_id() );
 	}
