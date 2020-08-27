@@ -41,6 +41,8 @@ class API extends Framework\SV_WC_API_Base {
 	 * Constructor.
 	 *
 	 * @since 2.0.0
+	 *
+	 * @param string $access_token access token to use for API requests
 	 */
 	public function __construct( $access_token ) {
 
@@ -52,6 +54,32 @@ class API extends Framework\SV_WC_API_Base {
 
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
+	}
+
+
+	/**
+	 * Gets the access token being used for API requests.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_access_token() {
+
+		return $this->access_token;
+	}
+
+
+	/**
+	 * Sets the access token to use for API requests.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $access_token access token to set
+	 */
+	public function set_access_token( $access_token ) {
+
+		$this->access_token = $access_token;
 	}
 
 

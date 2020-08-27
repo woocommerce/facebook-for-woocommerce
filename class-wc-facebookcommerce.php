@@ -328,14 +328,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @since 2.0.0
 		 *
+		 * @param string $access_token access token to use for this API request
 		 * @return \SkyVerge\WooCommerce\Facebook\API
 		 * @throws Framework\SV_WC_API_Exception
 		 */
-		public function get_api() {
+		public function get_api( $access_token = '' ) {
+
+			// if none provided, use the general access token
+			if ( ! $access_token ) {
+				$access_token = $this->get_connection_handler()->get_access_token();
+			}
 
 			if ( ! is_object( $this->api ) ) {
 
-				if ( ! $this->get_connection_handler()->get_access_token() ) {
+				if ( ! $access_token ) {
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
@@ -503,7 +509,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Orders/Response.php';
 				}
 
-				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
+				$this->api = new SkyVerge\WooCommerce\Facebook\API( $access_token );
+
+			} else {
+
+				$this->api->set_access_token( $access_token );
 			}
 
 			return $this->api;

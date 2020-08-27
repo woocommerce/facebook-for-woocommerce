@@ -21,9 +21,9 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		if ( ! class_exists( API::class ) ) {
-			require_once 'includes/API.php';
-		}
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( '1234' );
+
+		facebook_for_woocommerce()->get_api();
 	}
 
 
@@ -32,8 +32,6 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 
 	/** @see \WC_Facebookcommerce::get_api() */
 	public function test_get_api() {
-
-		facebook_for_woocommerce()->get_connection_handler()->update_access_token( '1234' );
 
 		$this->assertInstanceOf( API::class, facebook_for_woocommerce()->get_api() );
 	}
@@ -54,6 +52,13 @@ class WC_Facebookcommerce_Test extends \Codeception\TestCase\WPTestCase {
 		$instance->setValue( $plugin, null );
 
 		$this->assertInstanceOf( API::class, $plugin->get_api() );
+	}
+
+
+	/** @see \WC_Facebookcommerce::get_api() */
+	public function test_get_api_with_access_token() {
+
+		$this->assertSame( 'new_access_token', facebook_for_woocommerce()->get_api( 'new_access_token' )->get_access_token() );
 	}
 
 
