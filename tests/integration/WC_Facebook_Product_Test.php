@@ -273,6 +273,60 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see \WC_Facebook_Product::prepare_variants_for_group() */
+	public function test_prepare_variants_for_group_custom_attribute() {
+
+		$attributes = [
+			$this->tester->create_color_attribute( 'Custom attribute', [ 'red', 'blue' ], true ), // totally custom, but set as the Color attribute
+			$this->tester->create_size_attribute( 'Size', [ 'small', 'large' ], true ), // not explicitly set, but interpreted by name
+			$this->tester->create_size_attribute( 'Flavor', [ 'savory', 'sweet' ], true ), // completely custom
+			$this->tester->create_pattern_attribute( 'Pattern', [ 'striped' ] ) // not used for variations
+		];
+
+		$product = $this->tester->get_variable_product( [
+			'status'         => 'publish',
+			'regular_price'  => '1.00',
+			'manage_stock'   => true,
+			'stock_quantity' => 100,
+			'attributes'     => $attributes,
+			'children'       => 0,
+		] );
+
+		$product->get_data_store()->create_all_product_variations( $product );
+
+		Products::update_product_color_attribute( $product, 'custom-attribute' );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_variants_for_group();
+
+		$this->assertEquals( [
+			[
+				'product_field' => 'color',
+				'label'         => 'Custom attribute',
+				'options'       => [
+					'red',
+					'blue',
+				],
+			],
+			[
+				'product_field' => 'size',
+				'label'         => 'Size',
+				'options'       => [
+					'small',
+					'large',
+				],
+			],
+			[
+				'product_field' => 'custom_data:flavor',
+				'label'         => 'Flavor',
+				'options'       => [
+					'savory',
+					'sweet',
+				],
+			],
+		], $data );
+	}
+
+
 	/**
 	 * @see \WC_Facebook_Product::get_fb_price()
 	 *
