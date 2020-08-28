@@ -131,7 +131,8 @@ class Orders {
 	 */
 	public function add_hooks() {
 
-		// TODO: implement
+		// schedule a recurring ACTION_FETCH_ORDERS action, if not already scheduled
+		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
 	}
 
 
