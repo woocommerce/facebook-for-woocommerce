@@ -138,6 +138,15 @@ class Orders {
 		$local_order->set_shipping_postcode( $shipping_address['postal_code'] );
 		$local_order->set_shipping_country( $shipping_address['country'] );
 
+		// update information from estimated_payment_details
+		$estimated_payment_details = $remote_order->get_estimated_payment_details();
+
+		// TODO: confirm if we should use $estimated_payment_details['subtotal']->items for something
+		$local_order->set_shipping_total( $estimated_payment_details['subtotal']->shipping);
+		// TODO: confirm if we should use $estimated_payment_details['tax'] for something
+		$local_order->set_total( $estimated_payment_details['total_amount']->amount );
+		// TODO: confirm if we should use $estimated_payment_details['tax_remitted'] for something
+
 		$local_order->save();
 
 		return $local_order;
