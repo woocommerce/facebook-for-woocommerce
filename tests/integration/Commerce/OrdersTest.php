@@ -16,6 +16,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Orders::schedule_local_orders_update() */
+	public function test_schedule_local_orders_update() {
+
+		$this->assertNotFalse( as_next_scheduled_action( Orders::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) );
+	}
+
+
 	/** @see Orders::find_local_order() */
 	public function test_find_local_order_found() {
 
