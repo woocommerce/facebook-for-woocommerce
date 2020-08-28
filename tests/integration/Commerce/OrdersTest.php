@@ -60,7 +60,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Orders::create_local_order() */
-	public function test_create_local_order_fb_processing() {
+	public function test_create_local_order() {
 
 		$product = $this->tester->get_product();
 
@@ -71,21 +71,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertInstanceOf( \WC_Order::class, $local_order );
 		$this->assertEquals( $response_data['channel'], $local_order->get_created_via() );
 		$this->assertEquals( 'pending', $local_order->get_status() );
-	}
-
-
-	/** @see Orders::create_local_order() */
-	public function test_create_local_order_created() {
-
-		$product = $this->tester->get_product();
-
-		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id() );
-		$remote_order  = new Order( $response_data );
-
-		$local_order = $this->get_commerce_orders_handler()->create_local_order( $remote_order );
-		$this->assertInstanceOf( \WC_Order::class, $local_order );
-		$this->assertEquals( $response_data['channel'], $local_order->get_created_via() );
-		$this->assertEquals( 'processing', $local_order->get_status() );
 	}
 
 
