@@ -114,10 +114,9 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id() );
 
-		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
+		// mock the API to return a test response
 		$api = $this->make( API::class, [
 			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
-			'acknowledge_order' => \Codeception\Stub\Expected::once(),
 		] );
 
 		// replace the API property
@@ -148,10 +147,9 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order->add_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
 		$order->save_meta_data();
 
-		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
+		// mock the API to return a test response
 		$api = $this->make( API::class, [
 			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
-			'acknowledge_order' => \Codeception\Stub\Expected::once(),
 		] );
 
 		// replace the API property
@@ -169,6 +167,28 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_acknowledge() {
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id() );
+
+		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
+		$api = $this->make( API::class, [
+			'get_new_orders'    => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+			'acknowledge_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->update_local_orders();
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
@@ -179,9 +199,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_commerce_orders_handler() {
 
-		$commerce_handler = new Commerce();
-
-		return $commerce_handler->get_orders_handler();
+		return facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler();
 	}
 
 
