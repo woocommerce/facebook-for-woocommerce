@@ -1020,4 +1020,68 @@ class Products {
 	}
 
 
+	/**
+	 * Gets a product by its Facebook product ID, from the `fb_product_item_id` or `fb_product_group_id`.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $fb_product_id Facebook product ID
+	 * @return \WC_Product|null
+	 */
+	public static function get_product_by_fb_product_id( $fb_product_id ) {
+
+		$product = null;
+
+		// try to by the `fb_product_item_id` meta
+		$products = wc_get_products( [
+			'limit'      => 1,
+			'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
+			'meta_value' => $fb_product_id,
+		] );
+
+		if ( ! empty( $products ) ) {
+			$product = current( $products );
+		}
+
+		if ( empty( $product ) ) {
+			// try to by the `fb_product_group_id` meta
+			$products = wc_get_products( [
+				'limit'      => 1,
+				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
+				'meta_value' => $fb_product_id,
+			] );
+
+			if ( ! empty( $products ) ) {
+				$product = current( $products );
+			}
+		}
+
+		return ! empty( $product ) ? $product : null;
+	}
+
+
+	/**
+	 * Gets a product by its Facebook retailer ID.
+	 *
+	 * @see \WC_Facebookcommerce_Utils::get_fb_retailer_id().
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $fb_retailer_id Facebook retailer ID
+	 * @return \WC_Product|null
+	 */
+	public static function get_product_by_fb_retailer_id( $fb_retailer_id ) {
+
+		if ( strpos( $fb_retailer_id, \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX ) !== false ) {
+			$product_id = str_replace( \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX, '', $fb_retailer_id );
+		} else {
+			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) );
+		}
+
+		$product = wc_get_product( $product_id );
+
+		return ! empty( $product ) ? $product : null;
+	}
+
+
 }

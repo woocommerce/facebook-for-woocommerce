@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
@@ -91,14 +92,25 @@ class Orders {
 		// add/update items
 		foreach ( $remote_order->get_items() as $item ) {
 
-			$wc_product_id = $item['retailer_id'];
+			$product = Products::get_product_by_fb_product_id( $item['product_id'] );
+
+			if ( empty( $product ) ) {
+				$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
+			}
+
+			if ( ! $product instanceof \WC_Product ) {
+
+				// add a note and skip this item
+				$local_order->add_order_note( "Product with retailer ID {$item['retailer_id']} not found" );
+				continue;
+			}
 
 			$matching_wc_order_item = false;
 
 			// check if the local order already has this item
 			foreach ( $local_order->get_items() as $wc_order_item ) {
 
-				if ( $wc_order_item instanceof \WC_Order_Item_Product && $wc_product_id === (string) $wc_order_item->get_product_id() ) {
+				if ( $wc_order_item instanceof \WC_Order_Item_Product && $product->get_id() === $wc_order_item->get_product_id() ) {
 					$matching_wc_order_item = $wc_order_item;
 					break;
 				}
@@ -106,19 +118,11 @@ class Orders {
 
 			if ( empty( $matching_wc_order_item ) ) {
 
-				$wc_product = wc_get_product( $wc_product_id );
-
-				if ( ! $wc_product instanceof \WC_Product ) {
-
-					$local_order->add_order_note( "Product with retailer ID {$item['retailer_id']} not found" );
-					continue;
-				}
-
 				$matching_wc_order_item = new \WC_Order_Item_Product();
 				$local_order->add_item( $matching_wc_order_item );
 			}
 
-			$matching_wc_order_item->set_product_id( $wc_product_id );
+			$matching_wc_order_item->set_product_id( $product->get_id() );
 			$matching_wc_order_item->set_quantity( $item['quantity'] );
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// we use the estimated_tax because the captured_tax represents the tax after the order/item has been shipped and we don't fulfill order at the line-item level
