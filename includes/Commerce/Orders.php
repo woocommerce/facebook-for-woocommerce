@@ -58,12 +58,18 @@ class Orders {
 	 *
 	 * @param Order $remote_order Orders API order object
 	 * @return \WC_Order
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
 	 */
 	public function create_local_order( Order $remote_order ) {
 
-		// TODO: implement
-		return null;
+		$local_order = new \WC_Order();
+		$local_order->set_created_via( $remote_order->get_channel() );
+		$local_order->set_status( 'pending' );
+		$local_order->save();
+
+		$this->update_local_order( $remote_order, $local_order );
+
+		return $local_order;
 	}
 
 
