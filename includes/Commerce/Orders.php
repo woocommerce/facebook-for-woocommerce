@@ -147,6 +147,13 @@ class Orders {
 		$local_order->set_total( $estimated_payment_details['total_amount']->amount );
 		// TODO: confirm if we should use $estimated_payment_details['tax_remitted'] for something
 
+		// update information from buyer_details
+		$buyer_details = $remote_order->get_buyer_details();
+
+		$local_order->set_billing_last_name( $buyer_details['name'] );
+		$local_order->set_billing_email( $buyer_details['email'] );
+		// TODO: confirm if we should use $buyer_details['email_remarketing_option'] for something
+
 		$local_order->save();
 
 		return $local_order;
