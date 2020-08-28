@@ -144,6 +144,8 @@ class Orders {
 
 		// schedule a recurring ACTION_FETCH_ORDERS action, if not already scheduled
 		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
+
+		add_action( self::ACTION_FETCH_ORDERS, [ $this, 'update_local_orders' ] );
 	}
 
 
