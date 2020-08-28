@@ -1075,7 +1075,7 @@ class Products {
 		if ( strpos( $fb_retailer_id, \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX ) !== false ) {
 			$product_id = str_replace( \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX, '', $fb_retailer_id );
 		} else {
-			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) );
+			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
 		}
 
 		$product = wc_get_product( $product_id );
