@@ -82,10 +82,47 @@ class Orders {
 	 * @param Order $remote_order Orders API order object
 	 * @param \WC_Order $local_order local order object
 	 * @return \WC_Order
+	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
 	 */
 	public function update_local_order( Order $remote_order, \WC_Order $local_order ) {
 
-		// TODO: implement
+		// add/update items
+		foreach ( $remote_order->get_items() as $item ) {
+
+			$wc_product_id = $item->retailer_id;
+
+			$matching_wc_order_item = false;
+
+			// check if the local order already has this item
+			foreach ( $local_order->get_items() as $wc_order_item ) {
+
+				if ( $wc_order_item instanceof \WC_Order_Item_Product && $wc_product_id === $wc_order_item->get_product_id() ) {
+					$matching_wc_order_item = $wc_order_item;
+					break;
+				}
+			}
+
+			if ( empty( $matching_wc_order_item ) ) {
+
+				$wc_product = wc_get_product( $wc_product_id );
+
+				if ( ! $wc_product instanceof \WC_Product ) {
+					throw new SV_WC_Plugin_Exception( "Product with WC ID $wc_product_id not found" );
+				}
+
+				$matching_wc_order_item_id = $local_order->add_product( $wc_product, $item->quantity );
+				$matching_wc_order_item    = $local_order->get_item( $matching_wc_order_item_id );
+			}
+
+			$matching_wc_order_item->set_quantity( $item->quantity );
+			$matching_wc_order_item->set_subtotal( $item->quantity * $item->price_per_unit->amount );
+			// TODO: should we use the estimated_tax or the captured_tax on the line below?
+			$matching_wc_order_item->set_subtotal_tax( $item->tax_details->estimated_tax->amount );
+			$matching_wc_order_item->save();
+		}
+
+		$local_order->save();
+
 		return $local_order;
 	}
 
