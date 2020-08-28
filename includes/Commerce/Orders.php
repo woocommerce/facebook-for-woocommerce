@@ -40,8 +40,14 @@ class Orders {
 	 */
 	public function find_local_order( $remote_id ) {
 
-		// TODO: implement
-		return null;
+		$orders = wc_get_orders( [
+			'limit'      => 1,
+			'status'     => 'any',
+			'meta_key'   => self::REMOTE_ID_META_KEY,
+			'meta_value' => $remote_id,
+		] );
+
+		return ! empty( $orders ) ? current( $orders ) : null;
 	}
 
 
