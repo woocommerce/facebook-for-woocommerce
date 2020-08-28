@@ -74,7 +74,7 @@ class Orders {
 		$local_order->set_status( 'pending' );
 		$local_order->save();
 
-		$this->update_local_order( $remote_order, $local_order );
+		$local_order = $this->update_local_order( $remote_order, $local_order );
 
 		return $local_order;
 	}
