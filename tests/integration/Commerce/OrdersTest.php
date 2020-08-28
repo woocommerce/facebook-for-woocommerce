@@ -2,9 +2,13 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Tests\Commerce;
 
+use ReflectionProperty;
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the general Commerce orders handler class.
@@ -18,9 +22,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	public function _before() {
 
-		if ( ! class_exists( SkyVerge\WooCommerce\Facebook\API\Orders\Order::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Orders/Order.php';
-		}
+		parent::_before();
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 
@@ -76,6 +84,27 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_error_fetching() {
+
+		// mock the API to throw an exception
+		$api = $this->make( API::class, [
+			'get_new_orders' => function( $page_id ) {
+
+				throw new SV_WC_API_Exception( 'Error' );
+			},
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if find_local_order() is called
+		$orders_handler = $this->make( Orders::class, [
+			'find_local_order' => \Codeception\Stub\Expected::never(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
 
 
 	/** Helper methods **************************************************************************************************/
