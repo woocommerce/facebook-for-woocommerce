@@ -127,6 +127,17 @@ class Orders {
 		$local_order->set_shipping_total( $selected_shipping_option['price']->amount );
 		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']->amount );
 
+		// update information from shipping_address
+		$shipping_address = $remote_order->get_shipping_address();
+
+		$local_order->set_shipping_last_name( $shipping_address['name'] );
+		$local_order->set_shipping_address_1( $shipping_address['street1'] );
+		$local_order->set_shipping_address_2( $shipping_address['street2'] );
+		$local_order->set_shipping_city( $shipping_address['city'] );
+		$local_order->set_shipping_state( $shipping_address['state'] );
+		$local_order->set_shipping_postcode( $shipping_address['postal_code'] );
+		$local_order->set_shipping_country( $shipping_address['country'] );
+
 		$local_order->save();
 
 		return $local_order;
