@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\Commerce;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
-use SkyVerge\WooCommerce\PluginFramework\v5_4_1\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the general Commerce orders handler class.
@@ -193,7 +193,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING );
 		$remote_order  = new Order( $response_data );
 
-		$this->expectException( \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception::class );
+		$this->expectException( SV_WC_Plugin_Exception::class );
 		$this->expectExceptionMessage( 'Product with WC ID external_product_1234 not found' );
 
 		$this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
