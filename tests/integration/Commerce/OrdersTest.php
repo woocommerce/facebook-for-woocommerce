@@ -16,6 +16,42 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Orders::get_order_update_interval() */
+	public function test_get_order_update_interval() {
+
+		$this->assertSame( 300, $this->get_commerce_orders_handler()->get_order_update_interval() );
+	}
+
+
+	/**
+	 * @see Orders::get_order_update_interval()
+	 *
+	 * @param int $filter_value filtered interval value
+	 * @param int $expected expected return value
+	 *
+	 * @dataProvider provider_get_order_update_interval_filtered
+	 */
+	public function test_get_order_update_interval_filtered( $filter_value, $expected ) {
+
+		add_filter( 'wc_facebook_commerce_order_update_interval', function() use ( $filter_value )  {
+			return $filter_value;
+		} );
+
+		$this->assertSame( $expected, $this->get_commerce_orders_handler()->get_order_update_interval() );
+	}
+
+
+	/** @see test_get_order_update_interval_filtered */
+	public function provider_get_order_update_interval_filtered() {
+
+		return [
+			'filter value longer'    => [ 600, 600 ],
+			'filter value too short' => [ 5, 120 ],
+			'filter value invalid'   => [ '1 billion seconds', 300 ],
+		];
+	}
+
+
 	/** @see Orders::find_local_order() */
 	public function test_find_local_order_found() {
 
