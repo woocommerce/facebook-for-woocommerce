@@ -124,7 +124,7 @@ class Orders {
 					$local_order = $this->update_local_order( $remote_order, $local_order );
 				}
 
-			} catch ( SV_WC_Plugin_Exception $exception ) {
+			} catch ( \Exception $exception ) {
 
 				if ( ! empty( $local_order ) ) {
 					// add note to order

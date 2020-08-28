@@ -74,6 +74,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_error_fetching() {
+
+
 	/** Helper methods **************************************************************************************************/
 
 
