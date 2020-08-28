@@ -1313,7 +1313,9 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, '444444', true );
 		$product->save_meta_data();
 
-		$this->assertEquals( $product->get_id(), Facebook\Products::get_product_by_fb_product_id( '444444')->get_id() );
+		$product_found = Facebook\Products::get_product_by_fb_product_id( '444444' );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
 	}
 
 
@@ -1325,14 +1327,43 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 		$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, '123456', true );
 		$product->save_meta_data();
 
-		$this->assertEquals( $product->get_id(), Facebook\Products::get_product_by_fb_product_id( '123456')->get_id() );
+		$product_found = Facebook\Products::get_product_by_fb_product_id( '123456' );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
 	}
 
 
 	/** @see Products::get_product_by_fb_product_id() */
 	public function test_get_product_by_fb_product_id_not_found() {
 
-		$this->assertEquals( null, Facebook\Products::get_product_by_fb_product_id( '777777') );
+		$this->assertEquals( null, Facebook\Products::get_product_by_fb_product_id( '777777' ) );
+	}
+
+
+	/** @see Products::get_product_by_fb_retailer_id() */
+	public function test_get_product_by_fb_retailer_id_with_sku() {
+
+		$product = $this->get_product();
+		$product->set_sku( '123456_a' );
+		$product->save();
+
+		$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+		$product_found = Facebook\Products::get_product_by_fb_retailer_id( $retailer_id );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
+	}
+
+
+	/** @see Products::get_product_by_fb_retailer_id() */
+	public function test_get_product_by_fb_retailer_id_without_sku() {
+
+		$product     = $this->get_product();
+		$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+		$product_found = Facebook\Products::get_product_by_fb_retailer_id( $retailer_id );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
 	}
 
 
