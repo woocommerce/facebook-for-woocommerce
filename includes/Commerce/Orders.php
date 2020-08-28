@@ -122,6 +122,8 @@ class Orders {
 	/**
 	 * Schedules a recurring ACTION_FETCH_ORDERS action, if not already scheduled.
 	 *
+	 * @internal
+	 *
 	 * @since 2.1.0-dev.1
 	 */
 	public function schedule_local_orders_update() {
