@@ -109,7 +109,9 @@ class Orders {
 				$wc_product = wc_get_product( $wc_product_id );
 
 				if ( ! $wc_product instanceof \WC_Product ) {
-					throw new SV_WC_Plugin_Exception( "Product with WC ID $wc_product_id not found" );
+
+					$local_order->add_order_note( "Product with retailer ID {$item['retailer_id']} not found" );
+					continue;
 				}
 
 				$matching_wc_order_item = new \WC_Order_Item_Product();
