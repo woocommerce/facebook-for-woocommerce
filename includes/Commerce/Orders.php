@@ -159,6 +159,9 @@ class Orders {
 			$local_order->set_status( 'processing' );
 		}
 
+		// set remote ID
+		$local_order->update_meta_data( self::REMOTE_ID_META_KEY, $remote_order->get_id() );
+
 		$local_order->save();
 
 		return $local_order;

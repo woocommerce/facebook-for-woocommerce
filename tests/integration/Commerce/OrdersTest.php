@@ -103,6 +103,9 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
 
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
 		$order_items = $updated_local_order->get_items();
 		$this->assertCount( 1, $order_items );
 
@@ -129,6 +132,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( $response_data['buyer_details']['name'], $updated_local_order->get_billing_last_name() );
 		$this->assertEquals( $response_data['buyer_details']['email'], $updated_local_order->get_billing_email() );
+
+		$this->assertEquals( $response_data['id'], $updated_local_order->get_meta( Orders::REMOTE_ID_META_KEY ) );
 
 		$this->assertEquals( 'processing', $updated_local_order->get_status() );
 	}
