@@ -107,6 +107,66 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_create() {
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING, (string) $product->get_id() );
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if create_local_order() is not called once
+		$orders_handler = $this->make( Orders::class, [
+			'create_local_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
+
+
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_update() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING, (string) $product->get_id(), (string) $order->get_id() );
+
+		$remote_id = $response_data['id'];
+		$order->add_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
+		$order->save_meta_data();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if create_local_order() is called or if update_local_order() is not called once
+        $orders_handler = $this->make( Orders::class, [
+			'create_local_order' => \Codeception\Stub\Expected::never(),
+			'update_local_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
@@ -130,9 +190,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @param string $order_status order status
 	 * @param string $product_retailer_id WC product ID
+	 * @param string $merchant_order_id WC order ID
 	 * @return array
 	 */
-	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product_retailer_id = '' ) {
+	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product_retailer_id = '', $merchant_order_id = '' ) {
 
 		return [
 			'id'                        => '335211597203390',
@@ -166,7 +227,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 				],
 			],
 			'ship_by_date'              => '2019-01-16',
-			'merchant_order_id'         => '46192',
+			'merchant_order_id'         => ! empty( $merchant_order_id ) ? $merchant_order_id : '46192',
 			'channel'                   => 'Instagram',
 			'selected_shipping_option'  => [
 				'name'                    => 'Standard',
