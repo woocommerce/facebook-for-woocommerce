@@ -154,6 +154,11 @@ class Orders {
 		$local_order->set_billing_email( $buyer_details['email'] );
 		// TODO: confirm if we should use $buyer_details['email_remarketing_option'] for something
 
+		// update order status
+		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
+			$local_order->set_status( 'processing' );
+		}
+
 		$local_order->save();
 
 		return $local_order;
