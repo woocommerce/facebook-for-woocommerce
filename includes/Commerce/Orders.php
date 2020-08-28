@@ -115,7 +115,12 @@ class Orders {
 	 */
 	public function schedule_local_orders_update() {
 
-		// TODO: implement
+		if ( false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+
+			$interval = $this->get_order_update_interval();
+
+			as_schedule_recurring_action( time() + $interval, $interval, self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID );
+		}
 	}
 
 
