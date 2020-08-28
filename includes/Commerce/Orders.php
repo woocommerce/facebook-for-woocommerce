@@ -123,7 +123,7 @@ class Orders {
 			$matching_wc_order_item->set_product_id( $wc_product_id );
 			$matching_wc_order_item->set_quantity( $item['quantity'] );
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
-			// TODO: should we use the estimated_tax or the captured_tax on the line below?
+			// we use the estimated_tax because the captured_tax represents the tax after the order/item has been shipped and we don't fulfill order at the line-item level
 			$matching_wc_order_item->set_subtotal_tax( $item['tax_details']['estimated_tax']['amount'] );
 			$matching_wc_order_item->save();
 		}
