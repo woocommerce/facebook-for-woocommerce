@@ -136,7 +136,7 @@ class Orders {
 				return;
 			}
 
-			if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
+			if ( ! empty( $local_order ) && Order::STATUS_CREATED === $remote_order->get_status() ) {
 
 				// acknowledge the order
 				try {
