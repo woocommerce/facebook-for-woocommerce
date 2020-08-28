@@ -89,7 +89,7 @@ class Orders {
 		// add/update items
 		foreach ( $remote_order->get_items() as $item ) {
 
-			$wc_product_id = $item->retailer_id;
+			$wc_product_id = $item['retailer_id'];
 
 			$matching_wc_order_item = false;
 
@@ -110,22 +110,22 @@ class Orders {
 					throw new SV_WC_Plugin_Exception( "Product with WC ID $wc_product_id not found" );
 				}
 
-				$matching_wc_order_item_id = $local_order->add_product( $wc_product, $item->quantity );
+				$matching_wc_order_item_id = $local_order->add_product( $wc_product, $item['quantity'] );
 				$matching_wc_order_item    = $local_order->get_item( $matching_wc_order_item_id );
 			}
 
-			$matching_wc_order_item->set_quantity( $item->quantity );
-			$matching_wc_order_item->set_subtotal( $item->quantity * $item->price_per_unit->amount );
+			$matching_wc_order_item->set_quantity( $item['quantity'] );
+			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// TODO: should we use the estimated_tax or the captured_tax on the line below?
-			$matching_wc_order_item->set_subtotal_tax( $item->tax_details->estimated_tax->amount );
+			$matching_wc_order_item->set_subtotal_tax( $item['tax_details']['estimated_tax']['amount'] );
 			$matching_wc_order_item->save();
 		}
 
 		// update information from selected_shipping_option
 		$selected_shipping_option = $remote_order->get_selected_shipping_option();
 
-		$local_order->set_shipping_total( $selected_shipping_option['price']->amount );
-		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']->amount );
+		$local_order->set_shipping_total( $selected_shipping_option['price']['amount'] );
+		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']['amount'] );
 
 		// update information from shipping_address
 		$shipping_address = $remote_order->get_shipping_address();
@@ -141,10 +141,10 @@ class Orders {
 		// update information from estimated_payment_details
 		$estimated_payment_details = $remote_order->get_estimated_payment_details();
 
-		// TODO: confirm if we should use $estimated_payment_details['subtotal']->items for something
-		// TODO: confirm if we should use $estimated_payment_details['subtotal']->shipping for something
+		// TODO: confirm if we should use $estimated_payment_details['subtotal']['items'] for something
+		// TODO: confirm if we should use $estimated_payment_details['subtotal']['shipping'] for something
 		// TODO: confirm if we should use $estimated_payment_details['tax'] for something
-		$local_order->set_total( $estimated_payment_details['total_amount']->amount );
+		$local_order->set_total( $estimated_payment_details['total_amount']['amount'] );
 		// TODO: confirm if we should use $estimated_payment_details['tax_remitted'] for something
 
 		// update information from buyer_details
