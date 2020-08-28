@@ -132,6 +132,18 @@ class Orders {
 				} else {
 					facebook_for_woocommerce()->log( 'Error creating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
 				}
+
+				return;
+			}
+
+			if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
+
+				// acknowledge the order
+				try {
+					facebook_for_woocommerce()->get_api()->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+				} catch ( SV_WC_API_Exception $exception ) {
+					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
+				}
 			}
 		}
 	}
