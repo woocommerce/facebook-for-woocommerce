@@ -31,6 +31,17 @@ class Orders {
 
 
 	/**
+	 * Orders constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function __construct() {
+
+		$this->add_hooks();
+	}
+
+
+	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
 	 *
 	 * @since 2.1.0-dev.1
