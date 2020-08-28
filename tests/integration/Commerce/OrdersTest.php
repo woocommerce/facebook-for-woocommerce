@@ -132,6 +132,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertEquals( $response_data['buyer_details']['name'], $updated_local_order->get_billing_last_name() );
 		$this->assertEquals( $response_data['buyer_details']['email'], $updated_local_order->get_billing_email() );
+		$this->assertEquals( $response_data['buyer_details']['email_remarketing_option'], wc_string_to_bool( $updated_local_order->get_meta( Orders::EMAIL_REMARKETING_META_KEY ) ) );
 
 		$this->assertEquals( $response_data['id'], $updated_local_order->get_meta( Orders::REMOTE_ID_META_KEY ) );
 

@@ -29,6 +29,9 @@ class Orders {
 	/** @var string the meta key used to store the remote order ID */
 	const REMOTE_ID_META_KEY = '_wc_facebook_commerce_remote_id';
 
+	/** @var string the meta key used to store the email remarketing option */
+	const EMAIL_REMARKETING_META_KEY = '_wc_facebook_commerce_email_remarketing';
+
 
 	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
@@ -152,7 +155,7 @@ class Orders {
 
 		$local_order->set_billing_last_name( $buyer_details['name'] );
 		$local_order->set_billing_email( $buyer_details['email'] );
-		// TODO: confirm if we should use $buyer_details['email_remarketing_option'] for something
+		$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 
 		// update order status
 		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
