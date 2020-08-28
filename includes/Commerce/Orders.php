@@ -96,7 +96,7 @@ class Orders {
 			// check if the local order already has this item
 			foreach ( $local_order->get_items() as $wc_order_item ) {
 
-				if ( $wc_order_item instanceof \WC_Order_Item_Product && $wc_product_id === $wc_order_item->get_product_id() ) {
+				if ( $wc_order_item instanceof \WC_Order_Item_Product && $wc_product_id === (string) $wc_order_item->get_product_id() ) {
 					$matching_wc_order_item = $wc_order_item;
 					break;
 				}
@@ -110,10 +110,11 @@ class Orders {
 					throw new SV_WC_Plugin_Exception( "Product with WC ID $wc_product_id not found" );
 				}
 
-				$matching_wc_order_item_id = $local_order->add_product( $wc_product, $item['quantity'] );
-				$matching_wc_order_item    = $local_order->get_item( $matching_wc_order_item_id );
+				$matching_wc_order_item = new \WC_Order_Item_Product();
+				$local_order->add_item( $matching_wc_order_item );
 			}
 
+			$matching_wc_order_item->set_product_id( $wc_product_id );
 			$matching_wc_order_item->set_quantity( $item['quantity'] );
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// TODO: should we use the estimated_tax or the captured_tax on the line below?
