@@ -121,6 +121,12 @@ class Orders {
 			$matching_wc_order_item->save();
 		}
 
+		// update information from selected_shipping_option
+		$selected_shipping_option = $remote_order->get_selected_shipping_option();
+
+		$local_order->set_shipping_total( $selected_shipping_option['price']->amount );
+		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']->amount );
+
 		$local_order->save();
 
 		return $local_order;
