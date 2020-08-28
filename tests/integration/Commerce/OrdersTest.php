@@ -102,6 +102,15 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// TODO: investigate why this assertion is failing
 		// $this->assertEquals( $response_data['items'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
 
+		$shipping_items = $updated_local_order->get_items('shipping');
+		$this->assertCount( 1, $shipping_items );
+		/** @var \WC_Order_Item_Shipping $shipping_item */
+		$shipping_item = current( $shipping_items );
+		$this->assertInstanceOf( \WC_Order_Item_Shipping::class, $shipping_item );
+		$this->assertEquals( $response_data['selected_shipping_option']['name'], $shipping_item->get_method_title() );
+		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $shipping_item->get_total() );
+		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $shipping_item->get_total_tax() );
+
 		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $updated_local_order->get_shipping_total() );
 		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $updated_local_order->get_shipping_tax() );
 

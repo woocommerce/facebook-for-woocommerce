@@ -133,6 +133,13 @@ class Orders {
 		// update information from selected_shipping_option
 		$selected_shipping_option = $remote_order->get_selected_shipping_option();
 
+		$shipping_item = new \WC_Order_Item_Shipping();
+		$shipping_item->set_method_title( $selected_shipping_option['name'] );
+		$shipping_item->set_total( $selected_shipping_option['price']['amount'] );
+		$shipping_item->set_taxes( [ $selected_shipping_option['calculated_tax']['amount'] ] );
+		$shipping_item->save();
+		$local_order->add_item( $shipping_item );
+
 		$local_order->set_shipping_total( $selected_shipping_option['price']['amount'] );
 		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']['amount'] );
 
