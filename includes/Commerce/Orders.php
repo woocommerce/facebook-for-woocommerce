@@ -133,13 +133,33 @@ class Orders {
 		// update information from shipping_address
 		$shipping_address = $remote_order->get_shipping_address();
 
-		$local_order->set_shipping_last_name( $shipping_address['name'] );
-		$local_order->set_shipping_address_1( $shipping_address['street1'] );
-		$local_order->set_shipping_address_2( $shipping_address['street2'] );
-		$local_order->set_shipping_city( $shipping_address['city'] );
-		$local_order->set_shipping_state( $shipping_address['state'] );
-		$local_order->set_shipping_postcode( $shipping_address['postal_code'] );
-		$local_order->set_shipping_country( $shipping_address['country'] );
+		if ( ! empty( $shipping_address['name'] ) ) {
+			$local_order->set_shipping_last_name( $shipping_address['name'] );
+		}
+
+		if ( ! empty( $shipping_address['street1'] ) ) {
+			$local_order->set_shipping_address_1( $shipping_address['street1'] );
+		}
+
+		if ( ! empty( $shipping_address['street2'] ) ) {
+			$local_order->set_shipping_address_2( $shipping_address['street2'] );
+		}
+
+		if ( ! empty( $shipping_address['city'] ) ) {
+			$local_order->set_shipping_city( $shipping_address['city'] );
+		}
+
+		if ( ! empty( $shipping_address['state'] ) ) {
+			$local_order->set_shipping_state( $shipping_address['state'] );
+		}
+
+		if ( ! empty( $shipping_address['postal_code'] ) ) {
+			$local_order->set_shipping_postcode( $shipping_address['postal_code'] );
+		}
+
+		if ( ! empty( $shipping_address['country'] ) ) {
+			$local_order->set_shipping_country( $shipping_address['country'] );
+		}
 
 		// update information from estimated_payment_details
 		$estimated_payment_details = $remote_order->get_estimated_payment_details();
