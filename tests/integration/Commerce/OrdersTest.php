@@ -114,6 +114,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $response_data['shipping_address']['country'], $updated_local_order->get_shipping_country() );
 
 		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['amount'], $updated_local_order->get_total() );
+		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['currency'], $updated_local_order->get_currency() );
 
 		$this->assertEquals( $response_data['buyer_details']['name'], $updated_local_order->get_billing_last_name() );
 		$this->assertEquals( $response_data['buyer_details']['email'], $updated_local_order->get_billing_email() );

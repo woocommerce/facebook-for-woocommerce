@@ -168,6 +168,7 @@ class Orders {
 		// TODO: confirm if we should use $estimated_payment_details['subtotal']['shipping'] for something
 		// TODO: confirm if we should use $estimated_payment_details['tax'] for something
 		$local_order->set_total( $estimated_payment_details['total_amount']['amount'] );
+		$local_order->set_currency( $estimated_payment_details['total_amount']['currency'] );
 		// TODO: confirm if we should use $estimated_payment_details['tax_remitted'] for something
 
 		// update information from buyer_details
