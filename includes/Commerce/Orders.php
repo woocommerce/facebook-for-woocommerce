@@ -69,12 +69,18 @@ class Orders {
 	 *
 	 * @param Order $remote_order Orders API order object
 	 * @return \WC_Order
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
 	 */
 	public function create_local_order( Order $remote_order ) {
 
-		// TODO: implement
-		return null;
+		$local_order = new \WC_Order();
+		$local_order->set_created_via( $remote_order->get_channel() );
+		$local_order->set_status( 'pending' );
+		$local_order->save();
+
+		$local_order = $this->update_local_order( $remote_order, $local_order );
+
+		return $local_order;
 	}
 
 
@@ -114,8 +120,25 @@ class Orders {
 	 */
 	public function get_order_update_interval() {
 
-		// TODO: implement
-		return 5 * MINUTE_IN_SECONDS;
+		$default_interval = 5 * MINUTE_IN_SECONDS;
+
+		/**
+		 * Filters the interval between querying Facebook for new or updated orders.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param int $interval interval in seconds. Defaults to 5 minutes, and the minimum interval is 120 seconds.
+		 */
+		$interval = apply_filters( 'wc_facebook_commerce_order_update_interval', $default_interval );
+
+		// if given a valid number, ensure it's 120 seconds at a minimum
+		if ( is_numeric( $interval ) ) {
+			$interval = max( 2 * MINUTE_IN_SECONDS, $interval );
+		} else {
+			$interval = $default_interval; // invalid values should get the default
+		}
+
+		return $interval;
 	}
 
 
