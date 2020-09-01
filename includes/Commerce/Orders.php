@@ -31,6 +31,17 @@ class Orders {
 
 
 	/**
+	 * Orders constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function __construct() {
+
+		$this->add_hooks();
+	}
+
+
+	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
 	 *
 	 * @since 2.1.0-dev.1
@@ -134,11 +145,18 @@ class Orders {
 	/**
 	 * Schedules a recurring ACTION_FETCH_ORDERS action, if not already scheduled.
 	 *
+	 * @internal
+	 *
 	 * @since 2.1.0-dev.1
 	 */
 	public function schedule_local_orders_update() {
 
-		// TODO: implement
+		if ( false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+
+			$interval = $this->get_order_update_interval();
+
+			as_schedule_recurring_action( time() + $interval, $interval, self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID );
+		}
 	}
 
 
@@ -149,7 +167,10 @@ class Orders {
 	 */
 	public function add_hooks() {
 
-		// TODO: implement
+		// schedule a recurring ACTION_FETCH_ORDERS action, if not already scheduled
+		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
+
+		add_action( self::ACTION_FETCH_ORDERS, [ $this, 'update_local_orders' ] );
 	}
 
 
