@@ -32,6 +32,17 @@ class Orders {
 
 
 	/**
+	 * Orders constructor.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function __construct() {
+
+		$this->add_hooks();
+	}
+
+
+	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
 	 *
 	 * @since 2.1.0-dev.1
@@ -158,19 +169,43 @@ class Orders {
 	 */
 	public function get_order_update_interval() {
 
-		// TODO: implement
-		return 5 * MINUTE_IN_SECONDS;
+		$default_interval = 5 * MINUTE_IN_SECONDS;
+
+		/**
+		 * Filters the interval between querying Facebook for new or updated orders.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param int $interval interval in seconds. Defaults to 5 minutes, and the minimum interval is 120 seconds.
+		 */
+		$interval = apply_filters( 'wc_facebook_commerce_order_update_interval', $default_interval );
+
+		// if given a valid number, ensure it's 120 seconds at a minimum
+		if ( is_numeric( $interval ) ) {
+			$interval = max( 2 * MINUTE_IN_SECONDS, $interval );
+		} else {
+			$interval = $default_interval; // invalid values should get the default
+		}
+
+		return $interval;
 	}
 
 
 	/**
 	 * Schedules a recurring ACTION_FETCH_ORDERS action, if not already scheduled.
 	 *
+	 * @internal
+	 *
 	 * @since 2.1.0-dev.1
 	 */
 	public function schedule_local_orders_update() {
 
-		// TODO: implement
+		if ( false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+
+			$interval = $this->get_order_update_interval();
+
+			as_schedule_recurring_action( time() + $interval, $interval, self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID );
+		}
 	}
 
 
@@ -181,7 +216,10 @@ class Orders {
 	 */
 	public function add_hooks() {
 
-		// TODO: implement
+		// schedule a recurring ACTION_FETCH_ORDERS action, if not already scheduled
+		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
+
+		add_action( self::ACTION_FETCH_ORDERS, [ $this, 'update_local_orders' ] );
 	}
 
 
