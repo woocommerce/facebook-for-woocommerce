@@ -34,7 +34,7 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		$request = new Request( '368508827392800', '63135' );
 
-		$this->assertEquals( '/368508827392800', $request->get_path() );
+		$this->assertEquals( '/368508827392800/acknowledge_order', $request->get_path() );
 		$this->assertEquals( 'POST', $request->get_method() );
 
 		$expected_data = [
