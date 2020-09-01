@@ -226,6 +226,12 @@ class Orders {
 	/**
 	 * Fulfills an order via API.
 	 *
+	 * In addition to the exceptions we throw for missing data, the API request will also fail if:
+	 * - The stored remote ID is invalid
+	 * - The order has an item with a retailer ID that was not originally part of the order
+	 * - An item has a different quantity than what was originally ordered
+	 * - The remote order was already fulfilled
+	 *
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Order $order order object
@@ -235,7 +241,52 @@ class Orders {
 	 */
 	public function fulfill_order( \WC_Order $order, $tracking_number, $carrier ) {
 
-		// TODO: implement
+		try {
+
+			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
+
+			if ( ! $remote_id ) {
+				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$items = [];
+
+			/** @var \WC_Order_Item_Product $item */
+			foreach ( $order->get_items() as $item ) {
+
+				if ( $product = $item->get_product() ) {
+
+					$items[] = [
+						'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+						'quantity'    => $item->get_quantity(),
+					];
+				}
+			}
+
+			if ( empty( $items ) ) {
+				throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$fulfillment_data = [
+				'items'         => $items,
+				'tracking_info' => [
+					'carrier'         => $carrier,
+					'tracking_number' => $tracking_number,
+				],
+			];
+
+			$plugin = facebook_for_woocommerce();
+
+			$plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() )->fulfill_order( $remote_id, $fulfillment_data );
+
+			$order->add_order_note( __( 'Remote order fulfilled.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			$order->add_order_note( sprintf( __( 'Remote order could not be fulfilled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+
+			throw $exception;
+		}
 	}
 
 

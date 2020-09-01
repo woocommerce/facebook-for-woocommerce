@@ -232,6 +232,71 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_no_remote_id() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'Remote ID not found.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_no_valid_items() {
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'No valid Facebook products were found.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+		$item->set_product( $product );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'fulfill_order' => new API\Orders\Response( json_encode( [ 'success' => true ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
