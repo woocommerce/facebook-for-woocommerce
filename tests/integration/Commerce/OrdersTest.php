@@ -297,6 +297,77 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::cancel_order() */
+	public function test_cancel_order_no_remote_id() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'Remote ID not found.' );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, 'asdf' );
+	}
+
+
+	/** @see Orders::cancel_order() */
+	public function test_cancel_order() {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'cancel_order' => new API\Orders\Response( json_encode( [ 'success' => true ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, 'OTHER' );
+	}
+
+
+	/**
+	 * @see Orders::cancel_order()
+	 *
+	 * @param string $reason_code reason code to use
+	 * @param string $expected expected request reason code
+	 * @dataProvider provider_cancel_order_valid_reasons
+	 */
+	public function test_cancel_order_valid_reasons( $reason_code, $expected ) {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to ensure the correct reason is passed to the API
+		$api = $this->make( API::class, [
+			'cancel_order' => function( $remote_id, $reason ) use ( $expected ) { $this->assertSame( $expected, $reason ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, $reason_code );
+	}
+
+
+	/** @see test_cancel_order_valid_reasons */
+	public function provider_cancel_order_valid_reasons() {
+
+		return [
+			'valid reason code'   => [ 'CUSTOMER_REQUESTED', 'CUSTOMER_REQUESTED', ],
+			'unknown reason code' => [ 'I_MADE_A_HUGE_MISTAKE', 'CANCEL_REASON_OTHER' ],
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 

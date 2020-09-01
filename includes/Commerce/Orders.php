@@ -10,7 +10,9 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
+use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
@@ -311,11 +313,45 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Order $order order object
+	 * @param string $reason_code cancellation reason code
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function cancel_order( \WC_Order $order ) {
+	public function cancel_order( \WC_Order $order, $reason_code ) {
 
-		// TODO: implement
+		$plugin = facebook_for_woocommerce();
+
+		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
+
+		$valid_reason_codes = [
+			Request::REASON_CUSTOMER_REQUESTED,
+			Request::REASON_INVALID_ADDRESS,
+			Request::REASON_OTHER,
+			Request::REASON_OUT_OF_STOCK,
+			Request::REASON_SUSPICIOUS_ORDER,
+		];
+
+		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
+			$reason_code = Request::REASON_OTHER;
+		}
+
+		try {
+
+			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
+
+			if ( ! $remote_id ) {
+				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$api->cancel_order( $remote_id, $reason_code );
+
+			$order->add_order_note( __( 'Remote order cancelled.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			$order->add_order_note( sprintf( __( 'Remote order could not be cancelled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+
+			throw $exception;
+		}
 	}
 
 
