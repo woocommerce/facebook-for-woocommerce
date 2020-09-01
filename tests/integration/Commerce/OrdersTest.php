@@ -344,7 +344,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$order->save();
 
-		// mock the API to return a test response
+		// mock the API to ensure the correct reason is passed to the API
 		$api = $this->make( API::class, [
 			'cancel_order' => function( $remote_id, $reason ) use ( $expected ) { $this->assertSame( $expected, $reason ); },
 		] );
