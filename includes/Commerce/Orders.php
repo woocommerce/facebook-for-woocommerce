@@ -101,7 +101,7 @@ class Orders {
 
 		try {
 
-			$response = facebook_for_woocommerce()->get_api()->get_new_orders( $page_id );
+			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_new_orders( $page_id );
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
@@ -140,7 +140,7 @@ class Orders {
 
 				// acknowledge the order
 				try {
-					facebook_for_woocommerce()->get_api()->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+					facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
 				} catch ( SV_WC_API_Exception $exception ) {
 					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
 				}
