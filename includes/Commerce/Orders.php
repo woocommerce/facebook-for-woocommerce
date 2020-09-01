@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
@@ -107,7 +108,55 @@ class Orders {
 	 */
 	public function update_local_orders() {
 
-		// TODO: implement
+		$page_id = facebook_for_woocommerce()->get_integration()->get_facebook_page_id();
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_new_orders( $page_id );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( 'Error fetching Commerce orders from the Orders API: ' . $exception->getMessage() );
+
+			return;
+		}
+
+		$remote_orders = $response->get_orders();
+
+		foreach ( $remote_orders as $remote_order ) {
+
+			$local_order = $this->find_local_order( $remote_order->get_id() );
+
+			try {
+
+				if ( empty( $local_order ) ) {
+					$local_order = $this->create_local_order( $remote_order );
+				} else {
+					$local_order = $this->update_local_order( $remote_order, $local_order );
+				}
+
+			} catch ( \Exception $exception ) {
+
+				if ( ! empty( $local_order ) ) {
+					// add note to order
+					$local_order->add_order_note( 'Error updating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
+				} else {
+					facebook_for_woocommerce()->log( 'Error creating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
+				}
+
+				continue;
+			}
+
+			if ( ! empty( $local_order ) && Order::STATUS_CREATED === $remote_order->get_status() ) {
+
+				// acknowledge the order
+				try {
+					facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+				} catch ( SV_WC_API_Exception $exception ) {
+					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
+				}
+			}
+		}
 	}
 
 
