@@ -133,7 +133,7 @@ class Orders {
 					facebook_for_woocommerce()->log( 'Error creating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
 				}
 
-				return;
+				continue;
 			}
 
 			if ( ! empty( $local_order ) && Order::STATUS_CREATED === $remote_order->get_status() ) {
