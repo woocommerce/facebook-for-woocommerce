@@ -502,7 +502,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// mock the API to ensure the correct reason is passed to the API
 		$api = $this->make( API::class, [
-			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected_refunded_shipping_total ) { $this->assertSame( $expected_refunded_shipping_total, $refund_data['shipping']['amount'] ); },
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected_refunded_shipping_total ) { $this->assertSame( $expected_refunded_shipping_total, $refund_data['shipping']['shipping_refund']['amount'] ); },
 		] );
 
 		// replace the API property

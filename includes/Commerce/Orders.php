@@ -358,8 +358,10 @@ class Orders {
 				'reason_code' => $reason_code,
 				'reason_text' => $refund->get_reason(),
 				'shipping'    => [
-					'amount'   => $refund->get_shipping_total(),
-					'currency' => $refund->get_currency(),
+					'shipping_refund' => [
+						'amount'   => $refund->get_shipping_total(),
+						'currency' => $refund->get_currency(),
+					],
 				],
 			];
 
