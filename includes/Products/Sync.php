@@ -54,6 +54,10 @@ class Sync {
 	public function add_hooks() {
 
 		add_action( 'shutdown', [ $this, 'schedule_sync' ] );
+
+		// stock update actions
+		add_action( 'woocommerce_product_set_stock', [ $this, 'handle_stock_update' ] );
+		add_action( 'woocommerce_variation_set_stock', [ $this, 'handle_stock_update' ] );
 	}
 
 
