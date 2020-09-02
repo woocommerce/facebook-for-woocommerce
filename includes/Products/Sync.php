@@ -166,6 +166,10 @@ class Sync {
 	 */
 	public function handle_stock_update( \WC_Product $product ) {
 
+		// bail if not connected
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			return;
+		}
 	}
 
 
