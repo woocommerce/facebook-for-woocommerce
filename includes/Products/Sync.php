@@ -170,6 +170,11 @@ class Sync {
 		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
 			return;
 		}
+
+		// bail if admin and not AJAX
+		if ( is_admin() && ! is_ajax() ) {
+			return;
+		}
 	}
 
 
