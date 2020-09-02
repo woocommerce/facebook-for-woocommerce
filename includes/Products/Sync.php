@@ -175,6 +175,9 @@ class Sync {
 		if ( is_admin() && ! is_ajax() ) {
 			return;
 		}
+
+		// add the product to the list of products to be updated
+		$this->create_or_update_products( [ $product->get_id() ] );
 	}
 
 
