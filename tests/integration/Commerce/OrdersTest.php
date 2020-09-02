@@ -297,6 +297,223 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::add_order_refund() */
+	public function test_add_order_refund_no_remote_id() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+		$refund->save();
+
+		// test will fail if add_order_refund() is called
+		$api = $this->make( API::class, [
+			'add_order_refund' => \Codeception\Stub\Expected::never(),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+
+		$order = wc_get_order( $order->get_id() );
+
+		$this->assertTrue( $this->order_has_note( $order, 'Could not refund Instagram order: Remote ID for parent order not found.' ) );
+	}
+
+
+	/** @see Orders::add_order_refund() */
+	public function test_add_order_refund_no_valid_items() {
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+
+		$refunded_item = new \WC_Order_Item_Product();
+		$refunded_item->set_name( 'Test' );
+		$refunded_item->set_quantity( 1 );
+		$refunded_item->set_total( 0.50 );
+
+		$refund->add_item( $refunded_item );
+		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$refund->save();
+
+		// test will fail if add_order_refund() is called
+		$api = $this->make( API::class, [
+			'add_order_refund' => \Codeception\Stub\Expected::never(),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+
+		$order = wc_get_order( $order->get_id() );
+
+		$this->assertTrue( $this->order_has_note( $order, 'Could not refund Instagram order: No valid Facebook products were found.' ) );
+	}
+
+
+	/**
+	 * @see Orders::add_order_refund()
+	 *
+	 * @param string $reason_code reason code to use
+	 * @param string $expected expected request reason code
+	 * @dataProvider provider_add_order_refund_reason_code
+	 */
+	public function test_add_order_refund_reason_code( $reason_code, $expected ) {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+		$refund->save();
+
+		// mock the API to ensure the correct reason is passed to the API
+		$api = $this->make( API::class, [
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected ) { $this->assertSame( $expected, $refund_data['reason_code'] ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, $reason_code );
+	}
+
+
+	/** @see test_add_order_refund_reason_code */
+	public function provider_add_order_refund_reason_code() {
+
+		return [
+			'valid reason code'   => [ 'BUYERS_REMORSE', 'BUYERS_REMORSE', ],
+			'unknown reason code' => [ 'I_MADE_A_HUGE_MISTAKE', 'REFUND_REASON_OTHER' ],
+		];
+	}
+
+
+	/**
+	 * @see Orders::add_order_refund()
+	 *
+	 * @param string $reason_text reason text to use
+	 * @param string $expected expected request reason text
+	 * @dataProvider provider_add_order_refund_reason_text
+	 */
+	public function test_add_order_refund_reason_text( $reason_text, $expected ) {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+		if ( ! empty( $reason_text ) ) {
+			$refund->set_reason( $reason_text );
+		}
+		$refund->save();
+
+		// mock the API to ensure the correct reason is passed to the API
+		$api = $this->make( API::class, [
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected ) { $this->assertSame( $expected, $refund_data['reason_text'] ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+	}
+
+
+	/** @see test_add_order_refund_valid_reasons */
+	public function provider_add_order_refund_reason_text() {
+
+		return [
+			'non empty reason text'   => [ 'Did not fit as expected', 'Did not fit as expected', ],
+			'empty reason text' => [ '', '' ],
+		];
+	}
+
+
+	/** @see Orders::add_order_refund() */
+	public function test_add_order_refund_shipping() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 10.00 );
+		$item->set_product( $product );
+		$item->save();
+
+		$shipping_item = new \WC_Order_Item_Shipping();
+		$shipping_item->set_name( 'Standard' );
+		$shipping_item->set_total( 5.00 );
+		$shipping_item->save();
+
+		$order->add_item( $item );
+		$order->add_item( $shipping_item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+
+		$refunded_item = new \WC_Order_Item_Product();
+		$refunded_item->set_name( 'Test' );
+		$refunded_item->set_quantity( 1 );
+		$refunded_item->set_total( 5.00 );
+		$refunded_item->set_product( $product );
+
+		$refunded_shipping_item = new \WC_Order_Item_Shipping();
+		$refunded_shipping_item->set_name( 'Standard' );
+		$refunded_shipping_item->set_total( 4.00 );
+		$refunded_shipping_item->save();
+
+		$refund->add_item( $refunded_item );
+		$refund->add_item( $refunded_shipping_item );
+		$refund->set_shipping_total( 4.00 );
+		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$refund->save();
+
+		$expected_refunded_shipping_total = $refund->get_shipping_total();
+
+		// mock the API to ensure the correct reason is passed to the API
+		$api = $this->make( API::class, [
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected_refunded_shipping_total ) { $this->assertSame( $expected_refunded_shipping_total, $refund_data['shipping']['amount'] ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+	}
+
+
 	/** @see Orders::cancel_order() */
 	public function test_cancel_order_no_remote_id() {
 
@@ -379,6 +596,31 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	private function get_commerce_orders_handler() {
 
 		return facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler();
+	}
+
+
+	/**
+	 * Checks if the order has a note with the given content.
+	 *
+	 * @param \WC_Order $order order object
+	 * @param string $note_content note content
+	 * @return bool
+	 */
+	private function order_has_note( $order, $note_content ) {
+
+		$note_found = false;
+		$notes      = wc_get_order_notes( [ 'order_id' => $order->get_id() ] );
+
+		foreach ( $notes as $note ) {
+
+			if ( $note_content === $note->content ) {
+
+				$note_found = true;
+				break;
+			}
+		}
+
+		return $note_found;
 	}
 
 
