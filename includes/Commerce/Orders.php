@@ -357,13 +357,16 @@ class Orders {
 				'items'       => $items,
 				'reason_code' => $reason_code,
 				'reason_text' => $refund->get_reason(),
-				'shipping'    => [
+			];
+
+			if ( ! empty( $refund->get_shipping_total() ) ) {
+				$refund_data['shipping'] = [
 					'shipping_refund' => [
 						'amount'   => $refund->get_shipping_total(),
 						'currency' => $refund->get_currency(),
 					],
-				],
-			];
+				];
+			}
 
 			$api->add_order_refund( $remote_id, $refund_data );
 
