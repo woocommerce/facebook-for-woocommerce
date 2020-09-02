@@ -183,6 +183,59 @@ class SyncTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Sync::handle_stock_update() */
+	public function test_handle_stock_update() {
+
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		$simple_product   = $this->tester->get_product();
+		$variable_product = $this->tester->get_variable_product( [ 'children' => 3 ] );
+
+		$sync = $this->get_sync();
+
+		$sync->handle_stock_update( $simple_product );
+		$sync->handle_stock_update( $variable_product );
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		$requests = $requests_property->getValue( $sync );
+
+		$this->assertIsArray( $requests );
+		$this->assertArrayHasKey( 'p-' . $simple_product->get_id(), $requests );
+		$this->assertArrayHasKey( 'p-' . $variable_product->get_id(), $requests );
+		$this->assertEquals( 'UPDATE', $requests[ 'p-' . $simple_product->get_id() ] );
+		$this->assertEquals( 'UPDATE', $requests['p-' . $variable_product->get_id() ] );
+	}
+
+
+	/** @see Sync::handle_stock_update() */
+	public function test_handle_stock_update_not_connected() {
+
+		$simple_product   = $this->tester->get_product();
+		$variable_product = $this->tester->get_variable_product( [ 'children' => 3 ] );
+
+		$sync = $this
+			->getMockBuilder( Sync::class )
+			->onlyMethods( [ 'create_or_update_products' ] )
+			->getMock();
+
+		$sync->method( 'create_or_update_products' )
+		     ->willReturn( \Codeception\Stub\Expected::never() );
+
+		$sync->handle_stock_update( $simple_product );
+		$sync->handle_stock_update( $variable_product );
+
+		$requests_property = new \ReflectionProperty( Sync::class, 'requests' );
+		$requests_property->setAccessible( true );
+
+		$requests = $requests_property->getValue( $sync );
+
+		$this->assertIsArray( $requests );
+		$this->assertEmpty( $requests );
+	}
+
+
 	/** @see Sync::schedule_sync() */
 	public function test_schedule_sync() {
 
