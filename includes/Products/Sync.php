@@ -158,6 +158,18 @@ class Sync {
 
 
 	/**
+	 * Adds the products with stock changes to the requests array to be updated.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public function handle_stock_update( \WC_Product $product ) {
+
+	}
+
+
+	/**
 	 * Creates a background job to sync the products in the requests array.
 	 *
 	 * @since 2.0.0
