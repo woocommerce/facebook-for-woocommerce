@@ -85,6 +85,34 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Performs an API request.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param API\Request $request request object
+	 * @return API\Response
+	 * @throws API\Exceptions\Request_Limit_Reached|Framework\SV_WC_API_Exception
+	 */
+	public function perform_request( $request ) {
+
+		$rate_limit_id   = $request::get_rate_limit_id();
+		$delay_timestamp = $this->get_rate_limit_delay( $request::get_rate_limit_id() );
+
+		// if there is a delayed timestamp in the future, throw an exception
+		if ( $delay_timestamp >= time() ) {
+
+			$this->handle_throttled_request( $rate_limit_id, $delay_timestamp );
+
+		} else {
+
+			$this->set_rate_limit_delay( $rate_limit_id, 0 );
+		}
+
+		return parent::perform_request( $request );
+	}
+
+
+	/**
 	 * Validates a response after it has been parsed and instantiated.
 	 *
 	 * Throws an exception if a rate limit or general API error is included in the response.
