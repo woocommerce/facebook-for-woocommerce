@@ -200,12 +200,9 @@ class Orders {
 		// update information from estimated_payment_details
 		$estimated_payment_details = $remote_order->get_estimated_payment_details();
 
-		// TODO: confirm if we should use $estimated_payment_details['subtotal']['items'] for something
-		// TODO: confirm if we should use $estimated_payment_details['subtotal']['shipping'] for something
-		// TODO: confirm if we should use $estimated_payment_details['tax'] for something
+		// we do not use subtotal values from the API because WC calculates them on the fly based on the items
 		$local_order->set_total( $estimated_payment_details['total_amount']['amount'] );
 		$local_order->set_currency( $estimated_payment_details['total_amount']['currency'] );
-		// TODO: confirm if we should use $estimated_payment_details['tax_remitted'] for something
 
 		// update information from buyer_details
 		$buyer_details = $remote_order->get_buyer_details();

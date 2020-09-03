@@ -104,11 +104,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		/** @var \WC_Order_Item_Product $first_order_item */
 		$first_order_item = current( $order_items );
 		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
-		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items'][0]['retailer_id'] );
-		$this->assertEquals( $response_data['items'][0]['quantity'], $first_order_item->get_quantity() );
-		$this->assertEquals( $response_data['items'][0]['quantity'] * $response_data['items'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
+		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items']['data'][0]['retailer_id'] );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
 		// TODO: investigate why this assertion is failing
-		// $this->assertEquals( $response_data['items'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
+//		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
 
 		$shipping_items = $updated_local_order->get_items('shipping');
 		$this->assertCount( 1, $shipping_items );
@@ -240,10 +240,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		/** @var \WC_Order_Item_Product $first_order_item */
 		$first_order_item = current( $order_items );
 		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
-		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items'][0]['retailer_id'] );
-		$this->assertEquals( $response_data['items'][0]['quantity'], $first_order_item->get_quantity() );
-		$this->assertEquals( $response_data['items'][0]['quantity'] * $response_data['items'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
-		$this->assertEquals( $response_data['items'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
+		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items']['data'][0]['retailer_id'] );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
 	}
 
 
@@ -583,24 +583,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 			'created'                   => '2019-01-14T19:17:31+00:00',
 			'last_updated'              => '2019-01-14T19:47:35+00:00',
 			'items'                     => [
-				0 => [
-					'id'             => '2082596341811586',
-					'product_id'     => '1213131231',
-					'retailer_id'    => ! empty( $product ) ? \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) : 'external_product_1234',
-					'quantity'       => 2,
-					'price_per_unit' => [
-						'amount'   => '20.00',
-						'currency' => 'USD',
-					],
-					'tax_details'    => [
-						'estimated_tax' => [
-							'amount'   => '0.30',
+				'data' => [
+					0 => [
+						'id'             => '2082596341811586',
+						'product_id'     => '1213131231',
+						'retailer_id'    => ! empty( $product ) ? \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) : 'external_product_1234',
+						'quantity'       => 2,
+						'price_per_unit' => [
+							'amount'   => '20.00',
 							'currency' => 'USD',
 						],
-						'captured_tax'  => [
-							'total_tax' => [
+						'tax_details'    => [
+							'estimated_tax' => [
 								'amount'   => '0.30',
 								'currency' => 'USD',
+							],
+							'captured_tax'  => [
+								'total_tax' => [
+									'amount'   => '0.30',
+									'currency' => 'USD',
+								],
 							],
 						],
 					],

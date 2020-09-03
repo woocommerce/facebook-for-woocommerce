@@ -87,7 +87,7 @@ class Order {
 	 */
 	public function get_items() {
 
-		return isset( $this->data['items'] ) ? $this->data['items'] : [];
+		return ! empty( $this->data['items']['data'] ) ? $this->data['items']['data'] : [];
 	}
 
 
