@@ -353,10 +353,20 @@ class Orders {
 
 					if ( $product = $item->get_product() ) {
 
-						$items[] = [
-							'retailer_id'          => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-							'item_refund_quantity' => $item->get_quantity(),
+						$item = [
+							'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
 						];
+
+						if ( ! empty( $item->get_quantity() ) ) {
+							$item['item_refund_quantity'] = abs( $item->get_quantity() );
+						} else {
+							$item['item_refund_amount'] = [
+								'amount'   => $item->get_total(),
+								'currency' => $refund->get_currency(),
+							];
+						}
+
+						$items[] = $item;
 					}
 				}
 
