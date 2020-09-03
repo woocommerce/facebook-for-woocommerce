@@ -40,6 +40,13 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::get_rate_limit_id() */
+	public function test_get_rate_limit_id() {
+
+		$this->assertEquals( 'ads_management', Request::get_rate_limit_id() );
+	}
+
+
 	/** @see Request::set_requests() */
 	public function test_set_requests() {
 
