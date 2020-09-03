@@ -39,6 +39,13 @@ class Request_Limit_Reached extends Framework\SV_WC_API_Exception {
 	}
 
 
+	/**
+	 * Sets the estimated throttle end.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \DateTime $date_time date time object representing when the throttle will end
+	 */
 	public function set_throttle_end( \DateTime $date_time ) {
 
 		$this->throttle_end = $date_time;
