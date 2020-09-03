@@ -326,7 +326,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Orders::add_order_refund() */
-	public function test_add_order_refund_no_valid_items() {
+	public function test_add_order_refund_full_refund() {
 
 		$order = new \WC_Order();
 
@@ -344,10 +344,109 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$refunded_item = new \WC_Order_Item_Product();
 		$refunded_item->set_name( 'Test' );
+		$refunded_item->set_quantity( 2 );
+		$refunded_item->set_total( 1.00 );
+
+		$refund->add_item( $refunded_item );
+		// full refund
+		$refund->set_amount( '1.00' );
+		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$refund->save();
+
+		// mock the API to ensure the items are not sent to the API
+		$api = $this->make( API::class, [
+			'add_order_refund' => function( $remote_id, $refund_data ) { $this->assertArrayNotHasKey( 'items', $refund_data ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+	}
+
+
+	/** @see Orders::add_order_refund() */
+	public function test_add_order_refund_partial_refund() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+		$item->set_product( $product );
+		$item->save();
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->set_total( '1.00' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+
+		$refunded_item = new \WC_Order_Item_Product();
+		$refunded_item->set_name( 'Test' );
 		$refunded_item->set_quantity( 1 );
 		$refunded_item->set_total( 0.50 );
 
 		$refund->add_item( $refunded_item );
+		// partial refund
+		$refund->set_amount( '0.50' );
+		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$refund->save();
+
+		// mock the API to ensure the items are sent to the API
+		$api = $this->make( API::class, [
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $product ) {
+				$this->assertArrayHasKey( 'items', $refund_data );
+				$this->assertIsArray( $refund_data['items'] );
+				$this->assertNotEmpty( $refund_data['items'] );
+				$this->assertCount( 1, $refund_data['items'] );
+				$this->assertSame( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ), $refund_data['items'][0]['retailer_id'] );
+				$this->assertSame( 1, $refund_data['items'][0]['item_refund_quantity'] );
+			},
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
+	}
+
+
+	/** @see Orders::add_order_refund() */
+	public function test_add_order_refund_partial_refund_no_valid_items() {
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->set_total( '1.00' );
+		$order->save();
+
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+
+		$refunded_item = new \WC_Order_Item_Product();
+		$refunded_item->set_name( 'Test' );
+		$refunded_item->set_quantity( 1 );
+		$refunded_item->set_total( 0.50 );
+
+		$refund->add_item( $refunded_item );
+		// partial refund
+		$refund->set_amount( '0.50' );
 		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$refund->save();
 
@@ -384,6 +483,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$refund = new \WC_Order_Refund();
 		$refund->set_parent_id( $order->get_id() );
+		$refund->set_amount( '0.50' );
 		$refund->save();
 
 		// mock the API to ensure the correct reason is passed to the API
@@ -425,6 +525,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$refund = new \WC_Order_Refund();
 		$refund->set_parent_id( $order->get_id() );
+		$refund->set_amount( '0.50' );
 		if ( ! empty( $reason_text ) ) {
 			$refund->set_reason( $reason_text );
 		}
@@ -432,7 +533,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// mock the API to ensure the correct reason is passed to the API
 		$api = $this->make( API::class, [
-			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected ) { $this->assertSame( $expected, $refund_data['reason_text'] ); },
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected ) {
+				if ( empty( $expected ) ) {
+					$this->assertArrayNotHasKey( 'reason_text', $refund_data );
+				} else {
+					$this->assertSame( $expected, $refund_data['reason_text'] );
+				}
+			},
 		] );
 
 		// replace the API property
@@ -495,6 +602,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$refund->add_item( $refunded_item );
 		$refund->add_item( $refunded_shipping_item );
 		$refund->set_shipping_total( 4.00 );
+		$refund->set_amount( '9.00' );
 		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$refund->save();
 
