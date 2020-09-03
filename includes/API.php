@@ -23,7 +23,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * @since 2.0.0
  *
- * @method Response perform_request( $request )
+ * @method API\Request get_request()
  */
 class API extends Framework\SV_WC_API_Base {
 
@@ -97,6 +97,7 @@ class API extends Framework\SV_WC_API_Base {
 
 		/** @var API\Response $response */
 		$response = $this->get_response();
+		$request  = $this->get_request();
 
 		if ( $response && $response->has_api_error() ) {
 
@@ -119,8 +120,23 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
-			if ( in_array( $code, [ 4, 17, 32, 613, 80004 ], true ) ) {
-				throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+			if ( in_array( $code, [ 4, 17, 32, 613, 80001, 80004 ], true ) ) {
+
+				$delay_in_seconds = $this->calculate_rate_limit_delay( $response, $this->get_response_headers() );
+
+				if ( $delay_in_seconds > 0 ) {
+
+					$rate_limit_id = $request::get_rate_limit_id();
+					$timestamp     = time() + $delay_in_seconds;
+
+					$this->set_rate_limit_delay( $rate_limit_id, $timestamp );
+
+					$this->handle_throttled_request( $rate_limit_id, $timestamp );
+
+				} else {
+
+					throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+				}
 			}
 
 			/**
