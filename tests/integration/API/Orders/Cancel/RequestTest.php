@@ -48,4 +48,11 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::get_rate_limit_id() */
+	public function test_get_rate_limit_id() {
+
+		$this->assertEquals( 'pages', Request::get_rate_limit_id() );
+	}
+
+
 }

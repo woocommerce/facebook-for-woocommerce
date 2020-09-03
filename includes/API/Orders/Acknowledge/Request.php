@@ -44,4 +44,19 @@ class Request extends API\Request  {
 	}
 
 
+	/**
+	 * Gets the rate limit ID.
+	 *
+	 * While this is the Orders API, orders belong to pages so this is where the rate limit comes from.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_rate_limit_id() {
+
+		return 'pages';
+	}
+
+
 }
