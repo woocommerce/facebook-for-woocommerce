@@ -144,6 +144,32 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Handles a throttled API request.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $rate_limit_id ID for the API request
+	 * @param int $timestamp timestamp until the delay is over
+	 * @throws API\Exceptions\Request_Limit_Reached
+	 */
+	private function handle_throttled_request( $rate_limit_id, $timestamp ) {
+
+		if ( time() > $timestamp ) {
+			return;
+		}
+
+		$exception = new API\Exceptions\Request_Limit_Reached( "{$rate_limit_id} requests are currently throttled.", 401 );
+
+		$date_time = new \DateTime();
+		$date_time->setTimestamp( $timestamp );
+
+		$exception->set_throttle_end( $date_time );
+
+		throw $exception;
+	}
+
+
+	/**
 	 * Gets the FBE installation IDs.
 	 *
 	 * @since 2.0.0
