@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
@@ -430,12 +431,105 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Order_Refund $refund order refund object
-	 * @param mixed $args
+	 * @param string $reason_code refund reason code
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function add_order_refund( \WC_Order_Refund $refund, $args ) {
+	public function add_order_refund( \WC_Order_Refund $refund, $reason_code ) {
 
-		// TODO: implement
+		$plugin = facebook_for_woocommerce();
+
+		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
+
+		$valid_reason_codes = [
+			Refund_Request::REASON_BUYERS_REMORSE,
+			Refund_Request::REASON_DAMAGED_GOODS,
+			Refund_Request::REASON_NOT_AS_DESCRIBED,
+			Refund_Request::REASON_QUALITY_ISSUE,
+			Refund_Request::REASON_OTHER,
+			Refund_Request::REASON_WRONG_ITEM,
+		];
+
+		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
+			$reason_code = Refund_Request::REASON_OTHER;
+		}
+
+		try {
+
+			$parent_order = wc_get_order( $refund->get_parent_id() );
+
+			if ( ! $parent_order instanceof \WC_Order ) {
+				throw new SV_WC_Plugin_Exception( __( 'Parent order not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$remote_id = $parent_order->get_meta( self::REMOTE_ID_META_KEY );
+
+			if ( ! $remote_id ) {
+				throw new SV_WC_Plugin_Exception( __( 'Remote ID for parent order not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$refund_data = [
+				'reason_code' => $reason_code,
+			];
+
+			if ( ! empty( $reason_text = $refund->get_reason() ) ) {
+				$refund_data['reason_text'] = $reason_text;
+			}
+
+			// only send items for partial refunds
+			if ( $parent_order->get_total() - $refund->get_amount() > 0 ) {
+
+				$items = [];
+
+				/** @var \WC_Order_Item_Product $item */
+				foreach ( $refund->get_items() as $item ) {
+
+					if ( $product = $item->get_product() ) {
+
+						$item = [
+							'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+						];
+
+						if ( ! empty( $item->get_quantity() ) ) {
+							$item['item_refund_quantity'] = abs( $item->get_quantity() );
+						} else {
+							$item['item_refund_amount'] = [
+								'amount'   => $item->get_total(),
+								'currency' => $refund->get_currency(),
+							];
+						}
+
+						$items[] = $item;
+					}
+				}
+
+				if ( empty( $items ) ) {
+					throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+				}
+
+				$refund_data['items'] = $items;
+			}
+
+			if ( ! empty( $refund->get_shipping_total() ) ) {
+				$refund_data['shipping'] = [
+					'shipping_refund' => [
+						'amount'   => $refund->get_shipping_total(),
+						'currency' => $refund->get_currency(),
+					],
+				];
+			}
+
+			$api->add_order_refund( $remote_id, $refund_data );
+
+			$parent_order->add_order_note( __( 'Order refunded on Instagram.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			if ( ! empty( $parent_order ) && $parent_order instanceof \WC_Order ) {
+				$parent_order->add_order_note( sprintf( __( 'Could not refund Instagram order: %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+			} else {
+				facebook_for_woocommerce()->log("Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
+			}
+		}
 	}
 
 
