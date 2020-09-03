@@ -2,9 +2,13 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Tests\Commerce;
 
+use ReflectionProperty;
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the general Commerce orders handler class.
@@ -18,9 +22,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	public function _before() {
 
-		if ( ! class_exists( SkyVerge\WooCommerce\Facebook\API\Orders\Order::class ) ) {
-			require_once facebook_for_woocommerce()->get_plugin_path() . '/includes/API/Orders/Order.php';
-		}
+		parent::_before();
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 
@@ -201,6 +209,113 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_error_fetching() {
+
+		// mock the API to throw an exception
+		$api = $this->make( API::class, [
+			'get_new_orders' => function( $page_id ) {
+
+				throw new SV_WC_API_Exception( 'Error' );
+			},
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if find_local_order() is called
+		$orders_handler = $this->make( Orders::class, [
+			'find_local_order' => \Codeception\Stub\Expected::never(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
+
+
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_create() {
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if create_local_order() is not called once
+		$orders_handler = $this->make( Orders::class, [
+			'create_local_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
+
+
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_update() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product, (string) $order->get_id() );
+
+		$remote_id = $response_data['id'];
+		$order->add_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
+		$order->save_meta_data();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'get_new_orders' => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		// test will fail if create_local_order() is called or if update_local_order() is not called once
+        $orders_handler = $this->make( Orders::class, [
+			'create_local_order' => \Codeception\Stub\Expected::never(),
+			'update_local_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$orders_handler->update_local_orders();
+	}
+
+
+	/** @see Orders::update_local_orders() */
+	public function test_update_local_orders_acknowledge() {
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+
+		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
+		$api = $this->make( API::class, [
+			'get_new_orders'    => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+			'acknowledge_order' => \Codeception\Stub\Expected::once(),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->update_local_orders();
+	}
+
+
 	/** @see Orders::get_order_update_interval() */
 	public function test_get_order_update_interval() {
 
@@ -244,6 +359,142 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_no_remote_id() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'Remote ID not found.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_no_valid_items() {
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'No valid Facebook products were found.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order() {
+
+		$product = $this->tester->get_product();
+
+		$order = new \WC_Order();
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+		$item->set_product( $product );
+
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'fulfill_order' => new API\Orders\Response( json_encode( [ 'success' => true ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::cancel_order() */
+	public function test_cancel_order_no_remote_id() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'Remote ID not found.' );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, 'asdf' );
+	}
+
+
+	/** @see Orders::cancel_order() */
+	public function test_cancel_order() {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to return a test response
+		$api = $this->make( API::class, [
+			'cancel_order' => new API\Orders\Response( json_encode( [ 'success' => true ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, 'OTHER' );
+	}
+
+
+	/**
+	 * @see Orders::cancel_order()
+	 *
+	 * @param string $reason_code reason code to use
+	 * @param string $expected expected request reason code
+	 * @dataProvider provider_cancel_order_valid_reasons
+	 */
+	public function test_cancel_order_valid_reasons( $reason_code, $expected ) {
+
+		$order = new \WC_Order();
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		// mock the API to ensure the correct reason is passed to the API
+		$api = $this->make( API::class, [
+			'cancel_order' => function( $remote_id, $reason ) use ( $expected ) { $this->assertSame( $expected, $reason ); },
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->cancel_order( $order, $reason_code );
+	}
+
+
+	/** @see test_cancel_order_valid_reasons */
+	public function provider_cancel_order_valid_reasons() {
+
+		return [
+			'valid reason code'   => [ 'CUSTOMER_REQUESTED', 'CUSTOMER_REQUESTED', ],
+			'unknown reason code' => [ 'I_MADE_A_HUGE_MISTAKE', 'CANCEL_REASON_OTHER' ],
+		];
+	}
+
+
 	/** Helper methods **************************************************************************************************/
 
 
@@ -254,9 +505,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	private function get_commerce_orders_handler() {
 
-		$commerce_handler = new Commerce();
-
-		return $commerce_handler->get_orders_handler();
+		return facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler();
 	}
 
 
@@ -266,10 +515,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#get_orders
 	 *
 	 * @param string $order_status order status
-	 * @param \WC_Product $product WC product object
+	 * @param \WC_Product|null $product WC product object
+	 * @param string $merchant_order_id WC order ID
 	 * @return array
 	 */
-	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product = null ) {
+	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product = null, $merchant_order_id = '' ) {
 
 		return [
 			'id'                        => '335211597203390',
@@ -303,7 +553,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 				],
 			],
 			'ship_by_date'              => '2019-01-16',
-			'merchant_order_id'         => '46192',
+			'merchant_order_id'         => ! empty( $merchant_order_id ) ? $merchant_order_id : '46192',
 			'channel'                   => 'Instagram',
 			'selected_shipping_option'  => [
 				'name'                    => 'Standard',

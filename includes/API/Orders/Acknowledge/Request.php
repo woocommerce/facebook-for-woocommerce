@@ -35,7 +35,7 @@ class Request extends API\Request  {
 	 */
 	public function __construct( $remote_id, $merchant_order_reference ) {
 
-		parent::__construct( "/{$remote_id}", 'POST' );
+		parent::__construct( "/{$remote_id}/acknowledge_order", 'POST' );
 
 		$this->set_data( [
 			'merchant_order_reference' => $merchant_order_reference,

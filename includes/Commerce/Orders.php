@@ -10,8 +10,10 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
+use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
@@ -223,7 +225,55 @@ class Orders {
 	 */
 	public function update_local_orders() {
 
-		// TODO: implement
+		$page_id = facebook_for_woocommerce()->get_integration()->get_facebook_page_id();
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_new_orders( $page_id );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( 'Error fetching Commerce orders from the Orders API: ' . $exception->getMessage() );
+
+			return;
+		}
+
+		$remote_orders = $response->get_orders();
+
+		foreach ( $remote_orders as $remote_order ) {
+
+			$local_order = $this->find_local_order( $remote_order->get_id() );
+
+			try {
+
+				if ( empty( $local_order ) ) {
+					$local_order = $this->create_local_order( $remote_order );
+				} else {
+					$local_order = $this->update_local_order( $remote_order, $local_order );
+				}
+
+			} catch ( \Exception $exception ) {
+
+				if ( ! empty( $local_order ) ) {
+					// add note to order
+					$local_order->add_order_note( 'Error updating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
+				} else {
+					facebook_for_woocommerce()->log( 'Error creating local order from Commerce order from the Orders API: ' . $exception->getMessage() );
+				}
+
+				continue;
+			}
+
+			if ( ! empty( $local_order ) && Order::STATUS_CREATED === $remote_order->get_status() ) {
+
+				// acknowledge the order
+				try {
+					facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+				} catch ( SV_WC_API_Exception $exception ) {
+					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
+				}
+			}
+		}
 	}
 
 
@@ -293,6 +343,12 @@ class Orders {
 	/**
 	 * Fulfills an order via API.
 	 *
+	 * In addition to the exceptions we throw for missing data, the API request will also fail if:
+	 * - The stored remote ID is invalid
+	 * - The order has an item with a retailer ID that was not originally part of the order
+	 * - An item has a different quantity than what was originally ordered
+	 * - The remote order was already fulfilled
+	 *
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Order $order order object
@@ -302,7 +358,52 @@ class Orders {
 	 */
 	public function fulfill_order( \WC_Order $order, $tracking_number, $carrier ) {
 
-		// TODO: implement
+		try {
+
+			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
+
+			if ( ! $remote_id ) {
+				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$items = [];
+
+			/** @var \WC_Order_Item_Product $item */
+			foreach ( $order->get_items() as $item ) {
+
+				if ( $product = $item->get_product() ) {
+
+					$items[] = [
+						'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+						'quantity'    => $item->get_quantity(),
+					];
+				}
+			}
+
+			if ( empty( $items ) ) {
+				throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$fulfillment_data = [
+				'items'         => $items,
+				'tracking_info' => [
+					'carrier'         => $carrier,
+					'tracking_number' => $tracking_number,
+				],
+			];
+
+			$plugin = facebook_for_woocommerce();
+
+			$plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() )->fulfill_order( $remote_id, $fulfillment_data );
+
+			$order->add_order_note( __( 'Remote order fulfilled.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			$order->add_order_note( sprintf( __( 'Remote order could not be fulfilled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+
+			throw $exception;
+		}
 	}
 
 
@@ -327,11 +428,45 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Order $order order object
+	 * @param string $reason_code cancellation reason code
 	 * @throws SV_WC_Plugin_Exception
 	 */
-	public function cancel_order( \WC_Order $order ) {
+	public function cancel_order( \WC_Order $order, $reason_code ) {
 
-		// TODO: implement
+		$plugin = facebook_for_woocommerce();
+
+		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
+
+		$valid_reason_codes = [
+			Request::REASON_CUSTOMER_REQUESTED,
+			Request::REASON_INVALID_ADDRESS,
+			Request::REASON_OTHER,
+			Request::REASON_OUT_OF_STOCK,
+			Request::REASON_SUSPICIOUS_ORDER,
+		];
+
+		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
+			$reason_code = Request::REASON_OTHER;
+		}
+
+		try {
+
+			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
+
+			if ( ! $remote_id ) {
+				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$api->cancel_order( $remote_id, $reason_code );
+
+			$order->add_order_note( __( 'Remote order cancelled.', 'facebook-for-woocommerce' ) );
+
+		} catch ( SV_WC_Plugin_Exception $exception ) {
+
+			$order->add_order_note( sprintf( __( 'Remote order could not be cancelled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+
+			throw $exception;
+		}
 	}
 
 
