@@ -370,20 +370,29 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::add_order_refund() */
 	public function test_add_order_refund_partial_refund() {
 
-		$product = $this->tester->get_product();
+		$product         = $this->tester->get_product();
+		$another_product = $this->tester->get_product();
 
 		$order = new \WC_Order();
 
 		$item = new \WC_Order_Item_Product();
-		$item->set_name( 'Test' );
+		$item->set_name( 'Test item 1' );
 		$item->set_quantity( 2 );
 		$item->set_total( 1.00 );
 		$item->set_product( $product );
 		$item->save();
 
+		$another_item = new \WC_Order_Item_Product();
+		$another_item->set_name( 'Test item 2' );
+		$another_item->set_quantity( 2 );
+		$another_item->set_total( 4.00 );
+		$another_item->set_product( $another_product );
+		$another_item->save();
+
 		$order->add_item( $item );
+		$order->add_item( $another_item );
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
-		$order->set_total( '1.00' );
+		$order->set_total( '5.00' );
 		$order->save();
 
 		$refund = new \WC_Order_Refund();
@@ -394,21 +403,30 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$refunded_item->set_quantity( 1 );
 		$refunded_item->set_total( 0.50 );
 
+		$refunded_item_without_quantity = new \WC_Order_Item_Product();
+		$refunded_item_without_quantity->set_name( 'Test without quantity' );
+		$refunded_item_without_quantity->set_total( '3.00' );
+
 		$refund->add_item( $refunded_item );
+		$refund->add_item( $refunded_item_without_quantity );
 		// partial refund
-		$refund->set_amount( '0.50' );
+		$refund->set_amount( '3.50' );
 		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$refund->save();
 
 		// mock the API to ensure the items are sent to the API
 		$api = $this->make( API::class, [
-			'add_order_refund' => function( $remote_id, $refund_data ) use ( $product ) {
+			'add_order_refund' => function( $remote_id, $refund_data ) use ( $product, $another_product ) {
 				$this->assertArrayHasKey( 'items', $refund_data );
 				$this->assertIsArray( $refund_data['items'] );
 				$this->assertNotEmpty( $refund_data['items'] );
 				$this->assertCount( 1, $refund_data['items'] );
 				$this->assertSame( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ), $refund_data['items'][0]['retailer_id'] );
 				$this->assertSame( 1, $refund_data['items'][0]['item_refund_quantity'] );
+				$this->assertArrayNotHasKey( 1, $refund_data['items'][0]['item_refund_amount'] );
+				$this->assertSame( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $another_product ), $refund_data['items'][1]['retailer_id'] );
+				$this->assertArrayNotHasKey( 1, $refund_data['items'][1]['item_refund_quantity'] );
+				$this->assertSame( '3.00', $refund_data['items'][1]['item_refund_amount'] );
 			},
 		] );
 
