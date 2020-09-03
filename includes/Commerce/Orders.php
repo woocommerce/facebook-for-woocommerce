@@ -160,7 +160,17 @@ class Orders {
 		$shipping_address = $remote_order->get_shipping_address();
 
 		if ( ! empty( $shipping_address['name'] ) ) {
-			$local_order->set_shipping_last_name( $shipping_address['name'] );
+
+			if ( strpos( $shipping_address['name'], ' ' ) !== false ) {
+
+				list( $first_name, $last_name ) = explode( ' ', $shipping_address['name'], 2 );
+				$local_order->set_shipping_first_name( $first_name );
+				$local_order->set_shipping_last_name( $last_name );
+
+			} else {
+
+				$local_order->set_shipping_last_name( $shipping_address['name'] );
+			}
 		}
 
 		if ( ! empty( $shipping_address['street1'] ) ) {
@@ -200,7 +210,17 @@ class Orders {
 		// update information from buyer_details
 		$buyer_details = $remote_order->get_buyer_details();
 
-		$local_order->set_billing_last_name( $buyer_details['name'] );
+		if ( strpos( $buyer_details['name'], ' ' ) !== false ) {
+
+			list( $first_name, $last_name ) = explode( ' ', $buyer_details['name'], 2 );
+			$local_order->set_billing_first_name( $first_name );
+			$local_order->set_billing_last_name( $last_name );
+
+		} else {
+
+			$local_order->set_billing_last_name( $buyer_details['name'] );
+		}
+
 		$local_order->set_billing_email( $buyer_details['email'] );
 		$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 

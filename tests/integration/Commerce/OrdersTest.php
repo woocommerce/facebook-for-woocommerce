@@ -122,7 +122,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $updated_local_order->get_shipping_total() );
 		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $updated_local_order->get_shipping_tax() );
 
-		$this->assertEquals( $response_data['shipping_address']['name'], $updated_local_order->get_shipping_last_name() );
+		$this->assertEquals( 'John', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'Doe', $updated_local_order->get_shipping_last_name() );
 		$this->assertEquals( $response_data['shipping_address']['street1'], $updated_local_order->get_shipping_address_1() );
 		$this->assertEquals( $response_data['shipping_address']['street2'], $updated_local_order->get_shipping_address_2() );
 		$this->assertEquals( $response_data['shipping_address']['city'], $updated_local_order->get_shipping_city() );
@@ -133,13 +134,66 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['amount'], $updated_local_order->get_total() );
 		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['currency'], $updated_local_order->get_currency() );
 
-		$this->assertEquals( $response_data['buyer_details']['name'], $updated_local_order->get_billing_last_name() );
+		$this->assertEquals( 'John', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'Doe', $updated_local_order->get_billing_last_name() );
 		$this->assertEquals( $response_data['buyer_details']['email'], $updated_local_order->get_billing_email() );
 		$this->assertEquals( $response_data['buyer_details']['email_remarketing_option'], wc_string_to_bool( $updated_local_order->get_meta( Orders::EMAIL_REMARKETING_META_KEY ) ) );
 
 		$this->assertEquals( $response_data['id'], $updated_local_order->get_meta( Orders::REMOTE_ID_META_KEY ) );
 
 		$this->assertEquals( 'processing', $updated_local_order->get_status() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_created_username() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data                             = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$response_data['shipping_address']['name'] = 'johndoe';
+		$response_data['buyer_details']['name']    = 'johndoe';
+		$remote_order                              = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
+		$this->assertEquals( '', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'johndoe', $updated_local_order->get_shipping_last_name() );
+
+		$this->assertEquals( '', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'johndoe', $updated_local_order->get_billing_last_name() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_created_middle_name() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data                             = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$response_data['shipping_address']['name'] = 'John James Doe';
+		$response_data['buyer_details']['name']    = 'John James Doe';
+		$remote_order                              = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'James Doe', $updated_local_order->get_shipping_last_name() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'James Doe', $updated_local_order->get_billing_last_name() );
 	}
 
 
@@ -571,7 +625,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 				],
 			],
 			'shipping_address'          => [
-				'name'        => 'ABC company',
+				'name'        => 'John Doe',
 				'street1'     => '123 Main St',
 				'street2'     => 'Unit 200',
 				'city'        => 'Boston',
