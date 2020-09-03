@@ -133,14 +133,17 @@ class Orders {
 			if ( empty( $matching_wc_order_item ) ) {
 
 				$matching_wc_order_item = new \WC_Order_Item_Product();
+				$matching_wc_order_item->set_product( $product );
 				$local_order->add_item( $matching_wc_order_item );
 			}
 
-			$matching_wc_order_item->set_product_id( $product->get_id() );
 			$matching_wc_order_item->set_quantity( $item['quantity'] );
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// we use the estimated_tax because the captured_tax represents the tax after the order/item has been shipped and we don't fulfill order at the line-item level
-			$matching_wc_order_item->set_subtotal_tax( $item['tax_details']['estimated_tax']['amount'] );
+			$matching_wc_order_item->set_taxes( [
+				'subtotal' => [ $item['tax_details']['estimated_tax']['amount'] ],
+				'total'    => [ $item['tax_details']['estimated_tax']['amount'] ],
+			] );
 			$matching_wc_order_item->save();
 		}
 
