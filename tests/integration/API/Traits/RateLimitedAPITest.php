@@ -45,7 +45,7 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 
 		$this->api->set_rate_limit_delay( $rate_limit_id, $value );
 
-		$this->assertEquals( get_option( "wc_facebook_rate_limit_${rate_limit_id}" ), $value );
+		$this->assertEquals( get_transient( "wc_facebook_rate_limit_${rate_limit_id}" ), $value );
 	}
 
 
@@ -53,7 +53,7 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 	public function provider_set_rate_limit_delay() {
 
 		return [
-			[ 'ads_management_api_request', 15 ],
+			[ 'ads_management', 15 ],
 		];
 	}
 
@@ -69,7 +69,7 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_get_rate_limit_delay( $rate_limit_id, $option_value, $expected_value ) {
 
-		update_option( "wc_facebook_rate_limit_${rate_limit_id}", $option_value );
+		set_transient( "wc_facebook_rate_limit_${rate_limit_id}", $option_value );
 
 		$this->assertEquals( $expected_value, $this->api->get_rate_limit_delay( $rate_limit_id ) );
 	}
@@ -79,10 +79,10 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 	public function provider_get_rate_limit_delay() {
 
 		return [
-			[ 'ads_management_api_request', 15, 15 ],
-			[ 'ads_management_api_request', '15', 15 ],
-			[ 'ads_management_api_request', '', 0 ],
-			[ 'ads_management_api_request', false, 0 ],
+			[ 'ads_management', 15, 15 ],
+			[ 'ads_management', '15', 15 ],
+			[ 'ads_management', '', 0 ],
+			[ 'ads_management', false, 0 ],
 		];
 	}
 
@@ -111,7 +111,7 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 	public function provider_calculate_rate_limit_delay() {
 
 		return [
-			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 ],
+			[ [ 'X-Business-Use-Case-Usage' => [ 'call_count' => 28, 'total_time' => 25, 'total_cputime' => 26, 'estimated_time_to_regain_access' => 15 ] ], 15 * MINUTE_IN_SECONDS ],
 		];
 	}
 
