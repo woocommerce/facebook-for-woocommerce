@@ -104,11 +104,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		/** @var \WC_Order_Item_Product $first_order_item */
 		$first_order_item = current( $order_items );
 		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
-		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items']['data'][0]['retailer_id'] );
+		$this->assertEquals( $response_data['items']['data'][0]['retailer_id'], \WC_Facebookcommerce_Utils::get_fb_retailer_id( $first_order_item->get_product() ) );
 		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
 		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
-		// TODO: investigate why this assertion is failing
-//		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
 
 		$shipping_items = $updated_local_order->get_items('shipping');
 		$this->assertCount( 1, $shipping_items );
@@ -240,10 +239,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		/** @var \WC_Order_Item_Product $first_order_item */
 		$first_order_item = current( $order_items );
 		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
-		$this->assertStringContainsString( (string) $first_order_item->get_product_id(), $response_data['items']['data'][0]['retailer_id'] );
+		$this->assertEquals( $response_data['items']['data'][0]['retailer_id'], \WC_Facebookcommerce_Utils::get_fb_retailer_id( $first_order_item->get_product() ) );
 		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
 		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
-		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_subtotal_tax() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
 	}
 
 
@@ -963,7 +963,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 						],
 						'tax_details'    => [
 							'estimated_tax' => [
-								'amount'   => '0.30',
+								'amount'   => '0.36',
 								'currency' => 'USD',
 							],
 							'captured_tax'  => [
