@@ -335,29 +335,37 @@ class Orders {
 				throw new SV_WC_Plugin_Exception( __( 'Remote ID for parent order not found.', 'facebook-for-woocommerce' ) );
 			}
 
-			$items = [];
-
-			/** @var \WC_Order_Item_Product $item */
-			foreach ( $refund->get_items() as $item ) {
-
-				if ( $product = $item->get_product() ) {
-
-					$items[] = [
-						'retailer_id'          => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-						'item_refund_quantity' => $item->get_quantity(),
-					];
-				}
-			}
-
-			if ( empty( $items ) ) {
-				throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
-			}
-
 			$refund_data = [
-				'items'       => $items,
 				'reason_code' => $reason_code,
-				'reason_text' => $refund->get_reason(),
 			];
+
+			if ( ! empty( $reason_text = $refund->get_reason() ) ) {
+				$refund_data['reason_text'] = $reason_text;
+			}
+
+			// only send items for partial refunds
+			if ( $parent_order->get_total() - $refund->get_amount() > 0 ) {
+
+				$items = [];
+
+				/** @var \WC_Order_Item_Product $item */
+				foreach ( $refund->get_items() as $item ) {
+
+					if ( $product = $item->get_product() ) {
+
+						$items[] = [
+							'retailer_id'          => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+							'item_refund_quantity' => $item->get_quantity(),
+						];
+					}
+				}
+
+				if ( empty( $items ) ) {
+					throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+				}
+
+				$refund_data['items'] = $items;
+			}
 
 			if ( ! empty( $refund->get_shipping_total() ) ) {
 				$refund_data['shipping'] = [
