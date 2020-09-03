@@ -33,6 +33,41 @@ class RateLimitedAPITest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see API::perform_request() */
+	public function test_perform_request() {
+
+		$request = new API\Orders\Acknowledge\Request( '1234', '5678' );
+
+		// mock the API to use fake data instead of making a real API call and return a valid response handler
+		$this->api = $this->make( $this->api, [
+			'do_remote_request'    => json_encode( [ 'success' => true ] ),
+			'get_response_handler' => API\Response::class,
+		] );
+
+		$response = $this->api->perform_request( $request );
+
+		$this->assertInstanceOf( API\Response::class, $response );
+	}
+
+
+	/** @see API::perform_request() */
+	public function test_perform_request_with_limit() {
+
+		$request = new API\Orders\Acknowledge\Request( '1234', '5678' );
+
+		$this->api->set_rate_limit_delay( $request::get_rate_limit_id(), time() + 60 );
+
+		// mock the API to return a valid response handler
+		$this->api = $this->make( $this->api, [
+			'get_response_handler' => API\Response::class,
+		] );
+
+		$this->expectException( API\Exceptions\Request_Limit_Reached::class );
+
+		$this->api->perform_request( $request );
+	}
+
+
 	/**
 	 * @see Rate_Limited_API::set_rate_limit_delay()
 	 *
