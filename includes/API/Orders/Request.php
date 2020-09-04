@@ -12,14 +12,27 @@ namespace SkyVerge\WooCommerce\Facebook\API\Orders;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
-
 /**
  * Orders API list request object.
  *
  * @since 2.1.0-dev.1
  */
-class Request extends API\Request  {
+class Request extends Abstract_Request  {
+
+
+	/**
+	 * Gets the rate limit ID.
+	 *
+	 * While this is the Orders API, orders belong to pages so this is where the rate limit comes from.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_rate_limit_id() {
+
+		return 'pages';
+	}
 
 
 	/**

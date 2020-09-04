@@ -23,7 +23,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * @since 2.0.0
  *
- * @method Response perform_request( $request )
+ * @method API\Request get_request()
  */
 class API extends Framework\SV_WC_API_Base {
 
@@ -85,6 +85,34 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Performs an API request.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param API\Request $request request object
+	 * @return API\Response
+	 * @throws API\Exceptions\Request_Limit_Reached|Framework\SV_WC_API_Exception
+	 */
+	public function perform_request( $request ) {
+
+		$rate_limit_id   = $request::get_rate_limit_id();
+		$delay_timestamp = $this->get_rate_limit_delay( $rate_limit_id );
+
+		// if there is a delayed timestamp in the future, throw an exception
+		if ( $delay_timestamp >= time() ) {
+
+			$this->handle_throttled_request( $rate_limit_id, $delay_timestamp );
+
+		} else {
+
+			$this->set_rate_limit_delay( $rate_limit_id, 0 );
+		}
+
+		return parent::perform_request( $request );
+	}
+
+
+	/**
 	 * Validates a response after it has been parsed and instantiated.
 	 *
 	 * Throws an exception if a rate limit or general API error is included in the response.
@@ -97,6 +125,7 @@ class API extends Framework\SV_WC_API_Base {
 
 		/** @var API\Response $response */
 		$response = $this->get_response();
+		$request  = $this->get_request();
 
 		if ( $response && $response->has_api_error() ) {
 
@@ -119,8 +148,23 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
-			if ( in_array( $code, [ 4, 17, 32, 613, 80004 ], true ) ) {
-				throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+			if ( in_array( $code, [ 4, 17, 32, 613, 80001, 80004 ], true ) ) {
+
+				$delay_in_seconds = $this->calculate_rate_limit_delay( $response, $this->get_response_headers() );
+
+				if ( $delay_in_seconds > 0 ) {
+
+					$rate_limit_id = $request::get_rate_limit_id();
+					$timestamp     = time() + $delay_in_seconds;
+
+					$this->set_rate_limit_delay( $rate_limit_id, $timestamp );
+
+					$this->handle_throttled_request( $rate_limit_id, $timestamp );
+
+				} else {
+
+					throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+				}
 			}
 
 			/**
@@ -135,11 +179,47 @@ class API extends Framework\SV_WC_API_Base {
 				delete_transient( 'wc_facebook_connection_invalid' );
 			}
 
+			// if the code indicates a retry and we've not hit the retry limit, perform the request again
+			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
+
+				$request->mark_retry();
+
+				$this->response = $this->perform_request( $request );
+
+				return;
+			}
+
 			throw new Framework\SV_WC_API_Exception( $message, $code );
 		}
 
 		// if we get this far we're connected, so delete any invalid connection flag
 		delete_transient( 'wc_facebook_connection_invalid' );
+	}
+
+
+	/**
+	 * Handles a throttled API request.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $rate_limit_id ID for the API request
+	 * @param int $timestamp timestamp until the delay is over
+	 * @throws API\Exceptions\Request_Limit_Reached
+	 */
+	private function handle_throttled_request( $rate_limit_id, $timestamp ) {
+
+		if ( time() > $timestamp ) {
+			return;
+		}
+
+		$exception = new API\Exceptions\Request_Limit_Reached( "{$rate_limit_id} requests are currently throttled.", 401 );
+
+		$date_time = new \DateTime();
+		$date_time->setTimestamp( $timestamp );
+
+		$exception->set_throttle_end( $date_time );
+
+		throw $exception;
 	}
 
 
