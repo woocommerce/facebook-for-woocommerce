@@ -25,7 +25,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	use Traits\Rate_Limited_Request;
 
 
-	/** @var int number of retries to attempt if told to do so by Facebook */
+	/** @var int maximum number of retries to attempt if told to do so by Facebook */
 	protected $retry_limit = 5;
 
 	/** @var int number of times this request has been retried */
