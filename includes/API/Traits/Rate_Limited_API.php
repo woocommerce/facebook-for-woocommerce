@@ -25,6 +25,8 @@ trait Rate_Limited_API {
 	/**
 	 * Stores the delay, in seconds, for requests with the given rate limit ID.
 	 *
+	 * This uses a transient, set to expire after the delay duration or after 24 hours, whichever is sooner.
+	 *
 	 * @since 2.0.0
 	 *
 	 * @param string $rate_limit_id request ID for rate limiting
@@ -32,7 +34,16 @@ trait Rate_Limited_API {
 	 */
 	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
 
-		update_option( "wc_facebook_rate_limit_${rate_limit_id}", $delay );
+		if ( ! empty( $delay ) ) {
+
+			$expiration = min( $delay, 24 * HOUR_IN_SECONDS );
+
+			set_transient( "wc_facebook_rate_limit_${rate_limit_id}", $delay, $expiration );
+
+		} else {
+
+			delete_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
+		}
 	}
 
 
@@ -46,7 +57,7 @@ trait Rate_Limited_API {
 	 */
 	public function get_rate_limit_delay( $rate_limit_id ) {
 
-		return (int) get_option( "wc_facebook_rate_limit_${rate_limit_id}", 0 );
+		return (int) get_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
 	}
 
 
@@ -58,12 +69,11 @@ trait Rate_Limited_API {
 	 *
 	 * @param Rate_Limited_Response $response API response object
 	 * @param array $headers API response headers
-	 * @return int
+	 * @return int delay in seconds
 	 */
 	protected function calculate_rate_limit_delay( $response, $headers ) {
 
-		// TODO: Implement calculate_rate_limit_delay() method.
-		return $response->get_rate_limit_estimated_time_to_regain_access( $headers );
+		return $response->get_rate_limit_estimated_time_to_regain_access( $headers ) * MINUTE_IN_SECONDS;
 	}
 
 

@@ -721,7 +721,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertInstanceOf( API\Orders\Acknowledge\Request::class, $api->get_request() );
 		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( '/335211597203390', $api->get_request()->get_path() );
+		$this->assertEquals( '/335211597203390/acknowledge_order', $api->get_request()->get_path() );
 		$expected_data = [
 			'merchant_order_reference' => '64241',
 			'idempotency_key'          => $api->get_request()->get_idempotency_key(),
