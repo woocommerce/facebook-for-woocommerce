@@ -64,6 +64,36 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::perform_request() */
+	public function test_do_post_parse_response_validation_retry() {
+
+		$request = new class extends API\Request {
+
+			public function __construct() {
+
+				parent::__construct( null, null );
+
+				$this->retry_codes[] = 5678;
+			}
+		};
+
+		// mock the API to use fake data instead of making a real API call and return a valid response handler
+		$api = $this->make( facebook_for_woocommerce()->get_api(), [
+			'get_parsed_response'    => \Codeception\Stub\Expected::exactly( 6, new API\Response( json_encode( [
+				'error' => [
+					'message'          => 'Retry me!',
+					'type'             => 'OAuthException',
+					'code'             => 5678,
+				]
+			] ) ) ),
+		] );
+
+		$this->expectException( Framework\SV_WC_API_Exception::class );
+
+		$api->perform_request( $request );
+	}
+
+
 	/**
 	 * @see API::do_post_parse_response_validation()
 	 *

@@ -179,6 +179,16 @@ class API extends Framework\SV_WC_API_Base {
 				delete_transient( 'wc_facebook_connection_invalid' );
 			}
 
+			// if the code indicates a retry and we've not hit the retry limit, perform the request again
+			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
+
+				$request->mark_retry();
+
+				$this->response = $this->perform_request( $request );
+
+				return;
+			}
+
 			throw new Framework\SV_WC_API_Exception( $message, $code );
 		}
 
