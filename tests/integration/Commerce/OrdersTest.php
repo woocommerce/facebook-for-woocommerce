@@ -72,13 +72,203 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->tester->get_product();
 
-		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING, (string) $product->get_id() );
+		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING, $product );
 		$remote_order  = new Order( $response_data );
 
 		$local_order = $this->get_commerce_orders_handler()->create_local_order( $remote_order );
 		$this->assertInstanceOf( \WC_Order::class, $local_order );
 		$this->assertEquals( $response_data['channel'], $local_order->get_created_via() );
 		$this->assertEquals( 'pending', $local_order->get_status() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_created() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$remote_order  = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
+		$order_items = $updated_local_order->get_items();
+		$this->assertCount( 1, $order_items );
+
+		/** @var \WC_Order_Item_Product $first_order_item */
+		$first_order_item = current( $order_items );
+		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
+		$this->assertEquals( $response_data['items']['data'][0]['retailer_id'], \WC_Facebookcommerce_Utils::get_fb_retailer_id( $first_order_item->get_product() ) );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
+
+		$shipping_items = $updated_local_order->get_items('shipping');
+		$this->assertCount( 1, $shipping_items );
+		/** @var \WC_Order_Item_Shipping $shipping_item */
+		$shipping_item = current( $shipping_items );
+		$this->assertInstanceOf( \WC_Order_Item_Shipping::class, $shipping_item );
+		$this->assertEquals( $response_data['selected_shipping_option']['name'], $shipping_item->get_method_title() );
+		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $shipping_item->get_total() );
+		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $shipping_item->get_total_tax() );
+
+		$tax_order_items = $updated_local_order->get_items( 'tax' );
+		$this->assertCount( 1, $tax_order_items );
+
+		/** @var \WC_Order_Item_Tax $first_tax_order_item */
+		$first_tax_order_item = current( $tax_order_items );
+		$this->assertInstanceOf( \WC_Order_Item_Tax::class, $first_tax_order_item );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_tax_order_item->get_tax_total() );
+		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $first_tax_order_item->get_shipping_tax_total() );
+
+		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $updated_local_order->get_shipping_total() );
+		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $updated_local_order->get_shipping_tax() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'Doe', $updated_local_order->get_shipping_last_name() );
+		$this->assertEquals( $response_data['shipping_address']['street1'], $updated_local_order->get_shipping_address_1() );
+		$this->assertEquals( $response_data['shipping_address']['street2'], $updated_local_order->get_shipping_address_2() );
+		$this->assertEquals( $response_data['shipping_address']['city'], $updated_local_order->get_shipping_city() );
+		$this->assertEquals( $response_data['shipping_address']['state'], $updated_local_order->get_shipping_state() );
+		$this->assertEquals( $response_data['shipping_address']['postal_code'], $updated_local_order->get_shipping_postcode() );
+		$this->assertEquals( $response_data['shipping_address']['country'], $updated_local_order->get_shipping_country() );
+
+		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['amount'], $updated_local_order->get_total() );
+		$this->assertEquals( $response_data['estimated_payment_details']['total_amount']['currency'], $updated_local_order->get_currency() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'Doe', $updated_local_order->get_billing_last_name() );
+		$this->assertEquals( $response_data['buyer_details']['email'], $updated_local_order->get_billing_email() );
+		$this->assertEquals( $response_data['buyer_details']['email_remarketing_option'], wc_string_to_bool( $updated_local_order->get_meta( Orders::EMAIL_REMARKETING_META_KEY ) ) );
+
+		$this->assertEquals( $response_data['id'], $updated_local_order->get_meta( Orders::REMOTE_ID_META_KEY ) );
+
+		$this->assertEquals( 'processing', $updated_local_order->get_status() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_created_username() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data                             = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$response_data['shipping_address']['name'] = 'johndoe';
+		$response_data['buyer_details']['name']    = 'johndoe';
+		$remote_order                              = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
+		$this->assertEquals( '', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'johndoe', $updated_local_order->get_shipping_last_name() );
+
+		$this->assertEquals( '', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'johndoe', $updated_local_order->get_billing_last_name() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_created_middle_name() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data                             = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$response_data['shipping_address']['name'] = 'John James Doe';
+		$response_data['buyer_details']['name']    = 'John James Doe';
+		$remote_order                              = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// get a fresh order
+		$updated_local_order = wc_get_order( $updated_local_order->get_id() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_shipping_first_name() );
+		$this->assertEquals( 'James Doe', $updated_local_order->get_shipping_last_name() );
+
+		$this->assertEquals( 'John', $updated_local_order->get_billing_first_name() );
+		$this->assertEquals( 'James Doe', $updated_local_order->get_billing_last_name() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_fb_processing() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING, $product );
+		$remote_order  = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		$this->assertEquals( 'pending', $updated_local_order->get_status() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_existing_item() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$product = $this->tester->get_product();
+
+		$order_item = new \WC_Order_Item_Product();
+		$order_item->set_product_id( $product->get_id() );
+		$order_item->set_quantity( 1 );
+		$order_item->save();
+		$order->add_item( $order_item );
+		$order->save();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
+		$remote_order  = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		$order_items = $updated_local_order->get_items();
+		$this->assertCount( 1, $order_items );
+
+		/** @var \WC_Order_Item_Product $first_order_item */
+		$first_order_item = current( $order_items );
+		$this->assertInstanceOf( \WC_Order_Item_Product::class, $first_order_item );
+		$this->assertEquals( $response_data['items']['data'][0]['retailer_id'], \WC_Facebookcommerce_Utils::get_fb_retailer_id( $first_order_item->get_product() ) );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'], $first_order_item->get_quantity() );
+		$this->assertEquals( $response_data['items']['data'][0]['quantity'] * $response_data['items']['data'][0]['price_per_unit']['amount'], $first_order_item->get_subtotal() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
+		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_order_item->get_total_tax() );
+	}
+
+
+	/** @see Orders::update_local_order() */
+	public function test_update_local_order_product_not_found() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		$response_data = $this->get_test_response_data( Order::STATUS_PROCESSING );
+		$remote_order  = new Order( $response_data );
+
+		$updated_local_order = $this->get_commerce_orders_handler()->update_local_order( $remote_order, $order );
+
+		// item was skipped
+		$this->assertCount( 0, $updated_local_order->get_items() );
 	}
 
 
@@ -112,7 +302,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->tester->get_product();
 
-		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id() );
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
 
 		// mock the API to return a test response
 		$api = $this->make( API::class, [
@@ -141,7 +331,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order = new \WC_Order();
 		$order->save();
 
-		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id(), (string) $order->get_id() );
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product, (string) $order->get_id() );
 
 		$remote_id = $response_data['id'];
 		$order->add_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
@@ -172,7 +362,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$product = $this->tester->get_product();
 
-		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, (string) $product->get_id() );
+		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
 
 		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
 		$api = $this->make( API::class, [
@@ -756,11 +946,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#get_orders
 	 *
 	 * @param string $order_status order status
-	 * @param string $product_retailer_id WC product ID
+	 * @param \WC_Product|null $product WC product object
 	 * @param string $merchant_order_id WC order ID
 	 * @return array
 	 */
-	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product_retailer_id = '', $merchant_order_id = '' ) {
+	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product = null, $merchant_order_id = '' ) {
 
 		return [
 			'id'                        => '335211597203390',
@@ -770,24 +960,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 			'created'                   => '2019-01-14T19:17:31+00:00',
 			'last_updated'              => '2019-01-14T19:47:35+00:00',
 			'items'                     => [
-				0 => [
-					'id'             => '2082596341811586',
-					'product_id'     => '1213131231',
-					'retailer_id'    => ! empty( $product_retailer_id ) ? $product_retailer_id : 'external_product_1234',
-					'quantity'       => 2,
-					'price_per_unit' => [
-						'amount'   => '20.00',
-						'currency' => 'USD',
-					],
-					'tax_details'    => [
-						'estimated_tax' => [
-							'amount'   => '0.30',
+				'data' => [
+					0 => [
+						'id'             => '2082596341811586',
+						'product_id'     => '1213131231',
+						'retailer_id'    => ! empty( $product ) ? \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) : 'external_product_1234',
+						'quantity'       => 2,
+						'price_per_unit' => [
+							'amount'   => '20.00',
 							'currency' => 'USD',
 						],
-						'captured_tax'  => [
-							'total_tax' => [
-								'amount'   => '0.30',
+						'tax_details'    => [
+							'estimated_tax' => [
+								'amount'   => '0.36',
 								'currency' => 'USD',
+							],
+							'captured_tax'  => [
+								'total_tax' => [
+									'amount'   => '0.30',
+									'currency' => 'USD',
+								],
 							],
 						],
 					],
@@ -812,7 +1004,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 				],
 			],
 			'shipping_address'          => [
-				'name'        => 'ABC company',
+				'name'        => 'John Doe',
 				'street1'     => '123 Main St',
 				'street2'     => 'Unit 200',
 				'city'        => 'Boston',

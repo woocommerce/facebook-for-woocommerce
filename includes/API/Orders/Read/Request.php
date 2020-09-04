@@ -42,7 +42,7 @@ class Request extends API\Orders\Abstract_Request  {
 				'order_status',
 				'created',
 				'last_updated',
-				'items',
+				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
 				'ship_by_date',
 				'merchant_order_id',
 				'channel',

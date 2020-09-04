@@ -52,24 +52,26 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 					'created'                   => '2019-01-14T19:17:31+00:00',
 					'last_updated'              => '2019-01-14T19:47:35+00:00',
 					'items'                     => [
-						0 => [
-							'id'             => '2082596341811586',
-							'product_id'     => '1213131231',
-							'retailer_id'    => 'external_product_1234',
-							'quantity'       => 2,
-							'price_per_unit' => [
-								'amount'   => '20.00',
-								'currency' => 'USD',
-							],
-							'tax_details'    => [
-								'estimated_tax' => [
-									'amount'   => '0.30',
+						'data' => [
+							0 => [
+								'id'             => '2082596341811586',
+								'product_id'     => '1213131231',
+								'retailer_id'    => 'external_product_1234',
+								'quantity'       => 2,
+								'price_per_unit' => [
+									'amount'   => '20.00',
 									'currency' => 'USD',
 								],
-								'captured_tax'  => [
-									'total_tax' => [
+								'tax_details'    => [
+									'estimated_tax' => [
 										'amount'   => '0.30',
 										'currency' => 'USD',
+									],
+									'captured_tax'  => [
+										'total_tax' => [
+											'amount'   => '0.30',
+											'currency' => 'USD',
+										],
 									],
 								],
 							],
@@ -148,6 +150,10 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 			if ( 'order_status' === $key ) {
 
 				$this->assertEquals( $value['state'], $first_order->get_status() );
+
+			} elseif ( 'items' === $key ) {
+
+				$this->assertEquals( $value['data'], $first_order->get_items() );
 
 			} elseif ( ! in_array( $key, [ 'created', 'last_updated', 'ship_by_date', 'merchant_order_id' ] ) ) {
 
