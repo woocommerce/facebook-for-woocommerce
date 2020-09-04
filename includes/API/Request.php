@@ -101,7 +101,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 
 
 	/**
-	 * Gets the number of retries to attempt if told to do so by Facebook.
+	 * Gets the maximum number of retries to attempt if told to do so by Facebook.
 	 *
 	 * @since 2.1.0-dev.1
 	 *
