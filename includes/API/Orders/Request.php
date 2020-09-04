@@ -12,14 +12,12 @@ namespace SkyVerge\WooCommerce\Facebook\API\Orders;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
-
 /**
  * Orders API list request object.
  *
  * @since 2.1.0-dev.1
  */
-class Request extends API\Request  {
+class Request extends Abstract_Request  {
 
 
 	/**
