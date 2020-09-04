@@ -88,6 +88,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			] ) ) ),
 		] );
 
+		// the request is expected to be retried 5 times using the Expected::exactly() call, then it lets this exception through
 		$this->expectException( Framework\SV_WC_API_Exception::class );
 
 		$api->perform_request( $request );
