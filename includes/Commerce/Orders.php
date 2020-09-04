@@ -259,19 +259,22 @@ class Orders {
 		// update information from buyer_details
 		$buyer_details = $remote_order->get_buyer_details();
 
-		if ( strpos( $buyer_details['name'], ' ' ) !== false ) {
+		if ( ! empty( $buyer_details ) ) {
 
-			list( $first_name, $last_name ) = explode( ' ', $buyer_details['name'], 2 );
-			$local_order->set_billing_first_name( $first_name );
-			$local_order->set_billing_last_name( $last_name );
+			if ( strpos( $buyer_details['name'], ' ' ) !== false ) {
 
-		} else {
+				list( $first_name, $last_name ) = explode( ' ', $buyer_details['name'], 2 );
+				$local_order->set_billing_first_name( $first_name );
+				$local_order->set_billing_last_name( $last_name );
 
-			$local_order->set_billing_last_name( $buyer_details['name'] );
+			} else {
+
+				$local_order->set_billing_last_name( $buyer_details['name'] );
+			}
+
+			$local_order->set_billing_email( $buyer_details['email'] );
+			$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 		}
-
-		$local_order->set_billing_email( $buyer_details['email'] );
-		$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 
 		// update order status
 		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
