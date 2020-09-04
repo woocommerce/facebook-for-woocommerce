@@ -155,9 +155,10 @@ class Orders {
 				// check if the local order already has this item
 				if ( ! empty( $tax_order_items = $local_order->get_items( 'tax' ) ) ) {
 
+					/** @var \WC_Order_Item_Tax $tax_order_item */
 					foreach ( $tax_order_items as $tax_order_item ) {
 
-						if ( 'Item tax' === $tax_order_item->get_name() ) {
+						if ( (float) $item['tax_details']['estimated_tax']['amount'] === (float) $tax_order_item->get_tax_total() ) {
 							$matching_tax_order_item = $tax_order_item;
 						}
 					}
@@ -166,11 +167,9 @@ class Orders {
 				if ( empty( $matching_tax_order_item ) ) {
 
 					$matching_tax_order_item = new \WC_Order_Item_Tax();
-
 					$local_order->add_item( $matching_tax_order_item );
 				}
 
-				$matching_tax_order_item->set_name( 'Item tax' );
 				$matching_tax_order_item->set_tax_total( $item['tax_details']['estimated_tax']['amount'] );
 				$matching_tax_order_item->save();
 			}
@@ -217,7 +216,7 @@ class Orders {
 				/** @var \WC_Order_Item_Tax $tax_order_item */
 				foreach ( $tax_order_items as $tax_order_item ) {
 
-					if ( 'Shipping tax' === $tax_order_item->get_name() ) {
+					if ( (float) $selected_shipping_option['calculated_tax']['amount'] === (float) $tax_order_item->get_tax_total() ) {
 						$matching_shipping_tax_order_item = $tax_order_item;
 					}
 				}
@@ -226,8 +225,6 @@ class Orders {
 			if ( empty( $matching_shipping_tax_order_item ) ) {
 
 				$matching_shipping_tax_order_item = new \WC_Order_Item_Tax();
-				$matching_shipping_tax_order_item->set_name( 'Shipping tax' );
-
 				$local_order->add_item( $matching_shipping_tax_order_item );
 			}
 
