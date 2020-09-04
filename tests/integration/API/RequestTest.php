@@ -112,6 +112,17 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::get_retry_limit() */
+	public function test_get_retry_limit_filtered() {
+
+		add_filter( 'wc_facebook_api_request_retry_limit', function() {
+			return 10;
+		} );
+
+		$this->assertSame( 10, ( new Request( null, null ) )->get_retry_limit() );
+	}
+
+
 	/** @see Request::get_retry_codes() */
 	public function test_get_retry_codes() {
 

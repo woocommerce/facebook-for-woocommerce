@@ -109,7 +109,15 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 */
 	public function get_retry_limit() {
 
-		return $this->retry_limit;
+		/**
+		 * Filters the maximum number of retries allowed for the request.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param int $retry_limit maximum number of retries
+		 * @param Request $request request object
+		 */
+		return (int) apply_filters( 'wc_facebook_api_request_retry_limit', $this->retry_limit, $this );
 	}
 
 
