@@ -119,17 +119,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $shipping_item->get_total_tax() );
 
 		$tax_order_items = $updated_local_order->get_items( 'tax' );
-		$this->assertCount( 2, $tax_order_items );
+		$this->assertCount( 1, $tax_order_items );
 
 		/** @var \WC_Order_Item_Tax $first_tax_order_item */
 		$first_tax_order_item = current( $tax_order_items );
 		$this->assertInstanceOf( \WC_Order_Item_Tax::class, $first_tax_order_item );
 		$this->assertEquals( $response_data['items']['data'][0]['tax_details']['estimated_tax']['amount'], $first_tax_order_item->get_tax_total() );
-
-		/** @var \WC_Order_Item_Tax $second_tax_order_item */
-		$second_tax_order_item = end( $tax_order_items );
-		$this->assertInstanceOf( \WC_Order_Item_Tax::class, $second_tax_order_item );
-		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $second_tax_order_item->get_tax_total() );
+		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $first_tax_order_item->get_shipping_tax_total() );
 
 		$this->assertEquals( $response_data['selected_shipping_option']['price']['amount'], $updated_local_order->get_shipping_total() );
 		$this->assertEquals( $response_data['selected_shipping_option']['calculated_tax']['amount'], $updated_local_order->get_shipping_tax() );
