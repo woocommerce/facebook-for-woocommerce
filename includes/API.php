@@ -96,7 +96,7 @@ class API extends Framework\SV_WC_API_Base {
 	public function perform_request( $request ) {
 
 		$rate_limit_id   = $request::get_rate_limit_id();
-		$delay_timestamp = $this->get_rate_limit_delay( $request::get_rate_limit_id() );
+		$delay_timestamp = $this->get_rate_limit_delay( $rate_limit_id );
 
 		// if there is a delayed timestamp in the future, throw an exception
 		if ( $delay_timestamp >= time() ) {

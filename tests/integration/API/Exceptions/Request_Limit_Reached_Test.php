@@ -3,6 +3,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Tests\API\Exceptions;
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached;
 
 /**
  * Tests the API\Exceptions\Request_Limit_Reached_Test object.
@@ -15,7 +16,9 @@ class Request_Limit_Reached_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function _before() {
 
-		require_once( 'includes/API/Exceptions/Request_Limit_Reached.php' );
+		if ( ! class_exists( Request_Limit_Reached::class ) ) {
+			require_once( 'includes/API/Exceptions/Request_Limit_Reached.php' );
+		}
 
 		parent::_before();
 	}
