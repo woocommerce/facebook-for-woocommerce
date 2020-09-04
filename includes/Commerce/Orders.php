@@ -134,28 +134,106 @@ class Orders {
 
 				$matching_wc_order_item = new \WC_Order_Item_Product();
 				$matching_wc_order_item->set_product( $product );
+
 				$local_order->add_item( $matching_wc_order_item );
 			}
 
 			$matching_wc_order_item->set_quantity( $item['quantity'] );
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
+			$matching_wc_order_item->set_total( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// we use the estimated_tax because the captured_tax represents the tax after the order/item has been shipped and we don't fulfill order at the line-item level
 			$matching_wc_order_item->set_taxes( [
 				'subtotal' => [ $item['tax_details']['estimated_tax']['amount'] ],
 				'total'    => [ $item['tax_details']['estimated_tax']['amount'] ],
 			] );
 			$matching_wc_order_item->save();
+
+			if ( ! empty( $item['tax_details']['estimated_tax']['amount'] ) ) {
+
+				$matching_tax_order_item = false;
+
+				// check if the local order already has this item
+				if ( ! empty( $tax_order_items = $local_order->get_items( 'tax' ) ) ) {
+
+					foreach ( $tax_order_items as $tax_order_item ) {
+
+						if ( 'Item tax' === $tax_order_item->get_name() ) {
+							$matching_tax_order_item = $tax_order_item;
+						}
+					}
+				}
+
+				if ( empty( $matching_tax_order_item ) ) {
+
+					$matching_tax_order_item = new \WC_Order_Item_Tax();
+
+					$local_order->add_item( $matching_tax_order_item );
+				}
+
+				$matching_tax_order_item->set_name( 'Item tax' );
+				$matching_tax_order_item->set_tax_total( $item['tax_details']['estimated_tax']['amount'] );
+				$matching_tax_order_item->save();
+			}
 		}
 
 		// update information from selected_shipping_option
 		$selected_shipping_option = $remote_order->get_selected_shipping_option();
 
-		$shipping_item = new \WC_Order_Item_Shipping();
-		$shipping_item->set_method_title( $selected_shipping_option['name'] );
-		$shipping_item->set_total( $selected_shipping_option['price']['amount'] );
-		$shipping_item->set_taxes( [ $selected_shipping_option['calculated_tax']['amount'] ] );
-		$shipping_item->save();
-		$local_order->add_item( $shipping_item );
+		$matching_shipping_order_item = false;
+
+		// check if the local order already has this item
+		if ( ! empty( $shipping_order_items = $local_order->get_items( 'shipping' ) ) ) {
+
+			/** @var \WC_Order_Item_Shipping $shipping_order_item */
+			foreach ( $shipping_order_items as $shipping_order_item ) {
+
+				if ( $selected_shipping_option['name'] === $shipping_order_item->get_method_title() ) {
+					$matching_shipping_order_item = $shipping_order_item;
+				}
+			}
+		}
+
+		if ( empty( $matching_shipping_order_item ) ) {
+
+			$matching_shipping_order_item = new \WC_Order_Item_Shipping();
+			$matching_shipping_order_item->set_method_title( $selected_shipping_option['name'] );
+
+			$local_order->add_item( $matching_shipping_order_item );
+		}
+
+		$matching_shipping_order_item->set_total( $selected_shipping_option['price']['amount'] );
+		$matching_shipping_order_item->set_taxes( [
+			'total' => [ $selected_shipping_option['calculated_tax']['amount'] ],
+		] );
+		$matching_shipping_order_item->save();
+
+		if ( ! empty( $selected_shipping_option['calculated_tax']['amount'] ) ) {
+
+			$matching_shipping_tax_order_item = false;
+
+			// check if the local order already has this item
+			if ( ! empty( $tax_order_items = $local_order->get_items( 'tax' ) ) ) {
+
+				/** @var \WC_Order_Item_Tax $tax_order_item */
+				foreach ( $tax_order_items as $tax_order_item ) {
+
+					if ( 'Shipping tax' === $tax_order_item->get_name() ) {
+						$matching_shipping_tax_order_item = $tax_order_item;
+					}
+				}
+			}
+
+			if ( empty( $matching_shipping_tax_order_item ) ) {
+
+				$matching_shipping_tax_order_item = new \WC_Order_Item_Tax();
+				$matching_shipping_tax_order_item->set_name( 'Shipping tax' );
+
+				$local_order->add_item( $matching_shipping_tax_order_item );
+			}
+
+			$matching_shipping_tax_order_item->set_tax_total( $selected_shipping_option['calculated_tax']['amount'] );
+			$matching_shipping_tax_order_item->save();
+		}
 
 		$local_order->set_shipping_total( $selected_shipping_option['price']['amount'] );
 		$local_order->set_shipping_tax( $selected_shipping_option['calculated_tax']['amount'] );
