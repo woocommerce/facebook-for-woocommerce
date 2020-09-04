@@ -284,6 +284,9 @@ class Orders {
 		// set remote ID
 		$local_order->update_meta_data( self::REMOTE_ID_META_KEY, $remote_order->get_id() );
 
+		// always reduce stock levels
+		wc_reduce_stock_levels( $local_order );
+
 		$local_order->save();
 
 		return $local_order;
