@@ -32,6 +32,10 @@ class Admin {
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
 
+	/** @var \Admin\Orders the orders admin handler */
+	protected $orders;
+
+
 	/**
 	 * Admin constructor.
 	 *
@@ -48,6 +52,10 @@ class Admin {
 		if ( ! $plugin->get_connection_handler()->is_connected() || ! $plugin->get_integration()->get_product_catalog_id() ) {
 			return;
 		}
+
+		require_once __DIR__ . '/Admin/Orders.php';
+
+		$this->orders = new Admin\Orders();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
@@ -129,6 +137,19 @@ class Admin {
 				wp_enqueue_script( 'wc-enhanced-select' );
 			}
 		}
+	}
+
+
+	/**
+	 * Gets the orders admin handler instance.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
+	 */
+	public function get_orders_handler() {
+
+		return $this->orders;
 	}
 
 
