@@ -12,6 +12,10 @@ namespace SkyVerge\WooCommerce\Facebook\Events;
 
 defined( 'ABSPATH' ) or exit;
 
+if ( ! class_exists( Normalizer::class ) ) {
+	require_once 'Normalizer.php';
+}
+
 /**
  * Event object.
  *
@@ -96,6 +100,7 @@ class Event {
 		] );
 
 		$this->prepare_user_data( $this->data['user_data'] );
+
 	}
 
 
@@ -106,9 +111,16 @@ class Event {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param array $data user data
 	 */
-	protected function prepare_user_data( $data ) {
+	protected function prepare_user_data($data) {
+
+		if( count($this->data['user_data']) == 0 ){
+			$this->data['user_data'] = $this->get_pii_from_session();
+		}
+
+		$this->data['user_data'] = $this->normalize_pii_data( $this->data['user_data'] );
+
+		$this->data['user_data'] =$this->hash_pii_data( $this->data['user_data'] );
 
 		$this->data['user_data'] = wp_parse_args( $data, [
 			'client_ip_address' => $this->get_client_ip(),
@@ -116,8 +128,28 @@ class Event {
 			'click_id'          => $this->get_click_id(),
 			'browser_id'        => $this->get_browser_id(),
 		] );
+
 	}
 
+	protected function normalize_pii_data($user_data){
+		$keys_to_normalize = ['em', 'ph', 'zp', 'ct', 'st', 'country'];
+		foreach($keys_to_normalize as $key){
+			if(array_key_exists($key, $user_data)){
+				$user_data[$key] = Normalizer::normalize($key, $user_data[$key]);
+			}
+		}
+		return $user_data;
+	}
+
+	protected function hash_pii_data( $user_data ){
+		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country'];
+		foreach( $keys_to_hash as $key ){
+			if(array_key_exists($key, $user_data)){
+				$user_data[$key] = hash('sha256', $user_data[$key], false);
+			}
+		}
+		return $user_data;
+	}
 
 	/**
 	 * Generates a UUIDv4 unique ID for the event.
@@ -328,5 +360,32 @@ class Event {
 		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : [];
 	}
 
+	/**
+	 * Gets the personal identifiable information from Wordpress session.
+	 *
+	 * @return array
+	 */
+	private function get_pii_from_session(){
+
+		$current_user = wp_get_current_user();
+		if(empty($current_user)){
+			return array();
+		}
+		$pii_data = array(
+      'em' => $current_user->user_email,
+      'fn' => $current_user->user_firstname,
+      'ln' => $current_user->user_lastname,
+    );
+    $user_id = get_current_user_id();
+    if($user_id != 0){
+      $pii_data['ct'] = get_user_meta($user_id, 'billing_city', true);
+			$pii_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
+      $pii_data['country'] = get_user_meta($user_id, 'billing_country', true);
+      $pii_data['st'] = get_user_meta($user_id, 'billing_state', true);
+      $pii_data['ph'] = get_user_meta($user_id, 'billing_phone', true);
+    }
+		return array_filter($pii_data);
+
+	}
 
 }
