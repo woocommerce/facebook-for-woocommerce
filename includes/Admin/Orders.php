@@ -38,6 +38,23 @@ class Orders {
 	 */
 	public function add_hooks() {
 
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		add_action( 'admin_notices', [ $this, 'add_notices' ] );
+
+		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
+
+		add_action( 'admin_footer', [ $this, 'render_modal_templates' ] );
+
+		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
+
+		add_action( 'woocommerce_refund_created', [ $this, 'handle_refund' ] );
+
+		add_action( 'woocommerce_email_enabled_customer_completed_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_processing_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
+
+		add_action( 'admin_menu', [ $this, 'maybe_remove_order_metaboxes' ] );
 	}
 
 
@@ -107,8 +124,10 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param int $refund_id refund ID
 	 */
-	public function handle_refund() {
+	public function handle_refund( $refund_id ) {
 
 	}
 
@@ -132,11 +151,13 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
+	 * @param bool $is_enabled whether the email is enabled in the first place
+	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function maybe_stop_order_email() {
+	public function maybe_stop_order_email( $is_enabled, \WC_Order $order ) {
 
-		return true;
+		return $is_enabled;
 	}
 
 
@@ -147,11 +168,13 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
+	 * @param bool $maybe_editable whether the order is editable in the first place
+	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function is_order_editable() {
+	public function is_order_editable( $maybe_editable, \WC_Order $order ) {
 
-		return true;
+		return $maybe_editable;
 	}
 
 
