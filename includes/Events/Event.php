@@ -113,16 +113,14 @@ class Event {
 	 *
 	 */
 	protected function prepare_user_data($data) {
-
-		if( count($this->data['user_data']) == 0 ){
-			$this->data['user_data'] = $this->get_pii_from_session();
-		}
+		//If $data already contains user data, it is preferred over the data extracted from session
+		$this->data['user_data'] = array_merge($this->get_pii_from_session(), $data);
 
 		$this->data['user_data'] = $this->normalize_pii_data( $this->data['user_data'] );
 
 		$this->data['user_data'] =$this->hash_pii_data( $this->data['user_data'] );
 
-		$this->data['user_data'] = wp_parse_args( $data, [
+		$this->data['user_data'] = wp_parse_args( $this->data['user_data'], [
 			'client_ip_address' => $this->get_client_ip(),
 			'client_user_agent' => $this->get_client_user_agent(),
 			'click_id'          => $this->get_click_id(),

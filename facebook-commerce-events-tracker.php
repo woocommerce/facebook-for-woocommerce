@@ -29,10 +29,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/** @var Event search event instance */
 		private $search_event;
+		/** @var array with events tracked */
+		private $tracked_events;
 
 
 		public function __construct( $user_info ) {
 			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
+			$this->tracked_events = array();
 
 			add_action( 'wp_head', array( $this, 'apply_filters' ) );
 
@@ -715,7 +718,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					$contents[] = $content;
 				}
 			}
-
+			//Personal idenfiable information is extracted from the order
 			$event_data = [
 				'event_name'  => $event_name,
 				'custom_data' => [
@@ -726,6 +729,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $order->get_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->get_pii_from_billing_address($order)
 			];
 
 			$event = new Event( $event_data );
@@ -831,6 +835,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @return bool
 		 */
 		protected function send_api_event( Event $event ) {
+			$this->tracked_events[] = $event;
 
 			try {
 
@@ -958,6 +963,34 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			return WC()->cart ? WC()->cart->total : 0;
 		}
 
+		/**
+		 * Gets personal identifiable information from a given order
+		 *
+		 * @return array
+		 */
+		private function get_pii_from_billing_address($order) {
+			$pii_data = array();
+
+			$pii_data['fn'] = $order->get_billing_first_name();
+			$pii_data['ln'] = $order->get_billing_last_name();
+			$pii_data['em'] = $order->get_billing_email();
+			$pii_data['zp'] = $order->get_billing_postcode();
+			$pii_data['st'] = $order->get_billing_state();
+			$pii_data['country'] = $order->get_billing_country();
+			$pii_data['ct'] = $order->get_billing_city();
+			$pii_data['ph'] = $order->get_billing_phone();
+
+			return array_filter($pii_data);
+		}
+
+		/**
+		 * Gets the events tracked by this object
+		 *
+		 * @return array
+		 */
+		public function get_tracked_events(){
+			return $this->tracked_events;
+		}
 
 	}
 
