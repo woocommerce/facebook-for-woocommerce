@@ -35,6 +35,37 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/**
+	 * @see Orders::is_commerce_order()
+	 *
+	 * @param string $created_via created via value
+	 * @param bool $expected expected result
+	 *
+	 * @dataProvider provider_is_commerce_order
+	 *
+	 * @throws \WC_Data_Exception
+	 */
+	public function test_is_commerce_order( $created_via, $expected ) {
+
+		$order = new \WC_Order();
+		$order->set_created_via( $created_via );
+		$order->save();
+
+		$this->assertEquals( $expected, Orders::is_commerce_order( $order ) );
+	}
+
+
+	/** @see test_is_commerce_order */
+	public function provider_is_commerce_order() {
+
+		return [
+			[ 'checkout', false ],
+			[ 'instagram', true ],
+			[ 'facebook', true ],
+		];
+	}
+
+
 	/** @see Orders::find_local_order() */
 	public function test_find_local_order_found() {
 
