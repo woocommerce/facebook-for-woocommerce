@@ -32,6 +32,10 @@ class Admin {
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
 
+	/** @var \Admin\Product_Categories the product category admin handler */
+	protected $product_categories;
+
+
 	/**
 	 * Admin constructor.
 	 *
@@ -48,6 +52,10 @@ class Admin {
 		if ( ! $plugin->get_connection_handler()->is_connected() || ! $plugin->get_integration()->get_product_catalog_id() ) {
 			return;
 		}
+
+		require_once __DIR__ . '/Admin/Product_Categories.php';
+
+		$this->product_categories = new Admin\Product_Categories();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
@@ -129,6 +137,19 @@ class Admin {
 				wp_enqueue_script( 'wc-enhanced-select' );
 			}
 		}
+	}
+
+
+	/**
+	 * Gets the product category admin handler instance.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Product_Categories
+	 */
+	public function get_product_categories_handler() {
+
+		return $this->product_categories;
 	}
 
 
