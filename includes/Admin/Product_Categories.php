@@ -20,4 +20,8 @@ defined( 'ABSPATH' ) or exit;
 class Product_Categories {
 
 
+	/** @var string ID for the HTML field */
+	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
+
+
 }
