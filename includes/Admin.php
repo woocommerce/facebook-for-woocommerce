@@ -142,6 +142,8 @@ class Admin {
 				wp_enqueue_script( 'wc-enhanced-select' );
 			}
 		}
+
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', plugins_url( '/facebook-for-woocommerce/assets/js/admin/google-product-category-fields.min.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 	}
 
 
