@@ -573,6 +573,19 @@ class Connection {
 
 
 	/**
+	 * Gets the Commerce manager ID value.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_commerce_manager_id() {
+
+		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0
