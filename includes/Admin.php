@@ -57,6 +57,7 @@ class Admin {
 		}
 
 		require_once __DIR__ . '/Admin/Orders.php';
+		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
 
 		$this->orders = new Admin\Orders();
