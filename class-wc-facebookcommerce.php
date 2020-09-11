@@ -151,6 +151,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Commerce.php.php';
 
 					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
 				}
