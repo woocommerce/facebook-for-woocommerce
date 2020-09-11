@@ -58,6 +58,9 @@ class Connection {
 	/** @var string the page access token option name */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
+	/** @var string the Commerce manager ID option name */
+	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
