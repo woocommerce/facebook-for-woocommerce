@@ -9,6 +9,18 @@
 
 jQuery( document ).ready( ( $ ) => {
 
+	'use strict';
 
+	/**
+	 * Google product category field handler.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @type {WC_Facebook_Google_Product_Category_Fields} object
+	 */
+	class WC_Facebook_Google_Product_Category_Fields {
+
+
+	}
 
 } );
