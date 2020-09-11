@@ -20,4 +20,8 @@ defined( 'ABSPATH' ) or exit;
 class Google_Product_Category_Field {
 
 
+	/** @var string the WordPress option name where the full categories list is stored */
+	const OPTION_GOOGLE_PRODUCT_CATEGORIES = 'wc_facebook_google_product_categories';
+
+
 }
