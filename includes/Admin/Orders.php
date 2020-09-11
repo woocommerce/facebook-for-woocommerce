@@ -162,7 +162,7 @@ class Orders {
 
 
 	/**
-	 * Returns whether or not the order is editable.
+	 * Determines whether or not the order is editable.
 	 *
 	 * @internal
 	 *
@@ -179,7 +179,7 @@ class Orders {
 
 
 	/**
-	 * Returns whether or not the current screen is an orders screen.
+	 * Determines whether or not the current screen is an orders screen.
 	 *
 	 * @internal
 	 *
@@ -194,7 +194,7 @@ class Orders {
 
 
 	/**
-	 * Returns whether or not the current screen is an order edit screen.
+	 * Determines whether or not the current screen is an order edit screen.
 	 *
 	 * @internal
 	 *
