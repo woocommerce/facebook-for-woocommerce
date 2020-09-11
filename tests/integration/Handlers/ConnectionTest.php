@@ -563,6 +563,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::update_commerce_manager_id() */
+	public function test_update_commerce_manager_id() {
+
+		$commerce_manager_id = 'commerce manager id';
+		$this->get_connection()->update_commerce_manager_id( $commerce_manager_id );
+
+		$this->assertSame( $commerce_manager_id, get_option( Connection::OPTION_COMMERCE_MANAGER_ID ) );
+	}
+
+
 	/** @see Connection::update_access_token() */
 	public function test_update_access_token() {
 
