@@ -70,6 +70,9 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'messenger', $screens );
 		$this->assertInstanceOf( Admin\Settings_Screens\Messenger::class, $screens['messenger'] );
+
+		$this->assertArrayHasKey( 'commerce', $screens );
+		$this->assertInstanceOf( Admin\Settings_Screens\Commerce::class, $screens['commerce'] );
 	}
 
 
@@ -117,6 +120,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'product_sync', $tabs );
 		$this->assertArrayHasKey( 'messenger', $tabs );
+		$this->assertArrayHasKey( 'commerce', $tabs );
 	}
 
 
