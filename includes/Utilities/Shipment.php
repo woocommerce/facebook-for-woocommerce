@@ -647,4 +647,28 @@ class Shipment {
 	}
 
 
+	/**
+	 * Finds the proper Facebook carrier code, given a Shipment Tracking carrier.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $carrier Shipment Tracking carrier
+	 * @return string
+	 */
+	public function convert_shipment_tracking_carrier_code( $carrier ) {
+
+		if ( isset( $this->shipment_tracking_carriers[ $carrier ] ) ) {
+			$carrier_code = $this->shipment_tracking_carriers[ $carrier ];
+ 		} elseif ( in_array( $carrier, $this->get_carrier_options(), true ) ) {
+			$carrier_code = array_search( $carrier, $this->get_carrier_options(), true );
+		} elseif ( array_key_exists( $carrier, $this->get_carrier_options() ) ) {
+			$carrier_code = $carrier;
+		} else {
+			$carrier_code = 'OTHER';
+		}
+
+		return $carrier_code;
+	}
+
+
 }
