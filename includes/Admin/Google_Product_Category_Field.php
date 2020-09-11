@@ -24,4 +24,30 @@ class Google_Product_Category_Field {
 	const OPTION_GOOGLE_PRODUCT_CATEGORIES = 'wc_facebook_google_product_categories';
 
 
+	/**
+	 * Instantiates the JS handler for the Google product category field.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $input_id element that should receive the latest concrete category ID value
+	 */
+	public function render( $input_id ) {
+
+	}
+
+
+	/**
+	 * Gets the full categories list from Google and stores it.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function get_categories() {
+
+	}
+
+
 }
