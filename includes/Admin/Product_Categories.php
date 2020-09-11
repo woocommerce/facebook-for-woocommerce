@@ -35,7 +35,7 @@ class Product_Categories {
 
 
 	/**
-	 * Enqueue the assets.
+	 * Enqueues the assets.
 	 *
 	 * @internal
 	 *
