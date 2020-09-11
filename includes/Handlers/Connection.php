@@ -767,6 +767,19 @@ class Connection {
 
 
 	/**
+	 * Stores the given Commerce manager ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_commerce_manager_id( $id ) {
+
+		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
+	}
+
+
+	/**
 	 * Stores the given token value.
 	 *
 	 * @since 2.0.0
