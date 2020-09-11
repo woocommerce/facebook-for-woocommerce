@@ -634,4 +634,17 @@ class Shipment {
 	}
 
 
+	/**
+	 * Gets the valid carriers.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array key-value array with carrier codes and their labels
+	 */
+	public function get_carrier_options() {
+
+		return $this->valid_carriers;
+	}
+
+
 }
