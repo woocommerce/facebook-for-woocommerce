@@ -39,4 +39,60 @@ class Products {
 	const FIELD_PATTERN = 'wc_facebook_pattern';
 
 
+	/**
+	 * Renders the Google product category fields.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public static function render_google_product_category_fields( \WC_Product $product ) {
+
+	}
+
+
+	/**
+	 * Renders the attribute fields.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public static function render_attribute_fields( \WC_Product $product ) {
+
+	}
+
+
+	/**
+	 * Renders the Commerce settings fields.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public static function render_commerce_fields( \WC_Product $product ) {
+
+	}
+
+
+	/**
+	 * Saves the Commerce settings.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public static function save_commerce_fields( \WC_Product $product ) {
+
+	}
+
+
 }
