@@ -19,4 +19,9 @@ use SkyVerge\WooCommerce\Facebook\Admin;
  */
 class Commerce extends Admin\Abstract_Settings_Screen {
 
+
+	/** @var string screen ID */
+	const ID = 'commerce';
+
+
 }
