@@ -558,18 +558,18 @@ class Shipment {
 			// Austria
 			'post.at'                   => 'OTHER',
 			'dhl.at'                    => 'DHL',
-			'DPD.at'                    => 'DPD',
+			'DPD.at'                    => 'DPD', // TODO: may be DPD_GERMANY (because the example URL contains "tracking.dpd.de")
 			// Brazil
 			'Correios'                  => 'BRAZIL_CORREIOS',
 			// Belgium
-			'bpost'                     => 'OTHER',
+			'bpost'                     => 'BPOST', // TODO: may be BPOST_INTERNATIONAL
 			// Canada
 			'Canada Post'               => 'CANADA_POST',
 			// Czech Republic
 			'PPL.cz'                    => 'OTHER',
 			'Česká pošta'               => 'CESKA_POSTA',
 			'DHL.cz'                    => 'DHL',
-			'DPD.cz'                    => 'DPD',
+			'DPD.cz'                    => 'DPD', // TODO: may be DPD_GERMANY (because the example URL contains "tracking.dpd.de")
 			// Finland
 			'Itella'                    => 'OTHER',
 			// France
@@ -584,12 +584,12 @@ class Shipment {
 			'DPD.ie'                    => 'DPD_IRELAND',
 			'An Post'                   => 'AN_POST',
 			// Italy
-			'BRT (Bartolini)'           => 'BRT_BARTOLINI',
+			'BRT (Bartolini)'           => 'BRT_BARTOLINI', // TODO: may be BRT_BARTOLINI_PARCEL_ID
 			'DHL Express'               => 'DHL_EXPRESS_PIECE_ID',
 			// India
 			'DTDC'                      => 'DTDC_INDIA',
 			// Netherlands
-			'PostNL'                    => 'POSTNL_DOMESTIC',
+			'PostNL'                    => 'POSTNL_DOMESTIC', // TODO: may be POSTNL_INTERNATIONAL or POSTNL_INTERNATIONAL_3S
 			'DPD.NL'                    => 'DPD',
 			'UPS Netherlands'           => 'UPS',
 			// New Zealand
@@ -629,7 +629,7 @@ class Shipment {
 			'OnTrac'                    => 'ONTRAC',
 			'UPS'                       => 'UPS',
 			'USPS'                      => 'USPS',
-			'DHL US'                    => 'DHL_ECOMMERCE_US',
+			'DHL US'                    => 'DHL_ECOMMERCE_US', // TODO: may be DHL
 		];
 	}
 
