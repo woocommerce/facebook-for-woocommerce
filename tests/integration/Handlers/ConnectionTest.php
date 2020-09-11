@@ -280,6 +280,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_commerce_manager_id() */
+	public function test_get_commerce_manager_id() {
+
+		$commerce_manager_id = 'commerce manager id';
+		update_option( Connection::OPTION_COMMERCE_MANAGER_ID, $commerce_manager_id );
+
+		$this->assertSame( $commerce_manager_id, $this->get_connection()->get_commerce_manager_id() );
+	}
+
+
 	/** @see Connection::get_proxy_url() */
 	public function test_get_proxy_url() {
 
