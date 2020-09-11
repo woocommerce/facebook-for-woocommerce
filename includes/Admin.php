@@ -35,6 +35,9 @@ class Admin {
 	/** @var \Admin\Orders the orders admin handler */
 	protected $orders;
 
+	/** @var \Admin\Product_Categories the product category admin handler */
+	protected $product_categories;
+
 
 	/**
 	 * Admin constructor.
@@ -54,8 +57,10 @@ class Admin {
 		}
 
 		require_once __DIR__ . '/Admin/Orders.php';
+		require_once __DIR__ . '/Admin/Product_Categories.php';
 
 		$this->orders = new Admin\Orders();
+		$this->product_categories = new Admin\Product_Categories();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
@@ -150,6 +155,19 @@ class Admin {
 	public function get_orders_handler() {
 
 		return $this->orders;
+	}
+
+
+	/**
+	 * Gets the product category admin handler instance.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Product_Categories
+	 */
+	public function get_product_categories_handler() {
+
+		return $this->product_categories;
 	}
 
 
