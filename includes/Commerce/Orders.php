@@ -49,6 +49,20 @@ class Orders {
 
 
 	/**
+	 * Returns whether or not the order is a Commerce order.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Order $order order object
+	 * @return bool
+	 */
+	public static function is_commerce_order( \WC_Order $order ) {
+
+		return in_array( $order->get_created_via(), [ 'instagram', 'facebook' ], true );
+	}
+
+
+	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
 	 *
 	 * @since 2.1.0-dev.1
