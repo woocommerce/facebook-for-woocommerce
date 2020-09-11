@@ -83,7 +83,7 @@ class Orders {
 
 
 	/**
-	 * Remove order metaboxes if the order is a Commerce pending order.
+	 * Removes order metaboxes if the order is a Commerce pending order.
 	 *
 	 * @internal
 	 *
