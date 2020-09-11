@@ -20,4 +20,11 @@ defined( 'ABSPATH' ) or exit;
 class Shipment {
 
 
+	/** @var mixed key-value array of valid carriers Facebook codes and labels */
+	protected $valid_carriers;
+
+	/** @var mixed mapping of carriers from the Shipment Tracking plugin to their Facebook code */
+	protected $shipment_tracking_carriers;
+
+
 }
