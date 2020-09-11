@@ -155,7 +155,7 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function maybe_stop_order_email( $is_enabled, \WC_Order $order ) {
+	public function maybe_stop_order_email( $is_enabled, $order ) {
 
 		return $is_enabled;
 	}
