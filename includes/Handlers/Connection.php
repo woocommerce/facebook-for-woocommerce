@@ -58,6 +58,9 @@ class Connection {
 	/** @var string the page access token option name */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
+	/** @var string the Commerce manager ID option name */
+	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
@@ -570,6 +573,19 @@ class Connection {
 
 
 	/**
+	 * Gets the Commerce manager ID value.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_commerce_manager_id() {
+
+		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0
@@ -747,6 +763,19 @@ class Connection {
 	public function update_system_user_id( $value ) {
 
 		update_option( self::OPTION_SYSTEM_USER_ID, $value );
+	}
+
+
+	/**
+	 * Stores the given Commerce manager ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_commerce_manager_id( $id ) {
+
+		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
 	}
 
 
