@@ -32,7 +32,15 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-	// TODO: add test for render()
+	/** @see Admin\Google_Product_Category_Field::render() */
+	public function test_render() {
+		global $wc_queued_js;
+
+		$field = new Admin\Google_Product_Category_Field();
+		$field->render( 'this-input' );
+
+		$this->assertStringContainsString( 'new WC_Facebook_Google_Product_Category_Fields', $wc_queued_js );
+	}
 
 	// TODO: add test for get_categories()
 
