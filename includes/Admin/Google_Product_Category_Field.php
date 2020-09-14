@@ -33,6 +33,13 @@ class Google_Product_Category_Field {
 	 */
 	public function render( $input_id ) {
 
+		$js = sprintf(
+			"window.wc_facebook_google_product_category_fields = new WC_Facebook_Google_Product_Category_Fields( %s, '%s' );",
+			json_encode( $this->get_categories() ),
+			esc_js( $input_id )
+		);
+
+		wc_enqueue_js( $js );
 	}
 
 
