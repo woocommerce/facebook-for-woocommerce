@@ -18,7 +18,7 @@ jQuery( document ).ready( ( $ ) => {
 	 *
 	 * @type {WC_Facebook_Google_Product_Category_Fields} object
 	 */
-	class WC_Facebook_Google_Product_Category_Fields {
+	window.WC_Facebook_Google_Product_Category_Fields = class WC_Facebook_Google_Product_Category_Fields {
 
 
 		/**
