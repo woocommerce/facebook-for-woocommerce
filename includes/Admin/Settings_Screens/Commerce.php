@@ -71,7 +71,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render_google_product_category_field() {
 
-		parent::render();
 	}
 
 
