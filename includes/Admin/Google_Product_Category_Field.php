@@ -43,6 +43,32 @@ class Google_Product_Category_Field {
 	 */
 	public function get_categories() {
 
+		// only fetch again if not fetched less than one hour ago
+		$categories = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+
+		if ( empty ( $categories ) ) {
+
+			// fetch from the URL
+			$categories_response = wp_remote_get( 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt', [ 'timeout' => 1 ] );
+
+			if ( is_array( $categories_response ) && isset( $categories_response['body'] ) ) {
+
+				$categories = $categories_response['body'];
+
+				// TODO: parse categories
+
+				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, HOUR_IN_SECONDS );
+				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories );
+			}
+		}
+
+		if ( empty( $categories ) ) {
+
+			// get the categories from the saved option
+			$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+		}
+
+		return $categories;
 	}
 
 
