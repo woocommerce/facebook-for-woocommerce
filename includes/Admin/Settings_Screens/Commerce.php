@@ -65,6 +65,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Renders the Google category field markup.
 	 *
+	 * @internal
+
 	 * @since 2.1.0-dev.1
 	 */
 	public function render_google_product_category_field() {
