@@ -27,8 +27,6 @@ class Google_Product_Category_Field {
 	/**
 	 * Instantiates the JS handler for the Google product category field.
 	 *
-	 * @internal
-	 *
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param string $input_id element that should receive the latest concrete category ID value
@@ -40,8 +38,6 @@ class Google_Product_Category_Field {
 
 	/**
 	 * Gets the full categories list from Google and stores it.
-	 *
-	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
 	 */
