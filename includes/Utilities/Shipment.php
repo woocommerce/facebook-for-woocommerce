@@ -549,7 +549,7 @@ class Shipment {
 		];
 
 		/**
-		 * @see https://docs.woocommerce.com/document/shipment-tracking/?_ga=2.193545197.1907176699.1599852448-1652361994.1593116723&_gac=1.227990895.1596051708.Cj0KCQjwvIT5BRCqARIsAAwwD-QunfzzbbyhGEEVmH4kdtPM1uID0g72ial0LcVu0eGdkLBcv_okGwcaAjdGEALw_wcB#section-5
+		 * @see https://docs.woocommerce.com/document/shipment-tracking/#section-5
 		 */
 		$this->shipment_tracking_carriers = [
 			// Australia
