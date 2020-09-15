@@ -35,7 +35,93 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 	// TODO: add test for render()
 
 
-	// TODO: add test for get_categories()
+	/** @see \SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field::get_categories() */
+	public function test_get_categories_transient() {
+
+		$transient_value = [
+			'1' => [
+				'label'   => 'Animals & Pet Supplies',
+				'parent'  => '',
+				'options' => [
+					'3237' => 'Live Animals',
+					'2'    => 'Pet Supplies',
+				],
+			],
+		];
+
+		set_transient( Admin\Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES, $transient_value, HOUR_IN_SECONDS );
+
+		$field = new Admin\Google_Product_Category_Field();
+
+		$this->assertEquals( $transient_value, $field->get_categories() );
+	}
+
+
+	/** @see \SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field::get_categories() */
+	public function test_get_categories_error() {
+
+		$field = new Admin\Google_Product_Category_Field();
+
+		add_filter( 'pre_http_request', static function() {
+
+			return new WP_Error();
+		} );
+
+		$this->assertEquals( [], $field->get_categories() );
+	}
+
+
+	/** @see \SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field::get_categories() */
+	public function test_get_categories_error_option_set() {
+
+		$option_value = [
+			'1' => [
+				'label'   => 'Animals & Pet Supplies',
+				'parent'  => '',
+				'options' => [
+					'3237' => 'Live Animals',
+					'2'    => 'Pet Supplies',
+				],
+			],
+		];
+
+		update_option( Admin\Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES, $option_value );
+
+		$field = new Admin\Google_Product_Category_Field();
+
+		add_filter( 'pre_http_request', static function() {
+
+			return new WP_Error();
+		} );
+
+		$this->assertEquals( $option_value, $field->get_categories() );
+	}
+
+
+	/** @see \SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field::get_categories() */
+	public function test_get_categories_success() {
+
+		$field = new Admin\Google_Product_Category_Field();
+
+		add_filter( 'pre_http_request', static function () {
+
+			return [
+				'body' => '# Google_Product_Taxonomy_Version: 2019-07-10
+1 - Animals & Pet Supplies
+3237 - Animals & Pet Supplies > Live Animals
+2 - Animals & Pet Supplies > Pet Supplies
+3 - Animals & Pet Supplies > Pet Supplies > Bird Supplies
+7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
+499954 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Bird Baths
+7386 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Food & Water Dishes
+4989 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cages & Stands',
+			];
+		} );
+
+		$this->assertEquals( $this->get_test_category_list(), $field->get_categories() );
+		$this->assertEquals( $this->get_test_category_list(), get_option( Admin\Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES ) );
+		$this->assertEquals( $this->get_test_category_list(), get_transient( Admin\Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES ) );
+	}
 
 
 	/**

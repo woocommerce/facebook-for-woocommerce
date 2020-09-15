@@ -63,7 +63,7 @@ class Google_Product_Category_Field {
 		if ( empty( $categories ) ) {
 
 			// get the categories from the saved option
-			$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+			$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, [] );
 		}
 
 		return $categories;
