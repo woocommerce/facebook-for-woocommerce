@@ -12,6 +12,7 @@ use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
+use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -412,8 +413,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		add_action( 'wc_facebook_generate_product_catalog_feed', [ $this, 'handle_generate_product_catalog_feed' ] );
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
-			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
+			if( ! class_exists(AAMSettings::class) ){
+				include_once 'includes/Events/AAMSettings.php';
+			}
+			$aam_settings = AAMSettings::build_from_pixel_id( $this->get_facebook_pixel_id() );
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $aam_settings );
+			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );
 		}
 
 		// initialize the messenger chat features

@@ -1,8 +1,8 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\Tests\API\Pixel;
+namespace SkyVerge\WooCommerce\Facebook\Tests\Events;
 
-use SkyVerge\WooCommerce\Facebook\API\Pixel\AAMSettings;
+use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 
 /**
  * Tests the AAMSettings class
@@ -19,7 +19,7 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 		parent::_before();
 
     if ( ! class_exists( AAMSettings::class ) ) {
-			require_once 'includes/API/Pixel/AAMSettings.php';
+			require_once 'includes/Events/AAMSettings.php';
 		}
 	}
 

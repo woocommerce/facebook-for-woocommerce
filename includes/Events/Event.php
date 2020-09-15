@@ -112,31 +112,27 @@ class Event {
 	 * @since 2.0.0
 	 *
 	 */
-	protected function prepare_user_data($data) {
-		//If $data already contains user data, it is preferred over the data extracted from session
-		$this->data['user_data'] = array_merge($this->get_pii_from_session(), $data);
-
-		$this->data['user_data'] = $this->normalize_pii_data( $this->data['user_data'] );
-
-		$this->data['user_data'] =$this->hash_pii_data( $this->data['user_data'] );
-
-		$this->data['user_data'] = wp_parse_args( $this->data['user_data'], [
+	protected function prepare_user_data( $data ) {
+		$this->data['user_data'] = wp_parse_args( $data, [
 			'client_ip_address' => $this->get_client_ip(),
 			'client_user_agent' => $this->get_client_user_agent(),
 			'click_id'          => $this->get_click_id(),
 			'browser_id'        => $this->get_browser_id(),
 		] );
 
-	}
-
-	protected function normalize_pii_data($user_data){
-		$keys_to_normalize = ['em', 'ph', 'zp', 'ct', 'st', 'country'];
-		foreach($keys_to_normalize as $key){
-			if(array_key_exists($key, $user_data)){
-				$user_data[$key] = Normalizer::normalize($key, $user_data[$key]);
-			}
+		// Country key is not the same in pixel and CAPI events, see:
+		// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+		// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
+		if(array_key_exists('cn', $this->data['user_data'])){
+			$country = $this->data['user_data']['cn'];
+			$this->data['user_data']['country'] = $country;
+			unset($this->data['user_data']['cn']);
 		}
-		return $user_data;
+
+		$this->data['user_data'] = Normalizer::normalize_array( $this->data['user_data'], false );
+
+		$this->data['user_data'] = $this->hash_pii_data( $this->data['user_data'] );
+
 	}
 
 	protected function hash_pii_data( $user_data ){
@@ -356,34 +352,6 @@ class Event {
 	public function get_custom_data() {
 
 		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : [];
-	}
-
-	/**
-	 * Gets the personal identifiable information from Wordpress session.
-	 *
-	 * @return array
-	 */
-	private function get_pii_from_session(){
-
-		$current_user = wp_get_current_user();
-		if(empty($current_user)){
-			return array();
-		}
-		$pii_data = array(
-      'em' => $current_user->user_email,
-      'fn' => $current_user->user_firstname,
-      'ln' => $current_user->user_lastname,
-    );
-    $user_id = get_current_user_id();
-    if($user_id != 0){
-      $pii_data['ct'] = get_user_meta($user_id, 'billing_city', true);
-			$pii_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
-      $pii_data['country'] = get_user_meta($user_id, 'billing_country', true);
-      $pii_data['st'] = get_user_meta($user_id, 'billing_state', true);
-      $pii_data['ph'] = get_user_meta($user_id, 'billing_phone', true);
-    }
-		return array_filter($pii_data);
-
 	}
 
 }

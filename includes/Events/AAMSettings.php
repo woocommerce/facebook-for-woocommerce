@@ -8,7 +8,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Pixel;
+namespace SkyVerge\WooCommerce\Facebook\Events;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -86,7 +86,7 @@ class AAMSettings {
 	/**
 	 * @return AAMSettings
 	 */
-	public function set_enabled_automatic_matching_fields($enable_automatic_matching_fields){
+	public function set_enabled_automatic_matching_fields($enabled_automatic_matching_fields){
 		$this->enabled_automatic_matching_fields = $enabled_automatic_matching_fields;
 		return $this;
 	}

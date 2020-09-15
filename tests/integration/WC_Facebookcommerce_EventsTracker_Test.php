@@ -2,6 +2,8 @@
 
 use SkyVerge\WooCommerce\Facebook\Events\Event;
 
+use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
+
 /**
  * Tests the WC_Facebookcommerce_EventsTracker class.
  */
@@ -86,8 +88,12 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 
 
 	private function get_events_tracker( array $user_info = [] ) {
-
-		return new WC_Facebookcommerce_EventsTracker( $user_info );
+		$aam_settings = (new AAMSettings())
+											->set_enable_automatic_matching(true)
+											->set_enabled_automatic_matching_fields(
+												['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country']
+											);
+		return new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );
 	}
 
 	private function create_product(){

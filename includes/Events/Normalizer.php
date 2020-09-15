@@ -11,7 +11,6 @@
 namespace SkyVerge\WooCommerce\Facebook\Events;
 
 use InvalidArgumentException;
-use SkyVerge\WooCommerce\Facebook\Events\Normalizer;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -58,10 +57,41 @@ class Normalizer {
         $normalized_data = Normalizer::normalizeCountry($data);
         break;
 
+      case 'cn':
+        $normalized_data = Normalizer::normalizeCountry($data);
+        break;
+
       default:
     }
 
     return $normalized_data;
+  }
+
+  /**
+   * @param string[] array with user data to be normalized
+   * @return string[]
+   */
+  public static function normalize_array($data, $is_pixel_data){
+    // Country is encoded as cn in Pixel events and country in CAPI events
+    $keys_to_normalize = ['em', 'ph', 'zp', 'ct', 'st'];
+    if($is_pixel_data){
+      $keys_to_normalize[] = 'cn';
+    }
+    else{
+      $keys_to_normalize[] = 'country';
+    }
+		foreach($keys_to_normalize as $key){
+			if(array_key_exists($key, $data)){
+        //If the data is invalid, it is erased from the array
+        try{
+          $data[$key] = self::normalize($key, $data[$key]);
+        }
+        catch(InvalidArgumentException $e){
+          unset($data[$key]);
+        }
+			}
+		}
+		return $data;
   }
 
   /**

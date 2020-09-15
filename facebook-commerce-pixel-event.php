@@ -632,7 +632,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return '';
 		}
 
-
+		/**
+		 * Gets the logged in user info
+		 *
+		 * @return string[]
+		 */
+		public function get_user_info(){
+			return $this->user_info;
+		}
 	}
 
 endif;

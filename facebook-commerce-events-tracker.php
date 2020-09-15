@@ -21,6 +21,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		include_once 'facebook-commerce-pixel-event.php';
 	}
 
+	if ( ! class_exists( 'AAMSettings' ) ) {
+		include_once 'includes/Events/AAMSettings.php';
+	}
+
 	class WC_Facebookcommerce_EventsTracker {
 		private $pixel;
 		private static $isEnabled = true;
@@ -31,10 +35,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private $search_event;
 		/** @var array with events tracked */
 		private $tracked_events;
+		/**@var AAMSettings aam settings instance, used to filter personal information*/
+		private $aam_settings;
 
-
-		public function __construct( $user_info ) {
+		public function __construct( $user_info, $aam_settings ) {
 			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
+			$this->aam_settings = $aam_settings;
 			$this->tracked_events = array();
 
 			add_action( 'wp_head', array( $this, 'apply_filters' ) );
@@ -173,6 +179,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_type'     => $content_type,
 					'contents'         => $contents,
 				],
+				'user_data' => $this->pixel->get_user_info()
 			];
 
 			$event = new Event( $event_data );
@@ -273,6 +280,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					],
+					'user_data' => $this->pixel->get_user_info()
 				];
 
 				$this->search_event = new Event( $event_data );
@@ -342,9 +350,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'            => $product->get_price(),
 					'currency'         => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info(),
 			];
 
-			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new Event( $event_data );
 
 			$this->send_api_event( $event );
 
@@ -620,6 +629,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info()
 			];
 
 			// if there is only one item in the cart, send its first category
@@ -729,7 +739,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $order->get_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
-				'user_data' => $this->get_pii_from_billing_address($order)
+				'user_data' => $this->get_user_data_from_billing_address($order)
 			];
 
 			$event = new Event( $event_data );
@@ -776,6 +786,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'value'       => $subscription->get_total(),
 						'currency'    => get_woocommerce_currency(),
 					],
+					'user_data' => $this->pixel->get_user_info()
 				];
 
 				$event = new Event( $event_data );
@@ -968,19 +979,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @return array
 		 */
-		private function get_pii_from_billing_address($order) {
-			$pii_data = array();
-
-			$pii_data['fn'] = $order->get_billing_first_name();
-			$pii_data['ln'] = $order->get_billing_last_name();
-			$pii_data['em'] = $order->get_billing_email();
-			$pii_data['zp'] = $order->get_billing_postcode();
-			$pii_data['st'] = $order->get_billing_state();
-			$pii_data['country'] = $order->get_billing_country();
-			$pii_data['ct'] = $order->get_billing_city();
-			$pii_data['ph'] = $order->get_billing_phone();
-
-			return array_filter($pii_data);
+		private function get_user_data_from_billing_address($order) {
+			if($this->aam_settings == null || !$this->aam_settings->get_enable_automatic_matching() ){
+				return array();
+			}
+			$user_data= array();
+			$user_data['fn'] = $order->get_billing_first_name();
+			$user_data['ln'] = $order->get_billing_last_name();
+			$user_data['em'] = $order->get_billing_email();
+			$user_data['zp'] = $order->get_billing_postcode();
+			$user_data['st'] = $order->get_billing_state();
+			// We can use country as key because this information is for CAPI events only
+			$user_data['country'] = $order->get_billing_country();
+			$user_data['ct'] = $order->get_billing_city();
+			$user_data['ph'] = $order->get_billing_phone();
+			// The fields contain country, so we do not need to add a condition
+			foreach ($user_data as $field => $value) {
+				if( $value === null || $value === '' ||
+					!in_array($field, $this->aam_settings->get_enabled_automatic_matching_fields())
+				){
+					unset($user_data[$field]);
+				}
+			}
+			return $user_data;
 		}
 
 		/**
