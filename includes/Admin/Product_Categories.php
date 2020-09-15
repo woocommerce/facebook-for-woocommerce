@@ -79,6 +79,11 @@ class Product_Categories {
 	 */
 	public function render_google_product_category_tooltip() {
 
+		$tooltip_text = __( 'Choose a default Google product category for products in this category. Products need at least two category levels defined to be sold on Instagram.', 'facebook-for-woocommerce' );
+
+		?>
+			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
+		<?php
 	}
 
 
