@@ -84,6 +84,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 						<?php else: ?>
 							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
 
+							<p style="margin-top:24px">
+								<a class="button button-primary" href="<?php echo esc_url( $this->get_connect_url() ); ?>"><?php esc_html_e( 'Connect', 'facebook-for-woocommerce' ); ?></a>
+							</p>
 						<?php endif; ?>
 					</td>
 				</tr>
