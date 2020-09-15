@@ -38,7 +38,16 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for render_edit_google_product_category_field()
 
-	// TODO: add test for render_google_product_category_tooltip()
+
+	/** @see Product_Categories::render_google_product_category_tooltip() */
+	public function test_render_google_product_category_tooltip() {
+
+		ob_start();
+		$this->get_product_categories_handler()->render_google_product_category_tooltip();
+		$html = trim( ob_get_clean() );
+
+		$this->assertEquals( '<span class="woocommerce-help-tip" data-tip="Choose a default Google product category for products in this category. Products need at least two category levels defined to be sold on Instagram."></span>', $html );
+	}
 
 
 	/** @see Product_Categories::get_google_product_category_field_title() */
