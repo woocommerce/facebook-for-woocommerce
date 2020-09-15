@@ -35,8 +35,6 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for enqueue_assets()
 
-	// TODO: add test for render_add_google_product_category_field()
-
 
 	/** @see Product_Categories::render_add_google_product_category_field() */
 	public function test_render_add_google_product_category_field() {
@@ -48,6 +46,8 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$html = trim( ob_get_clean() );
 
 		$this->assertStringContainsString( '<div class="form-field term-wc_facebook_google_product_category_id-wrap">', $html );
+		$this->assertStringContainsString( '<label for="wc_facebook_google_product_category_id">', $html );
+		$this->assertStringContainsString( '<span class="woocommerce-help-tip"', $html );
 		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id"
 				       name="wc_facebook_google_product_category_id"/>', $html );
 
@@ -55,7 +55,23 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	// TODO: add test for render_edit_google_product_category_field()
+	/** @see Product_Categories::render_edit_google_product_category_field() */
+	public function test_render_edit_google_product_category_field() {
+
+		global $wc_queued_js;
+
+		ob_start();
+		$this->get_product_categories_handler()->render_edit_google_product_category_field();
+		$html = trim( ob_get_clean() );
+
+		$this->assertStringContainsString( '<tr class="form-field term-wc_facebook_google_product_category_id-wrap">', $html );
+		$this->assertStringContainsString( '<label for="wc_facebook_google_product_category_id">', $html );
+		$this->assertStringContainsString( '<span class="woocommerce-help-tip"', $html );
+		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id"
+					       name="wc_facebook_google_product_category_id"/>', $html );
+
+		$this->assertStringContainsString( 'new WC_Facebook_Google_Product_Category_Fields', $wc_queued_js );
+	}
 
 
 	/** @see Product_Categories::render_google_product_category_tooltip() */
