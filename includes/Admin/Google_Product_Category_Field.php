@@ -125,10 +125,6 @@ class Google_Product_Category_Field {
 				}
 
 				$categories[ (string) $category_id ] = $category;
-
-				if ( count( $categories ) > 10 ) {
-					break;
-				}
 			}
 		}
 
