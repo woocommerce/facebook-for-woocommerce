@@ -130,7 +130,7 @@ class Google_Product_Category_Field {
 			// add the options to the list
 			foreach ( $categories as $key => $category ) {
 
-				$categories[ $key ]['options'] = $this->get_category_options( $key, $categories );
+				$categories[ $key ]['options'] = $this->get_category_options( (string) $key, $categories );
 			}
 		}
 
