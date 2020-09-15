@@ -78,6 +78,19 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Builds the connect URL.
 	 *
+	 * The base URL is https://www.facebook.com/commerce_manager/onboarding with two query variables:
+	 * - app_id - the developer app ID
+	 * - redirect_url - the URL where the user will land after onboarding is complete
+	 *
+	 * The redirect URL must be an approved domain, so it must be the connect.woocommerce.com proxy app. In that URL, we
+	 * include the final site URL, which is where the merchant will redirect to with the data that needs to be stored.
+	 * So the final URL looks like this without encoding:
+	 *
+	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.com/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
+	 *
+	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
+	 * to trigger the test account flow, where fake US-based business details can be used.
+	 *
 	 * @since 2.1.0-dev.1
 	 *
 	 * @return string
