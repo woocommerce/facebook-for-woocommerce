@@ -136,4 +136,22 @@ class Google_Product_Category_Field {
 	}
 
 
+	/**
+	 * Gets the category options (children) for a given category.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $category_id category ID
+	 * @param array $categories full category list
+	 * @return array
+	 */
+	public function get_category_options( $category_id, $categories ) {
+
+		return array_filter( array_map( function ( $category ) use ( $category_id ) {
+
+			return $category['parent'] === $category_id ? $category : false;
+		}, $categories ) );
+	}
+
+
 }
