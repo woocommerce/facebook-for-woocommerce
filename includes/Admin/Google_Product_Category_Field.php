@@ -99,7 +99,7 @@ class Google_Product_Category_Field {
 
 				list( $category_id, $category_tree ) = explode( ' - ', $category_line );
 
-				$category_id    = trim( $category_id );
+				$category_id    = (string) trim( $category_id );
 				$category_tree  = explode( ' > ', $category_tree );
 				$category_label = end( $category_tree );
 
@@ -121,10 +121,10 @@ class Google_Product_Category_Field {
 						return $item['label'];
 					}, $categories ) );
 
-					$category['parent'] = $parent_category;
+					$category['parent'] = (string) $parent_category;
 				}
 
-				$categories[ $category_id ] = $category;
+				$categories[ (string) $category_id ] = $category;
 
 				if ( count( $categories ) > 10 ) {
 					break;
