@@ -71,7 +71,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render_google_product_category_field() {
 
-		parent::render();
 	}
 
 
@@ -97,7 +96,12 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_settings() {
 
-		return [];
+		return [
+			[
+				'id'   => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
+				'type' => 'commerce_google_product_categories',
+			],
+		];
 	}
 
 
