@@ -51,11 +51,9 @@ class Google_Product_Category_Field {
 			// fetch from the URL
 			$categories_response = wp_remote_get( 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt', [ 'timeout' => 1 ] );
 
-			if ( is_array( $categories_response ) && isset( $categories_response['body'] ) ) {
+			$categories = $this->parse_categories_response( $categories_response );
 
-				$categories = $categories_response['body'];
-
-				// TODO: parse categories
+			if ( ! empty( $categories ) ) {
 
 				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, HOUR_IN_SECONDS );
 				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories );
@@ -66,6 +64,72 @@ class Google_Product_Category_Field {
 
 			// get the categories from the saved option
 			$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+		}
+
+		return $categories;
+	}
+
+
+	/**
+	 * Parses the categories response from Google.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array|\WP_Error $categories_response categories response from Google
+	 * @return array
+	 */
+	private function parse_categories_response( $categories_response ) {
+
+		$categories = [];
+
+		if ( is_array( $categories_response ) && isset( $categories_response['body'] ) ) {
+
+			$categories_body = $categories_response['body'];
+			$categories_body = explode( PHP_EOL, $categories_body );
+
+			// format: ID - Top level category > ... > Parent category > Category label
+			// example: 7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
+			foreach ( $categories_body as $category_line ) {
+
+				if ( strpos( $category_line, ' - ' ) === false ) {
+
+					// not a category, skip it
+					continue;
+				}
+
+				list( $category_id, $category_tree ) = explode( ' - ', $category_line );
+
+				$category_id    = trim( $category_id );
+				$category_tree  = explode( ' > ', $category_tree );
+				$category_label = end( $category_tree );
+
+				$category = [
+					'label' => $category_label,
+				];
+
+				if ( $category_label === $category_tree[0] ) {
+
+					// top-level category
+					$category['parent'] = '';
+
+				} else {
+
+					$parent_label = $category_tree[ count( $category_tree ) - 2 ];
+
+					$parent_category = array_search( $parent_label, array_map( function ( $item ) {
+
+						return $item['label'];
+					}, $categories ) );
+
+					$category['parent'] = $parent_category;
+				}
+
+				$categories[ $category_id ] = $category;
+
+				if ( count( $categories ) > 10 ) {
+					break;
+				}
+			}
 		}
 
 		return $categories;
