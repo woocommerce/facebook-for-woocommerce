@@ -1,8 +1,5 @@
 <?php
 
-use Codeception\Exception\InjectionException;
-use Codeception\Exception\ConditionalAssertionFailed;
-
 class InstagramCheckoutCest {
 
 
