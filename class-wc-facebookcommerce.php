@@ -152,6 +152,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Commerce.php';
+					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 
 					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
 				}
