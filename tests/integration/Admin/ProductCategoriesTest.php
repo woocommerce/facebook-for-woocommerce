@@ -40,7 +40,13 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for render_google_product_category_tooltip()
 
-	// TODO: add test for get_google_product_category_field_title()
+
+	/** @see Product_Categories::get_google_product_category_field_title() */
+	public function test_get_google_product_category_field_title() {
+
+		$this->assertEquals( 'Default Google product category', $this->get_product_categories_handler()->get_google_product_category_field_title() );
+	}
+
 
 	// TODO: add test for save_google_product_category()
 
@@ -49,7 +55,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
-	 * Gets an orders handler instance.
+	 * Gets a handler instance.
 	 *
 	 * @since 2.1.0-dev.1
 	 *
