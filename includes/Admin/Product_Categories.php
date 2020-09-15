@@ -76,6 +76,14 @@ class Product_Categories {
 	 */
 	public function render_edit_google_product_category_field() {
 
+		?>
+			<tr class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
+				<th scope="row"><label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"></label></th>
+				<td>
+
+				</td>
+			</tr>
+		<?php
 	}
 
 
