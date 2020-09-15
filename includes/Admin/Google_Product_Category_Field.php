@@ -78,7 +78,7 @@ class Google_Product_Category_Field {
 	 * @param array|\WP_Error $categories_response categories response from Google
 	 * @return array
 	 */
-	private function parse_categories_response( $categories_response ) {
+	protected function parse_categories_response( $categories_response ) {
 
 		$categories = [];
 
