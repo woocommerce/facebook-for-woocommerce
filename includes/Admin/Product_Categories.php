@@ -55,6 +55,11 @@ class Product_Categories {
 	 */
 	public function render_add_google_product_category_field() {
 
+		?>
+			<div class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
+
+			</div>
+		<?php
 	}
 
 
