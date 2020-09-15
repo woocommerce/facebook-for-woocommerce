@@ -99,8 +99,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		// build the site URL to which the user will ultimately return
 		$site_url = add_query_arg( [
-			'wc-api'               => Connection_Handler::ACTION_CONNECT_COMMERCE,
-			'nonce'                => wp_create_nonce( Connection_Handler::ACTION_CONNECT_COMMERCE ),
+			'wc-api' => Connection_Handler::ACTION_CONNECT_COMMERCE,
+			'nonce'  => wp_create_nonce( Connection_Handler::ACTION_CONNECT_COMMERCE ),
 		], home_url( '/' ) );
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
