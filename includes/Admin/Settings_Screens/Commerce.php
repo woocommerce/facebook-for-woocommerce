@@ -69,6 +69,12 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			$this->render_us_only_limitation_notice();
 			return;
 		}
+
+		?>
+
+		<h2><?php esc_html_e( 'Instagram Checkout', 'facebook-for-woocommerce' ); ?></h2>
+
+		<?php
 	}
 
 
