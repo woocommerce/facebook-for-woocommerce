@@ -68,6 +68,21 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 
 	/**
+	 * Renders the notice about the US-only limitation for Instagram Checkout.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	private function render_us_only_limitation_notice() {
+
+		?>
+
+		<div class="notice notice-info"><p><?php esc_html_e( 'Instagram Checkout is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
+
+		<?php
+	}
+
+
+	/**
 	 * Renders the Google category field markup.
 	 *
 	 * @internal
