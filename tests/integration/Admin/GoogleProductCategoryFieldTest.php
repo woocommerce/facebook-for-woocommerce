@@ -151,34 +151,53 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 			'1'      => [
 				'label'  => 'Animals & Pet Supplies',
 				'parent' => '',
+				'options' => [
+					'3237'   => 'Live Animals',
+					'2'      => 'Pet Supplies',
+				]
 			],
 			'3237'   => [
 				'label'  => 'Live Animals',
 				'parent' => '1',
+				'options' => [],
 			],
 			'2'      => [
 				'label'  => 'Pet Supplies',
 				'parent' => '1',
+				'options' => [
+					'3'      => 'Bird Supplies',
+				],
 			],
 			'3'      => [
 				'label'  => 'Bird Supplies',
 				'parent' => '2',
+				'options' => [
+					'7385'   => 'Bird Cage Accessories',
+					'4989'   => 'Bird Cages & Stands',
+				]
 			],
 			'7385'   => [
 				'label'  => 'Bird Cage Accessories',
 				'parent' => '3',
+				'options' => [
+					'499954' => 'Bird Cage Bird Baths',
+					'7386'   => 'Bird Cage Food & Water Dishes',
+				],
 			],
 			'499954' => [
 				'label'  => 'Bird Cage Bird Baths',
 				'parent' => '7385',
+				'options' => [],
 			],
 			'7386'   => [
 				'label'  => 'Bird Cage Food & Water Dishes',
 				'parent' => '7385',
+				'options' => [],
 			],
 			'4989'   => [
 				'label'  => 'Bird Cages & Stands',
 				'parent' => '3',
+				'options' => [],
 			],
 		];
 	}

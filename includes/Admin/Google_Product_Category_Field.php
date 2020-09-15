@@ -126,6 +126,12 @@ class Google_Product_Category_Field {
 
 				$categories[ (string) $category_id ] = $category;
 			}
+
+			// add the options to the list
+			foreach ( $categories as $key => $category ) {
+
+				$categories[ $key ]['options'] = $this->get_category_options( $key, $categories );
+			}
 		}
 
 		return $categories;
