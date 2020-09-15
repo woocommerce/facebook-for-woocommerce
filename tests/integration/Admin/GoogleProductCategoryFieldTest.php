@@ -50,7 +50,9 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 
 		$field = new Admin\Google_Product_Category_Field();
 
-		$this->assertNotEmpty( $field->get_categories() );
+		$parse_categories_response = IntegrationTester::getMethod( Admin\Google_Product_Category_Field::class, 'parse_categories_response' );
+
+		$this->assertEquals( $expected, $parse_categories_response->invokeArgs( $field, [ $response ] ) );
 	}
 
 
@@ -92,7 +94,7 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 
 		$field = new Admin\Google_Product_Category_Field();
 
-		$this->assertNotEmpty( $field->get_categories() );
+		$this->assertEquals( $expected, $field->get_category_options( $category_id, $categories ) );
 	}
 
 
