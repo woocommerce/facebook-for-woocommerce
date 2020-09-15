@@ -59,7 +59,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render() {
 
-		parent::render();
+		// if not connected, fall back to standard display
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			parent::render();
+			return;
+		}
 	}
 
 
