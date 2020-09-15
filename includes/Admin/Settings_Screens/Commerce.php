@@ -80,9 +80,10 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					<th scope="row" class="titledesc"><?php esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?></th>
 					<td class="forminp">
 						<?php if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) : ?>
-							<span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?>
+							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
 						<?php else: ?>
-							<span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?>
+							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
+
 						<?php endif; ?>
 					</td>
 				</tr>
