@@ -101,20 +101,13 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 	/** @see \SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field::get_categories() */
 	public function test_get_categories_success() {
 
-		$field = new Admin\Google_Product_Category_Field();
+		$field     = new Admin\Google_Product_Category_Field();
+		$test_body = $this->get_test_categories_response_body();
 
-		add_filter( 'pre_http_request', static function () {
+		add_filter( 'pre_http_request', static function () use ( $test_body ) {
 
 			return [
-				'body' => '# Google_Product_Taxonomy_Version: 2019-07-10
-1 - Animals & Pet Supplies
-3237 - Animals & Pet Supplies > Live Animals
-2 - Animals & Pet Supplies > Pet Supplies
-3 - Animals & Pet Supplies > Pet Supplies > Bird Supplies
-7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
-499954 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Bird Baths
-7386 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Food & Water Dishes
-4989 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cages & Stands',
+				'body' => $test_body,
 			];
 		} );
 
@@ -151,15 +144,7 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 			'response with empty body' => [ [ 'body' => '' ], [] ],
 			'response with valid body' => [
 				[
-					'body' => '# Google_Product_Taxonomy_Version: 2019-07-10
-1 - Animals & Pet Supplies
-3237 - Animals & Pet Supplies > Live Animals
-2 - Animals & Pet Supplies > Pet Supplies
-3 - Animals & Pet Supplies > Pet Supplies > Bird Supplies
-7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
-499954 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Bird Baths
-7386 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Food & Water Dishes
-4989 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cages & Stands',
+					'body' => $this->get_test_categories_response_body(),
 				],
 				$this->get_test_category_list(),
 			],
@@ -231,6 +216,25 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Helper methods **************************************************************************************************/
+
+
+	/**
+	 * Gets a test categories response body.
+	 *
+	 * @return string
+	 */
+	private function get_test_categories_response_body() {
+
+		return '# Google_Product_Taxonomy_Version: 2019-07-10
+1 - Animals & Pet Supplies
+3237 - Animals & Pet Supplies > Live Animals
+2 - Animals & Pet Supplies > Pet Supplies
+3 - Animals & Pet Supplies > Pet Supplies > Bird Supplies
+7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
+499954 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Bird Baths
+7386 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories > Bird Cage Food & Water Dishes
+4989 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cages & Stands';
+	}
 
 
 	/**
