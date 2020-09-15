@@ -93,6 +93,7 @@ class Product_Categories {
 	 */
 	public function get_google_product_category_field_title() {
 
+		return __( 'Default Google product category', 'facebook-for-woocommerce' );
 	}
 
 
