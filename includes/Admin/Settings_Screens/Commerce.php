@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection as Connection_Handler;
 
 /**
  * The Commerce settings screen object.
@@ -83,7 +84,29 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_connect_url() {
 
-		return '';
+		// build the site URL to which the user will ultimately return
+		$site_url = add_query_arg( [
+			'wc-api'               => Connection_Handler::ACTION_CONNECT_COMMERCE,
+			'nonce'                => wp_create_nonce( Connection_Handler::ACTION_CONNECT_COMMERCE ),
+		], home_url( '/' ) );
+
+		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
+		$redirect_url = add_query_arg( 'site_url', $site_url, facebook_for_woocommerce()->get_connection_handler()->get_proxy_url() );
+
+		// build the final connect URL, direct to Facebook
+		$connect_url = add_query_arg( [
+			'app_id'       => facebook_for_woocommerce()->get_connection_handler()->get_client_id(), // this endpoint calls the client ID "app ID"
+			'redirect_url' => urlencode( $redirect_url ),
+		], 'https://www.facebook.com/commerce_manager/onboarding/' );
+
+		/**
+		 * Filters the URL used to connect to Facebook Commerce.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param string $connect_url connect URL
+		 */
+		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
 	}
 
 
