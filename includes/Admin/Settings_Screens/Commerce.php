@@ -64,6 +64,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			parent::render();
 			return;
 		}
+
+		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_available() ) {
+			$this->render_us_only_limitation_notice();
+			return;
+		}
 	}
 
 
