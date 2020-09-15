@@ -145,7 +145,7 @@ class Google_Product_Category_Field {
 
 		return array_filter( array_map( function ( $category ) use ( $category_id ) {
 
-			return $category['parent'] === $category_id ? $category : false;
+			return $category['parent'] === $category_id ? $category['label'] : false;
 		}, $categories ) );
 	}
 

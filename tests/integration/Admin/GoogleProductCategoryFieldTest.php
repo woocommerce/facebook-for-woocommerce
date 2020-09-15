@@ -104,49 +104,28 @@ class GoogleProductCategoryFieldTest extends \Codeception\TestCase\WPTestCase {
 			'top level category' => [
 				$this->get_test_category_list(),
 				'1', [
-					'3237'   => [
-						'label'  => 'Live Animals',
-						'parent' => '1',
-					],
-					'2'      => [
-						'label'  => 'Pet Supplies',
-						'parent' => '1',
-					],
+					'3237'   => 'Live Animals',
+					'2'      => 'Pet Supplies',
 				],
 			],
 			'2nd level category' => [
 				$this->get_test_category_list(),
 				'2', [
-					'3'      => [
-						'label'  => 'Bird Supplies',
-						'parent' => '2',
-					],
+					'3'      => 'Bird Supplies',
 				],
 			],
 			'3rd level category' => [
 				$this->get_test_category_list(),
 				'3', [
-					'7385'   => [
-						'label'  => 'Bird Cage Accessories',
-						'parent' => '3',
-					],
-					'4989'   => [
-						'label'  => 'Bird Cages & Stands',
-						'parent' => '3',
-					],
+					'7385'   => 'Bird Cage Accessories',
+					'4989'   => 'Bird Cages & Stands',
 				],
 			],
 			'4th level category' => [
 				$this->get_test_category_list(),
 				'7385', [
-					'499954' => [
-						'label'  => 'Bird Cage Bird Baths',
-						'parent' => '7385',
-					],
-					'7386'   => [
-						'label'  => 'Bird Cage Food & Water Dishes',
-						'parent' => '7385',
-					],
+					'499954' => 'Bird Cage Bird Baths',
+					'7386'   => 'Bird Cage Food & Water Dishes',
 				],
 			],
 			'5th level category' => [
