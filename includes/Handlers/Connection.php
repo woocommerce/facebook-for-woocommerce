@@ -871,7 +871,7 @@ class Connection {
 	 *
 	 * @return string
 	 */
-	private function get_client_id() {
+	public function get_client_id() {
 
 		/**
 		 * Filters the client ID.
