@@ -90,6 +90,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		</table>
 
 		<?php
+
+		parent::render();
 	}
 
 
