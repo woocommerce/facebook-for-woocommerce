@@ -37,6 +37,9 @@ class Connection {
 	/** @var string the action callback for the disconnection */
 	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
 
+	/** @var string the action callback for the connection */
+	const ACTION_CONNECT_COMMERCE = 'wc_facebook_connect_commerce';
+
 	/** @var string the WordPress option name where the external business ID is stored */
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
