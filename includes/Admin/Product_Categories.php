@@ -35,6 +35,9 @@ class Product_Categories {
 
 		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
 		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
+
+		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
+		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
 	}
 
 
@@ -143,9 +146,12 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
+	 * @param int $term_id term ID
+	 * @param int $tt_id term taxonomy ID
+	 * @param string $taxonomy Taxonomy slug
 	 * @return string
 	 */
-	public function save_google_product_category() {
+	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
 	}
 
