@@ -713,65 +713,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					$enhanced_data[$attribute['key']] = $value;
 				}
 			}
-			$logger = new \WC_Logger();
-			$logger->add('max-test', "ALL ENHANCED ".json_encode($enhanced_data));
-
-			// $enhanced_data['fb_product_category'] = $fb_category_id;
-			// $logger = new \WC_Logger();
-			// $all_meta = get_post_meta($this->id);
-			// $logger->add('max-test', "ALL POST META ".json_encode($all_meta));
-			// $set_enhanced_attrs =
-
-
-
-			// // 	'inventory' => required for instagram shopping with checkout
-			// // 	'fb_product_category'
-			// // 	'google_product_category'
-			// // if($this->needs_shipping()){
-			// 	// Need to check shipping zones and then see if this product belongs
-			// 	// to a shipping class which affects that zone
-			// 	// 	'shipping' => required for checkout
-			// 	// 	'shipping_weight' => required for checkout
-			// // }
-
-
-			// // 		'material' => cotton, denim, leather
-
-			// $restricted_values = array(
-			// 	'gender' => array('male', 'female', 'unisex'),
-			// 	'age_group' => array('adult', 'all ages', 'teen', 'kids', 'toddler', 'infant', 'newborn'),
-			// 	// Already covered by above
-			// 	// 'availability' => array('in stock', 'available for order', 'out of stock', 'discontinued'),
-			// 	'condition' => array('new', 'refurbished', 'used'),
-			// );
-			// $attribute_keys = array(
-			// 	'color' => 'color',
-			// 	'colour' => 'color',
-			// 	'gender' => 'gender',
-			// 	'age' => 'age_group',
-			// 	'age_group' => 'age_group',
-			// 	'size' => 'size',
-			// 	'condition' => 'condition',
-			// 	'pattern' => 'pattern',
-			// );
-
-			// foreach($this->get_attributes() as $attribute) {
-			// 	$value = wc_implode_text_attributes($attribute->get_options());
-			// 	$name = strtolower($attribute->get_name());
-			// 	$key = $attribute_keys[$name];
-			// 	// WC_Facebookcommerce_Utils::log("NAME: ".$name." VALUE: ".$value." KEY: ".$key);
-			// 	if($key){
-			// 		if($restricted_values[$key]){
-			// 			$normalised_value = strtolower(trim($value));
-			// 			if(in_array($normalised_value, $restricted_values[$key])){
-			// 				$enhanced_data[$key] = $normalised_value;
-			// 			}
-			// 		} else {
-			// 			$enhanced_data[$key] = $value;
-			// 		}
-			// 	}
-			// }
-
 
 			return array_merge($product_data, $enhanced_data);
 		}
