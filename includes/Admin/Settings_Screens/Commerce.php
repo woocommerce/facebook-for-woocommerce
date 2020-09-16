@@ -97,7 +97,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		<?php
 
-		parent::render();
+        if ( $commerce_handler->is_connected() ) {
+			parent::render();
+		}
 	}
 
 
