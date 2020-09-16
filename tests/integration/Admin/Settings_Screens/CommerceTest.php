@@ -5,7 +5,7 @@ namespace SkyVerge\WooCommerce\Facebook\Tests\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 
 /**
- * Tests the Admin\Settings class.
+ * Tests the Settings_Screens\Commerce class.
  */
 class CommerceTest extends \Codeception\TestCase\WPTestCase {
 
