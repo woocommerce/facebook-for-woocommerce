@@ -31,6 +31,10 @@ class Product_Categories {
 	 */
 	public function __construct() {
 
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
 	}
 
 
