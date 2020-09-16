@@ -151,7 +151,6 @@ class Product_Categories {
 	 * @param int $term_id term ID
 	 * @param int $tt_id term taxonomy ID
 	 * @param string $taxonomy Taxonomy slug
-	 * @return string
 	 */
 	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
@@ -168,6 +167,11 @@ class Product_Categories {
 				'category' => [ $term['slug'] ],
 			]
 		);
+
+		if ( ! empty( $product_ids ) ) {
+
+			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+		}
 	}
 
 
