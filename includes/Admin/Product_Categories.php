@@ -158,6 +158,16 @@ class Product_Categories {
 		$google_product_category_id = Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID );
 
 		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
+
+		$term = get_term( $term_id, $taxonomy, ARRAY_A );
+
+		// get the products in the category being saved
+		$product_ids = wc_get_products(
+			[
+				'return'   => 'ids',
+				'category' => [ $term['slug'] ],
+			]
+		);
 	}
 
 
