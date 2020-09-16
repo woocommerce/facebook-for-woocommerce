@@ -49,6 +49,25 @@ class InstagramCheckoutCest {
 
 
 	/**
+	 * Test that the Connect button is shown if the store is not connected.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_connect_button_is_present( AcceptanceTester $I ) {
+
+		$I->dontHaveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_PAGE_ACCESS_TOKEN );
+
+		$I->amOnAdminPage('admin.php?page=wc-facebook&tab=commerce' );
+
+		$I->wantTo( 'Test that the Connect button is shown if the store is not connected.' );
+
+		$I->see( 'Connect', 'a.button.button-primary' );
+
+		$I->dontSee( 'Save changes' );
+	}
+
+
+	/**
 	 * Test that the Facebook connection message is shown if the plugin is not connected.
 	 *
 	 * @param AcceptanceTester $I tester instance
