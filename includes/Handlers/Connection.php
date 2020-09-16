@@ -329,6 +329,51 @@ class Connection {
 
 
 	/**
+	 * Retrieves the configured page access token remotely.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $page_id desired Facebook page ID
+	 * @return string
+	 * @throws SV_WC_API_Exception
+	 */
+	private function retrieve_page_access_token( $page_id ) {
+
+		facebook_for_woocommerce()->log( 'Retrieving page access token' );
+
+		$response = wp_remote_get( 'https://graph.facebook.com/v7.0/me/accounts?access_token=' . $this->get_access_token() );
+
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+
+		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+
+			facebook_for_woocommerce()->log( print_r( $body, true ) );
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - API error message */
+				__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
+				wp_remote_retrieve_response_message( $response )
+			) );
+		}
+
+		$page_access_tokens = wp_list_pluck( $body['data'], 'access_token', 'id' );
+
+		// bail if the user isn't authorized to manage the page
+		if ( empty( $page_access_tokens[ $page_id ] ) ) {
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - Facebook page ID */
+				__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
+				$page_id
+			) );
+		}
+
+		return $page_access_tokens[ $page_id ];
+	}
+
+
+	/**
 	 * Gets the API access token.
 	 *
 	 * @since 2.0.0
