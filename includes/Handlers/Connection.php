@@ -374,6 +374,37 @@ class Connection {
 
 
 	/**
+	 * Enables order management for the given commerce manager.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $commerce_manager_id commerce manager ID
+	 * @param string $page_access_token page access token
+	 * @throws SV_WC_API_Exception
+	 */
+	private function enable_order_management( $commerce_manager_id, $page_access_token ) {
+
+		facebook_for_woocommerce()->log( 'Enabling order management' );
+
+		$response = wp_remote_post( "https://graph.facebook.com/{$commerce_manager_id}/order_management_apps?access_token={$page_access_token}" );
+
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+
+		if ( ! is_array( $body ) || empty( $body['success'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+
+			facebook_for_woocommerce()->log( print_r( $body, true ) );
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - API error message */
+				__( 'Could not enable order management. %s', 'facebook for woocommerce' ),
+				wp_remote_retrieve_response_message( $response )
+			) );
+		}
+	}
+
+
+	/**
 	 * Gets the API access token.
 	 *
 	 * @since 2.0.0
