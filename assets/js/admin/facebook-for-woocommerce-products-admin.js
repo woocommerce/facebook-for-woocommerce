@@ -90,6 +90,118 @@ jQuery( document ).ready( function( $ ) {
 			$container.find( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
 		}
 
+		function showEnhancedAttributesForCategory(selectedCategory) {
+			const attributeFormField =  function(attribute) {
+				console.log("VALUE ", attribute.value);
+				switch(attribute.type) {
+					case 'enum':
+						const values = attribute.values.map(function(val) {
+							return $('<option/>').attr({
+								'value': val,
+								'selected': val === attribute.value
+							}).text(val);
+						});
+						const select = $('<select/>').attr({
+													name: 'fb_enhanced_attribute['+attribute.key+']',
+													id: 'fb_enhanced_attribute['+attribute.key+']'
+												});
+						values.forEach(function(valEl) { select.append(valEl); });
+						return select;
+					case 'boolean':
+						const list = $('<ul/>').addClass('wc-radios');
+						const yes = $('<label/>').append(
+													$('<input>').attr({
+														'type': 'radio',
+														'value': 'yes',
+														'name': 'fb_enhanced_attribute['+attribute.key+']',
+														'checked': 'yes' === attribute.value,
+													})
+												).append('Yes');
+						const no = $('<label/>').append(
+													$('<input>').attr({
+														'type': 'radio',
+														'value': 'no',
+														'name': 'fb_enhanced_attribute['+attribute.key+']',
+														'checked': 'no' === attribute.value,
+													})
+												).append('No');
+						list.append(
+							$('<li/>').append(yes)
+						).append(
+							$('<li/>').append(no)
+						);
+						return list;
+					case 'text':
+					default:
+						return $('<input/>')
+												.attr({
+													type: 'text',
+													name: 'fb_enhanced_attribute['+attribute.key+']',
+													id: 'fb_enhanced_attribute['+attribute.key+']'
+												}).val(attribute.value);
+				}
+			};
+
+			const attributeFormFieldWrapper = function(attribute) {
+				switch(attribute.type) {
+					case 'boolean':
+						return $('<fieldset/>')
+										.addClass('form-field fb_enhanced_attribute')
+										.append($('<legend/>').text(attribute.name));
+					default:
+						return $('<p/>')
+											.addClass('form-field fb_enhanced_attribute')
+											.append(
+												$('<label/>')
+													.attr('for', 'fb_enhanced_attribute['+attribute.key+']')
+													.text(attribute.name)
+											);
+				}
+			};
+
+			const optionsGroupHeader = function(text) {
+				return $('<h4/>')
+									.text(text)
+									.attr('style', 'margin-left: 5px;');
+			}
+
+			const optionsContainer = $('#facebook_options');
+			$('.fb_enhanced_attribute_container', optionsContainer).remove();
+
+			$.get( facebook_for_woocommerce_products_admin.ajax_url, {
+				action:   'wc_facebook_category_attributes',
+				security: '',
+				category:  selectedCategory,
+				item_id: parseInt( $( 'input#post_ID' ).val(), 10 ),
+			}, function( response ) {
+				if(response) {
+					const primaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
+					const secondaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
+					primaryOptionsGroup.append(optionsGroupHeader('Primary Attributes'));
+					secondaryOptionsGroup.append(optionsGroupHeader('Secondary Attributes'));
+					response.primary.forEach(function(attribute){
+						const wrapper = attributeFormFieldWrapper(attribute);
+						const formField = attributeFormField(attribute);
+						wrapper.append(formField);
+						primaryOptionsGroup.append(wrapper);
+					});
+					response.secondary.forEach(function(attribute){
+						const wrapper = attributeFormFieldWrapper(attribute);
+						const formField = attributeFormField(attribute);
+						wrapper.append(formField);
+						secondaryOptionsGroup.append(wrapper);
+					});
+					optionsContainer
+						.append(primaryOptionsGroup)
+						.append(secondaryOptionsGroup);
+				}
+			} );
+		}
+		const currentlySelectedCategory = $( '#woocommerce-product-data select[name=fb_category]' ).val();
+		if(currentlySelectedCategory){
+			showEnhancedAttributesForCategory(currentlySelectedCategory);
+		}
+
 
 		/**
 		 * Toggles (shows/hides) Sync and show option and changes the select value if needed.
@@ -444,6 +556,11 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
+
+		$( '#woocommerce-product-data select[name=fb_category]' ).on('change', function(e) {
+			const selectedCategory = $(this).val();
+			showEnhancedAttributesForCategory(selectedCategory);
+		});
 
 		// trigger settings fields modifiers when variations are loaded
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
