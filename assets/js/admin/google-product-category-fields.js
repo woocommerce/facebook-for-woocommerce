@@ -38,7 +38,7 @@ jQuery( document ).ready( ( $ ) => {
 
 			this.input_id = input_id;
 
-			// TODO: add wrapper div
+			$( '<div id="wc-facebook-google-product-category-fields"></div>' ).insertBefore( $( '#' + this.input_id ) );
 
 			// TODO: add first two selects
 		}

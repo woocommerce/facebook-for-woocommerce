@@ -85,6 +85,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			</th>
 			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
 				<?php $category_field->render( $field['id'] ); ?>
+				<input id="<?php echo esc_attr( $field['id'] ); ?>" type="hidden" name="<?php echo esc_attr( $field['id'] ); ?>" />
 			</td>
 		</tr>
 		<?php
