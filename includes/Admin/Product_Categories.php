@@ -31,6 +31,10 @@ class Product_Categories {
 	 */
 	public function __construct() {
 
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
 	}
 
 
@@ -55,6 +59,19 @@ class Product_Categories {
 	 */
 	public function render_add_google_product_category_field() {
 
+		$category_field = new Google_Product_Category_Field();
+
+		?>
+			<div class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
+				<label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>">
+					<?php echo esc_html( $this->get_google_product_category_field_title() ); ?>
+					<?php $this->render_google_product_category_tooltip(); ?>
+				</label>
+				<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+				       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
+				<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
+			</div>
+		<?php
 	}
 
 
@@ -67,6 +84,23 @@ class Product_Categories {
 	 */
 	public function render_edit_google_product_category_field() {
 
+		$category_field = new Google_Product_Category_Field();
+
+		?>
+			<tr class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
+				<th scope="row">
+					<label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>">
+						<?php echo esc_html( $this->get_google_product_category_field_title() ); ?>
+						<?php $this->render_google_product_category_tooltip(); ?>
+					</label>
+				</th>
+				<td>
+					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
+					<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
+				</td>
+			</tr>
+		<?php
 	}
 
 
@@ -79,6 +113,11 @@ class Product_Categories {
 	 */
 	public function render_google_product_category_tooltip() {
 
+		$tooltip_text = __( 'Choose a default Google product category for products in this category. Products need at least two category levels defined to be sold on Instagram.', 'facebook-for-woocommerce' );
+
+		?>
+			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
+		<?php
 	}
 
 
@@ -93,6 +132,7 @@ class Product_Categories {
 	 */
 	public function get_google_product_category_field_title() {
 
+		return __( 'Default Google product category', 'facebook-for-woocommerce' );
 	}
 
 
