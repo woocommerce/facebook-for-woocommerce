@@ -65,7 +65,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
-		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_available() ) {
+		$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+
+		if ( ! $commerce_handler->is_available() ) {
 			$this->render_us_only_limitation_notice();
 			return;
 		}
@@ -79,7 +81,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				<tr valign="top" class="">
 					<th scope="row" class="titledesc"><?php esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?></th>
 					<td class="forminp">
-						<?php if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) : ?>
+						<?php if ( $commerce_handler->is_connected() ) : ?>
 							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
 						<?php else: ?>
 							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
