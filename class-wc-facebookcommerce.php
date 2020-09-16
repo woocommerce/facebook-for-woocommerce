@@ -109,6 +109,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/Products/FBCategories.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
 				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
@@ -118,6 +119,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->fb_categories 					 = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
 
 				if ( is_ajax() ) {
 
@@ -484,6 +486,16 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			return $this->product_feed;
 		}
 
+		/**
+		 * Gets the category handler.
+		 *
+		 * @since 1.11.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\FBCategories
+		 */
+		public function get_facebook_category_handler() {
+			return $this->fb_categories;
+		}
 
 		/**
 		 * Gets the background handle virtual products and variations handler instance.

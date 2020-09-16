@@ -33,6 +33,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		const FB_PRODUCT_IMAGE       = 'fb_product_image';
 		const FB_VARIANT_IMAGE       = 'fb_image';
 		const FB_VISIBILITY          = 'fb_visibility';
+		const FB_CATEGORY						 = 'fb_category';
+		const FB_ENHANCED_ATTRIBUTE  = 'fb_enhanced_attribute';
 
 		const MIN_DATE_1 = '1970-01-29';
 		const MIN_DATE_2 = '1970-01-30';
@@ -55,6 +57,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
+			$this->fb_category						= null;
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
 			if ( $meta = get_post_meta( $wpid, self::FB_VISIBILITY, true ) ) {
@@ -251,6 +254,37 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 		}
 
+		public function set_fb_category( $fb_category ) {
+			$category          = stripslashes(
+				WC_Facebookcommerce_Utils::clean_string( $fb_category )
+			);
+			$is_valid_category = facebook_for_woocommerce()->get_facebook_category_handler()->is_category($category);
+
+			if($is_valid_category){
+				$this->fb_category = $category;
+				update_post_meta(
+					$this->id,
+					self::FB_CATEGORY,
+					$category,
+				);
+			}
+		}
+
+		public function set_fb_enhanced_attribute( $attribute_key, $value ) {
+			$value = stripslashes(
+				WC_Facebookcommerce_Utils::clean_string( $value )
+			);
+			update_post_meta(
+				$this->id,
+				$this->build_enhanced_attribute_meta_key($attribute_key),
+				$value,
+			);
+		}
+
+		private function build_enhanced_attribute_meta_key($attribute_key) {
+			return self::FB_ENHANCED_ATTRIBUTE.'--'.$attribute_key;
+		}
+
 		public function set_product_image( $image ) {
 			if ( $image !== null && strlen( $image ) !== 0 ) {
 				$image = WC_Facebookcommerce_Utils::clean_string( $image );
@@ -295,6 +329,20 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				self::FB_VARIANT_IMAGE,
 				$this->fb_use_parent_image
 			);
+		}
+
+		public function get_fb_category() {
+			if ( $this->fb_category ) {
+				return $this->fb_category;
+			}
+
+			$this->fb_category = get_post_meta(
+				$this->id,
+				self::FB_CATEGORY,
+				true
+			);
+
+			return $this->fb_category;
 		}
 
 		public function get_fb_description() {
@@ -588,6 +636,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				: \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
+			$product_data = $this->apply_enhanced_catalog_fields_from_attributes($product_data);
+
 			// Only use checkout URLs if they exist.
 			if ( $checkout_url ) {
 				  $product_data['checkout_url'] = $checkout_url;
@@ -631,6 +681,120 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 		}
 
+		public function get_fb_enhanced_attribute($attribute_key) {
+			$attribute_key = strtolower($attribute_key); // Make it easier to match
+
+			$attr_value = get_post_meta(
+				$this->id,
+				$this->build_enhanced_attribute_meta_key($attribute_key),
+				true
+			);
+
+			if(!is_null($attr_value) && strlen($attr_value) > 0) {
+				return $attr_value;
+			}
+			$category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
+			foreach($this->get_attributes() as $attribute) {
+				$name = strtolower($attribute->get_name());
+				$value = wc_implode_text_attributes($attribute->get_options());
+				if($name === $attribute_key && $category_handler->is_valid_value_for_attribute($attribute_key, $value)){
+					return $value;
+				}
+			}
+			return null;
+		}
+
+		/**
+		* Adds enhanced catalog fields to product data array. Separated from
+		* the main function to make it easier to develop and debug, potentially
+		* worth refactoring into main prepare_product function when complete.
+		*
+		* @param array $product_data map
+		* @return array
+		*/
+		private function apply_enhanced_catalog_fields_from_attributes($product_data) {
+			// So weird but worth noting
+			// name is used on the batch api, the same field is title on the feed
+			// image_url is used on the batch api, the same field is image_link on the feed
+			// url is used on the batch api, the same field is link on the feed
+
+			$fb_category_id = $this->get_fb_category();
+			$category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
+			if(!$fb_category_id || !$category_handler->is_category($fb_category_id)){
+				return $product_data;
+			}
+			$enhanced_data = array();
+			$enhanced_data['fb_product_category'] = $fb_category_id;
+
+			$attributes = $category_handler->get_attributes_for_category($fb_category_id, $this);
+			foreach($attributes['primary'] as $attribute){
+				$value = $attribute['value'];
+				if(!is_null($value) && strlen($value) > 0){
+					$enhanced_data[$attribute['key']] = $value;
+				}
+			}
+			$logger = new \WC_Logger();
+			$logger->add('max-test', "ALL ENHANCED ".json_encode($enhanced_data));
+
+			// $enhanced_data['fb_product_category'] = $fb_category_id;
+			// $logger = new \WC_Logger();
+			// $all_meta = get_post_meta($this->id);
+			// $logger->add('max-test', "ALL POST META ".json_encode($all_meta));
+			// $set_enhanced_attrs =
+
+
+
+			// // 	'inventory' => required for instagram shopping with checkout
+			// // 	'fb_product_category'
+			// // 	'google_product_category'
+			// // if($this->needs_shipping()){
+			// 	// Need to check shipping zones and then see if this product belongs
+			// 	// to a shipping class which affects that zone
+			// 	// 	'shipping' => required for checkout
+			// 	// 	'shipping_weight' => required for checkout
+			// // }
+
+
+			// // 		'material' => cotton, denim, leather
+
+			// $restricted_values = array(
+			// 	'gender' => array('male', 'female', 'unisex'),
+			// 	'age_group' => array('adult', 'all ages', 'teen', 'kids', 'toddler', 'infant', 'newborn'),
+			// 	// Already covered by above
+			// 	// 'availability' => array('in stock', 'available for order', 'out of stock', 'discontinued'),
+			// 	'condition' => array('new', 'refurbished', 'used'),
+			// );
+			// $attribute_keys = array(
+			// 	'color' => 'color',
+			// 	'colour' => 'color',
+			// 	'gender' => 'gender',
+			// 	'age' => 'age_group',
+			// 	'age_group' => 'age_group',
+			// 	'size' => 'size',
+			// 	'condition' => 'condition',
+			// 	'pattern' => 'pattern',
+			// );
+
+			// foreach($this->get_attributes() as $attribute) {
+			// 	$value = wc_implode_text_attributes($attribute->get_options());
+			// 	$name = strtolower($attribute->get_name());
+			// 	$key = $attribute_keys[$name];
+			// 	// WC_Facebookcommerce_Utils::log("NAME: ".$name." VALUE: ".$value." KEY: ".$key);
+			// 	if($key){
+			// 		if($restricted_values[$key]){
+			// 			$normalised_value = strtolower(trim($value));
+			// 			if(in_array($normalised_value, $restricted_values[$key])){
+			// 				$enhanced_data[$key] = $normalised_value;
+			// 			}
+			// 		} else {
+			// 			$enhanced_data[$key] = $value;
+			// 		}
+			// 	}
+			// }
+
+
+			return array_merge($product_data, $enhanced_data);
+		}
 
 		/**
 		 * Normalizes variant data for Facebook.

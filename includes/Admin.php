@@ -113,7 +113,8 @@ class Admin {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/css/admin/facebook-for-woocommerce-products-admin.css' ), [], \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				# TODO: Change back to min
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
 					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
@@ -953,12 +954,14 @@ class Admin {
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
 		$image_source = get_post_meta( $post->ID, Products::PRODUCT_IMAGE_SOURCE_META_KEY, true );
 		$image        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_IMAGE, true );
+		$fb_category = get_post_meta( $post->ID, \WC_Facebook_Product::FB_CATEGORY, true );
 
 		if ( $sync_enabled ) {
 			$sync_mode = $is_visible ? self::SYNC_MODE_SYNC_AND_SHOW : self::SYNC_MODE_SYNC_AND_HIDE;
 		} else {
 			$sync_mode = self::SYNC_MODE_SYNC_DISABLED;
 		}
+
 
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
@@ -976,13 +979,25 @@ class Admin {
 					],
 					'value' => $sync_mode,
 				] );
+				?>
+				<p class='form-field'>
+					<label for="<?php echo \WC_Facebook_Product::FB_CATEGORY; ?>"><?php echo __( 'Facebook category', 'facebook-for-woocommerce' ); ?></label>
+					<select class="wc-product-search"  style="width: 50%;" id="<?php echo \WC_Facebook_Product::FB_CATEGORY; ?>" name="<?php echo \WC_Facebook_Product::FB_CATEGORY; ?>" data-sortable="true" data-placeholder="<?php echo __( 'Search for a category&hellip;', 'facebook-for-woocommerce' ); ?>" data-action="wc_facebook_json_search_facebook_categories">
+						<?php if($fb_category) { ?>
+							<option selected="selected" value="<?php echo $fb_category; ?>">
+								<?php echo facebook_for_woocommerce()->get_facebook_category_handler()->get_category($fb_category); ?>
+							</option>
+						<?php } ?>
+					</select>
+				</p>
+				<?php
 
 				woocommerce_wp_textarea_input( [
 					'id'          => \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION,
 					'label'       => __( 'Facebook Description', 'facebook-for-woocommerce' ),
 					'desc_tip'    => true,
 					'description' => __( 'Custom (plain-text only) description for product on Facebook. If blank, product description will be used. If product description is blank, shortname will be used.', 'facebook-for-woocommerce' ),
-					'cols'        => 40,
+'cols'        => 40,
 					'rows'        => 20,
 					'value'       => $description,
 					'class'       => 'short enable-if-sync-enabled',
