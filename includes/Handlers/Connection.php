@@ -188,8 +188,16 @@ class Connection {
 
 		$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
 
-		if ( $response->get_page_id() ) {
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $response->get_page_id() ) );
+		$page_id = sanitize_text_field( $response->get_page_id() );
+
+		if ( $page_id ) {
+
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
+
+			// get and store a current access token for the configured page
+			$page_access_token = $this->retrieve_page_access_token( $page_id );
+
+			$this->update_page_access_token( $page_access_token );
 		}
 
 		if ( $response->get_pixel_id() ) {
