@@ -189,9 +189,15 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		return [
 			[
+				'type' => 'title',
+			],
+			[
 				'id'   => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type' => 'commerce_google_product_categories',
 			],
+			[
+				'type' => 'sectionend',
+			]
 		];
 	}
 
