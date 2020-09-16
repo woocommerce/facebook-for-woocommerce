@@ -43,7 +43,7 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertStringContainsString( 'https://www.facebook.com/commerce_manager/onboarding/?app_id=', $connect_url );
 		$this->assertStringContainsString( 'redirect_url=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebook%2F%3Fsite_url%3D', $connect_url );
-		$this->assertStringContainsString( 'wc-api%3D' . \SkyVerge\WooCommerce\Facebook\Handlers\Connection::ACTION_CONNECT_COMMERCE . '%26nonce%3D', $connect_url );
+		$this->assertStringContainsString( 'wc-api%253D' . \SkyVerge\WooCommerce\Facebook\Handlers\Connection::ACTION_CONNECT_COMMERCE . '%2526nonce%253D', $connect_url );
 	}
 
 
