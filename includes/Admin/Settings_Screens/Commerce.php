@@ -105,7 +105,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
 		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), facebook_for_woocommerce()->get_connection_handler()->get_proxy_url() );
-```
 
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg( [
