@@ -302,6 +302,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
 
+
 			add_action(
 				'wp_ajax_ajax_sync_all_fb_products',
 				array( $this, 'ajax_sync_all_fb_products' ),
@@ -925,7 +926,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param \WC_Product $product the product object
 	 */
 	private function save_product_settings( \WC_Product $product ) {
-
 		$woo_product = new WC_Facebook_Product( $product->get_id() );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
@@ -942,9 +942,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product->save_meta_data();
 		}
 
+		if ( isset( $_POST[\WC_Facebook_Product::FB_CATEGORY] ) ) {
+			$woo_product->set_fb_category(sanitize_key( wp_unslash( $_POST[\WC_Facebook_Product::FB_CATEGORY] )));
+		}
+
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
+
+		if ( isset( $_POST[ \WC_Facebook_Product::FB_ENHANCED_ATTRIBUTE ] ) ) {
+			foreach( $_POST[ \WC_Facebook_Product::FB_ENHANCED_ATTRIBUTE ] as $key => $value ) {
+				if(is_null($value)) {
+					continue;
+				}
+				$clean_value = trim( sanitize_text_field( wp_unslash( $value ) ) );
+				if(strlen($clean_value) === 0) {
+					continue;
+				}
+				$woo_product->set_fb_enhanced_attribute($key, $clean_value);
+			}
+		}
+
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
@@ -3590,7 +3608,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->schedule_resync( $resync_offset );
 		}
 	}
-
 
 	/**
 	 * Handles the schedule feed generation action, triggered by the REST API.
