@@ -1,6 +1,8 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Products;
+use SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 /**
  * Tests the Admin\Product_Categories class.
@@ -92,7 +94,64 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	// TODO: add test for save_google_product_category()
+	/** @see Product_Categories::save_google_product_category() */
+	public function test_save_google_product_category() {
+
+		$category                  = wp_insert_term( 'New category', 'product_cat' );
+		$category_term_id          = $category['term_id'];
+		$category_term_taxonomy_id = $category['term_taxonomy_id'];
+
+		$product = $this->tester->get_product();
+		$product->set_category_ids( [ $category_term_id ] );
+		$product->save();
+
+		$sync = $this
+			->getMockBuilder( Sync::class )
+			->onlyMethods( [ 'create_or_update_products' ] )
+			->getMock();
+
+		// test will fail if the method is not called with the correct param
+		$sync->method( 'create_or_update_products' )
+		     ->willReturn( \Codeception\Stub\Expected::once( [ $product->get_id() ] ) );
+
+		// replace the sync handler property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $sync );
+
+		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
+		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
+
+		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
+	}
+
+
+	/** @see Product_Categories::save_google_product_category() */
+	public function test_save_google_product_category_no_products() {
+
+		$category                  = wp_insert_term( 'New category', 'product_cat' );
+		$category_term_id          = $category['term_id'];
+		$category_term_taxonomy_id = $category['term_taxonomy_id'];
+
+		$sync = $this
+			->getMockBuilder( Sync::class )
+			->onlyMethods( [ 'create_or_update_products' ] )
+			->getMock();
+
+		// test will fail if the method is called
+		$sync->method( 'create_or_update_products' )
+		     ->willReturn( \Codeception\Stub\Expected::never() );
+
+		// replace the sync handler property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $sync );
+
+		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
+		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
+
+		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
+	}
 
 
 	/** Utility methods ***********************************************************************************************/
