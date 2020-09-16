@@ -12,6 +12,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 /**
  * General handler for the product category admin functionality.
  *
@@ -153,6 +155,9 @@ class Product_Categories {
 	 */
 	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
+		$google_product_category_id = Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID );
+
+		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
 	}
 
 
