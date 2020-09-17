@@ -84,6 +84,15 @@ class Products {
 			'label' => __( 'Sell on Instagram', 'facebook-for-woocommerce' ),
 			'class' => 'enable-if-sync-enabled',
 		] );
+
+		?>
+
+		<div class='wc_facebook_commerce_fields'>
+			<?php self::render_google_product_category_fields( $product ); ?>
+			<?php self::render_attribute_fields( $product ); ?>
+		</div>
+
+		<?php
 	}
 
 
