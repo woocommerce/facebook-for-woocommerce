@@ -12,6 +12,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 /**
  * General handler for the product category admin functionality.
  *
@@ -35,6 +37,9 @@ class Product_Categories {
 
 		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
 		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
+
+		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
+		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
 	}
 
 
@@ -143,10 +148,49 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @return string
+	 * @param int $term_id term ID
+	 * @param int $tt_id term taxonomy ID
+	 * @param string $taxonomy Taxonomy slug
 	 */
-	public function save_google_product_category() {
+	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
+		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
+
+		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
+
+		$term = get_term( $term_id, $taxonomy );
+
+		if ( $term instanceof \WP_Term ) {
+
+			// get the products in the category being saved
+			$products = wc_get_products( [
+				'category' => [ $term->slug ],
+			] );
+
+			if ( ! empty( $products ) ) {
+
+				$sync_product_ids = [];
+
+				/**
+				 * @var int $product_id
+				 * @var \WC_Product $product
+				 */
+				foreach ( $products as $product_id => $product ) {
+
+					if ( $product instanceof \WC_Product_Variable ) {
+
+						// should sync the variations, not the variable product
+						$sync_product_ids = array_merge( $sync_product_ids, $product->get_children() );
+
+					} else {
+
+						$sync_product_ids[] = $product_id;
+					}
+				}
+
+				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
+			}
+		}
 	}
 
 
