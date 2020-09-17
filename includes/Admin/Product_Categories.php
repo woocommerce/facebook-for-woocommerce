@@ -154,7 +154,7 @@ class Product_Categories {
 	 */
 	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
-		$google_product_category_id = Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID );
+		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
 
 		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
 
