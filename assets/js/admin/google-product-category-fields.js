@@ -54,7 +54,20 @@ jQuery( document ).ready( ( $ ) => {
 		 */
 		onChange(element) {
 
-			// TODO: implement
+			// remove following select fields if their options depended on the value of the current select field
+			if ( element.hasClass( 'locked' ) ) {
+				element.closest( '.wc-facebook-google-product-category-field' ).nextAll().remove();
+			}
+
+			var categoryId = element.val();
+
+			$( '#' + this.input_id ).val( categoryId );
+
+			var options = this.getOptions( categoryId );
+
+			if ( Object.keys( options ).length ) {
+				this.addSelect( options );
+			}
 		}
 
 
