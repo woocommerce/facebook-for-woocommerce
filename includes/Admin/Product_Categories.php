@@ -165,7 +165,6 @@ class Product_Categories {
 			// get the products in the category being saved
 			$products = wc_get_products(
 				[
-					'type'     => ['simple', 'variable'],
 					'category' => [ $term->slug ],
 				]
 			);
