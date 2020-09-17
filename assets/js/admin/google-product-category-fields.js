@@ -40,7 +40,10 @@ jQuery( document ).ready( ( $ ) => {
 
 			$( '<div id="wc-facebook-google-product-category-fields"></div>' ).insertBefore( $( '#' + this.input_id ) );
 
-			// TODO: add first two selects
+			var options = this.getOptions();
+
+			this.addSelect( options, facebook_for_woocommerce_google_product_category.i18n.top_level_placeholder );
+			this.addSelect( {}, facebook_for_woocommerce_google_product_category.i18n.second_level_placeholder );
 		}
 
 
