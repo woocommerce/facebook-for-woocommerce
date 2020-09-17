@@ -49,6 +49,20 @@ class Orders {
 
 
 	/**
+	 * Returns whether or not the order is a pending Commerce order.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Order $order order object
+	 * @return bool
+	 */
+	public static function is_order_pending( \WC_Order $order ) {
+
+		return self::is_commerce_order( $order ) && 'pending' === $order->get_status();
+	}
+
+
+	/**
 	 * Returns whether or not the order is a Commerce order.
 	 *
 	 * @since 2.1.0-dev.1
