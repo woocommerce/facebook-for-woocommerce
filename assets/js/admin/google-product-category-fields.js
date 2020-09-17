@@ -42,8 +42,8 @@ jQuery( document ).ready( ( $ ) => {
 
 			var options = this.getOptions();
 
-			this.addSelect( options, facebook_for_woocommerce_google_product_category.i18n.top_level_placeholder );
-			this.addSelect( {}, facebook_for_woocommerce_google_product_category.i18n.second_level_placeholder );
+			this.addSelect( options );
+			this.addSelect( {} );
 		}
 
 
@@ -64,17 +64,18 @@ jQuery( document ).ready( ( $ ) => {
 		 * @since 2.1.0-dev.1
 		 *
 		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
-		 * @param {string} placeholder
 		 */
-		addSelect( options, placeholder ) {
+		addSelect( options ) {
 
 			var $container = $( '#wc-facebook-google-product-category-fields' );
+			var $otherSelects = $container.find( '.wc-facebook-google-product-category-select' );
 			var $select = $( '<select class="wc-enhanced-select wc-facebook-google-product-category-select"></select>' );
 
-			$container.find( '.wc-facebook-google-product-category-select' ).addClass( 'locked' );
+			$otherSelects.addClass( 'locked' );
+
 			$container.append( $( '<div class="wc-facebook-google-product-category-field" style="margin-bottom: 16px">' ).append( $select ) );
 
-			$select.attr( 'data-placeholder', placeholder ).append( $( '<option value=""></option>' ) );
+			$select.attr( 'data-placeholder', this.getSelectPlaceholder( $otherSelects ) ).append( $( '<option value=""></option>' ) );
 
 			Object.keys( options ).forEach( ( key ) => {
 				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
