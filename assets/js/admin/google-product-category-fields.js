@@ -133,7 +133,7 @@ jQuery( document ).ready( ( $ ) => {
 		 */
 		getOptions(category_id) {
 
-			if ( 'undefined' === typeof category_id ) {
+			if ( 'undefined' === typeof category_id || '' === category_id ) {
 				return this.getTopLevelOptions();
 			}
 
