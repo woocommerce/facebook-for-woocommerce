@@ -12,6 +12,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+
 /**
  * General handler for order admin functionality.
  *
@@ -189,7 +191,8 @@ class Orders {
 	 */
 	public function is_orders_screen() {
 
-		return true;
+		return Framework\SV_WC_Helper::is_current_screen( 'edit-shop_order' ) ||
+		       Framework\SV_WC_Helper::is_current_screen( 'shop_order' );
 	}
 
 
@@ -204,7 +207,7 @@ class Orders {
 	 */
 	public function is_edit_order_screen() {
 
-		return true;
+		return Framework\SV_WC_Helper::is_current_screen( 'shop_order' );
 	}
 
 
