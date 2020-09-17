@@ -74,9 +74,13 @@ jQuery( document ).ready( ( $ ) => {
 		 * @since 2.1.0-dev.1
 		 *
 		 * @param {string} category_id The given category ID
-		 * @return {string[]} the select options, indexed by the option ID
+		 * @return {Object.<string, string>} an object with option IDs as keys and option labels as values
 		 */
 		getOptions(category_id) {
+
+			if ( 'undefined' === typeof category_id ) {
+				return this.getTopLevelOptions();
+			}
 
 			if ( 'undefined' === typeof this.categories[ category_id ] ) {
 				return [];
