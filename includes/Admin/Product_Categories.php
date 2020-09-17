@@ -163,16 +163,35 @@ class Product_Categories {
 		if ( $term instanceof \WP_Term ) {
 
 			// get the products in the category being saved
-			$product_ids = wc_get_products(
+			$products = wc_get_products(
 				[
-					'return'   => 'ids',
+					'type'     => ['simple', 'variable'],
 					'category' => [ $term->slug ],
 				]
 			);
 
-			if ( ! empty( $product_ids ) ) {
+			if ( ! empty( $products ) ) {
 
-				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+				$sync_product_ids = [];
+
+				/**
+				 * @var int $product_id
+				 * @var \WC_Product $product
+				 */
+				foreach ( $products as $product_id => $product ) {
+
+					if ( $product instanceof \WC_Product_Variable ) {
+
+						// should sync the variations, not the variable product
+						$sync_product_ids = array_merge( $sync_product_ids, $product->get_children() );
+
+					} else {
+
+						$sync_product_ids[] = $product_id;
+					}
+				}
+
+				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
 			}
 		}
 	}
