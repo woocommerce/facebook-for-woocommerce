@@ -173,6 +173,35 @@ jQuery( document ).ready( ( $ ) => {
 		}
 
 
+		/**
+		 * Gets the ID of the selected category and all its ancestors.
+		 *
+		 * The method returns an array of arrays, where each entry is a pair of category IDs.
+		 * The first entry in the pair is the category ID and the second entry is the ID of the corresponding parent category.
+		 *
+		 * We use an array of arrays to be able to present the select fields in the correct order.
+		 * Object keys are automatically ordered causing options for categories with larger IDs to be displayed last.
+		 *
+		 * @param {string} categoryId
+		 * @param {Array.<string[]>} categoryId
+		 */
+		getSelectedCategoryIds( categoryId ) {
+
+			var options = [];
+
+			do {
+				if ( 'undefined' !== typeof this.categories[ categoryId ] ) {
+
+					options.push( [ categoryId, this.categories[ categoryId ].parent ] );
+
+					categoryId = this.categories[ categoryId ].parent;
+				}
+			} while ( '' !== categoryId );
+
+			return options.reverse();
+		}
+
+
 	}
 
 
