@@ -44,9 +44,7 @@ jQuery( document ).ready( ( $ ) => {
 					this.onChange( $( event.target ) );
 				} );
 
-			var options = this.getOptions();
-
-			this.addSelect( options );
+			this.addSelect( this.getOptions() );
 			this.addSelect( {} );
 		}
 
