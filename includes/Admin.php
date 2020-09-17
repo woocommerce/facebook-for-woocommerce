@@ -150,6 +150,7 @@ class Admin {
 			'i18n' => [
 				'top_level_placeholder'    => __( 'Search main categories...', 'facebook-for-woocommerce' ),
 				'second_level_placeholder' => __( 'Choose a main category', 'facebook-for-woocommerce' ),
+				'general_placeholder'      => __( 'Choose a parent category', 'facebook-for-woocommerce' ),
 			],
 		] );
 	}
