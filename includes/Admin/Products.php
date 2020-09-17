@@ -79,10 +79,12 @@ class Products {
 	public static function render_commerce_fields( \WC_Product $product ) {
 
 		woocommerce_wp_checkbox( [
-			'id'    => self::FIELD_COMMERCE_ENABLED,
-			'value' => \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) ? 'yes' : 'no',
-			'label' => __( 'Sell on Instagram', 'facebook-for-woocommerce' ),
-			'class' => 'enable-if-sync-enabled',
+			'id'          => self::FIELD_COMMERCE_ENABLED,
+			'value'       => \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) ? 'yes' : 'no',
+			'label'       => __( 'Sell on Instagram', 'facebook-for-woocommerce' ),
+			'class'       => 'enable-if-sync-enabled',
+			'desc_tip'    => true,
+			'description' => __( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ),
 		] );
 
 		?>
