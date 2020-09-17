@@ -145,6 +145,13 @@ class Admin {
 		}
 
 		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+		wp_localize_script( 'wc-facebook-google-product-category-fields', 'facebook_for_woocommerce_google_product_category', [
+			'i18n' => [
+				'top_level_placeholder'    => __( 'Search main categories...', 'facebook-for-woocommerce' ),
+				'second_level_placeholder' => __( 'Choose a main category', 'facebook-for-woocommerce' ),
+			],
+		] );
 	}
 
 
