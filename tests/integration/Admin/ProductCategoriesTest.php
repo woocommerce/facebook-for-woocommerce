@@ -101,18 +101,24 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$category_term_id          = $category['term_id'];
 		$category_term_taxonomy_id = $category['term_taxonomy_id'];
 
-		$product = $this->tester->get_product();
-		$product->set_category_ids( [ $category_term_id ] );
-		$product->save();
+		$simple_product = $this->tester->get_product();
+		$simple_product->set_category_ids( [ $category_term_id ] );
+		$simple_product->save();
+
+		$variable_product = $this->tester->get_variable_product();
+		$variable_product->set_category_ids( [ $category_term_id ] );
+		$variable_product->save();
 
 		$sync = $this
 			->getMockBuilder( Sync::class )
 			->onlyMethods( [ 'create_or_update_products' ] )
 			->getMock();
 
+		$expected_sync_ids = array_merge( [ $simple_product->get_id() ], $variable_product->get_children() );
+
 		// test will fail if the method is not called with the correct param
 		$sync->method( 'create_or_update_products' )
-		     ->willReturn( \Codeception\Stub\Expected::once( [ $product->get_id() ] ) );
+		     ->willReturn( \Codeception\Stub\Expected::once( $expected_sync_ids ) );
 
 		// replace the sync handler property
 		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
