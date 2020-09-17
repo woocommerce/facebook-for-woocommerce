@@ -158,19 +158,22 @@ class Product_Categories {
 
 		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
 
-		$term = get_term( $term_id, $taxonomy, ARRAY_A );
+		$term = get_term( $term_id, $taxonomy );
 
-		// get the products in the category being saved
-		$product_ids = wc_get_products(
-			[
-				'return'   => 'ids',
-				'category' => [ $term['slug'] ],
-			]
-		);
+		if ( $term instanceof \WP_Term ) {
 
-		if ( ! empty( $product_ids ) ) {
+			// get the products in the category being saved
+			$product_ids = wc_get_products(
+				[
+					'return'   => 'ids',
+					'category' => [ $term->slug ],
+				]
+			);
 
-			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+			if ( ! empty( $product_ids ) ) {
+
+				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $product_ids );
+			}
 		}
 	}
 
