@@ -163,11 +163,9 @@ class Product_Categories {
 		if ( $term instanceof \WP_Term ) {
 
 			// get the products in the category being saved
-			$products = wc_get_products(
-				[
-					'category' => [ $term->slug ],
-				]
-			);
+			$products = wc_get_products( [
+				'category' => [ $term->slug ],
+			] );
 
 			if ( ! empty( $products ) ) {
 
