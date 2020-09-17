@@ -72,7 +72,7 @@ jQuery( document ).ready( ( $ ) => {
 			var $select = $( '<select class="wc-enhanced-select wc-facebook-google-product-category-select"></select>' );
 
 			$container.find( '.wc-facebook-google-product-category-select' ).addClass( 'locked' );
-			$container.append( $( '<div class="wc-facebook-google-product-category-field">' ).append( $select ) );
+			$container.append( $( '<div class="wc-facebook-google-product-category-field" style="margin-bottom: 16px">' ).append( $select ) );
 
 			$select.attr( 'data-placeholder', placeholder ).append( $( '<option value=""></option>' ) );
 
