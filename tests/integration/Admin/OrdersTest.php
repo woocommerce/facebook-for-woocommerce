@@ -50,10 +50,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for is_order_editable()
 
-	// TODO: add test for is_orders_screen()
-
-	// TODO: add test for is_edit_order_screen()
-
 
 	/** Utility methods ***********************************************************************************************/
 
