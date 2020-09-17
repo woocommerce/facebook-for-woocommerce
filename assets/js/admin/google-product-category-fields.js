@@ -40,7 +40,10 @@ jQuery( document ).ready( ( $ ) => {
 
 			$( '<div id="wc-facebook-google-product-category-fields"></div>' ).insertBefore( $( '#' + this.input_id ) );
 
-			// TODO: add first two selects
+			var options = this.getOptions();
+
+			this.addSelect( options );
+			this.addSelect( {} );
 		}
 
 
@@ -60,11 +63,47 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @since 2.1.0-dev.1
 		 *
-		 * @param {string[]} options The select options, indexed by the option ID
+		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
 		 */
-		addSelect(options) {
+		addSelect( options ) {
 
-			// TODO: implement
+			var $container = $( '#wc-facebook-google-product-category-fields' );
+			var $otherSelects = $container.find( '.wc-facebook-google-product-category-select' );
+			var $select = $( '<select class="wc-enhanced-select wc-facebook-google-product-category-select"></select>' );
+
+			$otherSelects.addClass( 'locked' );
+
+			$container.append( $( '<div class="wc-facebook-google-product-category-field" style="margin-bottom: 16px">' ).append( $select ) );
+
+			$select.attr( 'data-placeholder', this.getSelectPlaceholder( $otherSelects ) ).append( $( '<option value=""></option>' ) );
+
+			Object.keys( options ).forEach( ( key ) => {
+				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
+			} );
+
+			$select.select2();
+		}
+
+
+		/**
+		 * Gets the placeholder string for a select field based on the number of existing select fields.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery} $otherSelects a jQuery object matching existing select fields
+		 * @return {string}
+		 */
+		getSelectPlaceholder( $otherSelects ) {
+
+			if ( 0 === $otherSelects.length ) {
+				return facebook_for_woocommerce_google_product_category.i18n.top_level_placeholder;
+			}
+
+			if ( 1 === $otherSelects.length ) {
+				return facebook_for_woocommerce_google_product_category.i18n.second_level_placeholder;
+			}
+
+			return facebook_for_woocommerce_google_product_category.i18n.general_placeholder;
 		}
 
 
