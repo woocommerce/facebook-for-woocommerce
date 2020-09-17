@@ -50,6 +50,29 @@ jQuery( document ).ready( ( $ ) => {
 
 
 		/**
+		 * Adds the initial select fields for the previously selected values.
+		 *
+		 * If there is no previously selected value, it adds two selected fields with no selected option.
+		 *
+		 * @param {string} categoryId the selected google product category
+		 */
+		addInitialSelects( categoryId ) {
+
+			if ( categoryId ) {
+
+				this.getSelectedCategoryIds( categoryId ).forEach( ( pair ) => {
+					this.addSelect( this.getOptions( pair[1] ), pair[0] );
+				} );
+
+			} else {
+
+				this.addSelect( this.getOptions() );
+				this.addSelect( {} );
+			}
+		}
+
+
+		/**
 		 * Updates the subsequent selects whenever one of the selects changes.
 		 *
 		 * @since 2.1.0-dev.1
