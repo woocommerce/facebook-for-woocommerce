@@ -85,6 +85,28 @@ jQuery( document ).ready( ( $ ) => {
 
 
 		/**
+		 * Gets the placeholder string for a select field based on the number of existing select fields.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery} $otherSelects a jQuery object matching existing select fields
+		 * @return {string}
+		 */
+		getSelectPlaceholder( $otherSelects ) {
+
+			if ( 0 === $otherSelects.length ) {
+				return facebook_for_woocommerce_google_product_category.i18n.top_level_placeholder;
+			}
+
+			if ( 1 === $otherSelects.length ) {
+				return facebook_for_woocommerce_google_product_category.i18n.second_level_placeholder;
+			}
+
+			return facebook_for_woocommerce_google_product_category.i18n.general_placeholder;
+		}
+
+
+		/**
 		 * Gets an array of options for the given category ID.
 		 *
 		 * @since 2.1.0-dev.1
