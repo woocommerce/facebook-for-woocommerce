@@ -38,14 +38,15 @@ jQuery( document ).ready( ( $ ) => {
 
 			this.input_id = input_id;
 
+			var $input = $( '#' + this.input_id );
+
 			$( '<div id="wc-facebook-google-product-category-fields"></div>' )
-				.insertBefore( $( '#' + this.input_id ) )
+				.insertBefore( $input )
 				.on( 'change', 'select.wc-facebook-google-product-category-select', ( event ) => {
 					this.onChange( $( event.target ) );
 				} );
 
-			this.addSelect( this.getOptions() );
-			this.addSelect( {} );
+			this.addInitialSelects( $input.val() );
 		}
 
 
