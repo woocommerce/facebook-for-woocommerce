@@ -60,11 +60,24 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @since 2.1.0-dev.1
 		 *
-		 * @param {string[]} options The select options, indexed by the option ID
+		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
+		 * @param {string} placeholder
 		 */
-		addSelect(options) {
+		addSelect( options, placeholder ) {
 
-			// TODO: implement
+			var $container = $( '#wc-facebook-google-product-category-fields' );
+			var $select = $( '<select class="wc-enhanced-select wc-facebook-google-product-category-select"></select>' );
+
+			$container.find( 'wc-facebook-google-product-category-select' ).addClass( 'locked' );
+			$container.append( $( '<div class="wc-facebook-google-product-category-field">' ).append( $select ) );
+
+			$select.attr( 'data-placeholder', placeholder ).append( $( '<option value=""></option>' ) );
+
+			Object.keys( options ).forEach( ( key ) => {
+				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
+			} );
+
+			$select.select2();
 		}
 
 
