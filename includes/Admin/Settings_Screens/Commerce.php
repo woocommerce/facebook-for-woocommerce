@@ -59,7 +59,62 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render() {
 
-		parent::render();
+		// if not connected, fall back to standard display
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			parent::render();
+			return;
+		}
+
+		$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+
+		if ( ! $commerce_handler->is_available() ) {
+			$this->render_us_only_limitation_notice();
+			return;
+		}
+
+		?>
+
+		<h2><?php esc_html_e( 'Instagram Checkout', 'facebook-for-woocommerce' ); ?></h2>
+
+		<table class="form-table">
+			<tbody>
+				<tr valign="top" class="">
+					<th scope="row" class="titledesc"><?php esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?></th>
+					<td class="forminp">
+						<?php if ( $commerce_handler->is_connected() ) : ?>
+							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
+						<?php else: ?>
+							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
+
+							<p style="margin-top:24px">
+								<a class="button button-primary" href="<?php echo esc_url( $this->get_connect_url() ); ?>"><?php esc_html_e( 'Connect', 'facebook-for-woocommerce' ); ?></a>
+							</p>
+						<?php endif; ?>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<?php
+
+		if ( $commerce_handler->is_connected() ) {
+			parent::render();
+		}
+	}
+
+
+	/**
+	 * Renders the notice about the US-only limitation for Instagram Checkout.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	private function render_us_only_limitation_notice() {
+
+		?>
+
+		<div class="notice notice-info"><p><?php esc_html_e( 'Instagram Checkout is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
+
+		<?php
 	}
 
 
@@ -151,12 +206,35 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		return [
 			[
+				'type' => 'title',
+			],
+			[
 				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type'     => 'commerce_google_product_categories',
 				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
 				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined to sell via Instagram.', 'facebook-for-woocommerce' ),
 			],
+			[
+				'type' => 'sectionend',
+			]
 		];
+	}
+
+
+	/**
+	 * Gets the "disconnected" message.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_disconnected_message() {
+
+		return sprintf(
+			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
+			__( 'Please %1$sconnect to Facebook%2$s to enable Instagram Checkout.', 'facebook-for-woocommerce' ),
+			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+		);
 	}
 
 
