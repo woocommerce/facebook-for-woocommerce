@@ -1013,7 +1013,7 @@ class Admin {
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
 		<div id='facebook_options' class='panel woocommerce_options_panel'>
-			<div class='options_group'>
+			<div class='options_group show_if_simple'>
 				<?php
 
 				woocommerce_wp_select( [
@@ -1073,6 +1073,12 @@ class Admin {
 					'value'       => $price,
 					'class'       => 'enable-if-sync-enabled',
 				] );
+
+				?>
+			</div>
+
+			<div class='options_group'>
+				<?php
 
 				$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 
