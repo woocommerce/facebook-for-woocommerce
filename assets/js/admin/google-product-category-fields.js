@@ -90,6 +90,30 @@ jQuery( document ).ready( ( $ ) => {
 		}
 
 
+		/**
+		 * Gets an array of top level category options.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {Object.<string, string>} an object with option IDs as keys and option labels as values
+		 */
+		getTopLevelOptions() {
+
+			let options = {};
+
+			Object.keys( this.categories ).forEach( ( key ) => {
+
+				if ( this.categories[ key ].parent ) {
+					return;
+				}
+
+				options[ key ] = this.categories[ key ].label;
+			} );
+
+			return options;
+		}
+
+
 	}
 
 
