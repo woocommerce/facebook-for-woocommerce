@@ -1074,6 +1074,16 @@ class Admin {
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
+				$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+
+				if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) {
+
+					$product = wc_get_product( $post );
+
+					if ( $product instanceof \WC_Product ) {
+						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
+					}
+				}
 				?>
 			</div>
 		</div>
