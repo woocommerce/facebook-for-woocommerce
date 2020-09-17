@@ -75,7 +75,7 @@ jQuery( document ).ready( ( $ ) => {
 
 			$container.append( $( '<div class="wc-facebook-google-product-category-field" style="margin-bottom: 16px">' ).append( $select ) );
 
-			$select.attr( 'data-placeholder', this.getSelectPlaceholder( $otherSelects ) ).append( $( '<option value=""></option>' ) );
+			$select.attr( 'data-placeholder', this.getSelectPlaceholder( $otherSelects, options ) ).append( $( '<option value=""></option>' ) );
 
 			Object.keys( options ).forEach( ( key ) => {
 				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
@@ -91,19 +91,20 @@ jQuery( document ).ready( ( $ ) => {
 		 * @since 2.1.0-dev.1
 		 *
 		 * @param {jQuery} $otherSelects a jQuery object matching existing select fields
+		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
 		 * @return {string}
 		 */
-		getSelectPlaceholder( $otherSelects ) {
+		getSelectPlaceholder( $otherSelects, options ) {
 
 			if ( 0 === $otherSelects.length ) {
-				return facebook_for_woocommerce_google_product_category.i18n.top_level_placeholder;
+				return facebook_for_woocommerce_google_product_category.i18n.top_level_dropdown_placeholder;
 			}
 
-			if ( 1 === $otherSelects.length ) {
-				return facebook_for_woocommerce_google_product_category.i18n.second_level_placeholder;
+			if ( 1 === $otherSelects.length && 0 === Object.keys( options ).length ) {
+				return facebook_for_woocommerce_google_product_category.i18n.second_level_empty_dropdown_placeholder;
 			}
 
-			return facebook_for_woocommerce_google_product_category.i18n.general_placeholder;
+			return facebook_for_woocommerce_google_product_category.i18n.general_dropdown_placeholder;
 		}
 
 
