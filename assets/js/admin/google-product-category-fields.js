@@ -78,7 +78,15 @@ jQuery( document ).ready( ( $ ) => {
 		 */
 		getOptions(category_id) {
 
-			// TODO: implement
+			if ( 'undefined' === typeof this.categories[ category_id ] ) {
+				return [];
+			}
+
+			if ( 'undefined' === typeof this.categories[ category_id ]['options'] ) {
+				return [];
+			}
+
+			return this.categories[ category_id ]['options'];
 		}
 
 
