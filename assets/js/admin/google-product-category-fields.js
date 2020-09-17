@@ -79,8 +79,9 @@ jQuery( document ).ready( ( $ ) => {
 		 * @since 2.1.0-dev.1
 		 *
 		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
+		 * @param {string} selected the selected option ID
 		 */
-		addSelect( options ) {
+		addSelect( options, selected ) {
 
 			var $container = $( '#wc-facebook-google-product-category-fields' );
 			var $otherSelects = $container.find( '.wc-facebook-google-product-category-select' );
@@ -96,7 +97,7 @@ jQuery( document ).ready( ( $ ) => {
 				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
 			} );
 
-			$select.select2();
+			$select.val( selected ).select2();
 		}
 
 
