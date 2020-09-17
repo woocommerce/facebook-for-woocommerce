@@ -36,6 +36,42 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
+	 * @see Orders::is_order_pending()
+	 *
+	 * @param string $created_via created via value
+	 * @param string $status WC order status value
+	 * @param bool $expected expected result
+	 *
+	 * @dataProvider provider_is_order_pending
+	 *
+	 * @throws \WC_Data_Exception
+	 */
+	public function test_is_order_pending( $created_via, $status, $expected ) {
+
+		$order = new \WC_Order();
+		$order->set_created_via( $created_via );
+		$order->set_status( $status );
+		$order->save();
+
+		$this->assertEquals( $expected, Orders::is_order_pending( $order ) );
+	}
+
+
+	/** @see test_is_order_pending */
+	public function provider_is_order_pending() {
+
+		return [
+			[ 'checkout', 'pending', false ],
+			[ 'checkout', 'processing', false ],
+			[ 'instagram', 'pending', true ],
+			[ 'instagram', 'processing', false ],
+			[ 'facebook', 'pending', true ],
+			[ 'facebook', 'processing', false ],
+		];
+	}
+
+
+	/**
 	 * @see Orders::is_commerce_order()
 	 *
 	 * @param string $created_via created via value
