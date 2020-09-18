@@ -110,6 +110,9 @@ jQuery( document ).ready( ( $ ) => {
 							.last()
 								.val();
 
+				if ( ! categoryId ) {
+					this.addSelect( {} );
+				}
 			}
 
 			$( '#' + this.input_id ).val( categoryId );
