@@ -78,6 +78,57 @@ class Products {
 				'male'   => __( 'Male', 'facebook-for-woocommerce' ),
 			],
 		] );
+
+		woocommerce_wp_select( [
+			'id'                => self::FIELD_COLOR,
+			'label'             => __( 'Color attribute', 'facebook-for-woocommerce' ),
+			'description'       => __( "Optionally select the attribute associated with the product's colors.", 'facebook-for-woocommerce' ),
+			'desc_tip'          => true,
+			'class'             => 'sv-wc-enhanced-search select short',
+			'style'             => 'width: 50%',
+			'options'           => self::filter_available_product_attribute_names( $product, [ 'color', 'colour', __( 'color', 'facebook-for-woocommerce' ) ] ),
+			'value'             => FacebookProducts::get_product_color_attribute( $product ),
+			'custom_attributes' => [
+				'data-allow_clear' => true,
+				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
+				'data-nonce'       => wp_create_nonce( '' ),
+			],
+		] );
+
+		woocommerce_wp_select( [
+			'id'                => self::FIELD_SIZE,
+			'label'             => __( 'Size attribute', 'facebook-for-woocommerce' ),
+			'description'       => __( "Optionally select the attribute associated with the product's sizes.", 'facebook-for-woocommerce' ),
+			'desc_tip'          => true,
+			'class'             => 'sv-wc-enhanced-search select short',
+			'style'             => 'width: 50%',
+			'options'           => self::filter_available_product_attribute_names( $product, [ 'size', __( 'size', 'facebook-for-woocommerce' ) ] ),
+			'value'             => FacebookProducts::get_product_size_attribute( $product ),
+			'custom_attributes' => [
+				'data-allow_clear' => true,
+				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
+				'data-nonce'       => wp_create_nonce( '' ),
+			],
+		] );
+
+		woocommerce_wp_select( [
+			'id'                => self::FIELD_PATTERN,
+			'label'             => __( 'Pattern attribute', 'facebook-for-woocommerce' ),
+			'description'       => __( "Optionally select the attribute associated with the product's patterns.", 'facebook-for-woocommerce' ),
+			'desc_tip'          => true,
+			'class'             => 'sv-wc-enhanced-search select short',
+			'style'             => 'width: 50%',
+			'options'           => self::filter_available_product_attribute_names( $product, [ 'pattern', __( 'pattern', 'facebook-for-woocommerce' ) ] ),
+			'value'             => FacebookProducts::get_product_pattern_attribute( $product ),
+			'custom_attributes' => [
+				'data-allow_clear' => true,
+				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
+				'data-nonce'       => wp_create_nonce( '' ),
+			],
+		] );
 	}
 
 
