@@ -313,6 +313,12 @@ class Orders {
 		// update order status
 		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
 			$local_order->set_status( 'processing' );
+
+			/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
+			$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
+				$remote_order->get_id(),
+				$remote_order->get_channel()
+			) );
 		}
 
 		// set remote ID
