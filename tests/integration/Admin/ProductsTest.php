@@ -17,6 +17,8 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
+		require_once WC()->plugin_path() . '/includes/admin/wc-meta-box-functions.php';
+
 		require_once 'includes/Admin/Products.php';
 	}
 
