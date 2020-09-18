@@ -67,6 +67,17 @@ class Products {
 	 */
 	public static function render_attribute_fields( \WC_Product $product ) {
 
+		woocommerce_wp_select( [
+			'id'          => self::FIELD_GENDER,
+			'label'       => __( 'Gender', 'facebook-for-woocommerce' ),
+			'description' => __( "Select the product's gender for sizing.", 'facebook-for-woocommerce' ),
+			'desc_tip'    => true,
+			'options'     => [
+				'unisex' => __( 'Unisex', 'facebook-for-woocommerce' ),
+				'female' => __( 'Female', 'facebook-for-woocommerce' ),
+				'male'   => __( 'Male', 'facebook-for-woocommerce' ),
+			],
+		] );
 	}
 
 
