@@ -18,6 +18,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	protected function _before() {
 
 		require_once 'includes/Admin/Orders.php';
+		require_once 'includes/Commerce/Orders.php';
 	}
 
 
@@ -46,7 +47,29 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for handle_bulk_update()
 
-	// TODO: add test for maybe_stop_order_email()
+
+	/**
+	 * @see Admin\Orders::maybe_stop_order_email()
+	 *
+	 * @throws WC_Data_Exception
+	 */
+	public function test_maybe_stop_order_email() {
+
+		$orders_handler = $this->get_orders_handler();
+
+		$this->assertFalse( $orders_handler->maybe_stop_order_email( false, null ) );
+		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, null ) );
+		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, 'a non \WC_Order object' ) );
+
+		$order = new \WC_Order();
+
+		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, $order ) );
+
+		$order->set_created_via( 'instagram' );
+
+		$this->assertFalse( $orders_handler->maybe_stop_order_email( true, $order ) );
+	}
+
 
 	// TODO: add test for is_order_editable()
 
