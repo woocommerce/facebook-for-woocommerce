@@ -623,6 +623,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$connection = $this->get_connection();
 
 		$connection->update_access_token( 'access token' );
+		$connection->update_commerce_manager_id( 'manager id' );
 
 		$this->assertTrue( $connection->is_connected() );
 	}

@@ -125,9 +125,10 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @dataProvider provider_is_connected
 	 */
-	public function test_is_connected( $access_token, $is_connected ) {
+	public function test_is_connected( $access_token, $manager_id, $is_connected ) {
 
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $access_token );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( $manager_id );
 
 		$this->assertSame( $is_connected, $this->get_commerce_handler()->is_connected() );
 	}
@@ -137,8 +138,10 @@ class CommerceTest extends \Codeception\TestCase\WPTestCase {
 	public function provider_is_connected() {
 
 		return [
-			[ '123456', true ],
-			[ '',       false ],
+			[ '123456', '1', true ],
+			[ '',       '',  false ],
+			[ '',       '1', false ],
+			[ '123456', '',  false ],
 		];
 	}
 

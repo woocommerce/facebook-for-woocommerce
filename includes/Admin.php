@@ -113,7 +113,8 @@ class Admin {
 		$modal_screens = [
 			'product',
 			'edit-product',
-			'shop_order'
+			'edit-product_cat',
+			'shop_order',
 		];
 
 		if ( isset( $current_screen->id ) ) {
@@ -979,7 +980,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => [ 'show_if_simple' ],
+			'class'  => [ 'show_if_simple', 'show_if_variable' ],
 		];
 
 		return $tabs;
@@ -1014,7 +1015,7 @@ class Admin {
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
 		<div id='facebook_options' class='panel woocommerce_options_panel'>
-			<div class='options_group'>
+			<div class='options_group show_if_simple'>
 				<?php
 
 				woocommerce_wp_select( [
@@ -1075,6 +1076,22 @@ class Admin {
 					'class'       => 'enable-if-sync-enabled',
 				] );
 
+				?>
+			</div>
+
+			<div class='options_group'>
+				<?php
+
+				$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+
+				if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) {
+
+					$product = wc_get_product( $post );
+
+					if ( $product instanceof \WC_Product ) {
+						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
+					}
+				}
 				?>
 			</div>
 		</div>
