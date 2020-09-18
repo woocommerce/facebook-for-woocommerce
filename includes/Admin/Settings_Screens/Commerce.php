@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection as Connection_Handler;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * The Commerce settings screen object.
@@ -49,6 +50,55 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
+		if ( Admin\Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) || ( self::ID !== Framework\SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'facebook-for-woocommerce-settings-commerce', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/settings-commerce.min.js', [ 'facebook-for-woocommerce-modal', 'jquery-tiptip' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+		wp_localize_script( 'facebook-for-woocommerce-settings-commerce', 'facebook_for_woocommerce_settings_commerce', [
+			'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
+			'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+		] );
+	}
+
+
+	/**
+	 * Gets the message for Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message() {
+
+		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Update default Google product category', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
