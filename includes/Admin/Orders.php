@@ -159,6 +159,8 @@ class Orders {
 	 */
 	public function maybe_stop_order_email( $is_enabled, $order ) {
 
+		$is_enabled = $is_enabled && ! ( $order instanceof \WC_Order && \SkyVerge\WooCommerce\Facebook\Commerce\Orders::is_commerce_order( $order ) );
+
 		return $is_enabled;
 	}
 
