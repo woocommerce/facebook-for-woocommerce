@@ -113,6 +113,7 @@ class Admin {
 		$modal_screens = [
 			'product',
 			'edit-product',
+			'edit-product_cat',
 		];
 
 		if ( isset( $current_screen->id ) ) {
