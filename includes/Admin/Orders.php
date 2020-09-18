@@ -161,6 +161,16 @@ class Orders {
 
 		$is_enabled = $is_enabled && ! ( $order instanceof \WC_Order && \SkyVerge\WooCommerce\Facebook\Commerce\Orders::is_commerce_order( $order ) );
 
+		/**
+		 * Filters the flag used to determine whether the email is enabled.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param bool $is_enabled whether the email is enabled
+		 * @param Orders $this admin orders instance
+		 */
+		$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $this );
+
 		return $is_enabled;
 	}
 
