@@ -52,7 +52,16 @@ class Product_Categories {
 	 */
 	public function enqueue_assets() {
 
-		wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		if ( $this->is_categories_screen() ) {
+
+			wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [
+					'jquery',
+					'wc-backbone-modal',
+					'jquery-blockui',
+					'jquery-tiptip',
+					'facebook-for-woocommerce-modal',
+			], \WC_Facebookcommerce::PLUGIN_VERSION );
+		}
 	}
 
 
@@ -192,6 +201,21 @@ class Product_Categories {
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
 			}
 		}
+	}
+
+
+	/**
+	 * Determines whether or not the current screen is a categories screen.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public function is_categories_screen() {
+
+		return Framework\SV_WC_Helper::is_current_screen( 'edit-product_cat' );
 	}
 
 
