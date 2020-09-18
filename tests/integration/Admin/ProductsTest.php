@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Admin\Products;
 
 /**
  * Tests the Admin\Products class.
@@ -36,7 +37,44 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for render_google_product_category_fields()
 
-	// TODO: add test for render_attribute_fields()
+
+	/**
+	 * @see Products::render_attribute_fields()
+	 *
+	 * @param string $constant_name the name of the input field
+	 * @dataProvider provider_render_attribute_fields
+	 */
+	public function test_render_attribute_fields( $constant_name ) {
+		global $post;
+
+		$product = $this->tester->get_product();
+		$post    = get_post( $product->get_id() );
+
+		ob_start();
+
+		Products::render_attribute_fields( $product );
+
+		$output = ob_get_clean();
+
+		$this->tester->assertStringContainsString( constant( Products::class . '::' . $constant_name ), $output );
+	}
+
+
+	/**
+	 * This method cannot use Product's constants because the class is not loaded by the time the method is executed.
+	 *
+	 * @see test_render_attribute_fields()
+	 */
+	public function provider_render_attribute_fields() {
+
+		return [
+			[ 'FIELD_GENDER' ],
+			[ 'FIELD_COLOR' ],
+			[ 'FIELD_SIZE' ],
+			[ 'FIELD_PATTERN' ],
+		];
+	}
+
 
 	// TODO: add test for render_commerce_fields()
 
