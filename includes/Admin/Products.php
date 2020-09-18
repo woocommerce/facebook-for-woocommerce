@@ -77,6 +77,7 @@ class Products {
 				'female' => __( 'Female', 'facebook-for-woocommerce' ),
 				'male'   => __( 'Male', 'facebook-for-woocommerce' ),
 			],
+			'value'       => FacebookProducts::get_product_gender( $product ),
 		] );
 
 		woocommerce_wp_select( [
