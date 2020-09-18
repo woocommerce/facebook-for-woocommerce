@@ -52,6 +52,7 @@ class Product_Categories {
 	 */
 	public function enqueue_assets() {
 
+		wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 	}
 
 
