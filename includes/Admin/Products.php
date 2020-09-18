@@ -78,16 +78,18 @@ class Products {
 	 */
 	public static function render_commerce_fields( \WC_Product $product ) {
 
-		woocommerce_wp_checkbox( [
-			'id'          => self::FIELD_COMMERCE_ENABLED,
-			'value'       => \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) ? 'yes' : 'no',
-			'label'       => __( 'Sell on Instagram', 'facebook-for-woocommerce' ),
-			'class'       => 'enable-if-sync-enabled',
-			'desc_tip'    => true,
-			'description' => __( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ),
-		] );
-
 		?>
+		<p class="form-field <?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>_field">
+			<label for="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>">
+				<?php echo esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?>
+				<span class="woocommerce-help-tip"
+				      data-tip="<?php echo esc_attr_e( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ); ?>"></span>
+			</label>
+			<input type="checkbox" class="enable-if-sync-enabled"
+			       name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
+			       id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>" value="yes"
+			       checked="<?php echo \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
+		</p>
 
 		<div id="product-not-ready-notice" style="display:none;">
 			<p>
