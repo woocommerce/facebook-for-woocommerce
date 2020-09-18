@@ -41,6 +41,8 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see Products::render_attribute_fields()
 	 *
+	 * TODO: add an acceptance test that checks the behavior of the attribute fields {WV 2020-09-18}
+	 *
 	 * @param string $constant_name the name of the input field
 	 * @dataProvider provider_render_attribute_fields
 	 */
