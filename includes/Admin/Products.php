@@ -89,6 +89,22 @@ class Products {
 
 		?>
 
+		<div id="product-not-ready-notice" style="display:none;">
+			<p>
+				<?php esc_html_e( 'This product does not meet the requirements to sell on Instagram.', 'facebook-for-woocommerce' ); ?>
+				<a href="#" id="product-not-ready-notice-open-modal"><?php esc_html_e( 'Click here to learn more.', 'facebook-for-woocommerce' ); ?></a>
+			</p>
+		</div>
+
+		<div id="variable-product-not-ready-notice" style="display:none;">
+			<p><?php sprintf(
+				/* translators: Placeholders %1$s - strong opening tag, %2$s - strong closing tag */
+				__( 'To sell this product on Instagram, at least one variation must be synced to Facebook. You can control variation sync on the %1$sVariations%2$s tab with the %1$sFacebook Sync%2$s setting.', 'facebook-for-woocommerce' ),
+				'<strong>',
+				'</strong>'
+			);?></p>
+		</div>
+
 		<div class='wc_facebook_commerce_fields'>
 			<?php self::render_google_product_category_fields( $product ); ?>
 			<?php self::render_attribute_fields( $product ); ?>
