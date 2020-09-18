@@ -9,4 +9,5 @@
 
 jQuery( document ).ready( ( $ ) => {
 
+	const original_category_ID = $( '#wc_facebook_google_product_category_id' ).val();
 } );
