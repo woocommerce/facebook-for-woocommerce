@@ -65,6 +65,12 @@ jQuery( document ).ready( ( $ ) => {
 					this.addSelect( this.getOptions( pair[1] ), pair[0] );
 				} );
 
+				var options = this.getOptions( categoryId );
+
+				if ( Object.keys( options ).length ) {
+					this.addSelect( options );
+				}
+
 			} else {
 
 				this.addSelect( this.getOptions() );
