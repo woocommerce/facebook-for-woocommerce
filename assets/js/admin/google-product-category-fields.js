@@ -93,13 +93,26 @@ jQuery( document ).ready( ( $ ) => {
 
 			var categoryId = element.val();
 
-			$( '#' + this.input_id ).val( categoryId );
+			if ( categoryId ) {
 
-			var options = this.getOptions( categoryId );
+				var options = this.getOptions( categoryId );
 
-			if ( Object.keys( options ).length ) {
-				this.addSelect( options );
+				if ( Object.keys( options ).length ) {
+					this.addSelect( options );
+				}
+
+			} else {
+
+				// use category ID from the last select field that has a selected value
+				categoryId = element.closest( '#wc-facebook-google-product-category-fields' )
+					.find( '.wc-facebook-google-product-category-select' )
+						.not( element )
+							.last()
+								.val();
+
 			}
+
+			$( '#' + this.input_id ).val( categoryId );
 		}
 
 
@@ -127,7 +140,7 @@ jQuery( document ).ready( ( $ ) => {
 				$select.append( $( '<option value="' + key + '">' + options[ key ] + '</option>' ) );
 			} );
 
-			$select.val( selected ).select2();
+			$select.val( selected ).select2( { allowClear: true } );
 		}
 
 
