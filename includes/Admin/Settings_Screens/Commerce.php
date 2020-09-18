@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection as Connection_Handler;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * The Commerce settings screen object.
@@ -49,6 +50,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
+		if ( Admin\Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) || ( self::ID !== Framework\SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'facebook-for-woocommerce-settings-commerce', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/settings-commerce.min.js', [ 'facebook-for-woocommerce-modal', 'jquery-tiptip' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 	}
 
 
