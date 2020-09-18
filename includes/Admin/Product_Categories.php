@@ -55,11 +55,11 @@ class Product_Categories {
 		if ( $this->is_categories_screen() ) {
 
 			wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [
-					'jquery',
-					'wc-backbone-modal',
-					'jquery-blockui',
-					'jquery-tiptip',
-					'facebook-for-woocommerce-modal',
+				'jquery',
+				'wc-backbone-modal',
+				'jquery-blockui',
+				'jquery-tiptip',
+				'facebook-for-woocommerce-modal',
 			], \WC_Facebookcommerce::PLUGIN_VERSION );
 		}
 	}
