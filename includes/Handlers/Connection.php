@@ -983,6 +983,19 @@ class Connection {
 
 
 	/**
+	 * Determines whether the Commerce has a manager ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return bool
+	 */
+	public function has_commerce_manager_id() {
+
+		return ! empty( $this->get_commerce_manager_id() );
+	}
+
+
+	/**
 	 * Determines whether the site has previously connected to FBE 2.
 	 *
 	 * @since 2.0.0
