@@ -59,6 +59,19 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 
 	/**
+	 * Gets the message for Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message() {
+
+		return wp_kses_post( __( '<strong>Products</strong><script>alert(1);</script> and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
 	 * Renders the screen.
 	 *
 	 * @since 2.1.0-dev.1
