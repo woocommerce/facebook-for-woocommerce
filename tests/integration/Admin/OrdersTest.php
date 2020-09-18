@@ -71,6 +71,21 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Admin\Orders::maybe_stop_order_email() */
+	public function test_maybe_stop_order_email_filter() {
+
+		add_filter( 'wc_facebook_commerce_send_woocommerce_emails', function( $is_enabled ) {
+
+			return ! $is_enabled;
+		} );
+
+		$orders_handler = $this->get_orders_handler();
+
+		$this->assertTrue( $orders_handler->maybe_stop_order_email( false, null ) );
+		$this->assertFalse( $orders_handler->maybe_stop_order_email( true, null ) );
+	}
+
+
 	// TODO: add test for is_order_editable()
 
 
