@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\Facebook\Products as FacebookProducts;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -64,6 +66,25 @@ class Products {
 	 */
 	public static function render_attribute_fields( \WC_Product $product ) {
 
+	}
+
+
+	/**
+	 * Gets a indexed list of available product attributes with the name of the attribute as key and the label as the value.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return array
+	 */
+	private static function get_available_product_attribute_names( \WC_Product $product ) {
+
+		return array_map(
+			function( $attribute ) use ( $product ) {
+				return wc_attribute_label( $attribute->get_name(), $product );
+			},
+			FacebookProducts::get_available_product_attributes( $product )
+		);
 	}
 
 
