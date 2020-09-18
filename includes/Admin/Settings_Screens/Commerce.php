@@ -72,6 +72,32 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 
 	/**
+	 * Gets the markup for the buttons used in the Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Update default Google product category', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
 	 * Renders the screen.
 	 *
 	 * @since 2.1.0-dev.1
