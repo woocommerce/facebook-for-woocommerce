@@ -55,6 +55,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		}
 
 		wp_enqueue_script( 'facebook-for-woocommerce-settings-commerce', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/settings-commerce.min.js', [ 'facebook-for-woocommerce-modal', 'jquery-tiptip' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+		wp_localize_script( 'facebook-for-woocommerce-settings-commerce', 'facebook_for_woocommerce_settings_commerce', [
+			'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
+			'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+		] );
 	}
 
 
