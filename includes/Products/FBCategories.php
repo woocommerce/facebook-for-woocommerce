@@ -23,8 +23,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  */
 class FBCategories {
   const ACTION_PRIORITY = 9;
-  const CATEGORY_FILE = 'fb_product_categories_en_US_simple_with_attributes.json';
-  const ATTRIBUTES_FILE = 'fb_product_enhanced_attributes.json';
+  const CATEGORY_FILE = 'fb_google_product_categories_en_US_simple.json';
+  const ATTRIBUTES_FILE = 'fb_google_category_to_attribute_mapping.json';
   /**
 	 * FBCategory constructor.
 	 *
@@ -83,22 +83,21 @@ class FBCategories {
 		if(!$this->is_category($category_id)) {
 			return [];
 		}
+		$all_attributes = $this->attributes_data[$category_id]['attributes'];
 
 		$primary_attributes = $this->extract_attributes_from_keys(
-			$this->categories_data[$category_id]['primary_attributes'],
-			$this->attributes_data,
+			array_filter($all_attribtues, function($attr) { return $attr['recommended']; }),
 			$product,
 		);
 		$secondary_attributes = $this->extract_attributes_from_keys(
-			$this->categories_data[$category_id]['secondary_attributes'],
-			$this->attributes_data,
+			array_filter($all_attribtues, function($attr) { return !$attr['recommended']; }),
 			$product,
 		);
 
 		return ['primary' => $primary_attributes, 'secondary' => $secondary_attributes];
 	}
 
-	private function extract_attributes_from_keys($keys, $attributes_data, $product){
+	private function extract_attributes_from_keys($keys, $product){
 	 	$attributes = array_map(function($key) use ($attributes_data){
 			return $attributes_data[$key];
 		}, $keys);
@@ -120,18 +119,40 @@ class FBCategories {
 		return $attributes;
 	}
 
-	public function is_valid_value_for_attribute($attribute_key, $value) {
+	private function get_attribute($category_id, $attribute_key) {
 		$this->ensure_data_is_loaded();
-		$attribute = $this->attributes_data[$attribute_key];
+		if(!$this->is_category($category_id)) {
+			return null;
+		}
+		$all_attributes =	$this->attributes_data[$category_id]['attributes'];
+		$attributes = array_filter(
+			$all_attributes,
+			function($attr) use ($attribute_key) {
+				return ($attribute_key === $attr['key']);
+			}
+		);
+		if(empty($attributes)){
+			return null;
+		}
+		return $attributes[0];
+	}
+
+	public function is_valid_value_for_attribute($category_id, $attribute_key, $value) {
+		$this->ensure_data_is_loaded();
+		$attribute = $this->get_attribute($category_id, $attribute_key);
+		if(is_null($attribute)) {
+			return false;
+		}
+
+		// TODO: can perform more validations here
 		switch($attribute['type']) {
 			case 'enum':
-				return in_array($value, $attribute['values']);
+				return in_array($value, $attribute['enum_values']);
 			case 'boolean':
 				return in_array($value, ['yes', 'no']);
 			default:
 				return true;
 		}
-
 	}
 
 	public function handle_search_facebook_categories(){
@@ -140,19 +161,16 @@ class FBCategories {
 		$lowercase_term = strtolower(wc_clean(wp_unslash($_GET['term'])));
 
 		$filtered_data = array_filter($this->categories_data, function($val) use ($lowercase_term){
-			return (strpos(strtolower($val['name']), $lowercase_term) !== false);
+			return (strpos(strtolower($val), $lowercase_term) !== false);
 		});
-		$mapped_data = array_map(function($val){
-			return $val['name'];
-		}, $filtered_data);
 
-		wp_send_json($mapped_data);
+		wp_send_json($filtered_data);
 	}
 
 	public function get_category($id) {
 		$this->ensure_data_is_loaded();
 		if($this->is_category($id)){
-			return $this->categories_data[$id]['name'];
+			return $this->categories_data[$id];
 		} else {
 			return null;
 		}

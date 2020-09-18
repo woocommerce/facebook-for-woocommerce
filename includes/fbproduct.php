@@ -670,14 +670,17 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				true
 			);
 
+			// If we've got a value return it
 			if(!is_null($attr_value) && strlen($attr_value) > 0) {
 				return $attr_value;
 			}
+
+			// Otherwise check to see what we can find in our existing attributes
 			$category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
 			foreach($this->get_attributes() as $attribute) {
 				$name = strtolower($attribute->get_name());
 				$value = wc_implode_text_attributes($attribute->get_options());
-				if($name === $attribute_key && $category_handler->is_valid_value_for_attribute($attribute_key, $value)){
+				if($name === $attribute_key){
 					return $value;
 				}
 			}
@@ -707,9 +710,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$enhanced_data['fb_product_category'] = $fb_category_id;
 
 			$attributes = $category_handler->get_attributes_for_category($fb_category_id, $this);
-			foreach($attributes['primary'] as $attribute){
+			$all_attributes = array_merge($attributes['primary'], $attributes['secondary']);
+			foreach($all_attributes as $attribute){
 				$value = $attribute['value'];
-				if(!is_null($value) && strlen($value) > 0){
+				if(!is_null($value) &&
+					strlen($value) > 0 &&
+					$category_handler->is_valid_value_for_attribute($fb_category_id, $attribute['key'], $value)
+				){
 					$enhanced_data[$attribute['key']] = $value;
 				}
 			}
