@@ -114,6 +114,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'edit-product_cat',
+			'shop_order',
 		];
 
 		if ( isset( $current_screen->id ) ) {
@@ -1300,7 +1301,7 @@ class Admin {
 		global $current_screen;
 
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook', 'shop_order' ], true ) ) {
 			return;
 		}
 
