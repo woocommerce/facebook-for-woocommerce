@@ -1299,8 +1299,15 @@ class Admin {
 	public function render_modal_template() {
 		global $current_screen;
 
+		$modal_screens = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-facebook',
+			'edit-product_cat',
+		];
+
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, $modal_screens, true ) ) {
 			return;
 		}
 
