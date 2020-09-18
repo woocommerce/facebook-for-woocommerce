@@ -92,10 +92,9 @@ jQuery( document ).ready( function( $ ) {
 
 		function showEnhancedAttributesForCategory(selectedCategory) {
 			const attributeFormField =  function(attribute) {
-				console.log("VALUE ", attribute.value);
 				switch(attribute.type) {
 					case 'enum':
-						const values = attribute.values.map(function(val) {
+						const values = attribute.enum_values.map(function(val) {
 							return $('<option/>').attr({
 								'value': val,
 								'selected': val === attribute.value
@@ -131,7 +130,7 @@ jQuery( document ).ready( function( $ ) {
 							$('<li/>').append(no)
 						);
 						return list;
-					case 'text':
+					case 'string':
 					default:
 						return $('<input/>')
 												.attr({
@@ -177,8 +176,8 @@ jQuery( document ).ready( function( $ ) {
 				if(response) {
 					const primaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
 					const secondaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
-					primaryOptionsGroup.append(optionsGroupHeader('Primary Attributes'));
-					secondaryOptionsGroup.append(optionsGroupHeader('Secondary Attributes'));
+					primaryOptionsGroup.append(optionsGroupHeader('Recommended Attributes'));
+					secondaryOptionsGroup.append(optionsGroupHeader('Other Attributes'));
 					response.primary.forEach(function(attribute){
 						const wrapper = attributeFormFieldWrapper(attribute);
 						const formField = attributeFormField(attribute);
