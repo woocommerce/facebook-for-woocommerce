@@ -36,7 +36,7 @@ class Product_Categories {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
-		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ], 10, 2 );
 
 		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
 		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
@@ -115,8 +115,10 @@ class Product_Categories {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $taxonomy current taxonomy slug
 	 */
-	public function render_add_google_product_category_field() {
+	public function render_add_google_product_category_field( $taxonomy ) {
 
 		$category_field = new Google_Product_Category_Field();
 
@@ -140,10 +142,14 @@ class Product_Categories {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WP_Term $term current taxonomy term object
+	 * @param string $taxonomy current taxonomy slug
 	 */
-	public function render_edit_google_product_category_field() {
+	public function render_edit_google_product_category_field( \WP_Term $term, $taxonomy ) {
 
 		$category_field = new Google_Product_Category_Field();
+		$value          = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 
 		?>
 			<tr class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
@@ -155,7 +161,8 @@ class Product_Categories {
 				</th>
 				<td>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
-					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
+					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+					       value="<?php echo esc_attr( $value ); ?>"/>
 					<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
 				</td>
 			</tr>
