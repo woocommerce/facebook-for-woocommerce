@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use SkyVerge\WooCommerce\Facebook\Products as FacebookProducts;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -66,6 +67,33 @@ class Products {
 	 */
 	public static function render_attribute_fields( \WC_Product $product ) {
 
+	}
+
+
+	/**
+	 * Gets a list of attribute names and labels that match any of the given words.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string $words a list of words used to filter attributes
+	 * @return array
+	 */
+	private static function filter_available_product_attribute_names( \WC_Product $product, $words ) {
+
+		$attributes = [];
+
+		foreach ( self::get_available_product_attribute_names( $product ) as $name => $label ) {
+
+			foreach ( $words as $word ) {
+
+				if ( Framework\SV_WC_Helper::str_exists( wc_strtolower( $label ), $word ) || Framework\SV_WC_Helper::str_exists( wc_strtolower( $name ), $word ) ) {
+					$attributes[ $name ] = $label;
+				}
+			}
+		}
+
+		return $attributes;
 	}
 
 
