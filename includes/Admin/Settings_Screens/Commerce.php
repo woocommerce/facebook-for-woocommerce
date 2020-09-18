@@ -72,7 +72,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	private function get_default_google_product_category_modal_message() {
 
-		return wp_kses_post( __( '<strong>Products</strong><script>alert(1);</script> and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
 	}
 
 
