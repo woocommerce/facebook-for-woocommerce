@@ -217,6 +217,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $response_data['id'], $updated_local_order->get_meta( Orders::REMOTE_ID_META_KEY ) );
 
 		$this->assertEquals( 'processing', $updated_local_order->get_status() );
+
+		$this->assertTrue( $this->order_has_note( $updated_local_order, sprintf( 'Order %s paid in %s', $response_data['id'], $response_data['channel'] ) ) );
 	}
 
 
