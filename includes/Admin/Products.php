@@ -129,6 +129,8 @@ class Products {
 				'data-nonce'       => wp_create_nonce( '' ),
 			],
 		] );
+
+		Framework\SV_WC_Helper::render_select2_ajax();
 	}
 
 
