@@ -144,6 +144,25 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether the current product has synced variations.
+		 *
+		 * @returns {boolean}
+		 */
+		function isSyncEnabledForVariableProduct() {
+
+			let $fields = $( '.js-variable-fb-sync-toggle' );
+
+			// fallback to the value at page load if the variation fields haven't been loaded
+			if ( 0 === $fields.length ) {
+				return !! facebook_for_woocommerce_products_admin.is_sync_enabled_for_product;
+			}
+
+			// returns true if any of the Facebook Sync settings is set to a value other than 'sync_disabled'
+			return !! $fields.map( ( i, element ) => $( element ).val() !== 'sync_disabled' ? element : null ).length
+		}
+
+
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
