@@ -124,6 +124,26 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Toggles (shows/hides) the visibility of Facebook Commerce setting fields.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {boolean} enabled whether the settings fields should be enabled or not
+		 * @param {jQuery} $container a common ancestor of all the elements that can be shown/hidden
+		 */
+		function toggleFacebookCommerceSettings( enabled, $container ) {
+
+			let $group = $container.find( '.wc-facebook-commerce-options-group' );
+
+			if ( enabled ) {
+				$group.show();
+			} else {
+				$group.hide();
+			}
+		}
+
+
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
