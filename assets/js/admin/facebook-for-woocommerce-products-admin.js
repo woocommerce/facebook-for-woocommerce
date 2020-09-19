@@ -145,6 +145,37 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Disables and changes the checked status of the Sell on Instagram setting field.
+		 *
+		 * Additionally, shows/hides messages explaining that the product is not ready for Commerce.
+		 *
+		 * @param {boolean} enabled whether the setting field should be enabled or not
+		 * @param {jQuery} $container a common ancestor of all the elements that need to modified
+		 */
+		function toggleFacebookSellOnInstagramSetting( enabled, $container ) {
+
+			$container.find( '#wc_facebook_commerce_enabled' )
+				.prop( 'checked', enabled ? $field.prop( 'original' ) : false )
+				.prop( 'disabled', ! enabled )
+				.trigger( 'change' );
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+
+				if ( enabled ) {
+					$container.find( '#variable-product-not-ready-notice' ).hide();
+				} else {
+					$container.find( '#variable-product-not-ready-notice' ).show();
+				}
+
+			} else {
+
+				// TODO: toggle product not ready message
+
+			}
+		}
+
+
+		/**
 		 * Determines whether the current product has synced variations.
 		 *
 		 * @returns {boolean}
