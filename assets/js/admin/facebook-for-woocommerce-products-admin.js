@@ -176,6 +176,31 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Determines whether product properties are configured using appropriate values for Commerce.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isProductReadyForCommerce() {
+
+			if ( ! isSyncEnabledForProduct() ) {
+				return false;
+			}
+
+			if ( ! isPriceDefinedForProduct() ) {
+				return false;
+			}
+
+			if ( ! isStockManagementEnabledForProduct() ) {
+				return false;
+			}
+
+			return true;
+		}
+
+
+		/**
 		 * Determines whether the product or one of its variations has Facebook Sync enabled.
 		 *
 		 * @since 2.1.0-dev.1
