@@ -176,7 +176,26 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Determines whether the product or one of its variations has Facebook Sync enabled.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isSyncEnabledForProduct() {
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+				return isSyncEnabledForVariableProduct();
+			}
+
+			return isSyncEnabledForSimpleProduct();
+		}
+
+
+		/**
 		 * Determines whether the current product has synced variations.
+		 *
+		 * @since 2.1.0-dev.1
 		 *
 		 * @returns {boolean}
 		 */
@@ -191,6 +210,19 @@ jQuery( document ).ready( function( $ ) {
 
 			// returns true if any of the Facebook Sync settings is set to a value other than 'sync_disabled'
 			return !! $fields.map( ( i, element ) => $( element ).val() !== 'sync_disabled' ? element : null ).length;
+		}
+
+
+		/**
+		 * Determines whether the product has Facebook Sync enabled.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isSyncEnabledForSimpleProduct() {
+
+			return $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled';
 		}
 
 
