@@ -223,7 +223,7 @@ jQuery( document ).ready( function( $ ) {
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
 
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
-			toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), facebookSettingsPanel );
+			toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), $( '#facebook_options' ) );
 
 			$( this ).prop( 'original', $( this ).val() );
 		} );
@@ -240,7 +240,7 @@ jQuery( document ).ready( function( $ ) {
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
 
-			toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), facebookSettingsPanel );
+			toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), $( '#facebook_options' ) );
 		} );
 
 		// show/hide Custom Image URL setting
