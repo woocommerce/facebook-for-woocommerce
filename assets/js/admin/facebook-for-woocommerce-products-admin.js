@@ -154,10 +154,16 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function toggleFacebookSellOnInstagramSetting( enabled, $container ) {
 
-			$container.find( '#wc_facebook_commerce_enabled' )
-				.prop( 'checked', enabled ? $field.prop( 'original' ) : false )
-				.prop( 'disabled', ! enabled )
-				.trigger( 'change' );
+			let $field = $container.find( '#wc_facebook_commerce_enabled' );
+			let checked = $field.prop( 'original' );
+
+			$field.prop( 'checked', enabled ? checked : false ).prop( 'disabled', ! enabled );
+
+			// trigger change to hide fields based on the new state
+			$field.trigger( 'change' );
+
+			// restore previously stored value so that we can later restore the field to the status it had before we disabled it here
+			$field.prop( 'original', checked );
 
 			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
 
