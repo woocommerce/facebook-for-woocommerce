@@ -312,8 +312,16 @@ jQuery( document ).ready( function( $ ) {
 
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
-			console.log( 'setting original to ', $( this ).prop( 'checked' ) );
-			$( this ).prop( 'original', $( this ).prop( 'checked' ) );
+
+			let checked = $( this ).prop( 'checked' );
+
+			if ( checked ) {
+				$( '.wc_facebook_commerce_fields' ).show();
+			} else {
+				$( '.wc_facebook_commerce_fields').hide();
+			}
+
+			$( this ).prop( 'original', checked );
 		} ).trigger( 'change' );
 
 		// toggle Facebook settings fields for simple products
