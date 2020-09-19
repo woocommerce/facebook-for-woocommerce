@@ -174,7 +174,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return array
 	 */
-	private static function get_available_product_attribute_names( \WC_Product $product ) {
+	public static function get_available_product_attribute_names( \WC_Product $product ) {
 
 		return array_map(
 			function( $attribute ) use ( $product ) {
