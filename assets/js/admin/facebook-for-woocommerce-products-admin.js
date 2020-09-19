@@ -149,6 +149,8 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * Additionally, shows/hides messages explaining that the product is not ready for Commerce.
 		 *
+		 * @since 2.1.0-dev.1
+		 *
 		 * @param {boolean} enabled whether the setting field should be enabled or not
 		 * @param {jQuery} $container a common ancestor of all the elements that need to modified
 		 */
