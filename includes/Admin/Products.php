@@ -16,6 +16,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
+
 /**
  * General handler for product admin functionality.
  *
@@ -54,6 +56,24 @@ class Products {
 	 */
 	public static function render_google_product_category_fields( \WC_Product $product ) {
 
+		$field = new Google_Product_Category_Field();
+
+		$field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID );
+
+		?>
+		<p class="form-field">
+			<label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>">
+				<?php esc_html_e( 'Google product category', 'facebook-for-woocommerce' ); ?>
+				<?php echo wc_help_tip( __( 'Choose the Google product category and (optionally) sub-categories associated with this product.', 'facebook-for-woocommerce' ) ); ?>
+			</label>
+			<input
+				id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+				type="hidden"
+				name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+				value="<?php echo esc_attr( Products_Handler::get_google_product_category_id( $product ) ); ?>"
+			/>
+		</p>
+		<?php
 	}
 
 
@@ -206,7 +226,7 @@ class Products {
 			<input type="checkbox" class="enable-if-sync-enabled"
 			       name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
 			       id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>" value="yes"
-			       checked="<?php echo \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
+			       checked="<?php echo Products_Handler::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
 		</p>
 
 		<div id="product-not-ready-notice" style="display:none;">
