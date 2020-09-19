@@ -1083,7 +1083,7 @@ class Admin {
 
 			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
 
-				<div class='options_group'>
+				<div class='wc-facebook-commerce-options-group options_group'>
 					<?php
 
 					$product = wc_get_product( $post );
