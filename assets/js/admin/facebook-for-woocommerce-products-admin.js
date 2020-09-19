@@ -401,9 +401,6 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
-
-		// TODO: store original value for the Sell on Instagram checkbox
-
 		// toggle Sell on Instagram checkbox on page load
 		// TODO: replace isSyncEnabledForVariableProduct() with a isProductReadyForCommerce() function that uses isSyncEnabledForVariableProduct() to determine whether the product is ready
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
