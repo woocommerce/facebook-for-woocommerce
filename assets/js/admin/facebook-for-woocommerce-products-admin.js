@@ -257,6 +257,34 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether the product has Manage Stock enabled and Stock quantity defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isStockManagementEnabledForProduct() {
+
+			// TODO: determine whether variations enabled for sync have stock management enabled {WV 2020-09-19}
+
+			return isStockManagementEnabledForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether a simple product has Manage Stock enabled and Stock quantity defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isStockManagementEnabledForSimpleProduct() {
+
+			return $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val().length;
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 			console.log( 'setting original to ', $( this ).prop( 'checked' ) );
