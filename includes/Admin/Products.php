@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Products as FacebookProducts;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
@@ -90,10 +91,11 @@ class Products {
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'color', 'colour', __( 'color', 'facebook-for-woocommerce' ) ] ),
 			'value'             => FacebookProducts::get_product_color_attribute( $product ),
 			'custom_attributes' => [
-				'data-allow_clear' => true,
-				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
-				'data-nonce'       => wp_create_nonce( '' ),
+				'data-allow_clear'  => true,
+				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
+				'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
+				'data-request_data' => $product->get_id(),
 			],
 		] );
 
@@ -107,10 +109,11 @@ class Products {
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'size', __( 'size', 'facebook-for-woocommerce' ) ] ),
 			'value'             => FacebookProducts::get_product_size_attribute( $product ),
 			'custom_attributes' => [
-				'data-allow_clear' => true,
-				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
-				'data-nonce'       => wp_create_nonce( '' ),
+				'data-allow_clear'  => true,
+				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
+				'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
+				'data-request_data' => $product->get_id(),
 			],
 		] );
 
@@ -124,10 +127,11 @@ class Products {
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'pattern', __( 'pattern', 'facebook-for-woocommerce' ) ] ),
 			'value'             => FacebookProducts::get_product_pattern_attribute( $product ),
 			'custom_attributes' => [
-				'data-allow_clear' => true,
-				'data-placeholder' => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-				'data-action'      => '', // TODO: define the value for the data-action and data-nonce attributes {WV 2020-09-18}
-				'data-nonce'       => wp_create_nonce( '' ),
+				'data-allow_clear'  => true,
+				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
+				'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
+				'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
+				'data-request_data' => $product->get_id(),
 			],
 		] );
 

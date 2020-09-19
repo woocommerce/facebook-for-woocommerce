@@ -22,6 +22,10 @@ defined( 'ABSPATH' ) or exit;
 class AJAX {
 
 
+	/** @var string the product attribute search AJAX action */
+	const ACTION_SEARCH_PRODUCT_ATTRIBUTES = 'wc_facebook_search_product_attributes';
+
+
 	/**
 	 * AJAX handler constructor.
 	 *
