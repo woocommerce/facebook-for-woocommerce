@@ -196,7 +196,7 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			// returns true if any of the Facebook Sync settings is set to a value other than 'sync_disabled'
-			return !! $fields.map( ( i, element ) => $( element ).val() !== 'sync_disabled' ? element : null ).length
+			return !! $fields.map( ( i, element ) => $( element ).val() !== 'sync_disabled' ? element : null ).length;
 		}
 
 
