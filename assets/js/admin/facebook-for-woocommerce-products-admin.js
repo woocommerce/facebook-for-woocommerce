@@ -150,7 +150,11 @@ jQuery( document ).ready( function( $ ) {
 
 		syncModeSelect.on( 'change', function() {
 
-			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
+			let syncEnabled = $( this ).val() !== 'sync_disabled';
+
+			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
+			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
+
 			syncModeSelect.prop( 'original', $( this ).val() );
 
 		} ).trigger( 'change' );
