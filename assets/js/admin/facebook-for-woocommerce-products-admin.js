@@ -165,18 +165,12 @@ jQuery( document ).ready( function( $ ) {
 			// restore previously stored value so that we can later restore the field to the status it had before we disabled it here
 			$field.prop( 'original', checked );
 
-			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+			$container.find( '#product-not-ready-notice, #variable-product-not-ready-notice' ).hide();
 
-				if ( enabled ) {
-					$container.find( '#variable-product-not-ready-notice' ).hide();
-				} else {
-					$container.find( '#variable-product-not-ready-notice' ).show();
-				}
-
-			} else {
-
-				// TODO: toggle product not ready message
-
+			if ( $( 'select#product-type' ).val().match( /variable/ ) && ! isSyncEnabledForVariableProduct() ) {
+				$container.find( '#variable-product-not-ready-notice' ).show();
+			} else if ( ! enabled ) {
+				$container.find( '#product-not-ready-notice' ).show();
 			}
 		}
 
