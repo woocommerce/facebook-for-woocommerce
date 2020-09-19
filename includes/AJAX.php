@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -45,6 +46,55 @@ class AJAX {
 
 		// get the current sync status
 		add_action( 'wp_ajax_wc_facebook_get_sync_status', [ $this, 'get_sync_status' ] );
+
+		// search a product's attributes for the given term
+		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, [ $this, 'admin_search_product_attributes' ] );
+	}
+
+
+	/**
+	 * Searches a product's attributes for the given term.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function admin_search_product_attributes() {
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_requested_value( 'security' ), self::ACTION_SEARCH_PRODUCT_ATTRIBUTES ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
+			}
+
+			$term = Framework\SV_WC_Helper::get_requested_value( 'term' );
+
+			if ( ! $term ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'A search term is required' );
+			}
+
+			$product = wc_get_product( (int) Framework\SV_WC_Helper::get_requested_value( 'request_data' ) );
+
+			if ( ! $product instanceof \WC_Product ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'A valid product ID is required' );
+			}
+
+			/** @var array $attributes */
+			$attributes = Admin\Products::get_available_product_attribute_names( $product );
+
+			// filter out any attributes whose slug or proper name don't at least partially match the search term
+			$results = array_filter( $attributes, function( $name, $slug ) use ( $term ) {
+
+				return false !== stripos( $name, $term ) || false !== stripos( $slug, $term );
+
+			}, ARRAY_FILTER_USE_BOTH );
+
+			wp_send_json( $results );
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			die();
+		}
 	}
 
 
