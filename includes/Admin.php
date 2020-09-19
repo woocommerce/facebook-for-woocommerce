@@ -1079,21 +1079,23 @@ class Admin {
 				?>
 			</div>
 
-			<div class='options_group'>
-				<?php
+			<?php $commerce_handler = facebook_for_woocommerce()->get_commerce_handler(); ?>
 
-				$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
 
-				if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) {
+				<div class='options_group'>
+					<?php
 
 					$product = wc_get_product( $post );
 
 					if ( $product instanceof \WC_Product ) {
 						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
 					}
-				}
-				?>
-			</div>
+
+					?>
+				</div>
+
+			<?php endif; ?>
 		</div>
 		<?php
 	}
