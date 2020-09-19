@@ -194,6 +194,12 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		// handle change events for the Sell on Instagram checkbox field
+		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
+			console.log( 'setting original to ', $( this ).prop( 'checked' ) );
+			$( this ).prop( 'original', $( this ).prop( 'checked' ) );
+		} ).trigger( 'change' );
+
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
