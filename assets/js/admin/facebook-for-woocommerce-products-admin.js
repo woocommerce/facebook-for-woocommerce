@@ -226,6 +226,37 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether the product has a Regular Price or Facebook Price defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isPriceDefinedForProduct() {
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+				// TODO: determine whether variations enabled for sync have a Regular Price or Facebook Price defined {WV 2020-09-19}
+				return true;
+			}
+
+			return isPriceDefinedForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether a simple product has a Regular Price or Facebook Price defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isPriceDefinedForSimpleProduct() {
+
+			return $( '#_regular_price' ).val().length || $( '#fb_product_price' ).val().length;
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 			console.log( 'setting original to ', $( this ).prop( 'checked' ) );
