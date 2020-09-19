@@ -230,6 +230,8 @@ jQuery( document ).ready( function( $ ) {
 				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
+
+			toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), facebookSettingsPanel );
 		} );
 
 		// show/hide Custom Image URL setting
@@ -251,6 +253,12 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
+
+		// TODO: store original value for the Sell on Instagram checkbox
+
+		// toggle Sell on Instagram checkbox on page load
+		// TODO: replace isSyncEnabledForVariableProduct() with a isProductReadyForCommerce() function that uses isSyncEnabledForVariableProduct() to determine whether the product is ready
+		toggleFacebookSellOnInstagramSetting( isSyncEnabledForVariableProduct(), facebookSettingsPanel );
 
 		let submitProductSave = false;
 
