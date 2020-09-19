@@ -165,7 +165,7 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $words a list of words used to filter attributes
+	 * @param array $words a list of words used to filter attributes
 	 * @return array
 	 */
 	private static function filter_available_product_attribute_names( \WC_Product $product, $words ) {
