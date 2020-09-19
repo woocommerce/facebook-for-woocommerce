@@ -108,6 +108,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/AJAX.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Product_Categories.php';
@@ -126,9 +127,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
 
 				if ( is_ajax() ) {
-
-					require_once __DIR__ . '/includes/AJAX.php';
-
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
