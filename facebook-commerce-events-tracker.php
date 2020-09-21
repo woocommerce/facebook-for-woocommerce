@@ -35,7 +35,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private $search_event;
 		/** @var array with events tracked */
 		private $tracked_events;
-		/**@var AAMSettings aam settings instance, used to filter personal information*/
+		/**@var AAMSettings aam settings instance, used to filter advanced matching fields*/
 		private $aam_settings;
 
 		public function __construct( $user_info, $aam_settings ) {
@@ -728,7 +728,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					$contents[] = $content;
 				}
 			}
-			//Personal idenfiable information is extracted from the order
+			// Advanced matching information is extracted from the order
 			$event_data = [
 				'event_name'  => $event_name,
 				'custom_data' => [
@@ -975,7 +975,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 		/**
-		 * Gets personal identifiable information from a given order
+		 * Gets advanced matching information from a given order
 		 *
 		 * @return array
 		 */

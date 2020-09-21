@@ -21,7 +21,7 @@ class AAMSettings {
 	/** @var bool is enable automatic matching enabled for this pixel */
 	private $enable_automatic_matching;
 
-	/**,@var string[] personal identifiable information to extract when $enable_automatic_matching is true*/
+	/** @var string[] advanced matching fields to extract when $enable_automatic_matching is true*/
 	private $enabled_automatic_matching_fields;
 
 	const SIGNALS_JSON_CONFIG_PATH = 'signals/config/json';
