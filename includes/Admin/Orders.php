@@ -122,7 +122,7 @@ class Orders {
 			);
 
 			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending', [
-				'dismissible'  => false,
+				'dismissible'  => true,
 				'notice_class' => 'notice-info',
 			] );
 		}
@@ -136,7 +136,7 @@ class Orders {
 			);
 
 			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_facebook_bulk_order_update', [
-				'dismissible'  => false,
+				'dismissible'  => true,
 				'notice_class' => 'notice-info',
 			] );
 
