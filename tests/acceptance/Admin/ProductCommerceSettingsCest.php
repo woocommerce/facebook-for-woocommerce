@@ -98,4 +98,47 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_enabled( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is enabled' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function see_commerce_enabled_field_is_enabled( AcceptanceTester $I ) {
+
+		$I->expect( 'Commerce Enabled field is enabled (but not necessarily checked)' );
+
+		$I->scrollTo( '.fb_commerce_tab_options', null, -200 );
+		$I->click( '.fb_commerce_tab_options' );
+		$I->assertFalse( (bool) $I->executeJS( "return jQuery( '#wc_facebook_commerce_enabled' ).prop( 'disabled' )" ) );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function dont_see_product_not_ready_notice( AcceptanceTester $I ) {
+
+		$I->expect( 'The product not ready notice is not shown' );
+
+		$I->dontSeeElement( '#product-not-ready-notice' );
+	}
+
+
 }
