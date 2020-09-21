@@ -121,7 +121,7 @@ class Orders {
 				'<strong>', '</strong>'
 			);
 
-			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending', [
+			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending_' . $order->get_id(), [
 				'dismissible'  => true,
 				'notice_class' => 'notice-info',
 			] );
