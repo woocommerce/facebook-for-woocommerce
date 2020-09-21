@@ -114,6 +114,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'edit-product_cat',
+			'shop_order',
 		];
 
 		if ( isset( $current_screen->id ) ) {
@@ -1078,21 +1079,23 @@ class Admin {
 				?>
 			</div>
 
-			<div class='options_group'>
-				<?php
+			<?php $commerce_handler = facebook_for_woocommerce()->get_commerce_handler(); ?>
 
-				$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
+			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
 
-				if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) {
+				<div class='wc-facebook-commerce-options-group options_group'>
+					<?php
 
 					$product = wc_get_product( $post );
 
 					if ( $product instanceof \WC_Product ) {
 						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
 					}
-				}
-				?>
-			</div>
+
+					?>
+				</div>
+
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -1304,6 +1307,7 @@ class Admin {
 			'edit-product',
 			'woocommerce_page_wc-facebook',
 			'edit-product_cat',
+			'shop_order',
 		];
 
 		// bail if not on the products, product edit, or settings screen

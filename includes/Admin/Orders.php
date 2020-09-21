@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -68,7 +69,29 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function enqueue_assets() {
+		global $post;
 
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order = wc_get_order( $post );
+
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+
+		wp_enqueue_script( 'wc-facebook-commerce-orders', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/orders.min.js', [
+			'jquery',
+			'wc-backbone-modal',
+			'facebook-for-woocommerce-modal',
+		], \WC_Facebookcommerce::VERSION );
+
+		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
+			'order_id'          => $order->get_id(),
+			'is_commerce_order' => Commerce\Orders::is_commerce_order( $order ),
+			'shipment_tracking' => $order->get_meta( '_wc_shipment_tracking_items', true ),
+		] );
 	}
 
 
