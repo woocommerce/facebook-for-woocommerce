@@ -892,6 +892,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $sync_enabled ) {
 
+			Admin\Products::save_commerce_fields( $product );
+
 			switch ( $product->get_type() ) {
 
 				case 'simple':
