@@ -81,35 +81,32 @@ class FBCategories {
 	public function get_attributes_for_category($category_id, $product){
 		$this->ensure_data_is_loaded();
 		if(!$this->is_category($category_id)) {
-			return [];
+			return ['primary' => [], 'secondary' => []];
 		}
 		$all_attributes = $this->attributes_data[$category_id]['attributes'];
 
-		$primary_attributes = $this->extract_attributes_from_keys(
-			array_filter($all_attribtues, function($attr) { return $attr['recommended']; }),
-			$product,
-		);
-		$secondary_attributes = $this->extract_attributes_from_keys(
-			array_filter($all_attribtues, function($attr) { return !$attr['recommended']; }),
+		$primary_attributes = $this->attributes_with_values(
+			array_filter($all_attributes, function($attr) { return $attr['recommended']; }),
 			$product,
 		);
 
-		return ['primary' => $primary_attributes, 'secondary' => $secondary_attributes];
+		$secondary_attributes = $this->attributes_with_values(
+			array_filter($all_attributes, function($attr) { return !$attr['recommended']; }),
+			$product,
+		);
+
+		// Use array values to make sure that the json encoding treats them
+		// as a 0 indexed arrays rather than maps with numeric indeces.
+		return ['primary' => array_values($primary_attributes), 'secondary' => array_values($secondary_attributes)];
 	}
 
-	private function extract_attributes_from_keys($keys, $product){
-	 	$attributes = array_map(function($key) use ($attributes_data){
-			return $attributes_data[$key];
-		}, $keys);
-
-		// $logger = new \WC_logger();
-		// $logger->add('max-test', 'HELLO MAX, ABOUT TO FILTER');
+	private function attributes_with_values($attributes, $product){
 
 		$attributes = array_map(function($attribute) use ($product) {
-			// Clean out the data we don't need as it makes the payload
-			// unecessarily large
+			$attribute['name'] = ucwords(str_replace('_', ' ', $attribute['key']));
+			// Clean out the data we don't need
 			$attribute = array_filter($attribute, function($key) {
-				return $key !== 'secondary_categories' && $key != 'primary_categories';
+				return $key !== 'fieldname';
 			}, ARRAY_FILTER_USE_KEY);
 
 			$attribute['value'] = $product->get_fb_enhanced_attribute($attribute['key']);
