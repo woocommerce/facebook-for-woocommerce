@@ -1,0 +1,14 @@
+.term-wc_facebook_google_product_category_id-wrap #wc-facebook-google-product-category-fields {
+	width: 50%;
+}
+
+.term-wc_facebook_google_product_category_id-wrap .wc-facebook-google-product-category-field select {
+	float: none;
+	width: 100%;
+	max-width: none;
+}
+
+.term-wc_facebook_google_product_category_id-wrap #wc-facebook-google-product-category-fields .select2-container {
+	float: none;
+	width: 100% !important;
+}
