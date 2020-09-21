@@ -131,12 +131,13 @@ class FBCategories {
 		if(empty($attributes)){
 			return null;
 		}
-		return $attributes[0];
+		return array_shift($attributes);
 	}
 
 	public function is_valid_value_for_attribute($category_id, $attribute_key, $value) {
 		$this->ensure_data_is_loaded();
 		$attribute = $this->get_attribute($category_id, $attribute_key);
+
 		if(is_null($attribute)) {
 			return false;
 		}
