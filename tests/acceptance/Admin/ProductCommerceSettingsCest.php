@@ -2,7 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 
-class ProductSyncSettingCest {
+class ProductCommerceSettingsCest {
 
 
 	/** @var \WC_Product|null product object created for the test */
