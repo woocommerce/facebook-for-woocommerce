@@ -11,7 +11,6 @@
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use SkyVerge\WooCommerce\Facebook\AJAX;
-use SkyVerge\WooCommerce\Facebook\Products as FacebookProducts;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
@@ -98,7 +97,7 @@ class Products {
 				'female' => __( 'Female', 'facebook-for-woocommerce' ),
 				'male'   => __( 'Male', 'facebook-for-woocommerce' ),
 			],
-			'value'       => FacebookProducts::get_product_gender( $product ),
+			'value'       => Products_Handler::get_product_gender( $product ),
 		] );
 
 		woocommerce_wp_select( [
@@ -109,7 +108,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'color', 'colour', __( 'color', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_color_attribute( $product ),
+			'value'             => Products_Handler::get_product_color_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -127,7 +126,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'size', __( 'size', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_size_attribute( $product ),
+			'value'             => Products_Handler::get_product_size_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -145,7 +144,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'pattern', __( 'pattern', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_pattern_attribute( $product ),
+			'value'             => Products_Handler::get_product_pattern_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -200,7 +199,7 @@ class Products {
 			function( $attribute ) use ( $product ) {
 				return wc_attribute_label( $attribute->get_name(), $product );
 			},
-			FacebookProducts::get_available_product_attributes( $product )
+			Products_Handler::get_available_product_attributes( $product )
 		);
 	}
 
