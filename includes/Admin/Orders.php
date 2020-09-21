@@ -129,7 +129,16 @@ class Orders {
 
 		if ( $bulk_order_update_transient = get_transient( 'wc_facebook_bulk_order_update' ) ) {
 
-			// TODO: add notice {AC 2020-09-21}
+			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> */
+			$message = sprintf(
+				__( '%1$sHeads up!%2$s Instagram order statuses can’t be updated in bulk. Please update Instagram orders individually so you can provide order details required by Instagram.', 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>'
+			);
+
+			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_facebook_bulk_order_update', [
+				'dismissible'  => false,
+				'notice_class' => 'notice-info',
+			] );
 
 			// TODO: delete the transient
 		}
