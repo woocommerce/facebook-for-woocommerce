@@ -265,6 +265,19 @@ class Products {
 	 */
 	public static function save_commerce_fields( \WC_Product $product ) {
 
+		$commerce_enabled           = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
+		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
+		$gender                     = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GENDER ) );
+		$color_attribute            = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COLOR ) );
+		$size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
+		$pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
+
+		FacebookProducts::update_commerce_enabled_for_product( $product, $commerce_enabled );
+		FacebookProducts::update_google_product_category_id( $product, $google_product_category_id );
+		FacebookProducts::update_product_gender( $product, $gender );
+		FacebookProducts::update_product_color_attribute( $product, $color_attribute );
+		FacebookProducts::update_product_size_attribute( $product, $size_attribute );
+		FacebookProducts::update_product_size_attribute( $product, $pattern_attribute );
 	}
 
 
