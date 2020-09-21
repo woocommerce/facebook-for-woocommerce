@@ -174,11 +174,12 @@ class Orders {
 			 * Filters the flag used to determine whether the email is enabled.
 			 *
 			 * @param bool $is_enabled whether the email is enabled
+			 * @param \WC_Order $order order object
 			 * @param Orders $this admin orders instance
 			 * @since 2.1.0-dev.1
 			 *
 			 */
-			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $this );
+			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $order, $this );
 		}
 
 		return $is_enabled;
