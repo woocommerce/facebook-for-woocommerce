@@ -127,7 +127,7 @@ class Orders {
 			] );
 		}
 
-		if ( $bulk_order_update_transient = get_transient( 'wc_facebook_bulk_order_update' ) ) {
+		if ( get_transient( 'wc_facebook_bulk_order_update' ) ) {
 
 			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> */
 			$message = sprintf(
@@ -140,7 +140,7 @@ class Orders {
 				'notice_class' => 'notice-info',
 			] );
 
-			// TODO: delete the transient
+			delete_transient( 'wc_facebook_bulk_order_update' );
 		}
 	}
 
