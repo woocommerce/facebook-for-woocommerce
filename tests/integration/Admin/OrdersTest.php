@@ -51,28 +51,49 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see Admin\Orders::maybe_stop_order_email()
 	 *
-	 * @throws WC_Data_Exception
+	 * @param bool $is_enabled
+	 * @param \WC_Order|string|null $order
+	 * @param bool $expected
+	 *
+	 * @dataProvider provider_maybe_stop_order_email
 	 */
-	public function test_maybe_stop_order_email() {
+	public function test_maybe_stop_order_email( $is_enabled, $order, $expected ) {
 
 		$orders_handler = $this->get_orders_handler();
 
-		$this->assertFalse( $orders_handler->maybe_stop_order_email( false, null ) );
-		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, null ) );
-		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, 'a non \WC_Order object' ) );
-
-		$order = new \WC_Order();
-
-		$this->assertTrue( $orders_handler->maybe_stop_order_email( true, $order ) );
-
-		$order->set_created_via( 'instagram' );
-
-		$this->assertFalse( $orders_handler->maybe_stop_order_email( true, $order ) );
+		$this->assertEquals( $expected, $orders_handler->maybe_stop_order_email( $is_enabled, $order ) );
 	}
 
 
-	/** @see Admin\Orders::maybe_stop_order_email() */
-	public function test_maybe_stop_order_email_filter() {
+	/**
+	 * @see test_maybe_stop_order_email
+	 *
+	 * @throws WC_Data_Exception
+	 */
+	public function provider_maybe_stop_order_email() {
+
+		$commerce_order = new \WC_Order();
+		$commerce_order->set_created_via( 'instagram' );
+
+		return [
+			[ false, null,                     false ],
+			[ true,  null,                     true ],
+			[ true,  'a non \WC_Order object', true ],
+			[ true,  new \WC_Order(),          true ],
+			[ true,  $commerce_order,          false ],
+		];
+	}
+
+
+	/**
+	 * @see Admin\Orders::maybe_stop_order_email()
+	 *
+	 * @param bool $is_enabled
+	 * @param bool $expected
+	 *
+	 * @dataProvider provider_maybe_stop_order_email_filter
+	 */
+	public function test_maybe_stop_order_email_filter( $is_enabled, $expected ) {
 
 		add_filter( 'wc_facebook_commerce_send_woocommerce_emails', function( $is_enabled ) {
 
@@ -81,8 +102,17 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$orders_handler = $this->get_orders_handler();
 
-		$this->assertTrue( $orders_handler->maybe_stop_order_email( false, null ) );
-		$this->assertFalse( $orders_handler->maybe_stop_order_email( true, null ) );
+		$this->assertEquals( $expected, $orders_handler->maybe_stop_order_email( $is_enabled, null ) );
+	}
+
+
+	/** @see test_maybe_stop_order_email_filter */
+	public function provider_maybe_stop_order_email_filter() {
+
+		return [
+			[ false, true ],
+			[ true,  false ],
+		];
 	}
 
 
