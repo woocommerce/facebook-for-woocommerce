@@ -58,7 +58,7 @@ class ProductCommerceSettingsCest {
 
 		$I->wantTo( 'Test that the Commerce fields are visible' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->see( 'Sell on Instagram', '.form-field' );
 	}
@@ -75,7 +75,7 @@ class ProductCommerceSettingsCest {
 
 		$I->wantTo( 'Test that the Commerce fields are not visible' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->dontSee( 'Sell on Instagram', '.form-field' );
 	}
@@ -90,7 +90,7 @@ class ProductCommerceSettingsCest {
 
 		$I->wantTo( 'Test that the Commerce fields are hidden when Facebook sync is disabled' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 
@@ -244,7 +244,7 @@ class ProductCommerceSettingsCest {
 
 		$I->amGoingTo( 'Enable Facebook sync for a variation' );
 
-		$I->click( 'Variations', '.variations_tab' );
+		$I->click( '.variations_tab' );
 		$index = $I->openVariationMetabox( $product_variation );
 
 		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}" );
