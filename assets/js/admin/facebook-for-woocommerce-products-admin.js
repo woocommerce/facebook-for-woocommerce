@@ -312,6 +312,31 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether we should ask the user to select a Google Product Category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function shouldShowMissingGoogleProductCategoryAlert() {
+
+			if ( ! $( '#wc_facebook_commerce_enabled' ).prop( 'checked' ) ) {
+				return false;
+			}
+
+			if ( ! isProductReadyForCommerce() ) {
+				return false;
+			}
+
+			let selectedCategories = $( '.wc_facebook_commerce_fields .wc-facebook-google-product-category-select' ).map( ( i, element ) => {
+				return $( element ).val() ? $( element ).val() : null;
+			} );
+
+			return selectedCategories.length < 2;
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 
