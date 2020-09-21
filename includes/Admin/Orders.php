@@ -159,17 +159,27 @@ class Orders {
 	 */
 	public function maybe_stop_order_email( $is_enabled, $order ) {
 
-		$is_enabled = $is_enabled && ! ( $order instanceof \WC_Order && \SkyVerge\WooCommerce\Facebook\Commerce\Orders::is_commerce_order( $order ) );
+		// will decide whether to allow $is_enabled to be filtered
+		$is_previously_enabled = $is_enabled;
 
-		/**
-		 * Filters the flag used to determine whether the email is enabled.
-		 *
-		 * @since 2.1.0-dev.1
-		 *
-		 * @param bool $is_enabled whether the email is enabled
-		 * @param Orders $this admin orders instance
-		 */
-		$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $this );
+		// checks whether or not the order is a Commerce order
+		$is_commerce_order = $order instanceof \WC_Order && \SkyVerge\WooCommerce\Facebook\Commerce\Orders::is_commerce_order( $order );
+
+		// decides whether to disable or to keep emails enabled
+		$is_enabled = $is_enabled && ! $is_commerce_order;
+
+		if ( $is_previously_enabled && $is_commerce_order ) {
+
+			/**
+			 * Filters the flag used to determine whether the email is enabled.
+			 *
+			 * @param bool $is_enabled whether the email is enabled
+			 * @param Orders $this admin orders instance
+			 * @since 2.1.0-dev.1
+			 *
+			 */
+			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $this );
+		}
 
 		return $is_enabled;
 	}
