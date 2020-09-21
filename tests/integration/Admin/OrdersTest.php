@@ -90,10 +90,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @param bool $is_enabled
 	 * @param bool $expected
+	 * @param \WC_Order|string|null $order
 	 *
 	 * @dataProvider provider_maybe_stop_order_email_filter
 	 */
-	public function test_maybe_stop_order_email_filter( $is_enabled, $expected ) {
+	public function test_maybe_stop_order_email_filter( $is_enabled, $order, $expected ) {
 
 		add_filter( 'wc_facebook_commerce_send_woocommerce_emails', function( $is_enabled ) {
 
@@ -102,16 +103,22 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$orders_handler = $this->get_orders_handler();
 
-		$this->assertEquals( $expected, $orders_handler->maybe_stop_order_email( $is_enabled, null ) );
+		$this->assertEquals( $expected, $orders_handler->maybe_stop_order_email( $is_enabled, $order ) );
 	}
 
 
 	/** @see test_maybe_stop_order_email_filter */
 	public function provider_maybe_stop_order_email_filter() {
 
+		$commerce_order = new \WC_Order();
+		$commerce_order->set_created_via( 'instagram' );
+
 		return [
-			[ false, true ],
-			[ true,  false ],
+			[ false, null,                     false ],
+			[ true,  null,                     true ],
+			[ true,  'a non \WC_Order object', true ],
+			[ true,  new \WC_Order(),          true ],
+			[ true,  $commerce_order,          true ],
 		];
 	}
 
