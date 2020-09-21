@@ -184,4 +184,78 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_stock_management_is_disabled( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( false );
+		$this->sync_enabled_product->set_stock_quantity( null );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled when Stock Management is disabled' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'This product does not meet the requirements to sell on Instagram.', '#product-not-ready-notice' );
+
+		$I->amGoingTo( 'Enable Stock Management' );
+
+		$I->click( '.inventory_options' );
+		$I->checkOption( '#_manage_stock' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_no_variations_have_sync_enabled( AcceptanceTester $I ) {
+
+		$product_objects = $I->haveVariableProductInDatabase();
+
+		/** @var \WC_Product_Variable */
+		$variable_product = $product_objects['product'];
+
+		/** @var \WC_Product_Variation */
+		$product_variation = $product_objects['variations']['product_variation'];
+
+		$variable_product->set_manage_stock( true );
+		$variable_product->save();
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $variable_product ] );
+
+		$I->amEditingPostWithId( $variable_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled if no variations have sync enabled' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'To sell this product on Instagram, at least one variation must be synced to Facebook.', '#variable-product-not-ready-notice' );
+
+		$I->amGoingTo( 'Enable Facebook sync for a variation' );
+
+		$I->click( 'Variations', '.variations_tab' );
+		$index = $I->openVariationMetabox( $product_variation );
+
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}" );
+		$I->selectOption( "#variable_facebook_sync_mode{$index}", 'sync_and_show' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+
+		$I->expect( 'The product not ready notice is not shown' );
+
+		$I->dontSeeElement( '#variable-product-not-ready-notice' );
+	}
+
+
 }
