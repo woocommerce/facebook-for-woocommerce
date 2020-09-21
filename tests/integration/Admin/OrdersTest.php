@@ -117,8 +117,11 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 			[ false, null,                     false ],
 			[ true,  null,                     true ],
 			[ true,  'a non \WC_Order object', true ],
+			[ false, 'a non \WC_Order object', false ],
 			[ true,  new \WC_Order(),          true ],
+			[ false, new \WC_Order(),          false ],
 			[ true,  $commerce_order,          true ],
+			[ false, $commerce_order,          false ],
 		];
 	}
 
