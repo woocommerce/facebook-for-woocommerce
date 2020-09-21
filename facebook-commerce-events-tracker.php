@@ -340,12 +340,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_name'     => $product->get_title(),
 					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type'     => $content_type,
-					'contents'         => [
+					'contents'         => wp_json_encode(
 						[
-							'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-							'quantity' => 1,
+							[
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => 1,
+							]
 						]
-					],
+					),
 					'content_category' => $categories['name'],
 					'value'            => $product->get_price(),
 					'currency'         => get_woocommerce_currency(),
