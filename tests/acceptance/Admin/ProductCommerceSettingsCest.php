@@ -141,4 +141,47 @@ class ProductSyncSettingCest {
 	}
 
 
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_price_is_not_set( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( null );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled when no regular price is set' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'This product does not meet the requirements to sell on Instagram.', '#product-not-ready-notice' );
+
+		$I->amGoingTo( 'Set the regular price to $10' );
+
+		$I->click( '.general_options' );
+		$I->fillField( '#_regular_price', 10 );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function see_commerce_enabled_field_is_disabled( AcceptanceTester $I ) {
+
+		$I->expect( 'Commerce Enabled field is not checked and is disabled' );
+
+		$I->click( '.fb_commerce_tab_options' );
+		$I->dontSeeCheckboxIsChecked( '#wc_facebook_commerce_enabled' );
+		$I->assertTrue( (bool) $I->executeJS( "return jQuery( '#wc_facebook_commerce_enabled' ).prop( 'disabled' )" ) );
+	}
+
+
 }
