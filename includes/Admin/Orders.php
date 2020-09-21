@@ -103,7 +103,25 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function add_notices() {
+		global $post;
 
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order = wc_get_order( $post );
+
+		if ( Commerce\Orders::is_order_pending( $order ) ) {
+
+			// TODO: add notice {AC 2020-09-21}
+		}
+
+		if ( $bulk_order_update_transient = get_transient( 'wc_facebook_bulk_order_update' ) ) {
+
+			// TODO: add notice {AC 2020-09-21}
+
+			// TODO: delete the transient
+		}
 	}
 
 
