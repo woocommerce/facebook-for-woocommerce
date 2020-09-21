@@ -707,12 +707,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				return $product_data;
 			}
 			$enhanced_data = array();
-			$enhanced_data['fb_product_category'] = $fb_category_id;
+			$enhanced_data['google_product_category'] = $fb_category_id;
 
 			$attributes = $category_handler->get_attributes_for_category($fb_category_id, $this);
 			$all_attributes = array_merge($attributes['primary'], $attributes['secondary']);
 			foreach($all_attributes as $attribute){
 				$value = $attribute['value'];
+
 				if(!is_null($value) &&
 					strlen($value) > 0 &&
 					$category_handler->is_valid_value_for_attribute($fb_category_id, $attribute['key'], $value)
