@@ -308,6 +308,8 @@ class Orders {
 	 */
 	public function is_order_editable( $maybe_editable, \WC_Order $order ) {
 
+		$maybe_editable = $maybe_editable && ! Commerce\Orders::is_order_pending( $order );
+
 		return $maybe_editable;
 	}
 
