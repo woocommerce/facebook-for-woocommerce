@@ -16,9 +16,6 @@ use SkyVerge\WooCommerce\Facebook\Events\Normalizer;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
-	if(!class_exists(Normalizer::class)){
-		include_once 'Events/Normalizer.php';
-	}
 	/**
 	 * FB Graph API helper functions
 	 */

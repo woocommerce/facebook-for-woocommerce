@@ -413,9 +413,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		add_action( 'wc_facebook_generate_product_catalog_feed', [ $this, 'handle_generate_product_catalog_feed' ] );
 
 		if ( $this->get_facebook_pixel_id() ) {
-			if( ! class_exists(AAMSettings::class) ){
-				include_once 'includes/Events/AAMSettings.php';
-			}
 			$aam_settings = AAMSettings::build_from_pixel_id( $this->get_facebook_pixel_id() );
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $aam_settings );
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );

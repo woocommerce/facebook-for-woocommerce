@@ -21,10 +21,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		include_once 'facebook-commerce-pixel-event.php';
 	}
 
-	if ( ! class_exists( 'AAMSettings' ) ) {
-		include_once 'includes/Events/AAMSettings.php';
-	}
-
 	class WC_Facebookcommerce_EventsTracker {
 		private $pixel;
 		private static $isEnabled = true;

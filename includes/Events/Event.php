@@ -12,10 +12,6 @@ namespace SkyVerge\WooCommerce\Facebook\Events;
 
 defined( 'ABSPATH' ) or exit;
 
-if ( ! class_exists( Normalizer::class ) ) {
-	require_once 'Normalizer.php';
-}
-
 /**
  * Event object.
  *
