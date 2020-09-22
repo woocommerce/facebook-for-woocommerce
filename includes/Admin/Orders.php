@@ -93,9 +93,15 @@ class Orders {
 		], \WC_Facebookcommerce::VERSION );
 
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
-			'order_id'          => $order->get_id(),
-			'is_commerce_order' => Commerce\Orders::is_commerce_order( $order ),
-			'shipment_tracking' => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'order_id'               => $order->get_id(),
+			'is_commerce_order'      => Commerce\Orders::is_commerce_order( $order ),
+			'shipment_tracking'      => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'complete_modal_message' => $this->get_complete_modal_message(),
+			'complete_modal_buttons' => $this->get_complete_modal_buttons(),
+			'refund_modal_message'   => $this->get_refund_modal_message(),
+			'refund_modal_buttons'   => $this->get_refund_modal_buttons(),
+			'cancel_modal_message'   => $this->get_cancel_modal_message(),
+			'cancel_modal_buttons'   => $this->get_cancel_modal_buttons(),
 		] );
 	}
 
