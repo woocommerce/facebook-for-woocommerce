@@ -121,15 +121,14 @@ class Orders {
 		facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
 			_n(
 				/* translators: %s - order ID */
-			'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+				'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
 				/* translators: %s - order IDs list */
-			'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+				'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
 				count( $commerce_orders ),
-			'facebook-for-woocommerce'
+				'facebook-for-woocommerce'
 			),
 			implode( ', ', $commerce_orders )
-			)
-		);
+		) );
 
 		delete_transient( $this->bulk_order_update_transient );
 
