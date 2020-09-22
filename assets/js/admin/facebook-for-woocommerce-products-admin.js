@@ -312,6 +312,49 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether we should ask the user to select a Google Product Category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function shouldShowMissingGoogleProductCategoryAlert() {
+
+			if ( ! $( '#wc_facebook_commerce_enabled' ).prop( 'checked' ) ) {
+				return false;
+			}
+
+			if ( ! isProductReadyForCommerce() ) {
+				return false;
+			}
+
+			let selectedCategories = $( '.wc_facebook_commerce_fields .wc-facebook-google-product-category-select' ).map( ( i, element ) => {
+				return $( element ).val() ? $( element ).val() : null;
+			} );
+
+			return selectedCategories.length < 2;
+		}
+
+
+		/**
+		 * Shows an alert asking the user to select a Google product category and sub-category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery.Event} event a jQuery Event object for the submit event
+		 * @returns {boolean}
+		 */
+		function showMissingGoogleProductCategoryAlert( event ) {
+
+			event.preventDefault();
+
+			alert( facebook_for_woocommerce_products_admin.i18n.missing_google_product_category_message );
+
+			return false;
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 
@@ -408,6 +451,10 @@ jQuery( document ).ready( function( $ ) {
 		let submitProductSave = false;
 
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
+
+			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
+				return showMissingGoogleProductCategoryAlert( e );
+			}
 
 			if ( ! submitProductSave ) {
 				e.preventDefault();
