@@ -270,17 +270,17 @@ class Products {
 		$size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
 		$pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
 
-		FacebookProducts::update_commerce_enabled_for_product( $product, $commerce_enabled );
+		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
 
-		if ( $google_product_category_id !== FacebookProducts::get_google_product_category_id( $product ) ) {
+		if ( $google_product_category_id !== Products_Handler::get_google_product_category_id( $product ) ) {
 
-			FacebookProducts::update_google_product_category_id( $product, $google_product_category_id );
+			Products_Handler::update_google_product_category_id( $product, $google_product_category_id );
 		}
 
-		FacebookProducts::update_product_gender( $product, $gender );
-		FacebookProducts::update_product_color_attribute( $product, $color_attribute );
-		FacebookProducts::update_product_size_attribute( $product, $size_attribute );
-		FacebookProducts::update_product_pattern_attribute( $product, $pattern_attribute );
+		Products_Handler::update_product_gender( $product, $gender );
+		Products_Handler::update_product_color_attribute( $product, $color_attribute );
+		Products_Handler::update_product_size_attribute( $product, $size_attribute );
+		Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
 	}
 
 
