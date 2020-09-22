@@ -766,10 +766,10 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			) . ',' .
 			'new' . ',' .
 			$product_data['visibility'] . ',' .
-			$product_data['gender'] . ',' .
-			$product_data['color'] . ',' .
-			$product_data['size'] . ',' .
-			$product_data['pattern'] . ',' .
+			static::get_value_from_product_data( $product_data, 'gender' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'color' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'size' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'pattern' ) . ',' .
 			$google_product_category . ',' .
 			$product_data['default_product'] . ',' .
 			$product_data['variant'] . PHP_EOL;
