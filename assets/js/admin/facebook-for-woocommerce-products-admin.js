@@ -337,6 +337,24 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Shows an alert asking the user to select a Google product category and sub-category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery.Event} event a jQuery Event object for the submit event
+		 * @returns {boolean}
+		 */
+		function showMissingGoogleProductCategoryAlert( event ) {
+
+			event.preventDefault();
+
+			alert( facebook_for_woocommerce_products_admin.i18n.missing_google_product_category_message );
+
+			return false;
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 
