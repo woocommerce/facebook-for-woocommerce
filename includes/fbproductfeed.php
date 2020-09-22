@@ -860,11 +860,12 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * @param array $product_data the product data retrieved from a Woo product passed by reference
 		 * @param string $index the data index
+		 * @param mixed $return_if_not_set the value to be returned if product data has no index (default to '')
 		 * @return mixed|string the data value or an empty string
 		 */
-		private static function get_value_from_product_data( &$product_data, $index ) {
+		private static function get_value_from_product_data( &$product_data, $index, $return_if_not_set = '' ) {
 
-			return isset( $product_data[ $index ] ) ? $product_data[ $index ] : '';
+			return isset( $product_data[ $index ] ) ? $product_data[ $index ] : $return_if_not_set;
 		}
 
 
