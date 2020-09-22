@@ -54,8 +54,6 @@ class Orders {
 
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
-		add_action( 'admin_footer', [ $this, 'render_modal_templates' ] );
-
 		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
 
 		add_action( 'woocommerce_refund_created', [ $this, 'handle_refund' ] );
@@ -165,18 +163,6 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function maybe_remove_order_metaboxes() {
-
-	}
-
-
-	/**
-	 * Renders the Complete, Refund, & Cancel modals templates markup.
-	 *
-	 * @internal
-	 *
-	 * @since 2.1.0-dev.1
-	 */
-	public function render_modal_templates() {
 
 	}
 

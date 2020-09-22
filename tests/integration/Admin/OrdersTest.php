@@ -39,8 +39,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for maybe_remove_order_metaboxes()
 
-	// TODO: add test for render_modal_templates()
-
 	// TODO: add test for render_refund_reason_field()
 
 	// TODO: add test for handle_refund()
