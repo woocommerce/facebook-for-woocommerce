@@ -2,7 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 
-class ProductSyncSettingCest {
+class ProductCommerceSettingsCest {
 
 
 	/** @var \WC_Product|null product object created for the test */
@@ -58,7 +58,7 @@ class ProductSyncSettingCest {
 
 		$I->wantTo( 'Test that the Commerce fields are visible' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->see( 'Sell on Instagram', '.form-field' );
 	}
@@ -75,7 +75,7 @@ class ProductSyncSettingCest {
 
 		$I->wantTo( 'Test that the Commerce fields are not visible' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->dontSee( 'Sell on Instagram', '.form-field' );
 	}
@@ -90,11 +90,254 @@ class ProductSyncSettingCest {
 
 		$I->wantTo( 'Test that the Commerce fields are hidden when Facebook sync is disabled' );
 
-		$I->click( 'Facebook', '.fb_commerce_tab_options' );
+		$I->click( '.fb_commerce_tab_options' );
 
 		$I->selectOption( '#wc_facebook_sync_mode', 'Do not sync' );
 
 		$I->dontSee( 'Sell on Instagram', '.form-field' );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_enabled( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is enabled' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function see_commerce_enabled_field_is_enabled( AcceptanceTester $I ) {
+
+		$I->expect( 'Commerce Enabled field is enabled (but not necessarily checked)' );
+
+		$I->scrollTo( '.fb_commerce_tab_options', null, -200 );
+		$I->click( '.fb_commerce_tab_options' );
+		$I->assertFalse( (bool) $I->executeJS( "return jQuery( '#wc_facebook_commerce_enabled' ).prop( 'disabled' )" ) );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function dont_see_product_not_ready_notice( AcceptanceTester $I ) {
+
+		$I->expect( 'The product not ready notice is not shown' );
+
+		$I->dontSeeElement( '#product-not-ready-notice' );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_price_is_not_set( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( null );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled when no regular price is set' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'This product does not meet the requirements to sell on Instagram.', '#product-not-ready-notice' );
+
+		$I->amGoingTo( 'Set the regular price to $10' );
+
+		$I->click( '.general_options' );
+		$I->fillField( '#_regular_price', 10 );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	private function see_commerce_enabled_field_is_disabled( AcceptanceTester $I ) {
+
+		$I->expect( 'Commerce Enabled field is not checked and is disabled' );
+
+		$I->click( '.fb_commerce_tab_options' );
+		$I->dontSeeCheckboxIsChecked( '#wc_facebook_commerce_enabled' );
+		$I->assertTrue( (bool) $I->executeJS( "return jQuery( '#wc_facebook_commerce_enabled' ).prop( 'disabled' )" ) );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_stock_management_is_disabled( AcceptanceTester $I ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( false );
+		$this->sync_enabled_product->set_stock_quantity( null );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled when Stock Management is disabled' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'This product does not meet the requirements to sell on Instagram.', '#product-not-ready-notice' );
+
+		$I->amGoingTo( 'Enable Stock Management' );
+
+		$I->click( '.inventory_options' );
+		$I->checkOption( '#_manage_stock' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+		$this->dont_see_product_not_ready_notice( $I );
+	}
+
+
+	/**
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_commerce_enabled_field_is_disabled_if_no_variations_have_sync_enabled( AcceptanceTester $I ) {
+
+		$product_objects = $I->haveVariableProductInDatabase();
+
+		/** @var \WC_Product_Variable */
+		$variable_product = $product_objects['product'];
+
+		/** @var \WC_Product_Variation */
+		$product_variation = $product_objects['variations']['product_variation'];
+
+		$variable_product->set_manage_stock( true );
+		$variable_product->save();
+
+		\SkyVerge\WooCommerce\Facebook\Products::disable_sync_for_products( [ $variable_product ] );
+
+		$I->amEditingPostWithId( $variable_product->get_id() );
+
+		$I->wantTo( 'Test that the Commerce Enabled field is disabled if no variations have sync enabled' );
+
+		$this->see_commerce_enabled_field_is_disabled( $I );
+
+		$I->expect( 'The product not ready notice is shown' );
+
+		$I->see( 'To sell this product on Instagram, at least one variation must be synced to Facebook.', '#variable-product-not-ready-notice' );
+
+		$I->amGoingTo( 'Enable Facebook sync for a variation' );
+
+		$I->click( '.variations_tab' );
+		$index = $I->openVariationMetabox( $product_variation );
+
+		$I->waitForElementVisible( "#variable_facebook_sync_mode{$index}" );
+		$I->selectOption( "#variable_facebook_sync_mode{$index}", 'sync_and_show' );
+
+		$this->see_commerce_enabled_field_is_enabled( $I );
+
+		$I->expect( 'The product not ready notice is not shown' );
+
+		$I->dontSeeElement( '#variable-product-not-ready-notice' );
+	}
+
+
+	/**
+	 * @dataProvider provider_missing_google_product_category_alert_is_shown
+	 */
+	public function try_missing_google_product_category_alert_is_shown_on_simple_product( AcceptanceTester $I, Codeception\Example $example ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$this->see_missing_google_product_category_alert( $I, $this->sync_enabled_product, $example['categories'] );
+	}
+
+
+	/**
+	 * Test that the missing Google product category alert is shown when the given categories are selected.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param WC_Product $product a product to edit
+	 * @param array $categories list of categories to select
+	 */
+	private function see_missing_google_product_category_alert( AcceptanceTester $I, \WC_Product $product, array $categories ) {
+
+		$I->amEditingPostWithId( $product->get_id() );
+
+		$I->wantTo( "Test that an alert is shown if the user doesn't select a Google product sub-category" );
+
+		$I->click( '.fb_commerce_tab_options' );
+
+		// clear the Google product category
+		$I->executeJS( "jQuery( '.wc-facebook-google-product-category-field:nth-child( 1 ) .wc-facebook-google-product-category-select' ).val( null ).trigger( 'change' )" );
+
+		// set the Google product category for the test
+		foreach ( $categories as $index => $category_id ) {
+
+			$element_position = $index + 1;
+
+			$I->executeJS( "jQuery( '.wc-facebook-google-product-category-field:nth-child( {$element_position} ) .wc-facebook-google-product-category-select' ).val( {$category_id} ).trigger( 'change' )" );
+		}
+
+		$I->scrollTo( 'input#publish', 0, -200 );
+		$I->click( 'input#publish' );
+
+		$I->seeInPopup( 'Please enter a Google product category' );
+		$I->acceptPopup();
+	}
+
+
+	/** @see try_missing_google_product_category_alert_is_shown */
+	public function provider_missing_google_product_category_alert_is_shown() {
+
+		return [
+			'no category selected'     => [ 'categories' => [] ],
+			'no sub-category selected' => [ 'categories' => [ 1 ] ],
+		];
+	}
+
+
+	/**
+	 * @dataProvider provider_missing_google_product_category_alert_is_shown
+	 */
+	public function try_missing_google_product_category_alert_is_shown_on_variable_product( AcceptanceTester $I, Codeception\Example $example ) {
+
+		$product_objects = $I->haveVariableProductInDatabase();
+
+		/** @var \WC_Product_Variable */
+		$variable_product = $product_objects['product'];
+
+		/** @var \WC_Product_Variation */
+		$product_variation = $product_objects['variations']['product_variation'];
+
+		$variable_product->set_manage_stock( true );
+		$variable_product->save();
+
+		$product_variation->set_regular_price( 7 );
+		$product_variation->save();
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $variable_product ] );
+
+		$this->see_missing_google_product_category_alert( $I, $variable_product, $example['categories'] );
 	}
 
 

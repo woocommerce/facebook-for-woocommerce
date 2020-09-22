@@ -10,13 +10,11 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\Facebook\AJAX;
-use SkyVerge\WooCommerce\Facebook\Products as FacebookProducts;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
-
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
  * General handler for product admin functionality.
@@ -98,7 +96,7 @@ class Products {
 				'female' => __( 'Female', 'facebook-for-woocommerce' ),
 				'male'   => __( 'Male', 'facebook-for-woocommerce' ),
 			],
-			'value'       => FacebookProducts::get_product_gender( $product ),
+			'value'       => Products_Handler::get_product_gender( $product ),
 		] );
 
 		woocommerce_wp_select( [
@@ -109,7 +107,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'color', 'colour', __( 'color', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_color_attribute( $product ),
+			'value'             => Products_Handler::get_product_color_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -127,7 +125,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'size', __( 'size', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_size_attribute( $product ),
+			'value'             => Products_Handler::get_product_size_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -145,7 +143,7 @@ class Products {
 			'class'             => 'sv-wc-enhanced-search select short',
 			'style'             => 'width: 50%',
 			'options'           => self::filter_available_product_attribute_names( $product, [ 'pattern', __( 'pattern', 'facebook-for-woocommerce' ) ] ),
-			'value'             => FacebookProducts::get_product_pattern_attribute( $product ),
+			'value'             => Products_Handler::get_product_pattern_attribute( $product ),
 			'custom_attributes' => [
 				'data-allow_clear'  => true,
 				'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
@@ -165,7 +163,7 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $words a list of words used to filter attributes
+	 * @param array $words a list of words used to filter attributes
 	 * @return array
 	 */
 	private static function filter_available_product_attribute_names( \WC_Product $product, $words ) {
@@ -200,7 +198,7 @@ class Products {
 			function( $attribute ) use ( $product ) {
 				return wc_attribute_label( $attribute->get_name(), $product );
 			},
-			FacebookProducts::get_available_product_attributes( $product )
+			Products_Handler::get_available_product_attributes( $product )
 		);
 	}
 
@@ -237,9 +235,9 @@ class Products {
 		</div>
 
 		<div id="variable-product-not-ready-notice" style="display:none;">
-			<p><?php sprintf(
+			<p><?php echo sprintf(
 				/* translators: Placeholders %1$s - strong opening tag, %2$s - strong closing tag */
-				__( 'To sell this product on Instagram, at least one variation must be synced to Facebook. You can control variation sync on the %1$sVariations%2$s tab with the %1$sFacebook Sync%2$s setting.', 'facebook-for-woocommerce' ),
+				esc_html__( 'To sell this product on Instagram, at least one variation must be synced to Facebook. You can control variation sync on the %1$sVariations%2$s tab with the %1$sFacebook Sync%2$s setting.', 'facebook-for-woocommerce' ),
 				'<strong>',
 				'</strong>'
 			);?></p>

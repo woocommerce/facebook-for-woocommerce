@@ -54,6 +54,8 @@ class Product_Categories {
 
 		if ( $this->is_categories_screen() ) {
 
+			wp_enqueue_style( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/products-categories.css', [], \WC_Facebookcommerce::PLUGIN_VERSION );
+
 			wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [
 				'jquery',
 				'wc-backbone-modal',
@@ -61,7 +63,51 @@ class Product_Categories {
 				'jquery-tiptip',
 				'facebook-for-woocommerce-modal',
 			], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+			wp_localize_script( 'wc-facebook-product-categories', 'facebook_for_woocommerce_product_categories', [
+				'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
+				'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+			] );
 		}
+	}
+
+
+	/**
+	 * Gets the message for Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message() {
+
+		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+				class="button button-large"
+				onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<button
+				id="btn-ok"
+				class="button button-large button-primary"
+		><?php esc_html_e( 'Update default Google product category', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
@@ -96,10 +142,13 @@ class Product_Categories {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WP_Term $term current taxonomy term object
 	 */
-	public function render_edit_google_product_category_field() {
+	public function render_edit_google_product_category_field( \WP_Term $term ) {
 
 		$category_field = new Google_Product_Category_Field();
+		$value          = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 
 		?>
 			<tr class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
@@ -111,7 +160,8 @@ class Product_Categories {
 				</th>
 				<td>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
-					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
+					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+					       value="<?php echo esc_attr( $value ); ?>"/>
 					<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
 				</td>
 			</tr>
