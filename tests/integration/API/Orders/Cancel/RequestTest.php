@@ -3,6 +3,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Tests\API\Orders\Cancel;
 
 use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 
 /**
  * Tests the API\Orders\Cancel\Request class.
@@ -32,14 +33,14 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Request::__construct() */
 	public function test_constructor() {
 
-		$request = new Request( '368508827392800', Request::REASON_CUSTOMER_REQUESTED, false );
+		$request = new Request( '368508827392800', Orders::CANCEL_REASON_CUSTOMER_REQUESTED, false );
 
 		$this->assertEquals( '/368508827392800/cancellations', $request->get_path() );
 		$this->assertEquals( 'POST', $request->get_method() );
 
 		$expected_data = [
 			'cancel_reason'   => [
-				'reason_code' => Request::REASON_CUSTOMER_REQUESTED,
+				'reason_code' => Orders::CANCEL_REASON_CUSTOMER_REQUESTED,
 			],
 			'restock_items'   => false,
 			'idempotency_key' => $request->get_idempotency_key(),

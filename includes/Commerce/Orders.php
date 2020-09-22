@@ -36,6 +36,21 @@ class Orders {
 	/** @var string the meta key used to store the email remarketing option */
 	const EMAIL_REMARKETING_META_KEY = '_wc_facebook_commerce_email_remarketing';
 
+	/** @var string customer requested cancellation */
+	const CANCEL_REASON_CUSTOMER_REQUESTED = 'CUSTOMER_REQUESTED';
+
+	/** @var string out of stock cancellation */
+	const CANCEL_REASON_OUT_OF_STOCK = 'OUT_OF_STOCK';
+
+	/** @var string invalid address cancellation */
+	const CANCEL_REASON_INVALID_ADDRESS = 'INVALID_ADDRESS';
+
+	/** @var string suspicious order cancellation */
+	const CANCEL_REASON_SUSPICIOUS_ORDER = 'SUSPICIOUS_ORDER';
+
+	/** @var string other reason cancellation */
+	const CANCEL_REASON_OTHER = 'CANCEL_REASON_OTHER';
+
 
 	/**
 	 * Orders constructor.
@@ -648,7 +663,7 @@ class Orders {
 		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Cancellation_Request::REASON_OTHER;
+			$reason_code = Orders::CANCEL_REASON_OTHER;
 		}
 
 		try {
@@ -683,11 +698,11 @@ class Orders {
 
 		return [
 
-			Cancellation_Request::REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
-			Cancellation_Request::REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
-			Cancellation_Request::REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
-			Cancellation_Request::REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
-			Cancellation_Request::REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
 		];
 	}
 
