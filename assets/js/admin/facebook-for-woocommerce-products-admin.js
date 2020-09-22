@@ -452,6 +452,10 @@ jQuery( document ).ready( function( $ ) {
 
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
 
+			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
+				return showMissingGoogleProductCategoryAlert( e );
+			}
+
 			if ( ! submitProductSave ) {
 				e.preventDefault();
 			} else {
