@@ -19,7 +19,7 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
-		restrict_order_statuses          : $orderStatus => {
+		restrict_order_statuses             : $orderStatus => {
 
 			$orderStatus.find( 'option' ).each( function ( index, option ) {
 
@@ -35,7 +35,7 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @param {Boolean} enable wither to enable date fields (true) or not (false)
 		 */
-		toggle_created_date_fields_status: enable => {
+		toggle_created_date_fields_status   : enable => {
 			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
 		},
 		/**
@@ -43,8 +43,27 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
-		disable_order_status_field       : ( $orderStatus ) => {
+		disable_order_status_field          : ( $orderStatus ) => {
 			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
+		},
+		/**
+		 * Hide customer field
+		 *
+		 * @param {Boolean} hide
+		 */
+		toggle_order_customer_field         : ( hide ) => {
+			$( '#order_data' ).find( '.form-field.wc-customer-user' ).addClass( 'hidden', hide );
+		},
+		/**
+		 * Disable order status field
+		 *
+		 * @param {Object} $orderStatus Order select jQuery DOM object
+		 */
+		disable_pending_order_related_fields: ( $orderStatus ) => {
+
+			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
+			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
+			WCFacebookCommerceOrderOperations.toggle_order_customer_field( true );
 		}
 	};
 
@@ -55,15 +74,14 @@ jQuery( document ).ready( ( $ ) => {
 		WCFacebookCommerceOrderOperations.restrict_order_statuses( $orderStatus );
 
 		if ( 'pending' === wc_facebook_commerce_orders.order_status ) {
-
-			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
-
-			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
+			WCFacebookCommerceOrderOperations.disable_pending_order_related_fields( $orderStatus );
 		}
 
 		$orderStatus.on( 'change', () => {
-			// toggle date fields upon order status change
-			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( 'wc-pending' !== $orderStatus.val() );
+
+			if ( 'wc-pending' === $orderStatus.val() ) {
+				WCFacebookCommerceOrderOperations.disable_pending_order_related_fields( $orderStatus );
+			}
 		} );
 	}
 
