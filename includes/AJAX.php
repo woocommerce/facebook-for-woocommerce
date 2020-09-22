@@ -66,6 +66,43 @@ class AJAX {
 	 */
 	public function admin_cancel_order() {
 
+		$order = null;
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_requested_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
+			}
+
+			$order_id    = Framework\SV_WC_Helper::get_requested_value( 'order_id' );
+			$reason_code = Framework\SV_WC_Helper::get_requested_value( 'reason_code' );
+
+			if ( empty( $order_id ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Order ID is required' );
+			}
+
+			if ( empty( $reason_code ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Cancel reason is required' );
+			}
+
+			$order = wc_get_order( absint( $order_id ) );
+
+			if ( false === $order ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'A valid Order ID is required' );
+			}
+
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->cancel_order( $order, $reason_code );
+
+			wp_send_json_success( 'cancelled' );
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			if ( $order instanceof \WC_Abstract_Order ) {
+				$order->add_order_note( sprintf( __( 'Could not cancel order. Code: "%s", message: "%s"', 'facebook-for-woocommerce' ), $exception->getCode(), $exception->getMessage() ) );
+			}
+
+			wp_send_json_error( $exception->getMessage() );
+		}
 	}
 
 	/**
