@@ -291,6 +291,20 @@ class Orders {
 	 */
 	private function get_cancel_modal_buttons() {
 
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Submit cancellation', 'facebook-for-woocommerce' ); ?></button>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
