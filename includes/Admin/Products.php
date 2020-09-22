@@ -282,7 +282,7 @@ class Products {
 		FacebookProducts::update_product_gender( $product, $gender );
 		FacebookProducts::update_product_color_attribute( $product, $color_attribute );
 		FacebookProducts::update_product_size_attribute( $product, $size_attribute );
-		FacebookProducts::update_product_size_attribute( $product, $pattern_attribute );
+		FacebookProducts::update_product_pattern_attribute( $product, $pattern_attribute );
 	}
 
 
