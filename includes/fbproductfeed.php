@@ -739,8 +739,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$product_data['default_product'] = '';
 			}
 
-			$google_product_category = isset( $product_data['google_product_category'] ) ? $product_data['google_product_category'] : '';
-
 			return $product_data['retailer_id'] . ',' .
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'name' ) ) . ',' .
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'description' ) ) . ',' .
@@ -770,7 +768,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			static::get_value_from_product_data( $product_data, 'color' ) . ',' .
 			static::get_value_from_product_data( $product_data, 'size' ) . ',' .
 			static::get_value_from_product_data( $product_data, 'pattern' ) . ',' .
-			$google_product_category . ',' .
+			static::get_value_from_product_data( $product_data, 'google_product_category' ) . ',' .
 			static::get_value_from_product_data( $product_data, 'default_product' ) . ',' .
 			static::get_value_from_product_data( $product_data, 'variant' ) . PHP_EOL;
 		}
