@@ -45,6 +45,8 @@ class Orders {
 
 		add_action( 'admin_notices', [ $this, 'add_notices' ] );
 
+		add_action( 'load-edit.php', [ $this, 'handle_bulk_update' ], 100 );
+
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
 		add_action( 'admin_footer', [ $this, 'render_modal_templates' ] );
