@@ -19,7 +19,7 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
-		restrict_order_statuses: $orderStatus => {
+		restrict_order_statuses          : $orderStatus => {
 
 			$orderStatus.find( 'option' ).each( function ( index, option ) {
 
@@ -29,13 +29,31 @@ jQuery( document ).ready( ( $ ) => {
 					option.remove();
 				}
 			} );
+		},
+		/**
+		 * Enable or Disable order created fields.
+		 *
+		 * @param {Boolean} enable wither to enable date fields (true) or not (false)
+		 */
+		toggle_created_date_fields_status: enable => {
+			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
 		}
 	};
 
 	if ( isCommerceOrder ) {
 
-		WCFacebookCommerceOrderOperations.restrict_order_statuses( $( '#order_status' ) );
+		let $orderStatus = $( '#order_status' );
 
+		WCFacebookCommerceOrderOperations.restrict_order_statuses( $orderStatus );
+
+		if ( 'pending' === wc_facebook_commerce_orders.order_status ) {
+			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
+		}
+
+		$orderStatus.on( 'change', () => {
+			// toggle date fields upon order status change
+			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( 'wc-pending' !== $orderStatus.val() );
+		} );
 	}
 
 } );

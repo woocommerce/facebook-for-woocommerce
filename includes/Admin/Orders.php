@@ -88,9 +88,10 @@ class Orders {
 		], \WC_Facebookcommerce::VERSION );
 
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
-			'order_id'          => $order->get_id(),
-			'is_commerce_order' => Commerce\Orders::is_commerce_order( $order ),
-			'shipment_tracking' => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'order_id'                  => $order->get_id(),
+			'order_status'              => $order->get_status(),
+			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
+			'shipment_tracking'         => $order->get_meta( '_wc_shipment_tracking_items', true ),
 			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
 		] );
 	}
