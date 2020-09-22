@@ -37,6 +37,14 @@ jQuery( document ).ready( ( $ ) => {
 		 */
 		toggle_created_date_fields_status: enable => {
 			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
+		},
+		/**
+		 * Disable order status field
+		 *
+		 * @param {Object} $orderStatus Order select jQuery DOM object
+		 */
+		disable_order_status_field       : ( $orderStatus ) => {
+			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
 		}
 	};
 
@@ -47,7 +55,10 @@ jQuery( document ).ready( ( $ ) => {
 		WCFacebookCommerceOrderOperations.restrict_order_statuses( $orderStatus );
 
 		if ( 'pending' === wc_facebook_commerce_orders.order_status ) {
+
 			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
+
+			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
 		}
 
 		$orderStatus.on( 'change', () => {
