@@ -214,6 +214,46 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 
 
 	/**
+	 * Adds new visibility meta set to 'no' for the given post IDs.
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @param int[] $post_ids post IDs to update
+	 * @return int
+	 */
+	private function set_product_visibility_meta( $post_ids ) {
+		global $wpdb;
+
+		if ( empty( $post_ids ) ) {
+			return 0;
+		}
+
+		$values_str = '';
+
+		foreach ( $post_ids as $post_id ) {
+			$values_str .= "('{$post_id}', 'fb_visibility', 'no')";
+		}
+
+		// we need to explicitly insert the metadata and set it to no, because not having it means it is visible
+		$sql = "
+			INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value )
+				VALUES {$values_str}
+		";
+
+		$rows_inserted = $wpdb->query( $sql );
+
+		if ( false === $rows_inserted ) {
+
+			$message = sprintf( 'There was an error trying to set products and variations meta data. %s', $wpdb->last_error );
+
+			facebook_for_woocommerce()->log( $message );
+		}
+
+		return (int) $rows_inserted;
+	}
+
+
+	/**
 	 * No-op
 	 *
 	 * @since 2.0.0
