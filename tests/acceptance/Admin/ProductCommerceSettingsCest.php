@@ -261,14 +261,27 @@ class ProductCommerceSettingsCest {
 	/**
 	 * @dataProvider provider_missing_google_product_category_alert_is_shown
 	 */
-	public function try_missing_google_product_category_alert_is_shown( AcceptanceTester $I, Codeception\Example $example ) {
+	public function try_missing_google_product_category_alert_is_shown_on_simple_product( AcceptanceTester $I, Codeception\Example $example ) {
 
 		$this->sync_enabled_product->set_regular_price( 10 );
 		$this->sync_enabled_product->set_manage_stock( true );
 		$this->sync_enabled_product->set_stock_quantity( 3 );
 		$this->sync_enabled_product->save();
 
-		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+		$this->see_missing_google_product_category_alert( $I, $this->sync_enabled_product, $example['categories'] );
+	}
+
+
+	/**
+	 * Test that the missing Google product category alert is shown when the given categories are selected.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @param WC_Product $product a product to edit
+	 * @param array $categories list of categories to select
+	 */
+	private function see_missing_google_product_category_alert( AcceptanceTester $I, \WC_Product $product, array $categories ) {
+
+		$I->amEditingPostWithId( $product->get_id() );
 
 		$I->wantTo( "Test that an alert is shown if the user doesn't select a Google product sub-category" );
 
@@ -278,7 +291,7 @@ class ProductCommerceSettingsCest {
 		$I->executeJS( "jQuery( '.wc-facebook-google-product-category-field:nth-child( 1 ) .wc-facebook-google-product-category-select' ).val( null ).trigger( 'change' )" );
 
 		// set the Google product category for the test
-		foreach ( $example['categories'] as $index => $category_id ) {
+		foreach ( $categories as $index => $category_id ) {
 
 			$element_position = $index + 1;
 
