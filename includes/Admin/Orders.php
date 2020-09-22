@@ -118,7 +118,7 @@ class Orders {
 			// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
 			facebook_for_woocommerce()->get_message_handler()->add_error(sprintf(
 				_n(
-				/* translators: %s - order ID */
+					/* translators: %s - order ID */
 					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
 					/* translators: %s - order IDs list */
 					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
