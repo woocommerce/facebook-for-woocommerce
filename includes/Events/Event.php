@@ -100,7 +100,6 @@ class Event {
 		] );
 
 		$this->prepare_user_data( $this->data['user_data'] );
-
 	}
 
 
