@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -192,13 +193,13 @@ class Orders {
 		$shipment_utilities = new Shipment();
 
 		woocommerce_wp_select( [
-			'id'      => 'wc-facebook-carrier',
+			'id'      => 'wc_facebook_carrier',
 			'label'   => __( 'Carrier', 'facebook-for-woocommerce' ),
 			'options' => $shipment_utilities->get_carrier_options(),
 		] );
 
 		woocommerce_wp_text_input( [
-			'id'    => 'wc-facebook-tracking-number',
+			'id'    => 'wc_facebook_tracking_number',
 			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
 		] );
 
@@ -265,6 +266,19 @@ class Orders {
 	 */
 	private function get_cancel_modal_message() {
 
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for cancelling this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		woocommerce_wp_select( [
+			'id'      => 'wc_facebook_cancellation_reason',
+			'label'   => '',
+			'options' => facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_cancellation_reasons(),
+		] );
+
+		return ob_get_clean();
 	}
 
 
