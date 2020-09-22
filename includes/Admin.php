@@ -133,9 +133,13 @@ class Admin {
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
 					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
+					'is_sync_enabled_for_product'               => $this->is_sync_enabled_for_current_product(),
 					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+					'i18n'                                      => [
+						'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
+					],
 				] );
 			}
 
@@ -155,6 +159,26 @@ class Admin {
 				'general_dropdown_placeholder'            => __( 'Choose a category', 'facebook-for-woocommerce' ),
 			],
 		] );
+	}
+
+
+	/**
+	 * Determines whether sync is enabled for the current product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_sync_enabled_for_current_product() {
+		global $post;
+
+		$product = wc_get_product( $post );
+
+		if ( ! $product instanceof \WC_Product ) {
+			return false;
+		}
+
+		return Products::is_sync_enabled_for_product( $product );
 	}
 
 
@@ -1302,8 +1326,16 @@ class Admin {
 	public function render_modal_template() {
 		global $current_screen;
 
+		$modal_screens = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-facebook',
+			'edit-product_cat',
+			'shop_order',
+		];
+
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook', 'shop_order' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, $modal_screens, true ) ) {
 			return;
 		}
 

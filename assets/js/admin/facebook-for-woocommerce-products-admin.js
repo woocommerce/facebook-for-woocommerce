@@ -144,6 +144,231 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Disables and changes the checked status of the Sell on Instagram setting field.
+		 *
+		 * Additionally, shows/hides messages explaining that the product is not ready for Commerce.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {boolean} enabled whether the setting field should be enabled or not
+		 * @param {jQuery} $container a common ancestor of all the elements that need to modified
+		 */
+		function toggleFacebookSellOnInstagramSetting( enabled, $container ) {
+
+			let $field = $container.find( '#wc_facebook_commerce_enabled' );
+			let checked = $field.prop( 'original' );
+
+			$field.prop( 'checked', enabled ? checked : false ).prop( 'disabled', ! enabled );
+
+			// trigger change to hide fields based on the new state
+			$field.trigger( 'change' );
+
+			// restore previously stored value so that we can later restore the field to the status it had before we disabled it here
+			$field.prop( 'original', checked );
+
+			$container.find( '#product-not-ready-notice, #variable-product-not-ready-notice' ).hide();
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) && ! isSyncEnabledForVariableProduct() ) {
+				$container.find( '#variable-product-not-ready-notice' ).show();
+			} else if ( ! enabled ) {
+				$container.find( '#product-not-ready-notice' ).show();
+			}
+		}
+
+
+		/**
+		 * Determines whether product properties are configured using appropriate values for Commerce.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isProductReadyForCommerce() {
+
+			if ( ! isSyncEnabledForProduct() ) {
+				return false;
+			}
+
+			if ( ! isPriceDefinedForProduct() ) {
+				return false;
+			}
+
+			if ( ! isStockManagementEnabledForProduct() ) {
+				return false;
+			}
+
+			return true;
+		}
+
+
+		/**
+		 * Determines whether the product or one of its variations has Facebook Sync enabled.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isSyncEnabledForProduct() {
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+				return isSyncEnabledForVariableProduct();
+			}
+
+			return isSyncEnabledForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether the current product has synced variations.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @returns {boolean}
+		 */
+		function isSyncEnabledForVariableProduct() {
+
+			let $fields = $( '.js-variable-fb-sync-toggle' );
+
+			// fallback to the value at page load if the variation fields haven't been loaded
+			if ( 0 === $fields.length ) {
+				return !! facebook_for_woocommerce_products_admin.is_sync_enabled_for_product;
+			}
+
+			// returns true if any of the Facebook Sync settings is set to a value other than 'sync_disabled'
+			return !! $fields.map( ( i, element ) => $( element ).val() !== 'sync_disabled' ? element : null ).length;
+		}
+
+
+		/**
+		 * Determines whether the product has Facebook Sync enabled.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isSyncEnabledForSimpleProduct() {
+
+			return $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled';
+		}
+
+
+		/**
+		 * Determines whether the product has a Regular Price or Facebook Price defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isPriceDefinedForProduct() {
+
+			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+				// TODO: determine whether variations enabled for sync have a Regular Price or Facebook Price defined {WV 2020-09-19}
+				return true;
+			}
+
+			return isPriceDefinedForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether a simple product has a Regular Price or Facebook Price defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isPriceDefinedForSimpleProduct() {
+
+			return $( '#_regular_price' ).val().length || $( '#fb_product_price' ).val().length;
+		}
+
+
+		/**
+		 * Determines whether the product has Manage Stock enabled and Stock quantity defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isStockManagementEnabledForProduct() {
+
+			// TODO: determine whether variations enabled for sync have stock management enabled {WV 2020-09-19}
+
+			return isStockManagementEnabledForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether a simple product has Manage Stock enabled and Stock quantity defined.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isStockManagementEnabledForSimpleProduct() {
+
+			return $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val().length;
+		}
+
+
+		/**
+		 * Determines whether we should ask the user to select a Google Product Category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function shouldShowMissingGoogleProductCategoryAlert() {
+
+			if ( ! $( '#wc_facebook_commerce_enabled' ).prop( 'checked' ) ) {
+				return false;
+			}
+
+			if ( ! isProductReadyForCommerce() ) {
+				return false;
+			}
+
+			let selectedCategories = $( '.wc_facebook_commerce_fields .wc-facebook-google-product-category-select' ).map( ( i, element ) => {
+				return $( element ).val() ? $( element ).val() : null;
+			} );
+
+			return selectedCategories.length < 2;
+		}
+
+
+		/**
+		 * Shows an alert asking the user to select a Google product category and sub-category.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery.Event} event a jQuery Event object for the submit event
+		 * @returns {boolean}
+		 */
+		function showMissingGoogleProductCategoryAlert( event ) {
+
+			event.preventDefault();
+
+			alert( facebook_for_woocommerce_products_admin.i18n.missing_google_product_category_message );
+
+			return false;
+		}
+
+
+		// handle change events for the Sell on Instagram checkbox field
+		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
+
+			let checked = $( this ).prop( 'checked' );
+
+			if ( checked ) {
+				$( '.wc_facebook_commerce_fields' ).show();
+			} else {
+				$( '.wc_facebook_commerce_fields').hide();
+			}
+
+			$( this ).prop( 'original', checked );
+		} ).trigger( 'change' );
+
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
@@ -163,9 +388,25 @@ jQuery( document ).ready( function( $ ) {
 			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
 		} ).trigger( 'change' );
 
+		// check whether the product meets the requirements for Commerce
+		$( '#woocommerce-product-data' ).on(
+			'change',
+			'#_regular_price, #_manage_stock, #_stock, #wc_facebook_sync_mode, #fb_product_price',
+			function( event ) {
+
+				// allow validation handlers that run on change to run before we check any field values
+				setTimeout( function() {
+					toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+				}, 1 );
+			}
+		);
+
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+
 			$( this ).prop( 'original', $( this ).val() );
 		} );
 
@@ -180,6 +421,8 @@ jQuery( document ).ready( function( $ ) {
 				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
+
+			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
 		} );
 
 		// show/hide Custom Image URL setting
@@ -201,10 +444,17 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
+		// toggle Sell on Instagram checkbox on page load
+		// TODO: replace isSyncEnabledForVariableProduct() with a isProductReadyForCommerce() function that uses isSyncEnabledForVariableProduct() to determine whether the product is ready
+		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
 
 		let submitProductSave = false;
 
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
+
+			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
+				return showMissingGoogleProductCategoryAlert( e );
+			}
 
 			if ( ! submitProductSave ) {
 				e.preventDefault();
