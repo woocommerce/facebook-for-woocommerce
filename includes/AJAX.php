@@ -51,8 +51,22 @@ class AJAX {
 
 		// search a product's attributes for the given term
 		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, [ $this, 'admin_search_product_attributes' ] );
+
+		// Cancel facebook order by the given order ID
+		add_action( 'wp_ajax_' . self::ACTION_CANCEL_ORDER, [ $this, 'admin_cancel_order' ] );
 	}
 
+
+	/**
+	 * Cancel facebook order by the given order ID
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function admin_cancel_order() {
+
+	}
 
 	/**
 	 * Searches a product's attributes for the given term.
