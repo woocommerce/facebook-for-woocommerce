@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
-use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
+use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
@@ -645,16 +645,10 @@ class Orders {
 
 		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
 
-		$valid_reason_codes = [
-			Request::REASON_CUSTOMER_REQUESTED,
-			Request::REASON_INVALID_ADDRESS,
-			Request::REASON_OTHER,
-			Request::REASON_OUT_OF_STOCK,
-			Request::REASON_SUSPICIOUS_ORDER,
-		];
+		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Request::REASON_OTHER;
+			$reason_code = Cancellation_Request::REASON_OTHER;
 		}
 
 		try {
@@ -675,6 +669,26 @@ class Orders {
 
 			throw $exception;
 		}
+	}
+
+
+	/**
+	 * Gets the valid cancellation reasons.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array key-value array with codes and their labels
+	 */
+	public function get_cancellation_reasons() {
+
+		return [
+
+			Cancellation_Request::REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
+			Cancellation_Request::REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
+			Cancellation_Request::REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
+			Cancellation_Request::REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
+			Cancellation_Request::REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
+		];
 	}
 
 
