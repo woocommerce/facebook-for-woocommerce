@@ -91,6 +91,7 @@ class Orders {
 			'order_id'          => $order->get_id(),
 			'is_commerce_order' => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking' => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
 		] );
 	}
 
