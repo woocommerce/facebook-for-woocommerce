@@ -254,6 +254,39 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 
 
 	/**
+	 * Updates the value of the visibility meta for the given post IDs.
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @param int[] $post_ids post IDs to update
+	 * @return int
+	 */
+	private function update_product_visibility_meta( $post_ids ) {
+		global $wpdb;
+
+		if ( empty( $post_ids ) ) {
+			return 0;
+		}
+
+		$sql = sprintf(
+			"UPDATE {$wpdb->postmeta} SET meta_value = 'no' WHERE meta_key = 'fb_visibility' AND post_id IN (%s)",
+			implode( ', ', array_map( 'intval', $post_ids ) )
+		);
+
+		$rows_updated = $wpdb->query( $sql );
+
+		if ( false === $rows_updated ) {
+
+			$message = sprintf( 'There was an error trying to update products and variations meta data. %s', $wpdb->last_error );
+
+			facebook_for_woocommerce()->log( $message );
+		}
+
+		return (int) $rows_updated;
+	}
+
+
+	/**
 	 * No-op
 	 *
 	 * @since 2.0.0
