@@ -110,6 +110,18 @@ class Orders {
 	 */
 	public function add_notices() {
 
+		if ( ! get_transient( $this->bulk_order_update_transient ) ) {
+			return;
+		}
+
+		facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
+			/* translators: %1$s - <strong> HTML tag, %2$s </strong> HTML tag */
+			esc_html__( '%1$sHeads up!%2$s Instagram order statuses can’t be updated in bulk. Please update Instagram orders individually so you can provide order details required by Instagram.', 'facebook-for-woocommerce' ),
+			'<strong>',
+			'</strong>'
+		) );
+
+		delete_transient( $this->bulk_order_update_transient );
 	}
 
 
