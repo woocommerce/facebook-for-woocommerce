@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use function Crontrol\Event\get_list_table;
 
 /**
  * General handler for order admin functionality.
@@ -49,7 +50,7 @@ class Orders {
 
 		add_action( 'admin_notices', [ $this, 'add_notices' ] );
 
-		add_action( 'load-edit.php', [ $this, 'handle_bulk_update' ], 100 );
+		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handle_bulk_update' ], -1, 3 );
 
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
@@ -110,18 +111,29 @@ class Orders {
 	 */
 	public function add_notices() {
 
-		if ( ! get_transient( $this->bulk_order_update_transient ) ) {
+		$commerce_orders = get_transient( $this->bulk_order_update_transient );
+
+		if ( empty( $commerce_orders ) ) {
 			return;
 		}
 
+		// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
 		facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
-			/* translators: %1$s - <strong> HTML tag, %2$s </strong> HTML tag */
-			esc_html__( '%1$sHeads up!%2$s Instagram order statuses can’t be updated in bulk. Please update Instagram orders individually so you can provide order details required by Instagram.', 'facebook-for-woocommerce' ),
-			'<strong>',
-			'</strong>'
-		) );
+			_n(
+				/* translators: %s - order ID */
+			'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+				/* translators: %s - order IDs list */
+			'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+				count( $commerce_orders ),
+			'facebook-for-woocommerce'
+			),
+			implode( ', ', $commerce_orders )
+			)
+		);
 
 		delete_transient( $this->bulk_order_update_transient );
+
+		facebook_for_woocommerce()->get_message_handler()->show_messages();
 	}
 
 
@@ -181,27 +193,22 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $redirect_url redirect URL carrying results
+	 * @param string $action bulk action
+	 * @param int[] $order_ids IDs of orders affected by the bulk action
+	 * @return string
 	 */
-	public function handle_bulk_update() {
-
-		$wp_list_table = _get_list_table( 'WC_Admin_List_Table_Orders' );
-
-		if ( ! $wp_list_table ) {
-			return;
-		}
-
-		$action = $wp_list_table->current_action();
+	public function handle_bulk_update( $redirect_url, $action, $order_ids ) {
 
 		// listen for order status change actions
-		if ( ! $action || ! Framework\SV_WC_Helper::str_starts_with( $action, 'mark_' ) ) {
-			return;
+		if ( empty( $action ) || empty( $order_ids ) || ! Framework\SV_WC_Helper::str_starts_with( $action, 'mark_' ) ) {
+			return $redirect_url;
 		}
 
-		$has_commerce_order = false;
+		$commerce_orders = [];
 
-		$order_ids = array_map( 'intval', (array) Framework\SV_WC_Helper::get_posted_value( 'post', [] ) );
-
-		foreach ( $order_ids as $order_id ) {
+		foreach ( $order_ids as $index => $order_id ) {
 
 			$order = wc_get_order( $order_id );
 
@@ -211,30 +218,42 @@ class Orders {
 
 			if ( Commerce\Orders::is_commerce_order( $order ) ) {
 
-				set_transient( $this->bulk_order_update_transient, MINUTE_IN_SECONDS );
+				unset( $order_ids[ $index ] );
 
-				$has_commerce_order = true;
-
-				break;
+				$commerce_orders[] = $order->get_order_number();
 			}
 		}
 
-		if ( $has_commerce_order ) {
+		if ( ! empty( $commerce_orders ) ) {
 
-			// remove order status change bulk actions set on the current request URL (fallback on the base orders edit screen URL)
-			if ( $clean_original_url = remove_query_arg( [ 'action', 'action2' ], wp_get_referer() ) ) {
-				$redirect_url = $clean_original_url;
-			} else {
+			// set the orders that are not going to be updated in the transient for reference
+			set_transient( $this->bulk_order_update_transient, $commerce_orders, MINUTE_IN_SECONDS );
+
+			// this will prevent WooCommerce to keep processing the orders we don't want to be changed in bulk
+			add_filter( 'woocommerce_bulk_action_ids', static function( $ids ) use ( $order_ids ) {
+				return $order_ids;
+			} );
+
+			// finally, parse the URL (main filter callback param)
+			if ( empty( $order_ids ) ) {
+
 				$redirect_url = admin_url( 'edit.php?post_type=shop_order' );
-			}
 
-			// redirect to the orders edit screen with the updated URL (keep current pagination)
-			wp_redirect( add_query_arg(
-				[ 'paged' => $wp_list_table->get_pagenum() ],
-				$redirect_url
-			) );
-			exit;
+			} else {
+
+				$redirect_url = add_query_arg(
+					[
+						'post_type'   => 'shop_order',
+						'bulk_action' => $action,
+						'changed'     => count( $order_ids ),
+						'ids'         => implode( ',', $order_ids ),
+					],
+					$redirect_url
+				);
+			}
 		}
+
+		return $redirect_url;
 	}
 
 
