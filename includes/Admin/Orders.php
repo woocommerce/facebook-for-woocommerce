@@ -184,10 +184,6 @@ class Orders {
 	 */
 	public function handle_bulk_update() {
 
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			return;
-		}
-
 		$wp_list_table = _get_list_table( 'WC_Admin_List_Table_Orders' );
 
 		if ( ! $wp_list_table ) {
