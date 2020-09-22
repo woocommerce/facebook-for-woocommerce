@@ -185,6 +185,35 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 
 
 	/**
+	 * Gets the ID and current visibility setting for virtual products that are enabled for sync.
+	 *
+	 * The method returns data for products that have visibility set to 'yes' or is not defined.
+	 * Products that have visibility set to 'no' are ignored.
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @return array|null
+	 */
+	private function get_posts_to_update() {
+		global $wpdb;
+
+		$sql = "
+			SELECT DISTINCT posts.ID id, visibility_meta.meta_value as visibility
+			FROM {$wpdb->posts} AS posts
+			INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
+			LEFT JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' )
+			LEFT JOIN {$wpdb->postmeta} AS visibility_meta ON ( posts.ID = visibility_meta.post_id AND visibility_meta.meta_key = 'fb_visibility' )
+			WHERE posts.post_type IN ( 'product', 'product_variation' )
+			AND ( sync_meta.meta_value IS NULL OR sync_meta.meta_value = 'yes' )
+			AND ( visibility_meta.meta_value IS NULL OR visibility_meta.meta_value = 'yes' )
+			LIMIT 1000
+		";
+
+		return $wpdb->get_results( $sql );
+	}
+
+
+	/**
 	 * No-op
 	 *
 	 * @since 2.0.0
