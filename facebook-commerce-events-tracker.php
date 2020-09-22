@@ -35,7 +35,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private $search_event;
 		/** @var array with events tracked */
 		private $tracked_events;
-		/**@var AAMSettings aam settings instance, used to filter advanced matching fields*/
+		/** @var AAMSettings aam settings instance, used to filter advanced matching fields*/
 		private $aam_settings;
 
 		public function __construct( $user_info, $aam_settings ) {
