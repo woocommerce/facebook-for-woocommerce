@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Commerce;
+use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use function Crontrol\Event\get_list_table;
 
@@ -182,6 +183,26 @@ class Orders {
 	 */
 	private function get_complete_modal_message() {
 
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$shipment_utilities = new Shipment();
+
+		woocommerce_wp_select( [
+			'id'      => 'wc-facebook-carrier',
+			'label'   => __( 'Carrier', 'facebook-for-woocommerce' ),
+			'options' => $shipment_utilities->get_carrier_options(),
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'    => 'wc-facebook-tracking-number',
+			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
+		] );
+
+		return ob_get_clean();
 	}
 
 
