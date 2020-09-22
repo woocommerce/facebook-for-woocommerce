@@ -258,4 +258,49 @@ class ProductCommerceSettingsCest {
 	}
 
 
+	/**
+	 * @dataProvider provider_missing_google_product_category_alert_is_shown
+	 */
+	public function try_missing_google_product_category_alert_is_shown( AcceptanceTester $I, Codeception\Example $example ) {
+
+		$this->sync_enabled_product->set_regular_price( 10 );
+		$this->sync_enabled_product->set_manage_stock( true );
+		$this->sync_enabled_product->set_stock_quantity( 3 );
+		$this->sync_enabled_product->save();
+
+		$I->amEditingPostWithId( $this->sync_enabled_product->get_id() );
+
+		$I->wantTo( "Test that an alert is shown if the user doesn't select a Google product sub-category" );
+
+		$I->click( '.fb_commerce_tab_options' );
+
+		// clear the Google product category
+		$I->executeJS( "jQuery( '.wc-facebook-google-product-category-field:nth-child( 1 ) .wc-facebook-google-product-category-select' ).val( null ).trigger( 'change' )" );
+
+		// set the Google product category for the test
+		foreach ( $example['categories'] as $index => $category_id ) {
+
+			$element_position = $index + 1;
+
+			$I->executeJS( "jQuery( '.wc-facebook-google-product-category-field:nth-child( {$element_position} ) .wc-facebook-google-product-category-select' ).val( {$category_id} ).trigger( 'change' )" );
+		}
+
+		$I->scrollTo( 'input#publish', 0, -200 );
+		$I->click( 'input#publish' );
+
+		$I->seeInPopup( 'Please enter a Google product category' );
+		$I->acceptPopup();
+	}
+
+
+	/** @see try_missing_google_product_category_alert_is_shown */
+	public function provider_missing_google_product_category_alert_is_shown() {
+
+		return [
+			'no category selected'     => [ 'categories' => [] ],
+			'no sub-category selected' => [ 'categories' => [ 1 ] ],
+		];
+	}
+
+
 }
