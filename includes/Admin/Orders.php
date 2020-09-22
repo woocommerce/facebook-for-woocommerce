@@ -57,7 +57,7 @@ class Orders {
 		add_action( 'woocommerce_email_enabled_customer_processing_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 		add_action( 'woocommerce_email_enabled_customer_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 
-		add_action( 'admin_menu', [ $this, 'maybe_remove_order_metaboxes' ] );
+		add_action( 'add_meta_boxes', [ $this, 'maybe_remove_order_metaboxes' ], 999 );
 	}
 
 
@@ -115,7 +115,25 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function maybe_remove_order_metaboxes() {
+		global $post;
 
+		if ( ! $post ) {
+			return;
+		}
+
+		$current_screen = Framework\SV_WC_Helper::get_current_screen();
+
+		if ( ! $current_screen || 'shop_order' !== $current_screen->id ) {
+			return;
+		}
+
+		$order = wc_get_order( $post->ID );
+
+		if ( ! $order || ! $order->has_status( 'pending' ) || ! Commerce\Orders::is_commerce_order( $order ) ) {
+			return;
+		}
+
+		remove_meta_box( 'woocommerce-order-actions', $current_screen, 'side' );
 	}
 
 
