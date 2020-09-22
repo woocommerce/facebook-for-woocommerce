@@ -23,6 +23,10 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 class Orders {
 
 
+	/** @var string key used for setting a transient in the event of bulk actions fired on Commerce orders */
+	private $bulk_order_update_transient = 'wc_facebook_bulk_order_update';
+
+
 	/**
 	 * Handler constructor.
 	 *
@@ -199,7 +203,7 @@ class Orders {
 
 			if ( Commerce\Orders::is_commerce_order( $order ) ) {
 
-				set_transient( 'wc_facebook_bulk_order_update', MINUTE_IN_SECONDS );
+				set_transient( $this->bulk_order_update_transient, MINUTE_IN_SECONDS );
 
 				$has_commerce_order = true;
 
