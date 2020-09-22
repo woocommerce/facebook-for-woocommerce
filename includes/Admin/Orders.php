@@ -114,10 +114,9 @@ class Orders {
 
 		if ( Commerce\Orders::is_order_pending( $order ) ) {
 
-			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong>, %3$s - <strong> tag, %4$s - </strong> tag */
+			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
 			$message = sprintf(
-				__( 'This order is currently being held by Instagram and cannot be edited. Once released by Instagram, it will move to %1$sProcessing%2$s or %3$sCancelled%4$s status.', 'facebook-for-woocommerce' ),
-				'<strong>', '</strong>',
+				__( 'This order is currently being held by Instagram and cannot be edited. Once released by Instagram, it will move to %1$sProcessing%2$s or %1$sCancelled%2$s status.', 'facebook-for-woocommerce' ),
 				'<strong>', '</strong>'
 			);
 
