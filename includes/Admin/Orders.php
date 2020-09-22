@@ -168,6 +168,78 @@ class Orders {
 
 
 	/**
+	 * Gets the markup for the message used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_message() {
+
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_buttons() {
+
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_message() {
+
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_buttons() {
+
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_message() {
+
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_buttons() {
+
+	}
+
+
+	/**
 	 * Renders the refund reason field.
 	 *
 	 * @internal
