@@ -110,6 +110,7 @@ class Event {
 	 *
 	 * @since 2.0.0
 	 *
+	 * @param array $data user data
 	 */
 	protected function prepare_user_data( $data ) {
 		$this->data['user_data'] = wp_parse_args( $data, [
