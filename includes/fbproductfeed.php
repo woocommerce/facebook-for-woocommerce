@@ -747,20 +747,18 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'category' ) ) . ',' .
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'brand' ) ) . ',' .
 			static::format_price_for_feed(
-				$product_data['price'],
-				$product_data['currency']
+				static::get_value_from_product_data( $product_data, 'price', 0 ),
+				static::get_value_from_product_data( $product_data, 'currency' )
 			) . ',' .
 			static::get_value_from_product_data( $product_data, 'availability' ) . ',' .
 			$item_group_id . ',' .
 			static::get_value_from_product_data( $product_data, 'checkout_url' ) . ',' .
-			static::format_additional_image_url(
-				$product_data['additional_image_urls']
-			) . ',' .
+			static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) ) . ',' .
 			static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' .
 			static::get_value_from_product_data( $product_data, 'sale_price_end_date' ) . ',' .
 			static::format_price_for_feed(
-				$product_data['sale_price'],
-				$product_data['currency']
+				static::get_value_from_product_data( $product_data, 'sale_price', 0 ),
+				static::get_value_from_product_data( $product_data, 'currency' )
 			) . ',' .
 			'new' . ',' .
 			static::get_value_from_product_data( $product_data, 'visibility' ) . ',' .
