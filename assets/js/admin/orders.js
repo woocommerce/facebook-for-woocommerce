@@ -47,12 +47,20 @@ jQuery( document ).ready( ( $ ) => {
 			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
 		},
 		/**
-		 * Hide customer field
+		 * Toggle customer field
 		 *
 		 * @param {Boolean} hide
 		 */
 		toggle_order_customer_field         : ( hide ) => {
 			$( '#order_data' ).find( '.form-field.wc-customer-user' ).addClass( 'hidden', hide );
+		},
+		/**
+		 * Toggle customer field
+		 *
+		 * @param {Boolean} hide
+		 */
+		toggle_billing_and_shipping_fields  : ( hide ) => {
+			$( '#order_data' ).find( 'a.edit_address' ).addClass( 'hidden', hide );
 		},
 		/**
 		 * Disable order status field
@@ -64,6 +72,7 @@ jQuery( document ).ready( ( $ ) => {
 			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
 			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
 			WCFacebookCommerceOrderOperations.toggle_order_customer_field( true );
+			WCFacebookCommerceOrderOperations.toggle_billing_and_shipping_fields( true );
 		}
 	};
 
