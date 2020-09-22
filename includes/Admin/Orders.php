@@ -113,26 +113,25 @@ class Orders {
 
 		$commerce_orders = get_transient( $this->bulk_order_update_transient );
 
-		if ( empty( $commerce_orders ) ) {
-			return;
-		}
+		if ( ! empty( $commerce_orders ) ) {
 
-		// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
-		facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
-			_n(
+			// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
+			facebook_for_woocommerce()->get_message_handler()->add_error(sprintf(
+				_n(
 				/* translators: %s - order ID */
-				'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
-				/* translators: %s - order IDs list */
-				'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
-				count( $commerce_orders ),
-				'facebook-for-woocommerce'
-			),
-			implode( ', ', $commerce_orders )
-		) );
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+					/* translators: %s - order IDs list */
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+					count($commerce_orders),
+					'facebook-for-woocommerce'
+				),
+				implode(', ', $commerce_orders)
+			));
 
-		delete_transient( $this->bulk_order_update_transient );
+			delete_transient($this->bulk_order_update_transient);
 
-		facebook_for_woocommerce()->get_message_handler()->show_messages();
+			facebook_for_woocommerce()->get_message_handler()->show_messages();
+		}
 	}
 
 
