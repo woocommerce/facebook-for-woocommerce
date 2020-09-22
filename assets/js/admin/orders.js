@@ -86,6 +86,10 @@ jQuery( document ).ready( ( $ ) => {
 			WCFacebookCommerceOrderOperations.disable_pending_order_related_fields( $orderStatus );
 		}
 
+		if ( 'cancelled' === wc_facebook_commerce_orders.order_status ) {
+			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
+		}
+
 		$orderStatus.on( 'change', () => {
 
 			if ( 'wc-pending' === $orderStatus.val() ) {
