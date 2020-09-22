@@ -110,6 +110,28 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function add_notices() {
+		global $post;
+
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order  = wc_get_order( $post );
+		$plugin = facebook_for_woocommerce();
+
+		if ( Commerce\Orders::is_order_pending( $order ) ) {
+
+			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
+			$message = sprintf(
+				__( 'This order is currently being held by Instagram and cannot be edited. Once released by Instagram, it will move to %1$sProcessing%2$s or %1$sCancelled%2$s status.', 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>'
+			);
+
+			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending_' . $order->get_id(), [
+				'dismissible'  => true,
+				'notice_class' => 'notice-info',
+			] );
+		}
 
 		$commerce_orders = get_transient( $this->bulk_order_update_transient );
 
