@@ -316,4 +316,29 @@ class ProductCommerceSettingsCest {
 	}
 
 
+	/**
+	 * @dataProvider provider_missing_google_product_category_alert_is_shown
+	 */
+	public function try_missing_google_product_category_alert_is_shown_on_variable_product( AcceptanceTester $I, Codeception\Example $example ) {
+
+		$product_objects = $I->haveVariableProductInDatabase();
+
+		/** @var \WC_Product_Variable */
+		$variable_product = $product_objects['product'];
+
+		/** @var \WC_Product_Variation */
+		$product_variation = $product_objects['variations']['product_variation'];
+
+		$variable_product->set_manage_stock( true );
+		$variable_product->save();
+
+		$product_variation->set_regular_price( 7 );
+		$product_variation->save();
+
+		\SkyVerge\WooCommerce\Facebook\Products::enable_sync_for_products( [ $variable_product ] );
+
+		$this->see_missing_google_product_category_alert( $I, $variable_product, $example['categories'] );
+	}
+
+
 }
