@@ -117,7 +117,7 @@ class Orders {
 	public function maybe_remove_order_metaboxes() {
 		global $post;
 
-		if ( ! $post ) {
+		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ class Orders {
 			return;
 		}
 
-		$order = wc_get_order( $post->ID );
+		$order = wc_get_order( $post );
 
 		if ( ! $order || ! $order->has_status( 'pending' ) || ! Commerce\Orders::is_commerce_order( $order ) ) {
 			return;
