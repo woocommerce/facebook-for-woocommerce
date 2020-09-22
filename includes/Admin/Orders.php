@@ -168,6 +168,60 @@ class Orders {
 	 */
 	public function handle_bulk_update() {
 
+		if ( current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		$wp_list_table = _get_list_table( 'WC_Admin_List_Table_Orders' );
+
+		if ( ! $wp_list_table ) {
+			return;
+		}
+
+		$action = $wp_list_table->current_action();
+
+		if ( ! $action ) {
+			return;
+		}
+
+		$has_commerce_order = false;
+
+		$order_ids = array_map( 'intval', (array) Framework\SV_WC_Helper::get_posted_value( 'post', [] ) );
+
+		foreach ( $order_ids as $order_id ) {
+
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				continue;
+			}
+
+			if ( Commerce\Orders::is_commerce_order( $order ) ) {
+
+				set_transient( 'wc_facebook_bulk_order_update', MINUTE_IN_SECONDS );
+
+				$has_commerce_order = true;
+
+				break;
+			}
+		}
+
+		if ( $has_commerce_order ) {
+
+			// remove order status change bulk actions set on the current request URL (fallback on the base orders edit screen URL)
+			if ( $clean_original_url = remove_query_arg( [ 'action', 'action2' ], wp_get_referer() ) ) {
+				$redirect_url = $clean_original_url;
+			} else {
+				$redirect_url = admin_url( 'edit.php?post_type=shop_order' );
+			}
+
+			// redirect to the orders edit screen with the updated URL (keep current pagination)
+			wp_redirect( add_query_arg(
+				[ 'paged' => $wp_list_table->get_pagenum() ],
+				$redirect_url
+			) );
+			exit;
+		}
 	}
 
 
