@@ -278,9 +278,22 @@ class Products {
 		}
 
 		Products_Handler::update_product_gender( $product, $gender );
-		Products_Handler::update_product_color_attribute( $product, $color_attribute );
-		Products_Handler::update_product_size_attribute( $product, $size_attribute );
-		Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
+
+		try {
+
+			Products_Handler::update_product_color_attribute( $product, $color_attribute );
+			Products_Handler::update_product_size_attribute( $product, $size_attribute );
+			Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
+
+		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+
+			$message = sprintf(
+				/* translators: Placeholders %1$s - product ID, %2$s - exception message */
+				__( 'There was an error trying to save the product attributes for product %1$s: %2$s' ), $product->get_id(), $e->getMessage()
+			);
+
+			facebook_for_woocommerce()->log( $message );
+		}
 	}
 
 
