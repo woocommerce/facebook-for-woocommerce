@@ -415,7 +415,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			}
 
 			if ( ! empty( $event_id ) ) {
-				Event::get_platform_identifier();
 				$event = sprintf(
 					"/* %s Facebook Integration Event Tracking */\n" .
 					"fbq('set', 'agent', '%s', '%s');\n".
