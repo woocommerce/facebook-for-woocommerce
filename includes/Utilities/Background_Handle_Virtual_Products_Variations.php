@@ -132,55 +132,29 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	private function sync_and_hide() {
 		global $wpdb;
 
-		$rows_inserted = 0;
+		$results = $this->get_posts_to_update();
 
-		// get post IDs to update
-		$sql = "
-			SELECT DISTINCT( posts.ID )
-			FROM {$wpdb->posts} AS posts
-			INNER JOIN {$wpdb->postmeta} AS virtual_meta ON ( posts.ID = virtual_meta.post_id AND virtual_meta.meta_key = '_virtual' AND virtual_meta.meta_value = 'yes' )
-			LEFT JOIN {$wpdb->postmeta} AS sync_meta ON ( posts.ID = sync_meta.post_id AND sync_meta.meta_key = '_wc_facebook_sync_enabled' )
-			LEFT JOIN {$wpdb->postmeta} AS visibility_meta ON ( posts.ID = visibility_meta.post_id AND visibility_meta.meta_key = 'fb_visibility' )
-			WHERE posts.post_type IN ( 'product', 'product_variation' )
-			AND ( sync_meta.meta_value IS NULL OR sync_meta.meta_value = 'yes' )
-			AND ( visibility_meta.meta_value IS NULL OR visibility_meta.meta_value = 'yes' )
-			LIMIT 1000
-		";
-
-		$post_ids = $wpdb->get_col( $sql );
-
-		if ( empty( $post_ids ) ) {
+		if ( empty( $results ) ) {
 
 			facebook_for_woocommerce()->log( 'There are no products or products variations to update.' );
+			return 0;
+		}
 
-		} else {
+		$insert = $update = [];
 
-			$values = [];
+		foreach ( $results as $result ) {
 
-			foreach ( $post_ids as $post_id ) {
-
-				$values[] = "('$post_id', 'fb_visibility', 'no')";
-			}
-
-			$values_str = implode( ',', $values );
-
-			// we need to explicitly insert the metadata and set it to no, because not having it means it is visible
-			$sql = "
-				INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value )
-					VALUES {$values_str}
-			";
-
-			$rows_inserted = $wpdb->query( $sql );
-
-			if ( false === $rows_inserted ) {
-
-				$message = sprintf( 'There was an error trying to set products and variations meta data. %s', $wpdb->last_error );
-
-				facebook_for_woocommerce()->log( $message );
+			if ( $result->visibility ) {
+				$update[] = $result->id;
+			} else {
+				$insert[] = $result->id;
 			}
 		}
 
-		return (int) $rows_inserted;
+		$rows_inserted = $this->set_product_visibility_meta( $insert );
+		$rows_updated  = $this->update_product_visibility_meta( $update );
+
+		return $rows_inserted + $rows_updated;
 	}
 
 
