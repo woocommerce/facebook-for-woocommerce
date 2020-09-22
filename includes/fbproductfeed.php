@@ -854,6 +854,23 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
+		 * Gets the value from the product data.
+		 *
+		 * This method is used to avoid PHP undefined index notices.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param array $product_data the product data retrieved from a Woo product passed by reference
+		 * @param string $index the data index
+		 * @return mixed|string the data value or an empty string
+		 */
+		private static function get_value_from_product_data( &$product_data, $index ) {
+
+			return isset( $product_data[ $index ] ) ? $product_data[ $index ] : '';
+		}
+
+
+		/**
 		 * Gets the status of the configured feed upload.
 		 *
 		 * The status indicator is one of 'in progress', 'complete', or 'error'.
