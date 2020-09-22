@@ -13,7 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Events;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Base Automatic advanced matching  settings object
+ * Base Automatic advanced matching settings object
  *
  */
 class AAMSettings {
@@ -55,8 +55,8 @@ class AAMSettings {
 		else{
 			$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 			if (!array_key_exists('errorMessage', $response_body)){
-        return new AAMSettings($response_body['matchingConfig']);
-      }
+				return new AAMSettings($response_body['matchingConfig']);
+			}
 		}
 		return null;
 	}
