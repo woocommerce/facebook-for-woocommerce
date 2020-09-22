@@ -180,7 +180,8 @@ class Orders {
 
 		$action = $wp_list_table->current_action();
 
-		if ( ! $action ) {
+		// listen for order status change actions
+		if ( ! $action || ! Framework\SV_WC_Helper::str_starts_with( $action, 'mark_' ) ) {
 			return;
 		}
 
