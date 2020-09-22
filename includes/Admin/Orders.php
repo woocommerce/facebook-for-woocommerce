@@ -127,20 +127,26 @@ class Orders {
 			] );
 		}
 
-		if ( get_transient( 'wc_facebook_bulk_order_update' ) ) {
+		$commerce_orders = get_transient( $this->bulk_order_update_transient );
 
-			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> */
-			$message = sprintf(
-				__( '%1$sHeads up!%2$s Instagram order statuses can’t be updated in bulk. Please update Instagram orders individually so you can provide order details required by Instagram.', 'facebook-for-woocommerce' ),
-				'<strong>', '</strong>'
-			);
+		if ( ! empty( $commerce_orders ) ) {
 
-			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_facebook_bulk_order_update', [
-				'dismissible'  => true,
-				'notice_class' => 'notice-info',
-			] );
+			// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
+			facebook_for_woocommerce()->get_message_handler()->add_error(sprintf(
+				_n(
+				/* translators: %s - order ID */
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+					/* translators: %s - order IDs list */
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+					count($commerce_orders),
+					'facebook-for-woocommerce'
+				),
+				implode(', ', $commerce_orders)
+			));
 
-			delete_transient( 'wc_facebook_bulk_order_update' );
+			delete_transient($this->bulk_order_update_transient);
+
+			facebook_for_woocommerce()->get_message_handler()->show_messages();
 		}
 	}
 
