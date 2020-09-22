@@ -184,7 +184,7 @@ class Orders {
 	 */
 	public function handle_bulk_update() {
 
-		if ( current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
 
