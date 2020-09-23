@@ -17,8 +17,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/Admin/Orders.php';
-		require_once 'includes/Commerce/Orders.php';
+		if ( ! class_exists( Admin\Orders::class ) ) {
+			require_once 'includes/Admin/Orders.php';
+		}
+
+		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\Commerce\Orders::class ) ) {
+			require_once 'includes/Commerce/Orders.php';
+		}
 	}
 
 
@@ -38,8 +43,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	// TODO: add test for add_notices()
 
 	// TODO: add test for maybe_remove_order_metaboxes()
-
-	// TODO: add test for render_modal_templates()
 
 	// TODO: add test for render_refund_reason_field()
 

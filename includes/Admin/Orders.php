@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Commerce;
+use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -53,8 +54,6 @@ class Orders {
 
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
-		add_action( 'admin_footer', [ $this, 'render_modal_templates' ] );
-
 		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
 
 		add_action( 'woocommerce_refund_created', [ $this, 'handle_refund' ] );
@@ -94,9 +93,15 @@ class Orders {
 		], \WC_Facebookcommerce::VERSION );
 
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
-			'order_id'          => $order->get_id(),
-			'is_commerce_order' => Commerce\Orders::is_commerce_order( $order ),
-			'shipment_tracking' => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'order_id'               => $order->get_id(),
+			'is_commerce_order'      => Commerce\Orders::is_commerce_order( $order ),
+			'shipment_tracking'      => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'complete_modal_message' => $this->get_complete_modal_message(),
+			'complete_modal_buttons' => $this->get_complete_modal_buttons(),
+			'refund_modal_message'   => $this->get_refund_modal_message(),
+			'refund_modal_buttons'   => $this->get_refund_modal_buttons(),
+			'cancel_modal_message'   => $this->get_cancel_modal_message(),
+			'cancel_modal_buttons'   => $this->get_cancel_modal_buttons(),
 		] );
 	}
 
@@ -169,14 +174,146 @@ class Orders {
 
 
 	/**
-	 * Renders the Complete, Refund, & Cancel modals templates markup.
-	 *
-	 * @internal
+	 * Gets the markup for the buttons used in a modal.
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $submit_label label for the submit button
+	 * @return string
 	 */
-	public function render_modal_templates() {
+	private function get_modal_buttons( $submit_label ) {
 
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( $submit_label ); ?></button>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$shipment_utilities = new Shipment();
+
+		woocommerce_wp_select( [
+			'id'      => 'wc_facebook_carrier',
+			'label'   => __( 'Carrier', 'facebook-for-woocommerce' ),
+			'options' => $shipment_utilities->get_carrier_options(),
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'    => 'wc_facebook_tracking_number',
+			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
+		] );
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit order', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for refunding this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$this->render_refund_reason_field();
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit refund', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for cancelling this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		woocommerce_wp_select( [
+			'id'      => 'wc_facebook_cancel_reason',
+			'label'   => '',
+			'options' => facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_cancellation_reasons(),
+		] );
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit cancellation', 'facebook-for-woocommerce' ) );
 	}
 
 

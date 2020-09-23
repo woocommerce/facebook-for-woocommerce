@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
-use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
+use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
@@ -53,6 +53,21 @@ class Orders {
 
 	/** @var string other refund reason */
 	const REFUND_REASON_OTHER = 'REFUND_REASON_OTHER';
+
+	/** @var string customer requested cancellation */
+	const CANCEL_REASON_CUSTOMER_REQUESTED = 'CUSTOMER_REQUESTED';
+
+	/** @var string out of stock cancellation */
+	const CANCEL_REASON_OUT_OF_STOCK = 'OUT_OF_STOCK';
+
+	/** @var string invalid address cancellation */
+	const CANCEL_REASON_INVALID_ADDRESS = 'INVALID_ADDRESS';
+
+	/** @var string suspicious order cancellation */
+	const CANCEL_REASON_SUSPICIOUS_ORDER = 'SUSPICIOUS_ORDER';
+
+	/** @var string other reason cancellation */
+	const CANCEL_REASON_OTHER = 'CANCEL_REASON_OTHER';
 
 
 	/**
@@ -358,6 +373,11 @@ class Orders {
 	 */
 	public function update_local_orders() {
 
+		// sanity check for connection status
+		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) {
+			return;
+		}
+
 		$page_id = facebook_for_woocommerce()->get_integration()->get_facebook_page_id();
 
 		try {
@@ -450,7 +470,7 @@ class Orders {
 	 */
 	public function schedule_local_orders_update() {
 
-		if ( false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
 
 			$interval = $this->get_order_update_interval();
 
@@ -663,16 +683,10 @@ class Orders {
 
 		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
 
-		$valid_reason_codes = [
-			Request::REASON_CUSTOMER_REQUESTED,
-			Request::REASON_INVALID_ADDRESS,
-			Request::REASON_OTHER,
-			Request::REASON_OUT_OF_STOCK,
-			Request::REASON_SUSPICIOUS_ORDER,
-		];
+		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Request::REASON_OTHER;
+			$reason_code = Orders::CANCEL_REASON_OTHER;
 		}
 
 		try {
@@ -693,6 +707,26 @@ class Orders {
 
 			throw $exception;
 		}
+	}
+
+
+	/**
+	 * Gets the valid cancellation reasons.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array key-value array with codes and their labels
+	 */
+	public function get_cancellation_reasons() {
+
+		return [
+
+			self::CANCEL_REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
+		];
 	}
 
 
