@@ -190,9 +190,7 @@ class Orders {
 	 */
 	public function render_refund_reason_field() {
 
-		$current_screen = Framework\SV_WC_Helper::get_current_screen();
-
-		if ( ! $current_screen || 'shop_order' !== $current_screen->id ) {
+		if ( ! $this->is_edit_order_screen() ) {
 			return;
 		}
 
