@@ -260,7 +260,7 @@ class Orders {
 		<p><?php esc_html_e( 'Select a reason for refunding this order:', 'facebook-for-woocommerce' ); ?></p>
 		<?php
 
-		$this->render_refund_reason_field();
+		$this->render_refund_reason_field( false );
 
 		return ob_get_clean();
 	}
