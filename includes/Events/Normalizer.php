@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
  */
 class Normalizer {
 	/**
+	 * Normalizes $data according to its type
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $field to be normalized.
 	 * @param string $data value to be normalized
 	 * @return string
@@ -69,6 +73,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes an array containing user data
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string[] array with user data to be normalized
 	 * @return string[]
 	 */
@@ -96,8 +104,13 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes an email
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $email Email address to be normalized.
 	 * @return string
+	 * @throws InvalidArgumentException
 	 */
 	private static function normalizeEmail($email) {
 		// Validates email against RFC 822
@@ -111,6 +124,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes a city name
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $city city name to be normalized.
 	 * @return string
 	 */
@@ -119,6 +136,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes a state code
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $state state name to be normalized.
 	 * @return string
 	 */
@@ -127,8 +148,13 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes a country code
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $country country code to be normalized(ISO 3166-2).
 	 * @return string
+	 * @throws InvalidArgumentException
 	 */
 	private static function normalizeCountry($country) {
 		$result = preg_replace('/[^a-z]/i', '', $country);
@@ -141,6 +167,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes a zip code
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $zip postal code to be normalized.
 	 * @return string
 	 */
@@ -154,6 +184,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Normalizes a phone number
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $phone phone number to be normalized.
 	 * @return string
 	 */
@@ -168,6 +202,10 @@ class Normalizer {
 	}
 
 	/**
+	 * Checks if a phone number is international
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param string $phone_number Phone number to be normalized.
 	 * @return bool
 	 */
