@@ -17,7 +17,9 @@ class ShipmentTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/Utilities/Shipment.php';
+		if ( ! class_exists( Shipment::class ) ) {
+			require_once 'includes/Utilities/Shipment.php';
+		}
 	}
 
 
