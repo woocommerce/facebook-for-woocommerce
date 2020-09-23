@@ -176,6 +176,33 @@ class Orders {
 
 
 	/**
+	 * Gets the markup for the buttons used in a modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $submit_label label for the submit button
+	 * @return string
+	 */
+	private function get_modal_buttons( $submit_label ) {
+
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html( $submit_label ); ?></button>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
 	 * Gets the markup for the message used in the Complete modal.
 	 *
 	 * @since 2.1.0-dev.1
@@ -216,20 +243,7 @@ class Orders {
 	 */
 	private function get_complete_modal_buttons() {
 
-		ob_start();
-
-		?>
-		<button
-			id="btn-ok"
-			class="button button-large button-primary"
-		><?php esc_html_e( 'Submit order', 'facebook-for-woocommerce' ); ?></button>
-		<button
-			class="button button-large"
-			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
-		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
-		<?php
-
-		return ob_get_clean();
+		return $this->get_modal_buttons( __( 'Submit order', 'facebook-for-woocommerce' ) );
 	}
 
 
@@ -263,20 +277,7 @@ class Orders {
 	 */
 	private function get_refund_modal_buttons() {
 
-		ob_start();
-
-		?>
-		<button
-			id="btn-ok"
-			class="button button-large button-primary"
-		><?php esc_html_e( 'Submit refund', 'facebook-for-woocommerce' ); ?></button>
-		<button
-			class="button button-large"
-			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
-		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
-		<?php
-
-		return ob_get_clean();
+		return $this->get_modal_buttons( __( 'Submit refund', 'facebook-for-woocommerce' ) );
 	}
 
 
@@ -314,20 +315,7 @@ class Orders {
 	 */
 	private function get_cancel_modal_buttons() {
 
-		ob_start();
-
-		?>
-		<button
-			id="btn-ok"
-			class="button button-large button-primary"
-		><?php esc_html_e( 'Submit cancellation', 'facebook-for-woocommerce' ); ?></button>
-		<button
-			class="button button-large"
-			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
-		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
-		<?php
-
-		return ob_get_clean();
+		return $this->get_modal_buttons( __( 'Submit cancellation', 'facebook-for-woocommerce' ) );
 	}
 
 
