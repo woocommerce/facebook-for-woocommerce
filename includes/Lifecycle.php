@@ -40,6 +40,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.1',
 			'1.11.0',
 			'2.0.0',
+			'2.0.2',
 		];
 	}
 
@@ -263,6 +264,23 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// deletes an option that is not longer used to generate an admin notice
 		delete_option( 'fb_cart_url' );
+	}
+
+
+	/**
+	 * Upgrades to version 2.0.2
+	 *
+	 * @since 2.0.2-dev.1
+	 */
+	protected function upgrade_to_2_0_2() {
+
+		// create a job to remove duplicate visibility meta data entries
+		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
+
+			// create_job() expects an non-empty array of attributes
+			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
+			$handler->dispatch();
+		}
 	}
 
 
