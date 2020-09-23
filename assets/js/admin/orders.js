@@ -40,6 +40,8 @@ jQuery( document ).ready( ( $ ) => {
 		$( document.body )
 			.off( 'wc_backbone_modal_response.facebook_for_commerce' )
 			.on( 'wc_backbone_modal_response.facebook_for_commerce', function() {
+				// copy the value of the modal select to the WC field
+				$( '#refund_reason ' ).val( $( '#wc_facebook_refund_reason' ).val() );
 				$form.data( 'allow-submit', true ).find( ':submit' ).trigger( 'click' );
 			} );
 	}
