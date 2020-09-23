@@ -98,6 +98,7 @@ class AJAX {
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			if ( $order instanceof \WC_Abstract_Order ) {
+				/* translators: Admin cancel commerce order error message placeholder */
 				$order->add_order_note( sprintf( __( 'Could not cancel order. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
 			}
 
