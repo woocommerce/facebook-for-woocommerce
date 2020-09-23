@@ -52,6 +52,9 @@ class AJAX {
 
 		// search a product's attributes for the given term
 		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, [ $this, 'admin_search_product_attributes' ] );
+
+		// complete a Facebook order for the given order ID
+		add_action( 'wp_ajax_' . self::ACTION_COMPLETE_ORDER, [ $this, 'admin_complete_order' ] );
 	}
 
 
