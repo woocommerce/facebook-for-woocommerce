@@ -1,11 +1,11 @@
 <?php
 
-use Codeception\Util\Stub;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -854,7 +854,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 					'item_refund_quantity' => 2,
 				],
 			],
-			'reason_code' => API\Orders\Refund\Request::REASON_BUYERS_REMORSE,
+			'reason_code' => Orders::REFUND_REASON_BUYERS_REMORSE,
 			'reason_text' => 'Optional description of the reason',
 			'shipping'    => [
 				'shipping_refund' => [
