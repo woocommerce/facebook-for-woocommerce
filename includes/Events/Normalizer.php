@@ -73,7 +73,7 @@ class Normalizer {
 	 */
 	public static function normalize_array($data, $is_pixel_data){
 		// Country is encoded as cn in Pixel events and country in CAPI events
-		$keys_to_normalize = ['em', 'ph', 'zp', 'ct', 'st'];
+		$keys_to_normalize = ['fn', 'ln', 'em', 'ph', 'zp', 'ct', 'st'];
 		if($is_pixel_data){
 			$keys_to_normalize[] = 'cn';
 		}

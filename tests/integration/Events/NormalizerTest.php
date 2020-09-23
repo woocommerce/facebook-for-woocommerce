@@ -73,4 +73,15 @@ class NormalizerTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals("1234567890", $normalized_phone_number);
 	}
 
+	public function test_normalize_first_name(){
+		$first_name = 'John';
+		$normalized_first_name = Normalizer::normalize('fn', $first_name);
+		$this->assertEquals('john', $normalized_first_name);
+	}
+
+	public function test_normalize_last_name(){
+		$last_name = 'Doe';
+		$normalized_last_name = Normalizer::normalize('ln', $last_name);
+		$this->assertEquals('doe', $normalized_last_name);
+	}
 }
