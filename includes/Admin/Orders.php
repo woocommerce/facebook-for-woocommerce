@@ -242,6 +242,15 @@ class Orders {
 	 */
 	private function get_refund_modal_message() {
 
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for refunding this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$this->render_refund_reason_field();
+
+		return ob_get_clean();
 	}
 
 
