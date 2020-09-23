@@ -425,7 +425,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		] );
 	}
 
-	public function load_aam_settings_of_pixel(){
+	/**
+	 * @since 2.0.2-dev.1
+	 *
+	 * @return AAMSettings
+	 */
+	private function load_aam_settings_of_pixel() {
 		$installed_pixel = $this->get_facebook_pixel_id();
 		// If no pixel is installed, reading the DB is not needed
 		if(!$installed_pixel ){
