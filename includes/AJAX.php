@@ -132,6 +132,12 @@ class AJAX {
 				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ), 400 );
 			}
 
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order instanceof \WC_Order ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ), 404 );
+			}
+
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
