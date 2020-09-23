@@ -23,6 +23,7 @@ class Normalizer {
 	 * @param string $field to be normalized.
 	 * @param string $data value to be normalized
 	 * @return string
+	 * @throws InvalidArgumentException
 	 */
 	public static function normalize($field, $data) {
 		if ($data == null || strlen($data) == 0) {
