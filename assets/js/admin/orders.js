@@ -13,13 +13,13 @@ jQuery( document ).ready( ( $ ) => {
 
 	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
 
-	window.WCFacebookCommerceOrderOperations = {
+	const WCFacebookCommerceOrderOperations = {
 		/**
 		 * Restrict order status options to only allowed options.
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
-		restrict_order_statuses             : $orderStatus => {
+		restrict_order_statuses: $orderStatus => {
 
 			$orderStatus.find( 'option' ).each( function ( index, option ) {
 
@@ -30,8 +30,7 @@ jQuery( document ).ready( ( $ ) => {
 				}
 			} );
 		},
-		
-		
+
 		/**
 		 * Enable or Disable order created fields.
 		 *
