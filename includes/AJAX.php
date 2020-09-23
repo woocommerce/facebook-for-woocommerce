@@ -26,6 +26,9 @@ class AJAX {
 	/** @var string the product attribute search AJAX action */
 	const ACTION_SEARCH_PRODUCT_ATTRIBUTES = 'wc_facebook_search_product_attributes';
 
+	/** @var string the complete order AJAX action */
+	const ACTION_COMPLETE_ORDER = 'wc_facebook_complete_order';
+
 
 	/**
 	 * AJAX handler constructor.
