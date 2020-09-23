@@ -9,23 +9,7 @@ use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
  */
 class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 
-
-	/** @var \IntegrationTester */
-	protected $tester;
-
-
-	public function _before() {
-
-		parent::_before();
-
-		if ( ! class_exists( AAMSettings::class ) ) {
-			require_once 'includes/Events/AAMSettings.php';
-		}
-	}
-
-
 	/** Test methods **************************************************************************************************/
-
 
 	/** @see AAMSettings:__construct() */
 	public function test_constructor() {
