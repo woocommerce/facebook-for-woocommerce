@@ -31,38 +31,47 @@ jQuery( document ).ready( ( $ ) => {
 			} );
 		},
 
+
 		/**
 		 * Enable or Disable order created fields.
 		 *
 		 * @param {Boolean} enable whether to enable date fields (true) or not (false)
 		 */
-		toggle_created_date_fields_status   : enable => {
+		toggle_created_date_fields_status: enable => {
 			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
 		},
+
+
 		/**
 		 * Disable order status field
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
-		disable_order_status_field          : ( $orderStatus ) => {
+		disable_order_status_field: ( $orderStatus ) => {
 			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
 		},
+
+
 		/**
 		 * Toggle customer field
 		 *
 		 * @param {Boolean} hide
 		 */
-		toggle_order_customer_field         : ( hide ) => {
+		toggle_order_customer_field: ( hide ) => {
 			$( '#order_data' ).find( '.form-field.wc-customer-user' ).addClass( 'hidden', hide );
 		},
+
+
 		/**
 		 * Toggle customer field
 		 *
 		 * @param {Boolean} hide
 		 */
-		toggle_billing_and_shipping_fields  : ( hide ) => {
+		toggle_billing_and_shipping_fields: ( hide ) => {
 			$( '#order_data' ).find( 'a.edit_address' ).addClass( 'hidden', hide );
 		},
+
+
 		/**
 		 * Disable order status field
 		 *
