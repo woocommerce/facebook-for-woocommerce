@@ -112,8 +112,13 @@ class AJAX {
 
 		try {
 
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'nonce' ), self::ACTION_COMPLETE_ORDER ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce', 403 );
+			}
+
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
+			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
 		}
 	}
 
