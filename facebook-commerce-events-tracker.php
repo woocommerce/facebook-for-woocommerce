@@ -976,6 +976,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets advanced matching information from a given order
 		 *
+		 * @since 2.0.2-dev.1
+		 *
 		 * @return array
 		 */
 		private function get_user_data_from_billing_address($order) {
