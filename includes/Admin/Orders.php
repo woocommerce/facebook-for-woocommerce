@@ -308,11 +308,8 @@ class Orders {
 	 */
 	public function is_order_editable( $maybe_editable, $order ) {
 
-		// checks if the order is an instance of WC_Order
-		$is_wc_order = isset( $order ) && $order instanceof \WC_Order;
-
 		// if the order is a WC_Order, determines whether it is pending or not
-		$is_order_pending = $is_wc_order && Commerce\Orders::is_order_pending( $order );
+		$is_order_pending = $order instanceof \WC_Order && Commerce\Orders::is_order_pending( $order );
 
 		return $maybe_editable && ! $is_order_pending;
 	}
