@@ -70,12 +70,12 @@ class AJAX {
 
 		try {
 
-			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_requested_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
 				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
 			}
 
-			$order_id    = Framework\SV_WC_Helper::get_requested_value( 'order_id' );
-			$reason_code = Framework\SV_WC_Helper::get_requested_value( 'reason_code' );
+			$order_id    = Framework\SV_WC_Helper::get_posted_value( 'order_id' );
+			$reason_code = Framework\SV_WC_Helper::get_posted_value( 'reason_code' );
 
 			if ( empty( $order_id ) ) {
 				throw new Framework\SV_WC_Plugin_Exception( 'Order ID is required' );
@@ -104,6 +104,7 @@ class AJAX {
 			wp_send_json_error( $exception->getMessage() );
 		}
 	}
+
 
 	/**
 	 * Searches a product's attributes for the given term.
