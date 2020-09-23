@@ -11,6 +11,7 @@
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
+use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -56,6 +57,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var Background_Handle_Virtual_Products_Variations instance */
 		protected $background_handle_virtual_products_variations;
+
+		/** @var Background_Remove_Duplicate_Visibility_Meta job handler instance */
+		protected $background_remove_duplicate_visibility_meta;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
 		private $products_sync_handler;
@@ -133,6 +137,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Utilities/Background_Handle_Virtual_Products_Variations.php';
 
 					$this->background_handle_virtual_products_variations = new Background_Handle_Virtual_Products_Variations();
+
+				}
+
+				if ( 'yes' !== get_option( 'wc_facebook_background_remove_duplicate_visibility_meta_complete', 'no' ) ) {
+
+					require_once __DIR__ . '/includes/Utilities/Background_Remove_Duplicate_Visibility_Meta.php';
+
+					$this->background_remove_duplicate_visibility_meta = new Background_Remove_Duplicate_Visibility_Meta();
 				}
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
@@ -495,6 +507,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_background_handle_virtual_products_variations_instance() {
 
 			return $this->background_handle_virtual_products_variations;
+		}
+
+
+		/**
+		 * Gets the background remove duplicate visibility meta data handler instance.
+		 *
+		 * @since 2.0.2-dev.1
+		 *
+		 * @return Background_Remove_Duplicate_Visibility_Meta
+		 */
+		public function get_background_remove_duplicate_visibility_meta_instance() {
+
+			return $this->background_remove_duplicate_visibility_meta;
 		}
 
 
