@@ -14,7 +14,6 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
-use function Crontrol\Event\get_list_table;
 
 /**
  * General handler for order admin functionality.
