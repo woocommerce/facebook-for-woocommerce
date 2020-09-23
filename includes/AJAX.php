@@ -138,6 +138,10 @@ class AJAX {
 				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ), 404 );
 			}
 
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->fulfill_order( $order, $tracking_number, $carrier_code );
+
+			wp_send_json_success();
+
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
