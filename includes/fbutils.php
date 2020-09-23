@@ -223,7 +223,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 					'ln' => $current_user->user_lastname,
 				);
 				$user_id = get_current_user_id();
-				if($user_data != 0){
+				if( 0 !== $user_id ){
 					$user_data['ct'] = get_user_meta($user_id, 'billing_city', true);
 					$user_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
 					$user_data['country'] = get_user_meta($user_id, 'billing_country', true);
