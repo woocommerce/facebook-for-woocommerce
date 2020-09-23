@@ -34,6 +34,8 @@ class AAMSettings {
 	/**
 	 * AAMSettings constructor
 	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @param array $data
 	 */
 	public function __construct( $data = array() ) {
@@ -49,6 +51,10 @@ class AAMSettings {
 	/**
 	 * Factory method that builds an AAMSettings object given a pixel id
 	 * by sending a request to connect.facebook.net domain
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @param string $pixel_id
 	 */
 	public static function build_from_pixel_id( $pixel_id ){
 		$url = self::get_url($pixel_id);
@@ -67,6 +73,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Gets enable automatic matching flag
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return bool
 	 */
 	public function get_enable_automatic_matching(){
@@ -74,6 +84,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Gets enabled automatic matching fields array
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return string[]
 	 */
 	public function get_enabled_automatic_matching_fields(){
@@ -81,6 +95,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Gets the pixel id
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return string
 	 */
 	public function get_pixel_id(){
@@ -88,6 +106,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Sets the enable automatic matching flag
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return AAMSettings
 	 */
 	public function set_enable_automatic_matching($enable_automatic_matching){
@@ -96,6 +118,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Sets the enabled automatic matching fields flag
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return AAMSettings
 	 */
 	public function set_enabled_automatic_matching_fields($enabled_automatic_matching_fields){
@@ -104,6 +130,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Sets the pixel id
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return AAMSettings
 	 */
 	public function set_pixel_id($pixel_id){
@@ -112,6 +142,10 @@ class AAMSettings {
 	}
 
 	/**
+	 * Returns the json string representing this object
+	 *
+	 * @since 2.0.2-dev.1
+	 *
 	 * @return string
 	 */
 	public function __toString(){
