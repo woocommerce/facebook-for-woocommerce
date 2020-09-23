@@ -190,7 +190,7 @@ class Orders {
 		<button
 			id="btn-ok"
 			class="button button-large button-primary"
-		><?php esc_html( $submit_label ); ?></button>
+		><?php esc_html_e( $submit_label ); ?></button>
 		<button
 			class="button button-large"
 			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
