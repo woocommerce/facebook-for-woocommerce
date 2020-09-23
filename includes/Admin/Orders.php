@@ -297,7 +297,7 @@ class Orders {
 		<?php
 
 		woocommerce_wp_select( [
-			'id'      => 'wc_facebook_cancellation_reason',
+			'id'      => 'wc_facebook_cancel_reason',
 			'label'   => '',
 			'options' => facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_cancellation_reasons(),
 		] );
