@@ -395,6 +395,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info(),
 			];
 
 			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
