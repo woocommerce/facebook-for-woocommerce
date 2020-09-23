@@ -166,13 +166,7 @@ class Orders {
 	public function maybe_remove_order_metaboxes() {
 		global $post;
 
-		if ( ! $post instanceof \WP_Post ) {
-			return;
-		}
-
-		$current_screen = Framework\SV_WC_Helper::get_current_screen();
-
-		if ( ! $current_screen || 'shop_order' !== $current_screen->id ) {
+		if ( ! $post instanceof \WP_Post || ! $this->is_edit_order_screen() ) {
 			return;
 		}
 
@@ -182,7 +176,7 @@ class Orders {
 			return;
 		}
 
-		remove_meta_box( 'woocommerce-order-actions', $current_screen, 'side' );
+		remove_meta_box( 'woocommerce-order-actions', get_current_screen(), 'side' );
 	}
 
 
