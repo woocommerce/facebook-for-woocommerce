@@ -478,9 +478,12 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function is_order_editable( $maybe_editable, \WC_Order $order ) {
+	public function is_order_editable( $maybe_editable, $order ) {
 
-		return $maybe_editable;
+		// if the order is a WC_Order, determines whether it is pending or not
+		$is_order_pending = $order instanceof \WC_Order && Commerce\Orders::is_order_pending( $order );
+
+		return $maybe_editable && ! $is_order_pending;
 	}
 
 
