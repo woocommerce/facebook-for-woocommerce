@@ -34,7 +34,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Enable or Disable order created fields.
 		 *
-		 * @param {Boolean} enable wither to enable date fields (true) or not (false)
+		 * @param {Boolean} enable whether to enable date fields (true) or not (false)
 		 */
 		toggle_created_date_fields_status   : enable => {
 			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
