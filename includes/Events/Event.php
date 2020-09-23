@@ -130,6 +130,17 @@ class Event {
 		$this->data['user_data'] = $this->hash_pii_data( $this->data['user_data'] );
 	}
 
+	/**
+	 * Hashes the user data
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/user-data
+	 *
+	 * @since 2.0.2-dev.1
+	 *
+	 * @param array $user_data user data
+	 *
+	 * @return array
+	 */
 	protected function hash_pii_data( $user_data ){
 		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country'];
 		foreach( $keys_to_hash as $key ){
