@@ -116,6 +116,12 @@ class AJAX {
 				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce', 403 );
 			}
 
+			$order_id        = (int) Framework\SV_WC_Helper::get_posted_value( 'order_id' );
+
+			if ( empty( $order_id ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ), 400 );
+			}
+
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
