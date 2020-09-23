@@ -24,6 +24,9 @@ class AAMSettings {
 	/** @var string[] advanced matching fields to extract when $enable_automatic_matching is true*/
 	private $enabled_automatic_matching_fields;
 
+	/** @var string pixel id associated with this settings*/
+	private $pixel_id;
+
 	const SIGNALS_JSON_CONFIG_PATH = 'signals/config/json';
 
 	const CONNECT_FACEBOOK_DOMAIN = 'https://connect.facebook.net/';
@@ -36,6 +39,7 @@ class AAMSettings {
 	public function __construct( $data = array() ) {
 		$this->enable_automatic_matching = isset($data['enableAutomaticMatching']) ? $data['enableAutomaticMatching'] : null;
 		$this->enabled_automatic_matching_fields =	isset($data['enabledAutomaticMatchingFields']) ? $data['enabledAutomaticMatchingFields'] : null;
+		$this->pixel_id = isset($data['pixelId']) ? $data['pixelId'] : null;
 	}
 
 	public static function get_url($pixel_id){
@@ -55,6 +59,7 @@ class AAMSettings {
 		else{
 			$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 			if (!array_key_exists('errorMessage', $response_body)){
+				$response_body['matchingConfig']['pixelId'] = $pixel_id;
 				return new AAMSettings($response_body['matchingConfig']);
 			}
 		}
@@ -76,6 +81,13 @@ class AAMSettings {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function get_pixel_id(){
+		return $this->pixel_id;
+	}
+
+	/**
 	 * @return AAMSettings
 	 */
 	public function set_enable_automatic_matching($enable_automatic_matching){
@@ -92,13 +104,22 @@ class AAMSettings {
 	}
 
 	/**
+	 * @return AAMSettings
+	 */
+	public function set_pixel_id($pixel_id){
+		$this->pixel_id = $pixel_id;
+		return $this;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString(){
 		return json_encode(
 			array(
 				'enableAutomaticMatching' => $this->enable_automatic_matching,
-				'enabledAutomaticMatchingFields' => $this->enabled_automatic_matching_fields
+				'enabledAutomaticMatchingFields' => $this->enabled_automatic_matching_fields,
+				'pixelId' => $this->pixel_id
 			)
 		);
 	}

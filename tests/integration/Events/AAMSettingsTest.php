@@ -31,11 +31,13 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 	public function test_constructor() {
 		$data = array(
 			'enableAutomaticMatching' => true,
-			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country']
+			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country'],
+			'pixelId' => '123',
 		);
 		$aam_settings = new AAMSettings($data);
 		$this->assertEquals($data['enableAutomaticMatching'], $aam_settings->get_enable_automatic_matching());
 		$this->assertEquals($data['enabledAutomaticMatchingFields'], $aam_settings->get_enabled_automatic_matching_fields());
+		$this->assertEquals($data['pixelId'], $aam_settings->get_pixel_id());
 	}
 
 
@@ -63,6 +65,7 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 	/** @see AAMSettings:build_from_pixel_id */
 	public function test_not_null_settings_for_valid_pixel() {
 		$pixel_id = '23';
+		// Pixel id is not returned by the endpoint
 		$data = [
 			'enableAutomaticMatching' => true,
 			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country']
@@ -78,13 +81,15 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertNotNull($aam_settings);
 		$this->assertEquals($data['enableAutomaticMatching'], $aam_settings->get_enable_automatic_matching());
 		$this->assertEquals($data['enabledAutomaticMatchingFields'], $aam_settings->get_enabled_automatic_matching_fields());
+		$this->assertEquals($pixel_id, $aam_settings->get_pixel_id());
 	}
 
 	/** @see AAMSettings:__toString */
 	public function test_to_string() {
 		$data = array(
 			'enableAutomaticMatching' => true,
-			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country']
+			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country'],
+			'pixelId' => '123'
 		);
 		$aam_settings = new AAMSettings($data);
 		$expected_json = json_encode($data);
