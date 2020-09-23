@@ -128,7 +128,6 @@ class Event {
 		$this->data['user_data'] = Normalizer::normalize_array( $this->data['user_data'], false );
 
 		$this->data['user_data'] = $this->hash_pii_data( $this->data['user_data'] );
-
 	}
 
 	protected function hash_pii_data( $user_data ){
