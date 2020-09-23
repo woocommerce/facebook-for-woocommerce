@@ -36,6 +36,24 @@ class Orders {
 	/** @var string the meta key used to store the email remarketing option */
 	const EMAIL_REMARKETING_META_KEY = '_wc_facebook_commerce_email_remarketing';
 
+	/** @var string buyer's remorse refund reason */
+	const REFUND_REASON_BUYERS_REMORSE = 'BUYERS_REMORSE';
+
+	/** @var string damaged goods refund reason */
+	const REFUND_REASON_DAMAGED_GOODS = 'DAMAGED_GOODS';
+
+	/** @var string not as described refund reason */
+	const REFUND_REASON_NOT_AS_DESCRIBED = 'NOT_AS_DESCRIBED';
+
+	/** @var string quality issue refund reason */
+	const REFUND_REASON_QUALITY_ISSUE = 'QUALITY_ISSUE';
+
+	/** @var string wrong item refund reason */
+	const REFUND_REASON_WRONG_ITEM = 'WRONG_ITEM';
+
+	/** @var string other refund reason */
+	const REFUND_REASON_OTHER = 'REFUND_REASON_OTHER';
+
 
 	/**
 	 * Orders constructor.
@@ -538,16 +556,16 @@ class Orders {
 		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
 
 		$valid_reason_codes = [
-			Refund_Request::REASON_BUYERS_REMORSE,
-			Refund_Request::REASON_DAMAGED_GOODS,
-			Refund_Request::REASON_NOT_AS_DESCRIBED,
-			Refund_Request::REASON_QUALITY_ISSUE,
-			Refund_Request::REASON_OTHER,
-			Refund_Request::REASON_WRONG_ITEM,
+			self::REFUND_REASON_BUYERS_REMORSE,
+			self::REFUND_REASON_DAMAGED_GOODS,
+			self::REFUND_REASON_NOT_AS_DESCRIBED,
+			self::REFUND_REASON_QUALITY_ISSUE,
+			self::REFUND_REASON_OTHER,
+			self::REFUND_REASON_WRONG_ITEM,
 		];
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Refund_Request::REASON_OTHER;
+			$reason_code = self::REFUND_REASON_OTHER;
 		}
 
 		try {
