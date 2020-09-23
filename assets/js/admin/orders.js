@@ -58,7 +58,7 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Boolean} hide
 		 */
 		toggle_order_customer_field: ( hide ) => {
-			$( '#order_data' ).find( '.form-field.wc-customer-user' ).addClass( 'hidden', hide );
+			$( '#order_data' ).find( '.form-field.wc-customer-user' ).toggleClass( 'hidden', hide );
 		},
 
 
@@ -68,7 +68,7 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Boolean} hide
 		 */
 		toggle_billing_and_shipping_fields: ( hide ) => {
-			$( '#order_data' ).find( 'a.edit_address' ).addClass( 'hidden', hide );
+			$( '#order_data' ).find( 'a.edit_address' ).toggleClass( 'hidden', hide );
 		},
 
 
