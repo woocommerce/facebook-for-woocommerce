@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Commerce;
 
-use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request;
+use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Request;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
@@ -35,6 +35,21 @@ class Orders {
 
 	/** @var string the meta key used to store the email remarketing option */
 	const EMAIL_REMARKETING_META_KEY = '_wc_facebook_commerce_email_remarketing';
+
+	/** @var string customer requested cancellation */
+	const CANCEL_REASON_CUSTOMER_REQUESTED = 'CUSTOMER_REQUESTED';
+
+	/** @var string out of stock cancellation */
+	const CANCEL_REASON_OUT_OF_STOCK = 'OUT_OF_STOCK';
+
+	/** @var string invalid address cancellation */
+	const CANCEL_REASON_INVALID_ADDRESS = 'INVALID_ADDRESS';
+
+	/** @var string suspicious order cancellation */
+	const CANCEL_REASON_SUSPICIOUS_ORDER = 'SUSPICIOUS_ORDER';
+
+	/** @var string other reason cancellation */
+	const CANCEL_REASON_OTHER = 'CANCEL_REASON_OTHER';
 
 
 	/**
@@ -650,16 +665,10 @@ class Orders {
 
 		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
 
-		$valid_reason_codes = [
-			Request::REASON_CUSTOMER_REQUESTED,
-			Request::REASON_INVALID_ADDRESS,
-			Request::REASON_OTHER,
-			Request::REASON_OUT_OF_STOCK,
-			Request::REASON_SUSPICIOUS_ORDER,
-		];
+		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Request::REASON_OTHER;
+			$reason_code = Orders::CANCEL_REASON_OTHER;
 		}
 
 		try {
@@ -680,6 +689,26 @@ class Orders {
 
 			throw $exception;
 		}
+	}
+
+
+	/**
+	 * Gets the valid cancellation reasons.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return array key-value array with codes and their labels
+	 */
+	public function get_cancellation_reasons() {
+
+		return [
+
+			self::CANCEL_REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
+			self::CANCEL_REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
+		];
 	}
 
 
