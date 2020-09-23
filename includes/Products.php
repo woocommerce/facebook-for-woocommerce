@@ -729,7 +729,7 @@ class Products {
 	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
-		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
 			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
@@ -825,7 +825,7 @@ class Products {
 	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
-		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
 			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
@@ -921,7 +921,7 @@ class Products {
 	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
-		if ( ! self::product_has_attribute( $product, $attribute_name ) ) {
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
 			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
