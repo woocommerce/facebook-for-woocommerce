@@ -326,6 +326,20 @@ class Orders {
 	 */
 	public function render_refund_reason_field() {
 
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		?>
+		<select id="wc_facebook_refund_reason" style="display: none;">
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_BUYERS_REMORSE ); ?>"><?php esc_html_e( 'Customer request', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_DAMAGED_GOODS ); ?>"><?php esc_html_e( 'Damaged product', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_NOT_AS_DESCRIBED ); ?>"><?php esc_html_e( 'Product not as described', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_QUALITY_ISSUE ); ?>"><?php esc_html_e( 'Quality issue', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_WRONG_ITEM ); ?>"><?php esc_html_e( 'Wrong item', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_OTHER ); ?>"><?php esc_html_e( 'Other', 'facebook-for-woocommerce' ); ?></option>
+		</select>
+		<?php
 	}
 
 
