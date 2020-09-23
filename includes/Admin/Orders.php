@@ -306,7 +306,7 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function is_order_editable( $maybe_editable, \WC_Order $order ) {
+	public function is_order_editable( $maybe_editable, $order ) {
 
 		$maybe_editable = $maybe_editable && ! Commerce\Orders::is_order_pending( $order );
 
