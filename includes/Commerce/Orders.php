@@ -340,6 +340,11 @@ class Orders {
 	 */
 	public function update_local_orders() {
 
+		// sanity check for connection status
+		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) {
+			return;
+		}
+
 		$page_id = facebook_for_woocommerce()->get_integration()->get_facebook_page_id();
 
 		try {
@@ -432,7 +437,7 @@ class Orders {
 	 */
 	public function schedule_local_orders_update() {
 
-		if ( false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
 
 			$interval = $this->get_order_update_interval();
 

@@ -15,7 +15,7 @@
 
 	$form.on( 'submit', function( event ) {
 
-		if ( $form.data( 'allow-submit' ) || ! $defaultCategoryField.val() || $defaultCategoryField.val() === defaultCategoryId ) {
+		if ( $form.data( 'allow-submit' ) || $defaultCategoryField.val() === defaultCategoryId ) {
 			return;
 		}
 
@@ -26,7 +26,7 @@
 		new $.WCBackboneModal.View( {
 			target: 'facebook-for-woocommerce-modal',
 			string: {
-				message: facebook_for_woocommerce_settings_commerce.default_google_product_category_modal_message,
+				message: $defaultCategoryField.val() ? facebook_for_woocommerce_settings_commerce.default_google_product_category_modal_message : facebook_for_woocommerce_settings_commerce.default_google_product_category_modal_message_empty,
 				buttons: facebook_for_woocommerce_settings_commerce.default_google_product_category_modal_buttons
 			}
 		} );
