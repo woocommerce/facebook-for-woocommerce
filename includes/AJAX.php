@@ -102,6 +102,23 @@ class AJAX {
 
 
 	/**
+	 * Completes a Facebook order for the given order ID.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function admin_complete_order() {
+
+		try {
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+		}
+	}
+
+
+	/**
 	 * Syncs all products via AJAX.
 	 *
 	 * @internal
