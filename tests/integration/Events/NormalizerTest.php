@@ -11,18 +11,6 @@ use IntegrationTester;
  */
 class NormalizerTest extends \Codeception\TestCase\WPTestCase {
 
-	/**
-	 * Runs before each test.
-	 */
-	protected function _before() {
-
-		parent::_before();
-
-		if ( ! class_exists( Normalizer::class ) ) {
-			require_once 'includes/Events/Normalizer.php';
-		}
-	}
-
 
 	/**
 	 * Runs after each test.
