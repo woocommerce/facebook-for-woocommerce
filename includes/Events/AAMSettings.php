@@ -49,7 +49,7 @@ class AAMSettings {
 	/**
 	 * Factory method that builds an AAMSettings object given a pixel id
 	 * by sending a request to connect.facebook.net domain
-	*/
+	 */
 	public static function build_from_pixel_id( $pixel_id ){
 		$url = self::get_url($pixel_id);
 		$response = wp_remote_get($url);
