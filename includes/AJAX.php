@@ -71,24 +71,24 @@ class AJAX {
 		try {
 
 			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Invalid nonce.', 'facebook-for-woocommerce' ) );
 			}
 
 			$order_id    = Framework\SV_WC_Helper::get_posted_value( 'order_id' );
 			$reason_code = Framework\SV_WC_Helper::get_posted_value( 'reason_code' );
 
 			if ( empty( $order_id ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ) );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $reason_code ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Cancel reason is required', 'facebook-for-woocommerce' ) );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Cancel reason is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			$order = wc_get_order( absint( $order_id ) );
 
 			if ( false === $order ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'A valid Order ID is required', 'facebook-for-woocommerce' ) );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'A valid Order ID is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->cancel_order( $order, $reason_code );
