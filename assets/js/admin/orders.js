@@ -286,6 +286,35 @@ jQuery( document ).ready( ( $ ) => {
 	}
 
 
+	/**
+	 * Changes the label and tooltip of the specified order total field.
+	 *
+	 * @param {jQuery} $container an element that contains the label of the field
+	 * @param {string} fieldId the id of the field
+	 * @param {string} label the new label for the field
+	 * @param {string} tooltip the new tooltip for the field
+	 */
+	function updateOrderTotalFieldLabel( $container, fieldId, label, tooltip ) {
+
+		let $label   = $container.find( 'label[for="' + fieldId + '"]' );
+		let $tooltip = $label.find( '.woocommerce-help-tip' ).clone();
+
+		$label.text( label );
+
+		if ( tooltip && $tooltip.length ) {
+
+			$label.prepend( $tooltip );
+
+			$tooltip.attr( 'data-tip', tooltip ).tipTip( {
+				'attribute': 'data-tip',
+				'fadeIn': 50,
+				'fadeOut': 50,
+				'delay': 200
+			} );
+		}
+	}
+
+
 	$form.on( 'submit', function( event ) {
 
 		if ( shouldShowCancelOrderModal() ) {
