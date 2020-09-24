@@ -354,6 +354,9 @@ class Orders {
 	 */
 	public function handle_refund( $refund_id ) {
 
+		$order_refund = wc_get_order( $refund_id );
+
+		Commerce\Orders::add_order_refund( $order_refund, null );
 	}
 
 
