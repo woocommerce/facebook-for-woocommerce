@@ -96,6 +96,22 @@ jQuery( document ).ready( ( $ ) => {
 
 
 	/**
+	 * Replaces the content of the active Facebook for WooCommerce modal to show the given error.
+	 *
+	 * @since 2.0.1-dev.1
+	 *
+	 * @param {string} error
+	 */
+	function showErrorInModal( error ) {
+
+		unBlockModal();
+
+		$( '.facebook-for-woocommerce-modal .wc-backbone-modal-content article' ).html( '<p>' + error + '</p>' );
+		$( '.facebook-for-woocommerce-modal .wc-backbone-modal-content footer' ).remove();
+	}
+
+
+	/**
 	 * Displays the refund modal on form submit.
 	 *
 	 * @param {Event} event
