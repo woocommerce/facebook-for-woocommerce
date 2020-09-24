@@ -42,7 +42,7 @@ jQuery( document ).ready( ( $ ) => {
 				// copy the value of the modal select to the WC field
 				$( '#refund_reason' ).val( $( '#wc_facebook_refund_reason_modal' ).val() );
 				// submit the form
-				$form.data( 'allow-submit', true ).find( ':submit' ).trigger( 'click' );
+				$form.data( 'allow-submit', true ).submit();
 			} );
 	}
 
