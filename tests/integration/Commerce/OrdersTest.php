@@ -369,6 +369,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_create() {
 
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+
 		$product = $this->tester->get_product();
 
 		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
@@ -394,6 +398,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_update() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 
 		$product = $this->tester->get_product();
 
@@ -428,6 +436,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_acknowledge() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 
 		$product = $this->tester->get_product();
 
@@ -486,6 +498,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::schedule_local_orders_update() */
 	public function test_schedule_local_orders_update() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 
 		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
 
