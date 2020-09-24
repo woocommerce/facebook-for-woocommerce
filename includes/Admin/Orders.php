@@ -358,9 +358,12 @@ class Orders {
 
 		$order_refund = wc_get_order( $refund_id );
 
-		$reason_code = isset( $_POST['wc_facebook_refund_reason'] ) ? $_POST['wc_facebook_refund_reason'] : null;
+		if ( $order_refund instanceof \WC_Order_Refund ) {
 
-		Commerce\Orders::add_order_refund( $order_refund, $reason_code );
+			$reason_code = isset( $_POST['wc_facebook_refund_reason'] ) ? $_POST['wc_facebook_refund_reason'] : null;
+
+			Commerce\Orders::add_order_refund( $order_refund, $reason_code );
+		}
 	}
 
 
