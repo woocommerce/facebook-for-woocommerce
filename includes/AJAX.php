@@ -141,7 +141,6 @@ class AJAX {
 				throw new Framework\SV_WC_Plugin_Exception( 'A valid product ID is required' );
 			}
 
-			/** @var array $attributes */
 			$attributes = Admin\Products::get_available_product_attribute_names( $product );
 
 			// filter out any attributes whose slug or proper name don't at least partially match the search term
