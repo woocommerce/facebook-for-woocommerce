@@ -105,6 +105,9 @@ class Orders {
 			'refund_modal_buttons'   => $this->get_refund_modal_buttons(),
 			'cancel_modal_message'   => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'   => $this->get_cancel_modal_buttons(),
+			'i18n' => [
+				'unknown_error' => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+			],
 		] );
 	}
 
