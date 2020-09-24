@@ -108,7 +108,11 @@ class Orders {
 			'cancel_modal_message'      => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'      => $this->get_cancel_modal_buttons(),
 			'i18n' => [
-				'unknown_error' => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+				'unknown_error'              => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+				'refund_reason_label'        => __( 'Refund reason:', 'facebook-for-woocommerce' ),
+				'refund_reason_tooltip'      => __( 'Choose the reason for refunding this order.', 'facebook-for-woocommerce' ),
+				'refund_description_label'   => __( 'Refund description (optional)', 'facebook-for-woocommerce' ),
+				'refund_description_tooltip' => __( 'Note: the refund description will be visible by the customer.', 'facebook-for-woocommerce' ),
 			],
 		] );
 	}
