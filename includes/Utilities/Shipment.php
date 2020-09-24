@@ -648,7 +648,7 @@ class Shipment {
 
 
 	/**
-	 * Determines whether the given carrier is a one of the valid carrier options.
+	 * Determines whether the given carrier is one of the valid carrier options.
 	 *
 	 * @since 2.1.0-dev.1
 	 *
