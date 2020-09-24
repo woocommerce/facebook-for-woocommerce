@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -96,12 +97,17 @@ class Orders {
 			'order_id'               => $order->get_id(),
 			'is_commerce_order'      => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'      => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'cancel_order_action'    => AJAX::ACTION_CANCEL_ORDER,
+			'cancel_order_nonce'     => wp_create_nonce( AJAX::ACTION_CANCEL_ORDER ),
 			'complete_modal_message' => $this->get_complete_modal_message(),
 			'complete_modal_buttons' => $this->get_complete_modal_buttons(),
 			'refund_modal_message'   => $this->get_refund_modal_message(),
 			'refund_modal_buttons'   => $this->get_refund_modal_buttons(),
 			'cancel_modal_message'   => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'   => $this->get_cancel_modal_buttons(),
+			'i18n' => [
+				'unknown_error' => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+			],
 		] );
 	}
 
@@ -203,7 +209,7 @@ class Orders {
 			class="button button-large button-primary"
 		><?php esc_html_e( $submit_label ); ?></button>
 		<button
-			class="button button-large"
+			class="wc-facebook-modal-cancel-button button button-large"
 			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
 		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
 		<?php
