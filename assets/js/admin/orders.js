@@ -13,7 +13,7 @@ jQuery( document ).ready( ( $ ) => {
 
 	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
 
-	const WCFacebookCommerceOrderOperations = {
+	const commerceOrderOperations = {
 		/**
 		 * Restrict order status options to only allowed options.
 		 *
@@ -79,10 +79,10 @@ jQuery( document ).ready( ( $ ) => {
 		 */
 		disable_pending_order_related_fields: ( $orderStatus ) => {
 
-			WCFacebookCommerceOrderOperations.toggle_created_date_fields_status( false );
-			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
-			WCFacebookCommerceOrderOperations.toggle_order_customer_field( true );
-			WCFacebookCommerceOrderOperations.toggle_billing_and_shipping_fields( true );
+			commerceOrderOperations.toggle_created_date_fields_status( false );
+			commerceOrderOperations.disable_order_status_field( $orderStatus );
+			commerceOrderOperations.toggle_order_customer_field( true );
+			commerceOrderOperations.toggle_billing_and_shipping_fields( true );
 		}
 	};
 
@@ -90,14 +90,14 @@ jQuery( document ).ready( ( $ ) => {
 
 		let $orderStatus = $( '#order_status' );
 
-		WCFacebookCommerceOrderOperations.restrict_order_statuses( $orderStatus );
+		commerceOrderOperations.restrict_order_statuses( $orderStatus );
 
 		if ( 'pending' === wc_facebook_commerce_orders.order_status ) {
-			WCFacebookCommerceOrderOperations.disable_pending_order_related_fields( $orderStatus );
+			commerceOrderOperations.disable_pending_order_related_fields( $orderStatus );
 		}
 
 		if ( 'cancelled' === wc_facebook_commerce_orders.order_status ) {
-			WCFacebookCommerceOrderOperations.disable_order_status_field( $orderStatus );
+			commerceOrderOperations.disable_order_status_field( $orderStatus );
 		}
 	}
 
