@@ -12,6 +12,13 @@ jQuery( document ).ready( ( $ ) => {
 	'use strict';
 
 
+	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
+
+	let $form               = $( 'form[id="post"]' );
+	let $orderStatusField   = $( '#order_status' );
+	let originalOrderStatus = $orderStatusField.val();
+
+
 	/**
 	 * Determines whether we need to show the Cancel Order modal.
 	 *
@@ -31,13 +38,6 @@ jQuery( document ).ready( ( $ ) => {
 
 		return 'wc-cancelled' === $( '#order_status' ).val();
 	}
-
-
-	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
-
-	let $form               = $( 'form[id="post"]' );
-	let $orderStatusField   = $( '#order_status' );
-	let originalOrderStatus = $orderStatusField.val();
 
 
 	/**
