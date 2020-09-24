@@ -315,6 +315,10 @@ jQuery( document ).ready( ( $ ) => {
 	}
 
 
+	if ( isCommerceOrder ) {
+		moveRefundReasonField();
+	}
+
 	$form.on( 'submit', function( event ) {
 
 		if ( shouldShowCancelOrderModal() ) {
