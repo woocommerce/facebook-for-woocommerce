@@ -648,6 +648,20 @@ class Shipment {
 
 
 	/**
+	 * Determines whether the given carrier is a one of the valid carrier options.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $carrier
+	 * @return bool
+	 */
+	public function is_valid_carrier( $carrier ) {
+
+		return array_key_exists( $carrier, $this->get_carrier_options() );
+	}
+
+
+	/**
 	 * Finds the proper Facebook carrier code, given a Shipment Tracking carrier.
 	 *
 	 * @since 2.1.0-dev.1
