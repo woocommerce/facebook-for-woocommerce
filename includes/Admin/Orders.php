@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
@@ -96,6 +97,8 @@ class Orders {
 			'order_id'               => $order->get_id(),
 			'is_commerce_order'      => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'      => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'cancel_order_action'    => AJAX::ACTION_CANCEL_ORDER,
+			'cancel_order_nonce'     => wp_create_nonce( AJAX::ACTION_CANCEL_ORDER ),
 			'complete_modal_message' => $this->get_complete_modal_message(),
 			'complete_modal_buttons' => $this->get_complete_modal_buttons(),
 			'refund_modal_message'   => $this->get_refund_modal_message(),
