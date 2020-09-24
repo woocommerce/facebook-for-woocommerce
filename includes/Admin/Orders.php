@@ -366,9 +366,19 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param int $refund_id refund ID
+	 *
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function handle_refund( $refund_id ) {
 
+		$order_refund = wc_get_order( $refund_id );
+
+		if ( $order_refund instanceof \WC_Order_Refund ) {
+
+			$reason_code = isset( $_POST['wc_facebook_refund_reason'] ) ? $_POST['wc_facebook_refund_reason'] : null;
+
+			Commerce\Orders::add_order_refund( $order_refund, $reason_code );
+		}
 	}
 
 
