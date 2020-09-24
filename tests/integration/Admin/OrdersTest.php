@@ -17,8 +17,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected function _before() {
 
-		require_once 'includes/Admin/Orders.php';
-		require_once 'includes/Commerce/Orders.php';
+		if ( ! class_exists( Admin\Orders::class ) ) {
+			require_once 'includes/Admin/Orders.php';
+		}
+
+		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\Commerce\Orders::class ) ) {
+			require_once 'includes/Commerce/Orders.php';
+		}
 	}
 
 
@@ -38,8 +43,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	// TODO: add test for add_notices()
 
 	// TODO: add test for maybe_remove_order_metaboxes()
-
-	// TODO: add test for render_modal_templates()
 
 	// TODO: add test for render_refund_reason_field()
 
@@ -126,7 +129,41 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	// TODO: add test for is_order_editable()
+	/**
+	 * @see Admin\Orders::is_order_editable()
+	 *
+	 * @param bool $maybe_editable
+	 * @param string $created_via
+	 * @param string $status
+	 * @param bool $expected
+	 *
+	 * @dataProvider provider_is_order_editable
+	 *
+ 	 * @throws WC_Data_Exception
+	 */
+	public function test_is_order_editable( $maybe_editable, $created_via, $status, $expected ) {
+
+		$order = new \WC_Order();
+		$order->set_created_via( $created_via );
+		$order->set_status( $status );
+		$order->save();
+
+		$this->assertEquals( $expected, $this->get_orders_handler()->is_order_editable( $maybe_editable, $order ) );
+	}
+
+
+	/** @see test_is_order_editable */
+	public function provider_is_order_editable() {
+
+		return [
+			[ false, 'checkout',  'pending',    false ],
+			[ true,  'checkout',  'pending',    true ],
+			[ true,  'instagram', 'pending',    false ],
+			[ true,  'instagram', 'processing', true ],
+			[ true,  'facebook',  'pending',    false ],
+			[ true,  'facebook',  'processing', true ],
+		];
+	}
 
 
 	/** Utility methods ***********************************************************************************************/

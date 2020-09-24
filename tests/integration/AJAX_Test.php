@@ -66,6 +66,7 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 
 	/** Test methods **************************************************************************************************/
 
+	/** TODO write test for AJAX::admin_cancel_order */
 
 	/** @see Facebook\AJAX::get_products_to_be_excluded() */
 	public function test_get_products_to_be_excluded_no_new_terms() {

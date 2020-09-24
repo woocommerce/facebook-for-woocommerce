@@ -57,8 +57,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		wp_enqueue_script( 'facebook-for-woocommerce-settings-commerce', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/settings-commerce.min.js', [ 'facebook-for-woocommerce-modal', 'jquery-tiptip' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script( 'facebook-for-woocommerce-settings-commerce', 'facebook_for_woocommerce_settings_commerce', [
-			'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
-			'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+			'default_google_product_category_modal_message'       => $this->get_default_google_product_category_modal_message(),
+			'default_google_product_category_modal_message_empty' => $this->get_default_google_product_category_modal_message_empty(),
+			'default_google_product_category_modal_buttons'       => $this->get_default_google_product_category_modal_buttons(),
 		] );
 	}
 
@@ -73,6 +74,23 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	private function get_default_google_product_category_modal_message() {
 
 		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the message for Default Google Product Category modal when the selection is empty.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message_empty() {
+
+		return sprintf(
+			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
+			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
+			'<strong>', '</strong>'
+		);
 	}
 
 

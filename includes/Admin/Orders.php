@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Commerce;
+use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -21,6 +22,10 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  * @since 2.1.0-dev.1
  */
 class Orders {
+
+
+	/** @var string key used for setting a transient in the event of bulk actions fired on Commerce orders */
+	private $bulk_order_update_transient = 'wc_facebook_bulk_order_update';
 
 
 	/**
@@ -45,9 +50,9 @@ class Orders {
 
 		add_action( 'admin_notices', [ $this, 'add_notices' ] );
 
-		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
+		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handle_bulk_update' ], -1, 3 );
 
-		add_action( 'admin_footer', [ $this, 'render_modal_templates' ] );
+		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
 		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
 
@@ -93,6 +98,12 @@ class Orders {
 			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'         => $order->get_meta( '_wc_shipment_tracking_items', true ),
 			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
+      'complete_modal_message'    => $this->get_complete_modal_message(),
+			'complete_modal_buttons'    => $this->get_complete_modal_buttons(),
+			'refund_modal_message'      => $this->get_refund_modal_message(),
+			'refund_modal_buttons'      => $this->get_refund_modal_buttons(),
+			'cancel_modal_message'      => $this->get_cancel_modal_message(),
+			'cancel_modal_buttons'      => $this->get_cancel_modal_buttons(),
 		] );
 	}
 
@@ -105,7 +116,50 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function add_notices() {
+		global $post;
 
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order  = wc_get_order( $post );
+		$plugin = facebook_for_woocommerce();
+
+		if ( Commerce\Orders::is_order_pending( $order ) ) {
+
+			$message = sprintf(
+				/* translators: Placeholders: %1$s - HTML <strong> tag, %2$s - HTML </strong> tag */
+				__( 'This order is currently being held by Instagram and cannot be edited. Once released by Instagram, it will move to %1$sProcessing%2$s or %1$sCancelled%2$s status.', 'facebook-for-woocommerce' ),
+				'<strong>', '</strong>'
+			);
+
+			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending_' . $order->get_id(), [
+				'dismissible'  => true,
+				'notice_class' => 'notice-info',
+			] );
+		}
+
+		$commerce_orders = get_transient( $this->bulk_order_update_transient );
+
+		if ( ! empty( $commerce_orders ) ) {
+
+			// if there were orders managed by Instagram updated in bulk, we need to warn the merchant that it wasn't updated
+			facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
+				_n(
+					/* translators: Placeholder: %s - order ID */
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+					/* translators: Placeholder: %s - order IDs list */
+					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+					count( $commerce_orders ),
+					'facebook-for-woocommerce'
+				),
+				implode( ', ', $commerce_orders )
+			) );
+
+			delete_transient( $this->bulk_order_update_transient );
+
+			facebook_for_woocommerce()->get_message_handler()->show_messages();
+		}
 	}
 
 
@@ -122,14 +176,146 @@ class Orders {
 
 
 	/**
-	 * Renders the Complete, Refund, & Cancel modals templates markup.
-	 *
-	 * @internal
+	 * Gets the markup for the buttons used in a modal.
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $submit_label label for the submit button
+	 * @return string
 	 */
-	public function render_modal_templates() {
+	private function get_modal_buttons( $submit_label ) {
 
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( $submit_label ); ?></button>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$shipment_utilities = new Shipment();
+
+		woocommerce_wp_select( [
+			'id'      => 'wc_facebook_carrier',
+			'label'   => __( 'Carrier', 'facebook-for-woocommerce' ),
+			'options' => $shipment_utilities->get_carrier_options(),
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'    => 'wc_facebook_tracking_number',
+			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
+		] );
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Complete modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_complete_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit order', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for refunding this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		$this->render_refund_reason_field();
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Refund modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_refund_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit refund', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'Select a reason for cancelling this order:', 'facebook-for-woocommerce' ); ?></p>
+		<?php
+
+		woocommerce_wp_select( [
+			'id'      => 'wc_facebook_cancel_reason',
+			'label'   => '',
+			'options' => facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_cancellation_reasons(),
+		] );
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Cancel modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_cancel_modal_buttons() {
+
+		return $this->get_modal_buttons( __( 'Submit cancellation', 'facebook-for-woocommerce' ) );
 	}
 
 
@@ -142,6 +328,20 @@ class Orders {
 	 */
 	public function render_refund_reason_field() {
 
+		if ( ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		?>
+		<select id="wc_facebook_refund_reason" style="display: none;">
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_BUYERS_REMORSE ); ?>"><?php esc_html_e( 'Customer request', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_DAMAGED_GOODS ); ?>"><?php esc_html_e( 'Damaged product', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_NOT_AS_DESCRIBED ); ?>"><?php esc_html_e( 'Product not as described', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_QUALITY_ISSUE ); ?>"><?php esc_html_e( 'Quality issue', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_WRONG_ITEM ); ?>"><?php esc_html_e( 'Wrong item', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_OTHER ); ?>"><?php esc_html_e( 'Other', 'facebook-for-woocommerce' ); ?></option>
+		</select>
+		<?php
 	}
 
 
@@ -165,9 +365,67 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $redirect_url redirect URL carrying results
+	 * @param string $action bulk action
+	 * @param int[] $order_ids IDs of orders affected by the bulk action
+	 * @return string
 	 */
-	public function handle_bulk_update() {
+	public function handle_bulk_update( $redirect_url, $action, $order_ids ) {
 
+		// listen for order status change actions
+		if ( empty( $action ) || empty( $order_ids ) || ! Framework\SV_WC_Helper::str_starts_with( $action, 'mark_' ) ) {
+			return $redirect_url;
+		}
+
+		$commerce_orders = [];
+
+		foreach ( $order_ids as $index => $order_id ) {
+
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				continue;
+			}
+
+			if ( Commerce\Orders::is_commerce_order( $order ) ) {
+
+				unset( $order_ids[ $index ] );
+
+				$commerce_orders[] = $order->get_order_number();
+			}
+		}
+
+		if ( ! empty( $commerce_orders ) ) {
+
+			// set the orders that are not going to be updated in the transient for reference
+			set_transient( $this->bulk_order_update_transient, $commerce_orders, MINUTE_IN_SECONDS );
+
+			// this will prevent WooCommerce to keep processing the orders we don't want to be changed in bulk
+			add_filter( 'woocommerce_bulk_action_ids', static function( $ids ) use ( $order_ids ) {
+				return $order_ids;
+			} );
+
+			// finally, parse the URL (main filter callback param)
+			if ( empty( $order_ids ) ) {
+
+				$redirect_url = admin_url( 'edit.php?post_type=shop_order' );
+
+			} else {
+
+				$redirect_url = add_query_arg(
+					[
+						'post_type'   => 'shop_order',
+						'bulk_action' => $action,
+						'changed'     => count( $order_ids ),
+						'ids'         => implode( ',', $order_ids ),
+					],
+					$redirect_url
+				);
+			}
+		}
+
+		return $redirect_url;
 	}
 
 
@@ -222,9 +480,12 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
-	public function is_order_editable( $maybe_editable, \WC_Order $order ) {
+	public function is_order_editable( $maybe_editable, $order ) {
 
-		return $maybe_editable;
+		// if the order is a WC_Order, determines whether it is pending or not
+		$is_order_pending = $order instanceof \WC_Order && Commerce\Orders::is_order_pending( $order );
+
+		return $maybe_editable && ! $is_order_pending;
 	}
 
 
