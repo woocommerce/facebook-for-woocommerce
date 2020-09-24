@@ -216,4 +216,36 @@ class CommerceCest {
 	}
 
 
+	/**
+	 * Test that the Cancel Order modal does not show up for already cancelled orders.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_saving_an_already_cancelled_order( AcceptanceTester $I ) {
+
+		$remote_id = '1234';
+
+		$order = $this->get_order_to_cancel( $I, $remote_id );
+
+		$order->set_status( 'cancelled' );
+		$order->save();
+
+		$I->amEditingPostWithId( $order->get_id() );
+
+		$I->wantTo( 'test that the Cancel Order modal does not show up for already cancelled orders' );
+
+		$I->expect( 'the order status is already set to cancelled' );
+
+		$I->assertEquals( 'wc-cancelled', $I->executeJS( "return jQuery( '#order_status' ).val()" ) );
+
+		$I->amGoingTo( 'update the order' );
+		$I->click( 'button[name="save"]' );
+
+		$I->expect( 'the order to be updated' );
+
+		$I->waitForText( 'Order updated.', 15 );
+		$I->assertEquals( 'wc-cancelled', $I->executeJS( "return jQuery( '#order_status' ).val()" ) );
+	}
+
+
 }
