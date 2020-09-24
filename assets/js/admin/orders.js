@@ -32,7 +32,7 @@ jQuery( document ).ready( ( $ ) => {
 			return false;
 		}
 
-		if ( ! wc_facebook_commerce_orders.is_commerce_order ) {
+		if ( ! isCommerceOrder ) {
 			return false;
 		}
 
