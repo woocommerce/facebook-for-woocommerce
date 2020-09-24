@@ -487,6 +487,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::schedule_local_orders_update() */
 	public function test_schedule_local_orders_update() {
 
+		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
+
 		$this->assertNotFalse( as_next_scheduled_action( Orders::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) );
 	}
 
