@@ -23,7 +23,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 			require_once 'includes/Admin/Orders.php';
 		}
 
-		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\Commerce\Orders::class ) ) {
+		if ( ! class_exists( Orders::class ) ) {
 			require_once 'includes/Commerce/Orders.php';
 		}
 	}
