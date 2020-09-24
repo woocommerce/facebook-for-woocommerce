@@ -11,6 +11,28 @@ jQuery( document ).ready( ( $ ) => {
 
 	'use strict';
 
+
+	/**
+	 * Determines whether we need to show the Cancel Order modal.
+	 *
+	 * @since 2.0.1-dev.1
+	 *
+	 * @returns {boolean}
+	 */
+	function shouldShowCancelOrderModal() {
+
+		if ( $( '#post' ).data( 'skip-cancel-modal' ) ) {
+			return false;
+		}
+
+		if ( ! wc_facebook_commerce_orders.is_commerce_order ) {
+			return false;
+		}
+
+		return 'wc-cancelled' === $( '#order_status' ).val();
+	}
+
+
 	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
 
 	let $form               = $( 'form[id="post"]' );
