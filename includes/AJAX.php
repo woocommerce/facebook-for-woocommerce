@@ -26,6 +26,9 @@ class AJAX {
 	/** @var string the product attribute search AJAX action */
 	const ACTION_SEARCH_PRODUCT_ATTRIBUTES = 'wc_facebook_search_product_attributes';
 
+	/** @var string the complete order AJAX action */
+	const ACTION_COMPLETE_ORDER = 'wc_facebook_complete_order';
+
 
 	/**
 	 * AJAX handler constructor.
@@ -49,6 +52,9 @@ class AJAX {
 
 		// search a product's attributes for the given term
 		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, [ $this, 'admin_search_product_attributes' ] );
+
+		// complete a Facebook order for the given order ID
+		add_action( 'wp_ajax_' . self::ACTION_COMPLETE_ORDER, [ $this, 'admin_complete_order' ] );
 	}
 
 
@@ -94,6 +100,54 @@ class AJAX {
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			die();
+		}
+	}
+
+
+	/**
+	 * Completes a Facebook order for the given order ID.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function admin_complete_order() {
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'nonce' ), self::ACTION_COMPLETE_ORDER ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce', 403 );
+			}
+
+			$order_id        = (int) Framework\SV_WC_Helper::get_posted_value( 'order_id' );
+			$tracking_number = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'tracking_number' ) );
+			$carrier_code    = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'carrier_code' ) );
+
+			if ( empty( $order_id ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ), 400 );
+			}
+
+			if ( empty( $tracking_number ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Tracking number is required', 'facebook-for-woocommerce' ), 400 );
+			}
+
+			if ( empty( $carrier_code ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ), 400 );
+			}
+
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order instanceof \WC_Order ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ), 404 );
+			}
+
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->fulfill_order( $order, $tracking_number, $carrier_code );
+
+			wp_send_json_success();
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
 		}
 	}
 
