@@ -3,6 +3,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Tests\API\Orders\Refund;
 
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 
 /**
  * Tests the API\Orders\Refund\Request class.
@@ -33,7 +34,7 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	public function test_constructor() {
 
 		$data = [
-			'reason_code' => Request::REASON_BUYERS_REMORSE,
+			'reason_code' => Orders::REFUND_REASON_BUYERS_REMORSE,
 		];
 
 		$request = new Request( '368508827392800', $data );

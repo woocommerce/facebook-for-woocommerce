@@ -25,25 +25,6 @@ class Request extends API\Orders\Abstract_Request  {
 	use API\Traits\Idempotent_Request;
 
 
-	/** @var string buyer's remorse refund reason */
-	const REASON_BUYERS_REMORSE = 'BUYERS_REMORSE';
-
-	/** @var string damaged goods refund reason */
-	const REASON_DAMAGED_GOODS = 'DAMAGED_GOODS';
-
-	/** @var string not as described refund reason */
-	const REASON_NOT_AS_DESCRIBED = 'NOT_AS_DESCRIBED';
-
-	/** @var string quality issue refund reason */
-	const REASON_QUALITY_ISSUE = 'QUALITY_ISSUE';
-
-	/** @var string wrong item refund reason */
-	const REASON_WRONG_ITEM = 'WRONG_ITEM';
-
-	/** @var string other refund reason */
-	const REASON_OTHER = 'REFUND_REASON_OTHER';
-
-
 	/**
 	 * API request constructor.
 	 *

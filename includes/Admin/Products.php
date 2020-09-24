@@ -263,6 +263,37 @@ class Products {
 	 */
 	public static function save_commerce_fields( \WC_Product $product ) {
 
+		$commerce_enabled           = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
+		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
+		$gender                     = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GENDER ) );
+		$color_attribute            = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COLOR ) );
+		$size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
+		$pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
+
+		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
+
+		if ( $google_product_category_id !== Products_Handler::get_google_product_category_id( $product ) ) {
+
+			Products_Handler::update_google_product_category_id( $product, $google_product_category_id );
+		}
+
+		Products_Handler::update_product_gender( $product, $gender );
+
+		try {
+
+			Products_Handler::update_product_color_attribute( $product, $color_attribute );
+			Products_Handler::update_product_size_attribute( $product, $size_attribute );
+			Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
+
+		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+
+			$message = sprintf(
+				/* translators: Placeholders %1$s - product ID, %2$s - exception message */
+				__( 'There was an error trying to save the product attributes for product %1$s: %2$s' ), $product->get_id(), $e->getMessage()
+			);
+
+			facebook_for_woocommerce()->log( $message );
+		}
 	}
 
 

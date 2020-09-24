@@ -1,10 +1,11 @@
 <?php
 
-use Codeception\Util\Stub;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -812,14 +813,14 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			'do_remote_request' => \Codeception\Stub\Expected::once(),
 		] );
 
-		$api->cancel_order( '335211597203390', API\Orders\Cancel\Request::REASON_CUSTOMER_REQUESTED, true );
+		$api->cancel_order( '335211597203390', Orders::CANCEL_REASON_CUSTOMER_REQUESTED, true );
 
 		$this->assertInstanceOf( API\Orders\Cancel\Request::class, $api->get_request() );
 		$this->assertEquals( 'POST', $api->get_request()->get_method() );
 		$this->assertEquals( '/335211597203390/cancellations', $api->get_request()->get_path() );
 		$expected_data = [
 			'cancel_reason'   => [
-				'reason_code' => API\Orders\Cancel\Request::REASON_CUSTOMER_REQUESTED,
+				'reason_code' => Orders::CANCEL_REASON_CUSTOMER_REQUESTED,
 			],
 			'restock_items'   => true,
 			'idempotency_key' => $api->get_request()->get_idempotency_key(),
@@ -853,7 +854,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 					'item_refund_quantity' => 2,
 				],
 			],
-			'reason_code' => API\Orders\Refund\Request::REASON_BUYERS_REMORSE,
+			'reason_code' => Orders::REFUND_REASON_BUYERS_REMORSE,
 			'reason_text' => 'Optional description of the reason',
 			'shipping'    => [
 				'shipping_refund' => [
