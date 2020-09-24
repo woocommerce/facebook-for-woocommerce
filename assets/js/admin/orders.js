@@ -15,7 +15,7 @@ jQuery( document ).ready( ( $ ) => {
 
 	let $form               = $( 'form[id="post"]' );
 	let $orderStatusField   = $( '#order_status' );
-
+	let originalOrderStatus = $orderStatusField.val();
 
 	/**
 	 * Displays the refund modal on form submit.
@@ -53,7 +53,9 @@ jQuery( document ).ready( ( $ ) => {
 			return;
 		}
 
-		if ( 'wc-refunded' === $orderStatusField.val() ) {
+		let newOrderStatusField = $orderStatusField.val();
+
+		if ( 'wc-refunded' === newOrderStatusField && originalOrderStatus !== newOrderStatusField ) {
 			displayRefundModal( event );
 		}
 	} );
