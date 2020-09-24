@@ -143,6 +143,10 @@ jQuery( document ).ready( ( $ ) => {
 
 	$form.on( 'submit', function( event ) {
 
+		if ( shouldShowCancelOrderModal() ) {
+			return showCancelOrderModal( event );
+		}
+
 		if ( ! isCommerceOrder || $form.data('allow-submit') ) {
 			return;
 		}
