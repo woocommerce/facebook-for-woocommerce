@@ -58,7 +58,7 @@ class AJAX {
 
 
 	/**
-	 * Cancel facebook order by the given order ID
+	 * Cancels a Facebook order by the given order ID.
 	 *
 	 * @internal
 	 *
