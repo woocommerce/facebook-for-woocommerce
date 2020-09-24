@@ -142,4 +142,36 @@ class CommerceCest {
 	}
 
 
+	/**
+	 * Test that merchants can decide not to cancel the order through the Cancel Order modal.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_deciding_not_to_cancel_the_order( AcceptanceTester $I ) {
+
+		$remote_id = '1234';
+
+		$order = $this->get_order_to_cancel( $I, $remote_id );
+
+		$I->amEditingPostWithId( $order->get_id() );
+
+		$I->wantTo( 'test that I can close the Cancel Order modal without cancelling the order' );
+
+		$I->amGoingTo( 'set the order status to Cancelled and update the order' );
+
+		$I->executeJS( "jQuery( '#order_status' ).val( 'wc-cancelled' ).trigger( 'change' )" );
+		$I->click( 'button[name="save"]' );
+
+		$I->see( 'Select a reason for cancelling this order:', '.facebook-for-woocommerce-modal' );
+
+		$I->amGoingTo( 'click the Cancel button' );
+
+		$I->click( '.wc-facebook-modal-cancel-button' );
+
+		$I->expect( 'the modal to disappear' );
+
+		$I->dontSeeElement( '.facebook-for-woocommerce-modal' );
+	}
+
+
 }
