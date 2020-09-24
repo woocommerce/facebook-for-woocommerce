@@ -52,20 +52,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see Admin\Orders::handle_refund()
 	 *
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws SV_WC_Plugin_Exception|WC_Data_Exception
 	 */
 	public function test_handle_refund() {
 
 		// the API cannot be instantiated if an access token is not defined
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
-		$_POST[ 'wc_facebook_refund_reason' ] = Orders::REFUND_REASON_QUALITY_ISSUE;
-
-		$order = new \WC_Order_Refund();
-		$order->set_status( 'pending' );
+		$order = new \WC_Order();
 		$order->save();
 
-		$this->get_orders_handler()->handle_refund( $order->get_id() );
+		$refund = new \WC_Order_Refund();
+		$refund->set_parent_id( $order->get_id() );
+		$refund->save();
+
+		$this->get_orders_handler()->handle_refund( $refund->get_id() );
+
+		$notes = array_map( static function( $note ) { return $note->content; }, wc_get_order_notes( [ 'order_id' => $order->get_id() ] ) );
+
+		// asserts that handle_refund called add_order_refund
+		$this->assertContains( 'Could not refund Instagram order: Remote ID for parent order not found.', $notes );
 	}
 
 
