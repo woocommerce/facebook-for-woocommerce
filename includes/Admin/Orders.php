@@ -62,7 +62,7 @@ class Orders {
 		add_action( 'woocommerce_email_enabled_customer_processing_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 		add_action( 'woocommerce_email_enabled_customer_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 
-		add_action( 'admin_menu', [ $this, 'maybe_remove_order_metaboxes' ] );
+		add_action( 'add_meta_boxes', [ $this, 'maybe_remove_order_metaboxes' ], 999 );
 	}
 
 
@@ -169,7 +169,19 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function maybe_remove_order_metaboxes() {
+		global $post;
 
+		if ( ! $post instanceof \WP_Post || ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order = wc_get_order( $post );
+
+		if ( ! $order || ! $order->has_status( 'pending' ) || ! Commerce\Orders::is_commerce_order( $order ) ) {
+			return;
+		}
+
+		remove_meta_box( 'woocommerce-order-actions', get_current_screen(), 'side' );
 	}
 
 
