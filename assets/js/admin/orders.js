@@ -32,6 +32,10 @@ jQuery( document ).ready( ( $ ) => {
 			return false;
 		}
 
+		if ( 'wc-cancelled' === originalOrderStatus ) {
+			return false;
+		}
+
 		if ( ! isCommerceOrder ) {
 			return false;
 		}
