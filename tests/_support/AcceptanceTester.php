@@ -159,11 +159,56 @@ class AcceptanceTester extends \Codeception\Actor {
 
 
 	/**
+	 * Creates an order in the database.
+	 *
+	 * @return \WC_Order
+	 */
+	public function haveOrderInDatabase() {
+
+		$order = new \WC_Order();
+		$order->save();
+
+		return $order;
+	}
+
+
+	/**
 	 * Go to the Products screen.
 	 */
 	public function amOnProductsPage() {
 
 		$this->amOnAdminPage('edit.php?post_type=product' );
+	}
+
+
+	/**
+	 * Got to a Product edit screen.
+	 *
+	 * @param int $product_id product's post ID
+	 */
+	public function amOnProductPage( $product_id ) {
+
+		$this->amOnAdminPage( "post.php?post={$product_id}&action=edit" );
+	}
+
+
+	/**
+	 * Go to the Orders screen.
+	 */
+	public function amOnOrdersPage() {
+
+		$this->amOnAdminPage('edit.php?post_type=shop_order' );
+	}
+
+
+	/**
+	 * Got to an Order edit screen.
+	 *
+	 * @param int $order_id order's post ID
+	 */
+	public function amOnOrderPage( $order_id ) {
+
+		$this->amOnAdminPage( "post.php?post={$order_id}&action=edit" );
 	}
 
 

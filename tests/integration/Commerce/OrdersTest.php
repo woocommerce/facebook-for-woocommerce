@@ -369,6 +369,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_create() {
 
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+
 		$product = $this->tester->get_product();
 
 		$response_data = $this->get_test_response_data( Order::STATUS_CREATED, $product );
@@ -394,6 +398,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_update() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 
 		$product = $this->tester->get_product();
 
@@ -428,6 +436,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Orders::update_local_orders() */
 	public function test_update_local_orders_acknowledge() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 
 		$product = $this->tester->get_product();
 
@@ -487,6 +499,12 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::schedule_local_orders_update() */
 	public function test_schedule_local_orders_update() {
 
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+
+		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
+
 		$this->assertNotFalse( as_next_scheduled_action( Orders::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) );
 	}
 
@@ -501,6 +519,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$this->expectExceptionMessage( 'Remote ID not found.' );
 
 		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_invalid_carrier() {
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order = new \WC_Order();
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'NOT_A_CARRIER is not a valid shipping carrier code.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'NOT_A_CARRIER' );
 	}
 
 
