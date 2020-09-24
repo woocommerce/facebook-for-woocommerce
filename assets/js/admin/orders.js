@@ -16,8 +16,14 @@ jQuery( document ).ready( ( $ ) => {
 	let $form             = $( 'form[id="post"]' );
 	let $orderStatusField = $( '#order_status' );
 	let shipmentTracking  = wc_facebook_commerce_orders.shipment_tracking;
-	let trackingNumber    = Array.isArray( shipmentTracking ) && shipmentTracking[ 0 ] ? shipmentTracking[ 0 ] : shipmentTracking;
+	let trackingNumber    = '';
+	let carrierCode       = '';
 	let completeModel;
+
+	if ( Array.isArray( shipmentTracking ) && shipmentTracking[ 0 ] ) {
+		trackingNumber = shipmentTracking[ 0 ].tracking_number;
+		carrierCode    = shipmentTracking[ 0 ].carrier_code;
+	}
 
 
 	/**
@@ -51,14 +57,19 @@ jQuery( document ).ready( ( $ ) => {
 	 * Make complete order AJAX Request
 	 *
 	 * @param {Object} modal
+	 * @param {String} trackingNumber
+	 * @param {String} carrierCode
 	 */
-	function makeCompleteAjaxRequest( modal = null ) {
+	function makeCompleteAjaxRequest( modal = null, trackingNumber = null, carrierCode = null ) {
 
-		console.log( 'Complete AJAX' );
+		carrierCode    = carrierCode || $( '#wc_facebook_carrier' ).val();
+		trackingNumber = trackingNumber || $( '#wc_facebook_tracking_number' ).val();
 
-		if ( modal ) {
-			modal.remove();
-		}
+		console.log( carrierCode, trackingNumber );
+
+		// if ( modal ) {
+		// 	modal.remove();
+		// }
 	}
 
 
@@ -72,8 +83,8 @@ jQuery( document ).ready( ( $ ) => {
 
 			event.preventDefault();
 
-			if ( trackingNumber.length ) {
-				makeCompleteAjaxRequest();
+			if ( trackingNumber || carrierCode ) {
+				makeCompleteAjaxRequest( null, trackingNumber, carrierCode );
 			} else {
 				displayCompleteModal();
 			}

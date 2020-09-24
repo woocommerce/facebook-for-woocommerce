@@ -93,10 +93,22 @@ class Orders {
 			'facebook-for-woocommerce-modal',
 		], \WC_Facebookcommerce::VERSION );
 
+		$shipment_utilities = new Shipment();
+		$shipment_tracking  = array_filter( (array) $order->get_meta( '_wc_shipment_tracking_items', true ) );
+
+		if ( ! empty( $shipment_tracking ) ) {
+			$shipment_tracking = array_map( function ( $shipment ) use ( $shipment_utilities ) {
+
+				$shipment['carrier_code'] = $shipment_utilities->convert_shipment_tracking_carrier_code( $shipment['tracking_provider'] );
+
+				return $shipment;
+			}, $shipment_tracking );
+		}
+
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
 			'order_id'               => $order->get_id(),
 			'is_commerce_order'      => Commerce\Orders::is_commerce_order( $order ),
-			'shipment_tracking'      => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'shipment_tracking'      => $shipment_tracking,
 			'complete_ajax_action'   => AJAX::ACTION_COMPLETE_ORDER,
 			'complete_ajax_nonce'    => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
 			'complete_modal_message' => $this->get_complete_modal_message(),
