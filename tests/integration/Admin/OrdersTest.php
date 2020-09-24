@@ -1,6 +1,8 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 /**
  * Tests the Admin\Orders class.
@@ -46,7 +48,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for render_refund_reason_field()
 
-	// TODO: add test for handle_refund()
+
+	/**
+	 * @see Admin\Orders::handle_refund()
+	 *
+	 * @throws SV_WC_Plugin_Exception
+	 */
+	public function test_handle_refund() {
+
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+
+		$_POST[ 'wc_facebook_refund_reason' ] = Orders::REFUND_REASON_QUALITY_ISSUE;
+
+		$order = new \WC_Order_Refund();
+		$order->set_status( 'pending' );
+		$order->save();
+
+		$this->get_orders_handler()->handle_refund( $order->get_id() );
+	}
+
 
 	// TODO: add test for handle_bulk_update()
 
