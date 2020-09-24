@@ -174,4 +174,46 @@ class CommerceCest {
 	}
 
 
+	/**
+	 * Test that the Cancel Order modal shows API errors.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 */
+	public function try_cancelling_an_order_with_api_error( AcceptanceTester $I ) {
+
+		$remote_id = '1234';
+
+		$order = $this->get_order_to_cancel( $I, $remote_id );
+
+		$this->prepare_request_response( $I, 'POST', "/{$remote_id}/cancellations", [
+			'response_body' => json_encode( [
+				'error' => [
+					'type'    => 'Error',
+					'message' => 'Facebook API error.',
+				],
+			 ] ),
+		] );
+
+		$I->amEditingPostWithId( $order->get_id() );
+
+		$I->wantTo( 'test that an error is shown if the cancel order API request returns an error' );
+
+		$I->amGoingTo( 'set the order status to Cancelled and update the order' );
+
+		$I->executeJS( "jQuery( '#order_status' ).val( 'wc-cancelled' ).trigger( 'change' )" );
+		$I->click( 'button[name="save"]' );
+
+		$I->see( 'Select a reason for cancelling this order:', '.facebook-for-woocommerce-modal' );
+
+		$I->amGoingTo( 'set the cancel reason and confirm the modal action' );
+
+		$I->selectOption( '#wc_facebook_cancel_reason', 'CUSTOMER_REQUESTED' );
+		$I->click( '.facebook-for-woocommerce-modal #btn-ok' );
+
+		$I->expect( 'an error to be shown' );
+
+		$I->waitForText( 'Could not cancel order. Error: Facebook API error.', 15, '.facebook-for-woocommerce-modal' );
+	}
+
+
 }
