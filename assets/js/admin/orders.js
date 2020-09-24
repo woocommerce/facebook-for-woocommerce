@@ -83,9 +83,25 @@ jQuery( document ).ready( ( $ ) => {
 			commerceOrderOperations.disable_order_status_field( $orderStatus );
 			commerceOrderOperations.toggle_order_customer_field( true );
 			commerceOrderOperations.toggle_billing_and_shipping_fields( true );
-		}
-	};
+		},
 
+
+		/**
+		 * Hide the refund UI when refunds can't be performed.
+		 */
+		maybe_disable_refunds: () => {
+
+			// only completed (fulfilled) orders can be refunded
+			if ( 'completed' !== wc_facebook_commerce_orders.order_status ) {
+
+				$( '.wc-order-bulk-actions .refund-items' ).hide();
+
+				$orderStatusField.find( 'option[value="wc-refunded"]' ).remove();
+			}
+		}
+
+
+	};
 
 	let $form               = $( 'form[id="post"]' );
 	let $orderStatusField   = $( '#order_status' );
@@ -102,6 +118,8 @@ jQuery( document ).ready( ( $ ) => {
 		if ( 'cancelled' === wc_facebook_commerce_orders.order_status ) {
 			commerceOrderOperations.disable_order_status_field( $orderStatusField );
 		}
+
+		commerceOrderOperations.maybe_disable_refunds();
 	}
 
 
