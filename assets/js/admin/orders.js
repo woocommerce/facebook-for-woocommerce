@@ -39,6 +39,62 @@ jQuery( document ).ready( ( $ ) => {
 	let $orderStatusField   = $( '#order_status' );
 	let originalOrderStatus = $orderStatusField.val();
 
+
+	/**
+	 * Shows and listens for events on the Cancel Order modal.
+	 *
+	 * @since 2.0.1-dev.1
+	 *
+	 * @param {jQuery.Event} event a submit event instance
+	 */
+	function showCancelOrderModal( event ) {
+
+		event.preventDefault();
+
+		// close existing modals
+		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+		new $.WCBackboneModal.View( {
+			target: 'facebook-for-woocommerce-modal',
+			string: {
+				message: wc_facebook_commerce_orders.cancel_modal_message,
+				buttons: wc_facebook_commerce_orders.cancel_modal_buttons
+			}
+		} );
+
+		// handle confirm action
+		$( '.facebook-for-woocommerce-modal #btn-ok' )
+			.off( 'click.facebook_for_commerce' )
+			.on( 'click.facebook_for_commerce', ( event ) => {
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				blockModal();
+
+				$.post( ajaxurl, {
+					action:      wc_facebook_commerce_orders.cancel_order_action,
+					order_id:    $( '#post_ID' ).val(),
+					reason_code: $( '.facebook-for-woocommerce-modal [name="wc_facebook_cancel_reason"]' ).val(),
+					security:    wc_facebook_commerce_orders.cancel_order_nonce
+				}, ( response ) => {
+
+					if ( ! response || ! response.success ) {
+						showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
+						return;
+					}
+
+					$( '#post' ).data( 'skip-cancel-modal', true ).trigger( 'submit' );
+				} ).fail( () => {
+
+					showErrorInModal( wc_facebook_commerce_orders.i18n.unknown_error );
+				} );
+			} );
+
+		return false;
+	}
+
+
 	/**
 	 * Displays the refund modal on form submit.
 	 *
