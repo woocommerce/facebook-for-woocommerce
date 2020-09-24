@@ -351,14 +351,14 @@ class Orders {
 	 * @param boolean $select_id id for the select HTML element
 	 * @param boolean $hidden whether or not the field should be hidden
 	 */
-	public function render_refund_reason_field( $select_id = 'wc_facebook_refund_reason', $hidden = true ) {
+	public function render_refund_reason_field( $select_id = '', $hidden = true ) {
 
 		if ( ! $this->is_edit_order_screen() ) {
 			return;
 		}
 
 		?>
-		<select id="<?php echo esc_attr( $select_id ); ?>" <?php echo $hidden ? 'style="display: none;"' : ''; ?>>
+		<select id="<?php echo esc_attr( $select_id ?: 'wc_facebook_refund_reason' ); ?>" <?php echo $hidden ? 'style="display: none;"' : ''; ?>>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_BUYERS_REMORSE ); ?>"><?php esc_html_e( 'Customer request', 'facebook-for-woocommerce' ); ?></option>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_DAMAGED_GOODS ); ?>"><?php esc_html_e( 'Damaged product', 'facebook-for-woocommerce' ); ?></option>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_NOT_AS_DESCRIBED ); ?>"><?php esc_html_e( 'Product not as described', 'facebook-for-woocommerce' ); ?></option>
