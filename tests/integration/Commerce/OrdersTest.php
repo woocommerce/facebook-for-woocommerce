@@ -505,6 +505,26 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Orders::fulfill_order() */
+	public function test_fulfill_order_invalid_carrier() {
+
+		$item = new \WC_Order_Item_Product();
+		$item->set_name( 'Test' );
+		$item->set_quantity( 2 );
+		$item->set_total( 1.00 );
+
+		$order = new \WC_Order();
+		$order->add_item( $item );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
+		$order->save();
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'NOT_A_CARRIER is not a valid shipping carrier code.' );
+
+		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'NOT_A_CARRIER' );
+	}
+
+
+	/** @see Orders::fulfill_order() */
 	public function test_fulfill_order_no_valid_items() {
 
 		$order = new \WC_Order();
