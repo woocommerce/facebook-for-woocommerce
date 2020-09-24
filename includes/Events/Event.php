@@ -142,7 +142,7 @@ class Event {
 	 * @return array
 	 */
 	protected function hash_pii_data( $user_data ){
-		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country'];
+		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country', 'external_id'];
 		foreach( $keys_to_hash as $key ){
 			if(array_key_exists($key, $user_data)){
 				$user_data[$key] = hash('sha256', $user_data[$key], false);

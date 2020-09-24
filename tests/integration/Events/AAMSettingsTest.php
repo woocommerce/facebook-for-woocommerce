@@ -15,7 +15,7 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 	public function test_constructor() {
 		$data = array(
 			'enableAutomaticMatching' => true,
-			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country'],
+			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country', 'external_id'],
 			'pixelId' => '123',
 		);
 		$aam_settings = new AAMSettings($data);
@@ -52,7 +52,7 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 		// Pixel id is not returned by the endpoint
 		$data = [
 			'enableAutomaticMatching' => true,
-			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country']
+			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country', 'external_id']
 		];
 		$args = [
 			'request_path'     => 'signals/config/json/'.$pixel_id,
@@ -72,7 +72,7 @@ class AAMSettingsTest extends \Codeception\TestCase\WPTestCase {
 	public function test_to_string() {
 		$data = array(
 			'enableAutomaticMatching' => true,
-			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country'],
+			'enabledAutomaticMatchingFields' => ['em', 'fn', 'ln', 'ph', 'zp', 'ct', 'st', 'country', 'external_id'],
 			'pixelId' => '123'
 		);
 		$aam_settings = new AAMSettings($data);

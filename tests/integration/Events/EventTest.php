@@ -86,7 +86,8 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 				"ct" => "Springfield",
 				"st" => "Ohio",
 				"country" => "US",
-				"zp" => "12345"
+				"zp" => "12345",
+				"external_id" => "23"
 			)
 		);
 		$event = new Event( $data );
@@ -104,6 +105,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'st', $user_data );
 		$this->assertArrayHasKey( 'country', $user_data );
 		$this->assertArrayHasKey( 'zp', $user_data );
+		$this->assertArrayHasKey( 'external_id', $user_data );
 	}
 
 
@@ -335,12 +337,13 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 			"ct" => "Springfield",
 			"st" => "Ohio",
 			"country" => "US",
-			"zp" => "12345"
+			"zp" => "12345",
+			"external_id" => "23",
 		);
 
 		$method = IntegrationTester::getMethod( Event::class, 'hash_pii_data' );
 		$hashed_data = $method->invoke( new Event(), $pii_data );
-		$this->assertEquals(8, count($hashed_data));
+		$this->assertEquals(9, count($hashed_data));
 		foreach( $hashed_data as $key => $value ){
 			$this->assertRegExp('/^[A-Fa-f0-9]{64}$/', $value);
 		}

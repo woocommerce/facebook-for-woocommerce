@@ -988,6 +988,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$user_data['fn'] = $order->get_billing_first_name();
 			$user_data['ln'] = $order->get_billing_last_name();
 			$user_data['em'] = $order->get_billing_email();
+			// get_user_id() returns 0 if the current user is a guest
+			$user_data['external_id'] = $order->get_user_id() === 0 ? null : strval($order->get_user_id());
 			$user_data['zp'] = $order->get_billing_postcode();
 			$user_data['st'] = $order->get_billing_state();
 			// We can use country as key because this information is for CAPI events only

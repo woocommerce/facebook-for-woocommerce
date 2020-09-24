@@ -221,15 +221,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 					'em' => $current_user->user_email,
 					'fn' => $current_user->user_firstname,
 					'ln' => $current_user->user_lastname,
+					'external_id' => strval($current_user->ID),
 				);
 				$user_id = $current_user->ID;
-				if( 0 !== $user_id ){
-					$user_data['ct'] = get_user_meta($user_id, 'billing_city', true);
-					$user_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
-					$user_data['country'] = get_user_meta($user_id, 'billing_country', true);
-					$user_data['st'] = get_user_meta($user_id, 'billing_state', true);
-					$user_data['ph'] = get_user_meta($user_id, 'billing_phone', true);
-				}
+				$user_data['ct'] = get_user_meta($user_id, 'billing_city', true);
+				$user_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
+				$user_data['country'] = get_user_meta($user_id, 'billing_country', true);
+				$user_data['st'] = get_user_meta($user_id, 'billing_state', true);
+				$user_data['ph'] = get_user_meta($user_id, 'billing_phone', true);
 				// Each field that is not present in AAM settings or is empty is deleted from user data
 				foreach ($user_data as $field => $value) {
 					if( $value === null || $value === ''
