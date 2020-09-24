@@ -17,6 +17,7 @@ jQuery( document ).ready( ( $ ) => {
 	let $orderStatusField = $( '#order_status' );
 	let shipmentTracking  = wc_facebook_commerce_orders.shipment_tracking;
 	let trackingNumber    = Array.isArray( shipmentTracking ) && shipmentTracking[ 0 ] ? shipmentTracking[ 0 ] : shipmentTracking;
+	let completeModel;
 
 
 	/**
@@ -24,13 +25,23 @@ jQuery( document ).ready( ( $ ) => {
 	 */
 	function displayCompleteModal() {
 
-		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+		if ( completeModel ) {
+			completeModel.remove();
+		}
 
-		new $.WCBackboneModal.View( {
+		completeModel = new $.WCBackboneModal.View( {
 			target: 'facebook-for-woocommerce-modal',
 			string: {
 				message: wc_facebook_commerce_orders.complete_modal_message,
 				buttons: wc_facebook_commerce_orders.complete_modal_buttons
+			},
+			events: {
+				'click .modal-close': 'closeButton',
+				'touchstart #btn-ok': 'addButton',
+				'keydown'           : 'keyboardActions',
+				'click #btn-ok'     : function () {
+					makeCompleteAjaxRequest( completeModel );
+				}
 			}
 		} );
 	}
@@ -38,10 +49,16 @@ jQuery( document ).ready( ( $ ) => {
 
 	/**
 	 * Make complete order AJAX Request
+	 *
+	 * @param {Object} modal
 	 */
-	function makeCompleteAjaxRequest() {
+	function makeCompleteAjaxRequest( modal = null ) {
 
 		console.log( 'Complete AJAX' );
+
+		if ( modal ) {
+			modal.remove();
+		}
 	}
 
 
