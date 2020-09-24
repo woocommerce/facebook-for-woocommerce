@@ -11,12 +11,116 @@ jQuery( document ).ready( ( $ ) => {
 
 	'use strict';
 
-
 	const isCommerceOrder = Boolean( wc_facebook_commerce_orders.is_commerce_order );
+
+	const commerceOrderOperations = {
+		/**
+		 * Restrict order status options to only allowed options.
+		 *
+		 * @param {Object} $orderStatus Order select jQuery DOM object
+		 */
+		restrict_order_statuses: $orderStatus => {
+
+			$orderStatus.find( 'option' ).each( function ( index, option ) {
+
+				// check if option value in the allowed list or not
+				if ( wc_facebook_commerce_orders.allowed_commerce_statuses.indexOf( option.value ) === -1 ) {
+					// delete/remove option if not allowed
+					option.remove();
+				}
+			} );
+		},
+
+
+		/**
+		 * Enable or Disable order created fields.
+		 *
+		 * @param {Boolean} enable whether to enable date fields (true) or not (false)
+		 */
+		toggle_created_date_fields_status: enable => {
+			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
+		},
+
+
+		/**
+		 * Disable order status field
+		 *
+		 * @param {Object} $orderStatus Order select jQuery DOM object
+		 */
+		disable_order_status_field: ( $orderStatus ) => {
+			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
+		},
+
+
+		/**
+		 * Toggle customer field
+		 *
+		 * @param {Boolean} hide
+		 */
+		toggle_order_customer_field: ( hide ) => {
+			$( '#order_data' ).find( '.form-field.wc-customer-user' ).toggleClass( 'hidden', hide );
+		},
+
+
+		/**
+		 * Toggle customer field
+		 *
+		 * @param {Boolean} hide
+		 */
+		toggle_billing_and_shipping_fields: ( hide ) => {
+			$( '#order_data' ).find( 'a.edit_address' ).toggleClass( 'hidden', hide );
+		},
+
+
+		/**
+		 * Disable and hide related fields based on commerce order pending status
+		 *
+		 * @param {Object} $orderStatus Order select jQuery DOM object
+		 */
+		disable_pending_order_related_fields: ( $orderStatus ) => {
+
+			commerceOrderOperations.toggle_created_date_fields_status( false );
+			commerceOrderOperations.disable_order_status_field( $orderStatus );
+			commerceOrderOperations.toggle_order_customer_field( true );
+			commerceOrderOperations.toggle_billing_and_shipping_fields( true );
+		},
+
+
+		/**
+		 * Hide the refund UI when refunds can't be performed.
+		 */
+		maybe_disable_refunds: () => {
+
+			// only completed (fulfilled) orders can be refunded
+			if ( 'completed' !== wc_facebook_commerce_orders.order_status ) {
+
+				$( '.wc-order-bulk-actions .refund-items' ).hide();
+
+				$orderStatusField.find( 'option[value="wc-refunded"]' ).remove();
+			}
+		}
+
+
+	};
 
 	let $form               = $( 'form[id="post"]' );
 	let $orderStatusField   = $( '#order_status' );
 	let originalOrderStatus = $orderStatusField.val();
+
+	if ( isCommerceOrder ) {
+
+		commerceOrderOperations.restrict_order_statuses( $orderStatusField );
+
+		if ( 'pending' === wc_facebook_commerce_orders.order_status ) {
+			commerceOrderOperations.disable_pending_order_related_fields( $orderStatusField );
+		}
+
+		if ( 'cancelled' === wc_facebook_commerce_orders.order_status ) {
+			commerceOrderOperations.disable_order_status_field( $orderStatusField );
+		}
+
+		commerceOrderOperations.maybe_disable_refunds();
+	}
 
 
 	/**
