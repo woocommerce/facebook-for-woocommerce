@@ -46,6 +46,28 @@ class ShipmentTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
+	 * @see Shipment::is_valid_carrier()
+	 *
+	 * @param string $carrier a shipment carrier
+	 * @dataProvider provider_is_valid_carrier
+	 */
+	public function test_is_valid_carrier( string $carrier, bool $valid ) {
+
+		$this->assertSame( $valid, $this->get_shipment_utilities()->is_valid_carrier( $carrier ) );
+	}
+
+
+	/** @see test_is_valid_carrier() */
+	public function provider_is_valid_carrier() {
+
+		return [
+			'valid'   => [ 'RAM',           true ],
+			'invalid' => [ 'NOT_A_CARRIER', false ],
+		];
+	}
+
+
+	/**
 	 * @see Shipment::convert_shipment_tracking_carrier_code()
 	 *
 	 * @param string $carrier Shipment Tracking carrier
