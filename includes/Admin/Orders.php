@@ -209,7 +209,7 @@ class Orders {
 			class="button button-large button-primary"
 		><?php esc_html_e( $submit_label ); ?></button>
 		<button
-			class="button button-large"
+			class="wc-facebook-modal-cancel-button button button-large"
 			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
 		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
 		<?php
