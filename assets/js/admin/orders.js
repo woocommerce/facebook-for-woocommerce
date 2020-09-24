@@ -24,7 +24,15 @@ jQuery( document ).ready( ( $ ) => {
 	 */
 	function displayCompleteModal() {
 
-		console.log( 'Complete Modal' );
+		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+		new $.WCBackboneModal.View( {
+			target: 'facebook-for-woocommerce-modal',
+			string: {
+				message: wc_facebook_commerce_orders.complete_modal_message,
+				buttons: wc_facebook_commerce_orders.complete_modal_buttons
+			}
+		} );
 	}
 
 
