@@ -14,6 +14,7 @@ use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Requ
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
+use SkyVerge\WooCommerce\Facebook\Utilities;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
@@ -517,6 +518,13 @@ class Orders {
 
 			if ( ! $remote_id ) {
 				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+			}
+
+			$shipment_utilities = new Utilities\Shipment();
+
+			if ( ! $shipment_utilities->is_valid_carrier( $carrier ) ) {
+				/** translators: Placeholders: %s - shipping carrier code */
+				throw new SV_WC_Plugin_Exception( sprintf( __( '%s is not a valid shipping carrier code.', 'facebook-for-woocommerce' ), $carrier ) );
 			}
 
 			$items = [];
