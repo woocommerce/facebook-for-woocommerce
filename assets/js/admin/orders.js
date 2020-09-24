@@ -73,7 +73,7 @@ jQuery( document ).ready( ( $ ) => {
 
 
 		/**
-		 * Disable order status field
+		 * Disable and hide related fields based on commerce order pending status
 		 *
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
