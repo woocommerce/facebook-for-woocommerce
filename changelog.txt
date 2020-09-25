@@ -1,7 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 2.0.2-dev.1
+ * Tweak - Allow simple and variable products with zero/empty price to sync to Facebook
+ * Tweak - Use the bundle price for Product Bundles products with individually priced items
  * Fix - Update connection parameters to use an array to pass the Messenger domain
+ * Fix - Ensure out-of-stock products are marked as such in Facebook when the feed file replacement is run
  * Fix - Address a potential error when connecting from a site whose title contains special characters
 
 2020.08.17 - version 2.0.1
