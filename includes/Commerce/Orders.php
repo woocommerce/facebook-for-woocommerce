@@ -644,6 +644,9 @@ class Orders {
 			} else {
 				facebook_for_woocommerce()->log("Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
 			}
+
+			// re-throw the exception so the error halts refund creation
+			throw $exception;
 		}
 	}
 
