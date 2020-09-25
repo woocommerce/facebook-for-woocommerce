@@ -653,9 +653,10 @@ class Orders {
 			}
 
 			if ( ! empty( $refund->get_shipping_total() ) ) {
+
 				$refund_data['shipping'] = [
 					'shipping_refund' => [
-						'amount'   => $refund->get_shipping_total(),
+						'amount'   => abs( $refund->get_shipping_total() ),
 						'currency' => $refund->get_currency(),
 					],
 				];
