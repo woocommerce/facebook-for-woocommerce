@@ -614,6 +614,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property->setAccessible( true );
 		$property->setValue( facebook_for_woocommerce(), $api );
 
+		$this->expectException( SV_WC_Plugin_Exception::class );
+
 		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
 
 		$order = wc_get_order( $order->get_id() );
@@ -664,6 +666,39 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Orders::get_refund_items() */
+	public function test_get_refund_items() {
+
+		$product = $this->tester->get_product();
+
+		$refunded_item = new \WC_Order_Item_Product();
+		$refunded_item->set_name( 'Test' );
+		$refunded_item->set_quantity( 1 );
+		$refunded_item->set_total( 0.50 );
+		$refunded_item->set_product( $product );
+
+		$refund  = new \WC_Order_Refund();
+		$refund->add_item( $refunded_item );
+
+		$method = \IntegrationTester::getMethod( Commerce\Orders::class, 'get_refund_items' );
+
+		$this->assertIsArray( $method->invoke( new Commerce\Orders(), $refund ) );
+	}
+
+
+	/** @see Orders::get_refund_items() */
+	public function test_get_refund_items_exception() {
+
+		$refund = new \WC_Order_Refund();
+
+		$method = \IntegrationTester::getMethod( Commerce\Orders::class, 'get_refund_items' );
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
+
+		$method->invoke( new Commerce\Orders(), $refund );
+	}
+
+
 	/** @see Orders::add_order_refund() */
 	public function test_add_order_refund_partial_refund() {
 
@@ -699,10 +734,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$refunded_item->set_name( 'Test' );
 		$refunded_item->set_quantity( 1 );
 		$refunded_item->set_total( 0.50 );
+		$refunded_item->set_product( $product );
 
 		$refunded_item_without_quantity = new \WC_Order_Item_Product();
 		$refunded_item_without_quantity->set_name( 'Test without quantity' );
-		$refunded_item_without_quantity->set_total( '3.00' );
+		$refunded_item_without_quantity->set_total( '3.05' );
+		$refunded_item_without_quantity->set_product( $another_product );
+		$refunded_item_without_quantity->set_quantity( 0 );
 
 		$refund->add_item( $refunded_item );
 		$refund->add_item( $refunded_item_without_quantity );
@@ -717,13 +755,13 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 				$this->assertArrayHasKey( 'items', $refund_data );
 				$this->assertIsArray( $refund_data['items'] );
 				$this->assertNotEmpty( $refund_data['items'] );
-				$this->assertCount( 1, $refund_data['items'] );
+				$this->assertCount( 2, $refund_data['items'] );
 				$this->assertSame( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ), $refund_data['items'][0]['retailer_id'] );
 				$this->assertSame( 1, $refund_data['items'][0]['item_refund_quantity'] );
-				$this->assertArrayNotHasKey( 1, $refund_data['items'][0]['item_refund_amount'] );
+				$this->assertArrayNotHasKey( 'item_refund_amount', $refund_data['items'][0] );
 				$this->assertSame( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $another_product ), $refund_data['items'][1]['retailer_id'] );
-				$this->assertArrayNotHasKey( 1, $refund_data['items'][1]['item_refund_quantity'] );
-				$this->assertSame( '3.00', $refund_data['items'][1]['item_refund_amount'] );
+				$this->assertArrayNotHasKey( 'item_refund_quantity', $refund_data['items'][1] );
+				$this->assertSame( 3.05, $refund_data['items'][1]['item_refund_amount']['amount'] );
 			},
 		] );
 
@@ -774,6 +812,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
 		$property->setAccessible( true );
 		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->expectException( SV_WC_Plugin_Exception::class );
 
 		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
 
@@ -916,16 +956,14 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$refund->add_item( $refunded_item );
 		$refund->add_item( $refunded_shipping_item );
-		$refund->set_shipping_total( 4.00 );
+		$refund->set_shipping_total( 4.05 );
 		$refund->set_amount( '9.00' );
 		$refund->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$refund->save();
 
-		$expected_refunded_shipping_total = $refund->get_shipping_total();
-
 		// mock the API to ensure the correct reason is passed to the API
 		$api = $this->make( API::class, [
-			'add_order_refund' => function( $remote_id, $refund_data ) use ( $expected_refunded_shipping_total ) { $this->assertSame( $expected_refunded_shipping_total, $refund_data['shipping']['shipping_refund']['amount'] ); },
+			'add_order_refund' => function( $remote_id, $refund_data ) { $this->assertSame( 4.05, $refund_data['shipping']['shipping_refund']['amount'] ); },
 		] );
 
 		// replace the API property
