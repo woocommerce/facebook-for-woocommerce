@@ -449,16 +449,32 @@ class Connection {
 
 		if ( ! is_string( $this->external_business_id ) ) {
 
-			$value = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
+			$external_id = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
 
-			if ( ! is_string( $value ) ) {
+			if ( ! is_string( $external_id ) ) {
 
-				$value = uniqid( sanitize_title( $this->get_business_name() ) . '-', false );
+				/**
+				 * Filters the shop's business external ID.
+				 *
+				 * This is passed to Facebook when connecting.
+				 * Should be non-empty and without special characters, otherwise the ID will be obtained from the site URL as fallback.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param string $external_id the shop's business external ID
+				 */
+				$external_id = sanitize_key( (string) apply_filters( 'wc_facebook_connection_business_id', get_bloginfo( 'name' ) ) );
 
-				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $value );
+				if ( empty( $external_id ) ) {
+					$external_id = sanitize_key( str_replace( [ 'http', 'https', 'www' ], '', get_bloginfo( 'url' ) ) );
+				}
+
+				$external_id = uniqid( sprintf( '%s-', $external_id ), false );
+
+				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $external_id );
 			}
 
-			$this->external_business_id = $value;
+			$this->external_business_id = $external_id;
 		}
 
 		/**
