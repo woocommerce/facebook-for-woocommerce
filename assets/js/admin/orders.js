@@ -370,7 +370,7 @@ jQuery( document ).ready( ( $ ) => {
 			return showCancelOrderModal( event );
 		}
 
-		if ( !isCommerceOrder || $form.data( 'allow-submit' ) ) {
+		if ( ! isCommerceOrder || $form.data( 'allow-submit' ) ) {
 			return;
 		}
 
