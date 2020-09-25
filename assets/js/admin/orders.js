@@ -315,7 +315,7 @@ jQuery( document ).ready( ( $ ) => {
 	 */
 	function makeCompleteAjaxRequest( withModal = false, trackingNumber = null, carrierCode = null ) {
 
-		if ( !trackingNumber.length ) {
+		if ( ! trackingNumber.length ) {
 
 			alert( wc_facebook_commerce_orders.i18n.missing_tracking_number_error );
 
