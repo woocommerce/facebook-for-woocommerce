@@ -308,6 +308,8 @@ jQuery( document ).ready( ( $ ) => {
 			blockModal();
 		}
 
+		$form.find( 'button[type=submit].save_order' ).prop( 'disabled', true ).append( '<span class="spinner is-active"></span>' );
+
 		$.post( ajaxurl, {
 			action         : wc_facebook_commerce_orders.complete_order_action,
 			order_id       : $( '#post_ID' ).val(),
@@ -317,7 +319,15 @@ jQuery( document ).ready( ( $ ) => {
 		}, ( response ) => {
 
 			if ( !response || !response.success ) {
-				showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
+
+				let error_message = response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error;
+
+				if ( withModal ) {
+					showErrorInModal( error_message );
+				} else {
+					alert( error_message );
+				}
+
 				return;
 			}
 
@@ -325,10 +335,13 @@ jQuery( document ).ready( ( $ ) => {
 				unBlockModal();
 			}
 
-			$( '#post' ).data( 'allow-submit', true ).trigger( 'submit' );
+			$form.data( 'allow-submit', true ).trigger( 'submit' );
 		} ).fail( () => {
 
 			showErrorInModal( wc_facebook_commerce_orders.i18n.unknown_error );
+		} ).always( () => {
+
+			$form.find( 'button[type=submit].save_order' ).prop( 'disabled', false ).find( 'span.spinner' ).remove();
 		} );
 	}
 
