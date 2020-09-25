@@ -620,36 +620,7 @@ class Orders {
 
 			// only send items for partial refunds
 			if ( $parent_order->get_total() - $refund->get_amount() > 0 ) {
-
-				$items = [];
-
-				/** @var \WC_Order_Item_Product $item */
-				foreach ( $refund->get_items() as $item ) {
-
-					if ( $product = $item->get_product() ) {
-
-						$item = [
-							'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-						];
-
-						if ( ! empty( $item->get_quantity() ) ) {
-							$item['item_refund_quantity'] = abs( $item->get_quantity() );
-						} else {
-							$item['item_refund_amount'] = [
-								'amount'   => $item->get_total(),
-								'currency' => $refund->get_currency(),
-							];
-						}
-
-						$items[] = $item;
-					}
-				}
-
-				if ( empty( $items ) ) {
-					throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
-				}
-
-				$refund_data['items'] = $items;
+				$refund_data['items'] = $this->get_refund_items( $refund );
 			}
 
 			if ( ! empty( $refund->get_shipping_total() ) ) {
@@ -674,6 +645,52 @@ class Orders {
 				facebook_for_woocommerce()->log("Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
 			}
 		}
+	}
+
+
+	/**
+	 * Gets the Facebook items from the given refund.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WC_Order_Refund $refund refund object
+	 * @return array
+	 * @throws SV_WC_Plugin_Exception
+	 */
+	private function get_refund_items( \WC_Order_Refund $refund ) {
+
+		$items = [];
+
+		/** @var \WC_Order_Item_Product $item */
+		foreach ( $refund->get_items() as $item ) {
+
+			if ( $product = $item->get_product() ) {
+
+				$refund_item = [
+					'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+				];
+
+				if ( ! empty( $item->get_quantity() ) ) {
+
+					$refund_item['item_refund_quantity'] = abs( $item->get_quantity() );
+
+				} else {
+
+					$refund_item['item_refund_amount'] = [
+						'amount'   => abs( $item->get_total() ),
+						'currency' => $refund->get_currency(),
+					];
+				}
+
+				$items[] = $refund_item;
+			}
+		}
+
+		if ( empty( $items ) ) {
+			throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+		}
+
+		return $items;
 	}
 
 
