@@ -234,11 +234,10 @@ class Orders {
 
 		ob_start();
 
-		?>
-		<p><?php esc_html_e( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ); ?></p>
-		<?php
-
 		$shipment_utilities = new Shipment();
+
+		echo '<div class="woocommerce_options_panel">',
+		'<p>', esc_html__( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ), '</p>';
 
 		woocommerce_wp_select( [
 			'id'      => 'wc_facebook_carrier',
@@ -250,6 +249,8 @@ class Orders {
 			'id'    => 'wc_facebook_tracking_number',
 			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
 		] );
+
+		echo '</div>';
 
 		return ob_get_clean();
 	}
