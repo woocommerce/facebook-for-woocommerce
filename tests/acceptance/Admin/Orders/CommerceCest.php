@@ -117,26 +117,26 @@ class CommerceCest {
 		$args['response_body']    = json_encode( $args['response_body'] );
 
 		$code = <<<PHP
-		add_filter( 'pre_http_request', function( \$response, \$args, \$url ) {
+add_filter( 'pre_http_request', function( \$response, \$args, \$url ) {
 
-			if ( false !== strpos( \$url, '{$args['request_path']}' ) && '{$args['request_method']}' === \$args['method'] ) {
+	if ( false !== strpos( \$url, '{$args['request_path']}' ) && '{$args['request_method']}' === \$args['method'] ) {
 
-				\$response = [
-					'headers'       => json_decode( '{$args['response_headers']}' ),
-					'cookies'       => json_decode( '{$args['response_cookies']}' ),
-					'body'          => json_decode( '{$args['response_body']}' ),
-					'response'      => [
-						'code'    => '{$args['response_code']}',
-						'message' => '{$args['response_message']}',
-					],
-					'http_response' => null,
-				];
-			}
+		\$response = [
+			'headers'       => json_decode( '{$args['response_headers']}' ),
+			'cookies'       => json_decode( '{$args['response_cookies']}' ),
+			'body'          => json_decode( '{$args['response_body']}' ),
+			'response'      => [
+				'code'    => '{$args['response_code']}',
+				'message' => '{$args['response_message']}',
+			],
+			'http_response' => null,
+		];
+	}
 
-			return \$response;
+	return \$response;
 
-		}, 10, 3 );
-		PHP;
+}, 10, 3 );
+PHP;
 
 		$I->haveMuPlugin( sprintf( 'pre-http-request-%s.php', sanitize_file_name( $args['request_path'] ) ), $code );
 	}
