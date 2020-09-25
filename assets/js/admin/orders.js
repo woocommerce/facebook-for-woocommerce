@@ -278,7 +278,6 @@ jQuery( document ).ready( ( $ ) => {
 
 				if ( completeModalTrackingNumber ) {
 					$( '#wc_facebook_tracking_number' ).val( completeModalTrackingNumber );
-
 				}
 			} );
 		}
