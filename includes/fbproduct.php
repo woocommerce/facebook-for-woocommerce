@@ -523,7 +523,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => array_slice( $image_urls, 1 ),
+				'additional_image_urls' => array_slice( $image_urls, 1, 20 ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
 				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
