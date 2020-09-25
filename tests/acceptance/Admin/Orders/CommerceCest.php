@@ -248,4 +248,39 @@ class CommerceCest {
 	}
 
 
+	/**
+	 * Tests that the refund reason fields are shown.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_refund_fields_are_present( AcceptanceTester $I ) {
+
+		$remote_id = '1234';
+
+		$order = $this->get_order_to_cancel( $I, $remote_id );
+
+		$I->amEditingPostWithId( $order->get_id() );
+
+		$I->wantTo( 'test that the Commerce refund reason fields are shown' );
+
+		$I->amGoingTo( 'click the Refund button' );
+
+		$I->click( 'button.refund-items' );
+
+		$I->expect( 'that the Facebook refund reason field is present' );
+
+		$I->waitForElementVisible( '#wc_facebook_refund_reason', 15 );
+		$I->see( 'Refund reason:', 'label' );
+
+		$I->expect( 'that the refund description field is present' );
+
+		$I->seeElement( '#refund_reason' );
+		$I->see( 'Refund description (optional):', 'label' );
+
+		$I->amGoingTo( 'select a Commerce refund reason and enter a refund description' );
+
+		$I->selectOption( '#wc_facebook_refund_reason', 'NOT_AS_DESCRIBED' );
+		$I->fillField( '#refund_reason', 'I have my reasons' );
+	}
+
 }
