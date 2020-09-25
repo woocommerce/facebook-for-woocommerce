@@ -150,7 +150,7 @@ jQuery( document ).ready( ( $ ) => {
 			return false;
 		}
 
-		if ( !isCommerceOrder ) {
+		if ( ! isCommerceOrder ) {
 			return false;
 		}
 
