@@ -111,8 +111,8 @@ class Orders {
 			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'         => $shipment_tracking,
 			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
-			'complete_ajax_action'      => AJAX::ACTION_COMPLETE_ORDER,
-			'complete_ajax_nonce'       => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
+			'complete_order_action'     => AJAX::ACTION_COMPLETE_ORDER,
+			'complete_order_nonce'      => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
 			'cancel_order_action'       => AJAX::ACTION_CANCEL_ORDER,
 			'cancel_order_nonce'        => wp_create_nonce( AJAX::ACTION_CANCEL_ORDER ),
 			'complete_modal_message'    => $this->get_complete_modal_message(),
@@ -122,7 +122,8 @@ class Orders {
 			'cancel_modal_message'      => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'      => $this->get_cancel_modal_buttons(),
 			'i18n'                      => [
-				'unknown_error' => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+				'missing_tracking_number_error' => __( 'Tracking Number is missing.', 'facebook-for-woocommerce' ),
+				'unknown_error'                 => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
 			],
 		] );
 	}
