@@ -389,7 +389,7 @@ class Orders {
 
 			$reason_code = isset( $_POST['wc_facebook_refund_reason'] ) ? $_POST['wc_facebook_refund_reason'] : null;
 
-			Commerce\Orders::add_order_refund( $order_refund, $reason_code );
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->add_order_refund( $order_refund, $reason_code );
 		}
 	}
 
