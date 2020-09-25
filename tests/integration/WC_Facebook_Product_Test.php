@@ -42,12 +42,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$attachments = array_map( function() {
 
-			return wp_insert_attachment( [
-				// 'post_mime_type' => 'png',
-				// 'post_title'     => 'Fake Attachment',
-				// 'post_content'   => '',
-				// 'post_status'    => 'inheirt',
-			] );
+			return wp_insert_attachment( [] );
 		}, range( 1, $images_count ) );
 
 		$product->update_meta_data( '_thumbnail_id', $attachments[0] );
