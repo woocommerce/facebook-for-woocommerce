@@ -182,32 +182,32 @@ jQuery( document ).ready( ( $ ) => {
 
 		// handle confirm action
 		$( '.facebook-for-woocommerce-modal #btn-ok' )
-		.off( 'click.facebook_for_commerce' )
-		.on( 'click.facebook_for_commerce', ( event ) => {
+			.off( 'click.facebook_for_commerce' )
+			.on( 'click.facebook_for_commerce', ( event ) => {
 
-			event.preventDefault();
-			event.stopPropagation();
+				event.preventDefault();
+				event.stopPropagation();
 
-			blockModal();
+				blockModal();
 
-			$.post( ajaxurl, {
-				action     : wc_facebook_commerce_orders.cancel_order_action,
-				order_id   : $( '#post_ID' ).val(),
-				reason_code: $( '.facebook-for-woocommerce-modal [name="wc_facebook_cancel_reason"]' ).val(),
-				security   : wc_facebook_commerce_orders.cancel_order_nonce
-			}, ( response ) => {
+				$.post( ajaxurl, {
+					action:      wc_facebook_commerce_orders.cancel_order_action,
+					order_id:    $( '#post_ID' ).val(),
+					reason_code: $( '.facebook-for-woocommerce-modal [name="wc_facebook_cancel_reason"]' ).val(),
+					security:    wc_facebook_commerce_orders.cancel_order_nonce
+				}, ( response ) => {
 
-				if ( ! response || ! response.success ) {
-					showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
-					return;
-				}
+					if ( ! response || ! response.success ) {
+						showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
+						return;
+					}
 
-				$( '#post' ).data( 'skip-cancel-modal', true ).trigger( 'submit' );
-			} ).fail( () => {
+					$( '#post' ).data( 'skip-cancel-modal', true ).trigger( 'submit' );
+				} ).fail( () => {
 
-				showErrorInModal( wc_facebook_commerce_orders.i18n.unknown_error );
+					showErrorInModal( wc_facebook_commerce_orders.i18n.unknown_error );
+				} );
 			} );
-		} );
 
 		return false;
 	}
@@ -232,6 +232,8 @@ jQuery( document ).ready( ( $ ) => {
 	/**
 	 * Displays the refund modal on form submit.
 	 *
+	 * @since 2.0.1-dev.1
+	 *
 	 * @param {Event} event
 	 */
 	function displayRefundModal( event ) {
@@ -250,13 +252,13 @@ jQuery( document ).ready( ( $ ) => {
 		} );
 
 		$( document.body )
-		.off( 'wc_backbone_modal_response.facebook_for_commerce' )
-		.on( 'wc_backbone_modal_response.facebook_for_commerce', function () {
-			// copy the value of the modal select to the WC field
-			$( '#refund_reason' ).val( $( '#wc_facebook_refund_reason_modal' ).val() );
-			// submit the form
-			$form.data( 'allow-submit', true ).submit();
-		} );
+			.off( 'wc_backbone_modal_response.facebook_for_commerce' )
+			.on( 'wc_backbone_modal_response.facebook_for_commerce', function() {
+				// copy the value of the modal select to the WC field
+				$( '#refund_reason' ).val( $( '#wc_facebook_refund_reason_modal' ).val() );
+				// submit the form
+				$form.data( 'allow-submit', true ).submit();
+			} );
 	}
 
 
@@ -269,17 +271,17 @@ jQuery( document ).ready( ( $ ) => {
 
 		if ( completeModalCarrierCode || completeModalTrackingNumber ) {
 			$( document.body )
-			.off( 'wc_backbone_modal_loaded' )
-			.on( 'wc_backbone_modal_loaded', function () {
+				.off( 'wc_backbone_modal_loaded' )
+				.on( 'wc_backbone_modal_loaded', function() {
 
-				if ( completeModalCarrierCode ) {
-					$( '#wc_facebook_carrier' ).val( completeModalCarrierCode );
-				}
+					if ( completeModalCarrierCode ) {
+						$( '#wc_facebook_carrier' ).val( completeModalCarrierCode );
+					}
 
-				if ( completeModalTrackingNumber ) {
-					$( '#wc_facebook_tracking_number' ).val( completeModalTrackingNumber );
-				}
-			} );
+					if ( completeModalTrackingNumber ) {
+						$( '#wc_facebook_tracking_number' ).val( completeModalTrackingNumber );
+					}
+				} );
 		}
 
 		new $.WCBackboneModal.View( {
@@ -292,17 +294,17 @@ jQuery( document ).ready( ( $ ) => {
 
 		// handle confirm action
 		$( '.facebook-for-woocommerce-modal #btn-ok' )
-		.off( 'click.facebook_for_commerce' )
-		.on( 'click.facebook_for_commerce', ( event ) => {
+			.off( 'click.facebook_for_commerce' )
+			.on( 'click.facebook_for_commerce', ( event ) => {
 
-			event.preventDefault();
-			event.stopPropagation();
+				event.preventDefault();
+				event.stopPropagation();
 
-			completeModalCarrierCode    = $( '#wc_facebook_carrier' ).val();
-			completeModalTrackingNumber = $( '#wc_facebook_tracking_number' ).val();
+				completeModalCarrierCode    = $( '#wc_facebook_carrier' ).val();
+				completeModalTrackingNumber = $( '#wc_facebook_tracking_number' ).val();
 
-			makeCompleteAjaxRequest( true, completeModalCarrierCode, completeModalTrackingNumber );
-		} );
+				makeCompleteAjaxRequest( true, completeModalCarrierCode, completeModalTrackingNumber );
+			} );
 	}
 
 
@@ -364,7 +366,79 @@ jQuery( document ).ready( ( $ ) => {
 	}
 
 
-	$form.on( 'submit', function ( event ) {
+	/**
+	 * Moves the Facebook refund reason field above WooCommerce's refund reason field.
+	 *
+	 * It also updates the labels and tooltips.
+	 *
+	 * @since 2.0.1-dev.1
+	 */
+	function moveRefundReasonField() {
+
+		let $oldRefundReasonField  = $( '#refund_reason' );
+		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).css( 'width', $oldRefundReasonField.css( 'width' ) );
+		let $refundReasonRow       = $oldRefundReasonField.closest( 'tr' );
+		let $refundDescriptionRow  = $refundReasonRow.clone();
+
+		$refundReasonRow
+			.find( 'td.total' ).css( 'width', '16em' ).end()
+			.find( '#refund_reason' ).replaceWith( $newRefundReasonField.show() ).end()
+			.find( 'label[for="refund_reason"]' ).attr( 'for', 'wc_facebook_refund_reason' );
+
+		$refundReasonRow.after( $refundDescriptionRow );
+
+		updateOrderTotalFieldLabel(
+			$refundReasonRow,
+			'wc_facebook_refund_reason',
+			wc_facebook_commerce_orders.i18n.refund_reason_label,
+			wc_facebook_commerce_orders.i18n.refund_reason_tooltip
+		);
+
+		updateOrderTotalFieldLabel(
+			$refundDescriptionRow,
+			'refund_reason',
+			wc_facebook_commerce_orders.i18n.refund_description_label,
+			wc_facebook_commerce_orders.i18n.refund_description_tooltip
+		);
+	}
+
+
+	/**
+	 * Changes the label and tooltip of the specified order total field.
+	 *
+	 * @since 2.0.1-dev.1
+	 *
+	 * @param {jQuery} $container an element that contains the label of the field
+	 * @param {string} fieldId the id of the field
+	 * @param {string} label the new label for the field
+	 * @param {string} tooltip the new tooltip for the field
+	 */
+	function updateOrderTotalFieldLabel( $container, fieldId, label, tooltip ) {
+
+		let $label   = $container.find( 'label[for="' + fieldId + '"]' );
+		let $tooltip = $label.find( '.woocommerce-help-tip' ).clone();
+
+		$label.text( label );
+
+		if ( tooltip && $tooltip.length ) {
+
+			$label.prepend( $tooltip );
+
+			$tooltip.attr( 'data-tip', tooltip ).tipTip( {
+				'attribute': 'data-tip',
+				'fadeIn': 50,
+				'fadeOut': 50,
+				'delay': 200
+			} );
+		}
+	}
+
+
+	if ( isCommerceOrder ) {
+		moveRefundReasonField();
+	}
+
+	$form.on( 'submit', function( event ) {
 
 		if ( shouldShowCancelOrderModal() ) {
 			return showCancelOrderModal( event );

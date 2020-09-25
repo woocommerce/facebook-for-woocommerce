@@ -63,7 +63,7 @@ class Orders {
 		add_action( 'woocommerce_email_enabled_customer_processing_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 		add_action( 'woocommerce_email_enabled_customer_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 
-		add_action( 'admin_menu', [ $this, 'maybe_remove_order_metaboxes' ] );
+		add_action( 'add_meta_boxes', [ $this, 'maybe_remove_order_metaboxes' ], 999 );
 	}
 
 
@@ -97,11 +97,13 @@ class Orders {
 		$shipment_tracking  = array_filter( (array) $order->get_meta( '_wc_shipment_tracking_items', true ) );
 
 		if ( ! empty( $shipment_tracking ) ) {
+
 			$shipment_tracking = array_map( function ( $shipment ) use ( $shipment_utilities ) {
 
 				$shipment['carrier_code'] = $shipment_utilities->convert_shipment_tracking_carrier_code( $shipment['tracking_provider'] );
 
 				return $shipment;
+
 			}, $shipment_tracking );
 		}
 
@@ -121,9 +123,13 @@ class Orders {
 			'refund_modal_buttons'      => $this->get_refund_modal_buttons(),
 			'cancel_modal_message'      => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'      => $this->get_cancel_modal_buttons(),
-			'i18n'                      => [
-				'missing_tracking_number_error' => __( 'Tracking Number is missing.', 'facebook-for-woocommerce' ),
+			'i18n' => [
 				'unknown_error'                 => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+				'missing_tracking_number_error' => __( 'Tracking Number is missing.', 'facebook-for-woocommerce' ),
+				'refund_reason_label'           => __( 'Refund reason:', 'facebook-for-woocommerce' ),
+				'refund_reason_tooltip'         => __( 'Choose the reason for refunding this order.', 'facebook-for-woocommerce' ),
+				'refund_description_label'      => __( 'Refund description (optional):', 'facebook-for-woocommerce' ),
+				'refund_description_tooltip'    => __( 'Note: the refund description will be visible by the customer.', 'facebook-for-woocommerce' ),
 			],
 		] );
 	}
@@ -192,7 +198,19 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function maybe_remove_order_metaboxes() {
+		global $post;
 
+		if ( ! $post instanceof \WP_Post || ! $this->is_edit_order_screen() ) {
+			return;
+		}
+
+		$order = wc_get_order( $post );
+
+		if ( ! $order || ! $order->has_status( 'pending' ) || ! Commerce\Orders::is_commerce_order( $order ) ) {
+			return;
+		}
+
+		remove_meta_box( 'woocommerce-order-actions', get_current_screen(), 'side' );
 	}
 
 
@@ -214,7 +232,7 @@ class Orders {
 			class="button button-large button-primary"
 		><?php esc_html_e( $submit_label ); ?></button>
 		<button
-			class="button button-large"
+			class="wc-facebook-modal-cancel-button button button-large"
 			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
 		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
 		<?php
@@ -284,7 +302,7 @@ class Orders {
 		<p><?php esc_html_e( 'Select a reason for refunding this order:', 'facebook-for-woocommerce' ); ?></p>
 		<?php
 
-		$this->render_refund_reason_field();
+		$this->render_refund_reason_field( 'wc_facebook_refund_reason_modal', false );
 
 		return ob_get_clean();
 	}
@@ -348,14 +366,14 @@ class Orders {
 	 *
 	 * @since 2.1.0-dev.1
 	 */
-	public function render_refund_reason_field() {
+	public function render_refund_reason_field( $select_id = '', $hidden = true ) {
 
 		if ( ! $this->is_edit_order_screen() ) {
 			return;
 		}
 
 		?>
-		<select id="wc_facebook_refund_reason" style="display: none;">
+		<select id="<?php echo esc_attr( $select_id ?: 'wc_facebook_refund_reason' ); ?>" <?php echo $hidden ? 'style="display: none;"' : ''; ?>>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_BUYERS_REMORSE ); ?>"><?php esc_html_e( 'Customer request', 'facebook-for-woocommerce' ); ?></option>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_DAMAGED_GOODS ); ?>"><?php esc_html_e( 'Damaged product', 'facebook-for-woocommerce' ); ?></option>
 			<option value="<?php echo esc_attr( Commerce\Orders::REFUND_REASON_NOT_AS_DESCRIBED ); ?>"><?php esc_html_e( 'Product not as described', 'facebook-for-woocommerce' ); ?></option>
@@ -375,9 +393,18 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param int $refund_id refund ID
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function handle_refund( $refund_id ) {
 
+		$order_refund = wc_get_order( $refund_id );
+
+		if ( $order_refund instanceof \WC_Order_Refund ) {
+
+			$reason_code = isset( $_POST['wc_facebook_refund_reason'] ) ? $_POST['wc_facebook_refund_reason'] : null;
+
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->add_order_refund( $order_refund, $reason_code );
+		}
 	}
 
 

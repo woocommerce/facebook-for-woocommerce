@@ -642,7 +642,7 @@ class Orders {
 			if ( ! empty( $parent_order ) && $parent_order instanceof \WC_Order ) {
 				$parent_order->add_order_note( sprintf( __( 'Could not refund Instagram order: %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
 			} else {
-				facebook_for_woocommerce()->log("Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
+				facebook_for_woocommerce()->log( "Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
 			}
 
 			// re-throw the exception so the error halts refund creation
