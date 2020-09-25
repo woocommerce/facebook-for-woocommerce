@@ -222,6 +222,8 @@ jQuery( document ).ready( ( $ ) => {
 	/**
 	 * Displays the refund modal on form submit.
 	 *
+	 * @since 2.0.1-dev.1
+	 *
 	 * @param {Event} event
 	 */
 	function displayRefundModal( event ) {
@@ -288,6 +290,8 @@ jQuery( document ).ready( ( $ ) => {
 
 	/**
 	 * Changes the label and tooltip of the specified order total field.
+	 *
+	 * @since 2.0.1-dev.1
 	 *
 	 * @param {jQuery} $container an element that contains the label of the field
 	 * @param {string} fieldId the id of the field
