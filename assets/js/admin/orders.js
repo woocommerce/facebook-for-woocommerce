@@ -197,7 +197,7 @@ jQuery( document ).ready( ( $ ) => {
 				security   : wc_facebook_commerce_orders.cancel_order_nonce
 			}, ( response ) => {
 
-				if ( !response || !response.success ) {
+				if ( ! response || ! response.success ) {
 					showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
 					return;
 				}
