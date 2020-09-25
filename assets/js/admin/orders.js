@@ -103,12 +103,14 @@ jQuery( document ).ready( ( $ ) => {
 
 	};
 
-	let $form                  = $( 'form[id="post"]' );
-	let $orderStatusField      = $( '#order_status' );
-	let originalOrderStatus    = $orderStatusField.val();
-	let shipmentTracking       = wc_facebook_commerce_orders.shipment_tracking;
-	let existingTrackingNumber = '';
-	let existingCarrierCode    = '';
+	let $form                       = $( 'form[id="post"]' );
+	let $orderStatusField           = $( '#order_status' );
+	let originalOrderStatus         = $orderStatusField.val();
+	let shipmentTracking            = wc_facebook_commerce_orders.shipment_tracking;
+	let existingTrackingNumber      = '';
+	let existingCarrierCode         = '';
+	let completeModalTrackingNumber = '';
+	let completeModalCarrierCode    = '';
 
 	if ( Array.isArray( shipmentTracking ) && shipmentTracking[ 0 ] ) {
 		existingTrackingNumber = shipmentTracking[ 0 ].tracking_number;
@@ -238,6 +240,7 @@ jQuery( document ).ready( ( $ ) => {
 
 		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
 
+
 		new $.WCBackboneModal.View( {
 			target: 'facebook-for-woocommerce-modal',
 			string: {
@@ -264,6 +267,22 @@ jQuery( document ).ready( ( $ ) => {
 
 		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
 
+		if ( completeModalCarrierCode || completeModalTrackingNumber ) {
+			$( document.body )
+			.off( 'wc_backbone_modal_loaded' )
+			.on( 'wc_backbone_modal_loaded', function () {
+
+				if ( completeModalCarrierCode ) {
+					$( '#wc_facebook_carrier' ).val( completeModalCarrierCode );
+				}
+
+				if ( completeModalTrackingNumber ) {
+					$( '#wc_facebook_tracking_number' ).val( completeModalTrackingNumber );
+
+				}
+			} );
+		}
+
 		new $.WCBackboneModal.View( {
 			target: 'facebook-for-woocommerce-modal',
 			string: {
@@ -280,7 +299,10 @@ jQuery( document ).ready( ( $ ) => {
 			event.preventDefault();
 			event.stopPropagation();
 
-			makeCompleteAjaxRequest( true );
+			completeModalCarrierCode    = $( '#wc_facebook_carrier' ).val();
+			completeModalTrackingNumber = $( '#wc_facebook_tracking_number' ).val();
+
+			makeCompleteAjaxRequest( true, completeModalCarrierCode, completeModalTrackingNumber );
 		} );
 	}
 
@@ -293,9 +315,6 @@ jQuery( document ).ready( ( $ ) => {
 	 * @param {String} carrierCode
 	 */
 	function makeCompleteAjaxRequest( withModal = false, trackingNumber = null, carrierCode = null ) {
-
-		carrierCode    = carrierCode || $( '#wc_facebook_carrier' ).val();
-		trackingNumber = trackingNumber || $( '#wc_facebook_tracking_number' ).val();
 
 		if ( !trackingNumber.length ) {
 
