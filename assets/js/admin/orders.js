@@ -303,7 +303,7 @@ jQuery( document ).ready( ( $ ) => {
 				completeModalCarrierCode    = $( '#wc_facebook_carrier' ).val();
 				completeModalTrackingNumber = $( '#wc_facebook_tracking_number' ).val();
 
-				makeCompleteAjaxRequest( true, completeModalCarrierCode, completeModalTrackingNumber );
+				makeCompleteAjaxRequest( true, completeModalTrackingNumber, completeModalCarrierCode );
 			} );
 	}
 
