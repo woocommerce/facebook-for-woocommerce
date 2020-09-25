@@ -222,6 +222,8 @@ jQuery( document ).ready( ( $ ) => {
 	/**
 	 * Displays the refund modal on form submit.
 	 *
+	 * @since 2.0.1-dev.1
+	 *
 	 * @param {Event} event
 	 */
 	function displayRefundModal( event ) {
@@ -248,6 +250,78 @@ jQuery( document ).ready( ( $ ) => {
 			} );
 	}
 
+
+	/**
+	 * Moves the Facebook refund reason field above WooCommerce's refund reason field.
+	 *
+	 * It also updates the labels and tooltips.
+	 *
+	 * @since 2.0.1-dev.1
+	 */
+	function moveRefundReasonField() {
+
+		let $oldRefundReasonField  = $( '#refund_reason' );
+		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).css( 'width', $oldRefundReasonField.css( 'width' ) );
+		let $refundReasonRow       = $oldRefundReasonField.closest( 'tr' );
+		let $refundDescriptionRow  = $refundReasonRow.clone();
+
+		$refundReasonRow
+			.find( 'td.total' ).css( 'width', '16em' ).end()
+			.find( '#refund_reason' ).replaceWith( $newRefundReasonField.show() ).end()
+			.find( 'label[for="refund_reason"]' ).attr( 'for', 'wc_facebook_refund_reason' );
+
+		$refundReasonRow.after( $refundDescriptionRow );
+
+		updateOrderTotalFieldLabel(
+			$refundReasonRow,
+			'wc_facebook_refund_reason',
+			wc_facebook_commerce_orders.i18n.refund_reason_label,
+			wc_facebook_commerce_orders.i18n.refund_reason_tooltip
+		);
+
+		updateOrderTotalFieldLabel(
+			$refundDescriptionRow,
+			'refund_reason',
+			wc_facebook_commerce_orders.i18n.refund_description_label,
+			wc_facebook_commerce_orders.i18n.refund_description_tooltip
+		);
+	}
+
+
+	/**
+	 * Changes the label and tooltip of the specified order total field.
+	 *
+	 * @since 2.0.1-dev.1
+	 *
+	 * @param {jQuery} $container an element that contains the label of the field
+	 * @param {string} fieldId the id of the field
+	 * @param {string} label the new label for the field
+	 * @param {string} tooltip the new tooltip for the field
+	 */
+	function updateOrderTotalFieldLabel( $container, fieldId, label, tooltip ) {
+
+		let $label   = $container.find( 'label[for="' + fieldId + '"]' );
+		let $tooltip = $label.find( '.woocommerce-help-tip' ).clone();
+
+		$label.text( label );
+
+		if ( tooltip && $tooltip.length ) {
+
+			$label.prepend( $tooltip );
+
+			$tooltip.attr( 'data-tip', tooltip ).tipTip( {
+				'attribute': 'data-tip',
+				'fadeIn': 50,
+				'fadeOut': 50,
+				'delay': 200
+			} );
+		}
+	}
+
+
+	if ( isCommerceOrder ) {
+		moveRefundReasonField();
+	}
 
 	$form.on( 'submit', function( event ) {
 

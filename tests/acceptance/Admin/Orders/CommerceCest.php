@@ -117,26 +117,26 @@ class CommerceCest {
 		$args['response_body']    = json_encode( $args['response_body'] );
 
 		$code = <<<PHP
-		add_filter( 'pre_http_request', function( \$response, \$args, \$url ) {
+add_filter( 'pre_http_request', function( \$response, \$args, \$url ) {
 
-			if ( false !== strpos( \$url, '{$args['request_path']}' ) && '{$args['request_method']}' === \$args['method'] ) {
+	if ( false !== strpos( \$url, '{$args['request_path']}' ) && '{$args['request_method']}' === \$args['method'] ) {
 
-				\$response = [
-					'headers'       => json_decode( '{$args['response_headers']}' ),
-					'cookies'       => json_decode( '{$args['response_cookies']}' ),
-					'body'          => json_decode( '{$args['response_body']}' ),
-					'response'      => [
-						'code'    => '{$args['response_code']}',
-						'message' => '{$args['response_message']}',
-					],
-					'http_response' => null,
-				];
-			}
+		\$response = [
+			'headers'       => json_decode( '{$args['response_headers']}' ),
+			'cookies'       => json_decode( '{$args['response_cookies']}' ),
+			'body'          => json_decode( '{$args['response_body']}' ),
+			'response'      => [
+				'code'    => '{$args['response_code']}',
+				'message' => '{$args['response_message']}',
+			],
+			'http_response' => null,
+		];
+	}
 
-			return \$response;
+	return \$response;
 
-		}, 10, 3 );
-		PHP;
+}, 10, 3 );
+PHP;
 
 		$I->haveMuPlugin( sprintf( 'pre-http-request-%s.php', sanitize_file_name( $args['request_path'] ) ), $code );
 	}
@@ -245,6 +245,45 @@ class CommerceCest {
 
 		$I->waitForText( 'Order updated.', 15 );
 		$I->assertEquals( 'wc-cancelled', $I->executeJS( "return jQuery( '#order_status' ).val()" ) );
+	}
+
+
+	/**
+	 * Tests that the refund reason fields are shown.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	public function try_refund_fields_are_present( AcceptanceTester $I ) {
+
+		$remote_id = '1234';
+
+		$order = $this->get_order_to_cancel( $I, $remote_id );
+
+		$order->set_status( 'completed' );
+		$order->save();
+
+		$I->amEditingPostWithId( $order->get_id() );
+
+		$I->wantTo( 'test that the Commerce refund reason fields are shown' );
+
+		$I->amGoingTo( 'click the Refund button' );
+
+		$I->click( 'button.refund-items' );
+
+		$I->expect( 'that the Facebook refund reason field is present' );
+
+		$I->waitForElementVisible( '#wc_facebook_refund_reason', 15 );
+		$I->see( 'Refund reason:', 'label' );
+
+		$I->expect( 'that the refund description field is present' );
+
+		$I->seeElement( '#refund_reason' );
+		$I->see( 'Refund description (optional):', 'label' );
+
+		$I->amGoingTo( 'select a Commerce refund reason and enter a refund description' );
+
+		$I->selectOption( '#wc_facebook_refund_reason', 'NOT_AS_DESCRIBED' );
+		$I->fillField( '#refund_reason', 'I have my reasons' );
 	}
 
 
