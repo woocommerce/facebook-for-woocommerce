@@ -112,9 +112,9 @@ jQuery( document ).ready( ( $ ) => {
 	let completeModalTrackingNumber = '';
 	let completeModalCarrierCode    = '';
 
-	if ( Array.isArray( shipmentTracking ) && shipmentTracking[ 0 ] ) {
-		existingTrackingNumber = shipmentTracking[ 0 ].tracking_number;
-		existingCarrierCode    = shipmentTracking[ 0 ].carrier_code;
+	if ( Array.isArray( shipmentTracking ) && shipmentTracking[0] ) {
+		existingTrackingNumber = shipmentTracking[0].tracking_number;
+		existingCarrierCode    = shipmentTracking[0].carrier_code;
 	}
 
 	if ( isCommerceOrder ) {
