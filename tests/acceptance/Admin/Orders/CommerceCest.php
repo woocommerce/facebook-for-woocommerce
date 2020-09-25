@@ -259,6 +259,9 @@ PHP;
 
 		$order = $this->get_order_to_cancel( $I, $remote_id );
 
+		$order->set_status( 'completed' );
+		$order->save();
+
 		$I->amEditingPostWithId( $order->get_id() );
 
 		$I->wantTo( 'test that the Commerce refund reason fields are shown' );
