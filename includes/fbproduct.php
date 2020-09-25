@@ -209,6 +209,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return array_slice( $image_urls, 1, 20 );
 		}
 
+
 		// Returns the parent image id for variable products only.
 		public function get_parent_image_id() {
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->woo_product->get_type() ) ) {
