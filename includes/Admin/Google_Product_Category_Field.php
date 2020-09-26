@@ -129,15 +129,12 @@ class Google_Product_Category_Field {
 					}, $categories ) );
 
 					$category['parent'] = (string) $parent_category;
+
+					// add category label to the parent's list of options
+					$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
 				}
 
 				$categories[ (string) $category_id ] = $category;
-			}
-
-			// add the options to the list
-			foreach ( $categories as $key => $category ) {
-
-				$categories[ $key ]['options'] = $this->get_category_options( (string) $key, $categories );
 			}
 		}
 
