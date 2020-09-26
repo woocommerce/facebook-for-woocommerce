@@ -93,12 +93,28 @@ class Orders {
 			'facebook-for-woocommerce-modal',
 		], \WC_Facebookcommerce::VERSION );
 
+		$shipment_utilities = new Shipment();
+		$shipment_tracking  = array_filter( (array) $order->get_meta( '_wc_shipment_tracking_items', true ) );
+
+		if ( ! empty( $shipment_tracking ) ) {
+
+			$shipment_tracking = array_map( function ( $shipment ) use ( $shipment_utilities ) {
+
+				$shipment['carrier_code'] = $shipment_utilities->convert_shipment_tracking_carrier_code( $shipment['tracking_provider'] );
+
+				return $shipment;
+
+			}, $shipment_tracking );
+		}
+
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
 			'order_id'                  => $order->get_id(),
 			'order_status'              => $order->get_status(),
 			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
-			'shipment_tracking'         => $order->get_meta( '_wc_shipment_tracking_items', true ),
+			'shipment_tracking'         => $shipment_tracking,
 			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
+			'complete_order_action'     => AJAX::ACTION_COMPLETE_ORDER,
+			'complete_order_nonce'      => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
 			'cancel_order_action'       => AJAX::ACTION_CANCEL_ORDER,
 			'cancel_order_nonce'        => wp_create_nonce( AJAX::ACTION_CANCEL_ORDER ),
 			'complete_modal_message'    => $this->get_complete_modal_message(),
@@ -108,11 +124,12 @@ class Orders {
 			'cancel_modal_message'      => $this->get_cancel_modal_message(),
 			'cancel_modal_buttons'      => $this->get_cancel_modal_buttons(),
 			'i18n' => [
-				'unknown_error'              => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
-				'refund_reason_label'        => __( 'Refund reason:', 'facebook-for-woocommerce' ),
-				'refund_reason_tooltip'      => __( 'Choose the reason for refunding this order.', 'facebook-for-woocommerce' ),
-				'refund_description_label'   => __( 'Refund description (optional):', 'facebook-for-woocommerce' ),
-				'refund_description_tooltip' => __( 'Note: the refund description will be visible by the customer.', 'facebook-for-woocommerce' ),
+				'unknown_error'                 => __( 'An unknown error occurred.', 'facebook-for-woocommerce' ),
+				'missing_tracking_number_error' => __( 'Tracking Number is missing.', 'facebook-for-woocommerce' ),
+				'refund_reason_label'           => __( 'Refund reason:', 'facebook-for-woocommerce' ),
+				'refund_reason_tooltip'         => __( 'Choose the reason for refunding this order.', 'facebook-for-woocommerce' ),
+				'refund_description_label'      => __( 'Refund description (optional):', 'facebook-for-woocommerce' ),
+				'refund_description_tooltip'    => __( 'Note: the refund description will be visible by the customer.', 'facebook-for-woocommerce' ),
 			],
 		] );
 	}
@@ -235,11 +252,10 @@ class Orders {
 
 		ob_start();
 
-		?>
-		<p><?php esc_html_e( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ); ?></p>
-		<?php
-
 		$shipment_utilities = new Shipment();
+
+		echo '<div class="woocommerce_options_panel">',
+		'<p>', esc_html__( 'Select the carrier and tracking number for this order:', 'facebook-for-woocommerce' ), '</p>';
 
 		woocommerce_wp_select( [
 			'id'      => 'wc_facebook_carrier',
@@ -251,6 +267,8 @@ class Orders {
 			'id'    => 'wc_facebook_tracking_number',
 			'label' => __( 'Tracking number', 'facebook-for-woocommerce' ),
 		] );
+
+		echo '</div>';
 
 		return ob_get_clean();
 	}
@@ -347,9 +365,6 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
-	 *
-	 * @param boolean $select_id id for the select HTML element
-	 * @param boolean $hidden whether or not the field should be hidden
 	 */
 	public function render_refund_reason_field( $select_id = '', $hidden = true ) {
 
@@ -378,7 +393,6 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param int $refund_id refund ID
-	 *
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function handle_refund( $refund_id ) {

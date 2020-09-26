@@ -103,9 +103,19 @@ jQuery( document ).ready( ( $ ) => {
 
 	};
 
-	let $form               = $( 'form[id="post"]' );
-	let $orderStatusField   = $( '#order_status' );
-	let originalOrderStatus = $orderStatusField.val();
+	let $form                       = $( 'form[id="post"]' );
+	let $orderStatusField           = $( '#order_status' );
+	let originalOrderStatus         = $orderStatusField.val();
+	let shipmentTracking            = wc_facebook_commerce_orders.shipment_tracking;
+	let existingTrackingNumber      = '';
+	let existingCarrierCode         = '';
+	let completeModalTrackingNumber = '';
+	let completeModalCarrierCode    = '';
+
+	if ( Array.isArray( shipmentTracking ) && shipmentTracking[0] ) {
+		existingTrackingNumber = shipmentTracking[0].tracking_number;
+		existingCarrierCode    = shipmentTracking[0].carrier_code;
+	}
 
 	if ( isCommerceOrder ) {
 
@@ -144,7 +154,7 @@ jQuery( document ).ready( ( $ ) => {
 			return false;
 		}
 
-		return 'wc-cancelled' === $( '#order_status' ).val();
+		return 'wc-cancelled' === $orderStatusField.val();
 	}
 
 
@@ -187,7 +197,7 @@ jQuery( document ).ready( ( $ ) => {
 					security:    wc_facebook_commerce_orders.cancel_order_nonce
 				}, ( response ) => {
 
-					if ( ! response || ! response.success ) {
+					if ( ! response || ! response.success ) {
 						showErrorInModal( response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error );
 						return;
 					}
@@ -232,6 +242,7 @@ jQuery( document ).ready( ( $ ) => {
 
 		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
 
+
 		new $.WCBackboneModal.View( {
 			target: 'facebook-for-woocommerce-modal',
 			string: {
@@ -248,6 +259,109 @@ jQuery( document ).ready( ( $ ) => {
 				// submit the form
 				$form.data( 'allow-submit', true ).submit();
 			} );
+	}
+
+
+	/**
+	 * Displays the order complete modal on order form submit
+	 */
+	function displayCompleteModal() {
+
+		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+		if ( completeModalCarrierCode || completeModalTrackingNumber ) {
+			$( document.body )
+				.off( 'wc_backbone_modal_loaded' )
+				.on( 'wc_backbone_modal_loaded', function() {
+
+					if ( completeModalCarrierCode ) {
+						$( '#wc_facebook_carrier' ).val( completeModalCarrierCode );
+					}
+
+					if ( completeModalTrackingNumber ) {
+						$( '#wc_facebook_tracking_number' ).val( completeModalTrackingNumber );
+					}
+				} );
+		}
+
+		new $.WCBackboneModal.View( {
+			target: 'facebook-for-woocommerce-modal',
+			string: {
+				message: wc_facebook_commerce_orders.complete_modal_message,
+				buttons: wc_facebook_commerce_orders.complete_modal_buttons
+			}
+		} );
+
+		// handle confirm action
+		$( '.facebook-for-woocommerce-modal #btn-ok' )
+			.off( 'click.facebook_for_commerce' )
+			.on( 'click.facebook_for_commerce', ( event ) => {
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				completeModalCarrierCode    = $( '#wc_facebook_carrier' ).val();
+				completeModalTrackingNumber = $( '#wc_facebook_tracking_number' ).val();
+
+				makeCompleteAjaxRequest( true, completeModalTrackingNumber, completeModalCarrierCode );
+			} );
+	}
+
+
+	/**
+	 * Make complete order AJAX Request
+	 *
+	 * @param {Boolean} withModal
+	 * @param {String} trackingNumber
+	 * @param {String} carrierCode
+	 */
+	function makeCompleteAjaxRequest( withModal = false, trackingNumber = null, carrierCode = null ) {
+
+		if ( ! trackingNumber.length ) {
+
+			alert( wc_facebook_commerce_orders.i18n.missing_tracking_number_error );
+
+			return false;
+		}
+
+		if ( withModal ) {
+			blockModal();
+		}
+
+		$form.find( 'button[type=submit].save_order' ).prop( 'disabled', true ).append( '<span class="spinner is-active"></span>' );
+
+		$.post( ajaxurl, {
+			action         : wc_facebook_commerce_orders.complete_order_action,
+			order_id       : $( '#post_ID' ).val(),
+			tracking_number: trackingNumber,
+			carrier_code   : carrierCode,
+			nonce          : wc_facebook_commerce_orders.complete_order_nonce
+		}, ( response ) => {
+
+			if ( withModal ) {
+				unBlockModal();
+			}
+
+			if ( ! response || ! response.success ) {
+
+				let error_message = response && response.data ? response.data : wc_facebook_commerce_orders.i18n.unknown_error;
+
+				alert( error_message );
+
+				return;
+			}
+
+			$form.data( 'allow-submit', true ).trigger( 'submit' );
+
+		} ).fail( () => {
+
+			showErrorInModal( wc_facebook_commerce_orders.i18n.unknown_error );
+
+		} ).always( () => {
+
+			$form.find( 'button[type=submit].save_order' ).prop( 'disabled', false ).find( 'span.spinner' ).remove();
+
+		} );
 	}
 
 
@@ -329,7 +443,7 @@ jQuery( document ).ready( ( $ ) => {
 			return showCancelOrderModal( event );
 		}
 
-		if ( ! isCommerceOrder || $form.data('allow-submit') ) {
+		if ( ! isCommerceOrder || $form.data( 'allow-submit' ) ) {
 			return;
 		}
 
@@ -337,6 +451,17 @@ jQuery( document ).ready( ( $ ) => {
 
 		if ( 'wc-refunded' === newOrderStatusField && originalOrderStatus !== newOrderStatusField ) {
 			displayRefundModal( event );
+		}
+
+		if ( 'wc-completed' === newOrderStatusField ) {
+
+			event.preventDefault();
+
+			if ( existingTrackingNumber || existingCarrierCode ) {
+				makeCompleteAjaxRequest( false, existingTrackingNumber, existingCarrierCode );
+			} else {
+				displayCompleteModal();
+			}
 		}
 	} );
 

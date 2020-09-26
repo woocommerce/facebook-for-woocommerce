@@ -181,21 +181,21 @@ class AJAX {
 			$carrier_code    = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'carrier_code' ) );
 
 			if ( empty( $order_id ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ), 400 );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $tracking_number ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Tracking number is required', 'facebook-for-woocommerce' ), 400 );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Tracking number is required', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $carrier_code ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ), 400 );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ) );
 			}
 
 			$order = wc_get_order( $order_id );
 
 			if ( ! $order instanceof \WC_Order ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ), 404 );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ) );
 			}
 
 			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->fulfill_order( $order, $tracking_number, $carrier_code );
