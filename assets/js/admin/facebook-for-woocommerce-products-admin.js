@@ -445,7 +445,6 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		// toggle Sell on Instagram checkbox on page load
-		// TODO: replace isSyncEnabledForVariableProduct() with a isProductReadyForCommerce() function that uses isSyncEnabledForVariableProduct() to determine whether the product is ready
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
 
 		let submitProductSave = false;
