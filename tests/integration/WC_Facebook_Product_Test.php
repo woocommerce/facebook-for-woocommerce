@@ -1,5 +1,7 @@
 <?php
 
+use SkyVerge\WooCommerce\Facebook\Products;
+
 /**
  * Tests the Facebook product class.
  */
@@ -27,6 +29,151 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
+	 * @dataProvider provider_prepare_product_uses_correct_number_of_additional_image_urls
+	 */
+	public function test_prepare_product_uses_correct_number_of_additional_image_urls( int $images_count ) {
+
+		$product = $this->tester->get_product();
+
+		$attachments = array_map( function() {
+
+			return wp_insert_attachment( [] );
+		}, range( 1, $images_count ) );
+
+		$product->update_meta_data( '_thumbnail_id', $attachments[0] );
+		$product->update_meta_data( '_product_image_gallery', implode( ',', array_slice( $attachments, 1 ) ) );
+		$product->save_meta_data();
+
+		$data = ( new \WC_Facebook_Product( $product->get_id() ) )->prepare_product();
+
+		$this->assertLessThanOrEqual( 20, count( $data['additional_image_urls'] ) );
+	}
+
+
+	/** @see test_prepare_product_uses_correct_number_of_additional_image_urls() */
+	public function provider_prepare_product_uses_correct_number_of_additional_image_urls() {
+
+		return [
+			[ 1 ],
+			[ 2 ],
+			[ 10 ],
+			[ 15 ],
+			[ 25 ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
+	 * @param mixed $price the regular price for the product
+	 * @param bool $is_visible whether the product should visible in the Facebook Shop
+	 * @param string $visibility 'staging' or 'published'
+	 * @dataProvider provider_prepare_product_sets_product_visibility
+	 */
+	public function test_prepare_product_sets_product_visibility( $price, $is_visible, $visibility ) {
+
+		$product = $this->tester->get_product( [ 'regular_price' => $price ] );
+
+		Products::set_product_visibility( $product, $is_visible );
+
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+
+		$this->assertSame( $visibility, $data['visibility'] );
+	}
+
+
+	/** @see test_prepare_product_sets_product_visibility() */
+	public function provider_prepare_product_sets_product_visibility() {
+
+		return [
+			[ '',    true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+			[ 0.00,  true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+			[ 14.99, true, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ],
+
+			[ '',    false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+			[ 0.00,  false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+			[ 14.99, false, \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::get_fb_price()
+	 *
+	 * @param float $product_price product price
+	 * @param string $tax_display incl or excl
+	 * @param float $expected_price expected facebook price
+	 *
+	 * @dataProvider data_provider_get_fb_price
+	 */
+	public function test_get_fb_price( $product_price, $tax_display, $expected_price ) {
+
+		$this->check_fb_price( $this->tester->get_product( [ 'regular_price' => $product_price ] ), $tax_display, $expected_price );
+	}
+
+
+	/**
+	 * Tests that the returned Facebook price matches the expected value.
+	 *
+	 * @param \WC_Product $product product object
+	 * @param string $tax_display incl or excl
+	 * @param float $expected_price expected facebook price
+	 */
+	private function check_fb_price( $product, $tax_display, $expected_price ) {
+
+		// create tax
+		\WC_Tax::_insert_tax_rate( [
+			'tax_rate_country'  => '',
+			'tax_rate_state'    => '',
+			'tax_rate'          => 10.000,
+			'tax_rate_name'     => 'TEST',
+			'tax_rate_priority' => 1,
+			'tax_rate_compound' => 0,
+			'tax_rate_shipping' => 1,
+			'tax_rate_order'    => 0,
+		] );
+
+		update_option( 'woocommerce_calc_taxes', 'yes' );
+		update_option( 'woocommerce_tax_display_shop', $tax_display );
+
+		$this->assertSame( $expected_price, ( new WC_Facebook_Product( $product->get_id() ) )->get_fb_price() );
+	}
+
+
+	/** @see test_get_fb_price() */
+	public function data_provider_get_fb_price() {
+
+		return [
+			'including taxes' => [ 19.99, 'incl', 2199 ],
+			'excluding taxes' => [ 19.99, 'excl', 1999 ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::get_fb_price()
+	 *
+	 * @param float $product_price product price
+	 * @param string $tax_display incl or excl
+	 *
+	 * @dataProvider data_provider_get_fb_price
+	 */
+	public function test_get_fb_price_from_meta( $product_price, $tax_display ) {
+
+		$product = $this->tester->get_product( [ 'regular_price' => wp_rand() ] );
+
+		$product->update_meta_data( WC_Facebook_Product::FB_PRODUCT_PRICE, $product_price );
+		$product->save_meta_data();
+
+		// current behavior is to return the stored price without modifications regardless of tax settings
+		$this->check_fb_price( $product, $tax_display, (int) round( $product_price * 100 ) );
+	}
 
 
 	/** @see \WC_Facebook_Product::get_fb_description() */

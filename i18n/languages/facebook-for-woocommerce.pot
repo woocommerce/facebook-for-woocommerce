@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.0.1\n"
+"Project-Id-Version: Facebook for WooCommerce 2.0.3-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-08-17 20:20:42+00:00\n"
+"POT-Creation-Date: 2020-09-26 00:29:44+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: class-wc-facebookcommerce.php:187
+#: class-wc-facebookcommerce.php:189
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -21,7 +21,7 @@ msgid ""
 "Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:202
+#: class-wc-facebookcommerce.php:204
 #. translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link
 #. HTML tag
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "under %1$sWooCommerce > Facebook%2$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:217
+#: class-wc-facebookcommerce.php:219
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -37,7 +37,7 @@ msgid ""
 "configuration, %3$scomplete the setup steps%4$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:245
+#: class-wc-facebookcommerce.php:247
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -46,7 +46,7 @@ msgid ""
 "Connection%4$s area."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:262
+#: class-wc-facebookcommerce.php:264
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -55,7 +55,7 @@ msgid ""
 "products."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:315
+#: class-wc-facebookcommerce.php:317
 msgid "Cannot create the API instance because the access token is missing."
 msgstr ""
 
@@ -63,69 +63,69 @@ msgstr ""
 msgid "Facebook for WooCommerce"
 msgstr ""
 
-#: facebook-commerce.php:215
+#: facebook-commerce.php:216
 msgid "Facebook Commerce and Dynamic Ads (Pixel) Extension"
 msgstr ""
 
-#: facebook-commerce.php:589
+#: facebook-commerce.php:633
 msgid "Facebook ID:"
 msgstr ""
 
-#: facebook-commerce.php:597
+#: facebook-commerce.php:641
 msgid "Variant IDs:"
 msgstr ""
 
-#: facebook-commerce.php:615
+#: facebook-commerce.php:659
 msgid "Reset Facebook metadata"
 msgstr ""
 
-#: facebook-commerce.php:620
+#: facebook-commerce.php:664
 msgid "Delete product(s) on Facebook"
 msgstr ""
 
-#: facebook-commerce.php:628
+#: facebook-commerce.php:672
 msgid "This product is not yet synced to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:1369
+#: facebook-commerce.php:1418
 msgid "Nothing to update for product group for %1$s"
 msgstr ""
 
-#: facebook-commerce.php:1635
+#: facebook-commerce.php:1684
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API:  %1$s"
 msgstr ""
 
-#: facebook-commerce.php:1972
+#: facebook-commerce.php:2021
 msgid "Your connection has expired."
 msgstr ""
 
-#: facebook-commerce.php:1972
+#: facebook-commerce.php:2021
 msgid ""
 "Please click Manage connection > Advanced Options > Update Token to refresh "
 "your connection to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:1979
+#: facebook-commerce.php:2028
 #. translators: Placeholders %s - error message
 msgid "There was an error trying to sync the products to Facebook. %s"
 msgstr ""
 
-#: facebook-commerce.php:2002 facebook-commerce.php:2175
+#: facebook-commerce.php:2051 facebook-commerce.php:2224
 msgid "Product sync is disabled."
 msgstr ""
 
-#: facebook-commerce.php:2009 facebook-commerce.php:2182
+#: facebook-commerce.php:2058 facebook-commerce.php:2231
 msgid "The plugin is not configured or the Catalog ID is missing."
 msgstr ""
 
-#: facebook-commerce.php:2032
+#: facebook-commerce.php:2081
 msgid ""
 "A product sync is in progress. Please wait until the sync finishes before "
 "starting a new one."
 msgstr ""
 
-#: facebook-commerce.php:2044 facebook-commerce.php:2196
+#: facebook-commerce.php:2093 facebook-commerce.php:2245
 msgid ""
 "We've detected that your Facebook Product Catalog is no longer valid. This "
 "may happen if it was deleted, but could also be a temporary error. If the "
@@ -133,33 +133,33 @@ msgid ""
 "and setup the plugin again."
 msgstr ""
 
-#: facebook-commerce.php:2220
+#: facebook-commerce.php:2269
 msgid "We couldn't create the feed or upload the product information."
 msgstr ""
 
-#: facebook-commerce.php:2687
+#: facebook-commerce.php:2736
 msgid "Hi! We're here to answer any questions you may have."
 msgstr ""
 
-#: facebook-commerce.php:3031
+#: facebook-commerce.php:3080
 msgid "Facebook for WooCommerce error:"
 msgstr ""
 
-#: facebook-commerce.php:3113
+#: facebook-commerce.php:3162
 msgid ""
 "There was an error trying to retrieve information about the Facebook page: "
 "%s"
 msgstr ""
 
-#: facebook-commerce.php:3164
+#: facebook-commerce.php:3213
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
 
-#: facebook-commerce.php:3165
+#: facebook-commerce.php:3214
 msgid "Get started with Instagram Shopping"
 msgstr ""
 
-#: facebook-commerce.php:3406
+#: facebook-commerce.php:3449
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""
@@ -608,15 +608,15 @@ msgstr ""
 msgid "Uninstall unsuccessful. Please try again."
 msgstr ""
 
-#: includes/Products/Sync/Background.php:64
+#: includes/Products/Sync/Background.php:65
 msgid "Job data key \"%s\" not set"
 msgstr ""
 
-#: includes/Products/Sync/Background.php:68
+#: includes/Products/Sync/Background.php:69
 msgid "Job data key \"%s\" is not an array"
 msgstr ""
 
-#: includes/Products/Sync/Background.php:150
+#: includes/Products/Sync/Background.php:153
 msgid ""
 "There was an error trying sync products using the Catalog Batch API for job "
 "%s: %s"
@@ -638,19 +638,19 @@ msgstr ""
 msgid "Dismiss"
 msgstr ""
 
-#: includes/fbproductfeed.php:483
+#: includes/fbproductfeed.php:484
 msgid "Could not create product catalog feed directory"
 msgstr ""
 
-#: includes/fbproductfeed.php:549
+#: includes/fbproductfeed.php:550
 msgid "Could not open the product catalog temporary feed file for writing"
 msgstr ""
 
-#: includes/fbproductfeed.php:556
+#: includes/fbproductfeed.php:557
 msgid "Could not open the product catalog feed file for writing"
 msgstr ""
 
-#: includes/fbproductfeed.php:603
+#: includes/fbproductfeed.php:601
 msgid "Could not rename the product catalog feed file"
 msgstr ""
 

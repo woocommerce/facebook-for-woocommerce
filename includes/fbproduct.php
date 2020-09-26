@@ -124,46 +124,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		public function get_fb_price() {
-			// Cache the price in this object in case of multiple calls.
-			if ( $this->fb_price ) {
-				return $this->fb_price;
-			}
 
-			$price = get_post_meta(
-				$this->id,
-				self::FB_PRODUCT_PRICE,
-				true
-			);
-
-			if ( is_numeric( $price ) ) {
-				return intval( round( $price * 100 ) );
-			}
-
-			// If product is composite product, we rely on their pricing.
-			if ( class_exists( 'WC_Product_Composite' )
-			&& $this->woo_product->get_type() === 'composite' ) {
-				$price          = get_option( 'woocommerce_tax_display_shop' ) === 'incl'
-				? $this->woo_product->get_composite_price_including_tax()
-				: $this->woo_product->get_composite_price();
-				$this->fb_price = intval( round( $price * 100 ) );
-				return $this->fb_price;
-			}
-
-			// Get regular price: regular price doesn't include sales
-			$regular_price = floatval( $this->get_regular_price() );
-
-			// If it's a bookable product, the normal price is null/0.
-			if ( ! $regular_price && $this->is_bookable_product() ) {
-
-				$product       = new WC_Product_Booking( $this->woo_product );
-				$regular_price = is_callable( [ $product, 'get_display_cost' ] ) ? $product->get_display_cost() : 0;
-			}
-
-			// Get regular price plus tax, if it's set to display and taxable
-			// whether price includes tax is based on 'woocommerce_tax_display_shop'
-			$price          = $this->get_price_plus_tax( $regular_price );
-			$this->fb_price = intval( round( $price * 100 ) );
-			return $this->fb_price;
+			return Products::get_product_price( $this->woo_product );
 		}
 
 
@@ -229,6 +191,24 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			return $image_urls;
 		}
+
+
+		/**
+		 * Gets the list of additional image URLs for the product from the complete list of image URLs.
+		 *
+		 * It assumes the first URL will be used as the product image.
+		 * It returns 20 or less image URLs because Facebook doesn't allow more items on the additional_image_urls field.
+		 *
+		 * @since 2.0.2
+		 *
+		 * @param array $image_urls all image URLs for the product
+		 * @return array
+		 */
+		private function get_additional_image_urls( $image_urls ) {
+
+			return array_slice( $image_urls, 1, 20 );
+		}
+
 
 		// Returns the parent image id for variable products only.
 		public function get_parent_image_id() {
@@ -385,29 +365,16 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		/**
 		 * Determines whether a product should be excluded from all-products sync or the feed file.
 		 *
-		 * The plugin also avoids trying to get the Facebook ID of products where is_hidden() returns true.
-		 *
 		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
 		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
-		 * @see WC_Facebookcommerce_Integration::get_product_fbid()
+		 *
+		 * @deprecated 2.0.2
 		 */
 		public function is_hidden() {
-			$wpid = $this->id;
-			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
-				$wpid = $this->get_parent_id();
-			}
-			$hidden_from_catalog = has_term(
-				'exclude-from-catalog',
-				'product_visibility',
-				$wpid
-			);
-			$hidden_from_search  = has_term(
-				'exclude-from-search',
-				'product_visibility',
-				$wpid
-			);
 
-			return ( $hidden_from_catalog && $hidden_from_search ) || ! $this->get_fb_price();
+			wc_deprecated_function( __METHOD__,  '2.0.2', 'Products::product_should_be_synced()' );
+
+			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
 
 
@@ -574,18 +541,15 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => array_slice( $image_urls, 1 ),
+				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
 				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
 				'currency'              => get_woocommerce_currency(),
-				'availability'          => $this->is_in_stock() ? 'in stock' :
-				'out of stock',
-				'visibility'            => ! $this->is_hidden()
-				? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
-				: \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
+				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
+				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
 			// Only use checkout URLs if they exist.

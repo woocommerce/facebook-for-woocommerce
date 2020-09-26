@@ -53,6 +53,7 @@ class Integrations {
 
 		$registered_integrations = [
 			'WC_Facebook_WPML_Injector' => '/includes/fbwpml.php',
+			Bookings::class             => '/includes/Integrations/Bookings.php',
 		];
 
 		foreach ( $registered_integrations as $class_name => $path ) {
