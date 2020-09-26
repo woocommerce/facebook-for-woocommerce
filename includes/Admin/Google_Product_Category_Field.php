@@ -111,7 +111,8 @@ class Google_Product_Category_Field {
 				$category_label = end( $category_tree );
 
 				$category = [
-					'label' => $category_label,
+					'label'   => $category_label,
+					'options' => [],
 				];
 
 				if ( $category_label === $category_tree[0] ) {
