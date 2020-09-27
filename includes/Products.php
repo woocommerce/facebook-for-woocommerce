@@ -549,6 +549,10 @@ class Products {
 			$categories = get_the_terms( $product->get_id(), 'product_cat' );
 		}
 
+		if ( ! is_array( $categories ) ) {
+			return $google_product_category_id;
+		}
+
 		$categories_per_level = [];
 
 		// determine the level (depth) of each category
