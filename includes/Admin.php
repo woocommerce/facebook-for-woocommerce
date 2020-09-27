@@ -138,6 +138,7 @@ class Admin {
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
 					'product_not_ready_modal_message'           => $this->get_product_not_ready_modal_message(),
+					'product_not_ready_modal_buttons'           => $this->get_product_not_ready_modal_buttons(),
 					'i18n'                                      => [
 						'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
 					],
@@ -212,6 +213,28 @@ class Admin {
 				'</strong>'
 			) ); ?></li>
 		</ul>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the product not ready modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_not_ready_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Close', 'facebook-for-woocomerce' ); ?></button>
 		<?php
 
 		return ob_get_clean();
