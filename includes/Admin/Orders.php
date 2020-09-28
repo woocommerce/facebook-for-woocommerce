@@ -511,6 +511,7 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
 	 * @param array $actions existing actions
 	 * @param \WC_Order $order order object
 	 * @return array
@@ -531,6 +532,7 @@ class Orders {
 	 * @internal
 	 *
 	 * @since 2.1.0-dev.1
+	 *
 	 * @param array $actions existing actions
 	 * @param \WC_Order $order order object
 	 * @return array
