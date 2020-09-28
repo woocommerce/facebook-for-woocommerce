@@ -452,6 +452,23 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
+		// open modal explaining sell on Instagram requirements
+		$( '#facebook_options' ).on( 'click', '#product-not-ready-notice-open-modal', function( event ) {
+
+			event.preventDefault();
+
+			// close existing modals
+			$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+			new $.WCBackboneModal.View( {
+				target: 'facebook-for-woocommerce-modal',
+				string: {
+					message: facebook_for_woocommerce_products_admin.product_not_ready_modal_message,
+					buttons: facebook_for_woocommerce_products_admin.product_not_ready_modal_buttons
+				}
+			} );
+		} );
+
 		// toggle Sell on Instagram checkbox on page load
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
 

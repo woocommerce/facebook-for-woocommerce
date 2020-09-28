@@ -137,6 +137,8 @@ class Admin {
 					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+					'product_not_ready_modal_message'           => $this->get_product_not_ready_modal_message(),
+					'product_not_ready_modal_buttons'           => $this->get_product_not_ready_modal_buttons(),
 					'i18n'                                      => [
 						'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
 					],
@@ -179,6 +181,63 @@ class Admin {
 		}
 
 		return Products::is_sync_enabled_for_product( $product );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the product not ready modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_not_ready_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'To sell this product on Instagram, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
+
+		<ul class="ul-disc">
+			<li><?php esc_html_e( 'Has a price defined', 'facebook-for-woocommerce' ); ?></li>
+			<li><?php echo esc_html( sprintf(
+				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
+				__( 'Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab', 'facebook-for-woocommerce' ),
+				'<strong>',
+				'</strong>'
+			) ); ?></li>
+			<li><?php echo esc_html( sprintf(
+				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
+				__( 'Has the %1$sFacebook Sync%2$s setting set to "Sync and show" or "Sync and hide"', 'facebook-for-woocommerce' ),
+				'<strong>',
+				'</strong>'
+			) ); ?></li>
+		</ul>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the product not ready modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_not_ready_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Close', 'facebook-for-woocomerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
 	}
 
 
