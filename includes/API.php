@@ -675,6 +675,33 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets the latest cancelled orders.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $page_id page ID
+	 * @return API\Orders\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_cancelled_orders( $page_id ) {
+
+		$request_args = [
+			'state' => [
+				Order::STATUS_COMPLETED,
+			],
+			'updated_after' => time() - facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_order_update_interval(),
+			'filters'       => 'has_cancellations',
+		];
+
+		$request = new API\Orders\Request( $page_id, $request_args );
+
+		$this->set_response_handler( API\Orders\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Gets a single order based on its remote ID.
 	 *
 	 * @since 2.1.0-dev.1
