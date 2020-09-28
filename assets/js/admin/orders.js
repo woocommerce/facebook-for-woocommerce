@@ -38,7 +38,8 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Boolean} enable whether to enable date fields (true) or not (false)
 		 */
 		toggle_created_date_fields_status: enable => {
-			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
+
+			commerceOrderOperations.toggle_field( $( '#order_data' ).find( 'input[name*=order_date]' ), enable );
 		},
 
 
@@ -48,7 +49,8 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
 		disable_order_status_field: ( $orderStatus ) => {
-			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
+
+			commerceOrderOperations.toggle_field( $orderStatus, false );
 		},
 
 
