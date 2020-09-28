@@ -1,6 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 class ProductCommerceSettingsCest {
 
@@ -281,6 +282,8 @@ class ProductCommerceSettingsCest {
 	 */
 	private function see_missing_google_product_category_alert( AcceptanceTester $I, \WC_Product $product, array $categories ) {
 
+		Products::update_commerce_enabled_for_product( $product, true );
+
 		$I->amEditingPostWithId( $product->get_id() );
 
 		$I->wantTo( "Test that an alert is shown if the user doesn't select a Google product sub-category" );
@@ -307,7 +310,7 @@ class ProductCommerceSettingsCest {
 
 
 	/** @see try_missing_google_product_category_alert_is_shown */
-	public function provider_missing_google_product_category_alert_is_shown() {
+	protected function provider_missing_google_product_category_alert_is_shown() {
 
 		return [
 			'no category selected'     => [ 'categories' => [] ],
