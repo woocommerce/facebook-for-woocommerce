@@ -615,8 +615,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					$product_data['google_product_category'] = $google_product_category;
 				}
 			}
+			if($this->id == '28') {
+				$product_data['fb_product_category'] = '387';
+			}
 			// TODO: THIS BIT ABOVE HAS BEEN ADDED MAX SO WORK WITH THAT
-			$product_data = $this->apply_enhanced_catalog_fields_from_attributes($product_data);
+			// $product_data = $this->apply_enhanced_catalog_fields_from_attributes($product_data);
 
 			// Only use checkout URLs if they exist.
 			if ( $checkout_url ) {

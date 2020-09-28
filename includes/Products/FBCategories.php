@@ -75,6 +75,8 @@ class FBCategories {
 		$product_item_id = wc_clean(wp_unslash($_GET['item_id']));
 		$product = new \WC_Facebook_Product($product_item_id);
 
+		// $attributes = $this->get_attributes_for_category($category_id, $product);
+
 		wp_send_json($this->get_attributes_for_category($category_id, $product));
 	}
 
