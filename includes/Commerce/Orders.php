@@ -188,7 +188,13 @@ class Orders {
 			// check if the local order already has this item
 			foreach ( $local_order->get_items() as $wc_order_item ) {
 
-				if ( $wc_order_item instanceof \WC_Order_Item_Product && $product->get_id() === $wc_order_item->get_product_id() ) {
+				if ( ! $wc_order_item instanceof \WC_Order_Item_Product ) {
+					continue;
+				}
+
+				$order_item_product_id = $wc_order_item->get_variation_id() ?: $wc_order_item->get_product_id();
+
+				if ( $product->get_id() === $order_item_product_id ) {
 					$matching_wc_order_item = $wc_order_item;
 					break;
 				}
