@@ -130,7 +130,7 @@ class API extends Framework\SV_WC_API_Base {
 		if ( $response && $response->has_api_error() ) {
 
 			$code    = $response->get_api_error_code();
-			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
+			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_user_error_message() ?: $response->get_api_error_message() );
 
 			/**
 			 * Graph API
