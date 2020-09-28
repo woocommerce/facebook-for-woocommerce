@@ -38,7 +38,8 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Boolean} enable whether to enable date fields (true) or not (false)
 		 */
 		toggle_created_date_fields_status: enable => {
-			$( '#order_data' ).find( 'input[name*=order_date]' ).prop( 'disabled', !enable ).toggleClass( 'disabled', !enable );
+
+			commerceOrderOperations.toggle_field( $( '#order_data' ).find( 'input[name*=order_date]' ), enable );
 		},
 
 
@@ -48,7 +49,8 @@ jQuery( document ).ready( ( $ ) => {
 		 * @param {Object} $orderStatus Order select jQuery DOM object
 		 */
 		disable_order_status_field: ( $orderStatus ) => {
-			$orderStatus.prop( 'disabled', true ).addClass( 'disabled' );
+
+			commerceOrderOperations.toggle_field( $orderStatus, false );
 		},
 
 
@@ -97,6 +99,30 @@ jQuery( document ).ready( ( $ ) => {
 				$( '.wc-order-bulk-actions .refund-items' ).hide();
 
 				$orderStatusField.find( 'option[value="wc-refunded"]' ).remove();
+			}
+		},
+
+
+		/**
+		 * Uses CSS to enable/disable a form field.
+		 *
+		 * This function was copied from toggleSettingOptions() in facebook-for-woocommerce-settings-sync.js
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery} $element the form field
+		 * @param {boolean} enable whether to enable or disable the field
+		 */
+		toggle_field: ( $element, enable ) => {
+
+			if ( $element.hasClass( 'wc-enhanced-select' ) ) {
+				$element = $element.next( 'span.select2-container' );
+			}
+
+			if ( enable ) {
+				$element.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+			} else {
+				$element.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
 			}
 		}
 
