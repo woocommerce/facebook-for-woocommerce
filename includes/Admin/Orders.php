@@ -107,12 +107,36 @@ class Orders {
 			}, $shipment_tracking );
 		}
 
+		// limit the order status field to statuses that can be handled by Facebook
+		switch ( $order->get_status() ) {
+
+			case 'processing':
+				$allowed_statuses = [ 'wc-processing', 'wc-completed', 'wc-cancelled' ];
+			break;
+
+			case 'completed':
+				$allowed_statuses = [ 'wc-completed', 'wc-refunded' ];
+			break;
+
+			case 'refunded':
+				$allowed_statuses = [ 'wc-refunded' ];
+			break;
+
+			case 'cancelled':
+				$allowed_statuses = [ 'wc-cancelled' ];
+			break;
+
+			default:
+				$allowed_statuses = [ 'wc-pending' ];
+			break;
+		}
+
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
 			'order_id'                  => $order->get_id(),
 			'order_status'              => $order->get_status(),
 			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'         => $shipment_tracking,
-			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
+			'allowed_commerce_statuses' => $allowed_statuses,
 			'complete_order_action'     => AJAX::ACTION_COMPLETE_ORDER,
 			'complete_order_nonce'      => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
 			'cancel_order_action'       => AJAX::ACTION_CANCEL_ORDER,
