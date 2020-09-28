@@ -360,10 +360,18 @@ jQuery( document ).ready( function( $ ) {
 
 			let checked = $( this ).prop( 'checked' );
 
+			// toggle visibility of all commerce fields
 			if ( checked ) {
 				$( '.wc_facebook_commerce_fields' ).show();
 			} else {
 				$( '.wc_facebook_commerce_fields').hide();
+			}
+
+			// toggle visibility of attribute fields
+			if ( $( '.product_attributes' ).find( '.woocommerce_attribute' ).length ) {
+				$( '.show_if_has_attributes' ).show();
+			} else {
+				$( '.show_if_has_attributes' ).hide();
 			}
 
 			$( this ).prop( 'original', checked );
@@ -445,7 +453,6 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		// toggle Sell on Instagram checkbox on page load
-		// TODO: replace isSyncEnabledForVariableProduct() with a isProductReadyForCommerce() function that uses isSyncEnabledForVariableProduct() to determine whether the product is ready
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
 
 		let submitProductSave = false;
