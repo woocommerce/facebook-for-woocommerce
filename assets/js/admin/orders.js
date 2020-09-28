@@ -401,7 +401,7 @@ jQuery( document ).ready( ( $ ) => {
 	function moveRefundReasonField() {
 
 		let $oldRefundReasonField  = $( '#refund_reason' );
-		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).css( 'width', $oldRefundReasonField.css( 'width' ) );
+		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).clone().css( 'width', $oldRefundReasonField.css( 'width' ) );
 		let $refundReasonRow       = $oldRefundReasonField.closest( 'tr' );
 		let $refundDescriptionRow  = $refundReasonRow.clone();
 
