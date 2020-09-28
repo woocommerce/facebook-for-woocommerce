@@ -45,6 +45,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		add_action( 'woocommerce_admin_field_product_sync_title', [ $this, 'render_title' ] );
+
+		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', [ $this, 'render_google_product_category_field' ] );
 	}
 
 
@@ -88,9 +90,66 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
 				'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
 			],
+			'default_google_product_category_modal_message'       => $this->get_default_google_product_category_modal_message(),
+			'default_google_product_category_modal_message_empty' => $this->get_default_google_product_category_modal_message_empty(),
+			'default_google_product_category_modal_buttons'       => $this->get_default_google_product_category_modal_buttons(),
 		] );
 	}
 
+	/**
+	 * Gets the message for Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message() {
+
+		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
+	}
+
+
+	/**
+	 * Gets the message for Default Google Product Category modal when the selection is empty.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_message_empty() {
+
+		return sprintf(
+			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
+			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
+			'<strong>', '</strong>'
+		);
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the Default Google Product Category modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_default_google_product_category_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			class="button button-large"
+			onclick="jQuery( '.modal-close' ).trigger( 'click' )"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocommerce' ); ?></button>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Update default Google product category', 'facebook-for-woocommerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
 
 	/**
 	 * Renders the custom title.
@@ -253,12 +312,44 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 					\WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
 				],
 			],
-
+			[
+				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
+				'type'     => 'product_sync_google_product_categories',
+				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined to sell via Instagram.', 'facebook-for-woocommerce' ),
+			],
 			[ 'type' => 'sectionend' ],
 
 		];
 	}
 
+	/**
+	 * Renders the Google category field markup.
+	 *
+	 * @internal
+
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array $field field data
+	 */
+	public function render_google_product_category_field( $field ) {
+
+		$category_field = new Admin\Google_Product_Category_Field();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?>
+					<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $field['desc_tip'] ); ?>"></span>
+				</label>
+			</th>
+			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
+				<?php $category_field->render( $field['id'] ); ?>
+				<input id="<?php echo esc_attr( $field['id'] ); ?>" type="hidden" name="<?php echo esc_attr( $field['id'] ); ?>" value="<?php echo esc_attr( $field['value'] ); ?>" />
+			</td>
+		</tr>
+		<?php
+	}
 
 	/**
 	 * Gets the "disconnected" message.
