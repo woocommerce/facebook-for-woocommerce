@@ -53,7 +53,7 @@ class Orders {
 
 		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handle_bulk_update' ], -1, 3 );
 
-		add_filter( 'woocommerce_admin_order_actions', [ $this, 'remove_list_table_actions' ], 10, 2 );
+		add_filter( 'woocommerce_admin_order_actions',         [ $this, 'remove_list_table_actions' ], 10, 2 );
 		add_filter( 'woocommerce_admin_order_preview_actions', [ $this, 'remove_order_preview_actions' ], 10, 2 );
 
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
