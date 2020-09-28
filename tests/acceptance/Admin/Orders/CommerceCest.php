@@ -28,7 +28,7 @@ class CommerceCest {
 	/**
 	 * Test that the order list table action buttons are not displayed for Commerce orders.
 	 *
-	 * @param AcceptanceTester $I
+	 * @param AcceptanceTester $I tester instance
 	 * @throws \WC_Data_Exception
 	 */
 	public function try_order_list_table_actions_removed( AcceptanceTester $I ) {
@@ -58,7 +58,7 @@ class CommerceCest {
 	/**
 	 * Test that the order preview modal status action buttons are not displayed for Commerce orders.
 	 *
-	 * @param AcceptanceTester $I
+	 * @param AcceptanceTester $I tester instance
 	 * @throws \WC_Data_Exception
 	 */
 	public function try_order_preview_actions_removed( AcceptanceTester $I ) {
@@ -85,6 +85,12 @@ class CommerceCest {
 	}
 
 
+	/**
+	 * Test that only supported statuses are available on the Edit Order screen.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws \WC_Data_Exception
+	 */
 	public function try_edit_order_statuses( AcceptanceTester $I ) {
 
 		$commerce_order = $this->get_commerce_order( '1234' );
