@@ -98,6 +98,30 @@ jQuery( document ).ready( ( $ ) => {
 
 				$orderStatusField.find( 'option[value="wc-refunded"]' ).remove();
 			}
+		},
+
+
+		/**
+		 * Uses CSS to enable/disable a form field.
+		 *
+		 * This function was copied from toggleSettingOptions() in facebook-for-woocommerce-settings-sync.js
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param {jQuery} $element the form field
+		 * @param {boolean} enable whether to enable or disable the field
+		 */
+		toggle_field: ( $element, enable ) => {
+
+			if ( $element.hasClass( 'wc-enhanced-select' ) ) {
+				$element = $element.next( 'span.select2-container' );
+			}
+
+			if ( enable ) {
+				$element.css( 'pointer-events', 'all' ).css( 'opacity', '1.0' );
+			} else {
+				$element.css( 'pointer-events', 'none' ).css( 'opacity', '0.4' );
+			}
 		}
 
 
