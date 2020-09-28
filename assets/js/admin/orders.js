@@ -392,6 +392,21 @@ jQuery( document ).ready( ( $ ) => {
 
 
 	/**
+	 *
+	 * Move the Facebook refund reason field if this is a Commerce order.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	function maybeMoveRefundReasonField() {
+
+		if ( isCommerceOrder ) {
+			moveRefundReasonField();
+			setupRefunReasonMutationObserver();
+		}
+	}
+
+
+	/**
 	 * Moves the Facebook refund reason field above WooCommerce's refund reason field.
 	 *
 	 * It also updates the labels and tooltips.
@@ -496,9 +511,7 @@ jQuery( document ).ready( ( $ ) => {
 	}
 
 
-	if ( isCommerceOrder ) {
-		moveRefundReasonField();
-	}
+	maybeMoveRefundReasonField();
 
 	$form.on( 'submit', function( event ) {
 
