@@ -350,17 +350,6 @@ class Orders {
 			$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 		}
 
-		// update order status
-		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
-			$local_order->set_status( 'processing' );
-
-			/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
-			$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
-				$remote_order->get_id(),
-				$remote_order->get_channel()
-			) );
-		}
-
 		// set remote ID
 		$local_order->update_meta_data( self::REMOTE_ID_META_KEY, $remote_order->get_id() );
 
@@ -428,10 +417,28 @@ class Orders {
 
 				// acknowledge the order
 				try {
+
 					facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+
+					$local_order->set_status( 'processing' );
+
+					/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
+					$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
+						$remote_order->get_id(),
+						ucfirst( $remote_order->get_channel() )
+					) );
+
 				} catch ( SV_WC_API_Exception $exception ) {
+
 					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
+
+					// if we have a clear indication that the order was not found, cancel it locally
+					if ( 803 === (int) $exception->getCode() ) {
+						$local_order->set_status( 'cancelled' );
+					}
 				}
+
+				$local_order->save();
 			}
 		}
 	}
