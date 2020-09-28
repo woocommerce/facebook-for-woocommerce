@@ -53,6 +53,9 @@ class Orders {
 
 		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handle_bulk_update' ], -1, 3 );
 
+		add_filter( 'woocommerce_admin_order_actions', [ $this, 'remove_list_table_actions' ], 10, 2 );
+		add_filter( 'woocommerce_admin_order_preview_actions', [ $this, 'remove_order_preview_actions' ], 10, 2 );
+
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
 		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
@@ -499,6 +502,46 @@ class Orders {
 		}
 
 		return $redirect_url;
+	}
+
+
+	/**
+	 * Removes the status actions from the order list table rows.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 * @param array $actions existing actions
+	 * @param \WC_Order $order order object
+	 * @return array
+	 */
+	public function remove_list_table_actions( $actions, $order ) {
+
+		if ( $order instanceof \WC_Order && Commerce\Orders::is_commerce_order( $order ) ) {
+			unset( $actions['processing'], $actions['complete'] );
+		}
+
+		return $actions;
+	}
+
+
+	/**
+	 * Removes the status actions from the list table order preview modal.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 * @param array $actions existing actions
+	 * @param \WC_Order $order order object
+	 * @return array
+	 */
+	public function remove_order_preview_actions( $actions, $order ) {
+
+		if ( $order instanceof \WC_Order && Commerce\Orders::is_commerce_order( $order ) ) {
+			unset( $actions['status'] );
+		}
+
+		return $actions;
 	}
 
 
