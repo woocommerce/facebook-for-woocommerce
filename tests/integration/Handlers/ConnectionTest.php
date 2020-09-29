@@ -104,6 +104,24 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_connect_url() */
+	public function test_get_connect_url_with_commerce() {
+
+		$this->assertStringContainsString( 'connect_commerce', $this->get_connection()->get_connect_url( true ) );
+	}
+
+
+	/** @see Connection::get_commerce_connect_url() */
+	public function test_get_commerce_connect_url() {
+
+		$connect_url = $this->get_connection()->get_commerce_connect_url();
+
+		$this->assertStringContainsString( 'https://www.facebook.com/commerce_manager/onboarding/?app_id=', $connect_url );
+		$this->assertStringContainsString( 'redirect_url=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebook%2F%3Fsite_url%3D', $connect_url );
+		$this->assertStringContainsString( 'wc-api%253D' . Connection::ACTION_CONNECT_COMMERCE . '%2526nonce%253D', $connect_url );
+	}
+
+
 	/** @see Connection::get_disconnect_url() */
 	public function test_get_disconnect_url() {
 
@@ -359,6 +377,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 'code', $connection_parameters['response_type'] );
 		$this->assertEquals( implode( ',', $connection->get_scopes() ), $connection_parameters['scope'] );
 		$this->assertJson( $connection_parameters['extras'] );
+	}
+
+
+	/** @see Connection::get_connect_parameters() */
+	public function test_get_connect_parameters_with_commerce() {
+
+		$connection            = $this->get_connection();
+		$connection_parameters = $connection->get_connect_parameters( true );
+
+		$this->assertEquals( add_query_arg( 'connect_commerce', true, $connection->get_redirect_url() ), $connection_parameters['state'] );
 	}
 
 
