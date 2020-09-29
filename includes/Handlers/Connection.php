@@ -547,11 +547,60 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
+	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
 	 * @return string
 	 */
-	public function get_connect_url() {
+	public function get_connect_url( $connect_commerce = false ) {
 
-		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters() ), self::OAUTH_URL );
+		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
+	}
+
+
+	/**
+	 * Builds the Commerce connect URL.
+	 *
+	 * The base URL is https://www.facebook.com/commerce_manager/onboarding with two query variables:
+	 * - app_id - the developer app ID
+	 * - redirect_url - the URL where the user will land after onboarding is complete
+	 *
+	 * The redirect URL must be an approved domain, so it must be the connect.woocommerce.com proxy app. In that URL, we
+	 * include the final site URL, which is where the merchant will redirect to with the data that needs to be stored.
+	 * So the final URL looks like this without encoding:
+	 *
+	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.com/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
+	 *
+	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
+	 * to trigger the test account flow, where fake US-based business details can be used.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_commerce_connect_url() {
+
+		// build the site URL to which the user will ultimately return
+		$site_url = add_query_arg( [
+			'wc-api' => self::ACTION_CONNECT_COMMERCE,
+			'nonce'  => wp_create_nonce( self::ACTION_CONNECT_COMMERCE ),
+		], home_url( '/' ) );
+
+		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_proxy_url() );
+
+		// build the final connect URL, direct to Facebook
+		$connect_url = add_query_arg( [
+			'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+			'redirect_url' => urlencode( $redirect_url ),
+		], 'https://www.facebook.com/commerce_manager/onboarding/' );
+
+		/**
+		 * Filters the URL used to connect to Facebook Commerce.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @param string $connect_url connect URL
+		 */
+		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
 	}
 
 
@@ -786,9 +835,16 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
+	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
 	 * @return array
 	 */
-	public function get_connect_parameters() {
+	public function get_connect_parameters( $connect_commerce = false ) {
+
+		$state = $this->get_redirect_url();
+
+		if ( $connect_commerce ) {
+			$state = add_query_arg( 'connect_commerce', true, $state );
+		}
 
 		/**
 		 * Filters the connection parameters.
@@ -800,7 +856,7 @@ class Connection {
 		return apply_filters( 'wc_facebook_connection_parameters', [
 			'client_id'     => $this->get_client_id(),
 			'redirect_uri'  => $this->get_proxy_url(),
-			'state'         => $this->get_redirect_url(),
+			'state'         => $state,
 			'display'       => 'page',
 			'response_type' => 'code',
 			'scope'         => implode( ',', $this->get_scopes() ),
