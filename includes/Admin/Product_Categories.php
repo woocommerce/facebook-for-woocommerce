@@ -24,6 +24,7 @@ class Product_Categories {
 
 	/** @var string ID for the HTML field */
 	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
+	const FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID = 'wc_facebook_enhanced_catalog_attributes_id';
 
 
 	/**
@@ -37,6 +38,8 @@ class Product_Categories {
 
 		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
 		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
+		// add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_enhanced_catalog_attributes_field' ] );
 
 		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
 		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
@@ -168,7 +171,6 @@ class Product_Categories {
 		<?php
 	}
 
-
 	/**
 	 * Renders the common tooltip markup.
 	 *
@@ -178,13 +180,12 @@ class Product_Categories {
 	 */
 	public function render_google_product_category_tooltip() {
 
-		$tooltip_text = __( 'Choose a default Google product category for products in this category. Products need at least two category levels defined to be sold on Instagram.', 'facebook-for-woocommerce' );
+		$tooltip_text = __( 'Choose a default Google product category for products in this category. Products need at least two category levels defined for tax to be correctly applied.', 'facebook-for-woocommerce' );
 
 		?>
 			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
 		<?php
 	}
-
 
 	/**
 	 * Gets the common field title.
@@ -199,6 +200,73 @@ class Product_Categories {
 
 		return __( 'Default Google product category', 'facebook-for-woocommerce' );
 	}
+
+	/**
+	 * Renders the Google product category field markup for the edit form.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param \WP_Term $term current taxonomy term object
+	 */
+	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
+
+		$category_value 					 = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields();
+		$category_handler 				 = facebook_for_woocommerce()->get_facebook_category_handler();
+
+		if($category_handler->get_category_depth($category_value) < 2) {
+			// show nothing
+			return;
+		}
+
+		?>
+			<tr class="form-field term-<?php echo esc_attr( self::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>-title-wrap">
+				<th colspan="2" scope="row">
+					<label for="<?php echo esc_attr( self::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>">
+						<?php echo esc_html( $this->render_enhanced_catalog_attributes_title() ); ?>
+						<?php $this->render_enhanced_catalog_attributes_tooltip(); ?>
+					</label>
+				</th>
+			</tr>
+		<?php
+
+		echo $enhanced_attribute_fields->render($category_value);
+	}
+
+	/**
+	 * Renders the common tooltip markup.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function render_enhanced_catalog_attributes_tooltip() {
+
+		$tooltip_text = __( 'Select default values for enhanced attributes within this category', 'facebook-for-woocommerce' );
+
+		?>
+			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
+		<?php
+	}
+
+	/**
+	 * Gets the common field title.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public function render_enhanced_catalog_attributes_title() {
+
+		return __( 'Enhanced Catalog Attributes', 'facebook-for-woocommerce' );
+	}
+
+
+
 
 
 	/**

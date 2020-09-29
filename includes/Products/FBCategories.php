@@ -77,7 +77,7 @@ class FBCategories {
 
 		// $attributes = $this->get_attributes_for_category($category_id, $product);
 
-		wp_send_json($this->get_attributes_for_category($category_id, $product));
+		// wp_send_json($this->get_attributes_for_category($category_id, $product));
 	}
 
 	public function get_attributes_for_category($category_id, $product){
@@ -171,6 +171,23 @@ class FBCategories {
 		$this->ensure_data_is_loaded();
 		if($this->is_category($id)){
 			return $this->categories_data[$id];
+		} else {
+			return null;
+		}
+	}
+
+	public function get_category_depth($id) {
+		if(!$this->is_category($id)){
+			return 0;
+		}
+		$category = $this->get_category($id);
+		return count(explode('>', $category));
+	}
+
+	public function get_category_with_attrs($id) {
+		$this->ensure_data_is_loaded();
+		if($this->is_category($id)){
+			return $this->attributes_data[$id];
 		} else {
 			return null;
 		}

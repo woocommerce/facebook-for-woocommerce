@@ -154,7 +154,8 @@ class Admin {
 			}
 		}
 
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script( 'wc-facebook-google-product-category-fields', 'facebook_for_woocommerce_google_product_category', [
 			'i18n' => [

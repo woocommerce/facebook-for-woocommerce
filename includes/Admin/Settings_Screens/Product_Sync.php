@@ -316,7 +316,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type'     => 'product_sync_google_product_categories',
 				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
-				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined to sell via Instagram.', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined for tax to be correctly applied.', 'facebook-for-woocommerce' ),
 			],
 			[ 'type' => 'sectionend' ],
 
