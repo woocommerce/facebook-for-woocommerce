@@ -130,7 +130,7 @@ class API extends Framework\SV_WC_API_Base {
 		if ( $response && $response->has_api_error() ) {
 
 			$code    = $response->get_api_error_code();
-			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
+			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_user_error_message() ?: $response->get_api_error_message() );
 
 			/**
 			 * Graph API
@@ -664,6 +664,33 @@ class API extends Framework\SV_WC_API_Base {
 				Order::STATUS_PROCESSING,
 				Order::STATUS_CREATED,
 			]
+		];
+
+		$request = new API\Orders\Request( $page_id, $request_args );
+
+		$this->set_response_handler( API\Orders\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets the latest cancelled orders.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string $page_id page ID
+	 * @return API\Orders\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_cancelled_orders( $page_id ) {
+
+		$request_args = [
+			'state' => [
+				Order::STATUS_COMPLETED,
+			],
+			'updated_after' => time() - facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_order_update_interval(),
+			'filters'       => 'has_cancellations',
 		];
 
 		$request = new API\Orders\Request( $page_id, $request_args );
