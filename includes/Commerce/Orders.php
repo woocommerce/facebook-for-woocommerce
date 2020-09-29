@@ -763,7 +763,7 @@ class Orders {
 			$api->cancel_order( $remote_id, $reason_code );
 
 			$order->add_order_note( sprintf(
-				/* translators: Placeholders: %s - sales channel name, like Facebook or Instagram */
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
 				__( '%s order cancelled.', 'facebook-for-woocommerce' ),
 				ucfirst( $order->get_created_via() )
 			) );
