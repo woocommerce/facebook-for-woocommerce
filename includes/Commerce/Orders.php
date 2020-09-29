@@ -571,7 +571,7 @@ class Orders {
 			$plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() )->fulfill_order( $remote_id, $fulfillment_data );
 
 			$order->add_order_note( sprintf(
-				/* translators: Placeholders: %s - sales channel name, like Facebook or Instagram */
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
 				__( '%s order fulfilled.', 'facebook-for-woocommerce' ),
 				ucfirst( $order->get_created_via() )
 			) );
