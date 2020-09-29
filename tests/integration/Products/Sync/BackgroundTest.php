@@ -424,17 +424,6 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Background::process_item() */
-	public function test_process_item_exceptions_with_orphan_variation() {
-
-		// product variation without a parent
-		$variation = new \WC_Product_Variation();
-		$variation->save();
-
-		$this->check_process_item_exceptions( $variation, Sync::ACTION_UPDATE );
-	}
-
-
 	/**
 	 * @see Background::process_item_update()
 	 *

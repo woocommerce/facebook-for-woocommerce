@@ -1050,7 +1050,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Change from trash status -> publish status
 	 * No need to update for change from trash <-> unpublish status
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.2
 	 *
 	 * @param string $new_status
 	 * @param string $old_status
