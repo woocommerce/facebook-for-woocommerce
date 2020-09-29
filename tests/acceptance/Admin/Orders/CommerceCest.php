@@ -26,6 +26,131 @@ class CommerceCest {
 
 
 	/**
+	 * Test that the order list table action buttons are not displayed for Commerce orders.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws \WC_Data_Exception
+	 */
+	public function try_order_list_table_actions_removed( AcceptanceTester $I ) {
+
+		$commerce_order = $this->get_commerce_order( '1234' );
+
+		$woo_order = new \WC_Order();
+		$woo_order->set_status( 'pending' );
+		$woo_order->save();
+
+		$I->amOnOrdersPage();
+
+		// ensure the Actions column isn't hidden
+		$I->click( '#show-settings-link' );
+		$I->checkOption( '#wc_actions-hide' );
+
+		// not present for commerce orders
+		$I->dontSeeElement( "tr#post-{$commerce_order->get_order_number()} .wc-action-button-processing" );
+		$I->dontSeeElement( "tr#post-{$commerce_order->get_order_number()} .wc-action-button-complete" );
+
+		// present for non-commerce orders
+		$I->seeElement( "tr#post-{$woo_order->get_order_number()} .wc-action-button-processing" );
+		$I->seeElement( "tr#post-{$woo_order->get_order_number()} .wc-action-button-complete" );
+	}
+
+
+	/**
+	 * Test that the order preview modal status action buttons are not displayed for Commerce orders.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws \WC_Data_Exception
+	 */
+	public function try_order_preview_actions_removed( AcceptanceTester $I ) {
+
+		$commerce_order = $this->get_commerce_order( '1234' );
+
+		$woo_order = new \WC_Order();
+		$woo_order->set_status( 'pending' );
+		$woo_order->save();
+
+		$I->amOnOrdersPage();
+
+		$I->click( "tr#post-{$commerce_order->get_order_number()} .order-preview" );
+		$I->waitForElementVisible( '.wc-order-preview' );
+
+		$I->dontSeeElement( '.wc-order-preview .wc-action-button-group' );
+
+		$I->click( '.modal-close' );
+
+		$I->click( "tr#post-{$woo_order->get_order_number()} .order-preview" );
+		$I->waitForElementVisible( '.wc-order-preview' );
+
+		$I->seeElement( '.wc-order-preview .wc-action-button-group' );
+	}
+
+
+	/**
+	 * Test that only supported statuses are available on the Edit Order screen.
+	 *
+	 * @param AcceptanceTester $I tester instance
+	 * @throws \WC_Data_Exception
+	 */
+	public function try_edit_order_statuses( AcceptanceTester $I ) {
+
+		$commerce_order = $this->get_commerce_order( '1234' );
+
+		$I->amOnOrderPage( $commerce_order->get_id() );
+
+		$I->canSeeOptionIsSelected( '#order_status', 'Pending payment' );
+
+		$I->cantSeeElement( '#order_status option[value="wc-processing"]' );
+
+		$commerce_order->set_status( 'processing' );
+		$commerce_order->save();
+
+		$I->amOnOrderPage( $commerce_order->get_id() );
+
+		$I->canSeeOptionIsSelected( '#order_status', 'Processing' );
+
+		$I->canSeeElement( '#order_status option[value="wc-completed"]' );
+		$I->canSeeElement( '#order_status option[value="wc-cancelled"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-pending"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-refunded"]' );
+
+		$commerce_order->set_status( 'completed' );
+		$commerce_order->save();
+
+		$I->amOnOrderPage( $commerce_order->get_id() );
+
+		$I->canSeeOptionIsSelected( '#order_status', 'Completed' );
+
+		$I->canSeeElement( '#order_status option[value="wc-refunded"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-pending"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-processing"]' );
+
+		$commerce_order->set_status( 'cancelled' );
+		$commerce_order->save();
+
+		$I->amOnOrderPage( $commerce_order->get_id() );
+
+		$I->canSeeOptionIsSelected( '#order_status', 'Cancelled' );
+
+		$I->cantSeeElement( '#order_status option[value="wc-pending"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-processing"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-completed"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-refunded"]' );
+
+		$commerce_order->set_status( 'refunded' );
+		$commerce_order->save();
+
+		$I->amOnOrderPage( $commerce_order->get_id() );
+
+		$I->canSeeOptionIsSelected( '#order_status', 'Refunded' );
+
+		$I->cantSeeElement( '#order_status option[value="wc-pending"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-processing"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-completed"]' );
+		$I->cantSeeElement( '#order_status option[value="wc-cancelled"]' );
+	}
+
+
+	/**
 	 * Test that an order can be cancelled using the Cancel Order modal.
 	 *
 	 * @param AcceptanceTester $I tester instance
@@ -285,6 +410,25 @@ PHP;
 
 		$I->selectOption( '#wc_facebook_refund_reason', 'NOT_AS_DESCRIBED' );
 		$I->fillField( '#refund_reason', 'I have my reasons' );
+	}
+
+
+	/**
+	 * Gets an order with the minimum commerce data.
+	 *
+	 * @param string $remote_id desired remote ID
+	 * @return \WC_Order $order
+	 * @throws \WC_Data_Exception
+	 */
+	private function get_commerce_order( string $remote_id ) {
+
+		$order = new \WC_Order();
+		$order->set_created_via( 'instagram' );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
+		$order->set_status( 'pending' );
+		$order->save();
+
+		return $order;
 	}
 
 

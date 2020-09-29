@@ -95,10 +95,7 @@ jQuery( document ).ready( ( $ ) => {
 
 			// only completed (fulfilled) orders can be refunded
 			if ( 'completed' !== wc_facebook_commerce_orders.order_status ) {
-
 				$( '.wc-order-bulk-actions .refund-items' ).hide();
-
-				$orderStatusField.find( 'option[value="wc-refunded"]' ).remove();
 			}
 		},
 

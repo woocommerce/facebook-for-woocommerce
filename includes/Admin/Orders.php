@@ -53,6 +53,9 @@ class Orders {
 
 		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handle_bulk_update' ], -1, 3 );
 
+		add_filter( 'woocommerce_admin_order_actions',         [ $this, 'remove_list_table_actions' ], 10, 2 );
+		add_filter( 'woocommerce_admin_order_preview_actions', [ $this, 'remove_order_preview_actions' ], 10, 2 );
+
 		add_filter( 'wc_order_is_editable', [ $this, 'is_order_editable' ], 10, 2 );
 
 		add_action( 'admin_footer', [ $this, 'render_refund_reason_field' ] );
@@ -103,12 +106,36 @@ class Orders {
 			}, $shipment_tracking );
 		}
 
+		// limit the order status field to statuses that can be handled by Facebook
+		switch ( $order->get_status() ) {
+
+			case 'processing':
+				$allowed_statuses = [ 'wc-processing', 'wc-completed', 'wc-cancelled' ];
+			break;
+
+			case 'completed':
+				$allowed_statuses = [ 'wc-completed', 'wc-refunded' ];
+			break;
+
+			case 'refunded':
+				$allowed_statuses = [ 'wc-refunded' ];
+			break;
+
+			case 'cancelled':
+				$allowed_statuses = [ 'wc-cancelled' ];
+			break;
+
+			default:
+				$allowed_statuses = [ 'wc-pending' ];
+			break;
+		}
+
 		wp_localize_script( 'wc-facebook-commerce-orders', 'wc_facebook_commerce_orders', [
 			'order_id'                  => $order->get_id(),
 			'order_status'              => $order->get_status(),
 			'is_commerce_order'         => Commerce\Orders::is_commerce_order( $order ),
 			'shipment_tracking'         => $shipment_tracking,
-			'allowed_commerce_statuses' => [ 'wc-pending', 'wc-processing', 'wc-completed', 'wc-refunded', 'wc-cancelled' ],
+			'allowed_commerce_statuses' => $allowed_statuses,
 			'complete_order_action'     => AJAX::ACTION_COMPLETE_ORDER,
 			'complete_order_nonce'      => wp_create_nonce( AJAX::ACTION_COMPLETE_ORDER ),
 			'cancel_order_action'       => AJAX::ACTION_CANCEL_ORDER,
@@ -471,6 +498,88 @@ class Orders {
 		}
 
 		return $redirect_url;
+	}
+
+
+	/**
+	 * Removes the status actions from the order list table rows.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array $actions existing actions
+	 * @param \WC_Order $order order object
+	 * @return array
+	 */
+	public function remove_list_table_actions( $actions, $order ) {
+
+		if ( $order instanceof \WC_Order && Commerce\Orders::is_commerce_order( $order ) ) {
+			unset( $actions['processing'], $actions['complete'] );
+		}
+
+		return $actions;
+	}
+
+
+	/**
+	 * Removes the status actions from the list table order preview modal.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array $actions existing actions
+	 * @param \WC_Order $order order object
+	 * @return array
+	 */
+	public function remove_order_preview_actions( $actions, $order ) {
+
+		if ( $order instanceof \WC_Order && Commerce\Orders::is_commerce_order( $order ) ) {
+			unset( $actions['status'] );
+		}
+
+		return $actions;
+	}
+
+
+	/**
+	 * Prevents sending emails for Commerce orders.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param bool $is_enabled whether the email is enabled in the first place
+	 * @param \WC_Order $order order object
+	 * @return bool
+	 */
+	public function maybe_stop_order_email( $is_enabled, $order ) {
+
+		// will decide whether to allow $is_enabled to be filtered
+		$is_previously_enabled = $is_enabled;
+
+		// checks whether or not the order is a Commerce order
+		$is_commerce_order = $order instanceof \WC_Order && \SkyVerge\WooCommerce\Facebook\Commerce\Orders::is_commerce_order( $order );
+
+		// decides whether to disable or to keep emails enabled
+		$is_enabled = $is_enabled && ! $is_commerce_order;
+
+		if ( $is_previously_enabled && $is_commerce_order ) {
+
+			/**
+			 * Filters the flag used to determine whether the email is enabled.
+			 *
+			 * @param bool $is_enabled whether the email is enabled
+			 * @param \WC_Order $order order object
+			 * @param Orders $this admin orders instance
+			 * @since 2.1.0-dev.1
+			 *
+			 */
+			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $order, $this );
+		}
+
+		return $is_enabled;
 	}
 
 
