@@ -491,6 +491,11 @@ class Orders {
 		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
 
 		add_action( self::ACTION_FETCH_ORDERS, [ $this, 'update_local_orders' ] );
+
+		// prevent sending emails for Commerce orders
+		add_action( 'woocommerce_email_enabled_customer_completed_order',          [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_processing_order',         [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_refunded_order',           [ $this, 'maybe_stop_order_email' ], 10, 2 );
 	}
 
 
@@ -756,6 +761,47 @@ class Orders {
 			self::CANCEL_REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
 			self::CANCEL_REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
 		];
+	}
+
+
+	/**
+	 * Prevents sending emails for Commerce orders.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param bool $is_enabled whether the email is enabled in the first place
+	 * @param \WC_Order $order order object
+	 * @return bool
+	 */
+	public function maybe_stop_order_email( $is_enabled, $order ) {
+
+		// will decide whether to allow $is_enabled to be filtered
+		$is_previously_enabled = $is_enabled;
+
+		// checks whether or not the order is a Commerce order
+		$is_commerce_order = $order instanceof \WC_Order && self::is_commerce_order( $order );
+
+		// decides whether to disable or to keep emails enabled
+		$is_enabled = $is_enabled && ! $is_commerce_order;
+
+		if ( $is_previously_enabled && $is_commerce_order ) {
+
+			/**
+			 * Filters the flag used to determine whether the email is enabled.
+			 *
+			 * @since 2.1.0-dev.1
+			 *
+			 * @param bool $is_enabled whether the email is enabled
+			 * @param \WC_Order $order order object
+			 * @param Orders $this admin orders instance
+			 *
+			 */
+			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $order, $this );
+		}
+
+		return $is_enabled;
 	}
 
 
