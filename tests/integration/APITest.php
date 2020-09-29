@@ -704,6 +704,33 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::get_cancelled_orders() */
+	public function test_get_cancelled_orders() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_cancelled_orders( '1234' );
+
+		$this->assertInstanceOf( API\Orders\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/1234/commerce_orders', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+		$expected_params = [
+			'state'  => implode( ',', [
+				API\Orders\Order::STATUS_COMPLETED,
+			] ),
+			'updated_after' => time() - 5 * MINUTE_IN_SECONDS,
+			'filters' => 'has_cancellations',
+		];
+		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Orders\Response::class, $api->get_response() );
+	}
+
+
 	/** @see API::get_order() */
 	public function test_get_order() {
 

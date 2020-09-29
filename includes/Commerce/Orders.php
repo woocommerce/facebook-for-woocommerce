@@ -441,6 +441,45 @@ class Orders {
 				$local_order->save();
 			}
 		}
+
+		// update any local orders that have since been cancelled on Facebook
+		$this->update_cancelled_orders();
+	}
+
+
+	/**
+	 * Updates any local orders that have since been cancelled on Facebook.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function update_cancelled_orders() {
+
+		$page_id = facebook_for_woocommerce()->get_integration()->get_facebook_page_id();
+
+		try {
+
+			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_cancelled_orders( $page_id );
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( 'Error fetching Commerce orders from the Orders API: ' . $exception->getMessage() );
+
+			return;
+		}
+
+		foreach ( $response->get_orders() as $remote_order ) {
+
+			$local_order = $this->find_local_order( $remote_order->get_id() );
+
+			if ( ! $local_order instanceof \WC_Order || 'cancelled' === $local_order->get_status() ) {
+				continue;
+			}
+
+			$local_order->set_status( 'cancelled' );
+			$local_order->save();
+
+			wc_increase_stock_levels( $local_order );
+		}
 	}
 
 

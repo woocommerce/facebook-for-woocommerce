@@ -108,7 +108,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order = new \WC_Order();
 		$order->save();
 
-		$remote_id = '335211597203390';
+		$remote_id = 'FAKE_REMOTE_ID_1';
 
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, $remote_id );
 		$order->save_meta_data();
@@ -124,8 +124,8 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order = new \WC_Order();
 		$order->save();
 
-		$remote_id           = '435211597203390';
-		$different_remote_id = '335211597203390';
+		$remote_id           = 'FAKE_REMOTE_ID_1';
+		$different_remote_id = 'FAKE_REMOTE_ID_2';
 
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, $different_remote_id );
 		$order->save_meta_data();
@@ -457,6 +457,60 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property->setValue( facebook_for_woocommerce(), $api );
 
 		$this->get_commerce_orders_handler()->update_local_orders();
+	}
+
+
+	/** @see Orders::update_cancelled_orders() */
+	public function test_update_cancelled_orders() {
+
+		// ensure Commerce is connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+
+		$product = $this->tester->get_product( [
+			'manage_stock'   => true,
+			'stock_quantity' => 10,
+			'price'          => 1.00,
+		] );
+
+		$order_item = new \WC_Order_Item_Product();
+		$order_item->set_product( $product );
+		$order_item->set_quantity( 1 );
+
+		$order = new \WC_Order();
+		$order->set_created_via( 'facebook' );
+		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, 'FAKE_REMOTE_ID_1' );
+		$order->add_item( $order_item );
+		$order->save();
+
+		wc_reduce_stock_levels( $order );
+
+		$updated_product = wc_get_product( $product->get_id() );
+
+		// ensure the stock got reduced so we don't get a false positive
+		$this->assertEquals( 9, $updated_product->get_stock_quantity() );
+
+		$response_data = $this->get_test_response_data( Order::STATUS_COMPLETED, $product );
+
+		// mock the API to return a test response and so that the test fails if acknowledge_order() is not called once
+		$api = $this->make( API::class, [
+			'get_cancelled_orders'    => new API\Orders\Response( json_encode( [ 'data' => [ $response_data ] ] ) ),
+		] );
+
+		// replace the API property
+		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'api' );
+		$property->setAccessible( true );
+		$property->setValue( facebook_for_woocommerce(), $api );
+
+		$this->get_commerce_orders_handler()->update_cancelled_orders();
+
+		$updated_order = wc_get_order( $order->get_id() );
+
+		$this->assertEquals( 'cancelled', $updated_order->get_status() );
+
+		$updated_product = wc_get_product( $product->get_id() );
+
+		$this->assertEquals( 10, $updated_product->get_stock_quantity() );
 	}
 
 
@@ -1098,7 +1152,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	private function get_test_response_data( $order_status = Order::STATUS_CREATED, $product = null, $merchant_order_id = '' ) {
 
 		return [
-			'id'                        => '335211597203390',
+			'id'                        => 'FAKE_REMOTE_ID_1',
 			'order_status'              => [
 				'state' => $order_status,
 			],
