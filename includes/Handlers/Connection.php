@@ -265,6 +265,7 @@ class Connection {
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
 
 			// redirect to the Commerce onboarding if directed to do so
 			if ( ! empty( SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
