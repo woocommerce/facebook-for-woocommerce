@@ -140,6 +140,17 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
+		// if the user has authorized the pages_ready_engagement scope, they can go directly to the Commerce onboarding
+		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
+
+			$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
+
+		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
+		} else {
+
+			$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url( true );
+		}
+
 		?>
 
 		<h2><?php esc_html_e( 'Instagram Checkout', 'facebook-for-woocommerce' ); ?></h2>
@@ -155,7 +166,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
 
 							<p style="margin-top:24px">
-								<a class="button button-primary" href="<?php echo esc_url( $this->get_connect_url() ); ?>"><?php esc_html_e( 'Connect', 'facebook-for-woocommerce' ); ?></a>
+								<a class="button button-primary" href="<?php echo esc_url( $connect_url ); ?>"><?php esc_html_e( 'Connect', 'facebook-for-woocommerce' ); ?></a>
 							</p>
 						<?php endif; ?>
 					</td>
