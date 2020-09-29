@@ -389,6 +389,21 @@ jQuery( document ).ready( ( $ ) => {
 
 
 	/**
+	 *
+	 * Move the Facebook refund reason field if this is a Commerce order.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	function maybeMoveRefundReasonField() {
+
+		if ( isCommerceOrder ) {
+			moveRefundReasonField();
+			setupRefunReasonMutationObserver();
+		}
+	}
+
+
+	/**
 	 * Moves the Facebook refund reason field above WooCommerce's refund reason field.
 	 *
 	 * It also updates the labels and tooltips.
@@ -398,7 +413,7 @@ jQuery( document ).ready( ( $ ) => {
 	function moveRefundReasonField() {
 
 		let $oldRefundReasonField  = $( '#refund_reason' );
-		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).css( 'width', $oldRefundReasonField.css( 'width' ) );
+		let $newRefundReasonField  = $( '#wc_facebook_refund_reason' ).clone().css( 'width', $oldRefundReasonField.css( 'width' ) );
 		let $refundReasonRow       = $oldRefundReasonField.closest( 'tr' );
 		let $refundDescriptionRow  = $refundReasonRow.clone();
 
@@ -422,6 +437,43 @@ jQuery( document ).ready( ( $ ) => {
 			wc_facebook_commerce_orders.i18n.refund_description_label,
 			wc_facebook_commerce_orders.i18n.refund_description_tooltip
 		);
+	}
+
+
+	/**
+	 * Setups a MutationObserver to detect when the order refund items elements are replaced.
+	 *
+	 * WooCommerce (meta-boxes-orders.js) does not currently trigger an event when the order items are loaded.
+	 * We use the MutationObserver to move the Facebook refund reason field every time the order refund items are refreshed.
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	function setupRefunReasonMutationObserver() {
+
+		if ( 'undefined' === typeof window.MutationObserver ) {
+			return;
+		}
+
+		let node = document.querySelector( '#woocommerce-order-items .inside' );
+
+		if ( ! node ) {
+			return;
+		}
+
+		let observer = new MutationObserver( ( records ) => {
+
+			records.forEach( ( record ) => {
+
+				Array.prototype.forEach.call( record.addedNodes, ( child ) => {
+
+					if ( $( child ).is( '.wc-order-refund-items' ) ) {
+						moveRefundReasonField();
+					}
+				} );
+			} );
+		} );
+
+		observer.observe( node, { childList: true } );
 	}
 
 
@@ -456,9 +508,7 @@ jQuery( document ).ready( ( $ ) => {
 	}
 
 
-	if ( isCommerceOrder ) {
-		moveRefundReasonField();
-	}
+	maybeMoveRefundReasonField();
 
 	$form.on( 'submit', function( event ) {
 
