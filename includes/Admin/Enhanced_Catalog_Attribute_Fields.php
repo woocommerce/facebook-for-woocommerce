@@ -29,7 +29,7 @@ class Enhanced_Catalog_Attribute_Fields {
     foreach($recommended_attributes as $attribute) {
       $attr_id = self::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX.'_'.$attribute['key'];
       ?>
-        <tr class="form-field term-<?php echo esc_attr( $attr_id ); ?>-wrap">
+        <tr class="form-field wc-facebook-enhanced-catalog-attribute-row term-<?php echo esc_attr( $attr_id ); ?>-wrap">
           <th scope="row">
             <?php $this->render_label($attr_id, $attribute); ?>
           </th>

@@ -78,6 +78,35 @@ jQuery( document ).ready( ( $ ) => {
 			}
 		}
 
+		/**
+		 * Sets the enhanced attributes to show
+		 *
+		 */
+		requestAttributesIfValid() {
+			// if an input with this id isn't available then we can't show
+			// enhanced attributes on this page, (for example it may be the
+			// product sync page)
+			var canShowEnhancedAttributesID = 'wc_facebook_can_show_enhanced_catalog_attributes_id';
+			if($( '#'+canShowEnhancedAttributesID ).val() !== 'true'){
+				return;
+			}
+
+			$('.wc-facebook-enhanced-catalog-attribute-row').remove();
+
+			console.log("VALID ",this.isValid());
+			if(this.isValid()) {
+				var inputSelector = '#' + this.input_id;
+			  $.get( facebook_for_woocommerce_product_categories.ajax_url, {
+					action:   'wc_facebook_enhanced_catalog_attributes',
+					security: '',
+					selected_category:  $( inputSelector ).val(),
+				}, function( response ) {
+					var $categoryRow = $( inputSelector ).parents('tr');
+					$(response).insertAfter($categoryRow);
+				});
+			}
+		}
+
 
 		/**
 		 * Updates the subsequent selects whenever one of the selects changes.
@@ -116,8 +145,20 @@ jQuery( document ).ready( ( $ ) => {
 			}
 
 			$( '#' + this.input_id ).val( categoryId );
+			this.requestAttributesIfValid();
 		}
 
+		/**
+		 * Returns true if there have been at least two levels of category selected
+		 *
+		 * @return {boolean}
+		 */
+		isValid() {
+			var selectsWithValueCount = $('.wc-facebook-google-product-category-select')
+				.filter(function(_i, el) { return $(el).val() !== ""; })
+					.length;
+			return selectsWithValueCount >= 2;
+		}
 
 		/**
 		 * Adds a new select with the given options.
