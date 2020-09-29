@@ -25,6 +25,7 @@ class Product_Categories {
 	/** @var string ID for the HTML field */
 	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
 	const FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID = 'wc_facebook_enhanced_catalog_attributes_id';
+	const FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID = 'wc_facebook_can_show_enhanced_catalog_attributes_id';
 
 
 	/**
@@ -38,13 +39,13 @@ class Product_Categories {
 
 		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
 		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
-		// add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
-		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_enhanced_catalog_attributes_field' ] );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'inline_render_edit_enhanced_catalog_attributes_field' ] );
 
 		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
 		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
-	}
 
+		add_action( 'wp_ajax_wc_facebook_enhanced_catalog_attributes', [ $this, 'ajax_render_edit_enhanced_catalog_attributes_field' ] );
+	}
 
 	/**
 	 * Enqueues the assets.
@@ -68,6 +69,7 @@ class Product_Categories {
 			], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 			wp_localize_script( 'wc-facebook-product-categories', 'facebook_for_woocommerce_product_categories', [
+				'ajax_url'                        							=> admin_url( 'admin-ajax.php' ),
 				'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
 				'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
 			] );
@@ -162,6 +164,9 @@ class Product_Categories {
 					</label>
 				</th>
 				<td>
+					<input type="hidden" id="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
+					       name="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
+					       value="true"/>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
 					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
 					       value="<?php echo esc_attr( $value ); ?>"/>
@@ -202,7 +207,7 @@ class Product_Categories {
 	}
 
 	/**
-	 * Renders the Google product category field markup for the edit form.
+	 * Renders the enhanced catalog attributes  field markup for the edit form.
 	 *
 	 * @internal
 	 *
@@ -210,19 +215,44 @@ class Product_Categories {
 	 *
 	 * @param \WP_Term $term current taxonomy term object
 	 */
-	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
+	public function inline_render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
+		$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+		$this->render_edit_enhanced_catalog_attributes_field($category_id);
+	}
 
-		$category_value 					 = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+	/**
+	 * Renders the enhanced catalog attributes  field markup for the edit form.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function ajax_render_edit_enhanced_catalog_attributes_field( ) {
+		$category_id = $_GET['selected_category'];
+		$this->render_edit_enhanced_catalog_attributes_field($category_id);
+	}
+
+
+	/**
+	 * Renders the enhanced catalog attributes field markup for the edit form.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param $category_id the selected category to render attributes for
+	 */
+	public function render_edit_enhanced_catalog_attributes_field( $category_id ) {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields();
 		$category_handler 				 = facebook_for_woocommerce()->get_facebook_category_handler();
 
-		if($category_handler->get_category_depth($category_value) < 2) {
+		if($category_handler->get_category_depth($category_id) < 2) {
 			// show nothing
 			return;
 		}
 
 		?>
-			<tr class="form-field term-<?php echo esc_attr( self::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>-title-wrap">
+			<tr class="form-field wc-facebook-enhanced-catalog-attribute-row term-<?php echo esc_attr( self::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>-title-wrap">
 				<th colspan="2" scope="row">
 					<label for="<?php echo esc_attr( self::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>">
 						<?php echo esc_html( $this->render_enhanced_catalog_attributes_title() ); ?>
@@ -232,7 +262,7 @@ class Product_Categories {
 			</tr>
 		<?php
 
-		echo $enhanced_attribute_fields->render($category_value);
+		$enhanced_attribute_fields->render($category_id);
 	}
 
 	/**
