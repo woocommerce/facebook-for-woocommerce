@@ -62,15 +62,20 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 		global $wc_queued_js;
 
+		$term_data = wp_insert_term( 'term', 'product_cat' );
+
+		$term = get_term( $term_data['term_id'] );
+
 		ob_start();
-		$this->get_product_categories_handler()->render_edit_google_product_category_field();
+		$this->get_product_categories_handler()->render_edit_google_product_category_field( $term );
 		$html = trim( ob_get_clean() );
 
 		$this->assertStringContainsString( '<tr class="form-field term-wc_facebook_google_product_category_id-wrap">', $html );
 		$this->assertStringContainsString( '<label for="wc_facebook_google_product_category_id">', $html );
 		$this->assertStringContainsString( '<span class="woocommerce-help-tip"', $html );
 		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id"
-					       name="wc_facebook_google_product_category_id"/>', $html );
+					       name="wc_facebook_google_product_category_id"
+					       value=""/>', $html );
 
 		$this->assertStringContainsString( 'new WC_Facebook_Google_Product_Category_Fields', $wc_queued_js );
 	}

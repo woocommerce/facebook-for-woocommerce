@@ -66,12 +66,10 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$refund->set_parent_id( $order->get_id() );
 		$refund->save();
 
+		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectExceptionMessage( 'Remote ID for parent order not found' );
+
 		$this->get_orders_handler()->handle_refund( $refund->get_id() );
-
-		$notes = array_map( static function( $note ) { return $note->content; }, wc_get_order_notes( [ 'order_id' => $order->get_id() ] ) );
-
-		// asserts that handle_refund called add_order_refund
-		$this->assertContains( 'Could not refund Instagram order: Remote ID for parent order not found.', $notes );
 	}
 
 

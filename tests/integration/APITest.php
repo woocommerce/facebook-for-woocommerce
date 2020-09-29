@@ -724,6 +724,20 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 			] ),
 			'updated_after' => time() - 5 * MINUTE_IN_SECONDS,
 			'filters' => 'has_cancellations',
+			'fields' => implode( ',', [
+				'id',
+				'order_status',
+				'created',
+				'last_updated',
+				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
+				'ship_by_date',
+				'merchant_order_id',
+				'channel',
+				'selected_shipping_option',
+				'shipping_address',
+				'estimated_payment_details',
+				'buyer_details',
+			] ),
 		];
 		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
 
