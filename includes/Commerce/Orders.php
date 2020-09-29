@@ -188,7 +188,13 @@ class Orders {
 			// check if the local order already has this item
 			foreach ( $local_order->get_items() as $wc_order_item ) {
 
-				if ( $wc_order_item instanceof \WC_Order_Item_Product && $product->get_id() === $wc_order_item->get_product_id() ) {
+				if ( ! $wc_order_item instanceof \WC_Order_Item_Product ) {
+					continue;
+				}
+
+				$order_item_product_id = $wc_order_item->get_variation_id() ?: $wc_order_item->get_product_id();
+
+				if ( $product->get_id() === $order_item_product_id ) {
 					$matching_wc_order_item = $wc_order_item;
 					break;
 				}
@@ -344,17 +350,6 @@ class Orders {
 			$local_order->update_meta_data( self::EMAIL_REMARKETING_META_KEY, wc_bool_to_string( $buyer_details['email_remarketing_option'] ) );
 		}
 
-		// update order status
-		if ( Order::STATUS_CREATED === $remote_order->get_status() ) {
-			$local_order->set_status( 'processing' );
-
-			/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
-			$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
-				$remote_order->get_id(),
-				$remote_order->get_channel()
-			) );
-		}
-
 		// set remote ID
 		$local_order->update_meta_data( self::REMOTE_ID_META_KEY, $remote_order->get_id() );
 
@@ -422,10 +417,28 @@ class Orders {
 
 				// acknowledge the order
 				try {
+
 					facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->acknowledge_order( $remote_order->get_id(), $local_order->get_id() );
+
+					$local_order->set_status( 'processing' );
+
+					/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
+					$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
+						$remote_order->get_id(),
+						ucfirst( $remote_order->get_channel() )
+					) );
+
 				} catch ( SV_WC_API_Exception $exception ) {
+
 					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
+
+					// if we have a clear indication that the order was not found, cancel it locally
+					if ( 803 === (int) $exception->getCode() ) {
+						$local_order->set_status( 'cancelled' );
+					}
 				}
+
+				$local_order->save();
 			}
 		}
 	}
@@ -557,11 +570,20 @@ class Orders {
 
 			$plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() )->fulfill_order( $remote_id, $fulfillment_data );
 
-			$order->add_order_note( __( 'Remote order fulfilled.', 'facebook-for-woocommerce' ) );
+			$order->add_order_note( sprintf(
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
+				__( '%s order fulfilled.', 'facebook-for-woocommerce' ),
+				ucfirst( $order->get_created_via() )
+			) );
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
-			$order->add_order_note( sprintf( __( 'Remote order could not be fulfilled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+			$order->add_order_note( sprintf(
+				/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
+				__( '%1$s order could not be fulfilled. %2$s', 'facebook-for-woocommerce' ),
+				ucfirst( $order->get_created_via() ),
+				$exception->getMessage()
+			) );
 
 			throw $exception;
 		}
@@ -635,14 +657,26 @@ class Orders {
 
 			$api->add_order_refund( $remote_id, $refund_data );
 
-			$parent_order->add_order_note( __( 'Order refunded on Instagram.', 'facebook-for-woocommerce' ) );
+			$parent_order->add_order_note( sprintf(
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
+				__( 'Order refunded on %s.', 'facebook-for-woocommerce' ),
+				ucfirst( $parent_order->get_created_via() )
+			) );
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
 			if ( ! empty( $parent_order ) && $parent_order instanceof \WC_Order ) {
-				$parent_order->add_order_note( sprintf( __( 'Could not refund Instagram order: %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+
+				$parent_order->add_order_note( sprintf(
+					/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
+					__( 'Could not refund %1$s order: %2$s', 'facebook-for-woocommerce' ),
+					ucfirst( $parent_order->get_created_via() ),
+					$exception->getMessage()
+				) );
+
 			} else {
-				facebook_for_woocommerce()->log( "Could not refund Instagram order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
+
+				facebook_for_woocommerce()->log( "Could not refund remote order for order refund {$refund->get_id()}: {$exception->getMessage()}" );
 			}
 
 			// re-throw the exception so the error halts refund creation
@@ -728,11 +762,20 @@ class Orders {
 
 			$api->cancel_order( $remote_id, $reason_code );
 
-			$order->add_order_note( __( 'Remote order cancelled.', 'facebook-for-woocommerce' ) );
+			$order->add_order_note( sprintf(
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
+				__( '%s order cancelled.', 'facebook-for-woocommerce' ),
+				ucfirst( $order->get_created_via() )
+			) );
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
-			$order->add_order_note( sprintf( __( 'Remote order could not be cancelled. %s', 'facebook-for-woocommerce' ), $exception->getMessage() ) );
+			$order->add_order_note( sprintf(
+				/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
+				__( '%1$s order could not be cancelled. %2$s', 'facebook-for-woocommerce' ),
+				ucfirst( $order->get_created_via() ),
+				$exception->getMessage()
+			) );
 
 			throw $exception;
 		}

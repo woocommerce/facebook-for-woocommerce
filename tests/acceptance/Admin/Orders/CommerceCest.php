@@ -188,8 +188,9 @@ PHP;
 		$this->prepare_request_response( $I, 'POST', "/{$remote_id}/cancellations", [
 			'response_body' => json_encode( [
 				'error' => [
-					'type'    => 'Error',
-					'message' => 'Facebook API error.',
+					'type'           => 'Error',
+					'message'        => 'Facebook API error.',
+					'error_user_msg' => 'Super detailed error message.',
 				],
 			 ] ),
 		] );
@@ -212,7 +213,7 @@ PHP;
 
 		$I->expect( 'an error to be shown' );
 
-		$I->waitForText( 'Could not cancel order. Error: Facebook API error.', 15, '.facebook-for-woocommerce-modal' );
+		$I->waitForText( 'Error: Super detailed error message.', 15, '.facebook-for-woocommerce-modal' );
 	}
 
 
