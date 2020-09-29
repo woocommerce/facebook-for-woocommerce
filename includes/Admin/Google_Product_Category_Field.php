@@ -62,7 +62,7 @@ class Google_Product_Category_Field {
 
 			if ( ! empty( $categories ) ) {
 
-				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, HOUR_IN_SECONDS );
+				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
 				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories );
 			}
 		}
