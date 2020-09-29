@@ -56,7 +56,7 @@ class Google_Product_Category_Field {
 		if ( empty ( $categories ) ) {
 
 			// fetch from the URL
-			$categories_response = wp_remote_get( 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt', [ 'timeout' => 1 ] );
+			$categories_response = wp_remote_get( 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt' );
 
 			$categories = $this->parse_categories_response( $categories_response );
 
