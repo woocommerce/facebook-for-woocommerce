@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -264,6 +265,13 @@ class Connection {
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+
+			// redirect to the Commerce onboarding if directed to do so
+			if ( ! empty( SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
+
+				wp_redirect( $this->get_commerce_connect_url() );
+				exit;
+			}
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
