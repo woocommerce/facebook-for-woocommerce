@@ -496,6 +496,7 @@ class Orders {
 		add_action( 'woocommerce_email_enabled_customer_completed_order',          [ $this, 'maybe_stop_order_email' ], 10, 2 );
 		add_action( 'woocommerce_email_enabled_customer_processing_order',         [ $this, 'maybe_stop_order_email' ], 10, 2 );
 		add_action( 'woocommerce_email_enabled_customer_refunded_order',           [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_partially_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
 	}
 
 
