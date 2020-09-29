@@ -658,7 +658,7 @@ class Orders {
 			$api->add_order_refund( $remote_id, $refund_data );
 
 			$parent_order->add_order_note( sprintf(
-				/* translators: Placeholders: %s - sales channel name, like Facebook or Instagram */
+				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
 				__( 'Order refunded on %s.', 'facebook-for-woocommerce' ),
 				ucfirst( $parent_order->get_created_via() )
 			) );
