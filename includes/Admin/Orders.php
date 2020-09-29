@@ -62,10 +62,6 @@ class Orders {
 
 		add_action( 'woocommerce_refund_created', [ $this, 'handle_refund' ] );
 
-		add_action( 'woocommerce_email_enabled_customer_completed_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
-		add_action( 'woocommerce_email_enabled_customer_processing_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
-		add_action( 'woocommerce_email_enabled_customer_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
-
 		add_action( 'add_meta_boxes', [ $this, 'maybe_remove_order_metaboxes' ], 999 );
 	}
 

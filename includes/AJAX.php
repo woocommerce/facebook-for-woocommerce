@@ -100,18 +100,11 @@ class AJAX {
 
 			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->cancel_order( $order, $reason_code );
 
-			wp_send_json_success( 'cancelled' );
+			wp_send_json_success();
 
 		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
-			$message = sprintf( __( 'Could not cancel order. %s', 'facebook-for-woocommerce' ), $exception->getMessage() );
-
-			if ( $order instanceof \WC_Abstract_Order ) {
-				/* translators: Placeholder: %s - error message */
-				$order->add_order_note( $message );
-			}
-
-			wp_send_json_error( $message );
+			wp_send_json_error( $exception->getMessage() );
 		}
 	}
 
