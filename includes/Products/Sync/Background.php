@@ -273,9 +273,13 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	/**
 	 * Normalizes product data to be included in a sync request.
 	 *
+	 * The Batch API is unique in that the Google Product Category should be set in the 'category' field, as
+	 * 'google_product_category' is not supported in this context. The 'product_type' field is what should hold the
+	 * WooCommerce category.
+	 *
 	 * @since 2.0.0
 	 *
-	 * @param \WC_Product $product product object
+	 * @param array $data product data
 	 * @return array
 	 */
 	private function normalize_product_data( $data ) {
@@ -284,6 +288,15 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$data['condition'] = 'new';
 
 		$data['product_type'] = $data['category'];
+
+		// if a Google Product Category is set, move it to the category field as the field is handled differently for batch requests
+		if ( ! empty( $data['google_product_category'] ) ) {
+
+			$data['category'] = $data['google_product_category'];
+
+			// this is an unsupported field in the Batch API
+			unset( $data['google_product_category'] );
+		}
 
 		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
 		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
