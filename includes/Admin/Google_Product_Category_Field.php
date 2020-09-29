@@ -92,7 +92,7 @@ class Google_Product_Category_Field {
 		if ( is_array( $categories_response ) && isset( $categories_response['body'] ) ) {
 
 			$categories_body = $categories_response['body'];
-			$categories_body = explode( PHP_EOL, $categories_body );
+			$categories_body = explode( "\n", $categories_body );
 
 			// format: ID - Top level category > ... > Parent category > Category label
 			// example: 7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
