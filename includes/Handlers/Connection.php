@@ -594,7 +594,7 @@ class Connection {
 		], home_url( '/' ) );
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_proxy_url() );
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
 
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg( [
