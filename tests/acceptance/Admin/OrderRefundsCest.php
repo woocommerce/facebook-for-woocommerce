@@ -13,6 +13,12 @@ class OrderRefundsCest {
 	 */
 	public function _before( AcceptanceTester $I ) {
 
+		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
+
+		$I->haveOptionInDatabase( Connection::OPTION_PAGE_ACCESS_TOKEN, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MANAGER_ID, '1234' );
+
 		// always log in
 		$I->loginAsAdmin();
 	}

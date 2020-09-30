@@ -1,6 +1,6 @@
 <?php
 
-class CommerceCest {
+class SettingsCommerceCest {
 
 
 	/**
