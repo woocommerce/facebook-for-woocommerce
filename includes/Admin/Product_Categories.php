@@ -368,63 +368,37 @@ class Product_Categories {
 	 * @param string $taxonomy Taxonomy slug
 	 */
 	public function save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy ) {
-		$logger = new \WC_Logger();
-		$logger->add('sup', 'TERM ID '.$term_id);
-
 		$prefix = Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
 		$attributes = array_filter($_POST, function($key) use ($prefix) {
 			return substr($key, 0, strlen($prefix)) === $prefix;
 		}, ARRAY_FILTER_USE_KEY);
 
-		$clean_key_attribute_tuples = array_map(function($attr_key) use ($prefix) {
-			return array(
-				str_replace($prefix, '', $attr_key),
-				wc_clean(Framework\SV_WC_Helper::get_posted_value($attr_key)),
-			);
-		}, array_keys($attributes));
+		$clean_key_attributes = array_reduce(
+			array_keys($attributes),
+			function($attrs, $attr_key) use ($prefix) {
+				return array_merge(
+					$attrs,
+					array(str_replace($prefix, '', $attr_key) =>
+						wc_clean(Framework\SV_WC_Helper::get_posted_value($attr_key))),
+				);
+			},
+			array(),
+		);
 
-		foreach($clean_key_attribute_tuples as [$key, $value]) {
-			update_term_meta( $term_id, \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$key, $value );
+		foreach($clean_key_attributes as $key => $value) {
+			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$key;
+			update_term_meta( $term_id, $meta_key, $value );
+		}
+
+		if(!isset($clean_key_attributes[Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY])){
+			// This is a checkbox so won't show in the post data if it's been unchecked,
+			// hence if it's unset we should clear the term meta for it.
+			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;
+			update_term_meta( $term_id, $meta_key, null );
 		}
 
 
-		// $google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
-
-		// \SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
-
-		// $term = get_term( $term_id, $taxonomy );
-
-		// if ( $term instanceof \WP_Term ) {
-
-		// 	// get the products in the category being saved
-		// 	$products = wc_get_products( [
-		// 		'category' => [ $term->slug ],
-		// 	] );
-
-		// 	if ( ! empty( $products ) ) {
-
-		// 		$sync_product_ids = [];
-
-		// 		/**
-		// 		 * @var int $product_id
-		// 		 * @var \WC_Product $product
-		// 		 */
-		// 		foreach ( $products as $product_id => $product ) {
-
-		// 			if ( $product instanceof \WC_Product_Variable ) {
-
-		// 				// should sync the variations, not the variable product
-		// 				$sync_product_ids = array_merge( $sync_product_ids, $product->get_children() );
-
-		// 			} else {
-
-		// 				$sync_product_ids[] = $product_id;
-		// 			}
-		// 		}
-
-		// 		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
-		// 	}
-		// }
+		// TODO RE-SYNC PRODUCTS
 	}
 
 

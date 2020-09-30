@@ -18,32 +18,61 @@ defined( 'ABSPATH' ) or exit;
  */
 class Enhanced_Catalog_Attribute_Fields {
 	const FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX = 'wc_facebook_enhanced_catalog_attribute_';
+  const OPTIONAL_SELECTOR_KEY = '__optional_selector';
 
   public function render( $category_id, $term) {
 		$category_handler       = facebook_for_woocommerce()->get_facebook_category_handler();
 		$category               = $category_handler->get_category_with_attrs($category_id);
 		$all_attributes         = $category['attributes'];
     $all_attributes_with_values = array_map(function($attribute) use ($term) {
-      return array_merge($attribute, array('value' => $this->get_value($attribute, $term)));
+      return array_merge($attribute, array('value' => $this->get_value($attribute['key'], $term)));
     }, $all_attributes);
 		$recommended_attributes = array_filter($all_attributes_with_values, function($attr) { return $attr['recommended']; });
 		$optional_attributes    = array_filter($all_attributes_with_values, function($attr) { return !$attr['recommended']; });
 
     foreach($recommended_attributes as $attribute) {
-      $this->render_attribute($attribute, $term);
+      $this->render_attribute($attribute);
+    }
+    $selector_id = self::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX.self::OPTIONAL_SELECTOR_KEY;
+
+		$selector_label = __( 'Show advanced options', 'facebook-for-woocommerce' );
+    $selector_value = $this->get_value(self::OPTIONAL_SELECTOR_KEY, $term);
+    $is_showing_optional = $selector_value === 'on';
+    $checked_attr = $is_showing_optional ? 'checked="checked"' : '';
+    ?>
+    <tr class="form-field wc-facebook-enhanced-catalog-attribute-row term-<?php echo esc_attr(  $selector_id ); ?>-wrap">
+      <th colspan="2" scope="row">
+        <label for="<?php echo $selector_id; ?>">
+          <?php echo esc_html( $selector_label ); ?>
+          <input type="checkbox" name="<?php echo esc_attr( $selector_id ); ?>" id="<?php echo esc_attr( $selector_id ); ?>" <?php echo $checked_attr; ?>/>
+        </label>
+      </th>
+    </tr>
+    <?php
+
+    foreach($optional_attributes as $attribute) {
+      $this->render_attribute($attribute, true, $is_showing_optional);
     }
   }
 
-  private function get_value($attribute, $term){
-    $meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$attribute['key'];
+  private function get_value($attribute_key, $term){
+    $meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$attribute_key;
     // TODO check that value is valid for attribute
 		return get_term_meta( $term->term_id, $meta_key, true );
   }
 
-  private function render_attribute($attribute){
+  private function render_attribute($attribute, $optional=false, $is_showing_optional=false){
     $attr_id = self::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX.$attribute['key'];
+    $classes = array(
+      'form-field',
+      'wc-facebook-enhanced-catalog-attribute-row',
+      'term-'.esc_attr( $attr_id ).'-wrap',
+    );
+    if($optional) {
+      $classes[] = 'wc-facebook-enhanced-catalog-attribute-optional-row';
+    }
     ?>
-      <tr class="form-field wc-facebook-enhanced-catalog-attribute-row term-<?php echo esc_attr( $attr_id ); ?>-wrap">
+      <tr style="display: <?php echo $optional && !$is_showing_optional ? 'none' : 'table-row';?>", class="<?php echo implode(' ', $classes); ?>'">
         <th scope="row">
           <?php $this->render_label($attr_id, $attribute); ?>
         </th>
