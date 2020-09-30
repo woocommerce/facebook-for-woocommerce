@@ -48,6 +48,9 @@ class Products {
 	/** @var string the meta key used to store the Google product category ID for the product */
 	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
 
+	/** @var string the meta key prefix used to store the Enhanced Catalog Attributes for the product */
+	const ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX = '_wc_facebook_enhanced_catalog_attributes_';
+
 	/** @var string the meta key used to store the product gender */
 	const GENDER_META_KEY = '_wc_facebook_gender';
 

@@ -43,6 +43,7 @@ class Product_Categories {
 
 		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
 		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
+		add_action( 'edit_term', [ $this, 'save_enhanced_catalog_attributes' ], 10, 3 );
 
 		add_action( 'wp_ajax_wc_facebook_enhanced_catalog_attributes', [ $this, 'ajax_render_edit_enhanced_catalog_attributes_field' ] );
 	}
@@ -217,7 +218,7 @@ class Product_Categories {
 	 */
 	public function inline_render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
 		$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
-		$this->render_edit_enhanced_catalog_attributes_field($category_id);
+		$this->render_edit_enhanced_catalog_attributes_field($category_id, $term);
 	}
 
 	/**
@@ -227,9 +228,13 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 */
-	public function ajax_render_edit_enhanced_catalog_attributes_field( ) {
+	public function ajax_render_edit_enhanced_catalog_attributes_field() {
 		$category_id = $_GET['selected_category'];
-		$this->render_edit_enhanced_catalog_attributes_field($category_id);
+		$tag_id = intval($_GET['tag_id']);
+		$taxonomy = $_GET['taxonomy'];
+		$term = get_term( $tag_id, $taxonomy );
+
+		$this->render_edit_enhanced_catalog_attributes_field($category_id, $term);
 	}
 
 
@@ -242,7 +247,7 @@ class Product_Categories {
 	 *
 	 * @param $category_id the selected category to render attributes for
 	 */
-	public function render_edit_enhanced_catalog_attributes_field( $category_id ) {
+	public function render_edit_enhanced_catalog_attributes_field( $category_id, \WP_Term $term ) {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields();
 		$category_handler 				 = facebook_for_woocommerce()->get_facebook_category_handler();
 
@@ -262,7 +267,7 @@ class Product_Categories {
 			</tr>
 		<?php
 
-		$enhanced_attribute_fields->render($category_id);
+		$enhanced_attribute_fields->render($category_id, $term);
 	}
 
 	/**
@@ -349,6 +354,77 @@ class Product_Categories {
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
 			}
 		}
+	}
+
+	/**
+	 * Saves the POSTed enhanced catalog attributes and triggers a sync for the affected products.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param int $term_id term ID
+	 * @param int $tt_id term taxonomy ID
+	 * @param string $taxonomy Taxonomy slug
+	 */
+	public function save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy ) {
+		$logger = new \WC_Logger();
+		$logger->add('sup', 'TERM ID '.$term_id);
+
+		$prefix = Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$attributes = array_filter($_POST, function($key) use ($prefix) {
+			return substr($key, 0, strlen($prefix)) === $prefix;
+		}, ARRAY_FILTER_USE_KEY);
+
+		$clean_key_attribute_tuples = array_map(function($attr_key) use ($prefix) {
+			return array(
+				str_replace($prefix, '', $attr_key),
+				wc_clean(Framework\SV_WC_Helper::get_posted_value($attr_key)),
+			);
+		}, array_keys($attributes));
+
+		foreach($clean_key_attribute_tuples as [$key, $value]) {
+			update_term_meta( $term_id, \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$key, $value );
+		}
+
+
+		// $google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
+
+		// \SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
+
+		// $term = get_term( $term_id, $taxonomy );
+
+		// if ( $term instanceof \WP_Term ) {
+
+		// 	// get the products in the category being saved
+		// 	$products = wc_get_products( [
+		// 		'category' => [ $term->slug ],
+		// 	] );
+
+		// 	if ( ! empty( $products ) ) {
+
+		// 		$sync_product_ids = [];
+
+		// 		/**
+		// 		 * @var int $product_id
+		// 		 * @var \WC_Product $product
+		// 		 */
+		// 		foreach ( $products as $product_id => $product ) {
+
+		// 			if ( $product instanceof \WC_Product_Variable ) {
+
+		// 				// should sync the variations, not the variable product
+		// 				$sync_product_ids = array_merge( $sync_product_ids, $product->get_children() );
+
+		// 			} else {
+
+		// 				$sync_product_ids[] = $product_id;
+		// 			}
+		// 		}
+
+		// 		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
+		// 	}
+		// }
 	}
 
 

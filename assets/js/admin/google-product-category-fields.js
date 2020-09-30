@@ -93,13 +93,14 @@ jQuery( document ).ready( ( $ ) => {
 
 			$('.wc-facebook-enhanced-catalog-attribute-row').remove();
 
-			console.log("VALID ",this.isValid());
 			if(this.isValid()) {
 				var inputSelector = '#' + this.input_id;
 			  $.get( facebook_for_woocommerce_product_categories.ajax_url, {
 					action:   'wc_facebook_enhanced_catalog_attributes',
 					security: '',
 					selected_category:  $( inputSelector ).val(),
+					tag_id:  $( 'input[name=tag_ID]' ).val(),
+					taxonomy:  $( 'input[name=taxonomy]' ).val(),
 				}, function( response ) {
 					var $categoryRow = $( inputSelector ).parents('tr');
 					$(response).insertAfter($categoryRow);
