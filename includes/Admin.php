@@ -32,6 +32,13 @@ class Admin {
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
 
+	/** @var \Admin\Orders the orders admin handler */
+	protected $orders;
+
+	/** @var \Admin\Product_Categories the product category admin handler */
+	protected $product_categories;
+
+
 	/**
 	 * Admin constructor.
 	 *
@@ -48,6 +55,13 @@ class Admin {
 		if ( ! $plugin->get_connection_handler()->is_connected() || ! $plugin->get_integration()->get_product_catalog_id() ) {
 			return;
 		}
+
+		require_once __DIR__ . '/Admin/Orders.php';
+		require_once __DIR__ . '/Admin/Products.php';
+		require_once __DIR__ . '/Admin/Product_Categories.php';
+
+		$this->orders = new Admin\Orders();
+		$this->product_categories = new Admin\Product_Categories();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', [ $this, 'render_modal_template' ] );
@@ -99,6 +113,8 @@ class Admin {
 		$modal_screens = [
 			'product',
 			'edit-product',
+			'edit-product_cat',
+			'shop_order',
 		];
 
 		if ( isset( $current_screen->id ) ) {
@@ -106,20 +122,26 @@ class Admin {
 			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
-				wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/facebook-for-woocommerce-modal.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
-				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/css/admin/facebook-for-woocommerce-products-admin.css' ), [], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', [], \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-products-admin.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
 					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
+					'is_sync_enabled_for_product'               => $this->is_sync_enabled_for_current_product(),
 					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+					'product_not_ready_modal_message'           => $this->get_product_not_ready_modal_message(),
+					'product_not_ready_modal_buttons'           => $this->get_product_not_ready_modal_buttons(),
+					'i18n'                                      => [
+						'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
+					],
 				] );
 			}
 
@@ -129,6 +151,119 @@ class Admin {
 				wp_enqueue_script( 'wc-enhanced-select' );
 			}
 		}
+
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+
+		wp_localize_script( 'wc-facebook-google-product-category-fields', 'facebook_for_woocommerce_google_product_category', [
+			'i18n' => [
+				'top_level_dropdown_placeholder'          => __( 'Search main categories...', 'facebook-for-woocommerce' ),
+				'second_level_empty_dropdown_placeholder' => __( 'Choose a main category', 'facebook-for-woocommerce' ),
+				'general_dropdown_placeholder'            => __( 'Choose a category', 'facebook-for-woocommerce' ),
+			],
+		] );
+	}
+
+
+	/**
+	 * Determines whether sync is enabled for the current product.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return bool
+	 */
+	private function is_sync_enabled_for_current_product() {
+		global $post;
+
+		$product = wc_get_product( $post );
+
+		if ( ! $product instanceof \WC_Product ) {
+			return false;
+		}
+
+		return Products::is_sync_enabled_for_product( $product );
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the product not ready modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_not_ready_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php esc_html_e( 'To sell this product on Instagram, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
+
+		<ul class="ul-disc">
+			<li><?php esc_html_e( 'Has a price defined', 'facebook-for-woocommerce' ); ?></li>
+			<li><?php echo esc_html( sprintf(
+				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
+				__( 'Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab', 'facebook-for-woocommerce' ),
+				'<strong>',
+				'</strong>'
+			) ); ?></li>
+			<li><?php echo esc_html( sprintf(
+				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
+				__( 'Has the %1$sFacebook Sync%2$s setting set to "Sync and show" or "Sync and hide"', 'facebook-for-woocommerce' ),
+				'<strong>',
+				'</strong>'
+			) ); ?></li>
+		</ul>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the product not ready modal.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_not_ready_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Close', 'facebook-for-woocomerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the orders admin handler instance.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
+	 */
+	public function get_orders_handler() {
+
+		return $this->orders;
+	}
+
+
+	/**
+	 * Gets the product category admin handler instance.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Product_Categories
+	 */
+	public function get_product_categories_handler() {
+
+		return $this->product_categories;
 	}
 
 
@@ -928,7 +1063,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = [
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => [ 'show_if_simple' ],
+			'class'  => [ 'show_if_simple', 'show_if_variable' ],
 		];
 
 		return $tabs;
@@ -963,7 +1098,7 @@ class Admin {
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
 		<div id='facebook_options' class='panel woocommerce_options_panel'>
-			<div class='options_group'>
+			<div class='options_group show_if_simple'>
 				<?php
 
 				woocommerce_wp_select( [
@@ -1026,6 +1161,24 @@ class Admin {
 
 				?>
 			</div>
+
+			<?php $commerce_handler = facebook_for_woocommerce()->get_commerce_handler(); ?>
+
+			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
+
+				<div class='wc-facebook-commerce-options-group options_group'>
+					<?php
+
+					$product = wc_get_product( $post );
+
+					if ( $product instanceof \WC_Product ) {
+						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
+					}
+
+					?>
+				</div>
+
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -1232,8 +1385,16 @@ class Admin {
 	public function render_modal_template() {
 		global $current_screen;
 
+		$modal_screens = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-facebook',
+			'edit-product_cat',
+			'shop_order',
+		];
+
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, [ 'edit-product', 'product', 'woocommerce_page_wc-facebook' ], true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, $modal_screens, true ) ) {
 			return;
 		}
 

@@ -42,6 +42,7 @@ class Settings {
 			Settings_Screens\Connection::ID => new Settings_Screens\Connection(),
 			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
 			Settings_Screens\Messenger::ID => new Settings_Screens\Messenger(),
+			Settings_Screens\Commerce::ID => new Settings_Screens\Commerce(),
 		];
 
 		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );

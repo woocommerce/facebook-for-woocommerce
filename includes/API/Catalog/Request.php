@@ -23,6 +23,19 @@ class Request extends API\Request  {
 
 
 	/**
+	 * Gets the rate limit ID.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return string
+	 */
+	public static function get_rate_limit_id() {
+
+		return 'ads_management';
+	}
+
+
+	/**
 	 * API request constructor.
 	 *
 	 * @since 2.0.0

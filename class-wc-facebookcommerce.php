@@ -69,6 +69,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Integrations\Integrations integrations handler */
 		private $integrations;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
+		private $commerce_handler;
+
 
 		/**
 		 * Constructs the plugin.
@@ -105,8 +108,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/AJAX.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
+				require_once __DIR__ . '/includes/Product_Categories.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
@@ -114,15 +119,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Events/Event.php';
+				require_once __DIR__ . '/includes/Commerce.php';
+				require_once __DIR__ . '/includes/Utilities/Shipment.php';
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
 
 				if ( is_ajax() ) {
-
-					require_once __DIR__ . '/includes/AJAX.php';
-
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
@@ -145,6 +150,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Commerce.php';
+					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 
 					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
 				}
@@ -164,6 +171,24 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			require_once __DIR__ . '/includes/Admin.php';
 
 			$this->admin = new \SkyVerge\WooCommerce\Facebook\Admin();
+		}
+
+
+		/**
+		 * Gets deprecated and removed hooks.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return array
+		 */
+		protected function get_deprecated_hooks() {
+
+			return [
+				'wc_facebook_page_access_token' => [
+					'version'     => '2.1.0-dev.1',
+					'replacement' => false,
+				],
+			];
 		}
 
 
@@ -304,14 +329,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 *
 		 * @since 2.0.0
 		 *
+		 * @param string $access_token access token to use for this API request
 		 * @return \SkyVerge\WooCommerce\Facebook\API
 		 * @throws Framework\SV_WC_API_Exception
 		 */
-		public function get_api() {
+		public function get_api( $access_token = '' ) {
+
+			// if none provided, use the general access token
+			if ( ! $access_token ) {
+				$access_token = $this->get_connection_handler()->get_access_token();
+			}
 
 			if ( ! is_object( $this->api ) ) {
 
-				if ( ! $this->get_connection_handler()->get_access_token() ) {
+				if ( ! $access_token ) {
 					throw new Framework\SV_WC_API_Exception( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 				}
 
@@ -329,6 +360,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! trait_exists( API\Traits\Paginated_Response::class, false ) ) {
 					require_once __DIR__ . '/includes/API/Traits/Paginated_Response.php';
+				}
+
+				if ( ! trait_exists( API\Traits\Idempotent_Request::class, false ) ) {
+					require_once __DIR__ . '/includes/API/Traits/Idempotent_Request.php';
 				}
 
 				if ( ! class_exists( API::class ) ) {
@@ -439,7 +474,51 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Exceptions/Request_Limit_Reached.php';
 				}
 
-				$this->api = new SkyVerge\WooCommerce\Facebook\API( $this->get_connection_handler()->get_access_token() );
+				if ( ! class_exists( API\Orders\Order::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Order.php';
+				}
+
+				if ( ! class_exists( API\Orders\Abstract_Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Abstract_Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Acknowledge\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Acknowledge/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Cancel\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Cancel/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Fulfillment\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Fulfillment/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\Orders\Refund\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Refund/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Request.php';
+				}
+
+				if ( ! class_exists( API\Orders\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/Orders/Response.php';
+				}
+
+				$this->api = new SkyVerge\WooCommerce\Facebook\API( $access_token );
+
+			} else {
+
+				$this->api->set_access_token( $access_token );
 			}
 
 			return $this->api;
@@ -551,6 +630,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			return $this->integration;
+		}
+
+
+		/**
+		 * Gets the commerce handler instance.
+		 *
+		 * @since 2.1.0-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Commerce commerce handler instance
+		 */
+		public function get_commerce_handler() {
+
+			return $this->commerce_handler;
 		}
 
 

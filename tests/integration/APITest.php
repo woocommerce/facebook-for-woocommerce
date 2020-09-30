@@ -1,10 +1,10 @@
 <?php
 
-use Codeception\Util\Stub;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -44,6 +44,55 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** Test methods **************************************************************************************************/
+
+
+	/** @see API::get_access_token() */
+	public function test_get_access_token() {
+
+		$this->assertEquals( 'access_token', ( new API( 'access_token' ) )->get_access_token() );
+	}
+
+
+	/** @see API::set_access_token() */
+	public function test_set_access_token() {
+
+		$api = new API( 'access_token' );
+
+		$api->set_access_token( 'new_access_token' );
+
+		$this->assertEquals( 'new_access_token', $api->get_access_token() );
+	}
+
+
+	/** @see API::perform_request() */
+	public function test_do_post_parse_response_validation_retry() {
+
+		$request = new class extends API\Request {
+
+			public function __construct() {
+
+				parent::__construct( null, null );
+
+				$this->retry_codes[] = 5678;
+			}
+		};
+
+		// mock the API to use fake data instead of making a real API call and return a valid response handler
+		$api = $this->make( facebook_for_woocommerce()->get_api(), [
+			'get_parsed_response'    => \Codeception\Stub\Expected::exactly( 6, new API\Response( json_encode( [
+				'error' => [
+					'message'          => 'Retry me!',
+					'type'             => 'OAuthException',
+					'code'             => 5678,
+				]
+			] ) ) ),
+		] );
+
+		// the request is expected to be retried 5 times using the Expected::exactly() call, then it lets this exception through
+		$this->expectException( Framework\SV_WC_API_Exception::class );
+
+		$api->perform_request( $request );
+	}
 
 
 	/**
@@ -612,6 +661,269 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		] );
 
 		$this->assertNull( $api->next( $response, $additional_pages ) );
+	}
+
+
+	/** @see API::get_new_orders() */
+	public function test_get_new_orders() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_new_orders( '1234' );
+
+		$this->assertInstanceOf( API\Orders\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/1234/commerce_orders', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+		$expected_params = [
+			'state'  => implode( ',', [
+				API\Orders\Order::STATUS_PROCESSING,
+				API\Orders\Order::STATUS_CREATED,
+			] ),
+			'fields' => implode( ',', [
+				'id',
+				'order_status',
+				'created',
+				'last_updated',
+				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
+				'ship_by_date',
+				'merchant_order_id',
+				'channel',
+				'selected_shipping_option',
+				'shipping_address',
+				'estimated_payment_details',
+				'buyer_details',
+			] ),
+		];
+		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Orders\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::get_cancelled_orders() */
+	public function test_get_cancelled_orders() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_cancelled_orders( '1234' );
+
+		$this->assertInstanceOf( API\Orders\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/1234/commerce_orders', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+		$expected_params = [
+			'state'  => implode( ',', [
+				API\Orders\Order::STATUS_COMPLETED,
+			] ),
+			'updated_after' => time() - 5 * MINUTE_IN_SECONDS,
+			'filters' => 'has_cancellations',
+			'fields' => implode( ',', [
+				'id',
+				'order_status',
+				'created',
+				'last_updated',
+				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
+				'ship_by_date',
+				'merchant_order_id',
+				'channel',
+				'selected_shipping_option',
+				'shipping_address',
+				'estimated_payment_details',
+				'buyer_details',
+			] ),
+		];
+		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Orders\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::get_order() */
+	public function test_get_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->get_order( '335211597203390' );
+
+		$this->assertInstanceOf( API\Orders\Read\Request::class, $api->get_request() );
+		$this->assertEquals( 'GET', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390', $api->get_request()->get_path() );
+		$this->assertEquals( [], $api->get_request()->get_data() );
+		$expected_params = [
+			'fields' => implode( ',', [
+				'id',
+				'order_status',
+				'created',
+				'last_updated',
+				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
+				'ship_by_date',
+				'merchant_order_id',
+				'channel',
+				'selected_shipping_option',
+				'shipping_address',
+				'estimated_payment_details',
+				'buyer_details',
+			] ),
+		];
+		$this->assertEquals( $expected_params, $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Orders\Read\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::acknowledge_order() */
+	public function test_acknowledge_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->acknowledge_order( '335211597203390', '64241' );
+
+		$this->assertInstanceOf( API\Orders\Acknowledge\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/acknowledge_order', $api->get_request()->get_path() );
+		$expected_data = [
+			'merchant_order_reference' => '64241',
+			'idempotency_key'          => $api->get_request()->get_idempotency_key(),
+		];
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::fulfill_order() */
+	public function test_fulfill_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$fulfillment_data = [
+			'items'         => [
+				[
+					'retailer_id' => 'FB_product_1238',
+					'quantity'    => 1,
+				],
+				[
+					'retailer_id' => 'FB_product_5624',
+					'quantity'    => 2,
+				],
+			],
+			'tracking_info' => [
+				'tracking_number'      => 'ship 1',
+				'carrier'              => 'FEDEX',
+				'shipping_method_name' => '2 Day Fedex',
+			],
+		];
+
+		$api->fulfill_order( '335211597203390', $fulfillment_data );
+
+		$this->assertInstanceOf( API\Orders\Fulfillment\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/shipments', $api->get_request()->get_path() );
+		$expected_data = $fulfillment_data;
+		$expected_data['idempotency_key'] = $api->get_request()->get_idempotency_key();
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::cancel_order() */
+	public function test_cancel_order() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$api->cancel_order( '335211597203390', Orders::CANCEL_REASON_CUSTOMER_REQUESTED, true );
+
+		$this->assertInstanceOf( API\Orders\Cancel\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/cancellations', $api->get_request()->get_path() );
+		$expected_data = [
+			'cancel_reason'   => [
+				'reason_code' => Orders::CANCEL_REASON_CUSTOMER_REQUESTED,
+			],
+			'restock_items'   => true,
+			'idempotency_key' => $api->get_request()->get_idempotency_key(),
+		];
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
+	}
+
+
+	/** @see API::add_order_refund() */
+	public function test_add_order_refund() {
+
+		// test will fail if do_remote_request() is not called once
+		$api = $this->make( API::class, [
+			'do_remote_request' => \Codeception\Stub\Expected::once(),
+		] );
+
+		$sample_refund_data = [
+			'items'       => [
+				[
+					'retailer_id'        => '45251',
+					'item_refund_amount' => [
+						'amount'   => '50.00',
+						'currency' => 'USD',
+					],
+				],
+				[
+					'retailer_id'          => '45252',
+					'item_refund_quantity' => 2,
+				],
+			],
+			'reason_code' => Orders::REFUND_REASON_BUYERS_REMORSE,
+			'reason_text' => 'Optional description of the reason',
+			'shipping'    => [
+				'shipping_refund' => [
+					'amount'   => '10.00',
+					'currency' => 'USD',
+				],
+			],
+			'deductions'  => [
+				[
+					'deduction_type'   => 'RETURN_SHIPPING',
+					'deduction_amount' => [
+						'amount'   => '5.00',
+						'currency' => 'USD',
+					],
+				],
+			],
+		];
+
+		$api->add_order_refund( '335211597203390', $sample_refund_data );
+
+		$this->assertInstanceOf( API\Orders\Refund\Request::class, $api->get_request() );
+		$this->assertEquals( 'POST', $api->get_request()->get_method() );
+		$this->assertEquals( '/335211597203390/refunds', $api->get_request()->get_path() );
+		$expected_data = $sample_refund_data;
+		$expected_data['idempotency_key'] = $api->get_request()->get_idempotency_key();
+		$this->assertEquals( $expected_data, $api->get_request()->get_data() );
+		$this->assertEquals( [], $api->get_request()->get_params() );
+
+		$this->assertInstanceOf( API\Response::class, $api->get_response() );
 	}
 
 
