@@ -23,8 +23,8 @@ class Product_Categories {
 
 
 	/** @var string ID for the HTML field */
-	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
-	const FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID = 'wc_facebook_enhanced_catalog_attributes_id';
+	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID      = 'wc_facebook_google_product_category_id';
+	const FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID  = 'wc_facebook_enhanced_catalog_attributes_id';
 	const FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID = 'wc_facebook_can_show_enhanced_catalog_attributes_id';
 
 
@@ -35,17 +35,17 @@ class Product_Categories {
 	 */
 	public function __construct() {
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
-		add_action( 'product_cat_add_form_fields', [ $this, 'render_add_google_product_category_field' ] );
-		add_action( 'product_cat_edit_form_fields', [ $this, 'render_edit_google_product_category_field' ] );
-		add_action( 'product_cat_edit_form_fields', [ $this, 'inline_render_edit_enhanced_catalog_attributes_field' ] );
+		add_action( 'product_cat_add_form_fields', array( $this, 'render_add_google_product_category_field' ) );
+		add_action( 'product_cat_edit_form_fields', array( $this, 'render_edit_google_product_category_field' ) );
+		add_action( 'product_cat_edit_form_fields', array( $this, 'inline_render_edit_enhanced_catalog_attributes_field' ) );
 
-		add_action( 'created_term', [ $this, 'save_google_product_category' ], 10, 3 );
-		add_action( 'edit_term', [ $this, 'save_google_product_category' ], 10, 3 );
-		add_action( 'edit_term', [ $this, 'save_enhanced_catalog_attributes' ], 10, 3 );
+		add_action( 'created_term', array( $this, 'save_google_product_category' ), 10, 3 );
+		add_action( 'edit_term', array( $this, 'save_google_product_category' ), 10, 3 );
+		add_action( 'edit_term', array( $this, 'save_enhanced_catalog_attributes' ), 10, 3 );
 
-		add_action( 'wp_ajax_wc_facebook_enhanced_catalog_attributes', [ $this, 'ajax_render_edit_enhanced_catalog_attributes_field' ] );
+		add_action( 'wp_ajax_wc_facebook_enhanced_catalog_attributes', array( $this, 'ajax_render_edit_enhanced_catalog_attributes_field' ) );
 	}
 
 	/**
@@ -59,22 +59,32 @@ class Product_Categories {
 
 		if ( $this->is_categories_screen() ) {
 
-			wp_enqueue_style( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/products-categories.css', [], \WC_Facebookcommerce::PLUGIN_VERSION );
+			wp_enqueue_style( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/products-categories.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-			wp_enqueue_script( 'wc-facebook-product-categories', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js', [
-				'jquery',
-				'wc-backbone-modal',
-				'jquery-blockui',
-				'jquery-tiptip',
-				'facebook-for-woocommerce-modal',
-			], \WC_Facebookcommerce::PLUGIN_VERSION );
+			wp_enqueue_script(
+				'wc-facebook-product-categories',
+				facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-categories.min.js',
+				array(
+					'jquery',
+					'wc-backbone-modal',
+					'jquery-blockui',
+					'jquery-tiptip',
+					'facebook-for-woocommerce-modal',
+				),
+				\WC_Facebookcommerce::PLUGIN_VERSION
+			);
 
-			wp_localize_script( 'wc-facebook-product-categories', 'facebook_for_woocommerce_product_categories', [
-				'ajax_url'                        							=> admin_url( 'admin-ajax.php' ),
-				'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
-				'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
-			] );
-		}
+			wp_localize_script(
+				'wc-facebook-product-categories',
+				'facebook_for_woocommerce_product_categories',
+				array(
+					'ajax_url'                             => admin_url( 'admin-ajax.php' ),
+					'enhanced_attribute_optional_selector' => Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
+					'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
+					'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+				)
+			);
+		}//end if
 	}
 
 
@@ -135,7 +145,7 @@ class Product_Categories {
 					<?php $this->render_google_product_category_tooltip(); ?>
 				</label>
 				<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
-				       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
+					name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"/>
 				<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
 			</div>
 		<?php
@@ -149,7 +159,7 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param \WP_Term $term current taxonomy term object
+	 * @param \WP_Term $term current taxonomy term object.
 	 */
 	public function render_edit_google_product_category_field( \WP_Term $term ) {
 
@@ -166,11 +176,11 @@ class Product_Categories {
 				</th>
 				<td>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
-					       name="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
-					       value="true"/>
+						name="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
+						value="true"/>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
-					       name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
-					       value="<?php echo esc_attr( $value ); ?>"/>
+						name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
+						value="<?php echo esc_attr( $value ); ?>"/>
 					<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
 				</td>
 			</tr>
@@ -214,11 +224,11 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param \WP_Term $term current taxonomy term object
+	 * @param \WP_Term $term current taxonomy term object.
 	 */
 	public function inline_render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
 		$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
-		$this->render_edit_enhanced_catalog_attributes_field($category_id, $term);
+		$this->render_edit_enhanced_catalog_attributes_field( $category_id, $term );
 	}
 
 	/**
@@ -229,12 +239,12 @@ class Product_Categories {
 	 * @since 2.1.0-dev.1
 	 */
 	public function ajax_render_edit_enhanced_catalog_attributes_field() {
-		$category_id = $_GET['selected_category'];
-		$tag_id = intval($_GET['tag_id']);
-		$taxonomy = $_GET['taxonomy'];
-		$term = get_term( $tag_id, $taxonomy );
+		$category_id = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'selected_category' ) );
+		$tag_id      = intval( wc_clean( Framework\SV_WC_Helper::get_requested_value( 'tag_id' ) ) );
+		$taxonomy    = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'taxonomy' ) );
+		$term        = get_term( $tag_id, $taxonomy );
 
-		$this->render_edit_enhanced_catalog_attributes_field($category_id, $term);
+		$this->render_edit_enhanced_catalog_attributes_field( $category_id, $term );
 	}
 
 
@@ -245,13 +255,14 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param $category_id the selected category to render attributes for
+	 * @param mixed    $category_id the selected category to render attributes for.
+	 * @param \WP_Term $term current taxonomy term object.
 	 */
 	public function render_edit_enhanced_catalog_attributes_field( $category_id, \WP_Term $term ) {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields();
-		$category_handler 				 = facebook_for_woocommerce()->get_facebook_category_handler();
+		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
-		if($category_handler->get_category_depth($category_id) < 2) {
+		if ( $category_handler->get_category_depth( $category_id ) < 2 ) {
 			// show nothing
 			return;
 		}
@@ -267,7 +278,7 @@ class Product_Categories {
 			</tr>
 		<?php
 
-		$enhanced_attribute_fields->render($category_id, $term);
+		$enhanced_attribute_fields->render( $category_id, $term );
 	}
 
 	/**
@@ -300,10 +311,6 @@ class Product_Categories {
 		return __( 'Enhanced Catalog Attributes', 'facebook-for-woocommerce' );
 	}
 
-
-
-
-
 	/**
 	 * Saves the POSTed Google product category ID and triggers a sync for the affected products.
 	 *
@@ -311,9 +318,9 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param int $term_id term ID
-	 * @param int $tt_id term taxonomy ID
-	 * @param string $taxonomy Taxonomy slug
+	 * @param int    $term_id term ID.
+	 * @param int    $tt_id term taxonomy ID.
+	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function save_google_product_category( $term_id, $tt_id, $taxonomy ) {
 
@@ -326,13 +333,15 @@ class Product_Categories {
 		if ( $term instanceof \WP_Term ) {
 
 			// get the products in the category being saved
-			$products = wc_get_products( [
-				'category' => [ $term->slug ],
-			] );
+			$products = wc_get_products(
+				array(
+					'category' => array( $term->slug ),
+				)
+			);
 
 			if ( ! empty( $products ) ) {
 
-				$sync_product_ids = [];
+				$sync_product_ids = array();
 
 				/**
 				 * @var int $product_id
@@ -352,8 +361,8 @@ class Product_Categories {
 				}
 
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( $sync_product_ids );
-			}
-		}
+			}//end if
+		}//end if
 	}
 
 	/**
@@ -363,40 +372,45 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0-dev.1
 	 *
-	 * @param int $term_id term ID
-	 * @param int $tt_id term taxonomy ID
-	 * @param string $taxonomy Taxonomy slug
+	 * @param int    $term_id term ID.
+	 * @param int    $tt_id term taxonomy ID.
+	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy ) {
-		$prefix = Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
-		$attributes = array_filter($_POST, function($key) use ($prefix) {
-			return substr($key, 0, strlen($prefix)) === $prefix;
-		}, ARRAY_FILTER_USE_KEY);
+		$prefix     = Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$attributes = array_filter(
+			$_POST,
+			function( $key ) use ( $prefix ) {
+				return substr( $key, 0, strlen( $prefix ) ) === $prefix;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
 
 		$clean_key_attributes = array_reduce(
-			array_keys($attributes),
-			function($attrs, $attr_key) use ($prefix) {
+			array_keys( $attributes ),
+			function( $attrs, $attr_key ) use ( $prefix ) {
 				return array_merge(
 					$attrs,
-					array(str_replace($prefix, '', $attr_key) =>
-						wc_clean(Framework\SV_WC_Helper::get_posted_value($attr_key))),
+					array(
+						str_replace( $prefix, '', $attr_key ) =>
+																wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
+					),
 				);
 			},
 			array(),
 		);
 
-		foreach($clean_key_attributes as $key => $value) {
-			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.$key;
+		foreach ( $clean_key_attributes as $key => $value ) {
+			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key;
 			update_term_meta( $term_id, $meta_key, $value );
 		}
 
-		if(!isset($clean_key_attributes[Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY])){
+		if ( ! isset( $clean_key_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
 			// This is a checkbox so won't show in the post data if it's been unchecked,
 			// hence if it's unset we should clear the term meta for it.
-			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX.Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;
+			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;
 			update_term_meta( $term_id, $meta_key, null );
 		}
-
 
 		// TODO RE-SYNC PRODUCTS
 	}

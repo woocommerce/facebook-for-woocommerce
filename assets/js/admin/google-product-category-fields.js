@@ -47,6 +47,14 @@ jQuery( document ).ready( ( $ ) => {
 				} );
 
 			this.addInitialSelects( $input.val() );
+
+			// Initial trigger for the optional attributes selector
+			$('#'+facebook_for_woocommerce_product_categories.enhanced_attribute_optional_selector).on('change', function(){
+					$('.wc-facebook-enhanced-catalog-attribute-optional-row').attr(
+						'style',
+						'display: '+($(this).prop("checked") ? 'table-row' : 'none')+';',
+					);
+				});
 		}
 
 
@@ -103,7 +111,14 @@ jQuery( document ).ready( ( $ ) => {
 					taxonomy:  $( 'input[name=taxonomy]' ).val(),
 				}, function( response ) {
 					var $categoryRow = $( inputSelector ).parents('tr');
-					$(response).insertAfter($categoryRow);
+					var $response = $(response);
+					$('#'+facebook_for_woocommerce_product_categories.enhanced_attribute_optional_selector, $response).on('change', function(){
+						$('.wc-facebook-enhanced-catalog-attribute-optional-row').attr(
+							'style',
+							'display: '+($(this).prop("checked") ? 'table-row' : 'none')+';',
+						);
+					});
+					$response.insertAfter($categoryRow);
 				});
 			}
 		}
