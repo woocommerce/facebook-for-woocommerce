@@ -44,7 +44,17 @@ class AAMSettings {
 		$this->pixel_id = isset($data['pixelId']) ? $data['pixelId'] : null;
 	}
 
-	public static function get_url($pixel_id){
+
+	/**
+	 * Gets the URL used to retrieve the advanced matching settings for the given pixel ID.
+	 *
+	 * @since 2.0.3-dev.1
+	 *
+	 * @param string $pixel_id pixel ID
+	 * @return string
+	 */
+	public static function get_url( $pixel_id ){
+
 		return self::CONNECT_FACEBOOK_DOMAIN.self::SIGNALS_JSON_CONFIG_PATH.'/'.$pixel_id;
 	}
 
