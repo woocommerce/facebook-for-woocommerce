@@ -40,7 +40,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.1',
 			'1.11.0',
 			'2.0.0',
-			'2.0.2',
+			'2.0.3',
 		];
 	}
 
@@ -268,11 +268,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 
 	/**
-	 * Upgrades to version 2.0.2
+	 * Upgrades to version 2.0.3
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 */
-	protected function upgrade_to_2_0_2() {
+	protected function upgrade_to_2_0_3() {
 
 		// create a job to remove duplicate visibility meta data entries
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
