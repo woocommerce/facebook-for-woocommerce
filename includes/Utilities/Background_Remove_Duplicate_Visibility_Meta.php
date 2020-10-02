@@ -54,7 +54,9 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	public function process_job( $job, $items_per_batch = null ) {
 
 		// don't do anything until the job used to hide virtual variations is done
-		if ( 'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
+		$handler = facebook_for_woocommerce()->get_background_handle_virtual_products_variations_instance();
+
+		if ( $handler && $handler->get_jobs( [ 'status' => [ 'processing', 'queued' ] ] ) ) {
 			return $job;
 		}
 
