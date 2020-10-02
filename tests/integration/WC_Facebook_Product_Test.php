@@ -34,6 +34,43 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see \WC_Facebook_Product::prepare_product()
 	 *
+	 * @dataProvider provider_prepare_product_uses_correct_number_of_additional_image_urls
+	 */
+	public function test_prepare_product_uses_correct_number_of_additional_image_urls( int $images_count ) {
+
+		$product = $this->tester->get_product();
+
+		$attachments = array_map( function() {
+
+			return wp_insert_attachment( [] );
+		}, range( 1, $images_count ) );
+
+		$product->update_meta_data( '_thumbnail_id', $attachments[0] );
+		$product->update_meta_data( '_product_image_gallery', implode( ',', array_slice( $attachments, 1 ) ) );
+		$product->save_meta_data();
+
+		$data = ( new \WC_Facebook_Product( $product->get_id() ) )->prepare_product();
+
+		$this->assertLessThanOrEqual( 20, count( $data['additional_image_urls'] ) );
+	}
+
+
+	/** @see test_prepare_product_uses_correct_number_of_additional_image_urls() */
+	public function provider_prepare_product_uses_correct_number_of_additional_image_urls() {
+
+		return [
+			[ 1 ],
+			[ 2 ],
+			[ 10 ],
+			[ 15 ],
+			[ 25 ],
+		];
+	}
+
+
+	/**
+	 * @see \WC_Facebook_Product::prepare_product()
+	 *
 	 * @param mixed $price the regular price for the product
 	 * @param bool $is_visible whether the product should visible in the Facebook Shop
 	 * @param string $visibility 'staging' or 'published'

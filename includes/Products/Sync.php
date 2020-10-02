@@ -103,27 +103,8 @@ class Sync {
 		// remove parent products because those can't be represented as Product Items
 		$product_ids = array_diff( $product_ids, $parent_product_ids );
 
-		// make sure the product should be synced and add it to the sync queue
-		foreach ( $product_ids as $product_id ) {
-
-			$woo_product = new \WC_Facebook_Product( $product_id );
-
-			// skip if we don't have a valid product object
-			if ( ! $woo_product->woo_product instanceof \WC_Product ) {
-				continue;
-			}
-
-			if ( Products::product_should_be_deleted( $woo_product->woo_product ) ) {
-				continue;
-			}
-
-			// skip if not enabled for sync
-			if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
-				continue;
-			}
-
-			$this->create_or_update_products( [ $product_id ] );
-		}
+		// queue up these IDs for sync. they will only be included in the final requests if they should be synced
+		$this->create_or_update_products( $product_ids );
 	}
 
 

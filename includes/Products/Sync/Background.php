@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
@@ -115,7 +116,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 			try {
 
-				$requests[] = $this->process_item( [ $item_id, $method ], $job );
+				if ( $request = $this->process_item( [ $item_id, $method ], $job ) ) {
+					$requests[] = $request;
+				}
 
 			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
 
@@ -162,7 +165,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @param mixed $item
 	 * @param object|\stdClass $job
-	 * @return array
+	 * @return array|null
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function process_item( $item, $job ) {
@@ -189,7 +192,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.0.0
 	 *
 	 * @param string $prefixed_product_id prefixed product ID
-	 * @return array
+	 * @return array|null
 	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	private function process_item_update( $prefixed_product_id ) {
@@ -201,33 +204,40 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
 		}
 
-		if ( $product->is_type( 'variation' ) ) {
-			$product_data = $this->prepare_product_variation_data( $product );
-		} else {
-			$product_data = $this->prepare_product_data( $product );
+		$request = null;
+
+		if ( ! Products::product_should_be_deleted( $product ) && Products::product_should_be_synced( $product ) ) {
+
+			if ( $product->is_type( 'variation' ) ) {
+				$product_data = $this->prepare_product_variation_data( $product );
+			} else {
+				$product_data = $this->prepare_product_data( $product );
+			}
+
+			// extract the retailer_id
+			$retailer_id = $product_data['retailer_id'];
+
+			// retailer_id cannot be included in the data object
+			unset( $product_data['retailer_id'] );
+
+			$request = [
+				'retailer_id' => $retailer_id,
+				'method'      => Sync::ACTION_UPDATE,
+				'data'        => $product_data,
+			];
+
+			/**
+			 * Filters the data that will be included in a UPDATE sync request.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param array $request request data
+			 * @param \WC_Product $product product object
+			 */
+			$request = apply_filters( 'wc_facebook_sync_background_item_update_request', $request, $product );
 		}
 
-		// extract the retailer_id
-		$retailer_id = $product_data['retailer_id'];
-
-		// retailer_id cannot be included in the data object
-		unset( $product_data['retailer_id'] );
-
-		$request = [
-			'retailer_id' => $retailer_id,
-			'method'      => Sync::ACTION_UPDATE,
-			'data'        => $product_data,
-		];
-
-		/**
-		 * Filters the data that will be included in a UPDATE sync request.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param array $request request data
-		 * @param \WC_Product $product product object
-		 */
-		return apply_filters( 'wc_facebook_sync_background_item_update_request', $request, $product );
+		return $request;
 	}
 
 

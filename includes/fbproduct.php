@@ -192,6 +192,24 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $image_urls;
 		}
 
+
+		/**
+		 * Gets the list of additional image URLs for the product from the complete list of image URLs.
+		 *
+		 * It assumes the first URL will be used as the product image.
+		 * It returns 20 or less image URLs because Facebook doesn't allow more items on the additional_image_urls field.
+		 *
+		 * @since 2.0.2
+		 *
+		 * @param array $image_urls all image URLs for the product
+		 * @return array
+		 */
+		private function get_additional_image_urls( $image_urls ) {
+
+			return array_slice( $image_urls, 1, 20 );
+		}
+
+
 		// Returns the parent image id for variable products only.
 		public function get_parent_image_id() {
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->woo_product->get_type() ) ) {
@@ -350,11 +368,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
 		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
 		 *
-		 * @deprecated 2.0.2-dev.1
+		 * @deprecated 2.0.2
 		 */
 		public function is_hidden() {
 
-			wc_deprecated_function( __METHOD__,  '2.0.2-dev.1', 'Products::product_should_be_synced()' );
+			wc_deprecated_function( __METHOD__,  '2.0.2', 'Products::product_should_be_synced()' );
 
 			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
@@ -523,7 +541,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => array_slice( $image_urls, 1 ),
+				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
 				'category'              => $categories['categories'],
 				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
