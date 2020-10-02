@@ -274,6 +274,10 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_2_0_3() {
 
+		if ( ! $this->should_create_remove_duplicate_visibility_meta_background_job() ) {
+			return;
+		}
+
 		// create a job to remove duplicate visibility meta data entries
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
 
