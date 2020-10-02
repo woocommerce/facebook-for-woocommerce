@@ -284,4 +284,29 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	}
 
 
+	/**
+	 * Determines whether we need to run a background job to remove duplicate visibility meta.
+	 *
+	 * @since 2.0.3-dev.1
+	 *
+	 * @return bool
+	 */
+	private function should_create_remove_duplicate_visibility_meta_background_job() {
+
+		// we should try to remove duplicate meta if the virtual product variations job ran
+		if ( 'yes' === get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
+			return true;
+		}
+
+		$handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance();
+
+		// the virtual product variations job is not marked as complete but there is at least one job in the database
+		if ( $handler && $handler->get_jobs() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+
 }
