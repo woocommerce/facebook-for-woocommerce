@@ -278,6 +278,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			return;
 		}
 
+		// if an unfinished job is stuck, give the handler a chance to complete it
+		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
+			$handler->dispatch();
+		}
+
 		// create a job to remove duplicate visibility meta data entries
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
 
