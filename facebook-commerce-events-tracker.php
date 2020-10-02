@@ -976,7 +976,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Gets advanced matching information from a given order
 		 *
-		 * @since 2.0.3-dev.1
+		 * @since 2.0.3
 		 *
 		 * @return array
 		 */

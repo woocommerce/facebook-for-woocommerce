@@ -428,7 +428,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Returns the Automatic advanced matching of this pixel
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return AAMSettings
 	 */

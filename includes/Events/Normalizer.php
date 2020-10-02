@@ -23,7 +23,7 @@ class Normalizer {
 	/**
 	 * Normalizes $data according to its type
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $field to be normalized.
 	 * @param string $data value to be normalized
@@ -76,7 +76,7 @@ class Normalizer {
 	/**
 	 * Normalizes an array containing user data
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string[] array with user data to be normalized
 	 * @return string[]
@@ -107,7 +107,7 @@ class Normalizer {
 	/**
 	 * Normalizes an email
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $email Email address to be normalized.
 	 * @return string
@@ -127,7 +127,7 @@ class Normalizer {
 	/**
 	 * Normalizes a city name
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $city city name to be normalized.
 	 * @return string
@@ -139,7 +139,7 @@ class Normalizer {
 	/**
 	 * Normalizes a state code
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $state state name to be normalized.
 	 * @return string
@@ -151,7 +151,7 @@ class Normalizer {
 	/**
 	 * Normalizes a country code
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $country country code to be normalized(ISO 3166-2).
 	 * @return string
@@ -170,7 +170,7 @@ class Normalizer {
 	/**
 	 * Normalizes a zip code
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $zip postal code to be normalized.
 	 * @return string
@@ -187,7 +187,7 @@ class Normalizer {
 	/**
 	 * Normalizes a phone number
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $phone phone number to be normalized.
 	 * @return string
@@ -205,7 +205,7 @@ class Normalizer {
 	/**
 	 * Checks if a phone number is international
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param string $phone_number Phone number to be normalized.
 	 * @return bool

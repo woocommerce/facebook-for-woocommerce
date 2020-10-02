@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.0.3-dev.1\n"
+"Project-Id-Version: Facebook for WooCommerce 2.0.3\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-09-26 00:29:44+00:00\n"
+"POT-Creation-Date: 2020-10-02 23:23:52+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: class-wc-facebookcommerce.php:189
+#: class-wc-facebookcommerce.php:201
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -21,7 +21,7 @@ msgid ""
 "Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:204
+#: class-wc-facebookcommerce.php:216
 #. translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link
 #. HTML tag
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "under %1$sWooCommerce > Facebook%2$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:219
+#: class-wc-facebookcommerce.php:231
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -37,7 +37,7 @@ msgid ""
 "configuration, %3$scomplete the setup steps%4$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:247
+#: class-wc-facebookcommerce.php:259
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -46,7 +46,7 @@ msgid ""
 "Connection%4$s area."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:264
+#: class-wc-facebookcommerce.php:276
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -55,7 +55,7 @@ msgid ""
 "products."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:317
+#: class-wc-facebookcommerce.php:329
 msgid "Cannot create the API instance because the access token is missing."
 msgstr ""
 

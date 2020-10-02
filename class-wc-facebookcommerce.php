@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.0.3-dev.1';
+		const VERSION = '2.0.3';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -515,7 +515,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the background remove duplicate visibility meta data handler instance.
 		 *
-		 * @since 2.0.3-dev.1
+		 * @since 2.0.3
 		 *
 		 * @return Background_Remove_Duplicate_Visibility_Meta
 		 */

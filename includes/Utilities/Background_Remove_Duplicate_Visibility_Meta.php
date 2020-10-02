@@ -20,7 +20,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * The background job handler to hide virtual products from the catalog had a bug that allowed it to create many entries for each product.
  *
- * @since 2.0.3-dev.1
+ * @since 2.0.3
  */
 class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Background_Job_Handler {
 
@@ -28,7 +28,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	/**
 	 * Background job constructor.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 */
 	public function __construct() {
 
@@ -45,7 +45,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	 * This job continues to update products and product variations meta data until we run out of memory
 	 * or exceed the time limit. There is no list of items to loop over.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param object $job
 	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
@@ -95,7 +95,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	/**
 	 * Counts the number of virtual products or product variations with sync enabled and visible.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return bool
 	 */
@@ -120,7 +120,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	/**
 	 * Removes duplicate visibility meta data entries for products.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return int
 	 */
@@ -162,7 +162,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	 *
 	 * The method also returns the number of meta data entries and ID of the last meta data entry for each product.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return array|null
 	 */
@@ -184,7 +184,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	/**
 	 * No-op
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 */
 	protected function process_item( $item, $job ) {
 		// void

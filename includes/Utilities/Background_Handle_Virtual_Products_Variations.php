@@ -164,7 +164,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	 * The method returns data for products that have visibility set to 'yes' or is not defined.
 	 * Products that have visibility set to 'no' are ignored.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return array|null
 	 */
@@ -190,7 +190,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * Adds new visibility meta set to 'no' for the given post IDs.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param int[] $post_ids post IDs to update
 	 * @return int
@@ -230,7 +230,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	/**
 	 * Updates the value of the visibility meta for the given post IDs.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @param int[] $post_ids post IDs to update
 	 * @return int

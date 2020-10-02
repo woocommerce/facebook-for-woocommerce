@@ -270,7 +270,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Upgrades to version 2.0.3
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 */
 	protected function upgrade_to_2_0_3() {
 
@@ -296,7 +296,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	/**
 	 * Determines whether we need to run a background job to remove duplicate visibility meta.
 	 *
-	 * @since 2.0.3-dev.1
+	 * @since 2.0.3
 	 *
 	 * @return bool
 	 */
