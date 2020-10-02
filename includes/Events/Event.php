@@ -135,7 +135,7 @@ class Event {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/user-data
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @param array $user_data user data
 	 *

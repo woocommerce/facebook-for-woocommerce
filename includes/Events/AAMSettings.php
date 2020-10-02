@@ -34,7 +34,7 @@ class AAMSettings {
 	/**
 	 * AAMSettings constructor
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @param array $data
 	 */
@@ -52,7 +52,7 @@ class AAMSettings {
 	 * Factory method that builds an AAMSettings object given a pixel id
 	 * by sending a request to connect.facebook.net domain
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @param string $pixel_id
 	 */
@@ -75,7 +75,7 @@ class AAMSettings {
 	/**
 	 * Gets enable automatic matching flag
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return bool
 	 */
@@ -86,7 +86,7 @@ class AAMSettings {
 	/**
 	 * Gets enabled automatic matching fields array
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return string[]
 	 */
@@ -97,7 +97,7 @@ class AAMSettings {
 	/**
 	 * Gets the pixel id
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return string
 	 */
@@ -108,7 +108,7 @@ class AAMSettings {
 	/**
 	 * Sets the enable automatic matching flag
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return AAMSettings
 	 */
@@ -120,7 +120,7 @@ class AAMSettings {
 	/**
 	 * Sets the enabled automatic matching fields flag
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return AAMSettings
 	 */
@@ -132,7 +132,7 @@ class AAMSettings {
 	/**
 	 * Sets the pixel id
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return AAMSettings
 	 */
@@ -144,7 +144,7 @@ class AAMSettings {
 	/**
 	 * Returns the json string representing this object
 	 *
-	 * @since 2.0.2-dev.1
+	 * @since 2.0.3-dev.1
 	 *
 	 * @return string
 	 */
