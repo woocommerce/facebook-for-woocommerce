@@ -513,7 +513,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the background remove duplicate visibility meta data handler instance.
 		 *
-		 * @since 2.0.2-dev.1
+		 * @since 2.0.3-dev.1
 		 *
 		 * @return Background_Remove_Duplicate_Visibility_Meta
 		 */
