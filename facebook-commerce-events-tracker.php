@@ -29,10 +29,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/** @var Event search event instance */
 		private $search_event;
+		/** @var array with events tracked */
+		private $tracked_events;
+		/** @var AAMSettings aam settings instance, used to filter advanced matching fields*/
+		private $aam_settings;
 
-
-		public function __construct( $user_info ) {
+		public function __construct( $user_info, $aam_settings ) {
 			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
+			$this->aam_settings = $aam_settings;
+			$this->tracked_events = array();
 
 			add_action( 'wp_head', array( $this, 'apply_filters' ) );
 
@@ -170,6 +175,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_type'     => $content_type,
 					'contents'         => $contents,
 				],
+				'user_data' => $this->pixel->get_user_info()
 			];
 
 			$event = new Event( $event_data );
@@ -270,6 +276,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					],
+					'user_data' => $this->pixel->get_user_info()
 				];
 
 				$this->search_event = new Event( $event_data );
@@ -329,19 +336,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_name'     => $product->get_title(),
 					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type'     => $content_type,
-					'contents'         => [
+					'contents'         => wp_json_encode(
 						[
-							'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-							'quantity' => 1,
+							[
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => 1,
+							]
 						]
-					],
+					),
 					'content_category' => $categories['name'],
 					'value'            => $product->get_price(),
 					'currency'         => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info(),
 			];
 
-			$event = new \SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new Event( $event_data );
 
 			$this->send_api_event( $event );
 
@@ -385,6 +395,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info(),
 			];
 
 			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
@@ -617,6 +628,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->pixel->get_user_info()
 			];
 
 			// if there is only one item in the cart, send its first category
@@ -715,7 +727,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					$contents[] = $content;
 				}
 			}
-
+			// Advanced matching information is extracted from the order
 			$event_data = [
 				'event_name'  => $event_name,
 				'custom_data' => [
@@ -726,6 +738,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'value'        => $order->get_total(),
 					'currency'     => get_woocommerce_currency(),
 				],
+				'user_data' => $this->get_user_data_from_billing_address($order)
 			];
 
 			$event = new Event( $event_data );
@@ -772,6 +785,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'value'       => $subscription->get_total(),
 						'currency'    => get_woocommerce_currency(),
 					],
+					'user_data' => $this->pixel->get_user_info()
 				];
 
 				$event = new Event( $event_data );
@@ -831,6 +845,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @return bool
 		 */
 		protected function send_api_event( Event $event ) {
+			$this->tracked_events[] = $event;
 
 			try {
 
@@ -958,6 +973,48 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			return WC()->cart ? WC()->cart->total : 0;
 		}
 
+		/**
+		 * Gets advanced matching information from a given order
+		 *
+		 * @since 2.0.3-dev.1
+		 *
+		 * @return array
+		 */
+		private function get_user_data_from_billing_address($order) {
+			if($this->aam_settings == null || !$this->aam_settings->get_enable_automatic_matching() ){
+				return array();
+			}
+			$user_data= array();
+			$user_data['fn'] = $order->get_billing_first_name();
+			$user_data['ln'] = $order->get_billing_last_name();
+			$user_data['em'] = $order->get_billing_email();
+			// get_user_id() returns 0 if the current user is a guest
+			$user_data['external_id'] = $order->get_user_id() === 0 ? null : strval($order->get_user_id());
+			$user_data['zp'] = $order->get_billing_postcode();
+			$user_data['st'] = $order->get_billing_state();
+			// We can use country as key because this information is for CAPI events only
+			$user_data['country'] = $order->get_billing_country();
+			$user_data['ct'] = $order->get_billing_city();
+			$user_data['ph'] = $order->get_billing_phone();
+			// The fields contain country, so we do not need to add a condition
+			foreach ($user_data as $field => $value) {
+				if( $value === null || $value === '' ||
+					!in_array($field, $this->aam_settings->get_enabled_automatic_matching_fields())
+				){
+					unset($user_data[$field]);
+				}
+			}
+			return $user_data;
+		}
+
+		/**
+		 * Gets the events tracked by this object
+		 *
+		 * @return array
+		 */
+		public function get_tracked_events(){
+			return $this->tracked_events;
+		}
 
 	}
 
