@@ -571,6 +571,10 @@ class Products {
 
 		$categories_per_level = array();
 
+		if ( empty( $categories ) ) {
+			return $categories_per_level;
+		}
+
 		// determine the level (depth) of each category
 		foreach ( $categories as $category ) {
 
@@ -650,6 +654,10 @@ class Products {
 		} else {
 
 			$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		}
+
+		if ( empty( $categories ) ) {
+			return $google_product_category_id;
 		}
 
 		$categories_per_level = array();

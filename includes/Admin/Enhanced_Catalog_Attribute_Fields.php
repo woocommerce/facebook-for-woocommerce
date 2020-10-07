@@ -127,7 +127,7 @@ class Enhanced_Catalog_Attribute_Fields {
 		);
 		if ( $optional ) {
 			$classes[] = 'wc-facebook-enhanced-catalog-attribute-optional-row';
-			if ( $is_showing_optional ) {
+			if ( ! $is_showing_optional ) {
 				$classes[] = 'hidden';
 			}
 		}
