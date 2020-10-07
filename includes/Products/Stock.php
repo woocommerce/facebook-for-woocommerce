@@ -93,7 +93,7 @@ class Stock {
 	/**
 	 * Schedules a product sync to update the product's stock status.
 	 *
-	 * The product is removed from Facebook if it is out of stock and the plugin is configured to remove out of stock products form the catalog.
+	 * The product is removed from Facebook if it is out of stock and the plugin is configured to remove out of stock products from the catalog.
 	 *
 	 * @since 2.0.4-dev.1
 	 *
