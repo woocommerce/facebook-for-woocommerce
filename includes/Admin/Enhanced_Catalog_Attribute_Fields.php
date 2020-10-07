@@ -12,6 +12,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
+
 /**
  * Enhanced Catalog attribute fields.
  */
@@ -25,9 +27,10 @@ class Enhanced_Catalog_Attribute_Fields {
 	const PAGE_TYPE_ADD_CATEGORY  = 'add_category';
 	const PAGE_TYPE_EDIT_PRODUCT  = 'edit_product';
 
-	public function __construct( $page_type, \WP_Term $term = null ) {
+	public function __construct( $page_type, \WP_Term $term = null, \WC_Product $product = null ) {
 		$this->page_type = $page_type;
 		$this->term      = $term;
+		$this->product   = $product;
 	}
 
 	public static function render_hidden_input_can_show_attributes() {
@@ -103,12 +106,16 @@ class Enhanced_Catalog_Attribute_Fields {
 	}
 
 	private function get_value( $attribute_key ) {
-		if ( is_null( $this->term ) ) {
+		if ( ! is_null( $this->product ) ) {
+			// TODO check that value is valid for attribute
+			return Products_Handler::get_enhanced_catalog_attribute( $attribute_key, $this->product );
+		} elseif ( ! is_null( $this->term ) ) {
+			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key;
+			// TODO check that value is valid for attribute
+			return get_term_meta( $this->term->term_id, $meta_key, true );
+		} else {
 			return null;
 		}
-		$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key;
-		// TODO check that value is valid for attribute
-		return get_term_meta( $this->term->term_id, $meta_key, true );
 	}
 
 	private function render_attribute( $attribute, $optional = false, $is_showing_optional = false ) {
@@ -120,7 +127,7 @@ class Enhanced_Catalog_Attribute_Fields {
 		);
 		if ( $optional ) {
 			$classes[] = 'wc-facebook-enhanced-catalog-attribute-optional-row';
-			if ( ! $is_showing_optional ) {
+			if ( $is_showing_optional ) {
 				$classes[] = 'hidden';
 			}
 		}

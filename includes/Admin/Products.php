@@ -43,7 +43,6 @@ class Products {
 	const FIELD_PATTERN = 'wc_facebook_pattern';
 
 	public static function render_google_product_category_fields_and_enhanced_attributes( \WC_Product $product ) {
-		$facebook_product = new \WC_Facebook_Product( $product->get_id() );
 		?>
 		<div class='wc_facebook_commerce_fields'>
 			<?php \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
@@ -51,16 +50,20 @@ class Products {
 			<?php
 			self::render_enhanced_catalog_attributes_fields(
 				Products_Handler::get_google_product_category_id( $product ),
-				$facebook_product
+				$product
 			);
 			?>
 		 </div>
 		<?php
 	}
 
-	public static function render_enhanced_catalog_attributes_fields( $category_id, \WC_Facebook_Product $product ) {
-		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT );
+	public static function render_enhanced_catalog_attributes_fields( $category_id, \WC_Product $product ) {
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
+		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields(
+			\SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+			null,
+			$product
+		);
 
 		if ( $category_handler->get_category_depth( $category_id ) < 2 ) {
 			// show nothing

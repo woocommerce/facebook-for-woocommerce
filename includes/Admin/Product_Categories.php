@@ -175,9 +175,7 @@ class Product_Categories {
 					</label>
 				</th>
 				<td>
-					<input type="hidden" id="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
-						name="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"
-						value="true"/>
+					<?php Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
 					<input type="hidden" id="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
 						name="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>"
 						value="<?php echo esc_attr( $value ); ?>"/>
@@ -240,7 +238,7 @@ class Product_Categories {
 				break;
 			case Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT:
 				$item_id = intval( wc_clean( Framework\SV_WC_Helper::get_requested_value( 'item_id' ) ) );
-				$product = new \WC_Facebook_Product( $item_id );
+				$product = new \WC_Product( $item_id );
 				\SkyVerge\WooCommerce\Facebook\Admin\Products::render_enhanced_catalog_attributes_fields( $category_id, $product );
 				break;
 		}
