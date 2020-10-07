@@ -28,9 +28,10 @@ class Enhanced_Catalog_Attribute_Fields {
 	const PAGE_TYPE_EDIT_PRODUCT  = 'edit_product';
 
 	public function __construct( $page_type, \WP_Term $term = null, \WC_Product $product = null ) {
-		$this->page_type = $page_type;
-		$this->term      = $term;
-		$this->product   = $product;
+		$this->page_type        = $page_type;
+		$this->term             = $term;
+		$this->product          = $product;
+		$this->category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
 	}
 
 	public static function render_hidden_input_can_show_attributes() {
@@ -42,12 +43,11 @@ class Enhanced_Catalog_Attribute_Fields {
 	}
 
 	public function render( $category_id ) {
-		$category_handler           = facebook_for_woocommerce()->get_facebook_category_handler();
-		$category                   = $category_handler->get_category_with_attrs( $category_id );
+		$category                   = $this->category_handler->get_category_with_attrs( $category_id );
 		$all_attributes             = $category['attributes'];
 		$all_attributes_with_values = array_map(
 			function( $attribute ) {
-				return array_merge( $attribute, array( 'value' => $this->get_value( $attribute['key'] ) ) );
+				return array_merge( $attribute, array( 'value' => $this->get_value( $attribute['key'], $category_id ) ) );
 			},
 			$all_attributes
 		);
@@ -68,7 +68,7 @@ class Enhanced_Catalog_Attribute_Fields {
 			$this->render_attribute( $attribute );
 		}
 
-		$selector_value      = $this->get_value( self::OPTIONAL_SELECTOR_KEY );
+		$selector_value      = $this->get_value( self::OPTIONAL_SELECTOR_KEY, $category_id );
 		$is_showing_optional = 'on' === $selector_value;
 		$this->render_selector_checkbox( $is_showing_optional );
 
@@ -105,17 +105,21 @@ class Enhanced_Catalog_Attribute_Fields {
 		}//end if
 	}
 
-	private function get_value( $attribute_key ) {
+	private function get_value( $attribute_key, $category_id ) {
+		$value = null;
 		if ( ! is_null( $this->product ) ) {
-			// TODO check that value is valid for attribute
-			return Products_Handler::get_enhanced_catalog_attribute( $attribute_key, $this->product );
+			$value = Products_Handler::get_enhanced_catalog_attribute( $attribute_key, $this->product );
 		} elseif ( ! is_null( $this->term ) ) {
 			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key;
-			// TODO check that value is valid for attribute
-			return get_term_meta( $this->term->term_id, $meta_key, true );
-		} else {
-			return null;
+			$value    = get_term_meta( $this->term->term_id, $meta_key, true );
 		}
+
+		// Check if it's valid
+		if ( self::OPTIONAL_SELECTOR_KEY !== $attribute_key && ! empty( $value ) ) {
+			$is_valid = $this->category_handler->is_valid_value_for_attribute( $category_id, $attribute_key, $value );
+			$value    = $is_valid ? $value : null;
+		}
+		return $value;
 	}
 
 	private function render_attribute( $attribute, $optional = false, $is_showing_optional = false ) {
@@ -169,6 +173,7 @@ class Enhanced_Catalog_Attribute_Fields {
 		$placeholder              = isset( $attribute['example'] ) ? $attribute['example'] : '';
 		$can_have_multiple_values = isset( $attribute['can_have_multiple_values'] ) && $attribute['can_have_multiple_values'];
 		switch ( $attribute['type'] ) {
+			case 'boolean':
 			case 'enum':
 				if ( $can_have_multiple_values ) {
 					$this->render_text_field( $attr_id, $attribute, $placeholder );

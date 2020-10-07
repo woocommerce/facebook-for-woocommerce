@@ -47,16 +47,20 @@ jQuery( document ).ready( ( $ ) => {
 			this.addInitialSelects( $input.val() );
 			var optionalSelectorID = this.globalsHolder().enhanced_attribute_optional_selector;
 
-			// Initial trigger for the optional attributes selector
-			$( '#' + optionalSelectorID ).on('change', function(){
-				$('.wc-facebook-enhanced-catalog-attribute-optional-row')
-					.toggleClass('hidden', !$(this).prop("checked"));
-			});
+			if(typeof(optionalSelectorID) !== 'undefined') {
+				// Initial trigger for the optional attributes selector
+				$( '#' + optionalSelectorID ).on('change', function(){
+					$('.wc-facebook-enhanced-catalog-attribute-optional-row')
+						.toggleClass('hidden', !$(this).prop("checked"));
+				});
+			}
 		}
 
 		globalsHolder() {
 			if(typeof(facebook_for_woocommerce_product_categories) !== 'undefined'){
 				return facebook_for_woocommerce_product_categories;
+			} else if(facebook_for_woocommerce_settings_sync !== 'undefined'){
+				return facebook_for_woocommerce_settings_sync;
 			} else {
 				return facebook_for_woocommerce_products_admin;
 			}

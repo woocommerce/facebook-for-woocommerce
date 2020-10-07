@@ -33,7 +33,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		const FB_PRODUCT_IMAGE       = 'fb_product_image';
 		const FB_VARIANT_IMAGE       = 'fb_image';
 		const FB_VISIBILITY          = 'fb_visibility';
-		const FB_CATEGORY						 = 'fb_category';
+		const FB_CATEGORY            = 'fb_category';
 		const FB_ENHANCED_ATTRIBUTE  = 'fb_enhanced_attribute';
 
 		const MIN_DATE_1 = '1970-01-29';
@@ -57,13 +57,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
-			$this->fb_category						= null;
+			$this->fb_category            = null;
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
 			if ( $meta = get_post_meta( $wpid, self::FB_VISIBILITY, true ) ) {
 				$this->fb_visibility = wc_string_to_bool( $meta );
 			} else {
-				$this->fb_visibility = ''; // for products that haven't synced yet
+				$this->fb_visibility = '';
+				// for products that haven't synced yet
 			}
 
 			// Variable products should use some data from the parent_product
@@ -143,7 +144,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 */
 		private function is_bookable_product() {
 
-			return facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php') && class_exists( 'WC_Product_Booking' ) && is_callable( 'is_wc_booking_product' ) && is_wc_booking_product( $this );
+			return facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php' ) && class_exists( 'WC_Product_Booking' ) && is_callable( 'is_wc_booking_product' ) && is_wc_booking_product( $this );
 		}
 
 
@@ -154,7 +155,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 */
 		public function get_all_image_urls() {
 
-			$image_urls = [];
+			$image_urls = array();
 
 			$product_image_url        = wp_get_attachment_url( $this->woo_product->get_image_id() );
 			$parent_product_image_url = null;
@@ -171,17 +172,17 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			switch ( $this->woo_product->get_meta( Products::PRODUCT_IMAGE_SOURCE_META_KEY ) ) {
 
 				case Products::PRODUCT_IMAGE_SOURCE_CUSTOM:
-					$image_urls = [ $custom_image_url, $product_image_url, $parent_product_image_url ];
-				break;
+					$image_urls = array( $custom_image_url, $product_image_url, $parent_product_image_url );
+					break;
 
 				case Products::PRODUCT_IMAGE_SOURCE_PARENT_PRODUCT:
-					$image_urls = [ $parent_product_image_url, $product_image_url ];
-				break;
+					$image_urls = array( $parent_product_image_url, $product_image_url );
+					break;
 
 				case Products::PRODUCT_IMAGE_SOURCE_PRODUCT:
 				default:
-					$image_urls = [ $product_image_url, $parent_product_image_url ];
-				break;
+					$image_urls = array( $product_image_url, $parent_product_image_url );
+					break;
 			}
 
 			$image_urls = array_merge( $image_urls, $this->get_gallery_urls() );
@@ -238,9 +239,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$category          = stripslashes(
 				WC_Facebookcommerce_Utils::clean_string( $fb_category )
 			);
-			$is_valid_category = facebook_for_woocommerce()->get_facebook_category_handler()->is_category($category);
+			$is_valid_category = facebook_for_woocommerce()->get_facebook_category_handler()->is_category( $category );
 
-			if($is_valid_category){
+			if ( $is_valid_category ) {
 				$this->fb_category = $category;
 				update_post_meta(
 					$this->id,
@@ -256,13 +257,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 			update_post_meta(
 				$this->id,
-				$this->build_enhanced_attribute_meta_key($attribute_key),
+				$this->build_enhanced_attribute_meta_key( $attribute_key ),
 				$value,
 			);
 		}
 
-		private function build_enhanced_attribute_meta_key($attribute_key) {
-			return self::FB_ENHANCED_ATTRIBUTE.'--'.$attribute_key;
+		private function build_enhanced_attribute_meta_key( $attribute_key ) {
+			return self::FB_ENHANCED_ATTRIBUTE . '--' . $attribute_key;
 		}
 
 		public function set_product_image( $image ) {
@@ -517,7 +518,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 * Gets product data to send to Facebook.
 		 *
 		 * @param string $retailer_id the retailer ID of the product
-		 * @param bool $prepare_for_product_feed whether the data is going to be used in a feed upload
+		 * @param bool   $prepare_for_product_feed whether the data is going to be used in a feed upload
 		 * @return array
 		 */
 		public function prepare_product( $retailer_id = null, $prepare_for_product_feed = false ) {
@@ -571,7 +572,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			} else {
 				$checkout_url = null;
-			}
+			}//end if
 
 			$id = $this->get_id();
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
@@ -584,7 +585,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
 			$product_data = array(
-				'name'                  => WC_Facebookcommerce_Utils::clean_string(
+				'name'         => WC_Facebookcommerce_Utils::clean_string(
 					$this->get_title()
 				),
 				'description'           => $this->get_fb_description(),
@@ -603,23 +604,20 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// add the Commerce values
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
 
-				$product_data['gender']    = Products::get_product_gender( $this->woo_product );
+				// $product_data['gender']    = Products::get_product_gender( $this->woo_product );
 				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
 
 				// add the known attribute values
-				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
-				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
-				$product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
+				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
+				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
+				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
 
-				if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
-					$product_data['google_product_category'] = $google_product_category;
-				}
 			}
-			if($this->id == '28') {
-				$product_data['fb_product_category'] = '387';
+
+			if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
+				$product_data['google_product_category'] = $google_product_category;
+				$product_data                            = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
 			}
-			// TODO: THIS BIT ABOVE HAS BEEN ADDED MAX SO WORK WITH THAT
-			// $product_data = $this->apply_enhanced_catalog_fields_from_attributes($product_data);
 
 			// Only use checkout URLs if they exist.
 			if ( $checkout_url ) {
@@ -664,68 +662,35 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 		}
 
-		public function get_fb_enhanced_attribute($attribute_key) {
-			$attribute_key = strtolower($attribute_key); // Make it easier to match
-
-			$attr_value = get_post_meta(
-				$this->id,
-				$this->build_enhanced_attribute_meta_key($attribute_key),
-				true
-			);
-
-			// If we've got a value return it
-			if(!is_null($attr_value) && strlen($attr_value) > 0) {
-				return $attr_value;
-			}
-
-			// Otherwise check to see what we can find in our existing attributes
-			$category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
-			foreach($this->get_attributes() as $attribute) {
-				$name = strtolower($attribute->get_name());
-				$value = wc_implode_text_attributes($attribute->get_options());
-				if($name === $attribute_key){
-					return $value;
-				}
-			}
-			return null;
-		}
-
 		/**
-		* Adds enhanced catalog fields to product data array. Separated from
-		* the main function to make it easier to develop and debug, potentially
-		* worth refactoring into main prepare_product function when complete.
-		*
-		* @param array $product_data map
-		* @return array
-		*/
-		private function apply_enhanced_catalog_fields_from_attributes($product_data) {
-			// So weird but worth noting
-			// name is used on the batch api, the same field is title on the feed
-			// image_url is used on the batch api, the same field is image_link on the feed
-			// url is used on the batch api, the same field is link on the feed
-
-			$fb_category_id = $this->get_fb_category();
-			$category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
-			if(!$fb_category_id || !$category_handler->is_category($fb_category_id)){
+		 * Adds enhanced catalog fields to product data array. Separated from
+		 * the main function to make it easier to develop and debug, potentially
+		 * worth refactoring into main prepare_product function when complete.
+		 *
+		 * @param array $product_data map
+		 * @return array
+		 */
+		private function apply_enhanced_catalog_fields_from_attributes( $product_data, $google_category_id ) {
+			$google_category_id = $product_data['google_product_category'];
+			$category_handler   = facebook_for_woocommerce()->get_facebook_category_handler();
+			if ( empty( $google_category_id ) || ! $category_handler->is_category( $google_category_id ) ) {
 				return $product_data;
 			}
 			$enhanced_data = array();
-			$enhanced_data['google_product_category'] = $fb_category_id;
 
-			$attributes = $category_handler->get_attributes_for_category($fb_category_id, $this);
-			$all_attributes = array_merge($attributes['primary'], $attributes['secondary']);
-			foreach($all_attributes as $attribute){
-				$value = $attribute['value'];
+			$category       = $category_handler->get_category_with_attrs( $google_category_id );
+			$all_attributes = $category['attributes'];
+			foreach ( $all_attributes as $attribute ) {
+				$value = Products::get_enhanced_catalog_attribute( $attribute['key'], $this->woo_product );
 
-				if(!is_null($value) &&
-					strlen($value) > 0 &&
-					$category_handler->is_valid_value_for_attribute($fb_category_id, $attribute['key'], $value)
-				){
-					$enhanced_data[$attribute['key']] = $value;
+				if ( ! empty( $value ) &&
+					$category_handler->is_valid_value_for_attribute( $google_category_id, $attribute['key'], $value )
+				) {
+					$enhanced_data[ $attribute['key'] ] = $value;
 				}
 			}
 
-			return array_merge($product_data, $enhanced_data);
+			return array_merge( $product_data, $enhanced_data );
 		}
 
 		/**
@@ -740,17 +705,17 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$product = $this;
 
 			if ( ! $product->is_type( 'variation' ) ) {
-				return [];
+				return array();
 			}
 
 			$attributes = $product->get_variation_attributes();
 
 			if ( ! $attributes ) {
-				return [];
+				return array();
 			}
 
 			$variant_names = array_keys( $attributes );
-			$variant_data  = [];
+			$variant_data  = array();
 
 			// Loop through variants (size, color, etc) if they exist
 			// For each product field type, pull the single variant
@@ -780,7 +745,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 					} else {
 
-						$option_values = [ $options ];
+						$option_values = array( $options );
 
 						// If this attribute has value 'any', options will be empty strings
 						// Redirect to product page to select variants.
@@ -801,38 +766,35 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					switch ( $new_name ) {
 
 						case \WC_Facebookcommerce_Utils::FB_VARIANT_GENDER:
-
 							// If we can't validate the GENDER field, we'll fall through to the
 							// default case and set the gender into custom data.
 							if ( $product_data[ $new_name ] ) {
 
-								$variant_data[] = [
+								$variant_data[] = array(
 									'product_field' => $new_name,
 									'label'         => $label,
 									'options'       => $option_values,
-								];
+								);
 							}
 
-						break;
+							break;
 
 						default:
-
 							// This is for any custom_data.
 							if ( ! isset( $product_data['custom_data'] ) ) {
-								$product_data['custom_data'] = [];
+								$product_data['custom_data'] = array();
 							}
 
 							$product_data['custom_data'][ $new_name ] = urldecode( $option_values[0] );
 
-						break;
-					}
-
+							break;
+					}//end switch
 				} else {
 
 					\WC_Facebookcommerce_Utils::log( $product->get_id() . ': No options for ' . $original_variant_name );
 					continue;
-				}
-			}
+				}//end if
+			}//end foreach
 
 			return $variant_data;
 		}
@@ -848,7 +810,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			/** @var \WC_Product_Variable $product */
 			$product        = $this;
-			$final_variants = [];
+			$final_variants = array();
 
 			try {
 
@@ -859,7 +821,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$variation_attributes = $product->get_variation_attributes();
 
 				if ( ! $variation_attributes ) {
-					return [];
+					return array();
 				}
 
 				foreach ( array_keys( $product->get_attributes() ) as $name ) {
@@ -903,45 +865,44 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 					switch ( $name ) {
 
-						case Products::get_product_color_attribute( $this->woo_product ) :
+						case Products::get_product_color_attribute( $this->woo_product ):
 							$name = WC_Facebookcommerce_Utils::FB_VARIANT_COLOR;
-						break;
+							break;
 
-						case Products::get_product_size_attribute( $this->woo_product ) :
+						case Products::get_product_size_attribute( $this->woo_product ):
 							$name = WC_Facebookcommerce_Utils::FB_VARIANT_SIZE;
-						break;
+							break;
 
-						case Products::get_product_pattern_attribute( $this->woo_product ) :
+						case Products::get_product_pattern_attribute( $this->woo_product ):
 							$name = WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN;
-						break;
+							break;
 
 						default:
-
 							/**
 							 * For API approach, product_field need to start with 'custom_data:'
+							 *
 							 * @link https://developers.facebook.com/docs/marketing-api/reference/product-variant/
 							 */
 							$name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $name );
-					}
+					}//end switch
 
 					// for feed uploading, product field should remove prefix 'custom_data:'
 					if ( $feed_data ) {
 						$name = str_replace( 'custom_data:', '', $name );
 					}
 
-					$final_variants[] = [
+					$final_variants[] = array(
 						'product_field' => $name,
 						'label'         => $label,
 						'options'       => $option_values,
-					];
-				}
-
+					);
+				}//end foreach
 			} catch ( \Exception $e ) {
 
 				\WC_Facebookcommerce_Utils::fblog( $e->getMessage() );
 
-				return [];
-			}
+				return array();
+			}//end try
 
 			return $final_variants;
 		}
