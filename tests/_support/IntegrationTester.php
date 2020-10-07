@@ -131,6 +131,15 @@ class IntegrationTester extends \Codeception\Actor {
 	/** Sync methods **************************************************************************************************/
 
 
+	/**
+	 * Clears sync requests stored in the product sync handler instance.
+	 */
+	public function clearSyncRequests() {
+
+		$this->setPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests', [] );
+	}
+
+
 	public function assertSyncRequestsExist( $request_keys = [], $requests = null ) {
 
 		if ( null === $requests ) {
