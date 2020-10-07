@@ -45,7 +45,7 @@ class Products {
 	public static function render_google_product_category_fields_and_enhanced_attributes( \WC_Product $product ) {
 		?>
 		<div class='wc_facebook_commerce_fields'>
-			<?php \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
+			<?php Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
 			<?php self::render_google_product_category_fields( $product ); ?>
 			<?php
 			self::render_enhanced_catalog_attributes_fields(
@@ -60,7 +60,7 @@ class Products {
 	public static function render_enhanced_catalog_attributes_fields( $category_id, \WC_Product $product ) {
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields(
-			\SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+			Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
 			null,
 			$product
 		);
@@ -72,7 +72,7 @@ class Products {
 
 		?>
 			<p class="form-field wc-facebook-enhanced-catalog-attribute-row">
-				<label for="<?php echo esc_attr( \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>">
+				<label for="<?php echo esc_attr( Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTES_ID ); ?>">
 					<?php echo esc_html( self::render_enhanced_catalog_attributes_title() ); ?>
 					<?php self::render_enhanced_catalog_attributes_tooltip(); ?>
 				</label>
@@ -345,10 +345,21 @@ class Products {
 
 		$commerce_enabled           = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
 		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
-		$gender                     = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GENDER ) );
-		$color_attribute            = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COLOR ) );
-		$size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
-		$pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
+		// $gender                     = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GENDER ) );
+		// $color_attribute            = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COLOR ) );
+		// $size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
+		// $pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
+		$enhanced_catalog_attributes = Products_Handler::get_enhanced_catalog_attributes_from_request();
+
+		foreach ( $enhanced_catalog_attributes as $key => $value ) {
+			Products_Handler::update_product_enhanced_catalog_attribute($product, $key, $value);
+		}
+
+		if ( ! isset( $enhanced_catalog_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
+			// This is a checkbox so won't show in the post data if it's been unchecked,
+			// hence if it's unset we should clear the term meta for it.
+			Products_Handler::update_product_enhanced_catalog_attribute($product, Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, null);
+		}
 
 		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
 
@@ -357,25 +368,28 @@ class Products {
 			Products_Handler::update_google_product_category_id( $product, $google_product_category_id );
 		}
 
-		Products_Handler::update_product_gender( $product, $gender );
 
-		try {
 
-			Products_Handler::update_product_color_attribute( $product, $color_attribute );
-			Products_Handler::update_product_size_attribute( $product, $size_attribute );
-			Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
+		// COMMERCE VERSION PRIOR TO ENHANCED CATALOG ADDITIONS:
+		// Products_Handler::update_product_gender( $product, $gender );
 
-		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+		// try {
 
-			$message = sprintf(
-				/* translators: Placeholders %1$s - product ID, %2$s - exception message */
-				__( 'There was an error trying to save the product attributes for product %1$s: %2$s' ),
-				$product->get_id(),
-				$e->getMessage()
-			);
+		// 	Products_Handler::update_product_color_attribute( $product, $color_attribute );
+		// 	Products_Handler::update_product_size_attribute( $product, $size_attribute );
+		// 	Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
 
-			facebook_for_woocommerce()->log( $message );
-		}
+		// } catch ( Framework\SV_WC_Plugin_Exception $e ) {
+
+		// 	$message = sprintf(
+		// 		/* translators: Placeholders %1$s - product ID, %2$s - exception message */
+		// 		__( 'There was an error trying to save the product attributes for product %1$s: %2$s' ),
+		// 		$product->get_id(),
+		// 		$e->getMessage()
+		// 	);
+
+		// 	facebook_for_woocommerce()->log( $message );
+		// }
 	}
 
 

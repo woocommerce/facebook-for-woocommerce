@@ -407,35 +407,14 @@ class Product_Categories {
 	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy ) {
-		$prefix     = Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
-		$attributes = array_filter(
-			$_POST,
-			function( $key ) use ( $prefix ) {
-				return substr( $key, 0, strlen( $prefix ) ) === $prefix;
-			},
-			ARRAY_FILTER_USE_KEY
-		);
+		$enhanced_catalog_attributes = \SkyVerge\WooCommerce\Facebook\Products::get_enhanced_catalog_attributes_from_request();
 
-		$clean_key_attributes = array_reduce(
-			array_keys( $attributes ),
-			function( $attrs, $attr_key ) use ( $prefix ) {
-				return array_merge(
-					$attrs,
-					array(
-						str_replace( $prefix, '', $attr_key ) =>
-																wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
-					),
-				);
-			},
-			array(),
-		);
-
-		foreach ( $clean_key_attributes as $key => $value ) {
+		foreach ( $enhanced_catalog_attributes as $key => $value ) {
 			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key;
 			update_term_meta( $term_id, $meta_key, $value );
 		}
 
-		if ( ! isset( $clean_key_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
+		if ( ! isset( $enhanced_catalog_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
 			// This is a checkbox so won't show in the post data if it's been unchecked,
 			// hence if it's unset we should clear the term meta for it.
 			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;

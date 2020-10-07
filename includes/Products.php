@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use WC_Facebook_Product;
 
 defined( 'ABSPATH' ) or exit;
@@ -722,48 +723,6 @@ class Products {
 		return $meta_value;
 	}
 
-	/**
-	 * Gets the value for a given enhanced catalog attribute
-	 *
-	 * @since 2.1.0-dev.1
-	 *
-	 * @param string      $key         The attribute key.
-	 * @param \WC_Product $product The product object.
-	 * @return string
-	 */
-	public static function get_enhanced_catalog_attribute( $key, \WC_Product $product ) {
-		if ( ! $product ) {
-			// Break
-			return null;
-		}
-
-		$value = $product->get_meta( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
-
-		if ( empty( $value ) ) {
-			// Check normal product attributes
-			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
-				if ( strtolower( $attribute->get_name() ) === $key ) {
-					$value = $product->get_attribute( $slug );
-					break;
-				}
-			}
-		}
-
-		// Check parent if we're a variation
-		if ( empty( $value ) && $product->is_type( 'variation' ) ) {
-			$parent_product = wc_get_product( $product->get_parent_id() );
-			$value          = $parent_product instanceof \WC_Product ? self::get_enhanced_catalog_attribute( $key, $parent_product ) : '';
-		}
-
-		// Check categories for default values
-		if ( empty( $value ) ) {
-			$value = self::get_meta_value_from_categories_for_product( $product, self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
-		}
-
-		return $value;
-	}
-
-
 
 	/**
 	 * Updates the stored Google product category ID for the product.
@@ -1124,6 +1083,93 @@ class Products {
 		return $product->get_attributes();
 	}
 
+
+	/**
+	 * Gets the value for a given enhanced catalog attribute
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string      $key         The attribute key.
+	 * @param \WC_Product $product The product object.
+	 * @return string
+	 */
+	public static function get_enhanced_catalog_attribute( $key, \WC_Product $product ) {
+		if ( ! $product ) {
+			// Break
+			return null;
+		}
+
+		$value = $product->get_meta( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+
+		if ( empty( $value ) ) {
+			// Check normal product attributes
+			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+				if ( strtolower( $attribute->get_name() ) === $key ) {
+					$value = $product->get_attribute( $slug );
+					break;
+				}
+			}
+		}
+
+		// Check parent if we're a variation
+		if ( empty( $value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$value          = $parent_product instanceof \WC_Product ? self::get_enhanced_catalog_attribute( $key, $parent_product ) : '';
+		}
+
+		// Check categories for default values
+		if ( empty( $value ) ) {
+			$value = self::get_meta_value_from_categories_for_product( $product, self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Updates the passed enhanced catalog attribute
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @param string      $attribute_key the attribute key.
+	 * @param mixed       $value the attribute value.
+	 */
+	public static function update_product_enhanced_catalog_attribute( \WC_Product $product, $attribute_key, $value ) {
+		$product->update_meta_data( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key, $value );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Helper function that gets and cleans the submitted values for enhanced
+	 * catalog attributes from the request. Is used by both product categories
+	 * and product pages.
+	 * Returns an array that maps key to value.
+	 *
+	 * @return array
+	 */
+	public static function get_enhanced_catalog_attributes_from_request() {
+		$prefix     = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$attributes = array_filter(
+			$_POST,
+			function( $key ) use ( $prefix ) {
+				return substr( $key, 0, strlen( $prefix ) ) === $prefix;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array_reduce(
+			array_keys( $attributes ),
+			function( $attrs, $attr_key ) use ( $prefix ) {
+				return array_merge(
+					$attrs,
+					array(
+						str_replace( $prefix, '', $attr_key ) =>
+																wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
+					),
+				);
+			},
+			array(),
+		);
+	}
 
 	/**
 	 * Checks if the product has an attribute with the given name.
