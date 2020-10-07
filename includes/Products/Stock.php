@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\Products;
 /**
  * The product stock handler.
  *
- * @since 2.0.0
+ * @since 2.0.4-dev.1
  */
 class Stock {
 
@@ -25,7 +25,7 @@ class Stock {
 	/**
 	 * Stock constructor.
 	 *
-	 * @since 2.0.0
+	 * @since 2.0.4-dev.1
 	 */
 	public function __construct() {
 
@@ -36,7 +36,7 @@ class Stock {
 	/**
 	 * Adds needed hooks to keep product stock in sync.
 	 *
-	 * @since 2.0.0
+	 * @since 2.0.4-dev.1
 	 */
 	public function add_hooks() {
 
@@ -91,7 +91,7 @@ class Stock {
 
 
 	/**
-	 * Schedules a product sync to update its stock status.
+	 * Schedules a product sync to update the product's stock status.
 	 *
 	 * The product is removed from Facebook if it is out of stock and the plugin is configured to remove out of stock products form the catalog.
 	 *
