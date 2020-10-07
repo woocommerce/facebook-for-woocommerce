@@ -19,8 +19,6 @@ jQuery( document ).ready( ( $ ) => {
 	 * @type {WC_Facebook_Google_Product_Category_Fields} object
 	 */
 	window.WC_Facebook_Google_Product_Category_Fields = class WC_Facebook_Google_Product_Category_Fields {
-
-
 		/**
 		 * Handler constructor.
 		 *
@@ -47,14 +45,33 @@ jQuery( document ).ready( ( $ ) => {
 				} );
 
 			this.addInitialSelects( $input.val() );
+			var optionalSelectorID = this.globalsHolder().enhanced_attribute_optional_selector;
 
 			// Initial trigger for the optional attributes selector
-			$('#'+facebook_for_woocommerce_product_categories.enhanced_attribute_optional_selector).on('change', function(){
-					$('.wc-facebook-enhanced-catalog-attribute-optional-row').attr(
-						'style',
-						'display: '+($(this).prop("checked") ? 'table-row' : 'none')+';',
-					);
-				});
+			$( '#' + optionalSelectorID ).on('change', function(){
+				$('.wc-facebook-enhanced-catalog-attribute-optional-row')
+					.toggleClass('hidden', !$(this).prop("checked"));
+			});
+		}
+
+		globalsHolder() {
+			if(typeof(facebook_for_woocommerce_product_categories) !== 'undefined'){
+				return facebook_for_woocommerce_product_categories;
+			} else {
+				return facebook_for_woocommerce_products_admin;
+			}
+		}
+
+		getPageType(){
+			if(typeof(facebook_for_woocommerce_product_categories) !== 'undefined'){
+				if( $( 'input[name=tag_ID]' ).length === 0){
+					return this.globalsHolder().enhanced_attribute_page_type_add_category;
+				} else {
+					return this.globalsHolder().enhanced_attribute_page_type_edit_category;
+				}
+			} else {
+				return this.globalsHolder().enhanced_attribute_page_type_edit_product;
+			}
 		}
 
 
@@ -103,22 +120,31 @@ jQuery( document ).ready( ( $ ) => {
 
 			if(this.isValid()) {
 				var inputSelector = '#' + this.input_id;
-			  $.get( facebook_for_woocommerce_product_categories.ajax_url, {
+				var $inputParent = $( inputSelector ).parents('div.form-field');
+				var optionalSelectorID = this.globalsHolder().enhanced_attribute_optional_selector;
+				if( this.getPageType() === this.globalsHolder().enhanced_attribute_page_type_edit_category ){
+					$inputParent = $( inputSelector ).parents('tr.form-field');
+				} else if( this.getPageType() === this.globalsHolder().enhanced_attribute_page_type_edit_product ) {
+					$inputParent = $( inputSelector ).parents('p.form-field');
+				}
+			  $.get( this.globalsHolder().ajax_url, {
 					action:   'wc_facebook_enhanced_catalog_attributes',
 					security: '',
 					selected_category:  $( inputSelector ).val(),
-					tag_id:  $( 'input[name=tag_ID]' ).val(),
+					tag_id:  parseInt($( 'input[name=tag_ID]' ).val(), 10),
 					taxonomy:  $( 'input[name=taxonomy]' ).val(),
+					item_id: parseInt( $( 'input[name=post_ID]' ).val(), 10 ),
+					page_type: this.getPageType(),
 				}, function( response ) {
-					var $categoryRow = $( inputSelector ).parents('tr');
 					var $response = $(response);
-					$('#'+facebook_for_woocommerce_product_categories.enhanced_attribute_optional_selector, $response).on('change', function(){
-						$('.wc-facebook-enhanced-catalog-attribute-optional-row').attr(
-							'style',
-							'display: '+($(this).prop("checked") ? 'table-row' : 'none')+';',
-						);
+
+					$( '#' + optionalSelectorID, $response ).on('change', function(){
+						$('.wc-facebook-enhanced-catalog-attribute-optional-row')
+							.toggleClass('hidden', !$(this).prop("checked"));
 					});
-					$response.insertAfter($categoryRow);
+					$response.insertAfter($inputParent);
+					// Ensure tooltips work:
+					$(document.body).trigger('init_tooltips');
 				});
 			}
 		}
