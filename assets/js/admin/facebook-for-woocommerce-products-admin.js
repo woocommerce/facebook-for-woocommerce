@@ -90,117 +90,6 @@ jQuery( document ).ready( function( $ ) {
 			$container.find( '.enable-if-sync-enabled' ).prop( 'disabled', ! enabled );
 		}
 
-		function showEnhancedAttributesForCategory(selectedCategory) {
-			const attributeFormField =  function(attribute) {
-				switch(attribute.type) {
-					case 'enum':
-						const values = attribute.enum_values.map(function(val) {
-							return $('<option/>').attr({
-								'value': val,
-								'selected': val === attribute.value
-							}).text(val);
-						});
-						const select = $('<select/>').attr({
-													name: 'fb_enhanced_attribute['+attribute.key+']',
-													id: 'fb_enhanced_attribute['+attribute.key+']'
-												});
-						values.forEach(function(valEl) { select.append(valEl); });
-						return select;
-					case 'boolean':
-						const list = $('<ul/>').addClass('wc-radios');
-						const yes = $('<label/>').append(
-													$('<input>').attr({
-														'type': 'radio',
-														'value': 'yes',
-														'name': 'fb_enhanced_attribute['+attribute.key+']',
-														'checked': 'yes' === attribute.value,
-													})
-												).append('Yes');
-						const no = $('<label/>').append(
-													$('<input>').attr({
-														'type': 'radio',
-														'value': 'no',
-														'name': 'fb_enhanced_attribute['+attribute.key+']',
-														'checked': 'no' === attribute.value,
-													})
-												).append('No');
-						list.append(
-							$('<li/>').append(yes)
-						).append(
-							$('<li/>').append(no)
-						);
-						return list;
-					case 'string':
-					default:
-						return $('<input/>')
-												.attr({
-													type: 'text',
-													name: 'fb_enhanced_attribute['+attribute.key+']',
-													id: 'fb_enhanced_attribute['+attribute.key+']'
-												}).val(attribute.value);
-				}
-			};
-
-			const attributeFormFieldWrapper = function(attribute) {
-				switch(attribute.type) {
-					case 'boolean':
-						return $('<fieldset/>')
-										.addClass('form-field fb_enhanced_attribute')
-										.append($('<legend/>').text(attribute.name));
-					default:
-						return $('<p/>')
-											.addClass('form-field fb_enhanced_attribute')
-											.append(
-												$('<label/>')
-													.attr('for', 'fb_enhanced_attribute['+attribute.key+']')
-													.text(attribute.name)
-											);
-				}
-			};
-
-			const optionsGroupHeader = function(text) {
-				return $('<h4/>')
-									.text(text)
-									.attr('style', 'margin-left: 5px;');
-			}
-
-			const optionsContainer = $('#facebook_options');
-			$('.fb_enhanced_attribute_container', optionsContainer).remove();
-
-			$.get( facebook_for_woocommerce_products_admin.ajax_url, {
-				action:   'wc_facebook_category_attributes',
-				security: '',
-				category:  selectedCategory,
-				item_id: parseInt( $( 'input#post_ID' ).val(), 10 ),
-			}, function( response ) {
-				if(response) {
-					const primaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
-					const secondaryOptionsGroup = $('<div/>').addClass('options_group fb_enhanced_attribute_container');
-					primaryOptionsGroup.append(optionsGroupHeader('Recommended Attributes'));
-					secondaryOptionsGroup.append(optionsGroupHeader('Other Attributes'));
-					response.primary.forEach(function(attribute){
-						const wrapper = attributeFormFieldWrapper(attribute);
-						const formField = attributeFormField(attribute);
-						wrapper.append(formField);
-						primaryOptionsGroup.append(wrapper);
-					});
-					response.secondary.forEach(function(attribute){
-						const wrapper = attributeFormFieldWrapper(attribute);
-						const formField = attributeFormField(attribute);
-						wrapper.append(formField);
-						secondaryOptionsGroup.append(wrapper);
-					});
-					optionsContainer
-						.append(primaryOptionsGroup)
-						.append(secondaryOptionsGroup);
-				}
-			} );
-		}
-		const currentlySelectedCategory = $( '#woocommerce-product-data select[name=fb_category]' ).val();
-		if(currentlySelectedCategory){
-			showEnhancedAttributesForCategory(currentlySelectedCategory);
-		}
-
 
 		/**
 		 * Toggles (shows/hides) Sync and show option and changes the select value if needed.
@@ -494,11 +383,7 @@ jQuery( document ).ready( function( $ ) {
 
 		syncModeSelect.on( 'change', function() {
 
-			let syncEnabled = $( this ).val() !== 'sync_disabled';
-
-			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
-			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
-
+			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
 			syncModeSelect.prop( 'original', $( this ).val() );
 
 		} ).trigger( 'change' );
@@ -507,25 +392,9 @@ jQuery( document ).ready( function( $ ) {
 			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
 		} ).trigger( 'change' );
 
-		// check whether the product meets the requirements for Commerce
-		$( '#woocommerce-product-data' ).on(
-			'change',
-			'#_regular_price, #_manage_stock, #_stock, #wc_facebook_sync_mode, #fb_product_price',
-			function( event ) {
-
-				// allow validation handlers that run on change to run before we check any field values
-				setTimeout( function() {
-					toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
-				}, 1 );
-			}
-		);
-
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
-
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
-			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
-
 			$( this ).prop( 'original', $( this ).val() );
 		} );
 
@@ -540,8 +409,6 @@ jQuery( document ).ready( function( $ ) {
 				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
-
-			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
 		} );
 
 		// show/hide Custom Image URL setting
@@ -556,11 +423,6 @@ jQuery( document ).ready( function( $ ) {
 
 		$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 
-		$( '#woocommerce-product-data select[name=fb_category]' ).on('change', function(e) {
-			const selectedCategory = $(this).val();
-			showEnhancedAttributesForCategory(selectedCategory);
-		});
-
 		// trigger settings fields modifiers when variations are loaded
 		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
 			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
@@ -568,6 +430,7 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
+<<<<<<< HEAD
 		// open modal explaining sell on Instagram requirements
 		$( '#facebook_options' ).on( 'click', '#product-not-ready-notice-open-modal', function( event ) {
 
@@ -587,14 +450,12 @@ jQuery( document ).ready( function( $ ) {
 
 		// toggle Sell on Instagram checkbox on page load
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
+=======
+>>>>>>> Undo js that was no longer relevant
 
 		let submitProductSave = false;
 
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
-
-			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
-				return showMissingGoogleProductCategoryAlert( e );
-			}
 
 			if ( ! submitProductSave ) {
 				e.preventDefault();
