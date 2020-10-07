@@ -65,10 +65,10 @@ class Products {
 
 
 	/** @var array memoized array of sync enabled status for products */
-	private static $products_sync_enabled = [];
+	private static $products_sync_enabled = array();
 
 	/** @var array memoized array of visibility status for products */
-	private static $products_visibility = [];
+	private static $products_visibility = array();
 
 
 	/**
@@ -77,11 +77,11 @@ class Products {
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product[] $products array of product objects
-	 * @param bool $enabled whether sync should be enabled for $products
+	 * @param bool          $enabled whether sync should be enabled for $products
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 
-		self::$products_sync_enabled = [];
+		self::$products_sync_enabled = array();
 
 		$enabled = wc_bool_to_string( $enabled );
 
@@ -101,14 +101,13 @@ class Products {
 							$product_variation->save_meta_data();
 						}
 					}
-
 				} else {
 
 					$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 					$product->save_meta_data();
 				}
-			}
-		}
+			}//end if
+		}//end foreach
 	}
 
 
@@ -150,35 +149,42 @@ class Products {
 	 */
 	public static function disable_sync_for_products_with_terms( array $args ) {
 
-		$args = wp_parse_args( $args, [
-			'taxonomy' => 'product_cat',
-			'include'  => [],
-		] );
+		$args = wp_parse_args(
+			$args,
+			array(
+				'taxonomy' => 'product_cat',
+				'include'  => array(),
+			)
+		);
 
-		$products = [];
+		$products = array();
 
 		// get all products belonging to the given terms
 		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
 
-			$terms = get_terms( [
-				'taxonomy'   => $args['taxonomy'],
-				'fields'     => 'slugs',
-				'include'    => array_map( 'intval', $args['include'] ),
-			] );
+			$terms = get_terms(
+				array(
+					'taxonomy' => $args['taxonomy'],
+					'fields'   => 'slugs',
+					'include'  => array_map( 'intval', $args['include'] ),
+				)
+			);
 
 			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
 
 				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
 
-				$products = wc_get_products( [
-					$taxonomy => $terms,
-					'limit'   => -1,
-				] );
+				$products = wc_get_products(
+					array(
+						$taxonomy => $terms,
+						'limit'   => -1,
+					)
+				);
 			}
-		}
+		}//end if
 
 		if ( ! empty( $products ) ) {
-			Products::disable_sync_for_products( $products );
+			self::disable_sync_for_products( $products );
 		}
 	}
 
@@ -203,6 +209,7 @@ class Products {
 	 * Determines whether the given product should be synced assuming the product is published.
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
+	 *
 	 * @see Products::is_sync_enabled_for_product()
 	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
@@ -223,12 +230,12 @@ class Products {
 		}
 
 		// allow simple or variable products (and their variations) with zero or empty price - exclude other product types with zero or empty price
-		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), [ 'simple', 'variable' ] ) ) ) ) {
+		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), array( 'simple', 'variable' ) ) ) ) ) {
 			$should_sync = false;
 		}
 
 		// exclude products that are excluded from the store catalog or from search results
-		if ( $should_sync && ( ! $terms_product || has_term( [ 'exclude-from-catalog', 'exclude-from-search' ], 'product_visibility', $terms_product->get_id() ) ) ) {
+		if ( $should_sync && ( ! $terms_product || has_term( array( 'exclude-from-catalog', 'exclude-from-search' ), 'product_visibility', $terms_product->get_id() ) ) ) {
 			$should_sync = false;
 		}
 
@@ -287,14 +294,13 @@ class Products {
 						break;
 					}
 				}
-
 			} else {
 
 				$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
 			}
 
 			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
-		}
+		}//end if
 
 		return self::$products_sync_enabled[ $product->get_id() ];
 	}
@@ -314,15 +320,15 @@ class Products {
 			$excluded_categories = $integration->get_excluded_product_category_ids();
 			$excluded_tags       = $integration->get_excluded_product_tag_ids();
 		} else {
-			$excluded_categories = $excluded_tags = [];
+			$excluded_categories = $excluded_tags = array();
 		}
 
 		$categories = $product->get_category_ids();
 		$tags       = $product->get_tag_ids();
 
 		// returns true if no terms on the product, or no terms excluded, or if the product does not contain any of the excluded terms
-		$matches =    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
-		           && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
+		$matches = ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
+				   && ( ! $tags || ! $excluded_tags || ! array_intersect( $tags, $excluded_tags ) );
 
 		return ! $matches;
 	}
@@ -334,7 +340,7 @@ class Products {
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
-	 * @param bool $visibility true for 'published' or false for 'staging'
+	 * @param bool        $visibility true for 'published' or false for 'staging'
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {
@@ -382,7 +388,6 @@ class Products {
 						break;
 					}
 				}
-
 			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
 
 				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
@@ -390,10 +395,10 @@ class Products {
 			} else {
 
 				$is_visible = true;
-			}
+			}//end if
 
 			self::$products_visibility[ $product->get_id() ] = $is_visible;
-		}
+		}//end if
 
 		return self::$products_visibility[ $product->get_id() ];
 	}
@@ -407,7 +412,7 @@ class Products {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param int $price product price in cents
+	 * @param int         $price product price in cents
 	 * @param \WC_Product $product product object
 	 * @return int
 	 */
@@ -433,7 +438,7 @@ class Products {
 
 		} else {
 
-			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
+			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) );
 		}
 
 		$price = (int) ( $price ? round( $price * 100 ) : 0 );
@@ -475,7 +480,7 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 * @return bool
 	 */
-	public static function is_commerce_enabled_for_product( \WC_Product $product )  {
+	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
 
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -491,11 +496,11 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param bool $is_enabled whether or not Commerce is to be enabled
+	 * @param bool        $is_enabled whether or not Commerce is to be enabled
 	 */
 	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
 
-		$product->update_meta_data( Products::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
+		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
 		$product->save_meta_data();
 	}
 
@@ -552,7 +557,7 @@ class Products {
 		if ( $product->is_type( 'variation' ) ) {
 
 			$parent_product = wc_get_product( $product->get_parent_id() );
-			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : [];
+			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
 
 		} else {
 
@@ -563,7 +568,7 @@ class Products {
 			return $google_product_category_id;
 		}
 
-		$categories_per_level = [];
+		$categories_per_level = array();
 
 		// determine the level (depth) of each category
 		foreach ( $categories as $category ) {
@@ -577,7 +582,7 @@ class Products {
 			}
 
 			if ( empty( $categories_per_level[ $level ] ) ) {
-				$categories_per_level[ $level ] = [];
+				$categories_per_level[ $level ] = array();
 			}
 
 			$categories_per_level[ $level ][] = $category;
@@ -623,10 +628,141 @@ class Products {
 					$google_product_category_id = '';
 				}
 			}
-		}
+		}//end if
 
 		return $google_product_category_id;
 	}
+
+	/**
+	 * Gets an ordered list of the categories for the product organised by level.
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @return string
+	 */
+	private static function get_ordered_categories_for_product( \WC_Product $product ) {
+			// get all categories for the product
+		if ( $product->is_type( 'variation' ) ) {
+
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
+
+		} else {
+
+			$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		}
+
+		$categories_per_level = array();
+
+		// determine the level (depth) of each category
+		foreach ( $categories as $category ) {
+
+			$level           = 0;
+			$parent_category = $category;
+
+			while ( $parent_category->parent !== 0 ) {
+				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+				$level ++;
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				$categories_per_level[ $level ] = array();
+			}
+
+			$categories_per_level[ $level ][] = $category;
+		}
+
+		// sort descending by level
+		krsort( $categories_per_level );
+		return $categories_per_level;
+	}
+
+	/**
+	 * Gets the first unconflicted value for a meta key from the categories a
+	 * product belongs to. This does the same job as the above google category
+	 * code but (I think) in a slightly simpler form, not going to change
+	 * the google category one just yet until I've got unit tests doing what
+	 * I want. TODO: refactor the get_google_product_category_id_from_highest_category
+	 * function to use this.
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @param string      $meta_key the meta key we're looking for.
+	 * @return string
+	 */
+	private static function get_meta_value_from_categories_for_product( \WC_Product $product, $meta_key ) {
+		$categories_per_level = self::get_ordered_categories_for_product( $product );
+		// The plan is to find the first level with a value for the meta key
+		// Then we need to check the rest of this level and if there's a conflict
+		// continue to the next level up.
+
+		// We're looking fdr the first non-conflicted level basically
+		$meta_value = null;
+		foreach ( $categories_per_level as $level => $categories ) {
+			foreach ( $categories as $category ) {
+				$category_meta_value = get_term_meta( $category->term_id, $meta_key, true );
+				if ( empty( $category_meta_value ) ) {
+					// No value here, move on
+					continue;
+				}
+				if ( empty( $meta_value ) ) {
+					// We've found a value for this level and there's no conflict as it's
+					// the first one we've found on this level.
+					$meta_value = $category_meta_value;
+				} elseif ( $meta_value !== $category_meta_value ) {
+					// conflict we need to jump out of this loop and go to the next level
+					$meta_value = null;
+					break;
+				}
+			}
+			if ( ! empty( $meta_value ) ) {
+				// We have an unconflicted value, we can use it so break out of the
+				// level loop
+				break;
+			}
+		}//end foreach
+		return $meta_value;
+	}
+
+	/**
+	 * Gets the value for a given enhanced catalog attribute
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param string      $key         The attribute key.
+	 * @param \WC_Product $product The product object.
+	 * @return string
+	 */
+	public static function get_enhanced_catalog_attribute( $key, \WC_Product $product ) {
+		if ( ! $product ) {
+			// Break
+			return null;
+		}
+
+		$value = $product->get_meta( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+
+		if ( empty( $value ) ) {
+			// Check normal product attributes
+			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+				if ( strtolower( $attribute->get_name() ) === $key ) {
+					$value = $product->get_attribute( $slug );
+					break;
+				}
+			}
+		}
+
+		// Check parent if we're a variation
+		if ( empty( $value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$value          = $parent_product instanceof \WC_Product ? self::get_enhanced_catalog_attribute( $key, $parent_product ) : '';
+		}
+
+		// Check categories for default values
+		if ( empty( $value ) ) {
+			$value = self::get_meta_value_from_categories_for_product( $product, self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+		}
+
+		return $value;
+	}
+
 
 
 	/**
@@ -635,11 +771,11 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $category_id the Google product category ID
+	 * @param string      $category_id the Google product category ID
 	 */
 	public static function update_google_product_category_id( \WC_Product $product, $category_id ) {
 
-		$product->update_meta_data( Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
+		$product->update_meta_data( self::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
 		$product->save_meta_data();
 	}
 
@@ -665,7 +801,7 @@ class Products {
 			$gender = $product->get_meta( self::GENDER_META_KEY );
 		}
 
-		if ( ! in_array( $gender, [ 'female', 'male', 'unisex' ] ) ) {
+		if ( ! in_array( $gender, array( 'female', 'male', 'unisex' ) ) ) {
 			$gender = 'unisex';
 		}
 
@@ -679,11 +815,11 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $gender the gender (`female`, `male`, or `unisex`)
+	 * @param string      $gender the gender (`female`, `male`, or `unisex`)
 	 */
 	public static function update_product_gender( \WC_Product $product, $gender ) {
 
-		$product->update_meta_data( Products::GENDER_META_KEY, $gender );
+		$product->update_meta_data( self::GENDER_META_KEY, $gender );
 		$product->save_meta_data();
 	}
 
@@ -730,14 +866,13 @@ class Products {
 		return $attribute_name;
 	}
 
-
 	/**
 	 * Updates the configured color attribute.
 	 *
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute_name the attribute to be used to store the color
+	 * @param string      $attribute_name the attribute to be used to store the color
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
@@ -833,7 +968,7 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute_name the attribute to be used to store the size
+	 * @param string      $attribute_name the attribute to be used to store the size
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
@@ -929,7 +1064,7 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute_name the attribute to be used to store the pattern
+	 * @param string      $attribute_name the attribute to be used to store the pattern
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
@@ -996,7 +1131,7 @@ class Products {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WC_Product $product the product object
-	 * @param string $attribute_name the attribute name
+	 * @param string      $attribute_name the attribute name
 	 * @return bool
 	 */
 	public static function product_has_attribute( \WC_Product $product, $attribute_name ) {
@@ -1026,11 +1161,13 @@ class Products {
 	 */
 	public static function get_distinct_product_attributes( \WC_Product $product ) {
 
-		return array_filter( [
-			self::get_product_color_attribute( $product ),
-			self::get_product_size_attribute( $product ),
-			self::get_product_pattern_attribute( $product ),
-		] );
+		return array_filter(
+			array(
+				self::get_product_color_attribute( $product ),
+				self::get_product_size_attribute( $product ),
+				self::get_product_pattern_attribute( $product ),
+			)
+		);
 	}
 
 
@@ -1047,11 +1184,13 @@ class Products {
 		$product = null;
 
 		// try to by the `fb_product_item_id` meta
-		$products = wc_get_products( [
-			'limit'      => 1,
-			'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
-			'meta_value' => $fb_product_id,
-		] );
+		$products = wc_get_products(
+			array(
+				'limit'      => 1,
+				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
+				'meta_value' => $fb_product_id,
+			)
+		);
 
 		if ( ! empty( $products ) ) {
 			$product = current( $products );
@@ -1059,11 +1198,13 @@ class Products {
 
 		if ( empty( $product ) ) {
 			// try to by the `fb_product_group_id` meta
-			$products = wc_get_products( [
-				'limit'      => 1,
-				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
-				'meta_value' => $fb_product_id,
-			] );
+			$products = wc_get_products(
+				array(
+					'limit'      => 1,
+					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
+					'meta_value' => $fb_product_id,
+				)
+			);
 
 			if ( ! empty( $products ) ) {
 				$product = current( $products );
