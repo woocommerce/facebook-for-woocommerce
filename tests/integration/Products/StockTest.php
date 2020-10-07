@@ -15,6 +15,7 @@ class StockTest extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see Stock::set_product_stock() */
 	public function test_set_product_stock_with_simple_product() {
 
 		$product = $this->tester->get_product();
@@ -27,6 +28,7 @@ class StockTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Stock::set_product_stock() */
 	public function test_set_product_stock_with_variable_product() {
 
 		$product = $this->tester->get_variable_product();
@@ -39,6 +41,7 @@ class StockTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Stock::set_product_stock() */
 	public function test_set_product_stock_with_invalid_product() {
 
 		$this->tester->clearSyncRequests();
@@ -49,6 +52,7 @@ class StockTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Stock::set_product_stock() */
 	public function test_set_product_stock_with_out_of_stock_product() {
 
 		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
