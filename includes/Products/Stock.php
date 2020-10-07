@@ -23,6 +23,74 @@ class Stock {
 
 
 	/**
+	 * Stock constructor.
+	 *
+	 * @since 2.0.0
+	 */
+	public function __construct() {
+
+		$this->add_hooks();
+	}
+
+
+	/**
+	 * Adds needed hooks to keep product stock in sync.
+	 *
+	 * @since 2.0.0
+	 */
+	public function add_hooks() {
+
+		add_action( 'woocommerce_variation_set_stock', [ $this, 'set_product_stock' ] );
+		add_action( 'woocommerce_product_set_stock',   [ $this, 'set_product_stock' ] );
+	}
+
+
+	/**
+	 * Attempts to sync a product when its stock changes.
+	 *
+	 * @internal
+	 *
+	 * @since 2.0.4-dev.1
+	 *
+	 * @param \WC_Product $product the product that was updated
+	 */
+	public function set_product_stock( $product ) {
+
+		if ( ! $product instanceof \WC_Product ) {
+			return;
+		}
+
+		foreach ( $this->get_products_to_sync( $product ) as $item ) {
+			$this->maybe_sync_product_stock_status( $item );
+		}
+	}
+
+
+	/**
+	 * Gets an array of product objects that could be synced using the Batch API.
+	 *
+	 * This method returns the product variations of variable products, or the product itself for other product types.
+	 * Variable products cannot be synced through the Batch API as they are represented as Product Groups instead of Product Items on Facebook.
+	 *
+	 * @since 2.0.4-dev.1
+	 *
+	 * @param \WC_Product $product a product object
+	 * @return \WC_Product[]
+	 */
+	private function get_products_to_sync( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variable' ) ) {
+
+			return array_filter( array_map( 'wc_get_product', $product->get_children() ), function ( $item ) {
+				return $item instanceof \WC_Product;
+			} );
+		}
+
+		return [ $product ];
+	}
+
+
+	/**
 	 * Schedules a product sync to update its stock status.
 	 *
 	 * The product is removed from Facebook if it is out of stock and the plugin is configured to remove out of stock products form the catalog.
