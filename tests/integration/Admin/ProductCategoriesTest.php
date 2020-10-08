@@ -18,9 +18,9 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	 * Runs before each test.
 	 */
 	protected function _before() {
-
 		require_once 'includes/Admin/Product_Categories.php';
 		require_once 'includes/Admin/Google_Product_Category_Field.php';
+		require_once 'includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 	}
 
 
@@ -50,8 +50,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertStringContainsString( '<div class="form-field term-wc_facebook_google_product_category_id-wrap">', $html );
 		$this->assertStringContainsString( '<label for="wc_facebook_google_product_category_id">', $html );
 		$this->assertStringContainsString( '<span class="woocommerce-help-tip"', $html );
-		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id"
-				       name="wc_facebook_google_product_category_id"/>', $html );
+		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id" name="wc_facebook_google_product_category_id"/>', preg_replace( '/\s{2,}/', ' ', $html ) );
 
 		$this->assertStringContainsString( 'new WC_Facebook_Google_Product_Category_Fields', $wc_queued_js );
 	}
@@ -61,6 +60,9 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	public function test_render_edit_google_product_category_field() {
 
 		global $wc_queued_js;
+		$category					= wp_insert_term( 'New category', 'product_cat' );
+		$category_term_id = $category['term_id'];
+		$term             = get_term( $category_term_id, 'product_cat' );
 
 		$term_data = wp_insert_term( 'term', 'product_cat' );
 
@@ -73,9 +75,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertStringContainsString( '<tr class="form-field term-wc_facebook_google_product_category_id-wrap">', $html );
 		$this->assertStringContainsString( '<label for="wc_facebook_google_product_category_id">', $html );
 		$this->assertStringContainsString( '<span class="woocommerce-help-tip"', $html );
-		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id"
-					       name="wc_facebook_google_product_category_id"
-					       value=""/>', $html );
+		$this->assertStringContainsString( '<input type="hidden" id="wc_facebook_google_product_category_id" name="wc_facebook_google_product_category_id" value=""/>', preg_replace( '/\s{2,}/', ' ', $html ) );
 
 		$this->assertStringContainsString( 'new WC_Facebook_Google_Product_Category_Fields', $wc_queued_js );
 	}
@@ -88,7 +88,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_product_categories_handler()->render_google_product_category_tooltip();
 		$html = trim( ob_get_clean() );
 
-		$this->assertEquals( '<span class="woocommerce-help-tip" data-tip="Choose a default Google product category for products in this category. Products need at least two category levels defined to be sold on Instagram."></span>', $html );
+		$this->assertEquals( '<span class="woocommerce-help-tip" data-tip="Choose a default Google product category for products in this category. Products need at least two category levels defined for tax to be correctly applied."></span>', $html );
 	}
 
 
@@ -131,7 +131,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$property->setValue( facebook_for_woocommerce(), $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
-		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
+		$this->get_product_categories_handler()->save_google_product_category_and_enhanced_attributes( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
 
 		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
 	}
@@ -159,7 +159,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$property->setValue( facebook_for_woocommerce(), $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
-		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
+		$this->get_product_categories_handler()->save_google_product_category_and_enhanced_attributes( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
 
 		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
 	}
