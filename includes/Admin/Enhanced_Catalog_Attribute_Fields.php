@@ -46,7 +46,7 @@ class Enhanced_Catalog_Attribute_Fields {
 		$category                   = $this->category_handler->get_category_with_attrs( $category_id );
 		$all_attributes             = $category['attributes'];
 		$all_attributes_with_values = array_map(
-			function( $attribute ) {
+			function( $attribute ) use ( $category_id ) {
 				return array_merge( $attribute, array( 'value' => $this->get_value( $attribute['key'], $category_id ) ) );
 			},
 			$all_attributes
