@@ -38,7 +38,7 @@ class Stock {
 	 *
 	 * @since 2.0.4-dev.1
 	 */
-	public function add_hooks() {
+	private function add_hooks() {
 
 		add_action( 'woocommerce_variation_set_stock', [ $this, 'set_product_stock' ] );
 		add_action( 'woocommerce_product_set_stock',   [ $this, 'set_product_stock' ] );
