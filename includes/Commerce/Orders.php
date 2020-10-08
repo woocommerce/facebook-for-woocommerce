@@ -368,7 +368,6 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function update_local_orders() {
-
 		// sanity check for connection status
 		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) {
 			return;
@@ -522,7 +521,6 @@ class Orders {
 	 * @since 2.1.0-dev.1
 	 */
 	public function schedule_local_orders_update() {
-
 		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
 
 			$interval = $this->get_order_update_interval();
