@@ -38,16 +38,19 @@ class Settings {
 	 */
 	public function __construct() {
 
-		$this->screens = [
-			Settings_Screens\Connection::ID => new Settings_Screens\Connection(),
+		$this->screens = array(
+			Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),
 			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
-			Settings_Screens\Messenger::ID => new Settings_Screens\Messenger(),
-			Settings_Screens\Commerce::ID => new Settings_Screens\Commerce(),
-		];
+			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
+		);
 
-		add_action( 'admin_menu', [ $this, 'add_menu_item' ] );
+		if ( is_release_part_of_commerce_rollout() ) {
+			$this->screens[ Settings_Screens\Commerce::ID ] = new Settings_Screens\Commerce();
+		}
 
-		add_action( 'wp_loaded', [ $this, 'save' ] );
+		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
+
+		add_action( 'wp_loaded', array( $this, 'save' ) );
 	}
 
 
@@ -58,7 +61,7 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, [ $this, 'render' ], 5 );
+		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
 	}
 
 
@@ -142,11 +145,13 @@ class Settings {
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
-			facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
+			facebook_for_woocommerce()->get_message_handler()->add_error(
+				sprintf(
 				/* translators: Placeholders: %s - user-friendly error message */
-				__( 'Your settings could not be saved. %s', 'facebook-for-woocommerce' ),
-				$exception->getMessage()
-			) );
+					__( 'Your settings could not be saved. %s', 'facebook-for-woocommerce' ),
+					$exception->getMessage()
+				)
+			);
 		}
 	}
 
@@ -186,11 +191,14 @@ class Settings {
 		$screens = (array) apply_filters( 'wc_facebook_admin_settings_screens', $this->screens, $this );
 
 		// ensure no bogus values are added via filter
-		$screens = array_filter( $screens, function( $value ) {
+		$screens = array_filter(
+			$screens,
+			function( $value ) {
 
-			return $value instanceof Abstract_Settings_Screen;
+				return $value instanceof Abstract_Settings_Screen;
 
-		} );
+			}
+		);
 
 		return $screens;
 	}
@@ -205,7 +213,7 @@ class Settings {
 	 */
 	public function get_tabs() {
 
-		$tabs = [];
+		$tabs = array();
 
 		foreach ( $this->get_screens() as $screen_id => $screen ) {
 			$tabs[ $screen_id ] = $screen->get_label();

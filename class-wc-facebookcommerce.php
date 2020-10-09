@@ -658,7 +658,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			return $this->commerce_handler;
 		}
 
-
 		/**
 		 * Gets the settings page URL.
 		 *
@@ -818,7 +817,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			wc_deprecated_function( __METHOD__, '1.10.0' );
 		}
 
-
 	}
 
 
@@ -834,5 +832,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		return \WC_Facebookcommerce::instance();
 	}
 
+	/**
+	 * Checks to see if this version of the plugin can view the commerce tab
+	 *
+	 *
+	 * @return bool whether or not this release should see the commerce tab.
+	 */
+	function is_release_part_of_commerce_rollout() {
+		return false;
+	}
 
 endif;

@@ -172,7 +172,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$term_meta = get_term_meta( $category_term_id, Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . 'gender', true );
 
 		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
-		$this->assertEquals( 'male',  $term_meta);
+		$this->assertEquals( 'male',  $term_meta );
 	}
 
 
