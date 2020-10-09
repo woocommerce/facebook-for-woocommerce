@@ -202,11 +202,13 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 			return 0;
 		}
 
-		$values_str = '';
+		$values = [];
 
 		foreach ( $post_ids as $post_id ) {
-			$values_str .= "('{$post_id}', 'fb_visibility', 'no')";
+			$values[] = "('{$post_id}', 'fb_visibility', 'no')";
 		}
+
+		$values_str = implode( ',', $values );
 
 		// we need to explicitly insert the metadata and set it to no, because not having it means it is visible
 		$sql = "
