@@ -33,8 +33,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		const FB_PRODUCT_IMAGE       = 'fb_product_image';
 		const FB_VARIANT_IMAGE       = 'fb_image';
 		const FB_VISIBILITY          = 'fb_visibility';
-		const FB_CATEGORY            = 'fb_category';
-		const FB_ENHANCED_ATTRIBUTE  = 'fb_enhanced_attribute';
 
 		const MIN_DATE_1 = '1970-01-29';
 		const MIN_DATE_2 = '1970-01-30';
@@ -57,7 +55,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->fb_use_parent_image    = null;
 			$this->fb_price               = 0;
 			$this->main_description       = '';
-			$this->fb_category            = null;
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
 			if ( $meta = get_post_meta( $wpid, self::FB_VISIBILITY, true ) ) {
@@ -128,8 +125,15 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		public function get_fb_price() {
+			$product_price = Products::get_product_price( $this->woo_product );
 
-			return Products::get_product_price( $this->woo_product );
+			return self::format_price_for_fb_items_batch( $product_price );
+		}
+
+		private static function format_price_for_fb_items_batch($price) {
+			// items_batch endpoint requires a string and a currency code
+			$formatted = ( $price / 100.0 ) . ' ' . get_woocommerce_currency();
+			return $formatted;
 		}
 
 
@@ -235,37 +239,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 		}
 
-		public function set_fb_category( $fb_category ) {
-			$category          = stripslashes(
-				WC_Facebookcommerce_Utils::clean_string( $fb_category )
-			);
-			$is_valid_category = facebook_for_woocommerce()->get_facebook_category_handler()->is_category( $category );
-
-			if ( $is_valid_category ) {
-				$this->fb_category = $category;
-				update_post_meta(
-					$this->id,
-					self::FB_CATEGORY,
-					$category,
-				);
-			}
-		}
-
-		public function set_fb_enhanced_attribute( $attribute_key, $value ) {
-			$value = stripslashes(
-				WC_Facebookcommerce_Utils::clean_string( $value )
-			);
-			update_post_meta(
-				$this->id,
-				$this->build_enhanced_attribute_meta_key( $attribute_key ),
-				$value,
-			);
-		}
-
-		private function build_enhanced_attribute_meta_key( $attribute_key ) {
-			return self::FB_ENHANCED_ATTRIBUTE . '--' . $attribute_key;
-		}
-
 		public function set_product_image( $image ) {
 			if ( $image !== null && strlen( $image ) !== 0 ) {
 				$image = WC_Facebookcommerce_Utils::clean_string( $image );
@@ -310,20 +283,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				self::FB_VARIANT_IMAGE,
 				$this->fb_use_parent_image
 			);
-		}
-
-		public function get_fb_category() {
-			if ( $this->fb_category ) {
-				return $this->fb_category;
-			}
-
-			$this->fb_category = get_post_meta(
-				$this->id,
-				self::FB_CATEGORY,
-				true
-			);
-
-			return $this->fb_category;
 		}
 
 		public function get_fb_description() {
@@ -380,16 +339,20 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		}
 
 		public function add_sale_price( $product_data ) {
-			// initialize sale date and sale_price
-			$product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
-			$product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
+
+			// initialise sale price
+			// $product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
+			// $product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
+			$product_data['sale_price_effective_date']   = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
 			$product_data['sale_price']            = $product_data['price'];
 
 			$sale_price = $this->woo_product->get_sale_price();
+
 			// check if sale exist
-			if ( ! is_numeric( $sale_price ) ) {
+			if ( ! is_numeric( $sale_price )) {
 				return $product_data;
 			}
+
 			$sale_price =
 			intval( round( $this->get_price_plus_tax( $sale_price ) * 100 ) );
 
@@ -404,9 +367,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			: self::MAX_DATE . self::MAX_TIME;
 
 			// check if sale is expired and sale time range is valid
-			$product_data['sale_price_start_date'] = $sale_start;
-			$product_data['sale_price_end_date']   = $sale_end;
-			$product_data['sale_price']            = $sale_price;
+			// $product_data['sale_price_start_date'] = $sale_start;
+			// $product_data['sale_price_end_date']   = $sale_end;
+			$product_data['sale_price_effective_date']  = $sale_start . '/' . $sale_end;
+			$product_data['sale_price']                 = self::format_price_for_fb_items_batch( $sale_price );
+
 			return $product_data;
 		}
 
@@ -585,18 +550,20 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
 			$product_data = array(
-				'name'         => WC_Facebookcommerce_Utils::clean_string(
+				'title'         => WC_Facebookcommerce_Utils::clean_string(
 					$this->get_title()
 				),
 				'description'           => $this->get_fb_description(),
-				'image_url'             => $image_urls[0], // The array can't be empty.
-				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
-				'url'                   => $product_url,
-				'category'              => $categories['categories'],
+				'image_link'             => $image_urls[0], // The array can't be empty.
+				'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
+				'link'                   => $product_url,
+				// Currency not a catetgory
+				// 'category'              => $categories['categories'],
 				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
-				'currency'              => get_woocommerce_currency(),
+				// Currency isn't included in /items_batch as its part of the price
+				// 'currency'              => get_woocommerce_currency(),
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
@@ -611,7 +578,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
 				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
 				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
-
 			}
 
 			if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
