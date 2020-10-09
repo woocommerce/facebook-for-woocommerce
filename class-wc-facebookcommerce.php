@@ -658,6 +658,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			return $this->commerce_handler;
 		}
 
+		/**
+		 * Checks to see if this version of the plugin can view the commerce tab
+		 *
+		 *
+		 * @return bool whether or not this release should see the commerce tab.
+		 */
+		public function is_release_part_of_commerce_rollout() {
+
+			return false;
+		}
+
 
 		/**
 		 * Gets the settings page URL.
