@@ -21,6 +21,7 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 		require_once WC()->plugin_path() . '/includes/admin/wc-meta-box-functions.php';
 
 		require_once 'includes/Admin/Products.php';
+		require_once 'includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 	}
 
 
@@ -90,19 +91,16 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 
 		$_POST[ Admin\Products::FIELD_COMMERCE_ENABLED ] = 'yes';
 		$_POST[ Admin\Products::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
-		$_POST[ Admin\Products::FIELD_GENDER ] = 'male';
-		$_POST[ Admin\Products::FIELD_COLOR ] = 'color';
-		$_POST[ Admin\Products::FIELD_SIZE ] = 'size';
-		$_POST[ Admin\Products::FIELD_PATTERN ] = 'pattern';
+
+		$enhanced_catalog_prefix = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$_POST[ $enhanced_catalog_prefix . 'gender' ] = 'male';
 
 		$this->get_products_handler()->save_commerce_fields( $product );
+		$gender = \SkyVerge\WooCommerce\Facebook\Products::get_enhanced_catalog_attribute( 'gender', $product );
 
 		$this->assertEquals( true, \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) );
 		$this->assertEquals( '1234', \SkyVerge\WooCommerce\Facebook\Products::get_google_product_category_id( $product ) );
-		$this->assertEquals( 'male', \SkyVerge\WooCommerce\Facebook\Products::get_product_gender( $product ) );
-		$this->assertEquals( 'color', \SkyVerge\WooCommerce\Facebook\Products::get_product_color_attribute( $product ) );
-		$this->assertEquals( 'size', \SkyVerge\WooCommerce\Facebook\Products::get_product_size_attribute( $product ) );
-		$this->assertEquals( 'pattern', \SkyVerge\WooCommerce\Facebook\Products::get_product_pattern_attribute( $product ) );
+		$this->assertEquals( 'male', $gender );
 	}
 
 

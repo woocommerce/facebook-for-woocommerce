@@ -19,13 +19,18 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-
 	public function _before() {
 
 		parent::_before();
 
 		// the API cannot be instantiated if an access token is not defined
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( 'fake_page_access_token' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( 'fake_commerce_manager_id' );
+		// This would usually covered as a hook on the init action but if the acceptance
+		// test setup doesn't already have a page acess token or commerece manager id
+		// then it'll have been skipped.
+		$this->get_commerce_orders_handler()->schedule_local_orders_update();
 
 		// create an instance of the API and load all the request and response classes
 		facebook_for_woocommerce()->get_api();
@@ -421,7 +426,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property->setValue( facebook_for_woocommerce(), $api );
 
 		// test will fail if create_local_order() is called or if update_local_order() is not called once
-        $orders_handler = $this->make( Orders::class, [
+		$orders_handler = $this->make( Orders::class, [
 			'create_local_order' => \Codeception\Stub\Expected::never(),
 			'update_local_order' => \Codeception\Stub\Expected::once(),
 		] );

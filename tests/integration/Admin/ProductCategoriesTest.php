@@ -37,6 +37,40 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 	// TODO: add test for enqueue_assets()
 
+	/** @see Product_Categories::render_add_enhanced_catalog_attributes_field() */
+	public function test_render_add_enhanced_catalog_attributes_field() {
+
+		global $wc_queued_js;
+
+		$google_category_id = 167;
+		ob_start();
+		$this->get_product_categories_handler()->render_add_enhanced_catalog_attributes_field( $google_category_id );
+		$html = trim( ob_get_clean() );
+		$html = preg_replace( '/\s{2,}/', ' ', $html );
+
+		$this->assertStringContainsString( '<label for="wc_facebook_enhanced_catalog_attributes_id">', $html );
+		$this->assertStringContainsString( '<select name="wc_facebook_enhanced_catalog_attribute_gender" id="wc_facebook_enhanced_catalog_attribute_gender">', $html );
+	}
+
+	/** @see Product_Categories::test_render_edit_enhanced_catalog_attributes_field() */
+	public function test_render_edit_enhanced_catalog_attributes_field() {
+
+		global $wc_queued_js;
+
+		$google_category_id = 167;
+		$category					= wp_insert_term( 'New category', 'product_cat' );
+		$category_term_id = $category['term_id'];
+		$term             = get_term( $category_term_id, 'product_cat' );
+		update_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $google_category_id );
+
+		ob_start();
+		$this->get_product_categories_handler()->render_edit_enhanced_catalog_attributes_field( $term );
+		$html = trim( ob_get_clean() );
+		$html = preg_replace( '/\s{2,}/', ' ', $html );
+
+		$this->assertStringContainsString( '<label for="wc_facebook_enhanced_catalog_attributes_id">', $html );
+		$this->assertStringContainsString( '<select name="wc_facebook_enhanced_catalog_attribute_gender" id="wc_facebook_enhanced_catalog_attribute_gender">', $html );
+	}
 
 	/** @see Product_Categories::render_add_google_product_category_field() */
 	public function test_render_add_google_product_category_field() {
@@ -100,7 +134,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see Product_Categories::save_google_product_category() */
-	public function test_save_google_product_category() {
+	public function test_save_google_product_category_and_enhanced_attributes() {
 
 		$category                  = wp_insert_term( 'New category', 'product_cat' );
 		$category_term_id          = $category['term_id'];
@@ -131,9 +165,14 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		$property->setValue( facebook_for_woocommerce(), $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
+		$enhanced_catalog_prefix = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$_POST[ $enhanced_catalog_prefix . 'gender' ] = 'male';
+
 		$this->get_product_categories_handler()->save_google_product_category_and_enhanced_attributes( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
+		$term_meta = get_term_meta( $category_term_id, Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . 'gender', true );
 
 		$this->assertEquals( '1234', get_term_meta( $category_term_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
+		$this->assertEquals( 'male',  $term_meta);
 	}
 
 
