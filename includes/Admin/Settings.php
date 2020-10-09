@@ -44,7 +44,7 @@ class Settings {
 			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
 		);
 
-		if ( facebook_for_woocommerce()->is_release_part_of_commerce_rollout() ) {
+		if ( is_release_part_of_commerce_rollout() ) {
 			$this->screens[ Settings_Screens\Commerce::ID ] = new Settings_Screens\Commerce();
 		}
 
