@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.0.3';
+		const VERSION = '2.0.5-dev.1';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -60,6 +60,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var Background_Remove_Duplicate_Visibility_Meta job handler instance */
 		protected $background_remove_duplicate_visibility_meta;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Products\Stock products stock handler */
+		private $products_stock_handler;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync products sync handler */
 		private $products_sync_handler;
@@ -113,6 +116,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/Products/Stock.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
 				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
@@ -122,6 +126,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->products_stock_handler  = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
 
@@ -522,6 +527,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_background_remove_duplicate_visibility_meta_instance() {
 
 			return $this->background_remove_duplicate_visibility_meta;
+		}
+
+
+		/**
+		 * Gets the products stock handler.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Products\Stock
+		 */
+		public function get_products_stock_handler() {
+
+			return $this->products_stock_handler;
 		}
 
 

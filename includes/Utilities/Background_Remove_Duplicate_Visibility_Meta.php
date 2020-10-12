@@ -138,7 +138,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 
 		foreach ( $results as $result ) {
 
-			$sql = "DELETE FROM wp_postmeta WHERE post_id = %d AND meta_key = 'fb_visibility' AND meta_id != %d";
+			$sql = "DELETE FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'fb_visibility' AND meta_id != %d";
 
 			if ( false === $wpdb->query( $wpdb->prepare( $sql, $result->post_id, $result->last_meta_id ) ) ) {
 
