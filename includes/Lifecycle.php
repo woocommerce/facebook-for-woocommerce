@@ -41,6 +41,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.11.0',
 			'2.0.0',
 			'2.0.3',
+			'2.0.4',
 		];
 	}
 
@@ -315,6 +316,24 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Upgrades to version 2.0.4
+	 *
+	 * @since 2.0.4
+	 */
+	protected function upgrade_to_2_0_4() {
+
+		// if unfinished jobs are stuck, give the handlers a chance to complete them
+		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
+			$handler->dispatch();
+		}
+
+		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
+			$handler->dispatch();
+		}
 	}
 
 
