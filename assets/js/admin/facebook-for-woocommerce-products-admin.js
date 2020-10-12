@@ -222,7 +222,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the current product has synced variations.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.0.5
 		 *
 		 * @returns {boolean}
 		 */
