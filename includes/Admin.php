@@ -1375,7 +1375,7 @@ class Admin {
 	/**
 	 * Determines whether sync is enabled for the current product.
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 *
 	 * @return bool
 	 */

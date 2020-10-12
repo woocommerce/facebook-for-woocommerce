@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\Products;
 /**
  * The product stock handler.
  *
- * @since 2.0.5-dev.1
+ * @since 2.0.5
  */
 class Stock {
 
@@ -25,7 +25,7 @@ class Stock {
 	/**
 	 * Stock constructor.
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 */
 	public function __construct() {
 
@@ -36,7 +36,7 @@ class Stock {
 	/**
 	 * Adds needed hooks to keep product stock in sync.
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 */
 	private function add_hooks() {
 
@@ -50,7 +50,7 @@ class Stock {
 	 *
 	 * @internal
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 *
 	 * @param \WC_Product $product the product that was updated
 	 */
@@ -72,7 +72,7 @@ class Stock {
 	 * This method returns the product variations of variable products, or the product itself for other product types.
 	 * Variable products cannot be synced through the Batch API as they are represented as Product Groups instead of Product Items on Facebook.
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 *
 	 * @param \WC_Product $product a product object
 	 * @return \WC_Product[]
@@ -95,7 +95,7 @@ class Stock {
 	 *
 	 * The product is removed from Facebook if it is out of stock and the plugin is configured to remove out of stock products from the catalog.
 	 *
-	 * @since 2.0.5-dev.1
+	 * @since 2.0.5
 	 *
 	 * @param \WC_Product $product a product object
 	 */
