@@ -415,11 +415,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			}
 
 			if ( ! empty( $event_id ) ) {
-
 				$event = sprintf(
 					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('set', 'agent', '%s', '%s');\n".
 					"fbq('%s', '%s', %s, %s);",
 					WC_Facebookcommerce_Utils::getIntegrationName(),
+					Event::get_platform_identifier(),
+					self::get_pixel_id(),
 					esc_js( $method ),
 					esc_js( $event_name ),
 					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
@@ -430,8 +432,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 				$event = sprintf(
 					"/* %s Facebook Integration Event Tracking */\n" .
+					"fbq('set', 'agent', '%s', '%s');\n".
 					"fbq('%s', '%s', %s);",
 					WC_Facebookcommerce_Utils::getIntegrationName(),
+					Event::get_platform_identifier(),
+					self::get_pixel_id(),
 					esc_js( $method ),
 					esc_js( $event_name ),
 					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
@@ -626,7 +631,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return '';
 		}
 
-
+		/**
+		 * Gets the logged in user info
+		 *
+		 * @return string[]
+		 */
+		public function get_user_info(){
+			return $this->user_info;
+		}
 	}
 
 endif;

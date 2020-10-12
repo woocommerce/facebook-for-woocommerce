@@ -73,6 +73,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 				],
 				[
 					'/* WooCommerce Facebook Integration Event Tracking */',
+					'fbq(\'set\', \'agent\', ',
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
@@ -99,6 +100,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 				],
 				[
 					'/* WooCommerce Facebook Integration Event Tracking */',
+					'fbq(\'set\', \'agent\', ',
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
@@ -127,6 +129,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 				],
 				[
 					'/* WooCommerce Facebook Integration Event Tracking */',
+					'fbq(\'set\', \'agent\', ',
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
@@ -156,6 +159,7 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 				],
 				[
 					'/* WooCommerce Facebook Integration Event Tracking */',
+					'fbq(\'set\', \'agent\', ',
 					'fbq(\'track\', \'AddToCart\', {',
 					'"source": "woocommerce",',
 					'"version": "4.1.1",',
@@ -176,4 +180,3 @@ class WC_Facebookcommerce_Pixel_Test extends \Codeception\TestCase\WPTestCase {
 
 
 }
-

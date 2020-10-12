@@ -1532,4 +1532,24 @@ class Admin {
 	}
 
 
+	/**
+	 * Determines whether sync is enabled for the current product.
+	 *
+	 * @since 2.0.5
+	 *
+	 * @return bool
+	 */
+	private function is_sync_enabled_for_current_product() {
+		global $post;
+
+		$product = wc_get_product( $post );
+
+		if ( ! $product instanceof \WC_Product ) {
+			return false;
+		}
+
+		return Products::is_sync_enabled_for_product( $product );
+	}
+
+
 }

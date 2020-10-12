@@ -492,7 +492,7 @@ jQuery( document ).ready( function( $ ) {
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
 				syncEnabled      = $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
-				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).val() !== 'sync_disabled';
+				varSyncEnabled   = isSyncEnabledForVariableProduct();
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );

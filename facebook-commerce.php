@@ -9,6 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
@@ -413,8 +414,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		add_action( 'wc_facebook_generate_product_catalog_feed', [ $this, 'handle_generate_product_catalog_feed' ] );
 
 		if ( $this->get_facebook_pixel_id() ) {
-			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $this->is_advanced_matching_enabled() );
-			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info );
+			$aam_settings = $this->load_aam_settings_of_pixel();
+			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $aam_settings );
+			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );
 		}
 
 		// initialize the messenger chat features
@@ -422,6 +424,48 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'fb_page_id'             => $this->get_facebook_page_id(),
 			'facebook_jssdk_version' => $this->get_js_sdk_version(),
 		] );
+	}
+
+	/**
+	 * Returns the Automatic advanced matching of this pixel
+	 *
+	 * @since 2.0.3
+	 *
+	 * @return AAMSettings
+	 */
+	private function load_aam_settings_of_pixel() {
+		$installed_pixel = $this->get_facebook_pixel_id();
+		// If no pixel is installed, reading the DB is not needed
+		if(!$installed_pixel ){
+			return null;
+		}
+		$config_key = 'wc_facebook_aam_settings';
+		$saved_value = get_transient( $config_key );
+		$refresh_interval = 20*MINUTE_IN_SECONDS;
+		$aam_settings = null;
+		// If wc_facebook_aam_settings is present in the DB
+		// it is converted into an AAMSettings object
+		if( $saved_value !== false ){
+			$cached_aam_settings = new AAMSettings(json_decode($saved_value, true));
+			// This condition is added because
+			// it is possible that the AAMSettings saved do not belong to the current
+			// installed pixel
+			// because the admin could have changed the connection to Facebook
+			// during the refresh interval
+			if($cached_aam_settings->get_pixel_id() == $installed_pixel){
+				$aam_settings = $cached_aam_settings;
+			}
+		}
+		// If the settings are not present or invalid
+		// they are fetched from Facebook domain
+		// and cached in WP database if they are not null
+		if(!$aam_settings){
+			$aam_settings = AAMSettings::build_from_pixel_id( $installed_pixel );
+			if($aam_settings){
+				set_transient($config_key, strval($aam_settings), $refresh_interval);
+			}
+		}
+		return $aam_settings;
 	}
 
 	public function load_background_sync_process() {
