@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.0.5-dev.1 =
+ * Tweak - Update product availability when stock changes in the store
  * Fix - Prevent an error during the feed generation when variable products are still using deleted terms
 
 = 2020.10.08 - version 2.0.4 =
