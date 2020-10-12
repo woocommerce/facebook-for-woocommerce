@@ -533,7 +533,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the products stock handler.
 		 *
-		 * @since 2.0.0
+		 * @since 2.0.5-dev.1
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Products\Stock
 		 */
