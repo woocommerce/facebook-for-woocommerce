@@ -41,6 +41,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 2.0.5-dev.1 =
  * Tweak - Update product availability when stock changes in the store
+ * Fix - Won't prevent variation products to be updated when they're set to not sync with Facebook and have their categories excluded from syncing
  * Fix - Prevent an error during the feed generation when variable products are still using deleted terms
 
 = 2020.10.08 - version 2.0.4 =
