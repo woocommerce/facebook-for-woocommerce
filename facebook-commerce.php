@@ -950,19 +950,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
 
-		if ( isset( $_POST[ \WC_Facebook_Product::FB_ENHANCED_ATTRIBUTE ] ) ) {
-			foreach( $_POST[ \WC_Facebook_Product::FB_ENHANCED_ATTRIBUTE ] as $key => $value ) {
-				if(is_null($value)) {
-					continue;
-				}
-				$clean_value = trim( sanitize_text_field( wp_unslash( $value ) ) );
-				if(strlen($clean_value) === 0) {
-					continue;
-				}
-				$woo_product->set_fb_enhanced_attribute($key, $clean_value);
-			}
-		}
-
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 

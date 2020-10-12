@@ -266,18 +266,15 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$data = $fb_product->prepare_product();
 
 		// product variations use the parent product's retailer ID as the retailer product group ID
-		$data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+		// $data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+		$data['item_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
 
 		return $this->normalize_product_data( $data );
 	}
 
-
 	/**
-	 * Normalizes product data to be included in a sync request.
-	 *
-	 * The Batch API is unique in that the Google Product Category should be set in the 'category' field, as
-	 * 'google_product_category' is not supported in this context. The 'product_type' field is what should hold the
-	 * WooCommerce category.
+	 * Normalizes product data to be included in a sync request. /items_batch
+	 * rather than /batch this time.
 	 *
 	 * @since 2.0.0
 	 *
@@ -289,17 +286,6 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
 		$data['condition'] = 'new';
 
-		$data['product_type'] = $data['category'];
-
-		// if a Google Product Category is set, move it to the category field as the field is handled differently for batch requests
-		if ( ! empty( $data['google_product_category'] ) ) {
-
-			$data['category'] = $data['google_product_category'];
-
-			// this is an unsupported field in the Batch API
-			unset( $data['google_product_category'] );
-		}
-
 		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
 		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
 
@@ -309,6 +295,44 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		return $data;
 	}
+
+	// /**
+	//  * Normalizes product data to be included in a sync request.
+	//  *
+	//  * The Batch API is unique in that the Google Product Category should be set in the 'category' field, as
+	//  * 'google_product_category' is not supported in this context. The 'product_type' field is what should hold the
+	//  * WooCommerce category.
+	//  *
+	//  * @since 2.0.0
+	//  *
+	//  * @param array $data product data
+	//  * @return array
+	//  */
+	// private function normalize_product_data( $data ) {
+
+	// 	// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
+	// 	$data['condition'] = 'new';
+
+	// 	$data['product_type'] = $data['category'];
+
+	// 	// if a Google Product Category is set, move it to the category field as the field is handled differently for batch requests
+	// 	if ( ! empty( $data['google_product_category'] ) ) {
+
+	// 		$data['category'] = $data['google_product_category'];
+
+	// 		// this is an unsupported field in the Batch API
+	// 		unset( $data['google_product_category'] );
+	// 	}
+
+	// 	// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
+	// 	if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
+
+	// 		$data['additional_variant_attributes'] = $data['custom_data'];
+	// 		unset( $data['custom_data'] );
+	// 	}
+
+	// 	return $data;
+	// }
 
 
 	/**
@@ -326,7 +350,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$data = $fb_product->prepare_product();
 
 		// products that are not variations use their retailer retailer ID as the retailer product group ID
-		$data['retailer_product_group_id'] = $data['retailer_id'];
+		// $data['retailer_product_group_id'] = $data['retailer_id'];
+		$data['item_group_id'] = $data['retailer_id'];
 
 		return $this->normalize_product_data( $data );
 	}
