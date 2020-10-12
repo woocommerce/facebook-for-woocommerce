@@ -39,7 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+<<<<<<< HEAD
 = 2020.nn.nn - version 2.0.4 =
+=======
+= 2020.nn.nn - version 2.0.5-dev.1 =
+>>>>>>> release-2.0.5
 
 = 2020.10.02 - version 2.0.3 =
  * Tweak - Pixel events now can include advanced matching information
