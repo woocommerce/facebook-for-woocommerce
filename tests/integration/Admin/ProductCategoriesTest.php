@@ -14,21 +14,36 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
+	/** @var Sync original Sync handler instance */
+	protected $sync;
+
+
 	/**
 	 * Runs before each test.
 	 */
 	protected function _before() {
 
+		parent::_before();
+
 		require_once 'includes/Admin/Product_Categories.php';
 		require_once 'includes/Admin/Google_Product_Category_Field.php';
+
+		// store a reference to the original Sync handler to restore it after each test is complete
+		$this->sync = $this->tester->getPropertyValue( facebook_for_woocommerce(), 'products_sync_handler' );
 	}
 
 
 	/**
 	 * Runs after each test.
+	 *
+	 * Prefer _tearDown() over _after() because the latter is not currently called on sub-classes of \Codeception\TestCase\WPTestCase.
 	 */
-	protected function _after() {
+	public function _tearDown() {
 
+		// restore Sync handler reference back to the original instance
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $this->sync );
+
+		parent::_tearDown();
 	}
 
 
