@@ -570,14 +570,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			// add the Commerce values
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
-
-				// $product_data['gender']    = Products::get_product_gender( $this->woo_product );
 				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
-
-				// add the known attribute values
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
 			}
 
 			if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {

@@ -31,7 +31,6 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/** Test methods **************************************************************************************************/
 
 
-
 	/** @see \WC_Facebook_Product::prepare_product() */
 	public function test_prepare_product_not_ready_for_commerce_inventory() {
 
@@ -111,9 +110,9 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see \WC_Facebook_Product::prepare_product()
 	 *
-	 * @dataProvider provider_prepare_product_uses_correct_number_of_additional_image_urls
+	 * @dataProvider provider_prepare_product_uses_correct_number_of_additional_image_links
 	 */
-	public function test_prepare_product_uses_correct_number_of_additional_image_urls( int $images_count ) {
+	public function test_prepare_product_uses_correct_number_of_additional_image_links( int $images_count ) {
 
 		$product = $this->tester->get_product();
 
@@ -128,12 +127,12 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$data = ( new \WC_Facebook_Product( $product->get_id() ) )->prepare_product();
 
-		$this->assertLessThanOrEqual( 20, count( $data['additional_image_urls'] ) );
+		$this->assertLessThanOrEqual( 20, count( $data['additional_image_link'] ) );
 	}
 
 
-	/** @see test_prepare_product_uses_correct_number_of_additional_image_urls() */
-	public function provider_prepare_product_uses_correct_number_of_additional_image_urls() {
+	/** @see test_prepare_product_uses_correct_number_of_additional_image_links() */
+	public function provider_prepare_product_uses_correct_number_of_additional_image_links() {
 
 		return [
 			[ 1 ],
@@ -245,6 +244,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_get_fb_price( $product_price, $tax_display, $expected_price ) {
 
+
 		$this->check_fb_price( $this->tester->get_product( [ 'regular_price' => $product_price ] ), $tax_display, $expected_price );
 	}
 
@@ -279,10 +279,11 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 	/** @see test_get_fb_price() */
 	public function data_provider_get_fb_price() {
+		$currency = get_woocommerce_currency();
 
 		return [
-			'including taxes' => [ 19.99, 'incl', 2199 ],
-			'excluding taxes' => [ 19.99, 'excl', 1999 ],
+			'including taxes' => [ 19.99, 'incl', '21.99 ' . $currency ],
+			'excluding taxes' => [ 19.99, 'excl', '19.99 ' . $currency ],
 		];
 	}
 
@@ -301,9 +302,10 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$product->update_meta_data( WC_Facebook_Product::FB_PRODUCT_PRICE, $product_price );
 		$product->save_meta_data();
+		$currency = get_woocommerce_currency();
 
 		// current behavior is to return the stored price without modifications regardless of tax settings
-		$this->check_fb_price( $product, $tax_display, (int) round( $product_price * 100 ) );
+		$this->check_fb_price( $product, $tax_display, $product_price . ' ' . $currency);
 	}
 
 
