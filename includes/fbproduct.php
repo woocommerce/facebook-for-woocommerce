@@ -130,7 +130,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return self::format_price_for_fb_items_batch( $product_price );
 		}
 
-		private static function format_price_for_fb_items_batch($price) {
+		private static function format_price_for_fb_items_batch( $price ) {
 			// items_batch endpoint requires a string and a currency code
 			$formatted = ( $price / 100.0 ) . ' ' . get_woocommerce_currency();
 			return $formatted;
@@ -341,15 +341,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		public function add_sale_price( $product_data ) {
 
 			// initialise sale price
-			// $product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
-			// $product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
-			$product_data['sale_price_effective_date']   = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
-			$product_data['sale_price']            = $product_data['price'];
+			$product_data['sale_price_effective_date'] = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
+			$product_data['sale_price']                = $product_data['price'];
 
 			$sale_price = $this->woo_product->get_sale_price();
 
 			// check if sale exist
-			if ( ! is_numeric( $sale_price )) {
+			if ( ! is_numeric( $sale_price ) ) {
 				return $product_data;
 			}
 
@@ -367,10 +365,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			: self::MAX_DATE . self::MAX_TIME;
 
 			// check if sale is expired and sale time range is valid
-			// $product_data['sale_price_start_date'] = $sale_start;
-			// $product_data['sale_price_end_date']   = $sale_end;
-			$product_data['sale_price_effective_date']  = $sale_start . '/' . $sale_end;
-			$product_data['sale_price']                 = self::format_price_for_fb_items_batch( $sale_price );
+			$product_data['sale_price_effective_date'] = $sale_start . '/' . $sale_end;
+			$product_data['sale_price']                = self::format_price_for_fb_items_batch( $sale_price );
 
 			return $product_data;
 		}
@@ -386,7 +382,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 */
 		public function is_hidden() {
 
-			wc_deprecated_function( __METHOD__,  '2.0.2', 'Products::product_should_be_synced()' );
+			wc_deprecated_function( __METHOD__, '2.0.2', 'Products::product_should_be_synced()' );
 
 			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
@@ -550,34 +546,24 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
 			$product_data = array(
-				'title'         => WC_Facebookcommerce_Utils::clean_string(
+				'title'                 => WC_Facebookcommerce_Utils::clean_string(
 					$this->get_title()
 				),
 				'description'           => $this->get_fb_description(),
-				'image_link'             => $image_urls[0], // The array can't be empty.
+				// The array can't be empty.
+				'image_link'            => $image_urls[0],
 				'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
-				'link'                   => $product_url,
-				// Currency not a catetgory
-				// 'category'              => $categories['categories'],
+				'link'                  => $product_url,
 				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
-				// Currency isn't included in /items_batch as its part of the price
-				// 'currency'              => get_woocommerce_currency(),
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
 
 			// add the Commerce values
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
-
-				// $product_data['gender']    = Products::get_product_gender( $this->woo_product );
 				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
-
-				// add the known attribute values
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
 			}
 
 			if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
@@ -587,7 +573,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			// Only use checkout URLs if they exist.
 			if ( $checkout_url ) {
-				  $product_data['checkout_url'] = $checkout_url;
+				$product_data['checkout_url'] = $checkout_url;
 			}
 
 			$product_data = $this->add_sale_price( $product_data );
@@ -603,11 +589,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// Exclude variations that are "virtual" products from export to Facebook &&
 			// No Visibility Option for Variations
 			if ( true === $this->get_virtual() ) {
-				  $product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
+				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 
 			if ( ! $prepare_for_product_feed ) {
-				  $this->prepare_variants_for_item( $product_data );
+				$this->prepare_variants_for_item( $product_data );
 			} elseif (
 			WC_Facebookcommerce_Utils::is_all_caps( $product_data['description'] )
 			) {
@@ -616,11 +602,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 
 			/**
-			   * Filters the generated product data.
-			   *
-			   * @param int   $id           Woocommerce product id
-			   * @param array $product_data An array of product data
-			   */
+			 * Filters the generated product data.
+			 *
+			 * @param int   $id           Woocommerce product id
+			 * @param array $product_data An array of product data
+			 */
 			return apply_filters(
 				'facebook_for_woocommerce_integration_prepare_product',
 				$product_data,

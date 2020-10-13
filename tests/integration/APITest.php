@@ -5,6 +5,7 @@ use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
+use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 /**
@@ -356,7 +357,8 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$expected_request_data = [
 			'allow_upsert' => $allow_upsert,
-			'requests'     => $requests
+			'requests'     => $requests,
+			'item_type'    => 'PRODUCT_ITEM',
 		];
 
 		// test will fail if do_remote_request() is not called once
@@ -370,7 +372,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $requests, $api->get_request()->get_requests() );
 		$this->assertEquals( $allow_upsert, $api->get_request()->get_allow_upsert() );
 		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$catalog_id}/batch", $api->get_request()->get_path() );
+		$this->assertEquals( "/{$catalog_id}/items_batch", $api->get_request()->get_path() );
 		$this->assertEquals( [], $api->get_request()->get_params() );
 		$this->assertEquals( $expected_request_data, $api->get_request()->get_data() );
 

@@ -35,7 +35,7 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		$request = new Request( '1234' );
 
-		$this->assertEquals( '/1234/batch', $request->get_path() );
+		$this->assertEquals( '/1234/items_batch', $request->get_path() );
 		$this->assertEquals( 'POST', $request->get_method() );
 	}
 
