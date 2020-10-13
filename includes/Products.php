@@ -1141,6 +1141,11 @@ class Products {
 	 * @param mixed       $value the attribute value.
 	 */
 	public static function update_product_enhanced_catalog_attribute( \WC_Product $product, $attribute_key, $value ) {
+		// Ensure that we don't override a default with the same value
+		// as the default.
+		if ( self::get_enhanced_catalog_attribute( $key, $product ) === $value ) {
+			return;
+		}
 		$product->update_meta_data( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key, $value );
 		$product->save_meta_data();
 	}
