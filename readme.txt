@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.1
-Stable tag: 2.0.5
+Stable tag: 2.1.0-beta.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.1.0-dev.1 =
+= 2020.nn.nn - version 2.1.0-beta.1 =
  * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
