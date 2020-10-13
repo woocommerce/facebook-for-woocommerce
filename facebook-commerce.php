@@ -942,10 +942,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product->save_meta_data();
 		}
 
-		if ( isset( $_POST[\WC_Facebook_Product::FB_CATEGORY] ) ) {
-			$woo_product->set_fb_category(sanitize_key( wp_unslash( $_POST[\WC_Facebook_Product::FB_CATEGORY] )));
-		}
-
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
