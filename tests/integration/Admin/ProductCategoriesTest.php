@@ -141,9 +141,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		     ->willReturn( \Codeception\Stub\Expected::once( $expected_sync_ids ) );
 
 		// replace the sync handler property
-		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
-		$property->setAccessible( true );
-		$property->setValue( facebook_for_woocommerce(), $sync );
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
 		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
@@ -169,9 +167,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		     ->willReturn( \Codeception\Stub\Expected::never() );
 
 		// replace the sync handler property
-		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
-		$property->setAccessible( true );
-		$property->setValue( facebook_for_woocommerce(), $sync );
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
 		$this->get_product_categories_handler()->save_google_product_category( $category_term_id, $category_term_taxonomy_id, 'product_cat' );
