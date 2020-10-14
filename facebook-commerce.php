@@ -1401,6 +1401,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Update existing product group (variant data only)
+	 *
+	 * @param WC_Facebook_Product $woo_product
 	 **/
 	function update_product_group( $woo_product ) {
 		$fb_product_group_id = $this->get_product_fbid(
@@ -1428,9 +1430,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$product_group_data = array(
+		// figure out the matching default variation
+		$default_product_fbid  = null;
+		$woo_default_variation = $this->get_product_group_default_variation( $woo_product );
+
+		if ( $woo_default_variation ) {
+			$default_product_fbid = $this->get_product_fbid(
+				self::FB_PRODUCT_ITEM_ID,
+				$woo_default_variation->get_id(),
+				$woo_default_variation
+			);
+		}
+
+		$product_group_data = [
 			'variants' => $variants,
-		);
+		];
+
+		if ( $default_product_fbid ) {
+			$product_group_data['default_product_id'] = $default_product_fbid;
+		}
 
 		$result = $this->check_api_result(
 			$this->fbgraph->update_product_group(
@@ -1448,6 +1466,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 		}
 		*/
+	}
+
+
+	/**
+	 * Determine if there matching variation to the default attributes
+	 *
+	 * @param WC_Facebook_Product $woo_product
+	 *
+	 * @return WC_Product_Variation|null
+	 */
+	protected function get_product_group_default_variation( $woo_product ) {
+
+		$default_attributes = $woo_product->woo_product->get_default_attributes( 'edit' );
+
+		if ( empty( $default_attributes ) ) {
+			return null;
+		}
+
+		$default_variation  = null;
+		$product_variations = $woo_product->woo_product->get_available_variations( 'objects' );
+
+		/* @var $variation WC_Product_Variation */
+		foreach ( $product_variations as $variation ) {
+
+			$variation_attributes = $variation->get_attributes( 'edit' );
+
+			$matching_attributes = array_intersect_assoc( $default_attributes, $variation_attributes );
+
+			if ( count( $matching_attributes ) === count( $variation_attributes ) ) {
+				$default_variation = $variation;
+				break;
+			}
+		}
+
+		return $default_variation;
 	}
 
 	/**
