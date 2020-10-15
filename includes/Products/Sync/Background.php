@@ -40,7 +40,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.0.0
 	 *
 	 * @param \stdClass|object $job
-	 * @param int|null $items_per_batch number of items to process in a single request (defaults to null for unlimited)
+	 * @param int|null         $items_per_batch number of items to process in a single request (defaults to null for unlimited)
 	 * @throws \Exception when job data is incorrect
 	 * @return \stdClass $job
 	 */
@@ -104,23 +104,22 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.0.0
 	 *
 	 * @param \stdClass|object $job
-	 * @param array $data
-	 * @param int|null $items_per_batch number of items to process in a single request (defaults to null for unlimited)
+	 * @param array            $data
+	 * @param int|null         $items_per_batch number of items to process in a single request (defaults to null for unlimited)
 	 */
 	public function process_items( $job, $data, $items_per_batch = null ) {
 
 		$processed = 0;
-		$requests  = [];
+		$requests  = array();
 
 		foreach ( $data as $item_id => $method ) {
 
 			try {
 
-				if ( $request = $this->process_item( [ $item_id, $method ], $job ) ) {
+				if ( $request = $this->process_item( array( $item_id, $method ), $job ) ) {
 					$requests[] = $request;
 				}
-
-			} catch ( Framework\SV_WC_Plugin_Exception $e )	{
+			} catch ( Framework\SV_WC_Plugin_Exception $e ) {
 
 				facebook_for_woocommerce()->log( "Background sync error: {$e->getMessage()}" );
 			}
@@ -135,7 +134,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			if ( ( $items_per_batch && $processed >= $items_per_batch ) || $this->time_exceeded() || $this->memory_exceeded() ) {
 				break;
 			}
-		}
+		}//end foreach
 
 		// send item updates to Facebook and update the job with the returned array of batch handles
 		if ( ! empty( $requests ) ) {
@@ -150,7 +149,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 			} catch ( Framework\SV_WC_API_Exception $e ) {
 
-				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %s: %s' ), $job->id, $e->getMessage() );
+				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %1$s: %2$s' ), $job->id, $e->getMessage() );
 
 				facebook_for_woocommerce()->log( $message );
 			}
@@ -163,7 +162,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param mixed $item
+	 * @param mixed            $item
 	 * @param object|\stdClass $job
 	 * @return array|null
 	 * @throws Framework\SV_WC_Plugin_Exception
@@ -172,7 +171,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		list( $item_id, $method ) = $item;
 
-		if ( ! in_array( $method, [ Sync::ACTION_UPDATE, Sync::ACTION_DELETE ], true ) ) {
+		if ( ! in_array( $method, array( Sync::ACTION_UPDATE, Sync::ACTION_DELETE ), true ) ) {
 			throw new Framework\SV_WC_Plugin_Exception( "Invalid sync request method: {$method}." );
 		}
 
@@ -217,16 +216,15 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			// extract the retailer_id
 			$retailer_id = $product_data['retailer_id'];
 
-			//NB: Changing this to get items_batch to work
+			// NB: Changing this to get items_batch to work
 			// retailer_id cannot be included in the data object
 			unset( $product_data['retailer_id'] );
 			$product_data['id'] = $retailer_id;
 
-			$request = [
-				// 'retailer_id' => $retailer_id,
-				'method'      => Sync::ACTION_UPDATE,
-				'data'        => $product_data,
-			];
+			$request = array(
+				'method' => Sync::ACTION_UPDATE,
+				'data'   => $product_data,
+			);
 
 			/**
 			 * Filters the data that will be included in a UPDATE sync request.
@@ -237,7 +235,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			 * @param \WC_Product $product product object
 			 */
 			$request = apply_filters( 'wc_facebook_sync_background_item_update_request', $request, $product );
-		}
+		}//end if
 
 		return $request;
 	}
@@ -265,8 +263,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		$data = $fb_product->prepare_product();
 
-		// product variations use the parent product's retailer ID as the retailer product group ID
-		// $data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+		// Items batch uses item_group_id for variations
 		$data['item_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
 
 		return $this->normalize_product_data( $data );
@@ -292,47 +289,10 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$data['additional_variant_attributes'] = $data['custom_data'];
 			unset( $data['custom_data'] );
 		}
+		// Switching this out to make sure everything continues to work
 
 		return $data;
 	}
-
-	// /**
-	//  * Normalizes product data to be included in a sync request.
-	//  *
-	//  * The Batch API is unique in that the Google Product Category should be set in the 'category' field, as
-	//  * 'google_product_category' is not supported in this context. The 'product_type' field is what should hold the
-	//  * WooCommerce category.
-	//  *
-	//  * @since 2.0.0
-	//  *
-	//  * @param array $data product data
-	//  * @return array
-	//  */
-	// private function normalize_product_data( $data ) {
-
-	// 	// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
-	// 	$data['condition'] = 'new';
-
-	// 	$data['product_type'] = $data['category'];
-
-	// 	// if a Google Product Category is set, move it to the category field as the field is handled differently for batch requests
-	// 	if ( ! empty( $data['google_product_category'] ) ) {
-
-	// 		$data['category'] = $data['google_product_category'];
-
-	// 		// this is an unsupported field in the Batch API
-	// 		unset( $data['google_product_category'] );
-	// 	}
-
-	// 	// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
-	// 	if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
-
-	// 		$data['additional_variant_attributes'] = $data['custom_data'];
-	// 		unset( $data['custom_data'] );
-	// 	}
-
-	// 	return $data;
-	// }
 
 
 	/**
@@ -349,8 +309,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		$data = $fb_product->prepare_product();
 
-		// products that are not variations use their retailer retailer ID as the retailer product group ID
-		// $data['retailer_product_group_id'] = $data['retailer_id'];
+		// products that are not variations use their retailer ID as their item group ID
 		$data['item_group_id'] = $data['retailer_id'];
 
 		return $this->normalize_product_data( $data );
@@ -366,10 +325,10 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	private function process_item_delete( $retailer_id ) {
 
-		$request = [
-			'retailer_id' => $retailer_id,
-			'method'      => Sync::ACTION_DELETE,
-		];
+		$request = array(
+			'data'   => array( 'id' => $retailer_id ),
+			'method' => Sync::ACTION_DELETE,
+		);
 
 		/**
 		 * Filters the data that will be included in a DELETE sync request.
