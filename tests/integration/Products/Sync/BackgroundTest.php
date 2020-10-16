@@ -168,7 +168,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$request = [
 			'retailer_id' => $retailer_id,
 			'data'        => [
-				'item_group_id' => $retailer_id,
+				'retailer_product_group_id' => $retailer_id,
 			],
 		];
 
@@ -199,22 +199,23 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$data = $result['data'];
 
 		// validate data type and allowed values for fields that are always included
-		$this->assertIsArray( $data['additional_image_link'] );
+		$this->assertIsArray( $data['additional_image_urls'] );
 		$this->assertTrue( in_array( $data['availability'], [ 'in stock', 'out of stock' ], true ) );
 		$this->assertIsString( $data['brand'] );
 		$this->assertEquals( 'new', $data['condition'] );
 		$this->assertIsString( $data['description'] );
-		$this->assertIsString( $data['image_link'] );
-		$this->assertIsString( $data['title'] );
-		$this->assertIsString( $data['price'] );
-		$this->assertIsString( $data['item_group_id'] );
-		$this->assertIsString( $data['sale_price'] );
-		$this->assertIsString( $data['link'] );
+		$this->assertIsString( $data['image_url'] );
+		$this->assertIsString( $data['name'] );
+		$this->assertIsInt( $data['price'] );
+		$this->assertIsString( $data['product_type'] );
+		$this->assertIsString( $data['retailer_product_group_id'] );
+		$this->assertIsInt( $data['sale_price'] );
+		$this->assertIsString( $data['url'] );
 		$this->assertTrue( in_array( $data['visibility'], [ 'published', 'staging' ], true ) );
 
 		// compare results with specific values from the test case
 		if ( isset( $request['retailer_id'] ) ) {
-			$this->assertEquals( $request['retailer_id'], $data['id'] );
+			$this->assertEquals( $request['retailer_id'], $result['retailer_id'] );
 		}
 
 		if ( isset( $request['data'] ) ) {
@@ -244,7 +245,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$request = [
 			'retailer_id' => "wc_post_id_{$product_variation->get_id()}",
 			'data'        => [
-				'item_group_id' => "wc_post_id_{$parent_product->get_id()}"
+				'retailer_product_group_id' => "wc_post_id_{$parent_product->get_id()}"
 			],
 		];
 
@@ -279,7 +280,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$request = [
 			'retailer_id' => "wc_post_id_{$product_variation->get_id()}",
 			'data'        => [
-				'item_group_id' => "wc_post_id_{$parent_product->get_id()}",
+				'retailer_product_group_id' => "wc_post_id_{$parent_product->get_id()}",
 				'description'               => $short_description,
 			],
 		];
@@ -309,7 +310,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$request = [
 			'retailer_id' => $retailer_id,
 			'data'        => [
-				'item_group_id' => $retailer_id,
+				'retailer_product_group_id' => $retailer_id,
 			],
 		];
 
