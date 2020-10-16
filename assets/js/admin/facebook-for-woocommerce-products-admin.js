@@ -383,7 +383,11 @@ jQuery( document ).ready( function( $ ) {
 
 		syncModeSelect.on( 'change', function() {
 
-			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', facebookSettingsPanel );
+			let syncEnabled = $( this ).val() !== 'sync_disabled';
+
+			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
+			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
+
 			syncModeSelect.prop( 'original', $( this ).val() );
 
 		} ).trigger( 'change' );
@@ -392,9 +396,25 @@ jQuery( document ).ready( function( $ ) {
 			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
 		} ).trigger( 'change' );
 
+		// check whether the product meets the requirements for Commerce
+		$( '#woocommerce-product-data' ).on(
+			'change',
+			'#_regular_price, #_manage_stock, #_stock, #wc_facebook_sync_mode, #fb_product_price',
+			function( event ) {
+
+				// allow validation handlers that run on change to run before we check any field values
+				setTimeout( function() {
+					toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+				}, 1 );
+			}
+		);
+
 		// toggle Facebook settings fields for variations
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+
 			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+
 			$( this ).prop( 'original', $( this ).val() );
 		} );
 
@@ -409,6 +429,8 @@ jQuery( document ).ready( function( $ ) {
 				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
+
+			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
 		} );
 
 		// show/hide Custom Image URL setting
@@ -453,6 +475,10 @@ jQuery( document ).ready( function( $ ) {
 		let submitProductSave = false;
 
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
+
+			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
+				return showMissingGoogleProductCategoryAlert( e );
+			}
 
 			if ( ! submitProductSave ) {
 				e.preventDefault();
