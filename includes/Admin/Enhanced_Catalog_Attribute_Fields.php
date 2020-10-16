@@ -42,6 +42,12 @@ class Enhanced_Catalog_Attribute_Fields {
 		<?php
 	}
 
+	private function extract_attribute( &$attributes, $key ) {
+		$index     = array_search($key, array_column( $attributes, 'key' ));
+		$extracted = false === $index ? array() : array_splice( $attributes, $index, 1 );
+		return empty( $extracted ) ? null : array_shift( $extracted );
+	}
+
 	public function render( $category_id ) {
 		$category                   = $this->category_handler->get_category_with_attrs( $category_id );
 		$all_attributes             = $category['attributes'];
@@ -63,6 +69,21 @@ class Enhanced_Catalog_Attribute_Fields {
 				return ! $attr['recommended'];
 			}
 		);
+
+		// Some google mappings don't have any recommendations
+		// to avoid there being no attributes to see we extract color, gender
+		// and size from optional.
+		if ( empty( $recommended_attributes ) ) {
+			$recommended_attributes = array_filter(
+				array(
+					$this->extract_attribute( $optional_attributes, 'color' ),
+					$this->extract_attribute( $optional_attributes, 'size' ),
+					$this->extract_attribute( $optional_attributes, 'gender' ),
+				),
+				function( $attr ) {
+					return ! is_null( $attr ); },
+			);
+		}
 
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
