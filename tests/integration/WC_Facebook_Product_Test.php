@@ -39,7 +39,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::enable_sync_for_products( [ $product ] );
 
-		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
 		$this->assertArrayNotHasKey( 'inventory', $data );
 	}
@@ -52,7 +52,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::enable_sync_for_products( [ $product ] );
 
-		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
 		$this->assertArrayNotHasKey( 'google_product_category', $data );
 	}
@@ -65,7 +65,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		Products::update_google_product_category_id( $product, '1234' );
 
-		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
 		$this->assertSame( '1234', $data['google_product_category'] );
 	}

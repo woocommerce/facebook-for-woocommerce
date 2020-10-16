@@ -327,8 +327,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	private function process_item_delete( $retailer_id ) {
 
 		$request = [
-			'retailer_id' => $retailer_id,
-			'method'      => Sync::ACTION_DELETE,
+			'data'   => array( 'id' => $retailer_id ),
+			'method' => Sync::ACTION_DELETE,
 		];
 
 		/**
