@@ -25,6 +25,12 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 	 * Custom FB Product proxy class
 	 */
 	class WC_Facebook_Product {
+		// Used for the background sync
+		const PRODUCT_PREP_TYPE_ITEMS_BATCH = 'items_batch';
+		// Used for the background feed upload
+		const PRODUCT_PREP_TYPE_FEED = 'feed';
+		// Used for direct update and create calls
+		const PRODUCT_PREP_TYPE_NORMAL = 'normal';
 
 		// Should match facebook-commerce.php while we migrate that code over
 		// to this object.
@@ -123,13 +129,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 		}
 
-		public function get_fb_price() {
+		public function get_fb_price( $for_items_batch = false ) {
 			$product_price = Products::get_product_price( $this->woo_product );
 
-			return self::format_price_for_fb_items_batch( $product_price );
+			return $for_items_batch ? self::format_price_for_fb_items_batch( $product_price ) : $product_price;
 		}
 
-		private static function format_price_for_fb_items_batch($price) {
+		private static function format_price_for_fb_items_batch( $price ) {
 			// items_batch endpoint requires a string and a currency code
 			$formatted = ( $price / 100.0 ) . ' ' . get_woocommerce_currency();
 			return $formatted;
@@ -336,18 +342,21 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $description;
 		}
 
-		public function add_sale_price( $product_data ) {
+		public function add_sale_price( $product_data, $for_items_batch = false ) {
 
 			// initialise sale price
-			// $product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
-			// $product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
-			$product_data['sale_price_effective_date']   = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
-			$product_data['sale_price']            = $product_data['price'];
+			if ( $for_items_batch ) {
+				$product_data['sale_price_effective_date'] = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
+			} else {
+				$product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
+				$product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
+			}
+			$product_data['sale_price'] = $product_data['price'];
 
 			$sale_price = $this->woo_product->get_sale_price();
 
 			// check if sale exist
-			if ( ! is_numeric( $sale_price )) {
+			if ( ! is_numeric( $sale_price ) ) {
 				return $product_data;
 			}
 
@@ -365,10 +374,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			: self::MAX_DATE . self::MAX_TIME;
 
 			// check if sale is expired and sale time range is valid
-			// $product_data['sale_price_start_date'] = $sale_start;
-			// $product_data['sale_price_end_date']   = $sale_end;
-			$product_data['sale_price_effective_date']  = $sale_start . '/' . $sale_end;
-			$product_data['sale_price']                 = self::format_price_for_fb_items_batch( $sale_price );
+			if ( $for_items_batch ) {
+				$product_data['sale_price_effective_date'] = $sale_start . '/' . $sale_end;
+				$product_data['sale_price']                = self::format_price_for_fb_items_batch( $sale_price );
+			} else {
+				$product_data['sale_price_start_date'] = $sale_start;
+				$product_data['sale_price_end_date']   = $sale_end;
+				$product_data['sale_price']            = $sale_price;
+			}
 
 			return $product_data;
 		}
@@ -384,7 +397,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 */
 		public function is_hidden() {
 
-			wc_deprecated_function( __METHOD__,  '2.0.2', 'Products::product_should_be_synced()' );
+			wc_deprecated_function( __METHOD__, '2.0.2', 'Products::product_should_be_synced()' );
 
 			return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
 		}
@@ -477,32 +490,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 		}
 
-		/**
-		 * Gets product data to send to Facebook.
-		 *
-		 * @param string $retailer_id the retailer ID of the product
-		 * @param bool   $prepare_for_product_feed whether the data is going to be used in a feed upload
-		 * @return array
-		 */
-		public function prepare_product( $retailer_id = null, $prepare_for_product_feed = false ) {
-
-			if ( ! $retailer_id ) {
-				$retailer_id =
-				WC_Facebookcommerce_Utils::get_fb_retailer_id( $this );
-			}
-			$image_urls = $this->get_all_image_urls();
-
-			// Replace WordPress sanitization's ampersand with a real ampersand.
-			$product_url = str_replace(
-				'&amp%3B',
-				'&',
-				html_entity_decode( $this->get_permalink() )
-			);
-
+		private function build_checkout_url( $product_url ) {
 			// Use product_url for external/bundle product setting.
 			$product_type = $this->get_type();
 			if ( ! $product_type || ! isset( self::$use_checkout_url[ $product_type ] ) ) {
-				  $checkout_url = $product_url;
+					$checkout_url = $product_url;
 			} elseif ( wc_get_cart_url() ) {
 				$char = '?';
 				// Some merchant cart pages are actually a querystring
@@ -536,6 +528,29 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			} else {
 				$checkout_url = null;
 			}//end if
+		}
+
+		/**
+		 * Gets product data to send to Facebook.
+		 *
+		 * @param string $retailer_id the retailer ID of the product
+		 * @param string $type_to_prepare_for whether the data is going to be used in a feed upload, an items_batch update or a direct api call
+		 * @return array
+		 */
+		public function prepare_product( $retailer_id = null, $type_to_prepare_for = self::PRODUCT_PREP_TYPE_NORMAL ) {
+
+			if ( ! $retailer_id ) {
+				$retailer_id =
+				WC_Facebookcommerce_Utils::get_fb_retailer_id( $this );
+			}
+			$image_urls = $this->get_all_image_urls();
+
+			// Replace WordPress sanitization's ampersand with a real ampersand.
+			$product_url = str_replace(
+				'&amp%3B',
+				'&',
+				html_entity_decode( $this->get_permalink() )
+			);
 
 			$id = $this->get_id();
 			if ( WC_Facebookcommerce_Utils::is_variation_type( $this->get_type() ) ) {
@@ -547,48 +562,59 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$brand = get_the_term_list( $id, 'product_brand', '', ', ' );
 			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
 
-			$product_data = array(
-				'title'         => WC_Facebookcommerce_Utils::clean_string(
-					$this->get_title()
-				),
-				'description'           => $this->get_fb_description(),
-				'image_link'             => $image_urls[0], // The array can't be empty.
-				'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
-				'link'                   => $product_url,
-				// Currency not a catetgory
-				// 'category'              => $categories['categories'],
-				'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
-				'retailer_id'           => $retailer_id,
-				'price'                 => $this->get_fb_price(),
-				// Currency isn't included in /items_batch as its part of the price
-				// 'currency'              => get_woocommerce_currency(),
-				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
-				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
-			);
+			if ( self::PRODUCT_PREP_TYPE_ITEMS_BATCH === $type_to_prepare_for ) {
+				$product_data = array(
+					'title'                 => WC_Facebookcommerce_Utils::clean_string(
+						$this->get_title()
+					),
+					'description'           => $this->get_fb_description(),
+					'image_link'            => $image_urls[0],
+					'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
+					'link'                  => $product_url,
+					'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
+					'retailer_id'           => $retailer_id,
+					'price'                 => $this->get_fb_price( true ),
+					'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
+					'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
+				);
+				$product_data = $this->add_sale_price( $product_data, true );
+			} else {
+				$product_data = array(
+					'name'                  => WC_Facebookcommerce_Utils::clean_string(
+						$this->get_title()
+					),
+					'description'           => $this->get_fb_description(),
+					'image_url'             => $image_urls[0],
+					'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
+					'url'                   => $product_url,
+					'category'              => $categories['categories'],
+					'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
+					'retailer_id'           => $retailer_id,
+					'price'                 => $this->get_fb_price(),
+					'currency'              => get_woocommerce_currency(),
+					'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
+					'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
+				);
+				$product_data = $this->add_sale_price( $product_data );
+			}//end if
 
-			// add the Commerce values
-			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
-
-				// $product_data['gender']    = Products::get_product_gender( $this->woo_product );
-				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
-
-				// add the known attribute values
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_COLOR ]   = Products::get_product_color( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_SIZE ]    = Products::get_product_size( $this->woo_product );
-				// $product_data[ \WC_Facebookcommerce_Utils::FB_VARIANT_PATTERN ] = Products::get_product_pattern( $this->woo_product );
-			}
-
-			if ( $google_product_category = Products::get_google_product_category_id( $this->woo_product ) ) {
+			$google_product_category = Products::get_google_product_category_id( $this->woo_product );
+			// Currently only items batch and feed support enhanced catalog fields
+			if ( self::PRODUCT_PREP_TYPE_NORMAL !== $type_to_prepare_for && $google_product_category ) {
 				$product_data['google_product_category'] = $google_product_category;
 				$product_data                            = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
 			}
 
-			// Only use checkout URLs if they exist.
-			if ( $checkout_url ) {
-				  $product_data['checkout_url'] = $checkout_url;
+			// add the Commerce values (only inventory for the momenbt)
+			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
+				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
 			}
 
-			$product_data = $this->add_sale_price( $product_data );
+			// Only use checkout URLs if they exist.
+			$checkout_url = $this->build_checkout_url( $product_url );
+			if ( $checkout_url ) {
+				$product_data['checkout_url'] = $checkout_url;
+			}
 
 			// IF using WPML, set the product to staging unless it is in the
 			// default language. WPML >= 3.2 Supported.
@@ -601,11 +627,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// Exclude variations that are "virtual" products from export to Facebook &&
 			// No Visibility Option for Variations
 			if ( true === $this->get_virtual() ) {
-				  $product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
+				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 
-			if ( ! $prepare_for_product_feed ) {
-				  $this->prepare_variants_for_item( $product_data );
+			if ( self::PRODUCT_PREP_TYPE_FEED !== $type_to_prepare_for ) {
+				$this->prepare_variants_for_item( $product_data );
 			} elseif (
 			WC_Facebookcommerce_Utils::is_all_caps( $product_data['description'] )
 			) {

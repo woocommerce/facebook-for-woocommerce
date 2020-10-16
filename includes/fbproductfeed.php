@@ -643,7 +643,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		private function prepare_product_for_feed( $woo_product, &$attribute_variants ) {
 
-			$product_data  = $woo_product->prepare_product( null, true );
+			$product_data  = $woo_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_FEED );
 			$item_group_id = $product_data['retailer_id'];
 
 			// prepare variant column for variable products
