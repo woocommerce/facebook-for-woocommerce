@@ -384,7 +384,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 
 		$result = $this->get_background()->process_item( [ $retailer_id, Sync::ACTION_DELETE ], null );
 
-		$this->assertEquals( $retailer_id, $result['retailer_id'] );
+		$this->assertEquals( $retailer_id, $result['data']['id'] );
 		$this->assertEquals( Sync::ACTION_DELETE, $result['method'] );
 	}
 
