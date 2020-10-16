@@ -430,7 +430,6 @@ jQuery( document ).ready( function( $ ) {
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
 		} );
 
-<<<<<<< HEAD
 		// open modal explaining sell on Instagram requirements
 		$( '#facebook_options' ).on( 'click', '#product-not-ready-notice-open-modal', function( event ) {
 
@@ -450,8 +449,6 @@ jQuery( document ).ready( function( $ ) {
 
 		// toggle Sell on Instagram checkbox on page load
 		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
-=======
->>>>>>> Undo js that was no longer relevant
 
 		let submitProductSave = false;
 
