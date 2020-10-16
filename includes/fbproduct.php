@@ -53,7 +53,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$this->woo_product            = wc_get_product( $wpid );
 			$this->gallery_urls           = null;
 			$this->fb_use_parent_image    = null;
-			$this->fb_price               = 0;
 			$this->main_description       = '';
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
@@ -253,7 +252,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 		public function set_price( $price ) {
 			if ( is_numeric( $price ) ) {
-				$this->fb_price = intval( round( $price * 100 ) );
 				update_post_meta(
 					$this->id,
 					self::FB_PRODUCT_PRICE,

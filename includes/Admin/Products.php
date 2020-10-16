@@ -144,96 +144,6 @@ class Products {
 
 
 	/**
-	 * Renders the attribute fields.
-	 *
-	 * @internal
-	 *
-	 * @since 2.1.0-dev.1
-	 *
-	 * @param \WC_Product $product product object
-	 */
-	public static function render_attribute_fields( \WC_Product $product ) {
-
-		woocommerce_wp_select(
-			array(
-				'id'          => self::FIELD_GENDER,
-				'label'       => __( 'Gender', 'facebook-for-woocommerce' ),
-				'description' => __( "Select the product's gender for sizing.", 'facebook-for-woocommerce' ),
-				'desc_tip'    => true,
-				'options'     => array(
-					'unisex' => __( 'Unisex', 'facebook-for-woocommerce' ),
-					'female' => __( 'Female', 'facebook-for-woocommerce' ),
-					'male'   => __( 'Male', 'facebook-for-woocommerce' ),
-				),
-				'value'       => Products_Handler::get_product_gender( $product ),
-			)
-		);
-
-		woocommerce_wp_select(
-			array(
-				'id'                => self::FIELD_COLOR,
-				'label'             => __( 'Color attribute', 'facebook-for-woocommerce' ),
-				'description'       => __( "Optionally select the attribute associated with the product's colors.", 'facebook-for-woocommerce' ),
-				'desc_tip'          => true,
-				'class'             => 'sv-wc-enhanced-search select short',
-				'style'             => 'width: 50%',
-				'options'           => self::filter_available_product_attribute_names( $product, array( 'color', 'colour', __( 'color', 'facebook-for-woocommerce' ) ) ),
-				'value'             => Products_Handler::get_product_color_attribute( $product ),
-				'custom_attributes' => array(
-					'data-allow_clear'  => true,
-					'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-					'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
-					'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
-					'data-request_data' => $product->get_id(),
-				),
-			)
-		);
-
-		woocommerce_wp_select(
-			array(
-				'id'                => self::FIELD_SIZE,
-				'label'             => __( 'Size attribute', 'facebook-for-woocommerce' ),
-				'description'       => __( "Optionally select the attribute associated with the product's sizes.", 'facebook-for-woocommerce' ),
-				'desc_tip'          => true,
-				'class'             => 'sv-wc-enhanced-search select short',
-				'style'             => 'width: 50%',
-				'options'           => self::filter_available_product_attribute_names( $product, array( 'size', __( 'size', 'facebook-for-woocommerce' ) ) ),
-				'value'             => Products_Handler::get_product_size_attribute( $product ),
-				'custom_attributes' => array(
-					'data-allow_clear'  => true,
-					'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-					'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
-					'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
-					'data-request_data' => $product->get_id(),
-				),
-			)
-		);
-
-		woocommerce_wp_select(
-			array(
-				'id'                => self::FIELD_PATTERN,
-				'label'             => __( 'Pattern attribute', 'facebook-for-woocommerce' ),
-				'description'       => __( "Optionally select the attribute associated with the product's patterns.", 'facebook-for-woocommerce' ),
-				'desc_tip'          => true,
-				'class'             => 'sv-wc-enhanced-search select short',
-				'style'             => 'width: 50%',
-				'options'           => self::filter_available_product_attribute_names( $product, array( 'pattern', __( 'pattern', 'facebook-for-woocommerce' ) ) ),
-				'value'             => Products_Handler::get_product_pattern_attribute( $product ),
-				'custom_attributes' => array(
-					'data-allow_clear'  => true,
-					'data-placeholder'  => __( 'Search attributes...', 'facebook-for-woocommerce' ),
-					'data-action'       => AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES,
-					'data-nonce'        => wp_create_nonce( AJAX::ACTION_SEARCH_PRODUCT_ATTRIBUTES ),
-					'data-request_data' => $product->get_id(),
-				),
-			)
-		);
-
-		Framework\SV_WC_Helper::render_select2_ajax();
-	}
-
-
-	/**
 	 * Gets a list of attribute names and labels that match any of the given words.
 	 *
 	 * @since 2.1.0-dev.1
@@ -324,11 +234,6 @@ class Products {
 		</div>
 
 		<?php
-		// TODO: REMOVE
-		// <div class='wc_facebook_commerce_fields'>
-		// <?php self::render_google_product_category_fields( $product ); ? >
-		// <?php self::render_attribute_fields( $product ); ? >
-		// </div>
 	}
 
 
@@ -343,22 +248,18 @@ class Products {
 	 */
 	public static function save_commerce_fields( \WC_Product $product ) {
 
-		$commerce_enabled           = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
-		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
-		// $gender                     = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GENDER ) );
-		// $color_attribute            = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COLOR ) );
-		// $size_attribute             = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_SIZE ) );
-		// $pattern_attribute          = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_PATTERN ) );
+		$commerce_enabled            = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
+		$google_product_category_id  = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
 		$enhanced_catalog_attributes = Products_Handler::get_enhanced_catalog_attributes_from_request();
 
 		foreach ( $enhanced_catalog_attributes as $key => $value ) {
-			Products_Handler::update_product_enhanced_catalog_attribute($product, $key, $value);
+			Products_Handler::update_product_enhanced_catalog_attribute( $product, $key, $value );
 		}
 
 		if ( ! isset( $enhanced_catalog_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
 			// This is a checkbox so won't show in the post data if it's been unchecked,
 			// hence if it's unset we should clear the term meta for it.
-			Products_Handler::update_product_enhanced_catalog_attribute($product, Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, null);
+			Products_Handler::update_product_enhanced_catalog_attribute( $product, Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, null );
 		}
 
 		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
@@ -368,28 +269,6 @@ class Products {
 			Products_Handler::update_google_product_category_id( $product, $google_product_category_id );
 		}
 
-
-
-		// COMMERCE VERSION PRIOR TO ENHANCED CATALOG ADDITIONS:
-		// Products_Handler::update_product_gender( $product, $gender );
-
-		// try {
-
-		// 	Products_Handler::update_product_color_attribute( $product, $color_attribute );
-		// 	Products_Handler::update_product_size_attribute( $product, $size_attribute );
-		// 	Products_Handler::update_product_pattern_attribute( $product, $pattern_attribute );
-
-		// } catch ( Framework\SV_WC_Plugin_Exception $e ) {
-
-		// 	$message = sprintf(
-		// 		/* translators: Placeholders %1$s - product ID, %2$s - exception message */
-		// 		__( 'There was an error trying to save the product attributes for product %1$s: %2$s' ),
-		// 		$product->get_id(),
-		// 		$e->getMessage()
-		// 	);
-
-		// 	facebook_for_woocommerce()->log( $message );
-		// }
 	}
 
 
