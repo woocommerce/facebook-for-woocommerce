@@ -387,7 +387,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'messenger_chat', $extras['business_config'] );
 		$this->assertTrue( $extras['business_config']['messenger_chat']['enabled'] );
-		$this->assertSame( home_url( '/' ), $extras['business_config']['messenger_chat']['domains'] );
+		$this->assertSame( [ home_url( '/' ) ], $extras['business_config']['messenger_chat']['domains'] );
 	}
 
 

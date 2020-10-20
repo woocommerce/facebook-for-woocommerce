@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
@@ -565,16 +566,13 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 					$woo_product = new WC_Facebook_Product( $wp_id );
 
-					if ( $woo_product->is_hidden() ) {
-						continue;
-					}
-
-					if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' && ! $woo_product->is_in_stock() ) {
+					// skip if we don't have a valid product object
+					if ( ! $woo_product->woo_product instanceof \WC_Product ) {
 						continue;
 					}
 
 					// skip if not enabled for sync
-					if ( $woo_product->woo_product instanceof \WC_Product && ! SkyVerge\WooCommerce\Facebook\Products::product_should_be_synced( $woo_product->woo_product ) ) {
+					if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
 						continue;
 					}
 
@@ -735,6 +733,11 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$this->no_default_product_count++;
 
 				$product_data['default_product'] = '';
+			}
+
+			// when dealing with the feed file, only set out-of-stock products as hidden
+			if ( Products::product_should_be_deleted( $woo_product->woo_product ) ) {
+				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 
 			return $product_data['retailer_id'] . ',' .

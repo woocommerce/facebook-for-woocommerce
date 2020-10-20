@@ -103,26 +103,8 @@ class Sync {
 		// remove parent products because those can't be represented as Product Items
 		$product_ids = array_diff( $product_ids, $parent_product_ids );
 
-		// make sure the product should be synced and add it to the sync queue
-		foreach ( $product_ids as $product_id ) {
-
-			$woo_product = new \WC_Facebook_Product( $product_id );
-
-			if ( $woo_product->is_hidden() ) {
-				continue;
-			}
-
-			if ( get_option( 'woocommerce_hide_out_of_stock_items' ) === 'yes' && ! $woo_product->is_in_stock() ) {
-				continue;
-			}
-
-			// skip if not enabled for sync
-			if ( $woo_product->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
-				continue;
-			}
-
-			$this->create_or_update_products( [ $product_id ] );
-		}
+		// queue up these IDs for sync. they will only be included in the final requests if they should be synced
+		$this->create_or_update_products( $product_ids );
 	}
 
 

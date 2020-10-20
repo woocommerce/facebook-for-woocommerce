@@ -389,14 +389,22 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Background::process_item() */
+	public function test_process_item_exceptions_with_invalid_method() {
+
+		$product = new \WC_Product_Simple();
+		$product->save();
+
+		$this->check_process_item_exceptions( $product, 'INVALID' );
+	}
+
+
 	/**
 	 * Tests that process_item() throws exceptions if product or method are invalid.
 	 *
 	 * @see Background::process_item()
-	 *
-	 * @dataProvider provider_process_item_exceptions
 	 */
-	public function test_process_item_exceptions( $product, $method ) {
+	public function check_process_item_exceptions( $product, $method ) {
 
 		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 
@@ -406,22 +414,13 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see test_process_item_exceptions() */
-	public function provider_process_item_exceptions() {
+	/** @see Background::process_item() */
+	public function test_process_item_exceptions_with_invalid_product() {
 
-		$valid_product = new \WC_Product_Simple();
-		$valid_product->save();
+		// a product that hasn't been saved
+		$product = new \WC_Product_Simple();
 
-		$product_without_id = new \WC_Product_Simple();
-
-		$product_variation_without_parent = new \WC_Product_Variation();
-		$product_variation_without_parent->save();
-
-		return [
-			[ $product_without_id,               Sync::ACTION_UPDATE ],
-			[ $product_variation_without_parent, Sync::ACTION_UPDATE ],
-			[ $valid_product,                    'INVALID' ],
-		];
+		$this->check_process_item_exceptions( $product, Sync::ACTION_UPDATE );
 	}
 
 
