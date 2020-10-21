@@ -45,6 +45,9 @@ class Products {
 	public static function render_google_product_category_fields_and_enhanced_attributes( \WC_Product $product ) {
 		?>
 		<div class='wc_facebook_commerce_fields'>
+			<p class="form-field">
+				<span><?php echo esc_html( Product_Categories::get_enhanced_catalog_explanation_text() ); ?></span>
+			</p>
 			<?php Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
 			<?php self::render_google_product_category_fields( $product ); ?>
 			<?php

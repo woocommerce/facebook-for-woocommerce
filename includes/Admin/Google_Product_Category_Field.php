@@ -40,6 +40,7 @@ class Google_Product_Category_Field {
 		);
 
 		wc_enqueue_js( $js );
+
 	}
 
 

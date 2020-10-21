@@ -139,6 +139,9 @@ class Product_Categories {
 
 		?>
 			<div class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
+				<span><?php echo esc_html( self::get_enhanced_catalog_explanation_text() ); ?></span>
+				<br/>
+				<br/>
 				<?php Enhanced_Catalog_Attribute_Fields::render_hidden_input_can_show_attributes(); ?>
 				<label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>">
 					<?php echo esc_html( $this->get_google_product_category_field_title() ); ?>
@@ -149,6 +152,15 @@ class Product_Categories {
 				<?php $category_field->render( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>
 			</div>
 		<?php
+	}
+
+	/**
+	 * Returns the text that explains why the categories are being displayed
+	 *
+	 * @return string the explanation text
+	 */
+	public static function get_enhanced_catalog_explanation_text() {
+		return __( 'Facebook catalogs now support category specific fields, to make best use of them you need to select a category. WooCommerce uses the google taxonomy as it is the most widely accepted form of categorisation.', 'facebook-for-woocommerce' );
 	}
 
 
@@ -167,6 +179,11 @@ class Product_Categories {
 		$value          = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 
 		?>
+			<tr class="form-field">
+				<td colspan="2">
+					<span><?php echo esc_html( self::get_enhanced_catalog_explanation_text() ); ?></span>
+				</td>
+			</tr>
 			<tr class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
 				<th scope="row">
 					<label for="<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>">
@@ -231,7 +248,7 @@ class Product_Categories {
 				$tag_id   = intval( wc_clean( Framework\SV_WC_Helper::get_requested_value( 'tag_id' ) ) );
 				$taxonomy = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'taxonomy' ) );
 				$term     = get_term( $tag_id, $taxonomy );
-				$this->render_edit_enhanced_catalog_attributes_field( $term );
+				$this->render_edit_enhanced_catalog_attributes_field( $term, $category_id );
 				break;
 			case Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY:
 				$this->render_add_enhanced_catalog_attributes_field( $category_id );
@@ -252,15 +269,25 @@ class Product_Categories {
 	 * @since 2.1.0-dev.1
 	 *
 	 * @param \WP_Term $term current taxonomy term object.
+	 * @param string $category_id passed in category id
 	 */
-	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term ) {
-		$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term, $category_id = null ) {
+		if ( empty( $category_id ) ) {
+			$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+		}
 
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY, $term );
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
 		if ( $category_handler->get_category_depth( $category_id ) < 2 ) {
 			// show nothing
+			?>
+				<tr class='form-field'>
+				<td colspan="2">
+				<span>HELLO<?php echo $category_id; ?></span>
+				</td>
+				</tr>
+			<?php
 			return;
 		}
 
