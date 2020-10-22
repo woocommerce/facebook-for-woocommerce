@@ -121,23 +121,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Product_Categories.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
-<<<<<<< HEAD
 				require_once __DIR__ . '/includes/Products/FBCategories.php';
-=======
 				require_once __DIR__ . '/includes/Products/Stock.php';
->>>>>>> release-2.0.5
 				require_once __DIR__ . '/includes/Products/Sync.php';
 				require_once __DIR__ . '/includes/Products/Sync/Background.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Events/Event.php';
-<<<<<<< HEAD
 				require_once __DIR__ . '/includes/Commerce.php';
 				require_once __DIR__ . '/includes/Utilities/Shipment.php';
-=======
 				require_once __DIR__ . '/includes/Events/Normalizer.php';
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
->>>>>>> release-2.0.5
 
 				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_stock_handler  = new \SkyVerge\WooCommerce\Facebook\Products\Stock();

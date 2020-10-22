@@ -240,7 +240,6 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
-<<<<<<< HEAD
 		/**
 		 * Determines whether the product has Facebook Sync enabled.
 		 *
@@ -378,8 +377,6 @@ jQuery( document ).ready( function( $ ) {
 			$( this ).prop( 'original', checked );
 		} ).trigger( 'change' );
 
-=======
->>>>>>> release-2.0.5
 		// toggle Facebook settings fields for simple products
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
@@ -495,7 +492,7 @@ jQuery( document ).ready( function( $ ) {
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
 				syncEnabled      = $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
-				varSyncEnabled   = isSyncEnabledForVariableProduct();
+				varSyncEnabled   = $( '.js-variable-fb-sync-toggle' ).val() !== 'sync_disabled';
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
