@@ -117,6 +117,7 @@ class Admin {
 
 				wp_localize_script( 'facebook-for-woocommerce-products-admin', 'facebook_for_woocommerce_products_admin', [
 					'ajax_url'                                  => admin_url( 'admin-ajax.php' ),
+					'is_sync_enabled_for_product'               => $this->is_sync_enabled_for_current_product(),
 					'set_product_visibility_nonce'              => wp_create_nonce( 'set-products-visibility' ),
 					'set_product_sync_prompt_nonce'             => wp_create_nonce( 'set-product-sync-prompt' ),
 					'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
@@ -1368,6 +1369,26 @@ class Admin {
 	public function add_catalog_visibility_settings_removed_notice() {
 
 		wc_deprecated_function( __METHOD__, '2.0.0' );
+	}
+
+
+	/**
+	 * Determines whether sync is enabled for the current product.
+	 *
+	 * @since 2.0.5
+	 *
+	 * @return bool
+	 */
+	private function is_sync_enabled_for_current_product() {
+		global $post;
+
+		$product = wc_get_product( $post );
+
+		if ( ! $product instanceof \WC_Product ) {
+			return false;
+		}
+
+		return Products::is_sync_enabled_for_product( $product );
 	}
 
 

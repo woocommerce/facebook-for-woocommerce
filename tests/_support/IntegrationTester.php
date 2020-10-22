@@ -131,6 +131,21 @@ class IntegrationTester extends \Codeception\Actor {
 	/** Sync methods **************************************************************************************************/
 
 
+	/**
+	 * Clears sync requests stored in the product sync handler instance.
+	 */
+	public function clearSyncRequests() {
+
+		$this->setPropertyValue( facebook_for_woocommerce()->get_products_sync_handler(), 'requests', [] );
+	}
+
+
+	/**
+	 * Asserts that the given sync request keys are included in the given list of sync requests.
+	 *
+	 * @param array $request_keys sync requests keys to search for
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertSyncRequestsExist( $request_keys = [], $requests = null ) {
 
 		if ( null === $requests ) {
@@ -143,6 +158,12 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Asserts that the given sync request keys are not included in the given list of sync requests.
+	 *
+	 * @param array $request_keys sync requests keys that shouldn't be included
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertSyncRequestsNotExist( $request_keys = [], $requests = null ) {
 
 		if ( null === $requests ) {
@@ -164,6 +185,12 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Asserts that the given product IDs are scheduled for sync.
+	 *
+	 * @param array $product_ids product IDs
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertProductsAreScheduledForSync( $product_ids = [], $requests = null ) {
 
 		$this->assertSyncRequestsExist(
@@ -175,6 +202,12 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Asserts that the given product IDs are not scheduled for sync.
+	 *
+	 * @param array $product_ids product IDs
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertProductsAreNotScheduledForSync( $product_ids = [], $requests = null ) {
 
 		$this->assertSyncRequestsNotExist(
@@ -186,6 +219,12 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Asserts that the given product IDs are scheduled to be deleted.
+	 *
+	 * @param array $product_ids product IDs
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertProductsAreScheduledForDelete( $product_ids = [], $requests = null ) {
 
 		$this->assertSyncRequestsExist(
@@ -197,6 +236,12 @@ class IntegrationTester extends \Codeception\Actor {
 	}
 
 
+	/**
+	 * Asserts that the given product IDs are not scheduled to be deleted.
+	 *
+	 * @param array $product_ids product IDs
+	 * @param array|null $requests array of stored sync requests (defaults to the requests from the product sync handler)
+	 */
 	public function assertProductsAreNotScheduledForDelete( $product_ids = [], $requests = null ) {
 
 		$this->assertSyncRequestsNotExist(

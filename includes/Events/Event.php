@@ -109,15 +109,47 @@ class Event {
 	 * @param array $data user data
 	 */
 	protected function prepare_user_data( $data ) {
-
 		$this->data['user_data'] = wp_parse_args( $data, [
 			'client_ip_address' => $this->get_client_ip(),
 			'client_user_agent' => $this->get_client_user_agent(),
 			'click_id'          => $this->get_click_id(),
 			'browser_id'        => $this->get_browser_id(),
 		] );
+
+		// Country key is not the same in pixel and CAPI events, see:
+		// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+		// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
+		if(array_key_exists('cn', $this->data['user_data'])){
+			$country = $this->data['user_data']['cn'];
+			$this->data['user_data']['country'] = $country;
+			unset($this->data['user_data']['cn']);
+		}
+
+		$this->data['user_data'] = Normalizer::normalize_array( $this->data['user_data'], false );
+
+		$this->data['user_data'] = $this->hash_pii_data( $this->data['user_data'] );
 	}
 
+	/**
+	 * Hashes the user data
+	 *
+	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/parameters/user-data
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param array $user_data user data
+	 *
+	 * @return array
+	 */
+	protected function hash_pii_data( $user_data ){
+		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country', 'external_id'];
+		foreach( $keys_to_hash as $key ){
+			if(array_key_exists($key, $user_data)){
+				$user_data[$key] = hash('sha256', $user_data[$key], false);
+			}
+		}
+		return $user_data;
+	}
 
 	/**
 	 * Generates a UUIDv4 unique ID for the event.
@@ -327,6 +359,5 @@ class Event {
 
 		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : [];
 	}
-
 
 }

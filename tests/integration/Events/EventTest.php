@@ -75,6 +75,39 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'user_data', $data );
 	}
 
+	/** @see Event::__construct() */
+	public function test_constructor_with_pii_data(){
+		$data = array(
+			"user_data" => array(
+				"em" => 'homero@simpson.com',
+				"fn" => "Homero",
+				"ln" => "Simpson",
+				"ph" => "(123) 456 7890",
+				"ct" => "Springfield",
+				"st" => "Ohio",
+				"country" => "US",
+				"zp" => "12345",
+				"external_id" => "23"
+			)
+		);
+		$event = new Event( $data );
+		$data  = $event->get_data();
+
+		$this->assertIsArray( $data );
+		$this->assertNotEmpty( $data );
+		$this->assertArrayHasKey( 'user_data', $data );
+		$user_data = $data['user_data'];
+		$this->assertArrayHasKey( 'em', $user_data );
+		$this->assertArrayHasKey( 'fn', $user_data );
+		$this->assertArrayHasKey( 'ln', $user_data );
+		$this->assertArrayHasKey( 'ph', $user_data );
+		$this->assertArrayHasKey( 'ct', $user_data );
+		$this->assertArrayHasKey( 'st', $user_data );
+		$this->assertArrayHasKey( 'country', $user_data );
+		$this->assertArrayHasKey( 'zp', $user_data );
+		$this->assertArrayHasKey( 'external_id', $user_data );
+	}
+
 
 	/**
 	 * @see Event::prepare_data()
@@ -293,5 +326,27 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $custom_data, $event->get_custom_data() );
 	}
 
+	/** @see Event::hash_pii_data() */
+	public function test_hash_pii_data() {
+
+		$pii_data = array(
+			"em" => 'homero@simpson.com',
+			"fn" => "Homero",
+			"ln" => "Simpson",
+			"ph" => "(123) 456 7890",
+			"ct" => "Springfield",
+			"st" => "Ohio",
+			"country" => "US",
+			"zp" => "12345",
+			"external_id" => "23",
+		);
+
+		$method = IntegrationTester::getMethod( Event::class, 'hash_pii_data' );
+		$hashed_data = $method->invoke( new Event(), $pii_data );
+		$this->assertEquals(9, count($hashed_data));
+		foreach( $hashed_data as $key => $value ){
+			$this->assertRegExp('/^[A-Fa-f0-9]{64}$/', $value);
+		}
+	}
 
 }
