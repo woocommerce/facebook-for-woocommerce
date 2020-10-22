@@ -39,11 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.1.0-dev.1 =
- * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
- * Feature - Manage Facebook & Instagram generated orders in WooCommerce
- * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
- * Feature - Define custom product attributes such as gender, size, color, and pattern
+= 2020.10.22 - version 2.1.0 =
+ * Feature - Set Google category at the shop level for the Facebook catalog sync (on the product sync tab).
+ * Feature - Set Google category for the Facebook catalog sync at the WooCommerce category level.
+ * Feature - Set Google category for the Facebook catalog sync at the product level.
+ * Feature - Set Enhanced Catalog category specific fields for the Facebook catalog sync at the WooCommerce category level.
+ * Feature - Set Enhanced Catalog category specific fields for the Facebook catalog sync at the product level.
 
 = 2020.10.12 - version 2.0.5 =
  * Tweak - Update product availability when stock changes in the store
