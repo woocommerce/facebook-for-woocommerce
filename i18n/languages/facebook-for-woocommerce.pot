@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.0.2\n"
+"Project-Id-Version: Facebook for WooCommerce 2.0.5\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-09-26 00:08:41+00:00\n"
+"POT-Creation-Date: 2020-10-12 22:40:06+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: class-wc-facebookcommerce.php:187
+#: class-wc-facebookcommerce.php:206
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -21,7 +21,7 @@ msgid ""
 "Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:202
+#: class-wc-facebookcommerce.php:221
 #. translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link
 #. HTML tag
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "under %1$sWooCommerce > Facebook%2$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:217
+#: class-wc-facebookcommerce.php:236
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -37,7 +37,7 @@ msgid ""
 "configuration, %3$scomplete the setup steps%4$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:245
+#: class-wc-facebookcommerce.php:264
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -46,7 +46,7 @@ msgid ""
 "Connection%4$s area."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:262
+#: class-wc-facebookcommerce.php:281
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -55,7 +55,7 @@ msgid ""
 "products."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:315
+#: class-wc-facebookcommerce.php:334
 msgid "Cannot create the API instance because the access token is missing."
 msgstr ""
 
@@ -63,54 +63,85 @@ msgstr ""
 msgid "Facebook for WooCommerce"
 msgstr ""
 
-#: facebook-commerce.php:215
+#: facebook-commerce.php:216
 msgid "Facebook Commerce and Dynamic Ads (Pixel) Extension"
 msgstr ""
 
-#: facebook-commerce.php:589
+#: facebook-commerce.php:633
 msgid "Facebook ID:"
 msgstr ""
 
-#: facebook-commerce.php:597
+#: facebook-commerce.php:641
 msgid "Variant IDs:"
 msgstr ""
 
-#: facebook-commerce.php:615
+#: facebook-commerce.php:659
 msgid "Reset Facebook metadata"
 msgstr ""
 
-#: facebook-commerce.php:620
+#: facebook-commerce.php:664
 msgid "Delete product(s) on Facebook"
 msgstr ""
 
-#: facebook-commerce.php:628
+#: facebook-commerce.php:672
 msgid "This product is not yet synced to Facebook."
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:1418
+msgid "Nothing to update for product group for %1$s"
+msgstr ""
+
+#: facebook-commerce.php:1684
+=======
 #: facebook-commerce.php:1374
 msgid "Nothing to update for product group for %1$s"
 msgstr ""
 
 #: facebook-commerce.php:1640
+>>>>>>> master
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API:  %1$s"
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:2021
+msgid "Your connection has expired."
+msgstr ""
+
+#: facebook-commerce.php:2021
+=======
 #: facebook-commerce.php:1977
 msgid "Your connection has expired."
 msgstr ""
 
 #: facebook-commerce.php:1977
+>>>>>>> master
 msgid ""
 "Please click Manage connection > Advanced Options > Update Token to refresh "
 "your connection to Facebook."
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:2028
+=======
 #: facebook-commerce.php:1984
+>>>>>>> master
 #. translators: Placeholders %s - error message
 msgid "There was an error trying to sync the products to Facebook. %s"
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:2051 facebook-commerce.php:2224
+msgid "Product sync is disabled."
+msgstr ""
+
+#: facebook-commerce.php:2058 facebook-commerce.php:2231
+msgid "The plugin is not configured or the Catalog ID is missing."
+msgstr ""
+
+#: facebook-commerce.php:2081
+=======
 #: facebook-commerce.php:2007 facebook-commerce.php:2180
 msgid "Product sync is disabled."
 msgstr ""
@@ -120,12 +151,17 @@ msgid "The plugin is not configured or the Catalog ID is missing."
 msgstr ""
 
 #: facebook-commerce.php:2037
+>>>>>>> master
 msgid ""
 "A product sync is in progress. Please wait until the sync finishes before "
 "starting a new one."
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:2093 facebook-commerce.php:2245
+=======
 #: facebook-commerce.php:2049 facebook-commerce.php:2201
+>>>>>>> master
 msgid ""
 "We've detected that your Facebook Product Catalog is no longer valid. This "
 "may happen if it was deleted, but could also be a temporary error. If the "
@@ -133,6 +169,21 @@ msgid ""
 "and setup the plugin again."
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:2269
+msgid "We couldn't create the feed or upload the product information."
+msgstr ""
+
+#: facebook-commerce.php:2736
+msgid "Hi! We're here to answer any questions you may have."
+msgstr ""
+
+#: facebook-commerce.php:3080
+msgid "Facebook for WooCommerce error:"
+msgstr ""
+
+#: facebook-commerce.php:3162
+=======
 #: facebook-commerce.php:2225
 msgid "We couldn't create the feed or upload the product information."
 msgstr ""
@@ -146,11 +197,23 @@ msgid "Facebook for WooCommerce error:"
 msgstr ""
 
 #: facebook-commerce.php:3118
+>>>>>>> master
 msgid ""
 "There was an error trying to retrieve information about the Facebook page: "
 "%s"
 msgstr ""
 
+<<<<<<< HEAD
+#: facebook-commerce.php:3213
+msgid "Get started with Messenger Customer Chat"
+msgstr ""
+
+#: facebook-commerce.php:3214
+msgid "Get started with Instagram Shopping"
+msgstr ""
+
+#: facebook-commerce.php:3449
+=======
 #: facebook-commerce.php:3169
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
@@ -160,6 +223,7 @@ msgid "Get started with Instagram Shopping"
 msgstr ""
 
 #: facebook-commerce.php:3405
+>>>>>>> master
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""
@@ -452,36 +516,36 @@ msgstr ""
 msgid "Please %1$sconnect to Facebook%2$s to enable and manage product sync."
 msgstr ""
 
-#: includes/Admin.php:147 includes/Admin.php:971 includes/Admin.php:1076
+#: includes/Admin.php:148 includes/Admin.php:972 includes/Admin.php:1077
 msgid "Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:174 includes/Admin.php:206
+#: includes/Admin.php:175 includes/Admin.php:207
 msgid "Sync and show"
 msgstr ""
 
-#: includes/Admin.php:176 includes/Admin.php:207
+#: includes/Admin.php:177 includes/Admin.php:208
 msgid "Sync and hide"
 msgstr ""
 
-#: includes/Admin.php:181 includes/Admin.php:208 includes/Admin.php:975
-#: includes/Admin.php:1080
+#: includes/Admin.php:182 includes/Admin.php:209 includes/Admin.php:976
+#: includes/Admin.php:1081
 msgid "Do not sync"
 msgstr ""
 
-#: includes/Admin.php:205
+#: includes/Admin.php:206
 msgid "Filter by Facebook sync setting"
 msgstr ""
 
-#: includes/Admin.php:606
+#: includes/Admin.php:607
 msgid "Include in Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:607
+#: includes/Admin.php:608
 msgid "Exclude from Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:800
+#: includes/Admin.php:801
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - <a> tag
 msgid ""
@@ -495,11 +559,11 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:805
+#: includes/Admin.php:806
 msgid "Don't show this notice again"
 msgstr ""
 
-#: includes/Admin.php:837
+#: includes/Admin.php:838
 #. translators: Placeholders: %1$s - number of affected products, %2$s opening
 #. HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag,
 #. %5$s - closing HTML </a> tag
@@ -516,7 +580,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:900
+#: includes/Admin.php:901
 #. translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing
 #. HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a>
 #. tag
@@ -526,69 +590,69 @@ msgid ""
 "your Facebook catalog. You may still advertise Virtual products on Facebook."
 msgstr ""
 
-#: includes/Admin.php:973 includes/Admin.php:1078
+#: includes/Admin.php:974 includes/Admin.php:1079
 msgid "Sync and show in catalog"
 msgstr ""
 
-#: includes/Admin.php:974 includes/Admin.php:1079
+#: includes/Admin.php:975 includes/Admin.php:1080
 msgid "Sync and hide in catalog"
 msgstr ""
 
-#: includes/Admin.php:982 includes/Admin.php:1090
+#: includes/Admin.php:983 includes/Admin.php:1091
 msgid "Facebook Description"
 msgstr ""
 
-#: includes/Admin.php:984 includes/Admin.php:1092
+#: includes/Admin.php:985 includes/Admin.php:1093
 msgid ""
 "Custom (plain-text only) description for product on Facebook. If blank, "
 "product description will be used. If product description is blank, "
 "shortname will be used."
 msgstr ""
 
-#: includes/Admin.php:993 includes/Admin.php:1103
+#: includes/Admin.php:994 includes/Admin.php:1104
 msgid "Facebook Product Image"
 msgstr ""
 
-#: includes/Admin.php:995 includes/Admin.php:1105
+#: includes/Admin.php:996 includes/Admin.php:1106
 msgid ""
 "Choose the product image that should be synced to the Facebook catalog for "
 "this product. If using a custom image, please enter an absolute URL (e.g. "
 "https://domain.com/image.jpg)."
 msgstr ""
 
-#: includes/Admin.php:997
+#: includes/Admin.php:998
 msgid "Use WooCommerce image"
 msgstr ""
 
-#: includes/Admin.php:998 includes/Admin.php:1109
+#: includes/Admin.php:999 includes/Admin.php:1110
 msgid "Use custom image"
 msgstr ""
 
-#: includes/Admin.php:1007 includes/Admin.php:1119
+#: includes/Admin.php:1008 includes/Admin.php:1120
 msgid "Custom Image URL"
 msgstr ""
 
-#: includes/Admin.php:1016 includes/Admin.php:1130
+#: includes/Admin.php:1017 includes/Admin.php:1131
 #. translators: Placeholders %1$s - WC currency symbol
 msgid "Facebook Price (%1$s)"
 msgstr ""
 
-#: includes/Admin.php:1020 includes/Admin.php:1134
+#: includes/Admin.php:1021 includes/Admin.php:1135
 msgid ""
 "Custom price for product on Facebook. Please enter in monetary decimal (.) "
 "format without thousand separators and currency symbols. If blank, product "
 "price will be used."
 msgstr ""
 
-#: includes/Admin.php:1107
+#: includes/Admin.php:1108
 msgid "Use variation image"
 msgstr ""
 
-#: includes/Admin.php:1108
+#: includes/Admin.php:1109
 msgid "Use parent image"
 msgstr ""
 
-#: includes/Admin.php:1248
+#: includes/Admin.php:1249
 msgid "Close modal panel"
 msgstr ""
 

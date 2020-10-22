@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.3.2
-Stable tag: 2.0.2
+Tested up to: 5.5.1
+Stable tag: 2.0.5
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -44,6 +44,19 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
  * Feature - Define custom product attributes such as gender, size, color, and pattern
+
+= 2020.10.12 - version 2.0.5 =
+ * Tweak - Update product availability when stock changes in the store
+ * Fix - Don't prevent variation products from being updated when they're set to not sync with Facebook but have their categories excluded from syncing
+ * Fix - Prevent an error during the feed generation when variable products are still using deleted terms
+
+= 2020.10.08 - version 2.0.4 =
+ * Fix - Fix SQL errors triggered while trying to remove duplicate visibility meta entries from postmeta table
+
+= 2020.10.02 - version 2.0.3 =
+ * Tweak - Pixel events now can include advanced matching information
+ * Fix - Send contents parameter for ViewContent event using the correct format
+ * Fix - Remove duplicate visibility meta entries from postmeta table
 
 = 2020.09.25 - version 2.0.2 =
  * Tweak - Allow simple and variable products with zero/empty price to sync to Facebook

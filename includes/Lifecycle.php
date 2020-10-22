@@ -40,6 +40,8 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'1.10.1',
 			'1.11.0',
 			'2.0.0',
+			'2.0.3',
+			'2.0.4',
 		];
 	}
 
@@ -263,6 +265,75 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// deletes an option that is not longer used to generate an admin notice
 		delete_option( 'fb_cart_url' );
+	}
+
+
+	/**
+	 * Upgrades to version 2.0.3
+	 *
+	 * @since 2.0.3
+	 */
+	protected function upgrade_to_2_0_3() {
+
+		if ( ! $this->should_create_remove_duplicate_visibility_meta_background_job() ) {
+			return;
+		}
+
+		// if an unfinished job is stuck, give the handler a chance to complete it
+		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
+			$handler->dispatch();
+		}
+
+		// create a job to remove duplicate visibility meta data entries
+		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
+
+			// create_job() expects an non-empty array of attributes
+			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
+			$handler->dispatch();
+		}
+	}
+
+
+	/**
+	 * Determines whether we need to run a background job to remove duplicate visibility meta.
+	 *
+	 * @since 2.0.3
+	 *
+	 * @return bool
+	 */
+	private function should_create_remove_duplicate_visibility_meta_background_job() {
+
+		// we should try to remove duplicate meta if the virtual product variations job ran
+		if ( 'yes' === get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
+			return true;
+		}
+
+		$handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance();
+
+		// the virtual product variations job is not marked as complete but there is at least one job in the database
+		if ( $handler && $handler->get_jobs() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Upgrades to version 2.0.4
+	 *
+	 * @since 2.0.4
+	 */
+	protected function upgrade_to_2_0_4() {
+
+		// if unfinished jobs are stuck, give the handlers a chance to complete them
+		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
+			$handler->dispatch();
+		}
+
+		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
+			$handler->dispatch();
+		}
 	}
 
 

@@ -1,6 +1,17 @@
 *** Facebook for WooCommerce Changelog ***
 
-2020.nn.nn - version 2.1.0-dev.1
+2020.10.12 - version 2.0.5
+ * Tweak - Update product availability when stock changes in the store
+ * Fix - Don't prevent variation products from being updated when they're set to not sync with Facebook but have their categories excluded from syncing
+ * Fix - Prevent an error during the feed generation when variable products are still using deleted terms
+
+2020.10.08 - version 2.0.4
+ * Fix - Fix SQL errors triggered while trying to remove duplicate visibility meta entries from postmeta table
+
+2020.10.02 - version 2.0.3
+ * Tweak - Pixel events now can include advanced matching information
+ * Fix - Send contents parameter for ViewContent event using the correct format
+ * Fix - Remove duplicate visibility meta entries from postmeta table
 
 2020.09.25 - version 2.0.2
  * Tweak - Allow simple and variable products with zero/empty price to sync to Facebook
