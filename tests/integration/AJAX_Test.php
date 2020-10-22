@@ -2,6 +2,7 @@
 
 use SkyVerge\WooCommerce\Facebook;
 use SkyVerge\WooCommerce\Facebook\AJAX;
+use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * Tests the AJAX class.
@@ -69,10 +70,30 @@ class AJAX_Test extends \Codeception\TestCase\WPTestCase {
 
 	/** @see Facebook\AJAX::get_products_to_be_excluded() */
 	public function test_get_products_to_be_excluded_no_new_terms() {
+		// If the integration test database already has excluded products in it
+		// the assertion isn't with an empty set, we need to get the initial exclusions.
+		$sync_enabled_meta_query = array(
+			'relation' => 'OR',
+			array(
+				'key'   => Products::SYNC_ENABLED_META_KEY,
+				'value' => 'yes',
+			),
+			array(
+				'key'     => Products::SYNC_ENABLED_META_KEY,
+				'compare' => 'NOT EXISTS',
+			),
+		);
+
+		$products_query_vars = array(
+			'post_type'  => 'product',
+			'fields'     => 'ids',
+			'meta_query' => $sync_enabled_meta_query,
+		);
+		$products_query = new \WP_Query( $products_query_vars );
 
 		// no added categories or tags
 		$products_to_be_excluded = $this->get_products_to_be_excluded->invokeArgs( $this->ajax, [] );
-		$this->assertEqualSets( [], $products_to_be_excluded );
+		$this->assertEqualSets( $products_query->posts, $products_to_be_excluded );
 	}
 
 
