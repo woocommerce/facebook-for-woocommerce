@@ -57,6 +57,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// ViewContent for individual products
 			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
+			add_action( 'woocommerce_after_single_product', [ $this, 'maybe_inject_search_event' ] );
 
 			add_action(
 				'woocommerce_after_shop_loop',
