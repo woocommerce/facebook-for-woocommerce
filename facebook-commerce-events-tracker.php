@@ -66,6 +66,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'pre_get_posts',
 				array( $this, 'inject_search_event' )
 			);
+			add_filter( 'woocommerce_redirect_single_search_result', [ $this, 'maybe_add_product_search_event_to_session' ] );
 
 			// AddToCart events
 			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 40, 4 );
