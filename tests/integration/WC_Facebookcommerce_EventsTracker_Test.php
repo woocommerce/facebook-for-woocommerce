@@ -17,6 +17,65 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	/** Test methods **************************************************************************************************/
 
 
+	/**
+	 * @see WC_Facebookcommerce_EventsTracker::is_single_search_result()
+	 *
+	 * @dataProvider provider_is_single_search_result
+	 */
+	public function test_is_single_search_result( $is_single_search_result, $url ) {
+
+		// TODO: delete all existing products to avoid false positives {WV 2020-10-23}
+
+		$this->tester->get_product( [
+			'name'          => 'Duplicate Product 1',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->tester->get_product( [
+			'name'          => 'Duplicate Product 2',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->tester->get_product( [
+			'name'          => 'Unique Product',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->go_to( $url );
+
+		$tracker = $this->get_events_tracker();
+
+		$this->assertSame( $is_single_search_result, $this->tester->getMethod( $tracker, 'is_single_search_result' )->invoke( $tracker ) );
+	}
+
+
+	/** @see test_is_single_search_result() */
+	public function provider_is_single_search_result() {
+
+		return [
+			[
+				true,
+				add_query_arg( [ 's' => 'Unique Product', 'post_type' => 'product' ], home_url() ),
+			],
+			[
+				false,
+				add_query_arg( [ 's' => 'Unique Product' ], home_url() ),
+			],
+			[
+				false,
+				add_query_arg( [ 's' => 'Duplicate Product', 'post_type' => 'product' ], home_url() ),
+			],
+			[
+				false,
+				home_url(),
+			],
+		];
+	}
+
+
 	/** @see WC_Facebookcommerce_EventsTracker::get_search_event() */
 	public function test_get_search_event() {
 		global $wp_query;
