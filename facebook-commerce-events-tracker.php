@@ -27,6 +27,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		const FB_PRIORITY_HIGH    = 2;
 		const FB_PRIORITY_LOW     = 11;
 
+
+		/** @var string name of the session variable used to store search event data */
+		private $search_event_data_session_variable = 'wc_facebook_search_event_data';
+
 		/** @var Event search event instance */
 		private $search_event;
 		/** @var array with events tracked */
@@ -199,6 +203,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			global $wp_query;
 
 			return is_search() && is_post_type_archive( 'product' ) && 1 === absint( $wp_query->found_posts );
+		}
+
+
+		/**
+		 * Adds search event data to the session.
+		 *
+		 * This does nothing if there is no session set.
+		 *
+		 * @since 2.0.6-dev.1
+		 *
+		 * @return void
+		 */
+		private function add_product_search_event_to_session( Event $event ) {
+
+			if ( isset( WC()->session ) && is_callable( [ WC()->session, 'set' ] ) ) {
+				WC()->session->set( $this->search_event_data_session_variable, $event->get_data() );
+			}
 		}
 
 
