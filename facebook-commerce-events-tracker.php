@@ -193,6 +193,34 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Attempts to add a session variable to indicate that a product search event occurred.
+		 *
+		 * The session variable is used to catch search events that have a single result.
+		 * In those cases WooCommerce redirects customers to the product page instead of showing the search results.
+		 *
+		 * The plugin can't inject a Pixel event code on redirect responses, but it can check for the presence of the variable on the product page.
+		 *
+		 * This method is hooked to woocommerce_redirect_single_search_result which is triggered right before redirecting.
+		 *
+		 * @internal
+		 *
+		 * @since 2.0.6-dev.1
+		 *
+		 * @param bool $redirect whether to redirect to the product page
+		 * @return bool
+		 */
+		public function maybe_add_product_search_event_to_session( $redirect ) {
+
+			if ( $redirect && $this->search_event && $this->is_single_search_result() ) {
+
+				$this->add_product_search_event_to_session( $this->search_event );
+			}
+
+			return $redirect;
+		}
+
+
+		/**
 		 * Determines whether the current request is a product search with a single result.
 		 *
 		 * @since 2.0.6-dev.1
