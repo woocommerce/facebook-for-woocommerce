@@ -253,6 +253,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Attempts to create an Event instance for a product search event using session data.
+		 *
+		 * @since 2.0.6-dev.1
+		 *
+		 * @return Event|null
+		 */
+		private function get_product_search_event_from_session() {
+
+			if ( ! isset( WC()->session ) || ! is_callable( [ WC()->session, 'get' ] ) ) {
+				return null;
+			}
+
+			$data = WC()->session->get( $this->search_event_data_session_variable );
+
+			if ( ! is_array( $data ) || empty( $data ) ) {
+				return null;
+			}
+
+			return new Event( $data );
+		}
+
+
+		/**
 		 * Triggers Search for result pages (deduped)
 		 *
 		 * @internal
