@@ -253,6 +253,30 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Injects a frontend search event if the session has stored event data.
+		 *
+		 * @internal
+		 *
+		 * @since 2.0.6-dev.1
+		 */
+		public function maybe_inject_search_event() {
+
+			if ( ! self::$isEnabled ) {
+				return;
+			}
+
+			$this->search_event = $this->get_product_search_event_from_session();
+
+			if ( ! $this->search_event  ) {
+				return;
+			}
+
+			$this->delete_session_data( $this->search_event_data_session_variable );
+			$this->actually_inject_search_event();
+		}
+
+
+		/**
 		 * Attempts to create an Event instance for a product search event using session data.
 		 *
 		 * @since 2.0.6-dev.1
