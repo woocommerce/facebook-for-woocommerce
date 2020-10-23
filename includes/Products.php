@@ -657,7 +657,7 @@ class Products {
 		}
 
 		if ( empty( $categories ) ) {
-			return $google_product_category_id;
+			return array();
 		}
 
 		$categories_per_level = array();
