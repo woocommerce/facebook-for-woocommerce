@@ -276,6 +276,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 
 		/**
+		 * Deletes a session variable.
+		 *
+		 * @since 2.0.6-dev.1
+		 *
+		 * @param string $key name of the variable to delete
+		 */
+		private function delete_session_data( $key ) {
+
+			if ( isset( WC()->session->$key ) ) {
+				unset( WC()->session->$key );
+			}
+		}
+
+
+		/**
 		 * Triggers Search for result pages (deduped)
 		 *
 		 * @internal
