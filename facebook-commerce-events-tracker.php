@@ -187,6 +187,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->pixel->inject_event( $event_name, $event_data, 'trackCustom' );
 		}
 
+
+		/**
+		 * Determines whether the current request is a product search with a single result.
+		 *
+		 * @since 2.0.6-dev.1
+		 *
+		 * @return bool
+		 */
+		private function is_single_search_result() {
+			global $wp_query;
+
+			return is_search() && is_post_type_archive( 'product' ) && 1 === absint( $wp_query->found_posts );
+		}
+
+
 		/**
 		 * Triggers Search for result pages (deduped)
 		 *
