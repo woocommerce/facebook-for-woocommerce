@@ -44,6 +44,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
  * Feature - Define custom product attributes such as gender, size, color, and pattern
+ * Feature - Add LWI AD support for simplified AD creation within WooCommerce
 
 = 2020.10.12 - version 2.0.5 =
  * Tweak - Update product availability when stock changes in the store
