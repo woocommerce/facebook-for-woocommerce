@@ -52,6 +52,54 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	}
 
 
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		WC()->session->set( $variable_name, [ 'user_data' => [ 'foo' => 'bar' ] ] );
+
+		$event = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertInstanceOf( Event::class, $event );
+		$this->assertArrayHasKey( 'foo', $event->get_user_data() );
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session_if_session_is_not_available() {
+
+		$session = WC()->session;
+
+		unset( WC()->session );
+
+		$tracker = $this->get_events_tracker();
+		$event   = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertNull( $event );
+
+		// restore WooCommerce session to avoid unexpected Fatal errors
+		WC()->session = $session;
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session_if_session_has_no_data() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		WC()->session->{$variable_name} = null;
+
+		$event   = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertNull( $event );
+	}
+
+
 	/**
 	 * @see WC_Facebookcommerce_EventsTracker::is_single_search_result()
 	 *
