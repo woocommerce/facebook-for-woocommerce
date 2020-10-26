@@ -9,7 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

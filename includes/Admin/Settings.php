@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -57,7 +57,7 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		if ( Framework\SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
+		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 			$parent_slug = 'woocommerce-marketing';
 		} else {
 			$parent_slug = 'woocommerce';
