@@ -14,21 +14,37 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 	protected $tester;
 
 
+	/** @var Sync original Sync handler instance */
+	protected $sync;
+
+
 	/**
 	 * Runs before each test.
 	 */
 	protected function _before() {
+
+		parent::_before();
+
 		require_once 'includes/Admin/Product_Categories.php';
 		require_once 'includes/Admin/Google_Product_Category_Field.php';
 		require_once 'includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
+
+		// store a reference to the original Sync handler to restore it after each test is complete
+		$this->sync = $this->tester->getPropertyValue( facebook_for_woocommerce(), 'products_sync_handler' );
 	}
 
 
 	/**
 	 * Runs after each test.
+	 *
+	 * Prefer _tearDown() over _after() because the latter is not currently called on sub-classes of \Codeception\TestCase\WPTestCase.
 	 */
-	protected function _after() {
+	public function _tearDown() {
 
+		// restore Sync handler reference back to the original instance
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $this->sync );
+
+		parent::_tearDown();
 	}
 
 
@@ -160,9 +176,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		     ->willReturn( \Codeception\Stub\Expected::once( $expected_sync_ids ) );
 
 		// replace the sync handler property
-		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
-		$property->setAccessible( true );
-		$property->setValue( facebook_for_woocommerce(), $sync );
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
 		$enhanced_catalog_prefix = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
@@ -193,9 +207,7 @@ class ProductCategoriesTest extends \Codeception\TestCase\WPTestCase {
 		     ->willReturn( \Codeception\Stub\Expected::never() );
 
 		// replace the sync handler property
-		$property = new ReflectionProperty( \WC_Facebookcommerce::class, 'products_sync_handler' );
-		$property->setAccessible( true );
-		$property->setValue( facebook_for_woocommerce(), $sync );
+		$this->tester->setPropertyValue( facebook_for_woocommerce(), 'products_sync_handler', $sync );
 
 		$_POST[ Admin\Product_Categories::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
 		$this->get_product_categories_handler()->save_google_product_category_and_enhanced_attributes( $category_term_id, $category_term_taxonomy_id, 'product_cat' );

@@ -47,7 +47,7 @@ class Admin {
 	public function __construct() {
 
 		// enqueue admin scripts
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		$plugin = facebook_for_woocommerce();
 
@@ -181,7 +181,7 @@ class Admin {
 	/**
 	 * Determines whether sync is enabled for the current product.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.0.5
 	 *
 	 * @return bool
 	 */
@@ -324,6 +324,7 @@ class Admin {
 			} else {
 				esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' );
 			}
+
 		} else {
 
 			esc_html_e( 'Do not sync', 'facebook-for-woocommerce' );
@@ -1584,5 +1585,6 @@ class Admin {
 
 		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
+
 
 }

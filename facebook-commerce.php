@@ -9,11 +9,11 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
-use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -302,7 +302,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			add_action( 'admin_notices', array( $this, 'checks' ) );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
-
 
 			add_action(
 				'wp_ajax_ajax_sync_all_fb_products',
@@ -970,6 +969,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param \WC_Product $product the product object
 	 */
 	private function save_product_settings( \WC_Product $product ) {
+
 		$woo_product = new WC_Facebook_Product( $product->get_id() );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
@@ -989,7 +989,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( isset( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) {
 			$woo_product->set_product_image( sanitize_text_field( wp_unslash( $_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ] ) ) );
 		}
-
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
