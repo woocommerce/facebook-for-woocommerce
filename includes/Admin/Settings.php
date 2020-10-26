@@ -72,6 +72,19 @@ class Settings {
 			[ $this, 'render' ],
 			5
 		);
+
+		// enables the WC Admin top bar for the settings page
+		if ( is_callable( 'wc_admin_connect_page' ) ) {
+
+			wc_admin_connect_page( [
+				'id'        => self::PAGE_ID,
+				'screen_id' => 'marketing_page_wc-facebook',
+				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+				'title'     => [
+					__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+				],
+			] );
+		}
 	}
 
 
