@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Compatibility;
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
@@ -58,7 +59,13 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, [ $this, 'render' ], 5 );
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
+			$parent_slug = 'woocommerce-marketing';
+		} else {
+			$parent_slug = 'woocommerce';
+		}
+
+		add_submenu_page( $parent_slug, __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, [ $this, 'render' ], 5 );
 	}
 
 
