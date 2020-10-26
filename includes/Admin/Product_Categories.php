@@ -364,7 +364,7 @@ class Product_Categories {
 	 */
 	public function render_enhanced_catalog_attributes_title() {
 
-		return __( 'Enhanced Catalog Attributes', 'facebook-for-woocommerce' );
+		return __( 'Category Specific Attributes', 'facebook-for-woocommerce' );
 	}
 
 	/**
