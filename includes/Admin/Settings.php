@@ -65,7 +65,15 @@ class Settings {
 			$parent_slug = 'woocommerce';
 		}
 
-		add_submenu_page( $parent_slug, __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, [ $this, 'render' ], 5 );
+		add_submenu_page(
+			$parent_slug,
+			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+			__( 'Facebook', 'facebook-for-woocommerce' ),
+			'manage_woocommerce',
+			self::PAGE_ID,
+			[ $this, 'render' ],
+			5
+		);
 	}
 
 
