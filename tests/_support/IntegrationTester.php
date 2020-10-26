@@ -390,6 +390,23 @@ class IntegrationTester extends \Codeception\Actor {
 
 
 	/**
+	 * Uses reflection to invoke a method on the given object.
+	 *
+	 * The method can be private, protected, or public.
+	 *
+	 * @param object $object the instance to invoke the method on
+	 * @param string $method_name the name of the method
+	 * @param array $parameters zero or more parameters for the method
+	 * @return mixed
+	 * @throws ReflectionException
+	 */
+	public function invokeReflectionMethod( $object, $method_name, ...$parameters ) {
+
+		return $this->getMethod( $object, $method_name )->invokeArgs( $object, $parameters );
+	}
+
+
+	/**
 	 * Uses reflection to make a property public so we can test it.
 	 *
 	 * Copied from Jilt for WooCommerce.
