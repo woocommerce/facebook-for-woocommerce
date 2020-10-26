@@ -10,9 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Compatibility;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -59,7 +57,7 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
+		if ( Framework\SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
 			$parent_slug = 'woocommerce-marketing';
 		} else {
 			$parent_slug = 'woocommerce';
@@ -85,7 +83,7 @@ class Settings {
 	public function render() {
 
 		$tabs        = $this->get_tabs();
-		$current_tab = SV_WC_Helper::get_requested_value( 'tab' );
+		$current_tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
 
 		if ( ! $current_tab ) {
 			$current_tab = current( array_keys( $tabs ) );
@@ -129,17 +127,17 @@ class Settings {
 	 */
 	public function save() {
 
-		if ( ! is_admin() || SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
+		if ( ! is_admin() || Framework\SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
 			return;
 		}
 
-		$screen = $this->get_screen( SV_WC_Helper::get_posted_value( 'screen_id' ) );
+		$screen = $this->get_screen( Framework\SV_WC_Helper::get_posted_value( 'screen_id' ) );
 
 		if ( ! $screen ) {
 			return;
 		}
 
-		if ( ! SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
+		if ( ! Framework\SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
 			return;
 		}
 
@@ -155,7 +153,7 @@ class Settings {
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
 				/* translators: Placeholders: %s - user-friendly error message */
