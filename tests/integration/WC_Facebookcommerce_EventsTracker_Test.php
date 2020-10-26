@@ -35,6 +35,8 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	/** @see WC_Facebookcommerce_EventsTracker::add_product_search_event_to_session() */
 	public function test_add_product_search_event_to_session_if_session_is_not_available() {
 
+		$session = WC()->session;
+
 		unset( WC()->session );
 
 		$tracker = $this->get_events_tracker();
@@ -44,6 +46,9 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 		] );
 
 		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
+
+		// restore WooCommerce session to avoid unexpected Fatal errors
+		WC()->session = $session;
 	}
 
 
