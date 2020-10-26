@@ -171,7 +171,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
-					require_once __DIR__ . '/includes/Admin/Settings_Screens/Commerce.php';
 					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 					require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 
@@ -877,14 +876,5 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		return \WC_Facebookcommerce::instance();
 	}
 
-	/**
-	 * Checks to see if this version of the plugin can view the commerce tab
-	 *
-	 *
-	 * @return bool whether or not this release should see the commerce tab.
-	 */
-	function is_release_part_of_commerce_rollout() {
-		return false;
-	}
 
 endif;

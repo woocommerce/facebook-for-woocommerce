@@ -44,10 +44,6 @@ class Settings {
 			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
 		);
 
-		if ( is_release_part_of_commerce_rollout() ) {
-			$this->screens[ Settings_Screens\Commerce::ID ] = new Settings_Screens\Commerce();
-		}
-
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );

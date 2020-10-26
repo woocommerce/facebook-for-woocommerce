@@ -88,8 +88,6 @@ class Connection {
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
-
-		add_action( 'woocommerce_api_' . self::ACTION_CONNECT_COMMERCE, [ $this, 'handle_connect_commerce' ] );
 	}
 
 
@@ -348,65 +346,6 @@ class Connection {
 
 
 	/**
-	 * Handles the connection redirect from Commerce onboarding.
-	 *
-	 * @internal
-	 *
-	 * @since 2.1.0-dev.1
-	 */
-	public function handle_connect_commerce() {
-
-		// don't handle anything unless the user can manage WooCommerce settings
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			return;
-		}
-
-		try {
-
-			facebook_for_woocommerce()->log( 'Processing Facebook commerce connection.' );
-
-			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT_COMMERCE ) ) {
-				throw new SV_WC_API_Exception( 'Invalid nonce' );
-			}
-
-			$commerce_manager_id = ! empty( $_GET['commerce_manager_id'] ) ? sanitize_text_field( $_GET['commerce_manager_id'] ) : '';
-
-			if ( ! $commerce_manager_id ) {
-				throw new SV_WC_API_Exception( 'Commerce manager ID is missing' );
-			}
-
-			// get a current access token for the configured page
-			$page_access_token = $this->retrieve_page_access_token( facebook_for_woocommerce()->get_integration()->get_facebook_page_id() );
-
-			$this->update_page_access_token( $page_access_token );
-
-			// allow the commerce manager to manage orders for the page shop
-			$this->enable_order_management( $commerce_manager_id, $page_access_token );
-
-			// finally store the commerce manager ID to consider the site connected if all goes well
-			$this->update_commerce_manager_id( $commerce_manager_id );
-
-			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
-
-		} catch ( SV_WC_API_Exception $exception ) {
-
-			$message = sprintf(
-				/* translators: Placeholders: %s - connection error message */
-				__( 'Connection failed: %s', 'facebook-for-woocommerce' ),
-				$exception->getMessage()
-			);
-
-			facebook_for_woocommerce()->log( $message );
-
-			facebook_for_woocommerce()->get_message_handler()->add_error( $message );
-		}
-
-		wp_safe_redirect( add_query_arg( 'tab', 'commerce', facebook_for_woocommerce()->get_settings_url() ) );
-		exit;
-	}
-
-
-	/**
 	 * Retrieves the configured page access token remotely.
 	 *
 	 * @since 2.1.0-dev.1
@@ -448,37 +387,6 @@ class Connection {
 		}
 
 		return $page_access_tokens[ $page_id ];
-	}
-
-
-	/**
-	 * Enables order management for the given commerce manager.
-	 *
-	 * @since 2.1.0-dev.1
-	 *
-	 * @param string $commerce_manager_id commerce manager ID
-	 * @param string $page_access_token page access token
-	 * @throws SV_WC_API_Exception
-	 */
-	private function enable_order_management( $commerce_manager_id, $page_access_token ) {
-
-		facebook_for_woocommerce()->log( 'Enabling order management' );
-
-		$response = wp_remote_post( "https://graph.facebook.com/{$commerce_manager_id}/order_management_apps?access_token={$page_access_token}" );
-
-		$body = wp_remote_retrieve_body( $response );
-		$body = json_decode( $body, true );
-
-		if ( ! is_array( $body ) || empty( $body['success'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-
-			facebook_for_woocommerce()->log( print_r( $body, true ) );
-
-			throw new SV_WC_API_Exception( sprintf(
-				/* translators: Placeholders: %s - API error message */
-				__( 'Could not enable order management. %s', 'facebook for woocommerce' ),
-				wp_remote_retrieve_response_message( $response )
-			) );
-		}
 	}
 
 
