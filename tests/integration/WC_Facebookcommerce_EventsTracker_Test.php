@@ -17,6 +17,36 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see WC_Facebookcommerce_EventsTracker::add_product_search_event_to_session() */
+	public function test_add_product_search_event_to_session() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		$event = new Event( [ 'user_data' => [ 'foo' => 'bar' ] ] );
+
+		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
+
+		$this->assertSame( WC()->session->{$variable_name}, $event->get_data() );
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::add_product_search_event_to_session() */
+	public function test_add_product_search_event_to_session_if_session_is_not_available() {
+
+		unset( WC()->session );
+
+		$tracker = $this->get_events_tracker();
+
+		$event = $this->make( Event::class, [
+			'get_data' => \Codeception\Stub\Expected::never(),
+		] );
+
+		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
+	}
+
+
 	/**
 	 * @see WC_Facebookcommerce_EventsTracker::is_single_search_result()
 	 *
