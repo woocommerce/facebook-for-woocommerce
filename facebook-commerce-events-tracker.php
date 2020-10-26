@@ -232,7 +232,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private function is_single_search_result() {
 			global $wp_query;
 
-			return is_search() && is_post_type_archive( 'product' ) && 1 === absint( $wp_query->found_posts );
+			return is_search() && 1 === absint( $wp_query->found_posts ) && is_post_type_archive( 'product' );
 		}
 
 
