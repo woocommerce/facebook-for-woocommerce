@@ -37,6 +37,8 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
+		add_action( 'admin_head', [ $this, 'output_lwi_ads_script' ] );
+
 		add_action( 'admin_notices', [ $this, 'add_notices' ] );
 	}
 
@@ -67,6 +69,42 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 			delete_transient( 'wc_facebook_connection_failed' );
 		}
+	}
+
+
+	/**
+	 * Outputs the LWI Ads script.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function output_lwi_ads_script() {
+
+		$tab = SV_WC_Helper::get_requested_value( 'tab' );
+
+		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
+			return;
+		}
+
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+
+		if ( ! $connection_handler || ! $connection_handler->is_connected() ) {
+			return;
+		}
+
+		?>
+		<script>
+			window.fbAsyncInit = function() {
+				FB.init( {
+					appId            : '<?php echo esc_js( $connection_handler->get_client_id() ); ?>',
+					autoLogAppEvents : true,
+					xfbml            : true,
+					version          : 'v8.0',
+				} );
+			};
+		</script>
+		<?php
 	}
 
 
