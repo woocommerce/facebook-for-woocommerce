@@ -15,8 +15,8 @@ use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
 use SkyVerge\WooCommerce\Facebook\Utilities;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
 

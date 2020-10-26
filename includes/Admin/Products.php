@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 /**
  * General handler for product admin functionality.

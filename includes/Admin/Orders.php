@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Utilities\Shipment;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 /**
  * General handler for order admin functionality.
