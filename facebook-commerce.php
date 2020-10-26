@@ -1402,7 +1402,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Update existing product group (variant data only)
 	 *
-	 * @param WC_Facebook_Product $woo_product
+	 * @param \WC_Facebook_Product $woo_product
 	 **/
 	function update_product_group( $woo_product ) {
 		$fb_product_group_id = $this->get_product_fbid(
@@ -1470,11 +1470,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Determine if there matching variation to the default attributes
+	 * Determines if there a matching variation for the default attributes.
 	 *
-	 * @param WC_Facebook_Product $woo_product
-	 *
-	 * @return WC_Product_Variation|null
+	 * @param \WC_Facebook_Product $woo_product
+	 * @return \WC_Product_Variation|null
 	 */
 	protected function get_product_group_default_variation( $woo_product ) {
 
@@ -1487,7 +1486,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$default_variation  = null;
 		$product_variations = $woo_product->woo_product->get_available_variations( 'objects' );
 
-		/* @var $variation WC_Product_Variation */
+		/* @var $variation \WC_Product_Variation */
 		foreach ( $product_variations as $variation ) {
 
 			$variation_attributes = $variation->get_attributes( 'edit' );
