@@ -1174,13 +1174,12 @@ class Products {
 			function( $attrs, $attr_key ) use ( $prefix ) {
 				return array_merge(
 					$attrs,
-					array(
-						str_replace( $prefix, '', $attr_key ) =>
-																wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
-					),
+					[
+						str_replace( $prefix, '', $attr_key ) => wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
+					]
 				);
 			},
-			array(),
+			[]
 		);
 	}
 
