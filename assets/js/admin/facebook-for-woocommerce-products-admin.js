@@ -272,6 +272,21 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Determines whether the product is a Variable product.
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @return {boolean}
+		 */
+		function isVariableProduct() {
+
+			var productType = $( 'select#product-type' ).val();
+
+			return productType && productType.match( /variable/ );
+		}
+
+
+		/**
 		 * Determines whether a simple product has a Regular Price or Facebook Price defined.
 		 *
 		 * @since 2.1.0
