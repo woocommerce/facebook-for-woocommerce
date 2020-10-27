@@ -17,6 +17,151 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 	/** Test methods **************************************************************************************************/
 
 
+	/** @see WC_Facebookcommerce_EventsTracker::add_product_search_event_to_session() */
+	public function test_add_product_search_event_to_session() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		$event = new Event( [ 'user_data' => [ 'foo' => 'bar' ] ] );
+
+		// the session variable is set only if WC()->session->has_session() returns true
+		WC()->session->set_customer_session_cookie( true );
+
+		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
+
+		$this->assertSame( WC()->session->{$variable_name}, $event->get_data() );
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::add_product_search_event_to_session() */
+	public function test_add_product_search_event_to_session_if_session_is_not_available() {
+
+		$session = WC()->session;
+
+		unset( WC()->session );
+
+		$tracker = $this->get_events_tracker();
+
+		$event = $this->make( Event::class, [
+			'get_data' => \Codeception\Stub\Expected::never(),
+		] );
+
+		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
+
+		// restore WooCommerce session to avoid unexpected Fatal errors
+		WC()->session = $session;
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		WC()->session->set( $variable_name, [ 'user_data' => [ 'foo' => 'bar' ] ] );
+
+		$event = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertInstanceOf( Event::class, $event );
+		$this->assertArrayHasKey( 'foo', $event->get_user_data() );
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session_if_session_is_not_available() {
+
+		$session = WC()->session;
+
+		unset( WC()->session );
+
+		$tracker = $this->get_events_tracker();
+		$event   = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertNull( $event );
+
+		// restore WooCommerce session to avoid unexpected Fatal errors
+		WC()->session = $session;
+	}
+
+
+	/** @see WC_Facebookcommerce_EventsTracker::get_product_search_event_from_session() */
+	public function test_get_product_search_event_from_session_if_session_has_no_data() {
+
+		$tracker = $this->get_events_tracker();
+
+		$variable_name = $this->tester->getPropertyValue( $tracker, 'search_event_data_session_variable' );
+
+		WC()->session->{$variable_name} = null;
+
+		$event   = $this->tester->invokeReflectionMethod( $tracker, 'get_product_search_event_from_session' );
+
+		$this->assertNull( $event );
+	}
+
+
+	/**
+	 * @see WC_Facebookcommerce_EventsTracker::is_single_search_result()
+	 *
+	 * @dataProvider provider_is_single_search_result
+	 */
+	public function test_is_single_search_result( $is_single_search_result, $url ) {
+
+		// TODO: delete all existing products to avoid false positives {WV 2020-10-23}
+
+		$this->tester->get_product( [
+			'name'          => 'Duplicate Product 1',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->tester->get_product( [
+			'name'          => 'Duplicate Product 2',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->tester->get_product( [
+			'name'          => 'Unique Product',
+			'regular_price' => 10,
+			'status'        => 'publish',
+		] );
+
+		$this->go_to( $url );
+
+		$tracker = $this->get_events_tracker();
+
+		$this->assertSame( $is_single_search_result, $this->tester->getMethod( $tracker, 'is_single_search_result' )->invoke( $tracker ) );
+	}
+
+
+	/** @see test_is_single_search_result() */
+	public function provider_is_single_search_result() {
+
+		return [
+			[
+				true,
+				add_query_arg( [ 's' => 'Unique Product', 'post_type' => 'product' ], home_url() ),
+			],
+			[
+				false,
+				add_query_arg( [ 's' => 'Unique Product' ], home_url() ),
+			],
+			[
+				false,
+				add_query_arg( [ 's' => 'Duplicate Product', 'post_type' => 'product' ], home_url() ),
+			],
+			[
+				false,
+				home_url(),
+			],
+		];
+	}
+
+
 	/** @see WC_Facebookcommerce_EventsTracker::get_search_event() */
 	public function test_get_search_event() {
 		global $wp_query;

@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.1.2-dev.1 =
+ * Fix - Trigger a pixel Search event for product search request with a single result (works for logged in users or visitors with an active WooCommerce session)
 
 = 2020.10.27 - version 2.1.1 =
  * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
