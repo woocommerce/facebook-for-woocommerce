@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 2.1.1-dev.1 =
+
 = 2020.10.26 - version 2.1.0 =
  * Feature - Set Google category at the shop level for the Facebook catalog sync (on the product sync tab).
  * Feature - Set Google category for the Facebook catalog sync at the WooCommerce category level.
