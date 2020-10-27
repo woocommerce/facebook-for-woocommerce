@@ -1152,12 +1152,13 @@ class Products {
 
 
 	/**
-	 * Helper function that gets and cleans the submitted values for enhanced
-	 * catalog attributes from the request. Is used by both product categories
-	 * and product pages.
-	 * Returns an array that maps key to value.
+	 * Gets and cleans the submitted values for enhanced catalog attributes from the request.
 	 *
-	 * @return array
+	 * Helper function used by both product categories and product pages.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return array associative array
 	 */
 	public static function get_enhanced_catalog_attributes_from_request() {
 		$prefix     = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
