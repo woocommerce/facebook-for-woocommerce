@@ -295,7 +295,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isPriceDefinedForSimpleProduct() {
 
-			return $( '#_regular_price' ).val().length || $( '#fb_product_price' ).val().length;
+			return !! ( $( '#_regular_price' ).val() || $( '#fb_product_price' ).val() );
 		}
 
 
