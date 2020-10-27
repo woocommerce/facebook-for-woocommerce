@@ -26,6 +26,9 @@ class WC_Facebookcommerce_EventsTracker_Test extends \Codeception\TestCase\WPTes
 
 		$event = new Event( [ 'user_data' => [ 'foo' => 'bar' ] ] );
 
+		// the session variable is set only if WC()->session->has_session() returns true
+		WC()->session->set_customer_session_cookie( true );
+
 		$this->tester->invokeReflectionMethod( $tracker, 'add_product_search_event_to_session', $event );
 
 		$this->assertSame( WC()->session->{$variable_name}, $event->get_data() );

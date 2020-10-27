@@ -247,7 +247,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function add_product_search_event_to_session( Event $event ) {
 
-			if ( isset( WC()->session ) && is_callable( [ WC()->session, 'set' ] ) ) {
+			if ( isset( WC()->session ) && is_callable( [ WC()->session, 'has_session' ] ) && WC()->session->has_session() ) {
 				WC()->session->set( $this->search_event_data_session_variable, $event->get_data() );
 			}
 		}
