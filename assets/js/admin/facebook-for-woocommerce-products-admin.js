@@ -282,7 +282,7 @@ jQuery( document ).ready( function( $ ) {
 
 			var productType = $( 'select#product-type' ).val();
 
-			return productType && productType.match( /variable/ );
+			return !! ( productType && productType.match( /variable/ ) );
 		}
 
 
