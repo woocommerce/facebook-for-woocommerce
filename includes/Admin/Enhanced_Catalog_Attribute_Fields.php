@@ -81,7 +81,7 @@ class Enhanced_Catalog_Attribute_Fields {
 					$this->extract_attribute( $optional_attributes, 'gender' ),
 				),
 				function( $attr ) {
-					return ! is_null( $attr ); },
+					return ! is_null( $attr ); }
 			);
 		}
 
