@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.1.1-dev.1 =
+ * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
 
 = 2020.10.26 - version 2.1.0 =
  * Feature - Set Google category at the shop level for the Facebook catalog sync (on the product sync tab).
