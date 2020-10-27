@@ -83,4 +83,54 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Request::get_retry_count() */
+	public function test_get_retry_count() {
+
+		$this->assertSame( 0, ( new Request( null, null ) )->get_retry_count() );
+	}
+
+
+	/** @see Request::mark_retry() */
+	public function test_mark_retry() {
+
+		$request = new Request( null, null );
+
+		$request->mark_retry();
+
+		$this->assertSame( 1, $request->get_retry_count() );
+
+		$request->mark_retry();
+
+		$this->assertSame( 2, $request->get_retry_count() );
+	}
+
+
+	/** @see Request::get_retry_limit() */
+	public function test_get_retry_limit() {
+
+		$this->assertSame( 5, ( new Request( null, null ) )->get_retry_limit() );
+	}
+
+
+	/** @see Request::get_retry_limit() */
+	public function test_get_retry_limit_filtered() {
+
+		add_filter( 'wc_facebook_api_request_retry_limit', function() {
+			return 10;
+		} );
+
+		$this->assertSame( 10, ( new Request( null, null ) )->get_retry_limit() );
+	}
+
+
+	/** @see Request::get_retry_codes() */
+	public function test_get_retry_codes() {
+
+		$codes = ( new Request( null, null ) )->get_retry_codes();
+
+		$this->assertIsArray( $codes );
+		$this->assertEmpty( $codes );
+	}
+
+
 }

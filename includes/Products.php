@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 use WC_Facebook_Product;
 
 defined( 'ABSPATH' ) or exit;
@@ -41,12 +43,33 @@ class Products {
 	/** @var string product image source option to use the parent product image in Facebook */
 	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
 
+	/** @var string the meta key used to flag if Commerce is enabled for the product */
+	const COMMERCE_ENABLED_META_KEY = '_wc_facebook_commerce_enabled';
+
+	/** @var string the meta key used to store the Google product category ID for the product */
+	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
+
+	/** @var string the meta key prefix used to store the Enhanced Catalog Attributes for the product */
+	const ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX = '_wc_facebook_enhanced_catalog_attributes_';
+
+	/** @var string the meta key used to store the product gender */
+	const GENDER_META_KEY = '_wc_facebook_gender';
+
+	/** @var string the meta key used to store the name of the color attribute for a product */
+	const COLOR_ATTRIBUTE_META_KEY = '_wc_facebook_color_attribute';
+
+	/** @var string the meta key used to store the name of the size attribute for a product */
+	const SIZE_ATTRIBUTE_META_KEY = '_wc_facebook_size_attribute';
+
+	/** @var string the meta key used to store the name of the pattern attribute for a product */
+	const PATTERN_ATTRIBUTE_META_KEY = '_wc_facebook_pattern_attribute';
+
 
 	/** @var array memoized array of sync enabled status for products */
-	private static $products_sync_enabled = [];
+	private static $products_sync_enabled = array();
 
 	/** @var array memoized array of visibility status for products */
-	private static $products_visibility = [];
+	private static $products_visibility = array();
 
 
 	/**
@@ -55,11 +78,11 @@ class Products {
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product[] $products array of product objects
-	 * @param bool $enabled whether sync should be enabled for $products
+	 * @param bool          $enabled whether sync should be enabled for $products
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 
-		self::$products_sync_enabled = [];
+		self::$products_sync_enabled = array();
 
 		$enabled = wc_bool_to_string( $enabled );
 
@@ -79,14 +102,13 @@ class Products {
 							$product_variation->save_meta_data();
 						}
 					}
-
 				} else {
 
 					$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 					$product->save_meta_data();
 				}
-			}
-		}
+			}//end if
+		}//end foreach
 	}
 
 
@@ -128,35 +150,42 @@ class Products {
 	 */
 	public static function disable_sync_for_products_with_terms( array $args ) {
 
-		$args = wp_parse_args( $args, [
-			'taxonomy' => 'product_cat',
-			'include'  => [],
-		] );
+		$args = wp_parse_args(
+			$args,
+			array(
+				'taxonomy' => 'product_cat',
+				'include'  => array(),
+			)
+		);
 
-		$products = [];
+		$products = array();
 
 		// get all products belonging to the given terms
 		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
 
-			$terms = get_terms( [
-				'taxonomy'   => $args['taxonomy'],
-				'fields'     => 'slugs',
-				'include'    => array_map( 'intval', $args['include'] ),
-			] );
+			$terms = get_terms(
+				array(
+					'taxonomy' => $args['taxonomy'],
+					'fields'   => 'slugs',
+					'include'  => array_map( 'intval', $args['include'] ),
+				)
+			);
 
 			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
 
 				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
 
-				$products = wc_get_products( [
-					$taxonomy => $terms,
-					'limit'   => -1,
-				] );
+				$products = wc_get_products(
+					array(
+						$taxonomy => $terms,
+						'limit'   => -1,
+					)
+				);
 			}
-		}
+		}//end if
 
 		if ( ! empty( $products ) ) {
-			Products::disable_sync_for_products( $products );
+			self::disable_sync_for_products( $products );
 		}
 	}
 
@@ -181,6 +210,7 @@ class Products {
 	 * Determines whether the given product should be synced assuming the product is published.
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
+	 *
 	 * @see Products::is_sync_enabled_for_product()
 	 * @see Products::is_sync_excluded_for_product_terms()
 	 *
@@ -201,12 +231,12 @@ class Products {
 		}
 
 		// allow simple or variable products (and their variations) with zero or empty price - exclude other product types with zero or empty price
-		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), [ 'simple', 'variable' ] ) ) ) ) {
+		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), array( 'simple', 'variable' ) ) ) ) ) {
 			$should_sync = false;
 		}
 
 		// exclude products that are excluded from the store catalog or from search results
-		if ( $should_sync && ( ! $terms_product || has_term( [ 'exclude-from-catalog', 'exclude-from-search' ], 'product_visibility', $terms_product->get_id() ) ) ) {
+		if ( $should_sync && ( ! $terms_product || has_term( array( 'exclude-from-catalog', 'exclude-from-search' ), 'product_visibility', $terms_product->get_id() ) ) ) {
 			$should_sync = false;
 		}
 
@@ -265,14 +295,13 @@ class Products {
 						break;
 					}
 				}
-
 			} else {
 
 				$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
 			}
 
 			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
-		}
+		}//end if
 
 		return self::$products_sync_enabled[ $product->get_id() ];
 	}
@@ -292,15 +321,15 @@ class Products {
 			$excluded_categories = $integration->get_excluded_product_category_ids();
 			$excluded_tags       = $integration->get_excluded_product_tag_ids();
 		} else {
-			$excluded_categories = $excluded_tags = [];
+			$excluded_categories = $excluded_tags = array();
 		}
 
 		$categories = $product->get_category_ids();
 		$tags       = $product->get_tag_ids();
 
 		// returns true if no terms on the product, or no terms excluded, or if the product does not contain any of the excluded terms
-		$matches =    ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
-		           && ( ! $tags       || ! $excluded_tags       || ! array_intersect( $tags, $excluded_tags ) );
+		$matches = ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
+				   && ( ! $tags || ! $excluded_tags || ! array_intersect( $tags, $excluded_tags ) );
 
 		return ! $matches;
 	}
@@ -312,7 +341,7 @@ class Products {
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
-	 * @param bool $visibility true for 'published' or false for 'staging'
+	 * @param bool        $visibility true for 'published' or false for 'staging'
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {
@@ -360,7 +389,6 @@ class Products {
 						break;
 					}
 				}
-
 			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
 
 				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
@@ -368,10 +396,10 @@ class Products {
 			} else {
 
 				$is_visible = true;
-			}
+			}//end if
 
 			self::$products_visibility[ $product->get_id() ] = $is_visible;
-		}
+		}//end if
 
 		return self::$products_visibility[ $product->get_id() ];
 	}
@@ -385,7 +413,7 @@ class Products {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param int $price product price in cents
+	 * @param int         $price product price in cents
 	 * @param \WC_Product $product product object
 	 * @return int
 	 */
@@ -411,7 +439,7 @@ class Products {
 
 		} else {
 
-			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_regular_price() ] );
+			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) );
 		}
 
 		$price = (int) ( $price ? round( $price * 100 ) : 0 );
@@ -426,6 +454,847 @@ class Products {
 		 * @param \WC_Product $product product object
 		 */
 		return (int) apply_filters( 'wc_facebook_product_price', $price, (float) $facebook_price, $product );
+	}
+
+
+	/**
+	 * Determines whether the product meets all of the criteria needed for Commerce.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 */
+	public static function is_product_ready_for_commerce( \WC_Product $product ) {
+
+		return $product->managing_stock()
+			&& self::get_product_price( $product )
+			&& self::is_commerce_enabled_for_product( $product )
+			&& self::product_should_be_synced( $product );
+	}
+
+
+	/**
+	 * Determines whether Commerce is enabled for the product.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return bool
+	 */
+	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
+	}
+
+
+	/**
+	 * Enables or disables Commerce for a product.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param bool        $is_enabled whether or not Commerce is to be enabled
+	 */
+	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
+
+		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the Google product category ID stored for the product.
+	 *
+	 * If the product is a variation, it will get this value from its parent.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_google_product_category_id( \WC_Product $product ) {
+
+		// attempt to get from product or parent product metadata
+		if ( $product->is_type( 'variation' ) ) {
+			$parent_product             = wc_get_product( $product->get_parent_id() );
+			$google_product_category_id = $parent_product instanceof \WC_Product ? $parent_product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY ) : null;
+		} else {
+			$google_product_category_id = $product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY );
+		}
+
+		// fallback to the highest category's Google product category ID
+		if ( empty( $google_product_category_id ) ) {
+
+			$google_product_category_id = self::get_google_product_category_id_from_highest_category( $product );
+		}
+
+		// fallback to plugin-level default Google product category ID
+		if ( empty( $google_product_category_id ) ) {
+
+			$google_product_category_id = facebook_for_woocommerce()->get_commerce_handler()->get_default_google_product_category_id();
+		}
+
+		return $google_product_category_id;
+	}
+
+
+	/**
+	 * Gets the stored Google product category ID from the highest category.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	private static function get_google_product_category_id_from_highest_category( \WC_Product $product ) {
+
+		$google_product_category_id = '';
+
+		// get all categories for the product
+		if ( $product->is_type( 'variation' ) ) {
+
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
+
+		} else {
+
+			$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		}
+
+		if ( ! is_array( $categories ) ) {
+			return $google_product_category_id;
+		}
+
+		$categories_per_level = array();
+
+		if ( empty( $categories ) ) {
+			return $categories_per_level;
+		}
+
+		// determine the level (depth) of each category
+		foreach ( $categories as $category ) {
+
+			$level           = 0;
+			$parent_category = $category;
+
+			while ( $parent_category->parent !== 0 ) {
+				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+				$level ++;
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				$categories_per_level[ $level ] = array();
+			}
+
+			$categories_per_level[ $level ][] = $category;
+		}
+
+		// sort descending by level
+		krsort( $categories_per_level );
+
+		// remove categories without a Google product category
+		foreach ( $categories_per_level as $level => $categories ) {
+
+			foreach ( $categories as $key => $category ) {
+
+				$google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
+				if ( empty( $google_product_category_id ) ) {
+					unset( $categories_per_level[ $level ][ $key ] );
+				}
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				unset( $categories_per_level[ $level ] );
+			}
+		}
+
+		if ( ! empty( $categories_per_level ) ) {
+
+			// get highest level categories
+			$categories = current( $categories_per_level );
+
+			$google_product_category_id = '';
+
+			foreach ( $categories as $category ) {
+
+				$category_google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
+
+				if ( empty( $google_product_category_id && ! empty( $category_google_product_category_id ) ) ) {
+
+					$google_product_category_id = $category_google_product_category_id;
+
+				} elseif ( $google_product_category_id !== $category_google_product_category_id ) {
+
+					// conflicting Google product category IDs, discard them
+					$google_product_category_id = '';
+				}
+			}
+		}//end if
+
+		return $google_product_category_id;
+	}
+
+	/**
+	 * Gets an ordered list of the categories for the product organised by level.
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @return string
+	 */
+	private static function get_ordered_categories_for_product( \WC_Product $product ) {
+			// get all categories for the product
+		if ( $product->is_type( 'variation' ) ) {
+
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
+
+		} else {
+
+			$categories = get_the_terms( $product->get_id(), 'product_cat' );
+		}
+
+		if ( empty( $categories ) ) {
+			return array();
+		}
+
+		$categories_per_level = array();
+
+		// determine the level (depth) of each category
+		foreach ( $categories as $category ) {
+
+			$level           = 0;
+			$parent_category = $category;
+
+			while ( $parent_category->parent !== 0 ) {
+				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+				$level ++;
+			}
+
+			if ( empty( $categories_per_level[ $level ] ) ) {
+				$categories_per_level[ $level ] = array();
+			}
+
+			$categories_per_level[ $level ][] = $category;
+		}
+
+		// sort descending by level
+		krsort( $categories_per_level );
+		return $categories_per_level;
+	}
+
+	/**
+	 * Gets the first unconflicted value for a meta key from the categories a
+	 * product belongs to. This does the same job as the above google category
+	 * code but (I think) in a slightly simpler form, not going to change
+	 * the google category one just yet until I've got unit tests doing what
+	 * I want. TODO: refactor the get_google_product_category_id_from_highest_category
+	 * function to use this.
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @param string      $meta_key the meta key we're looking for.
+	 * @return string
+	 */
+	private static function get_meta_value_from_categories_for_product( \WC_Product $product, $meta_key ) {
+		$categories_per_level = self::get_ordered_categories_for_product( $product );
+		// The plan is to find the first level with a value for the meta key
+		// Then we need to check the rest of this level and if there's a conflict
+		// continue to the next level up.
+
+		// We're looking fdr the first non-conflicted level basically
+		$meta_value = null;
+		foreach ( $categories_per_level as $level => $categories ) {
+			foreach ( $categories as $category ) {
+				$category_meta_value = get_term_meta( $category->term_id, $meta_key, true );
+				if ( empty( $category_meta_value ) ) {
+					// No value here, move on
+					continue;
+				}
+				if ( empty( $meta_value ) ) {
+					// We've found a value for this level and there's no conflict as it's
+					// the first one we've found on this level.
+					$meta_value = $category_meta_value;
+				} elseif ( $meta_value !== $category_meta_value ) {
+					// conflict we need to jump out of this loop and go to the next level
+					$meta_value = null;
+					break;
+				}
+			}
+			if ( ! empty( $meta_value ) ) {
+				// We have an unconflicted value, we can use it so break out of the
+				// level loop
+				break;
+			}
+		}//end foreach
+		return $meta_value;
+	}
+
+
+	/**
+	 * Updates the stored Google product category ID for the product.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $category_id the Google product category ID
+	 */
+	public static function update_google_product_category_id( \WC_Product $product, $category_id ) {
+
+		$product->update_meta_data( self::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the stored gender for the product (`female`, `male`, or `unisex`).
+	 *
+	 * Defaults to `unisex` if not otherwise set.
+	 *
+	 * If the product is a variation, it will get this value from its parent.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_gender( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$gender         = $parent_product instanceof \WC_Product ? $parent_product->get_meta( self::GENDER_META_KEY ) : null;
+		} else {
+			$gender = $product->get_meta( self::GENDER_META_KEY );
+		}
+
+		if ( ! in_array( $gender, array( 'female', 'male', 'unisex' ) ) ) {
+			$gender = 'unisex';
+		}
+
+		return $gender;
+	}
+
+
+	/**
+	 * Updates the stored gender for the product.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $gender the gender (`female`, `male`, or `unisex`)
+	 */
+	public static function update_product_gender( \WC_Product $product, $gender ) {
+
+		$product->update_meta_data( self::GENDER_META_KEY, $gender );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the configured color attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_color_attribute( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		$attribute_name = '';
+
+		if ( $product ) {
+
+			$meta_value = $product->get_meta( self::COLOR_ATTRIBUTE_META_KEY );
+
+			// check if an attribute with that name exists
+			if ( self::product_has_attribute( $product, $meta_value ) ) {
+				$attribute_name = $meta_value;
+			}
+
+			if ( empty( $attribute_name ) ) {
+				// try to find a matching attribute
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+
+					if ( stripos( $attribute->get_name(), 'color' ) !== false || stripos( $attribute->get_name(), 'colour' ) !== false ) {
+						$attribute_name = $slug;
+						break;
+					}
+				}
+			}
+		}
+
+		return $attribute_name;
+	}
+
+	/**
+	 * Updates the configured color attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $attribute_name the attribute to be used to store the color
+	 * @throws SV_WC_Plugin_Exception
+	 */
+	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
+
+		// check if the name matches an available attribute
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute_name );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the stored color for a product.
+	 *
+	 * If the product is a variation and it doesn't have the color attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_color( \WC_Product $product ) {
+
+		$color_value     = '';
+		$color_attribute = self::get_product_color_attribute( $product );
+
+		if ( ! empty( $color_attribute ) ) {
+			$color_value = $product->get_attribute( $color_attribute );
+		}
+
+		if ( empty( $color_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$color_value    = $parent_product instanceof \WC_Product ? self::get_product_color( $parent_product ) : '';
+		}
+
+		return $color_value;
+	}
+
+
+	/**
+	 * Gets the configured size attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_size_attribute( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		$attribute_name = '';
+
+		if ( $product ) {
+
+			$meta_value = $product->get_meta( self::SIZE_ATTRIBUTE_META_KEY );
+
+			// check if an attribute with that name exists
+			if ( self::product_has_attribute( $product, $meta_value ) ) {
+				$attribute_name = $meta_value;
+			}
+
+			if ( empty( $attribute_name ) ) {
+				// try to find a matching attribute
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+
+					if ( stripos( $attribute->get_name(), 'size' ) !== false ) {
+						$attribute_name = $slug;
+						break;
+					}
+				}
+			}
+		}
+
+		return $attribute_name;
+	}
+
+
+	/**
+	 * Updates the configured size attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $attribute_name the attribute to be used to store the size
+	 * @throws SV_WC_Plugin_Exception
+	 */
+	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
+
+		// check if the name matches an available attribute
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute_name !== self::get_product_size_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::SIZE_ATTRIBUTE_META_KEY, $attribute_name );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the stored size for a product.
+	 *
+	 * If the product is a variation and it doesn't have the size attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_size( \WC_Product $product ) {
+
+		$size_value     = '';
+		$size_attribute = self::get_product_size_attribute( $product );
+
+		if ( ! empty( $size_attribute ) ) {
+			$size_value = $product->get_attribute( $size_attribute );
+		}
+
+		if ( empty( $size_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$size_value     = $parent_product instanceof \WC_Product ? self::get_product_size( $parent_product ) : '';
+		}
+
+		return $size_value;
+	}
+
+
+	/**
+	 * Gets the configured pattern attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_pattern_attribute( \WC_Product $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+
+			// get the attribute from the parent
+			$product = wc_get_product( $product->get_parent_id() );
+		}
+
+		$attribute_name = '';
+
+		if ( $product ) {
+
+			$meta_value = $product->get_meta( self::PATTERN_ATTRIBUTE_META_KEY );
+
+			// check if an attribute with that name exists
+			if ( self::product_has_attribute( $product, $meta_value ) ) {
+				$attribute_name = $meta_value;
+			}
+
+			if ( empty( $attribute_name ) ) {
+				// try to find a matching attribute
+				foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+
+					if ( stripos( $attribute->get_name(), 'pattern' ) !== false ) {
+						$attribute_name = $slug;
+						break;
+					}
+				}
+			}
+		}
+
+		return $attribute_name;
+	}
+
+
+	/**
+	 * Updates the configured pattern attribute.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $attribute_name the attribute to be used to store the pattern
+	 * @throws SV_WC_Plugin_Exception
+	 */
+	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
+
+		// check if the name matches an available attribute
+		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+		}
+
+		if ( $attribute_name !== self::get_product_pattern_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+		}
+
+		$product->update_meta_data( self::PATTERN_ATTRIBUTE_META_KEY, $attribute_name );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets the stored pattern for a product.
+	 *
+	 * If the product is a variation and it doesn't have the pattern attribute, falls back to the parent.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string
+	 */
+	public static function get_product_pattern( \WC_Product $product ) {
+
+		$pattern_value     = '';
+		$pattern_attribute = self::get_product_pattern_attribute( $product );
+
+		if ( ! empty( $pattern_attribute ) ) {
+			$pattern_value = $product->get_attribute( $pattern_attribute );
+		}
+
+		if ( empty( $pattern_value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$pattern_value  = $parent_product instanceof \WC_Product ? self::get_product_pattern( $parent_product ) : '';
+		}
+
+		return $pattern_value;
+	}
+
+
+	/**
+	 * Gets all product attributes that are valid for assignment for color, size, or pattern.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return \WC_Product_Attribute[]
+	 */
+	public static function get_available_product_attributes( \WC_Product $product ) {
+
+		return $product->get_attributes();
+	}
+
+
+	/**
+	 * Gets the value for a given enhanced catalog attribute
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string      $key         The attribute key.
+	 * @param \WC_Product $product The product object.
+	 * @return string
+	 */
+	public static function get_enhanced_catalog_attribute( $key, \WC_Product $product ) {
+		if ( ! $product ) {
+			// Break
+			return null;
+		}
+
+		$value = $product->get_meta( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+
+		if ( empty( $value ) ) {
+			// Check normal product attributes
+			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+				if ( strtolower( $attribute->get_name() ) === $key ) {
+					$value = $product->get_attribute( $slug );
+					break;
+				}
+			}
+		}
+
+		// Check parent if we're a variation
+		if ( empty( $value ) && $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			$value          = $parent_product instanceof \WC_Product ? self::get_enhanced_catalog_attribute( $key, $parent_product ) : '';
+		}
+
+		// Check categories for default values
+		if ( empty( $value ) ) {
+			$value = self::get_meta_value_from_categories_for_product( $product, self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Updates the passed enhanced catalog attribute
+	 *
+	 * @param \WC_Product $product the product object.
+	 * @param string      $attribute_key the attribute key.
+	 * @param mixed       $value the attribute value.
+	 */
+	public static function update_product_enhanced_catalog_attribute( \WC_Product $product, $attribute_key, $value ) {
+		// Ensure that we don't override a default with the same value
+		// as the default.
+		if ( self::get_enhanced_catalog_attribute( $attribute_key, $product ) === $value ) {
+			return;
+		}
+		$product->update_meta_data( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key, $value );
+		$product->save_meta_data();
+	}
+
+
+	/**
+	 * Gets and cleans the submitted values for enhanced catalog attributes from the request.
+	 *
+	 * Helper function used by both product categories and product pages.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return array associative array
+	 */
+	public static function get_enhanced_catalog_attributes_from_request() {
+		$prefix     = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
+		$attributes = array_filter(
+			$_POST,
+			function( $key ) use ( $prefix ) {
+				return substr( $key, 0, strlen( $prefix ) ) === $prefix;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array_reduce(
+			array_keys( $attributes ),
+			function( $attrs, $attr_key ) use ( $prefix ) {
+				return array_merge(
+					$attrs,
+					[
+						str_replace( $prefix, '', $attr_key ) => wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
+					]
+				);
+			},
+			[]
+		);
+	}
+
+	/**
+	 * Checks if the product has an attribute with the given name.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @param string      $attribute_name the attribute name
+	 * @return bool
+	 */
+	public static function product_has_attribute( \WC_Product $product, $attribute_name ) {
+
+		$found = false;
+
+		foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+
+			// taxonomy attributes have a slugged name, but custom attributes do not so we check the attribute key
+			if ( $attribute_name === $slug ) {
+				$found = true;
+				break;
+			}
+		}
+
+		return $found;
+	}
+
+
+	/**
+	 * Gets the attributes that are set for the product's color, size, and pattern.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product the product object
+	 * @return string[]
+	 */
+	public static function get_distinct_product_attributes( \WC_Product $product ) {
+
+		return array_filter(
+			array(
+				self::get_product_color_attribute( $product ),
+				self::get_product_size_attribute( $product ),
+				self::get_product_pattern_attribute( $product ),
+			)
+		);
+	}
+
+
+	/**
+	 * Gets a product by its Facebook product ID, from the `fb_product_item_id` or `fb_product_group_id`.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $fb_product_id Facebook product ID
+	 * @return \WC_Product|null
+	 */
+	public static function get_product_by_fb_product_id( $fb_product_id ) {
+
+		$product = null;
+
+		// try to by the `fb_product_item_id` meta
+		$products = wc_get_products(
+			array(
+				'limit'      => 1,
+				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
+				'meta_value' => $fb_product_id,
+			)
+		);
+
+		if ( ! empty( $products ) ) {
+			$product = current( $products );
+		}
+
+		if ( empty( $product ) ) {
+			// try to by the `fb_product_group_id` meta
+			$products = wc_get_products(
+				array(
+					'limit'      => 1,
+					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
+					'meta_value' => $fb_product_id,
+				)
+			);
+
+			if ( ! empty( $products ) ) {
+				$product = current( $products );
+			}
+		}
+
+		return ! empty( $product ) ? $product : null;
+	}
+
+
+	/**
+	 * Gets a product by its Facebook retailer ID.
+	 *
+	 * @see \WC_Facebookcommerce_Utils::get_fb_retailer_id().
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $fb_retailer_id Facebook retailer ID
+	 * @return \WC_Product|null
+	 */
+	public static function get_product_by_fb_retailer_id( $fb_retailer_id ) {
+
+		if ( strpos( $fb_retailer_id, \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX ) !== false ) {
+			$product_id = str_replace( \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX, '', $fb_retailer_id );
+		} else {
+			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
+		}
+
+		$product = wc_get_product( $product_id );
+
+		return ! empty( $product ) ? $product : null;
 	}
 
 

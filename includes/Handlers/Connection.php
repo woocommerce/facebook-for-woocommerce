@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -37,6 +38,9 @@ class Connection {
 	/** @var string the action callback for the disconnection */
 	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
 
+	/** @var string the action callback for the connection */
+	const ACTION_CONNECT_COMMERCE = 'wc_facebook_connect_commerce';
+
 	/** @var string the WordPress option name where the external business ID is stored */
 	const OPTION_EXTERNAL_BUSINESS_ID = 'wc_facebook_external_business_id';
 
@@ -54,6 +58,12 @@ class Connection {
 
 	/** @var string the merchant access token option name */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
+
+	/** @var string the page access token option name */
+	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
+
+	/** @var string the Commerce manager ID option name */
+	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
 
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
@@ -177,8 +187,16 @@ class Connection {
 
 		$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
 
-		if ( $response->get_page_id() ) {
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $response->get_page_id() ) );
+		$page_id = sanitize_text_field( $response->get_page_id() );
+
+		if ( $page_id ) {
+
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
+
+			// get and store a current access token for the configured page
+			$page_access_token = $this->retrieve_page_access_token( $page_id );
+
+			$this->update_page_access_token( $page_access_token );
 		}
 
 		if ( $response->get_pixel_id() ) {
@@ -245,6 +263,14 @@ class Connection {
 			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
+
+			// redirect to the Commerce onboarding if directed to do so
+			if ( ! empty( SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
+
+				wp_redirect( $this->get_commerce_connect_url() );
+				exit;
+			}
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
@@ -320,6 +346,51 @@ class Connection {
 
 
 	/**
+	 * Retrieves the configured page access token remotely.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $page_id desired Facebook page ID
+	 * @return string
+	 * @throws SV_WC_API_Exception
+	 */
+	private function retrieve_page_access_token( $page_id ) {
+
+		facebook_for_woocommerce()->log( 'Retrieving page access token' );
+
+		$response = wp_remote_get( 'https://graph.facebook.com/v7.0/me/accounts?access_token=' . $this->get_access_token() );
+
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+
+		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+
+			facebook_for_woocommerce()->log( print_r( $body, true ) );
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - API error message */
+				__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
+				wp_remote_retrieve_response_message( $response )
+			) );
+		}
+
+		$page_access_tokens = wp_list_pluck( $body['data'], 'access_token', 'id' );
+
+		// bail if the user isn't authorized to manage the page
+		if ( empty( $page_access_tokens[ $page_id ] ) ) {
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - Facebook page ID */
+				__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
+				$page_id
+			) );
+		}
+
+		return $page_access_tokens[ $page_id ];
+	}
+
+
+	/**
 	 * Gets the API access token.
 	 *
 	 * @since 2.0.0
@@ -366,15 +437,87 @@ class Connection {
 
 
 	/**
+	 * Gets the page access token.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string
+	 */
+	public function get_page_access_token() {
+
+		$access_token = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
+
+		/**
+		 * Filters the page access token.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param string $access_token page access token
+		 * @param Connection $connection connection handler instance
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_page_access_token', $access_token, $this );
+	}
+
+
+	/**
 	 * Gets the URL to start the connection flow.
 	 *
 	 * @since 2.0.0
 	 *
+	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
 	 * @return string
 	 */
-	public function get_connect_url() {
+	public function get_connect_url( $connect_commerce = false ) {
 
-		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters() ), self::OAUTH_URL );
+		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
+	}
+
+
+	/**
+	 * Builds the Commerce connect URL.
+	 *
+	 * The base URL is https://www.facebook.com/commerce_manager/onboarding with two query variables:
+	 * - app_id - the developer app ID
+	 * - redirect_url - the URL where the user will land after onboarding is complete
+	 *
+	 * The redirect URL must be an approved domain, so it must be the connect.woocommerce.com proxy app. In that URL, we
+	 * include the final site URL, which is where the merchant will redirect to with the data that needs to be stored.
+	 * So the final URL looks like this without encoding:
+	 *
+	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.com/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
+	 *
+	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
+	 * to trigger the test account flow, where fake US-based business details can be used.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string
+	 */
+	public function get_commerce_connect_url() {
+
+		// build the site URL to which the user will ultimately return
+		$site_url = add_query_arg( [
+			'wc-api' => self::ACTION_CONNECT_COMMERCE,
+			'nonce'  => wp_create_nonce( self::ACTION_CONNECT_COMMERCE ),
+		], home_url( '/' ) );
+
+		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+
+		// build the final connect URL, direct to Facebook
+		$connect_url = add_query_arg( [
+			'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+			'redirect_url' => urlencode( $redirect_url ),
+		], 'https://www.facebook.com/commerce_manager/onboarding/' );
+
+		/**
+		 * Filters the URL used to connect to Facebook Commerce.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param string $connect_url connect URL
+		 */
+		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
 	}
 
 
@@ -424,6 +567,7 @@ class Connection {
 			'business_management',
 			'ads_management',
 			'ads_read',
+			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
 		];
 
 		/**
@@ -560,6 +704,19 @@ class Connection {
 
 
 	/**
+	 * Gets the Commerce manager ID value.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string
+	 */
+	public function get_commerce_manager_id() {
+
+		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0
@@ -611,9 +768,16 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
+	 * @param bool $connect_commerce whether to connect to Commerce after successful FBE connection
 	 * @return array
 	 */
-	public function get_connect_parameters() {
+	public function get_connect_parameters( $connect_commerce = false ) {
+
+		$state = $this->get_redirect_url();
+
+		if ( $connect_commerce ) {
+			$state = add_query_arg( 'connect_commerce', true, $state );
+		}
 
 		/**
 		 * Filters the connection parameters.
@@ -625,7 +789,7 @@ class Connection {
 		return apply_filters( 'wc_facebook_connection_parameters', [
 			'client_id'     => $this->get_client_id(),
 			'redirect_uri'  => $this->get_proxy_url(),
-			'state'         => $this->get_redirect_url(),
+			'state'         => $state,
 			'display'       => 'page',
 			'response_type' => 'code',
 			'scope'         => implode( ',', $this->get_scopes() ),
@@ -741,6 +905,19 @@ class Connection {
 
 
 	/**
+	 * Stores the given Commerce manager ID.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_commerce_manager_id( $id ) {
+
+		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
+	}
+
+
+	/**
 	 * Stores the given token value.
 	 *
 	 * @since 2.0.0
@@ -763,6 +940,19 @@ class Connection {
 	public function update_merchant_access_token( $value ) {
 
 		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
+	}
+
+
+	/**
+	 * Stores the given page access token.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $value the access token
+	 */
+	public function update_page_access_token( $value ) {
+
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
 	}
 
 
@@ -816,7 +1006,7 @@ class Connection {
 	 *
 	 * @return string
 	 */
-	private function get_client_id() {
+	public function get_client_id() {
 
 		/**
 		 * Filters the client ID.

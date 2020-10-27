@@ -61,4 +61,51 @@ class ConnectionCest {
 	}
 
 
+	/**
+	 * Adds a MU plugin to filter the Facebook API response and simulate a successful GET of the page accounts.
+	 *
+	 * @param AcceptanceTester $I
+	 */
+	private function add_get_pages_success_response(  AcceptanceTester $I ) {
+
+		// simulate a successful configuration response
+		$code = <<<PHP
+add_filter( 'pre_http_request', function( \$response, \$args, \$url ) {
+
+	if ( false !== strpos( \$url, 'me/accounts' ) && 'GET' === \$args['method'] ) {
+
+		\$response = [
+			'headers' => [],
+			'body'    => json_encode(
+				[
+					'data' => [
+						[
+							'access_token' => 'PAGE_ACCESS_TOKEN',
+							'id'           => 'PAGE_ID',
+						],
+						[
+							'access_token' => 'OTHER_PAGE_ACCESS_TOKEN',
+							'id'           => 'OTHER_PAGE_ID',
+						],
+					],
+				]
+			),
+			'response'      => [
+				'code'    => 200,
+				'message' => 'Ok',
+			],
+			'cookies'       => [],
+			'http_response' => null,
+		];
+	}
+
+	return \$response;
+
+}, 10, 3 );
+PHP;
+
+		$I->haveMuPlugin( 'get-pages-response-filter.php', $code );
+	}
+
+
 }

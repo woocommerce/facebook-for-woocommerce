@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Events\Event;
@@ -22,7 +23,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  *
  * @since 2.0.0
  *
- * @method Response perform_request( $request )
+ * @method API\Request get_request()
  */
 class API extends Framework\SV_WC_API_Base {
 
@@ -41,6 +42,8 @@ class API extends Framework\SV_WC_API_Base {
 	 * Constructor.
 	 *
 	 * @since 2.0.0
+	 *
+	 * @param string $access_token access token to use for API requests
 	 */
 	public function __construct( $access_token ) {
 
@@ -52,6 +55,60 @@ class API extends Framework\SV_WC_API_Base {
 
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
+	}
+
+
+	/**
+	 * Gets the access token being used for API requests.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string
+	 */
+	public function get_access_token() {
+
+		return $this->access_token;
+	}
+
+
+	/**
+	 * Sets the access token to use for API requests.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $access_token access token to set
+	 */
+	public function set_access_token( $access_token ) {
+
+		$this->access_token = $access_token;
+	}
+
+
+	/**
+	 * Performs an API request.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param API\Request $request request object
+	 * @return API\Response
+	 * @throws API\Exceptions\Request_Limit_Reached|Framework\SV_WC_API_Exception
+	 */
+	public function perform_request( $request ) {
+
+		$rate_limit_id   = $request::get_rate_limit_id();
+		$delay_timestamp = $this->get_rate_limit_delay( $rate_limit_id );
+
+		// if there is a delayed timestamp in the future, throw an exception
+		if ( $delay_timestamp >= time() ) {
+
+			$this->handle_throttled_request( $rate_limit_id, $delay_timestamp );
+
+		} else {
+
+			$this->set_rate_limit_delay( $rate_limit_id, 0 );
+		}
+
+		return parent::perform_request( $request );
 	}
 
 
@@ -68,11 +125,12 @@ class API extends Framework\SV_WC_API_Base {
 
 		/** @var API\Response $response */
 		$response = $this->get_response();
+		$request  = $this->get_request();
 
 		if ( $response && $response->has_api_error() ) {
 
 			$code    = $response->get_api_error_code();
-			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_api_error_message() );
+			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_user_error_message() ?: $response->get_api_error_message() );
 
 			/**
 			 * Graph API
@@ -90,8 +148,23 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#rate-limiting-error-codes
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
-			if ( in_array( $code, [ 4, 17, 32, 613, 80004 ], true ) ) {
-				throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+			if ( in_array( $code, [ 4, 17, 32, 613, 80001, 80004 ], true ) ) {
+
+				$delay_in_seconds = $this->calculate_rate_limit_delay( $response, $this->get_response_headers() );
+
+				if ( $delay_in_seconds > 0 ) {
+
+					$rate_limit_id = $request::get_rate_limit_id();
+					$timestamp     = time() + $delay_in_seconds;
+
+					$this->set_rate_limit_delay( $rate_limit_id, $timestamp );
+
+					$this->handle_throttled_request( $rate_limit_id, $timestamp );
+
+				} else {
+
+					throw new API\Exceptions\Request_Limit_Reached( $message, $code );
+				}
 			}
 
 			/**
@@ -106,11 +179,47 @@ class API extends Framework\SV_WC_API_Base {
 				delete_transient( 'wc_facebook_connection_invalid' );
 			}
 
+			// if the code indicates a retry and we've not hit the retry limit, perform the request again
+			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
+
+				$request->mark_retry();
+
+				$this->response = $this->perform_request( $request );
+
+				return;
+			}
+
 			throw new Framework\SV_WC_API_Exception( $message, $code );
 		}
 
 		// if we get this far we're connected, so delete any invalid connection flag
 		delete_transient( 'wc_facebook_connection_invalid' );
+	}
+
+
+	/**
+	 * Handles a throttled API request.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $rate_limit_id ID for the API request
+	 * @param int $timestamp timestamp until the delay is over
+	 * @throws API\Exceptions\Request_Limit_Reached
+	 */
+	private function handle_throttled_request( $rate_limit_id, $timestamp ) {
+
+		if ( time() > $timestamp ) {
+			return;
+		}
+
+		$exception = new API\Exceptions\Request_Limit_Reached( "{$rate_limit_id} requests are currently throttled.", 401 );
+
+		$date_time = new \DateTime();
+		$date_time->setTimestamp( $timestamp );
+
+		$exception->set_throttle_end( $date_time );
+
+		throw $exception;
 	}
 
 
@@ -536,6 +645,163 @@ class API extends Framework\SV_WC_API_Base {
 		}
 
 		return $next_response;
+	}
+
+
+	/**
+	 * Gets all new orders.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $page_id page ID
+	 * @return API\Orders\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_new_orders( $page_id ) {
+
+		$request_args = [
+			'state' => [
+				Order::STATUS_PROCESSING,
+				Order::STATUS_CREATED,
+			]
+		];
+
+		$request = new API\Orders\Request( $page_id, $request_args );
+
+		$this->set_response_handler( API\Orders\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets the latest cancelled orders.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $page_id page ID
+	 * @return API\Orders\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_cancelled_orders( $page_id ) {
+
+		$request_args = [
+			'state' => [
+				Order::STATUS_COMPLETED,
+			],
+			'updated_after' => time() - facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->get_order_update_interval(),
+			'filters'       => 'has_cancellations',
+		];
+
+		$request = new API\Orders\Request( $page_id, $request_args );
+
+		$this->set_response_handler( API\Orders\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Gets a single order based on its remote ID.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $remote_id remote order ID
+	 * @return API\Orders\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_order( $remote_id ) {
+
+		$request = new API\Orders\Read\Request( $remote_id );
+
+		$this->set_response_handler( API\Orders\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Acknowledges the given order.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param string $merchant_order_reference WC order ID
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function acknowledge_order( $remote_id, $merchant_order_reference ) {
+
+		$request = new API\Orders\Acknowledge\Request( $remote_id, $merchant_order_reference );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Issues a fulfillment request for the given order.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/fulfillment-api#attach_shipment
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param array $fulfillment_data fulfillment data to be sent on the request
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function fulfill_order( $remote_id, $fulfillment_data ) {
+
+		$request = new API\Orders\Fulfillment\Request( $remote_id, $fulfillment_data );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Cancels the given order.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param string $reason cancellation reason
+	 * @param bool $restock_items whether to restock items remotely
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function cancel_order( $remote_id, $reason, $restock_items = true ) {
+
+		$request = new API\Orders\Cancel\Request( $remote_id, $reason, $restock_items );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Issues a refund request for the given order.
+	 *
+	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/cancellation-refund-api#refund_order
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $remote_id remote order ID
+	 * @param array $refund_data refund data to be sent on the request
+	 * @return API\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function add_order_refund( $remote_id, $refund_data ) {
+
+		$request = new API\Orders\Refund\Request( $remote_id, $refund_data );
+
+		$this->set_response_handler( API\Response::class );
+
+		return $this->perform_request( $request );
 	}
 
 

@@ -92,4 +92,17 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	}
 
 
+	/**
+	 * Gets the user error message.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string|null
+	 */
+	public function get_user_error_message() {
+
+		return isset( $this->error->error_user_msg ) ? $this->error->error_user_msg : null;
+	}
+
+
 }

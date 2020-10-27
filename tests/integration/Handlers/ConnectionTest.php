@@ -72,6 +72,26 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_page_access_token() */
+	public function test_get_page_access_token() {
+
+		update_option( Connection::OPTION_PAGE_ACCESS_TOKEN, '123456' );
+
+		$this->assertSame( '123456', $this->get_connection()->get_page_access_token() );
+	}
+
+
+	/** @see Connection::get_page_access_token() */
+	public function test_get_page_access_token_filter() {
+
+		add_filter( 'wc_facebook_connection_page_access_token', static function() {
+			return 'filtered';
+		} );
+
+		$this->assertSame( 'filtered', $this->get_connection()->get_page_access_token() );
+	}
+
+
 	/** @see Connection::get_connect_url() */
 	public function test_get_connect_url() {
 
@@ -81,6 +101,24 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertIsString( $connection_url );
 		$this->assertStringContainsString( Connection::OAUTH_URL, $connection_url );
 		$this->assertEquals( add_query_arg( rawurlencode_deep( $connection->get_connect_parameters() ), Connection::OAUTH_URL ), $connection_url );
+	}
+
+
+	/** @see Connection::get_connect_url() */
+	public function test_get_connect_url_with_commerce() {
+
+		$this->assertStringContainsString( 'connect_commerce', $this->get_connection()->get_connect_url( true ) );
+	}
+
+
+	/** @see Connection::get_commerce_connect_url() */
+	public function test_get_commerce_connect_url() {
+
+		$connect_url = $this->get_connection()->get_commerce_connect_url();
+
+		$this->assertStringContainsString( 'https://www.facebook.com/commerce_manager/onboarding/?app_id=', $connect_url );
+		$this->assertStringContainsString( 'redirect_url=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebookcommerce%2F%3Fsite_url%3D', $connect_url );
+		$this->assertStringContainsString( 'wc-api%253D' . Connection::ACTION_CONNECT_COMMERCE . '%2526nonce%253D', $connect_url );
 	}
 
 
@@ -113,6 +151,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 			'manage_business_extension' => [ 'manage_business_extension' ],
 			'catalog_management'        => [ 'catalog_management' ],
 			'business_management'       => [ 'business_management' ],
+			'ads_management'            => [ 'ads_management' ],
+			'ads_read'                  => [ 'ads_read' ],
+			'pages_read_engagement'     => [ 'pages_read_engagement' ],
 		];
 	}
 
@@ -260,6 +301,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::get_commerce_manager_id() */
+	public function test_get_commerce_manager_id() {
+
+		$commerce_manager_id = 'commerce manager id';
+		update_option( Connection::OPTION_COMMERCE_MANAGER_ID, $commerce_manager_id );
+
+		$this->assertSame( $commerce_manager_id, $this->get_connection()->get_commerce_manager_id() );
+	}
+
+
 	/** @see Connection::get_proxy_url() */
 	public function test_get_proxy_url() {
 
@@ -326,6 +377,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 'code', $connection_parameters['response_type'] );
 		$this->assertEquals( implode( ',', $connection->get_scopes() ), $connection_parameters['scope'] );
 		$this->assertJson( $connection_parameters['extras'] );
+	}
+
+
+	/** @see Connection::get_connect_parameters() */
+	public function test_get_connect_parameters_with_commerce() {
+
+		$connection            = $this->get_connection();
+		$connection_parameters = $connection->get_connect_parameters( true );
+
+		$this->assertEquals( add_query_arg( 'connect_commerce', true, $connection->get_redirect_url() ), $connection_parameters['state'] );
 	}
 
 
@@ -532,6 +593,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::update_commerce_manager_id() */
+	public function test_update_commerce_manager_id() {
+
+		$commerce_manager_id = 'commerce manager id';
+		$this->get_connection()->update_commerce_manager_id( $commerce_manager_id );
+
+		$this->assertSame( $commerce_manager_id, get_option( Connection::OPTION_COMMERCE_MANAGER_ID ) );
+	}
+
+
 	/** @see Connection::update_access_token() */
 	public function test_update_access_token() {
 
@@ -554,6 +625,18 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::update_page_access_token() */
+	public function test_update_page_access_token() {
+
+		$access_token = '123456';
+
+		$this->get_connection()->update_page_access_token( $access_token );
+
+		$this->assertSame( $access_token, get_option( Connection::OPTION_PAGE_ACCESS_TOKEN, '' ) );
+		$this->assertSame( $access_token, $this->get_connection()->get_page_access_token() );
+	}
+
+
 	/** @see Connection::is_connected() */
 	public function test_is_not_connected_without_access_token() {
 
@@ -567,6 +650,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$connection = $this->get_connection();
 
 		$connection->update_access_token( 'access token' );
+		$connection->update_commerce_manager_id( 'manager id' );
 
 		$this->assertTrue( $connection->is_connected() );
 	}

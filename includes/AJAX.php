@@ -11,6 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -20,6 +21,16 @@ defined( 'ABSPATH' ) or exit;
  * @since 1.10.0
  */
 class AJAX {
+
+
+	/** @var string the product attribute search AJAX action */
+	const ACTION_SEARCH_PRODUCT_ATTRIBUTES = 'wc_facebook_search_product_attributes';
+
+	/** @var string facebook order cancel AJAX action */
+	const ACTION_CANCEL_ORDER = 'wc_facebook_cancel_order';
+
+	/** @var string the complete order AJAX action */
+	const ACTION_COMPLETE_ORDER = 'wc_facebook_complete_order';
 
 
 	/**
@@ -41,6 +52,153 @@ class AJAX {
 
 		// get the current sync status
 		add_action( 'wp_ajax_wc_facebook_get_sync_status', [ $this, 'get_sync_status' ] );
+
+		// search a product's attributes for the given term
+		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, [ $this, 'admin_search_product_attributes' ] );
+
+		// complete a Facebook order for the given order ID
+		add_action( 'wp_ajax_' . self::ACTION_COMPLETE_ORDER, [ $this, 'admin_complete_order' ] );
+
+		// cancel facebook order by the given order ID
+		add_action( 'wp_ajax_' . self::ACTION_CANCEL_ORDER, [ $this, 'admin_cancel_order' ] );
+	}
+
+
+	/**
+	 * Cancels a Facebook order by the given order ID.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0
+	 */
+	public function admin_cancel_order() {
+
+		$order = null;
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Invalid nonce.', 'facebook-for-woocommerce' ) );
+			}
+
+			$order_id    = Framework\SV_WC_Helper::get_posted_value( 'order_id' );
+			$reason_code = Framework\SV_WC_Helper::get_posted_value( 'reason_code' );
+
+			if ( empty( $order_id ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required.', 'facebook-for-woocommerce' ) );
+			}
+
+			if ( empty( $reason_code ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Cancel reason is required.', 'facebook-for-woocommerce' ) );
+			}
+
+			$order = wc_get_order( absint( $order_id ) );
+
+			if ( false === $order ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'A valid Order ID is required.', 'facebook-for-woocommerce' ) );
+			}
+
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->cancel_order( $order, $reason_code );
+
+			wp_send_json_success();
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			wp_send_json_error( $exception->getMessage() );
+		}
+	}
+
+
+	/**
+	 * Searches a product's attributes for the given term.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0
+	 */
+	public function admin_search_product_attributes() {
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_requested_value( 'security' ), self::ACTION_SEARCH_PRODUCT_ATTRIBUTES ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
+			}
+
+			$term = Framework\SV_WC_Helper::get_requested_value( 'term' );
+
+			if ( ! $term ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'A search term is required' );
+			}
+
+			$product = wc_get_product( (int) Framework\SV_WC_Helper::get_requested_value( 'request_data' ) );
+
+			if ( ! $product instanceof \WC_Product ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'A valid product ID is required' );
+			}
+
+			$attributes = Admin\Products::get_available_product_attribute_names( $product );
+
+			// filter out any attributes whose slug or proper name don't at least partially match the search term
+			$results = array_filter( $attributes, function( $name, $slug ) use ( $term ) {
+
+				return false !== stripos( $name, $term ) || false !== stripos( $slug, $term );
+
+			}, ARRAY_FILTER_USE_BOTH );
+
+			wp_send_json( $results );
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			die();
+		}
+	}
+
+
+	/**
+	 * Completes a Facebook order for the given order ID.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0
+	 */
+	public function admin_complete_order() {
+
+		try {
+
+			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'nonce' ), self::ACTION_COMPLETE_ORDER ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce', 403 );
+			}
+
+			$order_id        = (int) Framework\SV_WC_Helper::get_posted_value( 'order_id' );
+			$tracking_number = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'tracking_number' ) );
+			$carrier_code    = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'carrier_code' ) );
+
+			if ( empty( $order_id ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ) );
+			}
+
+			if ( empty( $tracking_number ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Tracking number is required', 'facebook-for-woocommerce' ) );
+			}
+
+			if ( empty( $carrier_code ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ) );
+			}
+
+			$order = wc_get_order( $order_id );
+
+			if ( ! $order instanceof \WC_Order ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ) );
+			}
+
+			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->fulfill_order( $order, $tracking_number, $carrier_code );
+
+			wp_send_json_success();
+
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
+		}
 	}
 
 

@@ -81,7 +81,7 @@ jQuery( document ).ready( function( $ ) {
 		toggleSettingOptions( false );
 	}
 
-	// toggle availability of options withing field groups
+	// toggle availability of options within field groups
 	$( 'input#wc_facebook_enable_product_sync' ).on( 'change', function ( e ) {
 
 		if ( $( 'form.wc-facebook-settings' ).hasClass( 'disconnected' ) ) {

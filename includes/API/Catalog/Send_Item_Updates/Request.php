@@ -30,7 +30,7 @@ class Request extends API\Request  {
 
 
 	/**
-	 * Gets the ID of this request for rate limiting purposes.
+	 * Gets the rate limit ID.
 	 *
 	 * @since 2.0.0
 	 *
@@ -38,7 +38,7 @@ class Request extends API\Request  {
 	 */
 	public static function get_rate_limit_id() {
 
-		return 'ads_management_api_request';
+		return 'ads_management';
 	}
 
 
@@ -51,7 +51,9 @@ class Request extends API\Request  {
 	 */
 	public function __construct( $catalog_id ) {
 
-		parent::__construct( "/{$catalog_id}/batch", 'POST' );
+		// Switching this out to make sure everything continues to work
+		// parent::__construct( "/{$catalog_id}/batch", 'POST' );
+		parent::__construct( "/{$catalog_id}/items_batch", 'POST' );
 	}
 
 
@@ -113,10 +115,12 @@ class Request extends API\Request  {
 	 * @since 2.0.0
 	 */
 	public function get_data() {
+		# TODO: Make it so the item type is based on the actual item type
 
 		return [
 			'allow_upsert' => $this->get_allow_upsert(),
 			'requests'     => $this->get_requests(),
+			'item_type'    => 'PRODUCT_ITEM',
 		];
 	}
 

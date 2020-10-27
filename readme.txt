@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.1
-Stable tag: 2.0.5
+Stable tag: 2.1.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,16 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.10.27 - version 2.1.1 =
+ * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
+
+= 2020.10.26 - version 2.1.0 =
+ * Feature - Set Google category at the shop level for the Facebook catalog sync (on the product sync tab).
+ * Feature - Set Google category for the Facebook catalog sync at the WooCommerce category level.
+ * Feature - Set Google category for the Facebook catalog sync at the product level.
+ * Feature - Set Enhanced Catalog category specific fields for the Facebook catalog sync at the WooCommerce category level.
+ * Feature - Set Enhanced Catalog category specific fields for the Facebook catalog sync at the product level.
 
 = 2020.10.12 - version 2.0.5 =
  * Tweak - Update product availability when stock changes in the store

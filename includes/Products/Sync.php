@@ -54,6 +54,10 @@ class Sync {
 	public function add_hooks() {
 
 		add_action( 'shutdown', [ $this, 'schedule_sync' ] );
+
+		// stock update actions
+		add_action( 'woocommerce_product_set_stock', [ $this, 'handle_stock_update' ] );
+		add_action( 'woocommerce_variation_set_stock', [ $this, 'handle_stock_update' ] );
 	}
 
 
@@ -135,6 +139,30 @@ class Sync {
 		foreach ( $retailer_ids as $retailer_id ) {
 			$this->requests[ $retailer_id ] = self::ACTION_DELETE;
 		}
+	}
+
+
+	/**
+	 * Adds the products with stock changes to the requests array to be updated.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public function handle_stock_update( \WC_Product $product ) {
+
+		// bail if not connected
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			return;
+		}
+
+		// bail if admin and not AJAX
+		if ( is_admin() && ! is_ajax() ) {
+			return;
+		}
+
+		// add the product to the list of products to be updated
+		$this->create_or_update_products( [ $product->get_id() ] );
 	}
 
 

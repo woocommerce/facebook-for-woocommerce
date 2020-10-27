@@ -69,6 +69,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'messenger', $screens );
 		$this->assertInstanceOf( Admin\Settings_Screens\Messenger::class, $screens['messenger'] );
+
 	}
 
 

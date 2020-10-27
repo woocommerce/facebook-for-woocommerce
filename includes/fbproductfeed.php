@@ -630,7 +630,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			return 'id,title,description,image_link,link,product_type,' .
 			'brand,price,availability,item_group_id,checkout_url,' .
 			'additional_image_link,sale_price_effective_date,sale_price,condition,' .
-			'visibility,default_product,variant' . PHP_EOL;
+			'visibility,gender,color,size,pattern,google_product_category,default_product,variant' . PHP_EOL;
 		}
 
 
@@ -643,7 +643,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		private function prepare_product_for_feed( $woo_product, &$attribute_variants ) {
 
-			$product_data  = $woo_product->prepare_product( null, true );
+			$product_data  = $woo_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_FEED );
 			$item_group_id = $product_data['retailer_id'];
 
 			// prepare variant column for variable products
@@ -741,32 +741,35 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			}
 
 			return $product_data['retailer_id'] . ',' .
-			static::format_string_for_feed( $product_data['name'] ) . ',' .
-			static::format_string_for_feed( $product_data['description'] ) . ',' .
-			$product_data['image_url'] . ',' .
-			$product_data['url'] . ',' .
-			static::format_string_for_feed( $product_data['category'] ) . ',' .
-			static::format_string_for_feed( $product_data['brand'] ) . ',' .
+			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'name' ) ) . ',' .
+			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'description' ) ) . ',' .
+			static::get_value_from_product_data( $product_data, 'image_url' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'url' ) . ',' .
+			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'category' ) ) . ',' .
+			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'brand' ) ) . ',' .
 			static::format_price_for_feed(
-				$product_data['price'],
-				$product_data['currency']
+				static::get_value_from_product_data( $product_data, 'price', 0 ),
+				static::get_value_from_product_data( $product_data, 'currency' )
 			) . ',' .
-			$product_data['availability'] . ',' .
+			static::get_value_from_product_data( $product_data, 'availability' ) . ',' .
 			$item_group_id . ',' .
-			$product_data['checkout_url'] . ',' .
-			static::format_additional_image_url(
-				$product_data['additional_image_urls']
-			) . ',' .
-			$product_data['sale_price_start_date'] . '/' .
-			$product_data['sale_price_end_date'] . ',' .
+			static::get_value_from_product_data( $product_data, 'checkout_url' ) . ',' .
+			static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) ) . ',' .
+			static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' .
+			static::get_value_from_product_data( $product_data, 'sale_price_end_date' ) . ',' .
 			static::format_price_for_feed(
-				$product_data['sale_price'],
-				$product_data['currency']
+				static::get_value_from_product_data( $product_data, 'sale_price', 0 ),
+				static::get_value_from_product_data( $product_data, 'currency' )
 			) . ',' .
 			'new' . ',' .
-			$product_data['visibility'] . ',' .
-			$product_data['default_product'] . ',' .
-			$product_data['variant'] . PHP_EOL;
+			static::get_value_from_product_data( $product_data, 'visibility' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'gender' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'color' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'size' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'pattern' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'google_product_category' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'default_product' ) . ',' .
+			static::get_value_from_product_data( $product_data, 'variant' ) . PHP_EOL;
 		}
 
 
@@ -844,6 +847,24 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				implode( '/', $parent_attribute_values[ $product_field ] ) . ':' .
 				$value
 			);
+		}
+
+
+		/**
+		 * Gets the value from the product data.
+		 *
+		 * This method is used to avoid PHP undefined index notices.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param array $product_data the product data retrieved from a Woo product passed by reference
+		 * @param string $index the data index
+		 * @param mixed $return_if_not_set the value to be returned if product data has no index (default to '')
+		 * @return mixed|string the data value or an empty string
+		 */
+		private static function get_value_from_product_data( &$product_data, $index, $return_if_not_set = '' ) {
+
+			return isset( $product_data[ $index ] ) ? $product_data[ $index ] : $return_if_not_set;
 		}
 
 
