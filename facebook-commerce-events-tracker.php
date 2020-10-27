@@ -27,6 +27,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		const FB_PRIORITY_HIGH    = 2;
 		const FB_PRIORITY_LOW     = 11;
 
+
+		/** @var string name of the session variable used to store search event data */
+		private $search_event_data_session_variable = 'wc_facebook_search_event_data';
+
 		/** @var Event search event instance */
 		private $search_event;
 		/** @var array with events tracked */
@@ -53,6 +57,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// ViewContent for individual products
 			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
+			add_action( 'woocommerce_after_single_product', [ $this, 'maybe_inject_search_event' ] );
 
 			add_action(
 				'woocommerce_after_shop_loop',
@@ -62,6 +67,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'pre_get_posts',
 				array( $this, 'inject_search_event' )
 			);
+			add_filter( 'woocommerce_redirect_single_search_result', [ $this, 'maybe_add_product_search_event_to_session' ] );
 
 			// AddToCart events
 			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 40, 4 );
@@ -186,6 +192,128 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$this->pixel->inject_event( $event_name, $event_data, 'trackCustom' );
 		}
+
+
+		/**
+		 * Attempts to add a session variable to indicate that a product search event occurred.
+		 *
+		 * The session variable is used to catch search events that have a single result.
+		 * In those cases WooCommerce redirects customers to the product page instead of showing the search results.
+		 *
+		 * The plugin can't inject a Pixel event code on redirect responses, but it can check for the presence of the variable on the product page.
+		 *
+		 * This method is hooked to woocommerce_redirect_single_search_result which is triggered right before redirecting.
+		 *
+		 * @internal
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @param bool $redirect whether to redirect to the product page
+		 * @return bool
+		 */
+		public function maybe_add_product_search_event_to_session( $redirect ) {
+
+			if ( $redirect && $this->search_event && $this->is_single_search_result() ) {
+
+				$this->add_product_search_event_to_session( $this->search_event );
+			}
+
+			return $redirect;
+		}
+
+
+		/**
+		 * Determines whether the current request is a product search with a single result.
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @return bool
+		 */
+		private function is_single_search_result() {
+			global $wp_query;
+
+			return is_search() && 1 === absint( $wp_query->found_posts ) && is_post_type_archive( 'product' );
+		}
+
+
+		/**
+		 * Adds search event data to the session.
+		 *
+		 * This does nothing if there is no session set.
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @return void
+		 */
+		private function add_product_search_event_to_session( Event $event ) {
+
+			if ( isset( WC()->session ) && is_callable( [ WC()->session, 'has_session' ] ) && WC()->session->has_session() ) {
+				WC()->session->set( $this->search_event_data_session_variable, $event->get_data() );
+			}
+		}
+
+
+		/**
+		 * Injects a frontend search event if the session has stored event data.
+		 *
+		 * @internal
+		 *
+		 * @since 2.1.2-dev.1
+		 */
+		public function maybe_inject_search_event() {
+
+			if ( ! self::$isEnabled ) {
+				return;
+			}
+
+			$this->search_event = $this->get_product_search_event_from_session();
+
+			if ( ! $this->search_event  ) {
+				return;
+			}
+
+			$this->delete_session_data( $this->search_event_data_session_variable );
+			$this->actually_inject_search_event();
+		}
+
+
+		/**
+		 * Attempts to create an Event instance for a product search event using session data.
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @return Event|null
+		 */
+		private function get_product_search_event_from_session() {
+
+			if ( ! isset( WC()->session ) || ! is_callable( [ WC()->session, 'get' ] ) ) {
+				return null;
+			}
+
+			$data = WC()->session->get( $this->search_event_data_session_variable );
+
+			if ( ! is_array( $data ) || empty( $data ) ) {
+				return null;
+			}
+
+			return new Event( $data );
+		}
+
+
+		/**
+		 * Deletes a session variable.
+		 *
+		 * @since 2.1.2-dev.1
+		 *
+		 * @param string $key name of the variable to delete
+		 */
+		private function delete_session_data( $key ) {
+
+			if ( isset( WC()->session->$key ) ) {
+				unset( WC()->session->$key );
+			}
+		}
+
 
 		/**
 		 * Triggers Search for result pages (deduped)
