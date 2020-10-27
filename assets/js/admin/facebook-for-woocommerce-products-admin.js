@@ -323,7 +323,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isStockManagementEnabledForSimpleProduct() {
 
-			return $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val().length;
+			return !! ( $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val() );
 		}
 
 
