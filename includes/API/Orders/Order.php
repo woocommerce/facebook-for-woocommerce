@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Orders API order handler.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Order {
 
@@ -40,7 +40,7 @@ class Order {
 	/**
 	 * Orders API order handler constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param array $response_data response data from the API
 	 */
@@ -53,7 +53,7 @@ class Order {
 	/**
 	 * Gets the order’s ID.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -66,7 +66,7 @@ class Order {
 	/**
 	 * Gets the order’s status.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -81,7 +81,7 @@ class Order {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#item
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array
 	 */
@@ -94,7 +94,7 @@ class Order {
 	/**
 	 * Gets the channel name.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -109,7 +109,7 @@ class Order {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#selected_shipping_option
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array
 	 */
@@ -124,7 +124,7 @@ class Order {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#shipping_address
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array
 	 */
@@ -139,7 +139,7 @@ class Order {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#estimated_payment_details
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array
 	 */
@@ -154,7 +154,7 @@ class Order {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#buyer_details
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array
 	 */

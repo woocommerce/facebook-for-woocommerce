@@ -69,7 +69,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function admin_cancel_order() {
 
@@ -114,7 +114,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function admin_search_product_attributes() {
 
@@ -159,7 +159,7 @@ class AJAX {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function admin_complete_order() {
 

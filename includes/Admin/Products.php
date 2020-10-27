@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * General handler for product admin functionality.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Products {
 
@@ -89,7 +89,7 @@ class Products {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public static function render_enhanced_catalog_attributes_tooltip() {
 
@@ -105,7 +105,7 @@ class Products {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -119,7 +119,7 @@ class Products {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product product object
 	 */
@@ -149,7 +149,7 @@ class Products {
 	/**
 	 * Gets a list of attribute names and labels that match any of the given words.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param array       $words a list of words used to filter attributes
@@ -176,7 +176,7 @@ class Products {
 	/**
 	 * Gets a indexed list of available product attributes with the name of the attribute as key and the label as the value.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return array
@@ -197,7 +197,7 @@ class Products {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product product object
 	 */
@@ -245,7 +245,7 @@ class Products {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product product object
 	 */

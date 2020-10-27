@@ -105,7 +105,7 @@ jQuery( document ).ready( ( $ ) => {
 		 *
 		 * This function was copied from toggleSettingOptions() in facebook-for-woocommerce-settings-sync.js
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {jQuery} $element the form field
 		 * @param {boolean} enable whether to enable or disable the field
@@ -392,7 +392,7 @@ jQuery( document ).ready( ( $ ) => {
 	 *
 	 * Move the Facebook refund reason field if this is a Commerce order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	function maybeMoveRefundReasonField() {
 
@@ -446,7 +446,7 @@ jQuery( document ).ready( ( $ ) => {
 	 * WooCommerce (meta-boxes-orders.js) does not currently trigger an event when the order items are loaded.
 	 * We use the MutationObserver to move the Facebook refund reason field every time the order refund items are refreshed.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	function setupRefunReasonMutationObserver() {
 

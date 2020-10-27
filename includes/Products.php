@@ -460,7 +460,7 @@ class Products {
 	/**
 	 * Determines whether the product meets all of the criteria needed for Commerce.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 */
@@ -476,7 +476,7 @@ class Products {
 	/**
 	 * Determines whether Commerce is enabled for the product.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return bool
@@ -494,7 +494,7 @@ class Products {
 	/**
 	 * Enables or disables Commerce for a product.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param bool        $is_enabled whether or not Commerce is to be enabled
@@ -511,7 +511,7 @@ class Products {
 	 *
 	 * If the product is a variation, it will get this value from its parent.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -545,7 +545,7 @@ class Products {
 	/**
 	 * Gets the stored Google product category ID from the highest category.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -735,7 +735,7 @@ class Products {
 	/**
 	 * Updates the stored Google product category ID for the product.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $category_id the Google product category ID
@@ -754,7 +754,7 @@ class Products {
 	 *
 	 * If the product is a variation, it will get this value from its parent.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -779,7 +779,7 @@ class Products {
 	/**
 	 * Updates the stored gender for the product.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $gender the gender (`female`, `male`, or `unisex`)
@@ -794,7 +794,7 @@ class Products {
 	/**
 	 * Gets the configured color attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -836,7 +836,7 @@ class Products {
 	/**
 	 * Updates the configured color attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the color
@@ -863,7 +863,7 @@ class Products {
 	 *
 	 * If the product is a variation and it doesn't have the color attribute, falls back to the parent.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -889,7 +889,7 @@ class Products {
 	/**
 	 * Gets the configured size attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -932,7 +932,7 @@ class Products {
 	/**
 	 * Updates the configured size attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the size
@@ -959,7 +959,7 @@ class Products {
 	 *
 	 * If the product is a variation and it doesn't have the size attribute, falls back to the parent.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -985,7 +985,7 @@ class Products {
 	/**
 	 * Gets the configured pattern attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -1028,7 +1028,7 @@ class Products {
 	/**
 	 * Updates the configured pattern attribute.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the pattern
@@ -1055,7 +1055,7 @@ class Products {
 	 *
 	 * If the product is a variation and it doesn't have the pattern attribute, falls back to the parent.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string
@@ -1081,7 +1081,7 @@ class Products {
 	/**
 	 * Gets all product attributes that are valid for assignment for color, size, or pattern.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return \WC_Product_Attribute[]
@@ -1095,7 +1095,7 @@ class Products {
 	/**
 	 * Gets the value for a given enhanced catalog attribute
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string      $key         The attribute key.
 	 * @param \WC_Product $product The product object.
@@ -1187,7 +1187,7 @@ class Products {
 	/**
 	 * Checks if the product has an attribute with the given name.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute name
@@ -1213,7 +1213,7 @@ class Products {
 	/**
 	 * Gets the attributes that are set for the product's color, size, and pattern.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 * @return string[]
@@ -1233,7 +1233,7 @@ class Products {
 	/**
 	 * Gets a product by its Facebook product ID, from the `fb_product_item_id` or `fb_product_group_id`.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $fb_product_id Facebook product ID
 	 * @return \WC_Product|null
@@ -1279,7 +1279,7 @@ class Products {
 	 *
 	 * @see \WC_Facebookcommerce_Utils::get_fb_retailer_id().
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $fb_retailer_id Facebook retailer ID
 	 * @return \WC_Product|null

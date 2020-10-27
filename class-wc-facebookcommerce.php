@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.1.0-dev.1';
+		const VERSION = '2.1.0';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -198,7 +198,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets deprecated and removed hooks.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return array
 		 */
@@ -206,7 +206,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			return [
 				'wc_facebook_page_access_token' => [
-					'version'     => '2.1.0-dev.1',
+					'version'     => '2.1.0',
 					'replacement' => false,
 				],
 			];
@@ -693,7 +693,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the commerce handler instance.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Commerce commerce handler instance
 		 */

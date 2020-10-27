@@ -44,7 +44,7 @@ class Request extends API\Request {
 	/**
 	 * Gets the rate limit ID.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */

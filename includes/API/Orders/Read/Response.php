@@ -18,7 +18,7 @@ use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 /**
  * Orders API read response object.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Response extends API\Response {
 
@@ -26,7 +26,7 @@ class Response extends API\Response {
 	/**
 	 * Gets an order object from the response data.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return \SkyVerge\WooCommerce\Facebook\API\Orders\Order
 	 */

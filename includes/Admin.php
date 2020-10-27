@@ -201,7 +201,7 @@ class Admin {
 	/**
 	 * Gets the markup for the message used in the product not ready modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -236,7 +236,7 @@ class Admin {
 	/**
 	 * Gets the markup for the buttons used in the product not ready modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -258,7 +258,7 @@ class Admin {
 	/**
 	 * Gets the orders admin handler instance.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
 	 */
@@ -271,7 +271,7 @@ class Admin {
 	/**
 	 * Gets the product category admin handler instance.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Product_Categories
 	 */

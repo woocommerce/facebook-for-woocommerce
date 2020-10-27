@@ -20,7 +20,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * General handler for order admin functionality.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Orders {
 
@@ -32,7 +32,7 @@ class Orders {
 	/**
 	 * Handler constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function __construct() {
 
@@ -43,7 +43,7 @@ class Orders {
 	/**
 	 * Adds the necessary action & filter hooks.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function add_hooks() {
 
@@ -71,7 +71,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function enqueue_assets() {
 		global $post;
@@ -163,7 +163,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function add_notices() {
 		global $post;
@@ -218,7 +218,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function maybe_remove_order_metaboxes() {
 		global $post;
@@ -240,7 +240,7 @@ class Orders {
 	/**
 	 * Gets the markup for the buttons used in a modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $submit_label label for the submit button
 	 * @return string
@@ -267,7 +267,7 @@ class Orders {
 	/**
 	 * Gets the markup for the message used in the Complete modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -300,7 +300,7 @@ class Orders {
 	/**
 	 * Gets the markup for the buttons used in the Complete modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -313,7 +313,7 @@ class Orders {
 	/**
 	 * Gets the markup for the message used in the Refund modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -334,7 +334,7 @@ class Orders {
 	/**
 	 * Gets the markup for the buttons used in the Refund modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -347,7 +347,7 @@ class Orders {
 	/**
 	 * Gets the markup for the message used in the Cancel modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -372,7 +372,7 @@ class Orders {
 	/**
 	 * Gets the markup for the buttons used in the Cancel modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -387,7 +387,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function render_refund_reason_field( $select_id = '', $hidden = true ) {
 
@@ -413,7 +413,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param int $refund_id refund ID
 	 * @throws Framework\SV_WC_Plugin_Exception
@@ -436,7 +436,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $redirect_url redirect URL carrying results
 	 * @param string $action bulk action
@@ -506,7 +506,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param array $actions existing actions
 	 * @param \WC_Order $order order object
@@ -527,7 +527,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param array $actions existing actions
 	 * @param \WC_Order $order order object
@@ -548,7 +548,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param bool $is_enabled whether the email is enabled in the first place
 	 * @param \WC_Order $order order object
@@ -573,7 +573,7 @@ class Orders {
 			 * @param bool $is_enabled whether the email is enabled
 			 * @param \WC_Order $order order object
 			 * @param Orders $this admin orders instance
-			 * @since 2.1.0-dev.1
+			 * @since 2.1.0
 			 *
 			 */
 			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $order, $this );
@@ -588,7 +588,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param bool $maybe_editable whether the order is editable in the first place
 	 * @param \WC_Order $order order object
@@ -608,7 +608,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return bool
 	 */
@@ -624,7 +624,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return bool
 	 */

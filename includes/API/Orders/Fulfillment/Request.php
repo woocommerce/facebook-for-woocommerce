@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Orders API fulfillment request object.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Request extends API\Orders\Abstract_Request  {
 
@@ -28,7 +28,7 @@ class Request extends API\Orders\Abstract_Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @param array $fulfillment_data fulfillment data
@@ -48,7 +48,7 @@ class Request extends API\Orders\Abstract_Request  {
 	 *
 	 * While this is the Orders API, orders belong to pages so this is where the rate limit comes from.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */

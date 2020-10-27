@@ -28,7 +28,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * @var string the WordPress option name where the page access token is stored
-	 * @deprecated 2.1.0-dev.1
+	 * @deprecated 2.1.0
 	 */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
@@ -2358,13 +2358,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.1.0-dev.1
+	 * @deprecated 2.1.0
 	 *
 	 * @return string
 	 */
 	public function get_page_access_token() {
 
-		wc_deprecated_function( __METHOD__, '2.1.0-dev.1', Connection::class . '::get_page_access_token()' );
+		wc_deprecated_function( __METHOD__, '2.1.0', Connection::class . '::get_page_access_token()' );
 
 		$access_token = facebook_for_woocommerce()->get_connection_handler()->get_page_access_token();
 
@@ -2372,7 +2372,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * Filters the Facebook page access token.
 		 *
 		 * @since 1.10.0
-		 * @deprecated 2.1.0-dev.1
+		 * @deprecated 2.1.0
 		 *
 		 * @param string $page_access_token Facebook page access token
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
@@ -2800,13 +2800,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
 	 *
 	 * @since 1.10.0
-	 * @deprecated 2.1.0-dev.1
+	 * @deprecated 2.1.0
 	 *
 	 * @param string $value page access token value
 	 */
 	public function update_page_access_token( $value ) {
 
-		wc_deprecated_function( __METHOD__, '2.1.0-dev.1', Connection::class . '::update_page_access_token()' );
+		wc_deprecated_function( __METHOD__, '2.1.0', Connection::class . '::update_page_access_token()' );
 
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $value );
 	}

@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Base handler for Commerce-specific functionality.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Commerce {
 
@@ -31,7 +31,7 @@ class Commerce {
 	/**
 	 * Commerce handler constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function __construct() {
 
@@ -46,7 +46,7 @@ class Commerce {
 	 *
 	 * This will be used when the category or product-level settings don’t override it.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -57,7 +57,7 @@ class Commerce {
 		/**
 		 * Filters the plugin-level fallback Google product category ID.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param string $category_id default Google product category ID
 		 * @param Commerce $commerce commerce handler instance
@@ -69,7 +69,7 @@ class Commerce {
 	/**
 	 * Updates the plugin-level fallback Google product category ID.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $id category ID
 	 */
@@ -82,7 +82,7 @@ class Commerce {
 	/**
 	 * Determines whether Commerce features should be available.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return bool whether Commerce features should be available
 	 */
@@ -93,7 +93,7 @@ class Commerce {
 		/**
 		 * Filters whether Commerce features should be available.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param bool $available whether commerce features should be available
 		 * @param string $country country code
@@ -106,7 +106,7 @@ class Commerce {
 	/**
 	 * Determines whether the site is connected.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return bool whether the site is connected
 	 */
@@ -119,7 +119,7 @@ class Commerce {
 		/**
 		 * Filters whether the site is connected.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param bool $connected whether the site is connected
 		 * @param Commerce $commerce commerce handler instance
@@ -131,7 +131,7 @@ class Commerce {
 	/**
 	 * Gets the orders handler instance.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return \SkyVerge\WooCommerce\Facebook\Commerce\Orders
 	 */

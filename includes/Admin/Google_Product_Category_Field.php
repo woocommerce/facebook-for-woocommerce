@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Google product category field.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Google_Product_Category_Field {
 
@@ -27,7 +27,7 @@ class Google_Product_Category_Field {
 	/**
 	 * Instantiates the JS handler for the Google product category field.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $input_id element that should receive the latest concrete category ID value
 	 */
@@ -47,7 +47,7 @@ class Google_Product_Category_Field {
 	/**
 	 * Gets the full categories list from Google and stores it.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function get_categories() {
 
@@ -81,7 +81,7 @@ class Google_Product_Category_Field {
 	/**
 	 * Parses the categories response from Google.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param array|\WP_Error $categories_response categories response from Google
 	 * @return array
@@ -147,7 +147,7 @@ class Google_Product_Category_Field {
 	/**
 	 * Gets the category options (children) for a given category.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $category_id category ID
 	 * @param array $categories full category list

@@ -145,7 +145,7 @@ class Sync {
 	/**
 	 * Adds the products with stock changes to the requests array to be updated.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product product object
 	 */

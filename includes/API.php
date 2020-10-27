@@ -61,7 +61,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets the access token being used for API requests.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -74,7 +74,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Sets the access token to use for API requests.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $access_token access token to set
 	 */
@@ -87,7 +87,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Performs an API request.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param API\Request $request request object
 	 * @return API\Response
@@ -200,7 +200,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Handles a throttled API request.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $rate_limit_id ID for the API request
 	 * @param int $timestamp timestamp until the delay is over
@@ -651,7 +651,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets all new orders.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Orders\Response
@@ -677,7 +677,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets the latest cancelled orders.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Orders\Response
@@ -704,7 +704,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a single order based on its remote ID.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @return API\Orders\Read\Response
@@ -723,7 +723,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Acknowledges the given order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @param string $merchant_order_reference WC order ID
@@ -745,7 +745,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/fulfillment-api#attach_shipment
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @param array $fulfillment_data fulfillment data to be sent on the request
@@ -765,7 +765,7 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Cancels the given order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @param string $reason cancellation reason
@@ -788,7 +788,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/cancellation-refund-api#refund_order
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
 	 * @param array $refund_data refund data to be sent on the request

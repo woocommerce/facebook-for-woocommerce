@@ -348,7 +348,7 @@ class Connection {
 	/**
 	 * Retrieves the configured page access token remotely.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $page_id desired Facebook page ID
 	 * @return string
@@ -439,7 +439,7 @@ class Connection {
 	/**
 	 * Gets the page access token.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -450,7 +450,7 @@ class Connection {
 		/**
 		 * Filters the page access token.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param string $access_token page access token
 		 * @param Connection $connection connection handler instance
@@ -489,7 +489,7 @@ class Connection {
 	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
 	 * to trigger the test account flow, where fake US-based business details can be used.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -513,7 +513,7 @@ class Connection {
 		/**
 		 * Filters the URL used to connect to Facebook Commerce.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param string $connect_url connect URL
 		 */
@@ -706,7 +706,7 @@ class Connection {
 	/**
 	 * Gets the Commerce manager ID value.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -907,7 +907,7 @@ class Connection {
 	/**
 	 * Stores the given Commerce manager ID.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $id the ID
 	 */
@@ -946,7 +946,7 @@ class Connection {
 	/**
 	 * Stores the given page access token.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $value the access token
 	 */

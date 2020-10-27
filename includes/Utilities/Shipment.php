@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Utility class for shipment functionality.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Shipment {
 
@@ -30,7 +30,7 @@ class Shipment {
 	/**
 	 * Constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function __construct() {
 
@@ -637,7 +637,7 @@ class Shipment {
 	/**
 	 * Gets the valid carriers.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array key-value array with carrier codes and their labels
 	 */
@@ -650,7 +650,7 @@ class Shipment {
 	/**
 	 * Determines whether the given carrier is one of the valid carrier options.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $carrier
 	 * @return bool
@@ -664,7 +664,7 @@ class Shipment {
 	/**
 	 * Finds the proper Facebook carrier code, given a Shipment Tracking carrier.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $carrier Shipment Tracking carrier
 	 * @return string

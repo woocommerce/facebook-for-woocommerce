@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Idempotent request trait.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 trait Idempotent_Request {
 
@@ -27,7 +27,7 @@ trait Idempotent_Request {
 	/**
 	 * Gets the value of idempotency key.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */

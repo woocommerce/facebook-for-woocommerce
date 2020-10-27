@@ -127,7 +127,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Toggles (shows/hides) the visibility of Facebook Commerce setting fields.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {boolean} enabled whether the settings fields should be enabled or not
 		 * @param {jQuery} $container a common ancestor of all the elements that can be shown/hidden
@@ -149,7 +149,7 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * Additionally, shows/hides messages explaining that the product is not ready for Commerce.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {boolean} enabled whether the setting field should be enabled or not
 		 * @param {jQuery} $container a common ancestor of all the elements that need to modified
@@ -180,7 +180,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether product properties are configured using appropriate values for Commerce.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -205,7 +205,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the product or one of its variations has Facebook Sync enabled.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -222,7 +222,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the current product has synced variations.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @returns {boolean}
 		 */
@@ -243,7 +243,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the product has Facebook Sync enabled.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -256,7 +256,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the product has a Regular Price or Facebook Price defined.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -274,7 +274,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether a simple product has a Regular Price or Facebook Price defined.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -287,7 +287,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the product has Manage Stock enabled and Stock quantity defined.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -302,7 +302,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether a simple product has Manage Stock enabled and Stock quantity defined.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -315,7 +315,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether we should ask the user to select a Google Product Category.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {boolean}
 		 */
@@ -340,7 +340,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Shows an alert asking the user to select a Google product category and sub-category.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {jQuery.Event} event a jQuery Event object for the submit event
 		 * @returns {boolean}

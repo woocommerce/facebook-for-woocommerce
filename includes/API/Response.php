@@ -95,7 +95,7 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 	/**
 	 * Gets the user error message.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string|null
 	 */

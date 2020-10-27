@@ -99,7 +99,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the message for Default Google Product Category modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -112,7 +112,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the message for Default Google Product Category modal when the selection is empty.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -129,7 +129,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the markup for the buttons used in the Default Google Product Category modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -328,7 +328,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param array $field field data
 	 */

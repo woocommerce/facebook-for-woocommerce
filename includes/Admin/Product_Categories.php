@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * General handler for the product category admin functionality.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Product_Categories {
 
@@ -28,7 +28,7 @@ class Product_Categories {
 	/**
 	 * Handler constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function __construct() {
 
@@ -49,7 +49,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function enqueue_assets() {
 
@@ -90,7 +90,7 @@ class Product_Categories {
 	/**
 	 * Gets the message for Default Google Product Category modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -103,7 +103,7 @@ class Product_Categories {
 	/**
 	 * Gets the markup for the buttons used in the Default Google Product Category modal.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -131,7 +131,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function render_add_google_product_category_field() {
 
@@ -169,7 +169,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WP_Term $term current taxonomy term object.
 	 */
@@ -207,7 +207,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function render_google_product_category_tooltip() {
 
@@ -223,7 +223,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -237,7 +237,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function ajax_render_enhanced_catalog_attributes_field() {
 		$category_id = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'selected_category' ) );
@@ -266,7 +266,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WP_Term $term current taxonomy term object.
 	 * @param string $category_id passed in category id
@@ -310,7 +310,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param mixed    $category_id the selected category to render attributes for.
 	 * @param \WP_Term $term current taxonomy term object.
@@ -342,7 +342,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function render_enhanced_catalog_attributes_tooltip() {
 
@@ -358,7 +358,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -372,7 +372,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param int    $term_id term ID.
 	 * @param int    $tt_id term taxonomy ID.
@@ -427,7 +427,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param int    $term_id term ID.
 	 * @param int    $tt_id term taxonomy ID.
@@ -455,7 +455,7 @@ class Product_Categories {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return bool
 	 */

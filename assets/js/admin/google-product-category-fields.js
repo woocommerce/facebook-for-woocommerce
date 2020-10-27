@@ -14,7 +14,7 @@ jQuery( document ).ready( ( $ ) => {
 	/**
 	 * Google product category field handler.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @type {WC_Facebook_Google_Product_Category_Fields} object
 	 */
@@ -22,7 +22,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Handler constructor.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {Object[]} categories The full categories list, indexed by the category ID
 		 * @param {string} categories[].label The category label
@@ -157,7 +157,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Updates the subsequent selects whenever one of the selects changes.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 */
 		onChange(element) {
 
@@ -209,7 +209,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Adds a new select with the given options.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
 		 * @param {string} selected the selected option ID
@@ -237,7 +237,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Gets the placeholder string for a select field based on the number of existing select fields.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {jQuery} $otherSelects a jQuery object matching existing select fields
 		 * @param {Object.<string, string>} options an object with option IDs as keys and option labels as values
@@ -260,7 +260,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Gets an array of options for the given category ID.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param {string} category_id The given category ID
 		 * @return {Object.<string, string>} an object with option IDs as keys and option labels as values
@@ -286,7 +286,7 @@ jQuery( document ).ready( ( $ ) => {
 		/**
 		 * Gets an array of top level category options.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @return {Object.<string, string>} an object with option IDs as keys and option labels as values
 		 */

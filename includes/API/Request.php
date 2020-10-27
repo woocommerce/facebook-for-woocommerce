@@ -79,7 +79,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Gets the number of times this request has been retried.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return int
 	 */
@@ -92,7 +92,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Marks the request as having been retried.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function mark_retry() {
 
@@ -103,7 +103,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Gets the maximum number of retries to attempt if told to do so by Facebook.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return int
 	 */
@@ -112,7 +112,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 		/**
 		 * Filters the maximum number of retries allowed for the request.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param int $retry_limit maximum number of retries
 		 * @param Request $request request object
@@ -124,7 +124,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	/**
 	 * Response codes that should trigger a retry for this request.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return int[]
 	 */

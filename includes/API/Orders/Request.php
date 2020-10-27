@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Orders API list request object.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Request extends Abstract_Request  {
 
@@ -25,7 +25,7 @@ class Request extends Abstract_Request  {
 	 *
 	 * While this is the Orders API, orders belong to pages so this is where the rate limit comes from.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return string
 	 */
@@ -40,7 +40,7 @@ class Request extends Abstract_Request  {
 	 *
 	 * @see https://developers.facebook.com/docs/commerce-platform/order-management/order-api#get_orders
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $page_id page ID
 	 * @param array $args optional additional arguments

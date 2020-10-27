@@ -29,7 +29,7 @@ class Request_Limit_Reached extends Framework\SV_WC_API_Exception {
 	/**
 	 * Gets the estimated throttle end.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return \DateTime|null
 	 */
@@ -42,7 +42,7 @@ class Request_Limit_Reached extends Framework\SV_WC_API_Exception {
 	/**
 	 * Sets the estimated throttle end.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \DateTime $date_time date time object representing when the throttle will end
 	 */

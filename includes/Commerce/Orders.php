@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * General Commerce orders handler.
  *
- * @since 2.1.0-dev.1
+ * @since 2.1.0
  */
 class Orders {
 
@@ -74,7 +74,7 @@ class Orders {
 	/**
 	 * Orders constructor.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function __construct() {
 
@@ -85,7 +85,7 @@ class Orders {
 	/**
 	 * Returns whether or not the order is a pending Commerce order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
 	 * @return bool
@@ -99,7 +99,7 @@ class Orders {
 	/**
 	 * Returns whether or not the order is a Commerce order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
 	 * @return bool
@@ -113,7 +113,7 @@ class Orders {
 	/**
 	 * Finds a local order based on the Commerce ID stored in REMOTE_ID_META_KEY.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param string $remote_id Commerce order ID
 	 * @return \WC_Order|null
@@ -134,7 +134,7 @@ class Orders {
 	/**
 	 * Creates a local WooCommerce order based on an Orders API order object.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param Order $remote_order Orders API order object
 	 * @return \WC_Order
@@ -156,7 +156,7 @@ class Orders {
 	/**
 	 * Updates a local WooCommerce order based on an Orders API order object.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param Order $remote_order Orders API order object
 	 * @param \WC_Order $local_order local order object
@@ -365,7 +365,7 @@ class Orders {
 	/**
 	 * Updates WooCommerce’s Orders by fetching orders from the API and either creating or updating local orders.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function update_local_orders() {
 		// sanity check for connection status
@@ -449,7 +449,7 @@ class Orders {
 	/**
 	 * Updates any local orders that have since been cancelled on Facebook.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function update_cancelled_orders() {
 
@@ -485,7 +485,7 @@ class Orders {
 	/**
 	 * Frequency in seconds that orders are updated.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return int
 	 */
@@ -496,7 +496,7 @@ class Orders {
 		/**
 		 * Filters the interval between querying Facebook for new or updated orders.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param int $interval interval in seconds. Defaults to 5 minutes, and the minimum interval is 120 seconds.
 		 */
@@ -518,7 +518,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function schedule_local_orders_update() {
 		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
@@ -533,7 +533,7 @@ class Orders {
 	/**
 	 * Adds the necessary action & filter hooks.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 */
 	public function add_hooks() {
 
@@ -559,7 +559,7 @@ class Orders {
 	 * - An item has a different quantity than what was originally ordered
 	 * - The remote order was already fulfilled
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
 	 * @param string $tracking_number shipping tracking number
@@ -636,7 +636,7 @@ class Orders {
 	/**
 	 * Refunds an order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order_Refund $refund order refund object
 	 * @param string $reason_code refund reason code
@@ -731,7 +731,7 @@ class Orders {
 	/**
 	 * Gets the Facebook items from the given refund.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order_Refund $refund refund object
 	 * @return array
@@ -777,7 +777,7 @@ class Orders {
 	/**
 	 * Cancels an order.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
 	 * @param string $reason_code cancellation reason code
@@ -828,7 +828,7 @@ class Orders {
 	/**
 	 * Gets the valid cancellation reasons.
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @return array key-value array with codes and their labels
 	 */
@@ -850,7 +850,7 @@ class Orders {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.0-dev.1
+	 * @since 2.1.0
 	 *
 	 * @param bool $is_enabled whether the email is enabled in the first place
 	 * @param \WC_Order $order order object
@@ -872,7 +872,7 @@ class Orders {
 			/**
 			 * Filters the flag used to determine whether the email is enabled.
 			 *
-			 * @since 2.1.0-dev.1
+			 * @since 2.1.0
 			 *
 			 * @param bool $is_enabled whether the email is enabled
 			 * @param \WC_Order $order order object

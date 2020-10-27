@@ -855,7 +855,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * This method is used to avoid PHP undefined index notices.
 		 *
-		 * @since 2.1.0-dev.1
+		 * @since 2.1.0
 		 *
 		 * @param array $product_data the product data retrieved from a Woo product passed by reference
 		 * @param string $index the data index
