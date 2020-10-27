@@ -6,6 +6,8 @@ class SettingsCommerceCest {
 	/**
 	 * Runs before each test.
 	 *
+	 * @skip
+	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
 	public function _before( AcceptanceTester $I ) {
@@ -21,6 +23,8 @@ class SettingsCommerceCest {
 	/**
 	 * Test that the Instagram Checkout connection message is shown.
 	 *
+	 * @skip
+	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
 	public function try_store_connect_to_instagram_message( AcceptanceTester $I ) {
@@ -34,6 +38,8 @@ class SettingsCommerceCest {
 
 	/**
 	 * Test that the Instagram Checkout connection message is shown if the store is not connected.
+	 *
+	 * @skip
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
@@ -51,6 +57,8 @@ class SettingsCommerceCest {
 
 	/**
 	 * Test that the Connect button is shown if the store is not connected.
+	 *
+	 * @skip
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
@@ -71,6 +79,8 @@ class SettingsCommerceCest {
 	/**
 	 * Test that the Facebook connection message is shown if the plugin is not connected.
 	 *
+	 * @skip
+	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
 	public function try_connect_message( AcceptanceTester $I ) {
@@ -85,6 +95,8 @@ class SettingsCommerceCest {
 
 	/**
 	 * Test that the US-only limitation message is shown if the default country is not US.
+	 *
+	 * @skip
 	 *
 	 * @param AcceptanceTester $I tester instance
 	 */
