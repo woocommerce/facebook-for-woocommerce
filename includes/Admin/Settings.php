@@ -10,6 +10,9 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Connection;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
@@ -74,13 +77,29 @@ class Settings {
 		// enables the WC Admin top bar for the settings page
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
 
+			$crumbs = [
+				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+			];
+
+			if ( ! empty( $_GET['tab'] ) ) {
+				switch ( $_GET['tab'] ) {
+					case Connection::ID :
+						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
+					break;
+					case Messenger::ID :
+						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
+					break;
+					case Product_Sync::ID :
+						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
+					break;
+				}
+			}
+
 			wc_admin_connect_page( [
 				'id'        => self::PAGE_ID,
 				'screen_id' => 'marketing_page_wc-facebook',
 				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
-				'title'     => [
-					__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
-				],
+				'title'     => $crumbs
 			] );
 		}
 	}
