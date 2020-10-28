@@ -123,12 +123,45 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 			],
 			'setup'           => [
 				'external_business_id' => $connection_handler->get_external_business_id(),
-				'timezone'             => wc_timezone_string(),
+				'timezone'             => $this->maybe_convert_timezone( wc_timezone_string(), wc_timezone_offset() ),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 			],
 			'repeat'          => false,
 		];
+	}
+
+
+	/**
+	 * Convert the given timezone string to a name if needed
+	 *
+	 * @since 2.2.0-dev.1
+	 *
+	 * @param string $timezone_string Timezone string
+	 * @param int|float $timezone_offset Timezone offset
+	 * @return string
+	 */
+	private function maybe_convert_timezone( $timezone_string, $timezone_offset = 0 ) {
+
+		// no need to look for the equivalent timezone
+		if ( false !== strpos( $timezone_string, '/' ) ) {
+			return $timezone_string;
+		}
+
+		// Look up the timezones list based on the given offset
+		$timezones_list = timezone_abbreviations_list();
+
+		foreach ( $timezones_list as $timezone ) {
+
+			foreach ( $timezone as $city ) {
+				if ( (int) $city['offset'] === (int) $timezone_offset ) {
+					return $city['timezone_id'];
+				}
+			}
+		}
+
+		// fallback to default timezone
+		return 'Etc/GMT';
 	}
 
 
