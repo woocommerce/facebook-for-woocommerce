@@ -202,4 +202,18 @@ class Locales {
 	}
 
 
+	/**
+	 * Determines if a locale is supported by Facebook.
+	 *
+	 * @since 2.2.0-dev.1
+	 *
+	 * @param string $locale a locale identifier
+	 * @return bool
+	 */
+	public function is_supported_locale( $locale ) {
+
+		return array_key_exists( $locale, self::get_supported_locales_list() );
+	}
+
+
 }
