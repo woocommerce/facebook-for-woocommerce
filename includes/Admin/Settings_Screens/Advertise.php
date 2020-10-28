@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Locales;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0;
 
 /**
@@ -122,6 +123,25 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 
 	/**
+	 * Gets the LWI Ads SDK URL.
+	 *
+	 * @since 2.2.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_lwi_ads_sdk_url() {
+
+		$locale = get_user_locale();
+
+		if ( ! Locales::is_supported_locale( $locale ) ) {
+			$locale = Locales::DEFAULT_LOCALE;
+		}
+
+		return "https://connect.facebook.net/{$locale}/sdk.js";
+	}
+
+
+	/**
 	 * Renders the screen HTML.
 	 *
 	 * The contents of the Facebook box will be populated by the LWI Ads script through iframes.
@@ -147,7 +167,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$fbe_extras = wp_json_encode( $this->get_lwi_ads_configuration_data() );
 
 		?>
-		<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+		<script async defer src="<?php echo esc_url( $this->get_lwi_ads_sdk_url() ); ?>"></script>
 		<div
 			class="fb-lwi-ads-creation"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"

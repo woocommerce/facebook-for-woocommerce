@@ -205,7 +205,7 @@ class Locales {
 	 * @param string $locale a locale identifier
 	 * @return bool
 	 */
-	public function is_supported_locale( $locale ) {
+	public static function is_supported_locale( $locale ) {
 
 		return in_array( $locale, self::get_supported_locales( false ), false );
 	}
