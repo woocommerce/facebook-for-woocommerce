@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) or exit;
  *
  * @since 2.2.0-dev.1
  */
-class Locales {
+class Locale {
 
 
 	/** @var string default locale */

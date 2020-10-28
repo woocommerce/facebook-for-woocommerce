@@ -13,7 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\Facebook\Locales;
+use SkyVerge\WooCommerce\Facebook\Locale;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0;
 
 /**
@@ -133,8 +133,8 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 		$locale = get_user_locale();
 
-		if ( ! Locales::is_supported_locale( $locale ) ) {
-			$locale = Locales::DEFAULT_LOCALE;
+		if ( ! Locale::is_supported_locale( $locale ) ) {
+			$locale = Locale::DEFAULT_LOCALE;
 		}
 
 		return "https://connect.facebook.net/{$locale}/sdk.js";

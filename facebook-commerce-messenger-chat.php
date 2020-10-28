@@ -8,7 +8,7 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Locales;
+use SkyVerge\WooCommerce\Facebook\Locale;
 
 if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
@@ -90,7 +90,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
 			wc_deprecated_function( __METHOD__, '2.2.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Locales::get_supported_locales_list()' );
 
-			return Locales::get_supported_locales();
+			return Locale::get_supported_locales();
 		}
 
 
