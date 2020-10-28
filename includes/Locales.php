@@ -136,4 +136,70 @@ class Locales {
 	}
 
 
+	/**
+	 * Gets a list of locales supported by Facebook, and the corresponding language names.
+	 *
+	 * Returns the format $locale => $name for display in options.
+	 * @link https://developers.facebook.com/docs/messenger-platform/messenger-profile/supported-locales/
+	 * If the Locale extension is not available, will attempt to match locales to WordPress available language names.
+	 *
+	 * @since 2.2.0-dev.1
+	 *
+	 * @return array associative array of locale codes and names
+	 */
+	public static function get_supported_locales_list() {
+
+		$locales = [];
+
+		if ( class_exists( 'Locale' ) ) {
+
+			foreach ( self::get_supported_locales() as $locale ) {
+
+				if ( $name = \Locale::getDisplayName( $locale, substr( $locale, 0, 2 ) ) ) {
+
+					$locales[ $locale ] = ucfirst( $name );
+				}
+			}
+
+		} else {
+
+			include_once( ABSPATH . '/wp-admin/includes/translation-install.php' );
+
+			$translations = wp_get_available_translations();
+
+			foreach ( self::get_supported_locales() as $locale ) {
+
+				if ( isset( $translations[ $locale ]['native_name'] ) ) {
+
+					$locales[ $locale ] = $translations[ $locale ]['native_name'];
+
+				} else { // generic match e.g. <it>_IT, <it>_CH (any language in the the <it> group )
+
+					$matched_locale = substr( $locale, 0, 2 );
+
+					if ( isset( $translations[ $matched_locale ]['native_name'] ) ) {
+						$locales[ $locale ] = $translations[ $matched_locale ]['native_name'];
+					}
+				}
+			}
+
+			// always include US English
+			$locales['en_US'] = _x( 'English (United States)', 'language', 'facebook-for-woocommerce' );
+		}
+
+		/**
+		 * Filters the locales supported by Facebook Messenger.
+		 *
+		 * @since 1.10.0
+		 *
+		 * @param array $locales locales supported by Facebook, in $locale => $name format
+		 */
+		$locales = (array) apply_filters( 'wc_facebook_messenger_supported_locales', array_unique( $locales ) );
+
+		natcasesort( $locales );
+
+		return $locales;
+	}
+
+
 }

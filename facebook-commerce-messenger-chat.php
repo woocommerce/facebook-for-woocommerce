@@ -19,7 +19,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 	class WC_Facebookcommerce_MessengerChat {
 
 
-
 		public function __construct( $settings ) {
 
 			$this->page_id = isset( $settings['fb_page_id'] )
@@ -91,57 +90,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		 * @return array associative array of locale codes and names
 		 */
 		public static function get_supported_locales() {
-			global $wp_version;
 
-			$locales = [];
-
-			if ( class_exists( 'Locale' ) ) {
-
-				foreach ( Locales::get_supported_locales() as $locale ) {
-
-					if ( $name = \Locale::getDisplayName( $locale, substr( $locale, 0, 2 ) ) ) {
-						$locales[ $locale ] = ucfirst( $name );
-					}
-				}
-
-			} else {
-
-				include_once( ABSPATH . '/wp-admin/includes/translation-install.php' );
-
-				$translations = wp_get_available_translations();
-
-				foreach ( Locales::get_supported_locales() as $locale ) {
-
-					if ( isset( $translations[ $locale ]['native_name'] ) ) {
-
-						$locales[ $locale ] = $translations[ $locale ]['native_name'];
-
-					} else { // generic match e.g. <it>_IT, <it>_CH (any language in the the <it> group )
-
-						$matched_locale = substr( $locale, 0, 2 );
-
-						if ( isset( $translations[ $matched_locale ]['native_name'] ) ) {
-							$locales[ $locale ] = $translations[ $matched_locale ]['native_name'];
-						}
-					}
-				}
-
-				// always include US English
-				$locales['en_US'] = _x( 'English (United States)', 'language', 'facebook-for-woocommerce' );
-			}
-
-			/**
-			 * Filters the locales supported by Facebook Messenger.
-			 *
-			 * @since 1.10.0
-			 *
-			 * @param array $locales locales supported by Facebook Messenger, in $locale => $name format
-			 */
-			$locales = (array) apply_filters( 'wc_facebook_messenger_supported_locales', array_unique( $locales ) );
-
-			natcasesort( $locales );
-
-			return $locales;
+			return Locales::get_supported_locales_list();
 		}
 
 

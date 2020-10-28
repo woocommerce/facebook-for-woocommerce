@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
+use SkyVerge\WooCommerce\Facebook\Locales;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 /**
@@ -75,7 +76,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		}
 
 		$configured_locale = $this->remote_configuration->get_default_locale();
-		$supported_locales = \WC_Facebookcommerce_MessengerChat::get_supported_locales();
+		$supported_locales = Locales::get_supported_locales();
 
 		if ( ! empty( $supported_locales[ $configured_locale ] ) ) {
 			$configured_locale = $supported_locales[ $configured_locale ];
