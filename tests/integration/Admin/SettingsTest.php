@@ -22,6 +22,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		require_once 'includes/Admin/Settings_Screens/Connection.php';
 		require_once 'includes/Admin/Settings_Screens/Product_Sync.php';
 		require_once 'includes/Admin/Settings_Screens/Messenger.php';
+		require_once 'includes/Admin/Settings_Screens/Commerce.php';
 	}
 
 
