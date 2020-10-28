@@ -1,5 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 2.3.0-beta.1
+
 2020.11.04 - version 2.1.4
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.
 
