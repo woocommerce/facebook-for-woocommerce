@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2020.nn.nn - version 2.3.0-beta.1 =
+
 = 2020.10.29 - version 2.1.3 =
  * Fix - Prevent error triggered while trying to refund orders
 
