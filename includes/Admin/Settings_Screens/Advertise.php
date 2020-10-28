@@ -37,6 +37,25 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$this->title = __( 'Advertise', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_head', [ $this, 'output_scripts' ] );
+
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+	}
+
+
+	/**
+	 * Enqueues assets for the current screen.
+	 *
+	 * @internal
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	public function enqueue_assets() {
+
+		if ( ! $this->is_current_screen_page() ) {
+			return;
+		}
+
+		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-advertise.css', [], \WC_Facebookcommerce::VERSION );
 	}
 
 
