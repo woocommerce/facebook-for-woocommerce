@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use Codeception\Lib\Framework;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Helper;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Plugin_Exception;
 
@@ -57,7 +58,14 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
+		add_submenu_page(
+			'woocommerce',
+			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+			__( 'Facebook', 'facebook-for-woocommerce' ),
+			'manage_woocommerce', self::PAGE_ID,
+			[ $this, 'render' ],
+			5
+		);
 
 		// enables the WC Admin top bar for the settings page
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
