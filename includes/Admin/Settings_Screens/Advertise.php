@@ -105,6 +105,20 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render() {
 
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+
+		if ( ! $connection_handler || ! $connection_handler->is_connected() ) {
+
+			printf(
+				/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
+				esc_html__( 'Please %1$sconnect your store%2$s to Facebook to create ads.', 'facebook-for-woocommerce' ),
+				'<a href="' . esc_url( add_query_arg( [ 'tab' => Connection::ID ], facebook_for_woocommerce()->get_settings_url() ) ) . '">',
+				'</a>'
+			);
+
+			return;
+		}
+
 		$fbe_extras = wp_json_encode( $this->get_lwi_ads_configuration_data() );
 
 		?>
