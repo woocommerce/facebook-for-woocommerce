@@ -58,6 +58,19 @@ class Settings {
 	public function add_menu_item() {
 
 		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
+
+		// enables the WC Admin top bar for the settings page
+		if ( is_callable( 'wc_admin_connect_page' ) ) {
+
+			wc_admin_connect_page( [
+				'id'        => self::PAGE_ID,
+				'screen_id' => 'marketing_page_wc-facebook',
+				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+				'title'     => [
+					__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+				],
+			] );
+		}
 	}
 
 
