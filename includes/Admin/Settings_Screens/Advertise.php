@@ -151,12 +151,12 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		<div
 			class="fb-lwi-ads-creation"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
-			data-fbe-scopes="catalog_management"
+			data-fbe-scopes="ads_management"
 			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"></div>
 		<div
 			class="fb-lwi-ads-insights"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
-			data-fbe-scopes="catalog_management"
+			data-fbe-scopes="ads_management"
 			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"></div>
 		<?php
 
