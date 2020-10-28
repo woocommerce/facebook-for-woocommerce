@@ -171,6 +171,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 					require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 
