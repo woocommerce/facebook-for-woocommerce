@@ -71,6 +71,48 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 
 	/**
+	 * Renders the screen HTML.
+	 *
+	 * The contents of the Facebook box will be populated by the LWI Ads script through iframes.
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	public function render() {
+
+		$fbe_extras = wp_json_encode( [
+			'business_config' => [
+				'business' => [
+					'name' => facebook_for_woocommerce()->get_connection_handler()->get_business_name(),
+				],
+			],
+			'setup'           => [
+				'external_business_id' => facebook_for_woocommerce()->get_connection_handler()->get_external_business_id(),
+				'timezone'             => wc_timezone_string(),
+				'currency'             => get_woocommerce_currency(),
+				'business_vertical'    => 'ECOMMERCE',
+			],
+			'repeat'          => false,
+		] );
+
+		?>
+		<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+		<div
+			class="fb-lwi-ads-creation"
+			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
+			data-fbe-scopes="catalog_management"
+			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"></div>
+		<div
+			class="fb-lwi-ads-insights"
+			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
+			data-fbe-scopes="catalog_management"
+			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"></div>
+		<?php
+
+		parent::render();
+	}
+
+
+	/**
 	 * Gets the screen settings.
 	 *
 	 * @since 2.2.0-dev.1
