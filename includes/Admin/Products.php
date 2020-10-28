@@ -212,8 +212,9 @@ class Products {
 			</label>
 			<input type="checkbox" class="enable-if-sync-enabled"
 				   name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
-				   id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>" value="yes"
-				   checked="<?php echo Products_Handler::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
+				   id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
+				   value="yes"
+				   <?php checked( Products_Handler::is_commerce_enabled_for_product( $product ) ); ?> />
 		</p>
 
 		<div id="product-not-ready-notice" style="display:none;">
