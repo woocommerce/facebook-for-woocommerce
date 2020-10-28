@@ -38,7 +38,7 @@ class WC_Facebook_Loader {
 	const MINIMUM_WC_VERSION = '3.5.0';
 
 	/** SkyVerge plugin framework version used by this plugin */
-	const FRAMEWORK_VERSION = '5.5.4';
+	const FRAMEWORK_VERSION = '5.9.0';
 
 	/** the plugin name, for displaying notices */
 	const PLUGIN_NAME = 'Facebook for WooCommerce';
