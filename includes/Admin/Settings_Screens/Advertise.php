@@ -71,18 +71,18 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 
 	/**
-	 * Renders the screen HTML.
-	 *
-	 * The contents of the Facebook box will be populated by the LWI Ads script through iframes.
+	 * Gets the LWI Ads configuration to output the FB iframes.
 	 *
 	 * @since 2.2.0-dev.1
+	 *
+	 * @return array
 	 */
-	public function render() {
+	private function get_lwi_ads_configuration_data() {
 
-		$fbe_extras = wp_json_encode( [
+		return [
 			'business_config' => [
 				'business' => [
-					'name' => facebook_for_woocommerce()->get_connection_handler()->get_business_name(),
+						'name' => facebook_for_woocommerce()->get_connection_handler()->get_business_name(),
 				],
 			],
 			'setup'           => [
@@ -92,7 +92,20 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 				'business_vertical'    => 'ECOMMERCE',
 			],
 			'repeat'          => false,
-		] );
+		];
+	}
+
+
+	/**
+	 * Renders the screen HTML.
+	 *
+	 * The contents of the Facebook box will be populated by the LWI Ads script through iframes.
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	public function render() {
+
+		$fbe_extras = wp_json_encode( $this->get_lwi_ads_configuration_data() );
 
 		?>
 		<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
