@@ -59,7 +59,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		if ( ! $this->is_current_screen() ) {
+		if ( ! $this->is_current_screen_page() ) {
 			return;
 		}
 

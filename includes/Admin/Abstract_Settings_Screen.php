@@ -98,7 +98,7 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @return bool
 	 */
-	protected function is_current_screen() {
+	protected function is_current_screen_page() {
 
 		if ( Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) ) {
 			return false;

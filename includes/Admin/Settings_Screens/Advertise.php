@@ -51,7 +51,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 
-		if ( ! $connection_handler || ! $connection_handler->is_connected() || ! $this->is_current_screen() ) {
+		if ( ! $connection_handler || ! $connection_handler->is_connected() || ! $this->is_current_screen_page() ) {
 			return;
 		}
 
