@@ -17,7 +17,7 @@ class Abstract_Request_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * Before each test.
 	 *
-	 * @throws \SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception
+	 * @throws \SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_API_Exception
 	 */
 	public function _before() {
 
