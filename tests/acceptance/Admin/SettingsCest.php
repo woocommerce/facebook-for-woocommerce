@@ -25,6 +25,7 @@ class SettingsCest {
 		$I->see( 'Connection', '.woo-nav-tab-wrapper a' );
 		$I->see( 'Product sync', '.woo-nav-tab-wrapper a' );
 		$I->see( 'Messenger', '.woo-nav-tab-wrapper a' );
+		$I->see( 'Advertise', '.woo-nav-tab-wrapper a' );
 	}
 
 
