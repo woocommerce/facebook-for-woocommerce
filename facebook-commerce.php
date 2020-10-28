@@ -1471,7 +1471,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines if there is a matching variation for the default attributes.
 	 *
-	 * @since 2.1.2-dev.1
+	 * @since 2.1.2
 	 *
 	 * @param \WC_Facebook_Product $woo_product
 	 * @return array|null
@@ -1506,7 +1506,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Parses given product variation for it's attributes
 	 *
-	 * @since 2.1.2-dev.1
+	 * @since 2.1.2
 	 *
 	 * @param array $variation
 	 * @return array

@@ -274,7 +274,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether the product is a Variable product.
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @return {boolean}
 		 */

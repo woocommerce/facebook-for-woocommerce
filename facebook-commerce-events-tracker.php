@@ -206,7 +206,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @param bool $redirect whether to redirect to the product page
 		 * @return bool
@@ -225,7 +225,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Determines whether the current request is a product search with a single result.
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @return bool
 		 */
@@ -241,7 +241,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * This does nothing if there is no session set.
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @return void
 		 */
@@ -258,7 +258,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 */
 		public function maybe_inject_search_event() {
 
@@ -280,7 +280,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Attempts to create an Event instance for a product search event using session data.
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @return Event|null
 		 */
@@ -303,7 +303,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Deletes a session variable.
 		 *
-		 * @since 2.1.2-dev.1
+		 * @since 2.1.2
 		 *
 		 * @param string $key name of the variable to delete
 		 */
