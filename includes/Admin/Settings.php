@@ -56,8 +56,14 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
+		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
+			$root_menu_item = 'woocommerce-marketing';
+		} else {
+			$root_menu_item = 'woocommerce';
+		}
+
 		add_submenu_page(
-			'woocommerce',
+			$root_menu_item,
 			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
 			__( 'Facebook', 'facebook-for-woocommerce' ),
 			'manage_woocommerce', self::PAGE_ID,
