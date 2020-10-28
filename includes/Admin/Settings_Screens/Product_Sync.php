@@ -59,9 +59,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
-
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && self::ID !== $tab ) ) {
+		if ( ! $this->is_current_screen() ) {
 			return;
 		}
 
