@@ -71,12 +71,8 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'messenger', $screens );
 		$this->assertInstanceOf( Admin\Settings_Screens\Messenger::class, $screens['messenger'] );
 
-		if ( is_release_part_of_commerce_rollout() ) {
-			$this->assertArrayHasKey( 'commerce', $screens );
-			$this->assertInstanceOf( Admin\Settings_Screens\Commerce::class, $screens['commerce'] );
-		} else {
-			$this->assertArrayNotHasKey( 'commerce', $screens );
-		}
+		$this->assertArrayHasKey( 'commerce', $screens );
+		$this->assertInstanceOf( Admin\Settings_Screens\Commerce::class, $screens['commerce'] );
 	}
 
 
@@ -124,11 +120,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'product_sync', $tabs );
 		$this->assertArrayHasKey( 'messenger', $tabs );
-		if ( is_release_part_of_commerce_rollout() ) {
-			$this->assertArrayHasKey( 'commerce', $tabs );
-		} else {
-			$this->assertArrayNotHasKey( 'commerce', $tabs );
-		}
+		$this->assertArrayHasKey( 'commerce', $tabs );
 	}
 
 

@@ -87,9 +87,6 @@ class Commerce {
 	 * @return bool whether Commerce features should be available
 	 */
 	public function is_available() {
-		if ( ! is_release_part_of_commerce_rollout() ) {
-			return false;
-		}
 
 		list( $country ) = explode( ':', get_option( 'woocommerce_default_country' ) );
 
