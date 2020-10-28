@@ -138,7 +138,7 @@ class Locales {
 	 *
 	 * @return array associative array of locale codes and names
 	 */
-	public static function get_supported_locales_list() {
+	public static function get_supported_locales() {
 
 		$locales = [];
 
@@ -203,7 +203,7 @@ class Locales {
 	 */
 	public function is_supported_locale( $locale ) {
 
-		return array_key_exists( $locale, self::get_supported_locales_list() );
+		return array_key_exists( $locale, self::get_supported_locales() );
 	}
 
 
