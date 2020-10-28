@@ -1470,7 +1470,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Determines if there a matching variation for the default attributes.
+	 * Determines if there is a matching variation for the default attributes.
 	 *
 	 * @since 2.1.2-dev.1
 	 *
