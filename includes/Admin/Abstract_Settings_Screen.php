@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -83,11 +83,30 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public function save() {
 
 		woocommerce_update_options( $this->get_settings() );
+	}
+
+
+	/**
+	 * Determines whether the current screen is the same as identified by the current class.
+	 *
+	 * @since 2.1.0-dev.1
+	 *
+	 * @return bool
+	 */
+	protected function is_current_screen() {
+
+		if ( Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) ) {
+			return false;
+		}
+
+		$tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
+
+		return ! empty( $tab ) && $tab === $this->get_id();
 	}
 
 

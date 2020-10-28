@@ -13,8 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_API_Exception;
 
 /**
  * The Connection settings screen object.
@@ -81,15 +80,9 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 */
 	public function output_lwi_ads_script() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
-
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
-			return;
-		}
-
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 
-		if ( ! $connection_handler || ! $connection_handler->is_connected() ) {
+		if ( ! $connection_handler || ! $connection_handler->is_connected() || ! $this->is_current_screen() ) {
 			return;
 		}
 
@@ -117,9 +110,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
-
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
+		if ( ! $this->is_current_screen() ) {
 			return;
 		}
 
