@@ -74,7 +74,17 @@ class Settings {
 			5
 		);
 
-		// enables the WC Admin top bar for the settings page
+		$this->connect_to_enhanced_admin();
+	}
+
+
+	/**
+	 * Enables enhanced admin support for the main Facebook settings page.
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	private function connect_to_enhanced_admin() {
+
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
 
 			$crumbs = [
@@ -96,10 +106,10 @@ class Settings {
 			}
 
 			wc_admin_connect_page( [
-				'id'        => self::PAGE_ID,
-				'screen_id' => 'marketing_page_wc-facebook',
-				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
-				'title'     => $crumbs
+					'id'        => self::PAGE_ID,
+					'screen_id' => 'marketing_page_wc-facebook',
+					'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+					'title'     => $crumbs
 			] );
 		}
 	}
