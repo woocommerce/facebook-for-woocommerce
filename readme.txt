@@ -40,7 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.1.2-dev.1 =
- * Tweak - Ensure default variation is carried over to Facebook
+ * Tweak - Default variation selection will be synced to Facebook if the default product variation is already synced
 
 = 2020.10.27 - version 2.1.1 =
  * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
