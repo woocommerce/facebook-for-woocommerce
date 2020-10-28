@@ -81,15 +81,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		/**
 		 * Gets the locales supported by Facebook Messenger.
 		 *
-		 * Returns the format $locale => $name for display in options.
-		 * @link https://developers.facebook.com/docs/messenger-platform/messenger-profile/supported-locales/
-		 * If the Locale extension is not available, will attempt to match locales to WordPress available language names.
-		 *
 		 * @since 1.10.0
+		 * @deprecated since 2.2.0-dev.1
 		 *
 		 * @return array associative array of locale codes and names
 		 */
 		public static function get_supported_locales() {
+
+			wc_deprecated_function( __METHOD__, '2.2.0-dev.1', '\\SkyVerge\\WooCommerce\\Facebook\\Locales::get_supported_locales_list()' );
 
 			return Locales::get_supported_locales_list();
 		}
