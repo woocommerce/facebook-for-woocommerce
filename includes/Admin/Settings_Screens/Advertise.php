@@ -35,6 +35,38 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$this->id    = self::ID;
 		$this->label = __( 'Advertise', 'facebook-for-woocommerce' );
 		$this->title = __( 'Advertise', 'facebook-for-woocommerce' );
+
+		add_action( 'admin_head', [ $this, 'output_scripts' ] );
+	}
+
+
+	/**
+	 * Outputs the LWI Ads script.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function output_scripts() {
+
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+
+		if ( ! $connection_handler || ! $connection_handler->is_connected() || ! $this->is_current_screen() ) {
+			return;
+		}
+
+		?>
+		<script>
+			window.fbAsyncInit = function() {
+				FB.init( {
+					appId            : '<?php echo esc_js( $connection_handler->get_client_id() ); ?>',
+					autoLogAppEvents : true,
+					xfbml            : true,
+					version          : 'v8.0',
+				} );
+			};
+		</script>
+		<?php
 	}
 
 
