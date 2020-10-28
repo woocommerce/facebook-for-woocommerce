@@ -79,14 +79,20 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 */
 	private function get_lwi_ads_configuration_data() {
 
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+
+		if ( ! $connection_handler || ! $connection_handler->is_connected() ) {
+			return [];
+		}
+
 		return [
 			'business_config' => [
 				'business' => [
-						'name' => facebook_for_woocommerce()->get_connection_handler()->get_business_name(),
+					'name' => $connection_handler->get_business_name(),
 				],
 			],
 			'setup'           => [
-				'external_business_id' => facebook_for_woocommerce()->get_connection_handler()->get_external_business_id(),
+				'external_business_id' => $connection_handler->get_external_business_id(),
 				'timezone'             => wc_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
