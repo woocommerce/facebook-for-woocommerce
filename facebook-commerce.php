@@ -1437,8 +1437,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $woo_default_variation ) {
 			$default_product_fbid = $this->get_product_fbid(
 				self::FB_PRODUCT_ITEM_ID,
-				$woo_default_variation['variation_id'],
-				$woo_default_variation
+				$woo_default_variation['variation_id']
 			);
 		}
 
