@@ -128,17 +128,17 @@ class Locales {
 
 
 	/**
-	 * Gets a list of locales supported by Facebook, and the corresponding language names.
+	 * Gets a list of locales supported by Facebook.
 	 *
-	 * Returns the format $locale => $name for display in options.
 	 * @link https://developers.facebook.com/docs/messenger-platform/messenger-profile/supported-locales/
 	 * If the Locale extension is not available, will attempt to match locales to WordPress available language names.
 	 *
 	 * @since 2.2.0-dev.1
 	 *
-	 * @return array associative array of locale codes and names
+	 * @param bool $with_labels whether to output a list of locale identifiers or an associative array of identifiers and labels
+	 * @return array
 	 */
-	public static function get_supported_locales() {
+	public static function get_supported_locales( $with_labels = true ) {
 
 		$locales = [];
 
@@ -189,7 +189,7 @@ class Locales {
 
 		natcasesort( $locales );
 
-		return $locales;
+		return $with_labels ? $locales : array_keys( $locales );
 	}
 
 
@@ -203,7 +203,7 @@ class Locales {
 	 */
 	public function is_supported_locale( $locale ) {
 
-		return array_key_exists( $locale, self::get_supported_locales() );
+		return in_array( $locale, self::get_supported_locales( false ), false );
 	}
 
 
