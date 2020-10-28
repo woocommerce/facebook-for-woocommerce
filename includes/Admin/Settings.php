@@ -43,11 +43,8 @@ class Settings {
 			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
 			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
 			Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),
+			Settings_Screens\Commerce::ID     => new Settings_Screens\Commerce(),
 		);
-
-		if ( is_release_part_of_commerce_rollout() ) {
-			$this->screens[ Settings_Screens\Commerce::ID ] = new Settings_Screens\Commerce();
-		}
 
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
