@@ -36,6 +36,17 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Advertise', 'facebook-for-woocommerce' );
 		$this->title = __( 'Advertise', 'facebook-for-woocommerce' );
 
+		$this->add_hooks();
+	}
+
+
+	/**
+	 * Adds hooks.
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	private function add_hooks() {
+
 		add_action( 'admin_head', [ $this, 'output_scripts' ] );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
