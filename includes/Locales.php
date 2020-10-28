@@ -20,6 +20,10 @@ defined( 'ABSPATH' ) or exit;
 class Locales {
 
 
+	/** @var string default locale */
+	const DEFAULT_LOCALE = 'en_US';
+
+
 	/** @var string[] an array of supported locale identifiers */
 	private static $supported_locales = [
 		'af_ZA',
