@@ -2,6 +2,7 @@
 
 2020.nn.nn - version 2.1.2-dev.1
  * Fix - Trigger a pixel Search event for product search request with a single result (works for logged in users or visitors with an active WooCommerce session)
+ * Fix - Prevent a JavaScript error on the Add New Product page when Facebook for WooCommerce is not connected to Facebook
 
 2020.10.27 - version 2.1.1
  * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
