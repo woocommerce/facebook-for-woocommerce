@@ -31,6 +31,10 @@ class Admin {
 	/** @var string the "sync disabled" sync mode slug */
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
+
+	/** @var \Admin\Orders the orders admin handler */
+	protected $orders;
+
 	/** @var \Admin\Product_Categories the product category admin handler */
 	protected $product_categories;
 
@@ -52,9 +56,11 @@ class Admin {
 			return;
 		}
 
+		require_once __DIR__ . '/Admin/Orders.php';
 		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
 
+		$this->orders             = new Admin\Orders();
 		$this->product_categories = new Admin\Product_Categories();
 
 		// add a modal in admin product pages
@@ -246,6 +252,19 @@ class Admin {
 		<?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the orders admin handler instance.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
+	 */
+	public function get_orders_handler() {
+
+		return $this->orders;
 	}
 
 
