@@ -60,6 +60,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
 		$order = new \WC_Order();
+		$order->set_created_via( 'facebook' );
 		$order->save();
 
 		$refund = new \WC_Order_Refund();
