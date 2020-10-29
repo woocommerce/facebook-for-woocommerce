@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.1
-Stable tag: 2.1.2
+Stable tag: 2.1.3-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2020.nn.nn - version 2.1.3-dev.1 =
 
 = 2020.10.28 - version 2.1.2 =
  * Tweak - Default variation selection will be synced to Facebook if the default product variation is already synced
