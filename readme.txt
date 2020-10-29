@@ -40,7 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.10.29 - version 2.1.3 =
- * Fix - Prevent JavaScript error triggered while trying to refund orders
+ * Fix - Prevent error triggered while trying to refund orders
 
 = 2020.10.28 - version 2.1.2 =
  * Tweak - Default variation selection will be synced to Facebook if the default product variation is already synced
