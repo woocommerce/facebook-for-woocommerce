@@ -10,10 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Advertise;
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Connection;
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger;
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
@@ -95,16 +92,16 @@ class Settings {
 
 			if ( ! empty( $_GET['tab'] ) ) {
 				switch ( $_GET['tab'] ) {
-					case Connection::ID :
+					case Settings_Screens\Connection::ID :
 						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
 					break;
-					case Messenger::ID :
+					case Settings_Screens\Messenger::ID :
 						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
 					break;
-					case Product_Sync::ID :
+					case Settings_Screens\Product_Sync::ID :
 						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
 					break;
-					case Advertise::ID :
+					case Settings_Screens\Advertise::ID :
 						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
 					break;
 				}
