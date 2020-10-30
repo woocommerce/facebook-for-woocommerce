@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Advertise;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Connection;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
@@ -102,6 +103,9 @@ class Settings {
 					break;
 					case Product_Sync::ID :
 						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
+					break;
+					case Advertise::ID :
+						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
 					break;
 				}
 			}
