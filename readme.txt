@@ -40,7 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.2.0-dev.1 =
- * Feature - Add an Advertise tab in the Settings page to manage Facebook ads from within WooCommerce
+ * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
  * Tweak - Move the Facebook settings page into the Marketing menu item (WC 4.0+ and above)
 
 = 2020.10.28 - version 2.1.2 =
