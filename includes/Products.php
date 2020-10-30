@@ -1112,8 +1112,16 @@ class Products {
 		if ( empty( $value ) ) {
 			// Check normal product attributes
 			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
-				if ( strtolower( $attribute->get_name() ) === $key ) {
-					$value = $product->get_attribute( $slug );
+				if ( $product->is_type( 'variation' ) ) {
+					$attr_name = $slug;
+					$attr_val  = $attribute;
+				} else {
+					$attr_name = $attribute->get_name();
+					$attr_val  = $product->get_attribute( $slug );
+				}
+
+				if ( strtolower( $attr_name ) === $key ) {
+					$value = $attr_val;
 					break;
 				}
 			}
