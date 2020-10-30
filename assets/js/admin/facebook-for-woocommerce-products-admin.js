@@ -169,7 +169,7 @@ jQuery( document ).ready( function( $ ) {
 
 			$container.find( '#product-not-ready-notice, #variable-product-not-ready-notice' ).hide();
 
-			if ( $( 'select#product-type' ).val().match( /variable/ ) && ! isSyncEnabledForVariableProduct() ) {
+			if ( isVariableProduct() && ! isSyncEnabledForVariableProduct() ) {
 				$container.find( '#variable-product-not-ready-notice' ).show();
 			} else if ( ! enabled ) {
 				$container.find( '#product-not-ready-notice' ).show();
@@ -211,7 +211,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isSyncEnabledForProduct() {
 
-			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+			if ( isVariableProduct() ) {
 				return isSyncEnabledForVariableProduct();
 			}
 
@@ -262,12 +262,27 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isPriceDefinedForProduct() {
 
-			if ( $( 'select#product-type' ).val().match( /variable/ ) ) {
+			if ( isVariableProduct() ) {
 				// TODO: determine whether variations enabled for sync have a Regular Price or Facebook Price defined {WV 2020-09-19}
 				return true;
 			}
 
 			return isPriceDefinedForSimpleProduct();
+		}
+
+
+		/**
+		 * Determines whether the product is a Variable product.
+		 *
+		 * @since 2.1.2
+		 *
+		 * @return {boolean}
+		 */
+		function isVariableProduct() {
+
+			var productType = $( 'select#product-type' ).val();
+
+			return !! ( productType && productType.match( /variable/ ) );
 		}
 
 
@@ -280,7 +295,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isPriceDefinedForSimpleProduct() {
 
-			return $( '#_regular_price' ).val().length || $( '#fb_product_price' ).val().length;
+			return !! ( $( '#_regular_price' ).val() || $( '#fb_product_price' ).val() );
 		}
 
 
@@ -308,7 +323,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isStockManagementEnabledForSimpleProduct() {
 
-			return $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val().length;
+			return !! ( $( '#_manage_stock' ).prop( 'checked' ) && $( '#_stock' ).val() );
 		}
 
 
