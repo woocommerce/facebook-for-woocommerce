@@ -134,7 +134,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 
 	/*
-	 * Convert the given timezone string to a name if needed.
+	 * Converts the given timezone string to a name if needed.
 	 *
 	 * @since 2.2.0-dev.1
 	 *
