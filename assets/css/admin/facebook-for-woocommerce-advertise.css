@@ -1,9 +1,3 @@
-.fb-lwi-ads-creation,
-.fb-lwi-ads-insights {
-	margin-bottom: 0;
-	width: 0;
-}
-
 .fb-lwi-ads-creation.fb_iframe_widget,
 .fb-lwi-ads-insights.fb_iframe_widget {
 	background: #FFF;
@@ -14,6 +8,13 @@
 	width: 1000px;
 }
 
+/** when the remote content of the LWI Ads widget isn't ready yet, the div doesn't have the .fb_iframe_widget class yet, so we could use this difference to improve the UX during the loading state */
+.fb-lwi-ads-creation,
+.fb-lwi-ads-insights {
+	margin-bottom: 0;
+	width: 0;
+}
+/** similarly, we can display some text message, which would then persist if the widget fails to load */
 .fb-lwi-ads-creation::after {
 	display: block;
 	content: attr(data-title);
