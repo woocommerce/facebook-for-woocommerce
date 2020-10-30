@@ -1,8 +1,27 @@
 .fb-lwi-ads-creation,
 .fb-lwi-ads-insights {
+	margin-bottom: 0;
+	width: 0;
+}
+
+.fb-lwi-ads-creation.fb_iframe_widget,
+.fb-lwi-ads-insights.fb_iframe_widget {
 	background: #FFF;
 	box-shadow: 0 0 3px rgba( 0, 0, 0, 0.2 );
 	color: #050505;
+	display: block;
 	margin-bottom: 20px;
 	width: 1000px;
+}
+
+.fb-lwi-ads-creation::after {
+	display: block;
+	content: attr(data-title);
+	width: 1000px;
+}
+
+.fb-lwi-ads-creation.fb_iframe_widget:after {
+	content: none;
+	display: none;
+	width: 0;
 }
