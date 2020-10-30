@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.10.29 - version 2.1.3
+ * Fix - Prevent error triggered while trying to refund orders
+
 2020.10.28 - version 2.1.2
  * Tweak - Default variation selection will be synced to Facebook if the default product variation is already synced
  * Fix - Trigger a pixel Search event for product search requests with a single result (works for logged in users or visitors with an active WooCommerce session)

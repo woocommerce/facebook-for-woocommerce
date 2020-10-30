@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.1.2\n"
+"Project-Id-Version: Facebook for WooCommerce 2.1.3\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-10-28 13:28:32+00:00\n"
+"POT-Creation-Date: 2020-10-29 16:47:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -201,7 +201,7 @@ msgid "Go to Settings"
 msgstr ""
 
 #: includes/AJAX.php:337 includes/AJAX.php:406 includes/AJAX.php:470
-#: includes/Admin/Orders.php:260 includes/Admin/Product_Categories.php:118
+#: includes/Admin/Product_Categories.php:118
 #: includes/Admin/Settings_Screens/Product_Sync.php:144
 msgid "Cancel"
 msgstr ""
@@ -242,95 +242,6 @@ msgstr ""
 
 #: includes/Admin/Enhanced_Catalog_Attribute_Fields.php:104
 msgid "Show advanced options"
-msgstr ""
-
-#: includes/Admin/Orders.php:150
-msgid "An unknown error occurred."
-msgstr ""
-
-#: includes/Admin/Orders.php:151
-msgid "Tracking Number is missing."
-msgstr ""
-
-#: includes/Admin/Orders.php:152
-msgid "Refund reason:"
-msgstr ""
-
-#: includes/Admin/Orders.php:153
-msgid "Choose the reason for refunding this order."
-msgstr ""
-
-#: includes/Admin/Orders.php:154
-msgid "Refund description (optional):"
-msgstr ""
-
-#: includes/Admin/Orders.php:155
-msgid "Note: the refund description will be visible by the customer."
-msgstr ""
-
-#: includes/Admin/Orders.php:182
-#. translators: Placeholders: %1$s - HTML <strong> tag, %2$s - HTML </strong>
-#. tag
-msgid ""
-"This order is currently being held by Instagram and cannot be edited. Once "
-"released by Instagram, it will move to %1$sProcessing%2$s or "
-"%1$sCancelled%2$s status."
-msgstr ""
-
-#: includes/Admin/Orders.php:281
-msgid "Select the carrier and tracking number for this order:"
-msgstr ""
-
-#: includes/Admin/Orders.php:285
-msgid "Carrier"
-msgstr ""
-
-#: includes/Admin/Orders.php:291
-msgid "Tracking number"
-msgstr ""
-
-#: includes/Admin/Orders.php:309
-msgid "Submit order"
-msgstr ""
-
-#: includes/Admin/Orders.php:325
-msgid "Select a reason for refunding this order:"
-msgstr ""
-
-#: includes/Admin/Orders.php:343
-msgid "Submit refund"
-msgstr ""
-
-#: includes/Admin/Orders.php:359
-msgid "Select a reason for cancelling this order:"
-msgstr ""
-
-#: includes/Admin/Orders.php:381
-msgid "Submit cancellation"
-msgstr ""
-
-#: includes/Admin/Orders.php:400
-msgid "Customer request"
-msgstr ""
-
-#: includes/Admin/Orders.php:401
-msgid "Damaged product"
-msgstr ""
-
-#: includes/Admin/Orders.php:402
-msgid "Product not as described"
-msgstr ""
-
-#: includes/Admin/Orders.php:403
-msgid "Quality issue"
-msgstr ""
-
-#: includes/Admin/Orders.php:404
-msgid "Wrong item"
-msgstr ""
-
-#: includes/Admin/Orders.php:405 includes/Commerce/Orders.php:843
-msgid "Other"
 msgstr ""
 
 #: includes/Admin/Product_Categories.php:99
@@ -677,41 +588,41 @@ msgstr ""
 msgid "Please %1$sconnect to Facebook%2$s to enable and manage product sync."
 msgstr ""
 
-#: includes/Admin.php:150
+#: includes/Admin.php:144
 msgid ""
 "Please enter a Google product category and at least one sub-category to "
 "sell this product on Instagram."
 msgstr ""
 
-#: includes/Admin.php:172
+#: includes/Admin.php:166
 msgid "Search main categories..."
 msgstr ""
 
-#: includes/Admin.php:173
+#: includes/Admin.php:167
 msgid "Choose a main category"
 msgstr ""
 
-#: includes/Admin.php:174
+#: includes/Admin.php:168
 msgid "Choose a category"
 msgstr ""
 
-#: includes/Admin.php:213
+#: includes/Admin.php:207
 msgid ""
 "To sell this product on Instagram, please ensure it meets the following "
 "requirements:"
 msgstr ""
 
-#: includes/Admin.php:216
+#: includes/Admin.php:210
 msgid "Has a price defined"
 msgstr ""
 
-#: includes/Admin.php:219
+#: includes/Admin.php:213
 #. translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s -
 #. </strong> closing HTML tag
 msgid "Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab"
 msgstr ""
 
-#: includes/Admin.php:225
+#: includes/Admin.php:219
 #. translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s -
 #. </strong> closing HTML tag
 msgid ""
@@ -719,40 +630,40 @@ msgid ""
 "and hide\""
 msgstr ""
 
-#: includes/Admin.php:251
+#: includes/Admin.php:245
 msgid "Close"
 msgstr ""
 
-#: includes/Admin.php:296 includes/Admin.php:1140 includes/Admin.php:1275
+#: includes/Admin.php:277 includes/Admin.php:1121 includes/Admin.php:1256
 msgid "Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:323 includes/Admin.php:355
+#: includes/Admin.php:304 includes/Admin.php:336
 msgid "Sync and show"
 msgstr ""
 
-#: includes/Admin.php:325 includes/Admin.php:356
+#: includes/Admin.php:306 includes/Admin.php:337
 msgid "Sync and hide"
 msgstr ""
 
-#: includes/Admin.php:330 includes/Admin.php:357 includes/Admin.php:1144
-#: includes/Admin.php:1279
+#: includes/Admin.php:311 includes/Admin.php:338 includes/Admin.php:1125
+#: includes/Admin.php:1260
 msgid "Do not sync"
 msgstr ""
 
-#: includes/Admin.php:354
+#: includes/Admin.php:335
 msgid "Filter by Facebook sync setting"
 msgstr ""
 
-#: includes/Admin.php:767
+#: includes/Admin.php:748
 msgid "Include in Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:768
+#: includes/Admin.php:749
 msgid "Exclude from Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:961
+#: includes/Admin.php:942
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - <a> tag
 msgid ""
@@ -766,11 +677,11 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:968
+#: includes/Admin.php:949
 msgid "Don't show this notice again"
 msgstr ""
 
-#: includes/Admin.php:1002
+#: includes/Admin.php:983
 #. translators: Placeholders: %1$s - number of affected products, %2$s opening
 #. HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag,
 #. %5$s - closing HTML </a> tag
@@ -787,7 +698,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:1068
+#: includes/Admin.php:1049
 #. translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing
 #. HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a>
 #. tag
@@ -797,69 +708,69 @@ msgid ""
 "your Facebook catalog. You may still advertise Virtual products on Facebook."
 msgstr ""
 
-#: includes/Admin.php:1142 includes/Admin.php:1277
+#: includes/Admin.php:1123 includes/Admin.php:1258
 msgid "Sync and show in catalog"
 msgstr ""
 
-#: includes/Admin.php:1143 includes/Admin.php:1278
+#: includes/Admin.php:1124 includes/Admin.php:1259
 msgid "Sync and hide in catalog"
 msgstr ""
 
-#: includes/Admin.php:1153 includes/Admin.php:1291
+#: includes/Admin.php:1134 includes/Admin.php:1272
 msgid "Facebook Description"
 msgstr ""
 
-#: includes/Admin.php:1155 includes/Admin.php:1293
+#: includes/Admin.php:1136 includes/Admin.php:1274
 msgid ""
 "Custom (plain-text only) description for product on Facebook. If blank, "
 "product description will be used. If product description is blank, "
 "shortname will be used."
 msgstr ""
 
-#: includes/Admin.php:1166 includes/Admin.php:1306
+#: includes/Admin.php:1147 includes/Admin.php:1287
 msgid "Facebook Product Image"
 msgstr ""
 
-#: includes/Admin.php:1168 includes/Admin.php:1308
+#: includes/Admin.php:1149 includes/Admin.php:1289
 msgid ""
 "Choose the product image that should be synced to the Facebook catalog for "
 "this product. If using a custom image, please enter an absolute URL (e.g. "
 "https://domain.com/image.jpg)."
 msgstr ""
 
-#: includes/Admin.php:1170
+#: includes/Admin.php:1151
 msgid "Use WooCommerce image"
 msgstr ""
 
-#: includes/Admin.php:1171 includes/Admin.php:1312
+#: includes/Admin.php:1152 includes/Admin.php:1293
 msgid "Use custom image"
 msgstr ""
 
-#: includes/Admin.php:1182 includes/Admin.php:1324
+#: includes/Admin.php:1163 includes/Admin.php:1305
 msgid "Custom Image URL"
 msgstr ""
 
-#: includes/Admin.php:1193 includes/Admin.php:1337
+#: includes/Admin.php:1174 includes/Admin.php:1318
 #. translators: Placeholders %1$s - WC currency symbol
 msgid "Facebook Price (%1$s)"
 msgstr ""
 
-#: includes/Admin.php:1197 includes/Admin.php:1341
+#: includes/Admin.php:1178 includes/Admin.php:1322
 msgid ""
 "Custom price for product on Facebook. Please enter in monetary decimal (.) "
 "format without thousand separators and currency symbols. If blank, product "
 "price will be used."
 msgstr ""
 
-#: includes/Admin.php:1310
+#: includes/Admin.php:1291
 msgid "Use variation image"
 msgstr ""
 
-#: includes/Admin.php:1311
+#: includes/Admin.php:1292
 msgid "Use parent image"
 msgstr ""
 
-#: includes/Admin.php:1464
+#: includes/Admin.php:1445
 msgid "Close modal panel"
 msgstr ""
 
@@ -938,6 +849,10 @@ msgstr ""
 
 #: includes/Commerce/Orders.php:842
 msgid "Suspicious order"
+msgstr ""
+
+#: includes/Commerce/Orders.php:843
+msgid "Other"
 msgstr ""
 
 #: includes/Handlers/Connection.php:275
