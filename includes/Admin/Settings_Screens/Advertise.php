@@ -215,18 +215,8 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 			class="fb-lwi-ads-creation"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
 			data-fbe-scopes="ads_management"
-			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/">
-			<p>
-				<?php
-					printf(
-						/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-						esc_html__( 'If you are connected to Facebook but cannot create ads here, please %1$scontact Facebook support%2$s.', 'facebook-for-woocommerce' ),
-						'<a href="https://www.facebook.com/help/contact/552096935652452">',
-						'</a>'
-					);
-				?>
-			</p>
-		</div>
+			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"
+			data-title="<?php esc_attr_e( 'If you are connected to Facebook but cannot display ads, please contact Facebook support.', 'facebook-for-woocommerce' ); ?>"></div>
 		<div
 			class="fb-lwi-ads-insights"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
