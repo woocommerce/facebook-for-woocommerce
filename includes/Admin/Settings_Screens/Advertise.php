@@ -13,6 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Locale;
 use SkyVerge\WooCommerce\PluginFramework\v5_9_0;
 
 /**
@@ -123,7 +124,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 			],
 			'setup'           => [
 				'external_business_id' => $connection_handler->get_external_business_id(),
-				'timezone'             => $this->maybe_convert_timezone( wc_timezone_string(), wc_timezone_offset() ),
+				'timezone'             => $this->parse_timezone( wc_timezone_string(), wc_timezone_offset() ),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 			],
@@ -132,29 +133,28 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	}
 
 
-	/**
-	 * Convert the given timezone string to a name if needed
+	/*
+	 * Convert the given timezone string to a name if needed.
 	 *
 	 * @since 2.2.0-dev.1
 	 *
 	 * @param string $timezone_string Timezone string
 	 * @param int|float $timezone_offset Timezone offset
-	 * @return string
+	 * @return string timezone string
 	 */
-	private function maybe_convert_timezone( $timezone_string, $timezone_offset = 0 ) {
+	private function parse_timezone( $timezone_string, $timezone_offset = 0 ) {
 
 		// no need to look for the equivalent timezone
 		if ( false !== strpos( $timezone_string, '/' ) ) {
 			return $timezone_string;
 		}
 
-		// Look up the timezones list based on the given offset
+		// look up the timezones list based on the given offset
 		$timezones_list = timezone_abbreviations_list();
 
 		foreach ( $timezones_list as $timezone ) {
-
 			foreach ( $timezone as $city ) {
-				if ( (int) $city['offset'] === (int) $timezone_offset ) {
+				if ( isset( $city['offset'], $city['timezone_id'] ) && (int) $city['offset'] === (int) $timezone_offset ) {
 					return $city['timezone_id'];
 				}
 			}
@@ -162,6 +162,25 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 
 		// fallback to default timezone
 		return 'Etc/GMT';
+	}
+
+
+	/**
+	 * Gets the LWI Ads SDK URL.
+	 *
+	 * @since 2.2.0-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_lwi_ads_sdk_url() {
+
+		$locale = get_user_locale();
+
+		if ( ! Locale::is_supported_locale( $locale ) ) {
+			$locale = Locale::DEFAULT_LOCALE;
+		}
+
+		return "https://connect.facebook.net/{$locale}/sdk.js";
 	}
 
 
@@ -191,7 +210,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$fbe_extras = wp_json_encode( $this->get_lwi_ads_configuration_data() );
 
 		?>
-		<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+		<script async defer src="<?php echo esc_url( $this->get_lwi_ads_sdk_url() ); ?>"></script>
 		<div
 			class="fb-lwi-ads-creation"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
