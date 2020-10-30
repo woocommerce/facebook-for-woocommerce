@@ -104,7 +104,8 @@ abstract class Abstract_Settings_Screen {
 			return false;
 		}
 
-		$tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
+		// assume we are on the Connection tab by default because the link under Marketing doesn't include the tab query arg
+		$tab = Framework\SV_WC_Helper::get_requested_value( 'tab', 'connection' );
 
 		return ! empty( $tab ) && $tab === $this->get_id();
 	}
