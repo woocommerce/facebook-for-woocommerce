@@ -46,7 +46,6 @@ class ConnectionSettingsCest {
 
 		$I->amOnAdminPage('admin.php?page=wc-facebook' );
 
-		$I->canSee( 'Create Ad', '.button' );
 		$I->canSee( 'Manage Connection', '.button' );
 		$I->canSee( 'Uninstall', 'a.uninstall' );
 

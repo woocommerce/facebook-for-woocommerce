@@ -115,6 +115,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/Locale.php';
 				require_once __DIR__ . '/includes/AJAX.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
@@ -171,6 +172,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 					require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 
