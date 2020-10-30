@@ -41,6 +41,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 2020.nn.nn - version 2.2.0-dev.1 =
 
+= 2020.10.28 - version 2.1.2 =
+ * Tweak - Default variation selection will be synced to Facebook if the default product variation is already synced
+ * Fix - Trigger a pixel Search event for product search requests with a single result (works for logged in users or visitors with an active WooCommerce session)
+ * Fix - Prevent a JavaScript error on the Add New Product page when Facebook for WooCommerce is not connected to Facebook
+
 = 2020.10.27 - version 2.1.1 =
  * Fix - Adjust code syntax that may have issued errors in installations running PHP lower than 7.3
 

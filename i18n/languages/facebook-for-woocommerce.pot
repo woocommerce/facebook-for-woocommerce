@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.1.1\n"
+"Project-Id-Version: Facebook for WooCommerce 2.1.2\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-10-27 11:58:58+00:00\n"
+"POT-Creation-Date: 2020-10-28 13:28:32+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -87,45 +87,45 @@ msgstr ""
 msgid "This product is not yet synced to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:1421
+#: facebook-commerce.php:1423
 msgid "Nothing to update for product group for %1$s"
 msgstr ""
 
-#: facebook-commerce.php:1687
+#: facebook-commerce.php:1761
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API:  %1$s"
 msgstr ""
 
-#: facebook-commerce.php:2024
+#: facebook-commerce.php:2098
 msgid "Your connection has expired."
 msgstr ""
 
-#: facebook-commerce.php:2024
+#: facebook-commerce.php:2098
 msgid ""
 "Please click Manage connection > Advanced Options > Update Token to refresh "
 "your connection to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:2031
+#: facebook-commerce.php:2105
 #. translators: Placeholders %s - error message
 msgid "There was an error trying to sync the products to Facebook. %s"
 msgstr ""
 
-#: facebook-commerce.php:2054 facebook-commerce.php:2227
+#: facebook-commerce.php:2128 facebook-commerce.php:2301
 msgid "Product sync is disabled."
 msgstr ""
 
-#: facebook-commerce.php:2061 facebook-commerce.php:2234
+#: facebook-commerce.php:2135 facebook-commerce.php:2308
 msgid "The plugin is not configured or the Catalog ID is missing."
 msgstr ""
 
-#: facebook-commerce.php:2084
+#: facebook-commerce.php:2158
 msgid ""
 "A product sync is in progress. Please wait until the sync finishes before "
 "starting a new one."
 msgstr ""
 
-#: facebook-commerce.php:2096 facebook-commerce.php:2248
+#: facebook-commerce.php:2170 facebook-commerce.php:2322
 msgid ""
 "We've detected that your Facebook Product Catalog is no longer valid. This "
 "may happen if it was deleted, but could also be a temporary error. If the "
@@ -133,33 +133,33 @@ msgid ""
 "and setup the plugin again."
 msgstr ""
 
-#: facebook-commerce.php:2272
+#: facebook-commerce.php:2346
 msgid "We couldn't create the feed or upload the product information."
 msgstr ""
 
-#: facebook-commerce.php:2740
+#: facebook-commerce.php:2814
 msgid "Hi! We're here to answer any questions you may have."
 msgstr ""
 
-#: facebook-commerce.php:3087
+#: facebook-commerce.php:3161
 msgid "Facebook for WooCommerce error:"
 msgstr ""
 
-#: facebook-commerce.php:3169
+#: facebook-commerce.php:3243
 msgid ""
 "There was an error trying to retrieve information about the Facebook page: "
 "%s"
 msgstr ""
 
-#: facebook-commerce.php:3220
+#: facebook-commerce.php:3294
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
 
-#: facebook-commerce.php:3221
+#: facebook-commerce.php:3295
 msgid "Get started with Instagram Shopping"
 msgstr ""
 
-#: facebook-commerce.php:3456
+#: facebook-commerce.php:3530
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""
