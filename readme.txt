@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2020.nn.nn - version 2.1.4-dev.1
+ * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.
 
 = 2020.10.29 - version 2.1.3 =
  * Fix - Prevent error triggered while trying to refund orders
