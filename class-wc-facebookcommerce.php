@@ -314,6 +314,23 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-error',
 				] );
 			}
+
+			if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
+
+				$this->get_admin_notice_handler()->add_admin_notice(
+					sprintf(
+						/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
+						esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
+						'<a href="' . esc_url( $this->get_settings_url() ) . '">','</a>'
+					),
+					'settings_moved_to_marketing',
+					[
+						'dismissible'             => true,
+						'always_show_on_settings' => false,
+						'notice_class'            => 'notice-info',
+					]
+				);
+			}
 		}
 
 

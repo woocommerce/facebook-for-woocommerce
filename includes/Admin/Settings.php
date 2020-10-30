@@ -10,8 +10,10 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Helper;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Connection;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Messenger;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -57,7 +59,59 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
+		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
+			$root_menu_item = 'woocommerce-marketing';
+		} else {
+			$root_menu_item = 'woocommerce';
+		}
+
+		add_submenu_page(
+			$root_menu_item,
+			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+			__( 'Facebook', 'facebook-for-woocommerce' ),
+			'manage_woocommerce', self::PAGE_ID,
+			[ $this, 'render' ],
+			5
+		);
+
+		$this->connect_to_enhanced_admin();
+	}
+
+
+	/**
+	 * Enables enhanced admin support for the main Facebook settings page.
+	 *
+	 * @since 2.2.0-dev.1
+	 */
+	private function connect_to_enhanced_admin() {
+
+		if ( is_callable( 'wc_admin_connect_page' ) ) {
+
+			$crumbs = [
+				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
+			];
+
+			if ( ! empty( $_GET['tab'] ) ) {
+				switch ( $_GET['tab'] ) {
+					case Connection::ID :
+						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
+					break;
+					case Messenger::ID :
+						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
+					break;
+					case Product_Sync::ID :
+						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
+					break;
+				}
+			}
+
+			wc_admin_connect_page( [
+					'id'        => self::PAGE_ID,
+					'screen_id' => 'marketing_page_wc-facebook',
+					'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+					'title'     => $crumbs
+			] );
+		}
 	}
 
 
@@ -69,7 +123,7 @@ class Settings {
 	public function render() {
 
 		$tabs        = $this->get_tabs();
-		$current_tab = SV_WC_Helper::get_requested_value( 'tab' );
+		$current_tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
 
 		if ( ! $current_tab ) {
 			$current_tab = current( array_keys( $tabs ) );
@@ -113,17 +167,17 @@ class Settings {
 	 */
 	public function save() {
 
-		if ( ! is_admin() || SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
+		if ( ! is_admin() || Framework\SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
 			return;
 		}
 
-		$screen = $this->get_screen( SV_WC_Helper::get_posted_value( 'screen_id' ) );
+		$screen = $this->get_screen( Framework\SV_WC_Helper::get_posted_value( 'screen_id' ) );
 
 		if ( ! $screen ) {
 			return;
 		}
 
-		if ( ! SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
+		if ( ! Framework\SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
 			return;
 		}
 
@@ -139,7 +193,7 @@ class Settings {
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			facebook_for_woocommerce()->get_message_handler()->add_error(
 				sprintf(
