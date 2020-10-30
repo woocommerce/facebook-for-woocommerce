@@ -139,10 +139,9 @@ class Locale {
 	 *
 	 * @since 2.2.0-dev.1
 	 *
-	 * @param bool $with_labels whether to output a list of locale identifiers or an associative array of identifiers and labels
-	 * @return array
+	 * @return array associative array of locale identifiers and language labels
 	 */
-	public static function get_supported_locales( $with_labels = true ) {
+	public static function get_supported_locales() {
 
 		$locales = [];
 
@@ -193,7 +192,7 @@ class Locale {
 
 		natcasesort( $locales );
 
-		return $with_labels ? $locales : array_keys( $locales );
+		return $locales;
 	}
 
 
@@ -207,7 +206,7 @@ class Locale {
 	 */
 	public static function is_supported_locale( $locale ) {
 
-		return in_array( $locale, self::get_supported_locales( false ), false );
+		return array_key_exists( $locale, self::get_supported_locales() );
 	}
 
 
