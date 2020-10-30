@@ -20,7 +20,6 @@
 	content: attr(data-title);
 	width: 1000px;
 }
-
 .fb-lwi-ads-creation.fb_iframe_widget:after {
 	content: none;
 	display: none;
