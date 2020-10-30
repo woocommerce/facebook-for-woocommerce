@@ -13,16 +13,5 @@
 .fb-lwi-ads-creation,
 .fb-lwi-ads-insights {
 	margin-bottom: 0;
-	width: 0;
-}
-/** similarly, we can display some text message, which would then persist if the widget fails to load */
-.fb-lwi-ads-creation::after {
-	display: block;
-	content: attr(data-title);
-	width: 1000px;
-}
-.fb-lwi-ads-creation.fb_iframe_widget:after {
-	content: none;
-	display: none;
-	width: 0;
+	/*width: 0;*/
 }
