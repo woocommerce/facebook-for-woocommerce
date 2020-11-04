@@ -47,8 +47,7 @@ jQuery( document ).ready( function( $ ) {
 
 					if ( response && ! response.success ) {
 
-						// close existing modals
-						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+						closeExistingModal();
 
 						// open new modal, populate template with AJAX response data
 						new $.WCBackboneModal.View( {
@@ -371,6 +370,19 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Store the original value of the given element for later use
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncMode a jQuery element object
+		 */
+		function storeSyncModeOriginalValue( $syncMode ) {
+
+			$syncMode.attr( 'data-original-value', $syncMode.val() );
+		}
+
+
+		/**
 		 * Determines whether we should show the product removed from sync confirm modal
 		 *
 		 * @since 2.1.4-dev.1
@@ -401,20 +413,15 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function showProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
 
-			console.log( 'display modal', $syncModeSelect );
-		}
+			closeExistingModal();
 
-
-		/**
-		 * Store the original value of the given element for later use
-		 *
-		 * @since 2.1.4-dev.1
-		 *
-		 * @param {jQuery} $syncMode a jQuery element object
-		 */
-		function storeSyncModeOriginalValue( $syncMode ) {
-
-			$syncMode.attr( 'data-original-value', $syncMode.val() );
+			new $.WCBackboneModal.View( {
+				target: 'facebook-for-woocommerce-modal',
+				string: {
+					message: facebook_for_woocommerce_products_admin.product_removed_from_sync_confirm_modal_message,
+					buttons: facebook_for_woocommerce_products_admin.product_removed_from_sync_confirm_modal_buttons
+				}
+			} );
 		}
 
 
@@ -537,8 +544,7 @@ jQuery( document ).ready( function( $ ) {
 
 			event.preventDefault();
 
-			// close existing modals
-			$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+			closeExistingModal();
 
 			new $.WCBackboneModal.View( {
 				target: 'facebook-for-woocommerce-modal',
@@ -598,8 +604,7 @@ jQuery( document ).ready( function( $ ) {
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
 					if ( response && ! response.success && syncEnabled ) {
 
-						// close existing modals
-						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+						closeExistingModal();
 
 						// open new modal, populate template with AJAX response data
 						new $.WCBackboneModal.View( {

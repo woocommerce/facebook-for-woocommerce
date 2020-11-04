@@ -297,11 +297,11 @@ class Admin {
 		><?php esc_html_e( 'Remove from sync only', 'facebook-for-woocomerce' ); ?></button>
 
 		<button
-			class="button button-large" data-action="delete"
+			class="button button-large button-delete button-product-removed-from-sync-delete"
 		><?php esc_html_e( 'Remove from sync and delete', 'facebook-for-woocomerce' ); ?></button>
 
 		<button
-			class="button button-large" data-action="cancel"
+			class="button button-large button-product-removed-from-sync-cancel"
 		><?php esc_html_e( 'Cancel', 'facebook-for-woocomerce' ); ?></button>
 		<?php
 
