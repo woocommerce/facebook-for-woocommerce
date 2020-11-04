@@ -142,6 +142,7 @@ class Admin {
 						'product_not_ready_modal_buttons'                 => $this->get_product_not_ready_modal_buttons(),
 						'product_removed_from_sync_confirm_modal_message' => $this->get_product_removed_from_sync_confirm_modal_message(),
 						'product_removed_from_sync_confirm_modal_buttons' => $this->get_product_removed_from_sync_confirm_modal_buttons(),
+						'product_removed_from_sync_field_id'              => '#' . \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
 						'i18n'                                            => [
 							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
 						],
@@ -1242,6 +1243,11 @@ class Admin {
 						'class'       => 'enable-if-sync-enabled',
 					)
 				);
+
+				woocommerce_wp_hidden_input( [
+					'id'    => \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
+					'value' => '',
+				] );
 
 				?>
 			</div>

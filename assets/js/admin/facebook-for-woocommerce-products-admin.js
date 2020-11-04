@@ -447,6 +447,27 @@ jQuery( document ).ready( function( $ ) {
 			} );
 		}
 
+
+		/**
+		 * Fill in product IDs to remove from Sync
+		 *
+		 * @since 2.1.4-dev.1
+		 */
+		function populateRemoveFromSyncProductIDsField() {
+
+			$( facebook_for_woocommerce_products_admin.product_removed_from_sync_field_id ).val( removeFromSyncProductIDs.join( ',' ) );
+
+			// clear out temporarily stored product id if there is one
+			if ( maybeRemoveFromSyncProductID ) {
+
+				removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
+					return value !== maybeRemoveFromSyncProductID;
+				} );
+
+				maybeRemoveFromSyncProductID = null;
+			}
+		}
+
 		let $maybeRemoveFromSyncModeSelect = null;
 		let maybeRemoveFromSyncProductID = null;
 		let removeFromSyncProductIDs = [];
@@ -458,26 +479,20 @@ jQuery( document ).ready( function( $ ) {
 				closeExistingModal();
 
 				removeFromSyncProductIDs.push( maybeRemoveFromSyncProductID );
-				maybeRemoveFromSyncProductID = null;
+
+				populateRemoveFromSyncProductIDsField();
 			}
 		} )
 		.on( 'click', 'button.button-product-removed-from-sync-cancel', function () {
 
 			closeExistingModal();
 
-			if ( maybeRemoveFromSyncProductID ) {
-
-				removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
-					return value !== maybeRemoveFromSyncProductID;
-				} );
-
-				maybeRemoveFromSyncProductID = null;
-			}
-
 			if ( $maybeRemoveFromSyncModeSelect ) {
 				revertSyncModeToOriginalValue( $maybeRemoveFromSyncModeSelect );
 				$maybeRemoveFromSyncModeSelect = null;
 			}
+
+			populateRemoveFromSyncProductIDsField();
 		} );
 
 		// handle change events for the Sell on Instagram checkbox field
