@@ -248,7 +248,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isSyncEnabledForSimpleProduct() {
 
-			return syncModeSelect.val() !== 'sync_disabled';
+			return simpleProductSyncModeSelect.val() !== 'sync_disabled';
 		}
 
 
@@ -374,11 +374,24 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * @since 2.1.4-dev.1
 		 *
-		 * @param {jQuery} $syncMode a jQuery element object
+		 * @param {jQuery} $syncModeSelect a jQuery element object
 		 */
-		function storeSyncModeOriginalValue( $syncMode ) {
+		function storeSyncModeOriginalValue( $syncModeSelect ) {
 
-			$syncMode.attr( 'data-original-value', $syncMode.val() );
+			$syncModeSelect.attr( 'data-original-value', $syncModeSelect.val() );
+		}
+
+
+		/**
+		 * Revert to the original value of the given element
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function revertSyncModeToOriginalValue( $syncModeSelect ) {
+
+			$syncModeSelect.val( $syncModeSelect.attr( 'data-original-value') );
 		}
 
 
@@ -387,12 +400,12 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * @since 2.1.4-dev.1
 		 *
-		 * @param {jQuery} $syncModes a jQuery element(s) object
+		 * @param {jQuery} $syncModeSelect a jQuery element(s) object
 		 * @return {boolean}
 		 */
-		function shouldShowProductRemovedFromSyncConfirmModal( $syncModes ) {
+		function shouldShowProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
 
-			let syncValuesStatus = $syncModes.map( function ( index, selectElement ) {
+			let syncValuesStatus = $syncModeSelect.map( function ( index, selectElement ) {
 
 				let $syncMode     = $( selectElement );
 				let syncModeValue = $syncMode.val();
@@ -415,6 +428,16 @@ jQuery( document ).ready( function( $ ) {
 
 			closeExistingModal();
 
+			$maybeRemoveFromSyncModeSelect = $syncModeSelect;
+
+			if ( simpleProductSyncModeSelect === $syncModeSelect ) {
+				// simple product
+				maybeRemoveFromSyncProductID = $( 'input#post_ID' ).val();
+			} else {
+				// variable product
+				maybeRemoveFromSyncProductID = $syncModeSelect.closest( '.woocommerce_variation' ).find( 'input[name^=variable_post_id]' ).val();
+			}
+
 			new $.WCBackboneModal.View( {
 				target: 'facebook-for-woocommerce-modal',
 				string: {
@@ -424,6 +447,38 @@ jQuery( document ).ready( function( $ ) {
 			} );
 		}
 
+		let $maybeRemoveFromSyncModeSelect = null;
+		let maybeRemoveFromSyncProductID = null;
+		let removeFromSyncProductIDs = [];
+
+		$( document.body ).on( 'click', 'button.button-product-removed-from-sync-delete', function () {
+
+			if ( maybeRemoveFromSyncProductID ) {
+
+				closeExistingModal();
+
+				removeFromSyncProductIDs.push( maybeRemoveFromSyncProductID );
+				maybeRemoveFromSyncProductID = null;
+			}
+		} )
+		.on( 'click', 'button.button-product-removed-from-sync-cancel', function () {
+
+			closeExistingModal();
+
+			if ( maybeRemoveFromSyncProductID ) {
+
+				removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
+					return value !== maybeRemoveFromSyncProductID;
+				} );
+
+				maybeRemoveFromSyncProductID = null;
+			}
+
+			if ( $maybeRemoveFromSyncModeSelect ) {
+				revertSyncModeToOriginalValue( $maybeRemoveFromSyncModeSelect );
+				$maybeRemoveFromSyncModeSelect = null;
+			}
+		} );
 
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
@@ -448,29 +503,29 @@ jQuery( document ).ready( function( $ ) {
 		} ).trigger( 'change' );
 
 		// toggle Facebook settings fields for simple products
-		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
-		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
+		const simpleProductSyncModeSelect   = $( '#wc_facebook_sync_mode' );
+		const facebookSettingsPanel = simpleProductSyncModeSelect.closest( '.woocommerce_options_panel' );
 
 		// store sync mode original value for later use
-		storeSyncModeOriginalValue( syncModeSelect );
+		storeSyncModeOriginalValue( simpleProductSyncModeSelect );
 
-		syncModeSelect.on( 'change', function() {
+		simpleProductSyncModeSelect.on( 'change', function() {
 
-			let syncEnabled = syncModeSelect.val() !== 'sync_disabled';
+			let syncEnabled = simpleProductSyncModeSelect.val() !== 'sync_disabled';
 
 			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
 			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
 
-			syncModeSelect.prop( 'original', syncModeSelect.val() );
+			simpleProductSyncModeSelect.prop( 'original', simpleProductSyncModeSelect.val() );
 
-			if ( shouldShowProductRemovedFromSyncConfirmModal( syncModeSelect ) ) {
-				showProductRemovedFromSyncConfirmModal( syncModeSelect );
+			if ( shouldShowProductRemovedFromSyncConfirmModal( simpleProductSyncModeSelect ) ) {
+				showProductRemovedFromSyncConfirmModal( simpleProductSyncModeSelect );
 			}
 
 		} ).trigger( 'change' );
 
 		$( '#_virtual' ).on( 'change', function () {
-			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
+			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), simpleProductSyncModeSelect );
 		} ).trigger( 'change' );
 
 		const $productData = $( '#woocommerce-product-data' );
@@ -577,7 +632,7 @@ jQuery( document ).ready( function( $ ) {
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				syncEnabled      = syncModeSelect.val() !== 'sync_disabled',
+				syncEnabled      = simpleProductSyncModeSelect.val() !== 'sync_disabled',
 				varSyncEnabled   = isSyncEnabledForVariableProduct();
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
