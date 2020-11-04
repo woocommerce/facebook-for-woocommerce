@@ -1087,6 +1087,10 @@ class Products {
 	 * @return \WC_Product_Attribute[]
 	 */
 	public static function get_available_product_attributes( \WC_Product $product ) {
+		if ( $product->is_type( 'variation' ) ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+			return $parent_product instanceof \WC_Product ? self::get_available_product_attributes( $product ) : array();
+		}
 
 		return $product->get_attributes();
 	}
@@ -1111,7 +1115,7 @@ class Products {
 
 		if ( empty( $value ) ) {
 			// Check normal product attributes
-			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+			foreach ( $product->get_attributes() as $slug => $attribute ) {
 				if ( $product->is_type( 'variation' ) ) {
 					$attr_name = $slug;
 					$attr_val  = $attribute;
