@@ -128,22 +128,24 @@ class Admin {
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
 					'facebook_for_woocommerce_products_admin',
-					array(
-						'ajax_url'                                   => admin_url( 'admin-ajax.php' ),
-						'enhanced_attribute_optional_selector'       => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
-						'enhanced_attribute_page_type_edit_category' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
-						'enhanced_attribute_page_type_add_category'  => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
-						'enhanced_attribute_page_type_edit_product'  => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
-						'is_sync_enabled_for_product'                => $this->is_sync_enabled_for_current_product(),
-						'set_product_visibility_nonce'               => wp_create_nonce( 'set-products-visibility' ),
-						'set_product_sync_prompt_nonce'              => wp_create_nonce( 'set-product-sync-prompt' ),
-						'set_product_sync_bulk_action_prompt_nonce'  => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
-						'product_not_ready_modal_message'            => $this->get_product_not_ready_modal_message(),
-						'product_not_ready_modal_buttons'            => $this->get_product_not_ready_modal_buttons(),
-						'i18n'                                       => array(
+					[
+						'ajax_url'                                        => admin_url( 'admin-ajax.php' ),
+						'enhanced_attribute_optional_selector'            => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
+						'enhanced_attribute_page_type_edit_category'      => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
+						'enhanced_attribute_page_type_add_category'       => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
+						'enhanced_attribute_page_type_edit_product'       => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+						'is_sync_enabled_for_product'                     => $this->is_sync_enabled_for_current_product(),
+						'set_product_visibility_nonce'                    => wp_create_nonce( 'set-products-visibility' ),
+						'set_product_sync_prompt_nonce'                   => wp_create_nonce( 'set-product-sync-prompt' ),
+						'set_product_sync_bulk_action_prompt_nonce'       => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+						'product_not_ready_modal_message'                 => $this->get_product_not_ready_modal_message(),
+						'product_not_ready_modal_buttons'                 => $this->get_product_not_ready_modal_buttons(),
+						'product_removed_from_sync_confirm_modal_message' => $this->get_product_removed_from_sync_confirm_modal_message(),
+						'product_removed_from_sync_confirm_modal_buttons' => $this->get_product_removed_from_sync_confirm_modal_buttons(),
+						'i18n'                                            => [
 							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
-						),
-					)
+						],
+					]
 				);
 
 			}//end if
@@ -243,6 +245,64 @@ class Admin {
 			id="btn-ok"
 			class="button button-large button-primary"
 		><?php esc_html_e( 'Close', 'facebook-for-woocomerce' ); ?></button>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the message used in the product removed from sync confirm modal.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.4-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_removed_from_sync_confirm_modal_message() {
+
+		ob_start();
+
+		?>
+		<p><?php printf(
+			/* translators: Placeholders: %1$s - opening <a> link tag, %2$s - closing </a> link tag */
+				__( 'You\'re removing a product from the Facebook sync that is currently listed in your %1$sFacebook catalog%2$s. Would you like to delete the product from the Facebook catalog as well?', 'facebook-for-woocommerce' ),
+				'<a href="https://www.facebook.com/products" target="_blank">',
+				'</a>'
+			); ?></p>
+		<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the markup for the buttons used in the product removed from sync confirm modal.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.4-dev.1
+	 *
+	 * @return string
+	 */
+	private function get_product_removed_from_sync_confirm_modal_buttons() {
+
+		ob_start();
+
+		?>
+		<button
+			id="btn-ok"
+			class="button button-large button-primary"
+		><?php esc_html_e( 'Remove from sync only', 'facebook-for-woocomerce' ); ?></button>
+
+		<button
+			class="button button-large" data-action="delete"
+		><?php esc_html_e( 'Remove from sync and delete', 'facebook-for-woocomerce' ); ?></button>
+
+		<button
+			class="button button-large" data-action="cancel"
+		><?php esc_html_e( 'Cancel', 'facebook-for-woocomerce' ); ?></button>
 		<?php
 
 		return ob_get_clean();
