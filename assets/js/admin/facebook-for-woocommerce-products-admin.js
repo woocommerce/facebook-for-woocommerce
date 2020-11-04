@@ -249,7 +249,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isSyncEnabledForSimpleProduct() {
 
-			return $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled';
+			return syncModeSelect.val() !== 'sync_disabled';
 		}
 
 
@@ -370,6 +370,35 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 
+		/**
+		 * Determines whether we should show the product removed from sync confirm modal
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncMode a jQuery element object
+		 * @return {boolean}
+		 */
+		function shouldShowProductRemovedFromSyncConfirmModal( $syncMode ) {
+
+			let syncModeValue = $syncMode.val();
+
+			return 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
+		}
+
+
+		/**
+		 * Store the original value of the given element for later use
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncMode a jQuery element object
+		 */
+		function storeSyncModeOriginalValue( $syncMode ) {
+
+			$syncMode.attr( 'data-original-value', $syncMode.val() );
+		}
+
+
 		// handle change events for the Sell on Instagram checkbox field
 		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
 
@@ -396,6 +425,9 @@ jQuery( document ).ready( function( $ ) {
 		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
 		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
 
+		// store sync mode original value for later use
+		storeSyncModeOriginalValue( syncModeSelect );
+
 		syncModeSelect.on( 'change', function() {
 
 			let syncEnabled = $( this ).val() !== 'sync_disabled';
@@ -411,8 +443,10 @@ jQuery( document ).ready( function( $ ) {
 			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
 		} ).trigger( 'change' );
 
+		const $productData = $( '#woocommerce-product-data' );
+
 		// check whether the product meets the requirements for Commerce
-		$( '#woocommerce-product-data' ).on(
+		$productData.on(
 			'change',
 			'#_regular_price, #_manage_stock, #_stock, #wc_facebook_sync_mode, #fb_product_price',
 			function( event ) {
@@ -433,7 +467,7 @@ jQuery( document ).ready( function( $ ) {
 			$( this ).prop( 'original', $( this ).val() );
 		} );
 
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
+		$productData.on( 'woocommerce_variations_loaded', function () {
 
 			$( '.js-variable-fb-sync-toggle' ).each( function () {
 				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
@@ -449,7 +483,7 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		// show/hide Custom Image URL setting
-		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
+		$productData.on( 'change', '.js-fb-product-image-source', function() {
 
 			let $container  = $( this ).closest( '.woocommerce_options_panel, .wc-metabox-content' );
 			let imageSource = $( this ).val();
@@ -461,7 +495,7 @@ jQuery( document ).ready( function( $ ) {
 		$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 
 		// trigger settings fields modifiers when variations are loaded
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+		$productData.on( 'woocommerce_variations_loaded', function() {
 			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
 			$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
@@ -506,8 +540,14 @@ jQuery( document ).ready( function( $ ) {
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				syncEnabled      = $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
+				syncEnabled      = syncModeSelect.val() !== 'sync_disabled',
 				varSyncEnabled   = isSyncEnabledForVariableProduct();
+
+			if ( shouldShowProductRemovedFromSyncConfirmModal( syncModeSelect ) ) {
+
+				console.log( 'display modal' );
+				return false;
+			}
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
