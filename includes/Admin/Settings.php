@@ -58,10 +58,18 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
-			$root_menu_item = 'woocommerce-marketing';
-		} else {
-			$root_menu_item = 'woocommerce';
+		$root_menu_item       = 'woocommerce';
+		$is_marketing_enabled = false;
+
+		if ( function_exists( 'wc_admin_url' ) || Framework\SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
+
+			$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+			                        && \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+
+			if ( $is_marketing_enabled ) {
+
+				$root_menu_item = 'woocommerce-marketing';
+			}
 		}
 
 		add_submenu_page(
@@ -73,7 +81,7 @@ class Settings {
 			5
 		);
 
-		$this->connect_to_enhanced_admin();
+		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
 	}
 
 
@@ -81,8 +89,10 @@ class Settings {
 	 * Enables enhanced admin support for the main Facebook settings page.
 	 *
 	 * @since 2.2.0-dev.1
+	 *
+	 * @param string $screen_id the ID to connect to
 	 */
-	private function connect_to_enhanced_admin() {
+	private function connect_to_enhanced_admin( $screen_id ) {
 
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
 
@@ -108,10 +118,10 @@ class Settings {
 			}
 
 			wc_admin_connect_page( [
-					'id'        => self::PAGE_ID,
-					'screen_id' => 'marketing_page_wc-facebook',
-					'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
-					'title'     => $crumbs
+				'id'        => self::PAGE_ID,
+				'screen_id' => $screen_id,
+				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+				'title'     => $crumbs
 			] );
 		}
 	}

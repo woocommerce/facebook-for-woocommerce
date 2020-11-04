@@ -317,21 +317,27 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				] );
 			}
 
-			if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
+			if ( function_exists( 'wc_admin_url' ) || Framework\SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
 
-				$this->get_admin_notice_handler()->add_admin_notice(
-					sprintf(
-						/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-						esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( $this->get_settings_url() ) . '">','</a>'
-					),
-					'settings_moved_to_marketing',
-					[
-						'dismissible'             => true,
-						'always_show_on_settings' => false,
-						'notice_class'            => 'notice-info',
-					]
-				);
+				$is_marketing_enabled = is_callable( 'Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+				                        && Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+
+				if ( $is_marketing_enabled ) {
+
+					$this->get_admin_notice_handler()->add_admin_notice(
+						sprintf(
+							/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
+							esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
+							'<a href="' . esc_url( $this->get_settings_url() ) . '">','</a>'
+						),
+						'settings_moved_to_marketing',
+						[
+							'dismissible'             => true,
+							'always_show_on_settings' => false,
+							'notice_class'            => 'notice-info',
+						]
+					);
+				}
 			}
 		}
 
