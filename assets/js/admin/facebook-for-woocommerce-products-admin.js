@@ -393,6 +393,19 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Show the product removed from sync confirm modal
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function showProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
+
+			console.log( 'display modal', $syncModeSelect );
+		}
+
+
+		/**
 		 * Store the original value of the given element for later use
 		 *
 		 * @since 2.1.4-dev.1
@@ -436,12 +449,16 @@ jQuery( document ).ready( function( $ ) {
 
 		syncModeSelect.on( 'change', function() {
 
-			let syncEnabled = $( this ).val() !== 'sync_disabled';
+			let syncEnabled = syncModeSelect.val() !== 'sync_disabled';
 
 			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
 			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
 
-			syncModeSelect.prop( 'original', $( this ).val() );
+			syncModeSelect.prop( 'original', syncModeSelect.val() );
+
+			if ( shouldShowProductRemovedFromSyncConfirmModal( syncModeSelect ) ) {
+				showProductRemovedFromSyncConfirmModal( syncModeSelect );
+			}
 
 		} ).trigger( 'change' );
 
@@ -465,17 +482,23 @@ jQuery( document ).ready( function( $ ) {
 		);
 
 		// toggle Facebook settings fields for variations
-		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function () {
 
-			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+			let $syncModeSelect = $( this );
+
+			toggleFacebookSettings( $syncModeSelect.val() !== 'sync_disabled', $syncModeSelect.closest( '.wc-metabox-content' ) );
 			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
 
-			$( this ).prop( 'original', $( this ).val() );
+			$syncModeSelect.prop( 'original', $syncModeSelect.val() );
+
+			if ( shouldShowProductRemovedFromSyncConfirmModal( $syncModeSelect ) ) {
+				showProductRemovedFromSyncConfirmModal( $syncModeSelect );
+			}
 		} );
 
 		$productData.on( 'woocommerce_variations_loaded', function () {
 
-			$( '.js-variable-fb-sync-toggle' ).each( function ( index, element ) {
+			$productData.find( '.js-variable-fb-sync-toggle' ).each( function ( index, element ) {
 				let $syncModeSelect = $( element );
 				toggleFacebookSettings( $syncModeSelect.val() !== 'sync_disabled', $syncModeSelect.closest( '.wc-metabox-content' ) );
 				$syncModeSelect.prop( 'original', $syncModeSelect.val() );
@@ -531,8 +554,6 @@ jQuery( document ).ready( function( $ ) {
 
 		let submitProductSave = false;
 
-		// shouldShowProductRemovedFromSyncConfirmModal( $productData.find( '.js-variable-fb-sync-toggle' ) )
-
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
 
 			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
@@ -552,12 +573,6 @@ jQuery( document ).ready( function( $ ) {
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
 				syncEnabled      = syncModeSelect.val() !== 'sync_disabled',
 				varSyncEnabled   = isSyncEnabledForVariableProduct();
-
-			if ( shouldShowProductRemovedFromSyncConfirmModal( syncModeSelect ) ) {
-
-				console.log( 'display product removed from sync confirm modal' );
-				return false;
-			}
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
 				productCat.push( parseInt( $( this ).val(), 10 ) );
