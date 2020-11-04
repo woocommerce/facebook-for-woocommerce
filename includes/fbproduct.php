@@ -39,6 +39,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		const FB_PRODUCT_IMAGE       = 'fb_product_image';
 		const FB_VARIANT_IMAGE       = 'fb_image';
 		const FB_VISIBILITY          = 'fb_visibility';
+		const FB_REMOVE_FROM_SYNC    = 'fb_remove_from_sync';
 
 		const MIN_DATE_1 = '1970-01-29';
 		const MIN_DATE_2 = '1970-01-30';
