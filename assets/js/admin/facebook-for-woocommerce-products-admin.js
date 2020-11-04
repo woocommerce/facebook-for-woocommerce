@@ -375,14 +375,20 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * @since 2.1.4-dev.1
 		 *
-		 * @param {jQuery} $syncMode a jQuery element object
+		 * @param {jQuery} $syncModes a jQuery element(s) object
 		 * @return {boolean}
 		 */
-		function shouldShowProductRemovedFromSyncConfirmModal( $syncMode ) {
+		function shouldShowProductRemovedFromSyncConfirmModal( $syncModes ) {
 
-			let syncModeValue = $syncMode.val();
+			let syncValuesStatus = $syncModes.map( function ( index, selectElement ) {
 
-			return 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
+				let $syncMode     = $( selectElement );
+				let syncModeValue = $syncMode.val();
+
+				return 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
+			} ).toArray();
+
+			return syncValuesStatus.indexOf( true ) > -1;
 		}
 
 
@@ -469,9 +475,11 @@ jQuery( document ).ready( function( $ ) {
 
 		$productData.on( 'woocommerce_variations_loaded', function () {
 
-			$( '.js-variable-fb-sync-toggle' ).each( function () {
-				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
-				$( this ).prop( 'original', $( this ).val() );
+			$( '.js-variable-fb-sync-toggle' ).each( function ( index, element ) {
+				let $syncModeSelect = $( element );
+				toggleFacebookSettings( $syncModeSelect.val() !== 'sync_disabled', $syncModeSelect.closest( '.wc-metabox-content' ) );
+				$syncModeSelect.prop( 'original', $syncModeSelect.val() );
+				storeSyncModeOriginalValue( $syncModeSelect );
 			} );
 
 			$( '.variable_is_virtual' ).on( 'change', function () {
@@ -523,6 +531,8 @@ jQuery( document ).ready( function( $ ) {
 
 		let submitProductSave = false;
 
+		// shouldShowProductRemovedFromSyncConfirmModal( $productData.find( '.js-variable-fb-sync-toggle' ) )
+
 		$( 'form#post input[type="submit"]' ).on( 'click', function( e ) {
 
 			if ( shouldShowMissingGoogleProductCategoryAlert() ) {
@@ -545,7 +555,7 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( shouldShowProductRemovedFromSyncConfirmModal( syncModeSelect ) ) {
 
-				console.log( 'display modal' );
+				console.log( 'display product removed from sync confirm modal' );
 				return false;
 			}
 
