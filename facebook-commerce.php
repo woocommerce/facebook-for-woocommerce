@@ -890,6 +890,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Get products marked for deletion from Facebook when removed from Sync
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.4-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_removed_from_sync_products_to_delete() {
+
+		$posted_products = Framework\SV_WC_Helper::get_posted_value( WC_Facebook_Product::FB_REMOVE_FROM_SYNC );
+		if ( empty( $posted_products ) ) {
+			return [];
+		}
+
+		return array_map( 'absint', explode( ',', $posted_products ) );
+	}
+
+
+	/**
 	 * Checks the product type and calls the corresponding on publish method.
 	 *
 	 * @internal
@@ -898,7 +918,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $wp_id post ID
 	 */
-	function on_product_save( $wp_id ) {
+	public function on_product_save( $wp_id ) {
 
 		$product = wc_get_product( $wp_id );
 
