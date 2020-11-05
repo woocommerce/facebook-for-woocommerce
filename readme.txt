@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.5.1
-Stable tag: 2.1.4-dev.1
+Tested up to: 5.5.3
+Stable tag: 2.1.4
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.1.4-dev.1
+= 2020.11.04 - version 2.1.4
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.
 
 = 2020.10.29 - version 2.1.3 =
