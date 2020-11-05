@@ -418,6 +418,25 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
+		 * Get the target product ID based on the given sync select element
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function getSyncTargetProductID( $syncModeSelect ) {
+
+			if ( simpleProductSyncModeSelect === $syncModeSelect ) {
+				// simple product
+				return $( 'input#post_ID' ).val();
+			}
+
+			// variable product
+			return $syncModeSelect.closest( '.woocommerce_variation' ).find( 'input[name^=variable_post_id]' ).val();
+		}
+
+
+		/**
 		 * Show the product removed from sync confirm modal
 		 *
 		 * @since 2.1.4-dev.1
@@ -429,14 +448,7 @@ jQuery( document ).ready( function( $ ) {
 			closeExistingModal();
 
 			$maybeRemoveFromSyncModeSelect = $syncModeSelect;
-
-			if ( simpleProductSyncModeSelect === $syncModeSelect ) {
-				// simple product
-				maybeRemoveFromSyncProductID = $( 'input#post_ID' ).val();
-			} else {
-				// variable product
-				maybeRemoveFromSyncProductID = $syncModeSelect.closest( '.woocommerce_variation' ).find( 'input[name^=variable_post_id]' ).val();
-			}
+			maybeRemoveFromSyncProductID   = getSyncTargetProductID( $syncModeSelect )
 
 			new $.WCBackboneModal.View( {
 				target: 'facebook-for-woocommerce-modal',
@@ -456,16 +468,23 @@ jQuery( document ).ready( function( $ ) {
 		function populateRemoveFromSyncProductIDsField() {
 
 			$( facebook_for_woocommerce_products_admin.product_removed_from_sync_field_id ).val( removeFromSyncProductIDs.join( ',' ) );
+		}
 
-			// clear out temporarily stored product id if there is one
-			if ( maybeRemoveFromSyncProductID ) {
 
-				removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
-					return value !== maybeRemoveFromSyncProductID;
-				} );
+		/**
+		 * Remove the given product ID from the list of product to delete from Sync
+		 *
+		 * @since 2.1.4-dev.1
+		 *
+		 * @param {String} productID
+		 */
+		function removeProductIDFromUnSyncList( productID ) {
 
-				maybeRemoveFromSyncProductID = null;
-			}
+			removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
+				return value !== productID;
+			} );
+
+			populateRemoveFromSyncProductIDsField();
 		}
 
 		let $maybeRemoveFromSyncModeSelect = null;
@@ -518,8 +537,8 @@ jQuery( document ).ready( function( $ ) {
 		} ).trigger( 'change' );
 
 		// toggle Facebook settings fields for simple products
-		const simpleProductSyncModeSelect   = $( '#wc_facebook_sync_mode' );
-		const facebookSettingsPanel = simpleProductSyncModeSelect.closest( '.woocommerce_options_panel' );
+		const simpleProductSyncModeSelect = $( '#wc_facebook_sync_mode' );
+		const facebookSettingsPanel       = simpleProductSyncModeSelect.closest( '.woocommerce_options_panel' );
 
 		// store sync mode original value for later use
 		storeSyncModeOriginalValue( simpleProductSyncModeSelect );
@@ -530,6 +549,10 @@ jQuery( document ).ready( function( $ ) {
 
 			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
 			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
+
+			if ( syncEnabled ) {
+				removeProductIDFromUnSyncList( getSyncTargetProductID( simpleProductSyncModeSelect ) );
+			}
 
 			simpleProductSyncModeSelect.prop( 'original', simpleProductSyncModeSelect.val() );
 
@@ -562,9 +585,14 @@ jQuery( document ).ready( function( $ ) {
 		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function () {
 
 			let $syncModeSelect = $( this );
+			let syncEnabled     = $syncModeSelect.val() !== 'sync_disabled';
 
-			toggleFacebookSettings( $syncModeSelect.val() !== 'sync_disabled', $syncModeSelect.closest( '.wc-metabox-content' ) );
+			toggleFacebookSettings( syncEnabled, $syncModeSelect.closest( '.wc-metabox-content' ) );
 			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+
+			if ( syncEnabled ) {
+				removeProductIDFromUnSyncList( getSyncTargetProductID( $syncModeSelect ) );
+			}
 
 			$syncModeSelect.prop( 'original', $syncModeSelect.val() );
 
