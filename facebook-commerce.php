@@ -934,7 +934,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
 
-		if ( ! $product->is_type( 'variable' ) ) {
+		$products_to_delete_from_facebook = $this->get_removed_from_sync_products_to_delete();
+
+		if ( $product->is_type( 'variable' ) ) {
+
+			// check variations for deletion
+			foreach ( $products_to_delete_from_facebook as $delete_product_id ) {
+
+				$delete_product = wc_get_product( $delete_product_id );
+
+				if ( Products::is_sync_enabled_for_product( $delete_product ) ) {
+					continue;
+				}
+
+				$this->on_product_delete( $delete_product_id, true );
+			}
+
+		} else {
 
 			if ( $sync_enabled ) {
 
@@ -951,6 +967,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				}
 
 				Products::disable_sync_for_products( [ $product ] );
+
+				if ( in_array( $wp_id, $products_to_delete_from_facebook, true ) ) {
+					$this->on_product_delete( $wp_id, true );
+				}
 			}
 		}
 
@@ -1017,8 +1037,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Deletes a product from Facebook.
 	 *
 	 * @param int $product_id product ID
+	 * @param bool $force_delete boolean whether to foce delete product from Facebook or not
 	 */
-	public function on_product_delete( $product_id ) {
+	public function on_product_delete( $product_id, $force_delete = false ) {
 
 		$product = wc_get_product( $product_id );
 
@@ -1031,7 +1052,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * bail if not enabled for sync, except if explicitly deleting from the metabox
 		 * @see ajax_delete_fb_product()
 		 */
-		if ( ( ! is_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
+		if ( false === $force_delete
+		     && ( ! is_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
 		     && ! Products::published_product_should_be_synced( $product ) ) {
 
 			return;
