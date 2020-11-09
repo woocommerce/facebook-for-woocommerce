@@ -973,7 +973,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				Products::disable_sync_for_products( [ $product ] );
 
 				if ( in_array( $wp_id, $products_to_delete_from_facebook, true ) ) {
-					$this->on_product_delete( $wp_id, true );
+
+					$this->delete_fb_product( $product );
 				}
 			}
 		}
