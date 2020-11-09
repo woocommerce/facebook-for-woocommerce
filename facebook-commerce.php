@@ -894,7 +894,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 2.1.4-dev.1
+	 * @since 2.1.5-dev.1
 	 *
 	 * @return array
 	 */
