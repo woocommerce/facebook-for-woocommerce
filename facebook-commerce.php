@@ -890,7 +890,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Get products marked for deletion from Facebook when removed from Sync
+	 * Gets the IDs of products marked for deletion from Facebook when removed from Sync.
 	 *
 	 * @internal
 	 *
