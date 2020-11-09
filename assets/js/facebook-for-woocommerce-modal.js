@@ -49,7 +49,7 @@
 
 
 	/**
-	 * Close the current modal.
+	 * Closes the current modal.
 	 */
 	window.closeExistingModal = function() {
 

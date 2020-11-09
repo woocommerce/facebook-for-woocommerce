@@ -370,7 +370,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Store the original value of the given element for later use
+		 * Store the original value of the given element for later use.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
@@ -383,7 +383,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Revert to the original value of the given element
+		 * Reverts the value of the given sync mode element to its original value.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
@@ -396,11 +396,11 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Determines whether we should show the product removed from sync confirm modal
+		 * Determines whether we should show the product removed from sync confirm modal.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
-		 * @param {jQuery} $syncModeSelect a jQuery element(s) object
+		 * @param {jQuery} $syncModeSelect a jQuery object with one or more sync mode select elements
 		 * @return {boolean}
 		 */
 		function shouldShowProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
@@ -418,7 +418,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Get the target product ID based on the given sync select element
+		 * Gets the target product ID based on the given sync select element.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
@@ -437,7 +437,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Show the product removed from sync confirm modal
+		 * Shows the product removed from sync confirm modal.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
@@ -461,7 +461,7 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Fill in product IDs to remove from Sync
+		 * Fills in product IDs to remove from Sync.
 		 *
 		 * @since 2.1.4-dev.1
 		 */
@@ -472,11 +472,11 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Remove the given product ID from the list of product to delete from Sync
+		 * Removes the given product ID from the list of product to delete from Sync.
 		 *
 		 * @since 2.1.4-dev.1
 		 *
-		 * @param {String} productID
+		 * @param {String} productID Product ID to remove
 		 */
 		function removeProductIDFromUnSyncList( productID ) {
 
