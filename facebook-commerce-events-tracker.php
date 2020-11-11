@@ -43,7 +43,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->aam_settings = $aam_settings;
 			$this->tracked_events = array();
 
-			add_action( 'wp_head', array( $this, 'apply_filters' ) );
+			add_action( 'init', [ $this, 'apply_filters' ], 1 );
 
 			// Pixel Tracking Hooks
 			add_action(
@@ -90,8 +90,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
 		}
 
+
 		public function apply_filters() {
-			self::$isEnabled = apply_filters(
+			self::$isEnabled = (bool) apply_filters(
 				'facebook_for_woocommerce_integration_pixel_enabled',
 				self::$isEnabled
 			);
