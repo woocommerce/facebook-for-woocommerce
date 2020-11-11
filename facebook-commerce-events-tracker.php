@@ -24,9 +24,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 	class WC_Facebookcommerce_EventsTracker {
 
 
-		/** @deprecated since 2.3.0-dev.1 */
+		/** @deprecated since 2.2.0-dev.1 */
 		const FB_PRIORITY_HIGH = 2;
-		/** @deprecated since 2.3.0-dev.1 */
+		/** @deprecated since 2.2.0-dev.1 */
 		const FB_PRIORITY_LOW = 11;
 
 
@@ -69,7 +69,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Determines whether the Pixel should be enabled.
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.2.0-dev.1
 		 *
 		 * @return bool
 		 */
@@ -87,7 +87,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Add events tracker hooks.
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.2.0-dev.1
 		 */
 		private function add_hooks() {
 
@@ -131,11 +131,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @internal
 		 *
-		 * @deprecated since 2.3.0-dev.1
+		 * @deprecated since 2.2.0-dev.1
 		 */
 		public function apply_filters() {
 
-			wc_deprecated_function( __METHOD__, '2.3.0-dev.1' );
+			wc_deprecated_function( __METHOD__, '2.2.0-dev.1' );
 		}
 
 
