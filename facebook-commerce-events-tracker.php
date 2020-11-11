@@ -45,6 +45,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/** @var AAMSettings aam settings instance, used to filter advanced matching fields*/
 		private $aam_settings;
 
+		/** @var bool whether the pixel should be enabled */
+		private $is_pixel_enabled;
+
 
 		/**
 		 * Events tracker constructor.
@@ -75,12 +78,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function is_pixel_enabled() {
 
-			/**
-			 * Filters whether the Pixel should be enabled.
-			 *
-			 * @param bool $enabled default true
-			 */
-			return (bool) apply_filters( 'facebook_for_woocommerce_integration_pixel_enabled', true );
+			if ( null === $this->is_pixel_enabled ) {
+
+				/**
+				 * Filters whether the Pixel should be enabled.
+				 *
+				 * @param bool $enabled default true
+				 */
+				$this->is_pixel_enabled = (bool) apply_filters( 'facebook_for_woocommerce_integration_pixel_enabled', true );
+			}
+
+			return $this->is_pixel_enabled;
 		}
 
 
