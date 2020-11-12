@@ -10,8 +10,9 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use \Automattic\WooCommerce\Admin\Features\Navigation\Menu;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -59,72 +60,49 @@ class Settings {
 	 */
 	public function add_menu_item() {
 
-		$root_menu_item       = 'woocommerce';
-		$is_marketing_enabled = false;
+		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
 
-		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
-
-			$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-			                        && \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
-
-			if ( $is_marketing_enabled ) {
-
-				$root_menu_item = 'woocommerce-marketing';
-			}
+		if ( ! class_exists( '\Automattic\WooCommerce\Admin\Features\Navigation\Menu' ) ) {
+			return;
 		}
 
-		add_submenu_page(
-			$root_menu_item,
-			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
-			__( 'Facebook', 'facebook-for-woocommerce' ),
-			'manage_woocommerce', self::PAGE_ID,
-			[ $this, 'render' ],
-			5
+		Menu::add_plugin_category(
+			array(
+				'id'         => 'facebook-for-woocommerce',
+				'title'      => __( 'Facebook', 'facebook-for-woocommerce' ),
+				'capability' => 'manage_woocommerce',
+			)
 		);
 
-		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
-	}
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-connection',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Connection', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook',
+				'order'  => 1,
+			)
+		);
 
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-product-sync',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Product sync', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook&tab=product_sync',
+				'order'  => 2,
+			)
+		);
 
-	/**
-	 * Enables enhanced admin support for the main Facebook settings page.
-	 *
-	 * @since 2.2.0
-	 *
-	 * @param string $screen_id the ID to connect to
-	 */
-	private function connect_to_enhanced_admin( $screen_id ) {
-
-		if ( is_callable( 'wc_admin_connect_page' ) ) {
-
-			$crumbs = [
-				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
-			];
-
-			if ( ! empty( $_GET['tab'] ) ) {
-				switch ( $_GET['tab'] ) {
-					case Settings_Screens\Connection::ID :
-						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Messenger::ID :
-						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Product_Sync::ID :
-						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Advertise::ID :
-						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
-					break;
-				}
-			}
-
-			wc_admin_connect_page( [
-				'id'        => self::PAGE_ID,
-				'screen_id' => $screen_id,
-				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
-				'title'     => $crumbs
-			] );
-		}
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-messenger',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Messenger', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook&tab=messenger',
+				'order'  => 3,
+			)
+		);
 	}
 
 
