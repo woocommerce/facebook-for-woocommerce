@@ -317,7 +317,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				] );
 			}
 
-			if ( function_exists( 'wc_admin_url' ) || Framework\SV_WC_Plugin_Compatibility::is_wc_version_gte( '4.0' ) ) {
+			if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 
 				$is_marketing_enabled = is_callable( 'Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
 				                        && Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
