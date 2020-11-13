@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-= 2020.nn.nn - version 2.2.0-dev.1 =
+= 2020.nn.nn - version 2.2.0-dev.2 =
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
  * Tweak - Move the Facebook settings page into the Marketing menu item (WooCommerce 4.0+)
 
