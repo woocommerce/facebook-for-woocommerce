@@ -46,7 +46,7 @@ class ConnectionSettingsCest {
 
 		$I->amOnAdminPage('admin.php?page=wc-facebook' );
 
-		$I->canSee( 'Manage Connection', '.button' );
+		$I->canSee( 'Manage Connection', '.button-primary' );
 		$I->canSee( 'Uninstall', 'a.uninstall' );
 
 		$I->canSee( '1234', '.wc-facebook-connected-page code' );
