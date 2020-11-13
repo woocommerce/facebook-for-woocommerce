@@ -1253,6 +1253,26 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Facebook\Products::get_available_product_attributes() */
+	public function test_get_available_product_attributes_for_product_variation() {
+
+		$product = $this->get_variable_product( [ 'children' =>	1 ] );
+		$product->set_attributes( [ $this->tester->create_size_attribute( 'size', [ 'small' ], true ) ] );
+		$product->save();
+
+		$product_variation = wc_get_product( current( $product->get_children() ) );
+		$product_variation->set_attributes( [ 'size' => 'small' ] );
+		$product_variation->save();
+
+		$available_attributes = Products::get_available_product_attributes( $product_variation );
+
+		foreach ( array_keys( $product_variation->get_attributes() ) as $key ) {
+			$this->assertArrayHasKey( $key, $available_attributes );
+			$this->assertInstanceOf( \WC_Product_Attribute::class, $available_attributes[ $key ] );
+		}
+	}
+
+
 	/** @see Facebook\Products::get_distinct_product_attributes() */
 	public function test_get_distinct_product_attributes() {
 
