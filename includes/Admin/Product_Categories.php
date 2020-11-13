@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * General handler for the product category admin functionality.

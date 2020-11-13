@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 

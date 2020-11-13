@@ -16,7 +16,7 @@ use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * API handler.

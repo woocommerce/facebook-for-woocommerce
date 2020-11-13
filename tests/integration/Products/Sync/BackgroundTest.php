@@ -4,7 +4,7 @@ use Codeception\Stub;
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\Facebook\Products\Sync\Background;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Tests the Sync\Background class.

@@ -3,7 +3,7 @@
 use SkyVerge\WooCommerce\Facebook;
 use SkyVerge\WooCommerce\Facebook\Product_Categories;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
 
 /**
  * Tests the Products class.

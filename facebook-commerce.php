@@ -13,7 +13,7 @@ use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly

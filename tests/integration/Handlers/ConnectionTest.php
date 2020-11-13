@@ -1,7 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0\SV_WC_Plugin_Compatibility;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Compatibility;
 
 /**
  * Tests the Connection class.

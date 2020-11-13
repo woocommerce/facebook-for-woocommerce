@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
 use SkyVerge\WooCommerce\Facebook\Locale;
-use SkyVerge\WooCommerce\PluginFramework\v5_9_0 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The Messenger settings screen object.
