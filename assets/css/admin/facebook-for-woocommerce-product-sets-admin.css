@@ -1,0 +1,8 @@
+body.taxonomy-fb_product_set .term-parent-wrap,
+body.taxonomy-fb_product_set .term-slug-wrap {
+	display: none;
+}
+
+.wc-facebook.product_cats.select2.visible {
+	display: block;
+}
