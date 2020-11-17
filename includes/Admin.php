@@ -54,8 +54,10 @@ class Admin {
 
 		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
+		require_once __DIR__ . '/Admin/Product_Sets.php';
 
 		$this->product_categories = new Admin\Product_Categories();
+		$this->product_sets = new Admin\Product_Sets();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', array( $this, 'render_modal_template' ) );
@@ -144,7 +146,11 @@ class Admin {
 
 			if ( 'edit-fb_product_set' === $current_screen->id ) {
 
+				// enqueue WooCommerce Admin Styles because of Select2
+				wp_enqueue_style( 'woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 				wp_enqueue_style( 'facebook-for-woocommerce-product-sets-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sets-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
+
+				wp_enqueue_script( 'facebook-for-woocommerce-product-sets', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-product-sets-admin.js', array( 'jquery', 'select2' ), \WC_Facebookcommerce::PLUGIN_VERSION, true );
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
