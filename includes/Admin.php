@@ -91,8 +91,31 @@ class Admin {
 		// add Variation edit fields
 		add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'add_product_variation_edit_fields' ), 10, 3 );
 		add_action( 'woocommerce_save_product_variation', array( $this, 'save_product_variation_edit_fields' ), 10, 2 );
+
+		// add custom taxonomy for Product Sets
+		add_filter( 'gettext', array( $this, 'change_custom_taxonomy_tip' ), 20, 2 );
 	}
 
+	/**
+	 * Change custom taxonomy tip text
+	 *
+	 * @since 2.1.5
+	 *
+	 * @param string $translation Text translation.
+	 * @param string $text Original text.
+	 *
+	 * @return string
+	 */
+	public function change_custom_taxonomy_tip( $translation, $text ) {
+
+		global $current_screen;
+
+		if ( isset( $current_screen->id ) && 'edit-fb_product_set' === $current_screen->id && 'The name is how it appears on your site.' === $text ) {
+			$translation = esc_html__( 'The name is how it appears on Facebook Catalog.', 'facebook-for-woocommerce' );
+		}
+
+		return $translation;
+	}
 
 	/**
 	 * Enqueues admin scripts.
@@ -117,6 +140,11 @@ class Admin {
 
 				// enqueue modal functions
 				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/facebook-for-woocommerce-modal.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+			}
+
+			if ( 'edit-fb_product_set' === $current_screen->id ) {
+
+				wp_enqueue_style( 'facebook-for-woocommerce-product-sets-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sets-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
