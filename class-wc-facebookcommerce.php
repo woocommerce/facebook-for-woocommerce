@@ -107,6 +107,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function init() {
 
 			add_action( 'init', [ $this, 'get_integration' ] );
+			add_action( 'init', [ $this, 'register_custom_taxonomy' ] );
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
@@ -364,6 +365,42 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			parent::log_api_request( $request, $response, $log_id );
+		}
+
+		/**
+		 * Register FB Product Set Taxonomy
+		 *
+		 * @since 2.1.5
+		 */
+		public function register_custom_taxonomy() {
+
+			$plural   = esc_html__( 'FB Product Sets', 'facebook-for-woocommerce' );
+			$singular = esc_html__( 'FB Product Set', 'facebook-for-woocommerce' );
+
+			$args = array(
+				'labels'            => array(
+					'name'                       => $plural,
+					'singular_name'              => $singular,
+					'menu_name'                  => $plural,
+					// translators: Add new label
+					'add_new_item'               => sprintf( esc_html__( 'Add new %s', 'facebook-for-woocommerce' ), $singular ),
+					'menu_name'                  => $plural,
+					// translators: No items found text
+					'not_found'                  => sprintf( esc_html__( 'No %s found.', 'facebook-for-woocommerce' ), $plural ),
+					// translators: Search label
+					'search_items'               => sprintf( esc_html__( 'Search %s.', 'facebook-for-woocommerce' ), $plural ),
+					// translators: Text label
+					'separate_items_with_commas' => sprintf( esc_html__( 'Separate %s with commas', 'facebook-for-woocommerce' ), $plural ),
+					// translators: Text label
+					'choose_from_most_used'      => sprintf( esc_html__( 'Choose from the most used %s', 'facebook-for-woocommerce' ), $plural ),
+				),
+				'hierarchical'      => true,
+				'public'            => true,
+				'show_in_nav_menus' => false,
+				'show_tagcloud'     => false,
+			);
+
+			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
 		}
 
 
