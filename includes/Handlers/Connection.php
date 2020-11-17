@@ -586,6 +586,7 @@ class Connection {
 			'ads_management',
 			'ads_read',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
+			'instagram_basic',
 		];
 
 		/**
@@ -860,6 +861,8 @@ class Connection {
 				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
+				'domain'               => home_url(),
+				'channel'              => 'COMMERCE_OFFSITE',
 			],
 			'business_config' => [
 				'business' => [
