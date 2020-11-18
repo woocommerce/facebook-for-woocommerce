@@ -21,7 +21,6 @@ jQuery( document ).ready( function( $ ) {
 		jQuery( document ).ajaxSuccess( function( e, request, settings ) {
 			var obj = new URLSearchParams( settings.data )
 			if ( obj.has( 'action' ) && 'add-tag' === obj.get( 'action' ) && obj.has( 'taxonomy' ) && 'fb_product_set' === obj.get( 'taxonomy' ) ) {
-	console.log('YEAH');
 				jQuery( '.select2.wc-facebook' ).select2().val( null ).trigger( 'change' );
 			}
 	    });
