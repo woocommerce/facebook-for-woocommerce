@@ -213,6 +213,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		<script async defer src="<?php echo esc_url( $this->get_lwi_ads_sdk_url() ); ?>"></script>
 		<div
 			class="fb-lwi-ads-creation"
+			data-hide-manage-button="true"
 			data-fbe-extras="<?php echo esc_attr( $fbe_extras ); ?>"
 			data-fbe-scopes="manage_business_extension"
 			data-fbe-redirect-uri="https://mariner9.s3.amazonaws.com/"
