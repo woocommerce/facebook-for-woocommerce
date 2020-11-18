@@ -9,6 +9,11 @@
 	width: 1000px;
 }
 
+.fb-lwi-ads-insights.fb_iframe_widget span,
+.fb-lwi-ads-insights.fb_iframe_widget iframe {
+	width: 1000px !important;
+}
+
 /** when the remote content of the LWI Ads widget isn't ready yet, the div doesn't have the .fb_iframe_widget class yet, so we could use this difference to improve the UX during the loading state */
 .fb-lwi-ads-creation,
 .fb-lwi-ads-insights {
