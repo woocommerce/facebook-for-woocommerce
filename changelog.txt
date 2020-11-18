@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2020.nn.nn - version 2.3.0-beta.1
+2020.nn.nn - version 2.3.0-beta.2
  * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
