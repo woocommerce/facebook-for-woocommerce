@@ -605,7 +605,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$product_data                            = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
 			}
 
-			// add the Commerce values (only inventory for the momenbt)
+			// add the Commerce values (only inventory for the moment)
 			if ( Products::is_product_ready_for_commerce( $this->woo_product ) ) {
 				$product_data['inventory'] = (int) max( 0, $this->woo_product->get_stock_quantity() );
 			}

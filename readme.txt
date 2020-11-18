@@ -43,6 +43,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
  * Tweak - Move the Facebook settings page into the Marketing menu item (WooCommerce 4.0+)
  * Fix - Move the filter `facebook_for_woocommerce_integration_pixel_enabled` initialization to avoid possible uncaught JavaScript errors in front end
+ * Fix - Update field name and format for additional_variant_attribute to resolve Facebook catalog sync for variable products.
 
 = 2020.11.04 - version 2.1.4
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.

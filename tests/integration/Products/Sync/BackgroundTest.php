@@ -217,8 +217,18 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 			$this->assertEquals( $request['retailer_id'], $data['id'] );
 		}
 
-		if ( isset( $request['data'] ) ) {
+		if ( isset( $request['additional_variant_attribute'] ) ) {
+			$this->assertIsString( $data['additional_variant_attribute'] );
+			$attributes = explode( ',', $data['additional_variant_attribute'] );
+			$this->assertEquals( count( $attributes ), count( $request['additional_variant_attribute'] ) );
 
+			foreach ( $attributes as $attr ) {
+				$keyval = explode( ':', $attr );
+				$this->assertEquals( $request['additional_variant_attribute'][ $keyval[0] ], $keyval[1] );
+			}
+		}
+
+		if ( isset( $request['data'] ) ) {
 			foreach ( $request['data'] as $key => $value ) {
 				$this->assertEquals( $request['data'][ $key ], $result['data'][ $key ] );
 			}
@@ -361,12 +371,10 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$parent_product->save();
 
 		$request = [
-			'data' => [
-				'additional_variant_attributes' => [
-					'test-attribute-1' => 'foo-1',
-					'test-attribute-2' => 'bar-3',
-				],
-			],
+			'additional_variant_attribute' => [
+				'test-attribute-1' => 'foo-1',
+				'test-attribute-2' => 'bar-3'
+			]
 		];
 
 		$this->check_process_item_update_request( $product_variation, $request );

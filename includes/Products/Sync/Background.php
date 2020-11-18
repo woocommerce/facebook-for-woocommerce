@@ -289,7 +289,13 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
 		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
 
-			$data['additional_variant_attributes'] = $data['custom_data'];
+			$attributes = [];
+
+			foreach ($data['custom_data'] as $key => $val) {
+				$attributes[] = $key . ':' . $val;
+			}
+
+			$data['additional_variant_attribute'] = implode(',', $attributes);
 			unset( $data['custom_data'] );
 		}
 
