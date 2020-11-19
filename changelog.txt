@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+2020.nn.nn - version 2.1.5-dev.1
+
+ * Fix - Update field name and format for additional_variant_attribute to resolve Facebook catalog sync for variable products.
+
 2020.11.04 - version 2.1.4
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.
 
