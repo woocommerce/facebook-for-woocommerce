@@ -130,7 +130,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_thankyou',                   [ $this, 'inject_purchase_event' ], 40 );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
-			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], 2 );
+			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], 11 );
 		}
 
 
