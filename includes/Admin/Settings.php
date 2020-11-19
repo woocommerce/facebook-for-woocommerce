@@ -88,7 +88,7 @@ class Settings {
 	/**
 	 * Enables enhanced admin support for the main Facebook settings page.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @param string $screen_id the ID to connect to
 	 */

@@ -94,7 +94,7 @@ abstract class Abstract_Settings_Screen {
 	/**
 	 * Determines whether the current screen is the same as identified by the current class.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @return bool
 	 */

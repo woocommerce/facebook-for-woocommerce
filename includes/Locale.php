@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Helper class with utility methods for handling locales in Facebook.
  *
- * @since 2.2.0-dev.1
+ * @since 2.2.0
  */
 class Locale {
 
@@ -137,7 +137,7 @@ class Locale {
 	 * @link https://developers.facebook.com/docs/messenger-platform/messenger-profile/supported-locales/
 	 * If the Locale extension is not available, will attempt to match locales to WordPress available language names.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @return array associative array of locale identifiers and language labels
 	 */
@@ -199,7 +199,7 @@ class Locale {
 	/**
 	 * Determines if a locale is supported by Facebook.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @param string $locale a locale identifier
 	 * @return bool

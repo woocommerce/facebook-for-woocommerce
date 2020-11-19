@@ -29,7 +29,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Advertise settings constructor.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 */
 	public function __construct() {
 
@@ -44,7 +44,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Adds hooks.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 */
 	private function add_hooks() {
 
@@ -59,7 +59,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 *
 	 * @internal
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 */
 	public function enqueue_assets() {
 
@@ -104,7 +104,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the LWI Ads configuration to output the FB iframes.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @return array
 	 */
@@ -136,7 +136,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/*
 	 * Converts the given timezone string to a name if needed.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @param string $timezone_string Timezone string
 	 * @param int|float $timezone_offset Timezone offset
@@ -168,7 +168,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the LWI Ads SDK URL.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @return string
 	 */
@@ -189,7 +189,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 *
 	 * The contents of the Facebook box will be populated by the LWI Ads script through iframes.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 */
 	public function render() {
 
@@ -232,7 +232,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	/**
 	 * Gets the screen settings.
 	 *
-	 * @since 2.2.0-dev.1
+	 * @since 2.2.0
 	 *
 	 * @return array
 	 */

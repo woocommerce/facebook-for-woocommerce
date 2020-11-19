@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 2.2.0-dev.2
+Stable tag: 2.2.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.2.0-dev.2 =
+= 2020.11.19 - version 2.2.0 =
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
  * Tweak - Move the Facebook settings page into the Marketing menu item (WooCommerce 4.0+)
  * Fix - Move the filter `facebook_for_woocommerce_integration_pixel_enabled` initialization to avoid possible uncaught JavaScript errors in front end
