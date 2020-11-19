@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 2.1.5
+Stable tag: 2.1.5-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.11.18 - version 2.1.5
+= 2020.nn.nn - version 2.1.5-dev.1
  * Fix - Update field name and format for additional_variant_attribute to resolve Facebook catalog sync for variable products.
 
 = 2020.11.04 - version 2.1.4
