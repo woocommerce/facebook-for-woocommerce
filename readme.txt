@@ -45,7 +45,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Fix - Move the filter `facebook_for_woocommerce_integration_pixel_enabled` initialization to avoid possible uncaught JavaScript errors in front end
  * Fix - Update field name and format for additional_variant_attribute to resolve Facebook catalog sync for variable products.
 
-= 2020.11.04 - version 2.1.4
+= 2020.11.04 - version 2.1.4 =
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.
 
 = 2020.10.29 - version 2.1.3 =
