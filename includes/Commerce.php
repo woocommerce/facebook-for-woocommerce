@@ -23,7 +23,6 @@ class Commerce {
 	/** @var string option that stores the plugin-level fallback Google product category ID */
 	const OPTION_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
 
-
 	/** @var Commerce\Orders the orders handler */
 	protected $orders;
 
@@ -79,7 +78,7 @@ class Commerce {
 	}
 
 
-	/**
+  /**
 	 * Determines whether Commerce features should be available.
 	 *
 	 * @since 2.1.0
@@ -114,7 +113,10 @@ class Commerce {
 
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 
-		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_manager_id() );
+		$category_id = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, '' );
+
+		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_manager_id() ) &&
+      $connection_handler->is_onsite_checkout_connected();
 
 		/**
 		 * Filters whether the site is connected.
@@ -128,7 +130,7 @@ class Commerce {
 	}
 
 
-	/**
+  /**
 	 * Gets the orders handler instance.
 	 *
 	 * @since 2.1.0

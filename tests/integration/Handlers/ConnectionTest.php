@@ -311,6 +311,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::is_onsite_checkout_connected() */
+	public function test_is_onsite_checkout_connected() {
+
+		$connected = true;
+		update_option( Connection::OPTION_ONSITE_CHECKOUT_CONNECTED, $connected );
+
+		$this->assertSame( $connected, $this->get_connection()->is_onsite_checkout_connected() );
+	}
+
+
 	/** @see Connection::get_proxy_url() */
 	public function test_get_proxy_url() {
 
@@ -603,6 +613,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::update_onsite_checkout_connected() */
+	public function test_update_onsite_checkout_connected() {
+
+		$connected = true;
+		$this->get_connection()->update_onsite_checkout_connected( $connected );
+
+		$this->assertSame( $connected, get_option( Connection::OPTION_ONSITE_CHECKOUT_CONNECTED ) );
+	}
+
+
 	/** @see Connection::update_access_token() */
 	public function test_update_access_token() {
 
@@ -650,7 +670,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$connection = $this->get_connection();
 
 		$connection->update_access_token( 'access token' );
-		$connection->update_commerce_manager_id( 'manager id' );
 
 		$this->assertTrue( $connection->is_connected() );
 	}

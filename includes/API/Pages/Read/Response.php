@@ -48,4 +48,23 @@ class Response extends API\Response  {
 	}
 
 
+  /**
+	 * Gets the Commerce Merchant Settings ID associated with the page.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return string|null
+	 */
+	public function get_commerce_merchant_settings_id() {
+
+    $data = $this->commerce_merchant_settings->data;
+
+    if (is_object( $data[0])) {
+      return $data[0]->id;
+    }
+
+    return '';
+	}
+
+
 }

@@ -262,6 +262,25 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a Commerce Merchant Settings object from Facebook.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @return API\CMS\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_commerce_merchant_settings( $commerce_manager_id ) {
+
+		$request = new API\CMS\Read\Request( $commerce_manager_id );
+
+		$this->set_response_handler( API\CMS\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+  /**
 	 * Gets a business manager object from Facebook.
 	 *
 	 * @since 2.0.0

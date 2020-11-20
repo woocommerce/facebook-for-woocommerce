@@ -65,6 +65,9 @@ class Connection {
 	/** @var string the Commerce manager ID option name */
 	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
 
+  /** @var bool option that stores the onsite checkout connected state */
+	const OPTION_ONSITE_CHECKOUT_CONNECTED = 'wc_facebook_onsite_checkout_connected';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
@@ -199,6 +202,12 @@ class Connection {
 			$page_access_token = $this->retrieve_page_access_token( $page_id );
 
 			$this->update_page_access_token( $page_access_token );
+
+      // get and store the commerce merchant settings id for the configured page, if one exists
+      $page_response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
+      if ( $commerce_manager_id = $page_response->get_commerce_merchant_settings_id() ) {
+        $this->update_commerce_manager_id( sanitize_text_field( $commerce_manager_id ));
+      }
 		}
 
 		if ( $response->get_pixel_id() ) {
@@ -338,6 +347,8 @@ class Connection {
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
+    $this->update_commerce_manager_id( '' );
+    $this->update_onsite_checkout_connected( false );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
@@ -383,8 +394,11 @@ class Connection {
 			// allow the commerce manager to manage orders for the page shop
 			$this->enable_order_management( $commerce_manager_id, $page_access_token );
 
-			// finally store the commerce manager ID to consider the site connected if all goes well
+			// store the commerce manager ID
 			$this->update_commerce_manager_id( $commerce_manager_id );
+
+      // finally, store the onsite checkout connected state if we've gotten this far
+      $this->update_onsite_checkout_connected( true );
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
@@ -585,7 +599,7 @@ class Connection {
 	 *
 	 * @return string
 	 */
-	public function get_commerce_connect_url() {
+	public function get_commerce_connect_url( $commerce_manager_id = null ) {
 
 		// build the site URL to which the user will ultimately return
 		$site_url = add_query_arg( [
@@ -593,14 +607,18 @@ class Connection {
 			'nonce'  => wp_create_nonce( self::ACTION_CONNECT_COMMERCE ),
 		], home_url( '/' ) );
 
-		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+    if ( $commerce_manager_id ) {
+      $connect_url = $site_url . "&commerce_manager_id={$commerce_manager_id}";
+    } else {
+      // build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
+      $redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
 
-		// build the final connect URL, direct to Facebook
-		$connect_url = add_query_arg( [
-			'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
-			'redirect_url' => urlencode( $redirect_url ),
-		], 'https://www.facebook.com/commerce_manager/onboarding/' );
+      // build the final connect URL, direct to Facebook
+      $connect_url = add_query_arg( [
+        'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+        'redirect_url' => urlencode( $redirect_url ),
+      ], 'https://www.facebook.com/commerce_manager/onboarding/' );
+    }
 
 		/**
 		 * Filters the URL used to connect to Facebook Commerce.
@@ -1010,6 +1028,19 @@ class Connection {
 
 
 	/**
+	 * Stores the given onsite checkout connected state.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param bool $connected The onsite checkout state
+	 */
+	public function update_onsite_checkout_connected( $connected ) {
+
+		update_option( self::OPTION_ONSITE_CHECKOUT_CONNECTED, $connected );
+	}
+
+
+  /**
 	 * Stores the given token value.
 	 *
 	 * @since 2.0.0
@@ -1064,6 +1095,19 @@ class Connection {
 
 
 	/**
+	 * Determines whether onsite checkout is connected.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return bool
+	 */
+	public function is_onsite_checkout_connected() {
+
+		return get_option( self::OPTION_ONSITE_CHECKOUT_CONNECTED, false );
+	}
+
+
+  /**
 	 * Determines whether the site has previously connected to FBE 2.
 	 *
 	 * @since 2.0.0

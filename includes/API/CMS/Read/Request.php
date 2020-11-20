@@ -8,16 +8,16 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Pages\Read;
+namespace SkyVerge\WooCommerce\Facebook\API\CMS\Read;
 
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\API;
 
 /**
- * Page API request object.
+ * Commerce Merchant Settings API request object.
  *
- * @since 2.0.0
+ * @since 2.3.0
  */
 class Request extends API\Request  {
 
@@ -25,26 +25,26 @@ class Request extends API\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0
+	 * @since 2.3.0
 	 *
-	 * @param string $page_id page ID
+	 * @param string $commerce_manager_id Commerce Manager ID
 	 */
-	public function __construct( $page_id ) {
+	public function __construct( $commerce_manager_id ) {
 
-		parent::__construct( "/{$page_id}", 'GET' );
+		parent::__construct( "/{$commerce_manager_id}", 'GET' );
 	}
 
 
 	/**
 	 * Gets the request parameters.
 	 *
-	 * @since 2.0.0
+	 * @since 2.3.0
 	 *
 	 * @return array
 	 */
 	public function get_params() {
 
-		return [ 'fields' => 'name,link,commerce_merchant_settings' ];
+		return [ 'fields' => 'cta,setup_status' ];
 	}
 
 
