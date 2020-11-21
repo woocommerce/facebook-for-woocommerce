@@ -280,7 +280,7 @@ class API extends Framework\SV_WC_API_Base {
 	}
 
 
-  /**
+	/**
 	 * Gets a business manager object from Facebook.
 	 *
 	 * @since 2.0.0

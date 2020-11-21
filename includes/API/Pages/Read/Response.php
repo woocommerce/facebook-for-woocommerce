@@ -57,13 +57,13 @@ class Response extends API\Response  {
 	 */
 	public function get_commerce_merchant_settings_id() {
 
-    $data = $this->commerce_merchant_settings->data;
+		$data = $this->commerce_merchant_settings->data;
 
-    if (is_object( $data[0])) {
-      return $data[0]->id;
-    }
+		if (is_object( $data[0])) {
+			return $data[0]->id;
+		}
 
-    return '';
+		return '';
 	}
 
 

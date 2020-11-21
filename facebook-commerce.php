@@ -2978,7 +2978,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-  /**
+	/**
 	 * Sanitizes a value that's a Facebook credential.
 	 *
 	 * @since 1.10.0
@@ -3108,7 +3108,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 
-  /***
+	/***
 	 * Determines if the feed has been migrated from FBE 1 to FBE 1.5
 	 *
 	 * @since 1.11.0

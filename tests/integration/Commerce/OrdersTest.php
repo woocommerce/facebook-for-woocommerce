@@ -26,13 +26,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// the API cannot be instantiated if an access token is not defined
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( 'fake_page_access_token' );
-		// facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( 'fake_commerce_manager_id' );
-    // facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
-
-		// // This would usually covered as a hook on the init action but if the acceptance
-		// // test setup doesn't already have a page acess token or commerce manager id
-		// // then it'll have been skipped.
-		// $this->get_commerce_orders_handler()->schedule_local_orders_update();
 
 		// create an instance of the API and load all the request and response classes
 		facebook_for_woocommerce()->get_api();

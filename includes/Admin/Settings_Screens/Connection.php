@@ -145,23 +145,23 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			],
 		];
 
-    // If the Page ID is set, update the URL and get its name for display
-    if ( $page_id = $static_items['page']['value'] ) {
+		// If the Page ID is set, update the URL and get its name for display
+		if ( $page_id = $static_items['page']['value'] ) {
 
-      try {
+			try {
 
-        $response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
+				$response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
 
-        if ( $url = $response->get_url() ) {
-          $static_items['page']['url'] = $url;
-        }
+				if ( $url = $response->get_url() ) {
+					$static_items['page']['url'] = $url;
+				}
 
-        if ( $name = $response->get_name() ) {
-          $static_items['page']['value'] = $name;
-        }
+				if ( $name = $response->get_name() ) {
+					$static_items['page']['value'] = $name;
+				}
 
-      } catch ( SV_WC_API_Exception $exception ) {}
-    }
+			} catch ( SV_WC_API_Exception $exception ) {}
+		}
 
 		// if the catalog ID is set, update the URL and try to get its name for display
 		if ( $catalog_id = $static_items['catalog']['value'] ) {

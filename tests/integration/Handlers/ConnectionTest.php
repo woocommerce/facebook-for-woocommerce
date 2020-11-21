@@ -25,9 +25,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::__construct() */
 	public function test_constructor() {
 
-        $connection = $this->get_connection();
+		$connection = $this->get_connection();
 
-        $this->assertInstanceOf( Connection::class, $connection );
+		$this->assertInstanceOf( Connection::class, $connection );
 	}
 
 

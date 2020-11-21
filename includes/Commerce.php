@@ -78,7 +78,7 @@ class Commerce {
 	}
 
 
-  /**
+	/**
 	 * Determines whether Commerce features should be available.
 	 *
 	 * @since 2.1.0
@@ -116,7 +116,7 @@ class Commerce {
 		$category_id = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, '' );
 
 		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_manager_id() ) &&
-      $connection_handler->is_onsite_checkout_connected();
+			$connection_handler->is_onsite_checkout_connected();
 
 		/**
 		 * Filters whether the site is connected.
@@ -130,7 +130,7 @@ class Commerce {
 	}
 
 
-  /**
+	/**
 	 * Gets the orders handler instance.
 	 *
 	 * @since 2.1.0

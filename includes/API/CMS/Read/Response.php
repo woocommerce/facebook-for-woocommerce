@@ -31,9 +31,11 @@ class Response extends API\Response  {
 	 */
 	public function get_cta() {
 
-    codecept_debug($this);
 		return $this->cta;
 	}
+
+
+
 
 
 	/**
@@ -47,7 +49,7 @@ class Response extends API\Response  {
 
 		$data = ! empty( $this->setup_status->data ) && is_array( $this->setup_status->data ) ? $this->setup_status->data : [];
 
-    return is_object( $data[0] ) ? $data[0] : new \stdClass();
+		return is_object( $data[0] ) ? $data[0] : new \stdClass();
 	}
 
 

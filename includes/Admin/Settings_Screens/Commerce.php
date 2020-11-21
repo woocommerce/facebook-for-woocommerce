@@ -151,12 +151,12 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		 * + Payment Setup: Status
 		 */
 
-    $commerce_manager_id = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manager_id();
+		$commerce_manager_id = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manager_id();
 		$static_items = [
 			'commerce_manager' => [
 				'label' => __( 'Commerce Manager account', 'facebook-for-woocommerce' ),
 				'value' => $commerce_manager_id,
-        'url'   => "https://business.facebook.com/commerce_manager/{$commerce_manager_id}"
+				'url'   => "https://business.facebook.com/commerce_manager/{$commerce_manager_id}"
 			],
 			'shop_cta' => [
 				'label' => __( 'Shop Call to Action', 'facebook-for-woocommerce' ),
@@ -169,30 +169,30 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			],
 		];
 
-    $commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
+		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
 
-    // If the Commerce Manager ID is set, update the shop / setup details
-    if ( $commerce_manager_id ) {
+		// If the Commerce Manager ID is set, update the shop / setup details
+		if ( $commerce_manager_id ) {
 
-      try {
+			try {
 
-        $response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
+				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
 
-        if ( $cta = $response->get_cta() ) {
-          $static_items['shop_cta']['value'] = $cta;
-        }
+				if ( $cta = $response->get_cta() ) {
+					$static_items['shop_cta']['value'] = $cta;
+				}
 
-        if ( $setup_status = $response->get_setup_status() ) {
-          $static_items['shop_setup']['value'] = $setup_status->shop_setup;
-          $static_items['payment_setup']['value'] = $setup_status->payment_setup;
-        }
+				if ( $setup_status = $response->get_setup_status() ) {
+					$static_items['shop_setup']['value'] = $setup_status->shop_setup;
+					$static_items['payment_setup']['value'] = $setup_status->payment_setup;
+				}
 
-        if ( $cta === 'ONSITE_CHECKOUT' && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
-          $commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
-        }
+				if ( $cta === 'ONSITE_CHECKOUT' && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
+					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
+				}
 
-      } catch ( SV_WC_API_Exception $exception ) {}
-    }
+			} catch ( SV_WC_API_Exception $exception ) {}
+		}
 
 		// if the user has authorized the pages_ready_engagement scope, they can go directly to the Commerce onboarding
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
