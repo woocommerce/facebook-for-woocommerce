@@ -10,7 +10,9 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 
@@ -49,7 +51,8 @@ class Product_Sets {
 	 *
 	 * @var string
 	 */
-	protected $categories_field = 'wc_product_cats';
+	protected $categories_field = '';
+
 
 	/**
 	 * Handler constructor.
@@ -57,6 +60,8 @@ class Product_Sets {
 	 * @since 2.1.5
 	 */
 	public function __construct() {
+
+		$this->categories_field = \WC_Facebookcommerce::PRODUCT_SET_META;
 
 		// add taxonomy custom field
 		add_action( 'fb_product_set_add_form_fields', array( $this, 'category_field_on_new' ) );
@@ -66,6 +71,7 @@ class Product_Sets {
 		add_action( 'created_fb_product_set', array( $this, 'save_custom_field' ), 10, 2 );
 		add_action( 'edited_fb_product_set', array( $this, 'save_custom_field' ), 10, 2 );
 	}
+
 
 	/**
 	 * Add field to FB Product Set new term
@@ -80,6 +86,7 @@ class Product_Sets {
 		</div>
 		<?php
 	}
+
 
 	/**
 	 * Add field to FB Product Set new term
@@ -106,6 +113,7 @@ class Product_Sets {
 		<?php
 	}
 
+
 	/**
 	 * Saves custom field data
 	 *
@@ -116,19 +124,20 @@ class Product_Sets {
 	 */
 	public function save_custom_field( $term_id, $tt_id ) {
 
-		$wc_product_cats_temp = empty( $_POST[ $this->categories_field ] ) ? '' : $_POST[ $this->categories_field ]; //phpcs:ignore
-		if ( ! empty( $wc_product_cats_temp ) ) {
+		$wc_product_cats = empty( $_POST[ $this->categories_field ] ) ? '' : $_POST[ $this->categories_field ]; //phpcs:ignore
+		if ( ! empty( $wc_product_cats ) ) {
 
 			$wc_product_cats = array_map(
 				function( $item ) {
 					return absint( $item );
 				},
-				$wc_product_cats_temp
+				$wc_product_cats
 			);
-
-			update_term_meta( $term_id, $this->categories_field, $wc_product_cats );
 		}
+
+		update_term_meta( $term_id, $this->categories_field, $wc_product_cats );
 	}
+
 
 	/**
 	 * Return field label HTML
@@ -140,6 +149,7 @@ class Product_Sets {
 		<label for="<?php echo esc_attr( $this->categories_field ); ?>"><?php echo esc_html__( 'WC Product Categories', 'facebook-for-woocommerce' ); ?></label>
 		<?php
 	}
+
 
 	/**
 	 * Return field HTML

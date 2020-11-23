@@ -33,6 +33,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var string the integration ID */
 		const INTEGRATION_ID = 'facebookcommerce';
 
+		/** @var string the product set categories meta name */
+		const PRODUCT_SET_META = 'wc_product_cats';
+
 
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
@@ -69,6 +72,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Products\Sync\Background background sync handler */
 		private $sync_background_handler;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\ProductSets\Sync product sets sync handler */
+		private $product_sets_sync_handler;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\Connection connection handler */
 		private $connection_handler;
@@ -127,6 +133,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Products/Stock.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
 				require_once __DIR__ . '/includes/Products/Sync/Background.php';
+				require_once __DIR__ . '/includes/ProductSets/Sync.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Commerce.php';
@@ -135,12 +142,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
 				require_once __DIR__ . '/includes/Utilities/Shipment.php';
 
-				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
-				$this->products_stock_handler  = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
-				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
-				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
-				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
-				$this->fb_categories 					 = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
+				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
+				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
+				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
+				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
+				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
 
 				if ( is_ajax() ) {
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
@@ -172,6 +180,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sets.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
