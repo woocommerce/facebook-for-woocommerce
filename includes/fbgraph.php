@@ -394,6 +394,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::_delete( $product_group_url );
 		}
 
+		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
+		public function create_product_set_item( $product_catalog_id, $data ) {
+			$url = $this->build_url( $product_catalog_id, '/product_sets', '8.0' );
+			return self::_post( $url, $data );
+		}
+
+		// POST https://graph.facebook.com/vX.X/{product-set-id}
+		public function update_product_set_item( $product_set_id, $data ) {
+			$url = $this->build_url( $product_set_id, '', '8.0' );
+			return self::_post( $url, $data );
+		}
+
+
 		public function log( $ems_id, $message, $error ) {
 			$log_url = $this->build_url( $ems_id, '/log_events' );
 
