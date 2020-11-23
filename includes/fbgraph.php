@@ -406,6 +406,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::_post( $url, $data );
 		}
 
+		public function delete_product_set_item( $product_set_id ) {
+			$url = $this->build_url( $product_set_id, '', '8.0' );
+			return self::_delete( $url );
+		}
+
 
 		public function log( $ems_id, $message, $error ) {
 			$log_url = $this->build_url( $ems_id, '/log_events' );
