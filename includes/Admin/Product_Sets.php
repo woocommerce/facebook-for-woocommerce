@@ -160,19 +160,8 @@ class Product_Sets {
 	 */
 	protected function get_field( $term_id = '' ) {
 
-		$saved_items = get_term_meta( $term_id, $this->categories_field, true );
-
-		// gets Product Cats that has Google Category set
-		$product_cats_args = array(
-			'hide_empty' => 0,
-			'meta_query' => array(
-				array(
-					'key'     => \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY,
-					'compare' => 'EXISTS',
-				),
-			),
-		);
-		$product_cats      = get_terms( 'product_cat', $product_cats_args );
+		$saved_items  = get_term_meta( $term_id, $this->categories_field, true );
+		$product_cats = get_terms( 'product_cat', array( 'hide_empty' => 0 ) );
 
 		?>
 		<div class="select2 updating-message"><p></p></div>
