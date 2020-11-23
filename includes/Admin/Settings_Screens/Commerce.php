@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection as Connection_Handler;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The Commerce settings screen object.
