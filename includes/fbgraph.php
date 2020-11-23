@@ -160,8 +160,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				'timeout' => self::CURL_TIMEOUT,
 			];
 
-			$fbasync = new WC_Facebookcommerce_Async_Request();
 
+			$fbasync = new WC_Facebookcommerce_Async_Request();
 			$fbasync->query_url  = $url;
 			$fbasync->query_args = array();
 			$fbasync->post_args  = $request_args;
@@ -568,10 +568,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::_post( $url, $data );
 		}
 
-		private function build_url( $field_id, $param = '' ) {
-			return self::GRAPH_API_URL . (string) $field_id . $param;
+		private function build_url( $field_id, $param = '', $api_version = '' ) {
+			$api_url = self::GRAPH_API_URL;
+			if ( ! empty( $api_version ) ) {
+				$api_url = str_replace( '2.9', str_replace( 'v', '', trim( $api_version ) ), $api_url );
+			}
+			return $api_url . (string) $field_id . $param;
 		}
-
 	}
 
 endif;
