@@ -115,6 +115,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_action( 'init', [ $this, 'get_integration' ] );
 			add_action( 'init', [ $this, 'register_custom_taxonomy' ] );
 
+			// Product Set breadcrumb filters
+			add_filter( 'woocommerce_navigation_is_connected_page', [ $this, 'is_current_page_conected_filter' ], 99, 2 );
+			add_filter( 'woocommerce_navigation_get_breadcrumbs', [ $this, 'wc_page_breadcrumbs_filter' ], 99 );
+
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 
 				include_once 'facebook-commerce.php';
@@ -391,6 +395,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'name'                       => $plural,
 					'singular_name'              => $singular,
 					'menu_name'                  => $plural,
+					// translators: Edit item label
+					'edit_item'                  => sprintf( esc_html__( 'Edit %s', 'facebook-for-woocommerce' ), $singular ),
 					// translators: Add new label
 					'add_new_item'               => sprintf( esc_html__( 'Add new %s', 'facebook-for-woocommerce' ), $singular ),
 					'menu_name'                  => $plural,
@@ -410,6 +416,57 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
+		}
+
+
+		/**
+		 * Filter WC Breadcrumbs when the page is FB Product Sets
+		 *
+		 * @since 2.1.5
+		 *
+		 * @param array $breadcrumbs Page breadcrumbs.
+		 *
+		 * @return array
+		 */
+		public function wc_page_breadcrumbs_filter( $breadcrumbs ) {
+
+			if ( 'edit-fb_product_set' !== $this->get_current_page_id() ) {
+				return $breadcrumbs;
+			}
+
+			$breadcrumbs = array(
+				array( 'admin.php?page=wc-admin', 'WooCommerce' ),
+				array( 'edit.php?post_type=product', 'Products' ),
+			);
+
+			$term_id = empty( $_GET['tag_ID'] ) ? '' : $_GET['tag_ID']; //phpcs:ignore WordPress.Security
+
+			if ( ! empty( $term_id ) ) {
+				$breadcrumbs[] = array( 'edit-tags.php?taxonomy=fb_product_set&post_type=product', 'Products Sets' );
+			}
+
+			$breadcrumbs[] = ( empty( $term_id ) ? 'Product Sets' : 'Edit Product Set' );
+
+			return $breadcrumbs;
+		}
+
+
+		/**
+		 * Return that FB Product Set page is a WC Conected Page
+		 *
+		 * @since 2.1.5
+		 *
+		 * @param boolean $is_conected If it's connected or not.
+		 *
+		 * @return boolean
+		 */
+		public function is_current_page_conected_filter( $is_conected ) {
+
+			if ( 'edit-fb_product_set' === $this->get_current_page_id() ) {
+				return true;
+			}
+
+			return $is_conected;
 		}
 
 
@@ -905,6 +962,24 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		protected function get_file() {
 
 			return __FILE__;
+		}
+
+
+		/**
+		 * Return current page ID
+		 *
+		 * @since 2.1.5
+		 *
+		 * @return string
+		 */
+		protected function get_current_page_id() {
+
+			$current_screen_id = '';
+			$current_screen    = get_current_screen();
+			if ( ! empty( $current_screen ) ) {
+				$current_screen_id = $current_screen->id;
+			}
+			return $current_screen_id;
 		}
 
 
