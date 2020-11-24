@@ -316,6 +316,13 @@ class Sync {
 		);
 		$product_ids   = get_posts( $products_args );
 
+		// gets products variations
+		global $wpdb;
+		$variation_ids = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = 'product_variation' AND post_parent IN (%s) ", implode( ',', $product_ids ) ) );
+		if ( ! empty( $variation_ids ) ) {
+			$product_ids = array_merge( $product_ids, wp_list_pluck( $variation_ids, 'ID' ) );
+		}
+
 		// formats filter value
 		foreach ( $product_ids as $product_id ) {
 			array_push(
