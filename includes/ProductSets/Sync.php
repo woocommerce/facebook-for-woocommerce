@@ -118,10 +118,11 @@ class Sync {
 
 		// product hooks, compare taxonomies the lists before and after saving product to see if must sync
 		add_filter( 'wp_insert_post_data', array( $this, 'check_product_data_before_save' ), 99, 2 );
-		add_action( 'save_post', array( $this, 'check_product_data_after_save' ), 99, 2 );//maybe_sync_product_sets
+		add_action( 'save_post', array( $this, 'check_product_data_after_save' ), 99, 2 );
 
 		// product hooks, sync product's product set when deleting or restoring product
 		add_action( 'trashed_post', array( $this, 'sync_product_product_sets' ), 99 );
+		add_action( 'before_delete_post', array( $this, 'sync_product_product_sets' ), 99 );
 		add_action( 'untrashed_post', array( $this, 'sync_product_product_sets' ), 99 );
 
 		// product set hooks, compare taxonomies the lists before and after saving product to see if must sync
