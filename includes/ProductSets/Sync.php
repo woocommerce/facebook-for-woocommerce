@@ -353,7 +353,6 @@ class Sync {
 		$product_ids   = get_posts( $products_args );
 
 		if ( empty( $product_ids ) ) {
-error_log( 'NO PRODUCTS, WILL REMOVE' );
 			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
 			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
 			do_action( 'fb_wc_product_set_delete', $fb_product_set_id );
