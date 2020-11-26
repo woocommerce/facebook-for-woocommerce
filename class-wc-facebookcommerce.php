@@ -114,6 +114,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			add_action( 'init', [ $this, 'get_integration' ] );
 			add_action( 'init', [ $this, 'register_custom_taxonomy' ] );
+			add_filter( 'manage_edit-fb_product_set_columns', [ $this, 'manage_fb_product_set_columns' ] );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', [ $this, 'is_current_page_conected_filter' ], 99, 2 );
@@ -416,6 +417,21 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
+		}
+
+
+		/**
+		 * Remove posts count column from FB Product Set custom taxonomy
+		 *
+		 * @since 2.1.5
+		 *
+		 * @param array $columns Taxonomy columns.
+		 *
+		 * @return array
+		 */
+		public function manage_fb_product_set_columns( $columns ) {
+			unset( $columns['posts'] );
+			return $columns;
 		}
 
 
