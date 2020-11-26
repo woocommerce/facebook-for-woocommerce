@@ -117,8 +117,12 @@ class Sync {
 	public function add_hooks() {
 
 		// product hooks, compare taxonomies the lists before and after saving product to see if must sync
-		add_filter( 'wp_insert_post_data', array( $this, 'filter_product_data' ), 99, 2 );
-		add_action( 'save_post', array( $this, 'maybe_sync_product_sets' ), 99, 2 );
+		add_filter( 'wp_insert_post_data', array( $this, 'check_product_data_before_save' ), 99, 2 );
+		add_action( 'save_post', array( $this, 'check_product_data_after_save' ), 99, 2 );//maybe_sync_product_sets
+
+		// product hooks, sync product's product set when deleting or restoring product
+		add_action( 'trashed_post', array( $this, 'sync_product_product_sets' ), 99 );
+		add_action( 'untrashed_post', array( $this, 'sync_product_product_sets' ), 99 );
 
 		// product set hooks, compare taxonomies the lists before and after saving product to see if must sync
 		add_action( 'created_fb_product_set', array( $this, 'fb_product_set_hook_before' ), 1 );
@@ -143,10 +147,10 @@ class Sync {
 	 * @param array $data Post Data.
 	 * @param array $post Post.
 	 */
-	public function filter_product_data( $data, $post ) {
+	public function check_product_data_before_save( $data, $post ) {
 
 		// gets product's current categories IDs
-		if ( 'product' === $post['post_type'] ) {
+		if ( ! empty( $post ) && 'product' === $post['post_type'] ) {
 			self::$prev_product_cat = wc_get_product_cat_ids( $post['ID'] );
 			self::$prev_product_set = wc_get_product_term_ids( $post['ID'], 'fb_product_set' );
 		}
@@ -154,16 +158,34 @@ class Sync {
 		return $data;
 	}
 
+	/**
+	 * Sync Product's Product Sets based on its Categories
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function sync_product_product_sets( $post_id ) {
+
+		if ( 'product' !== get_post_type( $post_id ) ) {
+			return;
+		}
+
+		// get product's categories and sets
+		$product_cats = wc_get_product_cat_ids( $post_id );
+		$product_sets = wc_get_product_term_ids( $post_id, 'fb_product_set' );
+
+		$this->maybe_sync_product_sets( $product_cats, $product_sets );
+	}
+
 
 	/**
-	 * Stores the list of categories and product set of a product to compare with the previous and check if must sync
+	 * Stores the list of categories and product set of a product to compare with the previous
 	 *
 	 * @since 2.1.5
 	 *
 	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post Post Object.
 	 */
-	public function maybe_sync_product_sets( $post_id, $post ) {
+	public function check_product_data_after_save( $post_id, $post = '' ) {
 
 		if ( 'product' !== $post->post_type ) {
 			return;
@@ -180,18 +202,31 @@ class Sync {
 			return;
 		}
 
-		// will search products that belongs to these terms
-		if ( empty( $product_set_diffs ) || ! is_array( $product_set_diffs ) ) {
-			$product_set_diffs = array();
+		$this->maybe_sync_product_sets( $product_cat_diffs, $product_set_diffs );
+	}
+
+
+	/**
+	 * Check if must sync Product Sets from given lists
+	 *
+	 * @since 2.1.5
+	 *
+	 * @param array $product_cats Product Category Term IDs.
+	 * @param array $product_sets Product Set Term IDs.
+	 */
+	public function maybe_sync_product_sets( $product_cats, $product_sets ) {
+
+		if ( empty( $product_sets ) || ! is_array( $product_sets ) ) {
+			$product_sets = array();
 		}
-		$product_set_term_ids = array_merge( array(), $product_set_diffs );
+		$product_set_term_ids = array_merge( array(), $product_sets );
 
 		// check if product cat belongs to a product_set
-		foreach ( $product_cat_diffs as $product_cat_id ) {
+		foreach ( $product_cats as $product_cat_id ) {
 
-			$product_sets = $this->get_product_cat_sets( $product_cat_id );
-			if ( ! empty( $product_sets ) ) {
-				$product_set_term_ids = array_merge( $product_set_term_ids, $product_sets );
+			$cat_product_sets = $this->get_product_cat_sets( $product_cat_id );
+			if ( ! empty( $cat_product_sets ) ) {
+				$product_set_term_ids = array_merge( $product_set_term_ids, $cat_product_sets );
 			}
 		}
 
@@ -297,6 +332,7 @@ class Sync {
 		$products_args = array(
 			'fields'         => 'ids',
 			'post_type'      => 'product',
+			'post_status'    => 'publish',
 			'posts_per_page' => -1,
 			'tax_query'      => array(
 				'relation' => 'OR',
@@ -315,6 +351,13 @@ class Sync {
 			),
 		);
 		$product_ids   = get_posts( $products_args );
+
+		if ( empty( $product_ids ) ) {
+error_log( 'NO PRODUCTS, WILL REMOVE' );
+			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
+			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
+			do_action( 'fb_wc_product_set_delete', $fb_product_set_id );
+		}
 
 		// gets products variations
 		global $wpdb;
