@@ -19,8 +19,8 @@ defined( 'ABSPATH' ) or exit;
  */
 class Google_Categories {
 
-	/** @var string the WordPress option name where the full categories list is stored */
-	const OPTION_GOOGLE_PRODUCT_CATEGORIES = 'wc_facebook_google_product_categories';
+	/** @var string the WordPress option name where the last time the full categories list get updated is stored */
+	const OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED = 'wc_facebook_google_product_categories_update';
 
 
 	/**
@@ -33,21 +33,79 @@ class Google_Categories {
 	public function get_categories() {
 
 		// only fetch again if not fetched less than one week ago
-		// $categories = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
-		$categories = '';
+		$last_updated = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED );
 
-		if ( empty ( $categories ) ) {
+		if ( empty ( $last_updated ) ) {
 
 			// fetch from the URL
-			// $categories = $this->fetch_categories_list_from_url();
+			$categories = $this->fetch_categories_list_from_url();
 
+			if ( ! empty( $categories ) ) {
 
-			//			if ( ! empty( $categories ) ) {
-			//				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
-			//			}
+				// store into database for later use
+				$this->store_categories_list( $categories );
+
+				// mark when it's stored
+				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED, current_time( 'mysql' ), WEEK_IN_SECONDS );
+			}
 		}
 
 		return $categories;
+	}
+
+
+	/**
+	 * Fetches the full categories list from Google.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param array $categories fetched Google categories list to store
+	 */
+	private function store_categories_list( $categories ) {
+
+		global $wpdb;
+
+		$this->empty_db_table();
+
+		foreach ( $categories as $category_id => $category ) {
+
+			$this->store_item( $category_id, $category['label'], $category['parent'] );
+		}
+	}
+
+
+	/**
+	 * Stores given Google category into database.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param int $item_id category item ID
+	 * @param string $item_label category item label
+	 * @param int $item_parent category parent ID (optional)
+	 */
+	private function store_item( $item_id, $item_label, $item_parent = 0 ) {
+
+		global $wpdb;
+
+		$wpdb->insert( self::get_table_name(), [
+			'id'        => $item_id,
+			'parent_id' => $item_parent,
+			'label'     => $item_label,
+		], [ '%d', '%d', '%s' ] );
+
+	}
+
+
+	/**
+	 * Cleans up all previous categories stored.
+	 *
+	 * @since 2.2.1-dev.1
+	 */
+	private function empty_db_table() {
+
+		global $wpdb;
+
+		$wpdb->query( 'TRUNCATE ' . self::get_table_name() );
 	}
 
 
@@ -194,7 +252,7 @@ class Google_Categories {
 		$collate    = $collate = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
 
 		return "CREATE TABLE {$table_name} (
-  id BIGINT(20) unsigned NOT NULL auto_increment,
+  id BIGINT(20) unsigned NOT NULL,
   parent_id BIGINT(20) NOT NULL default 0,
   label VARCHAR(200) NOT NULL default '',
   PRIMARY KEY (id ASC),
