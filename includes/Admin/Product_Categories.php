@@ -284,7 +284,7 @@ class Product_Categories {
 			?>
 				<tr class='form-field'>
 				<td colspan="2">
-				<span>HELLO<?php echo $category_id; ?></span>
+				<span><?php echo $category_id; ?></span>
 				</td>
 				</tr>
 			<?php
