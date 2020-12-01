@@ -62,6 +62,9 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 			$this->upgrade( '1.9.15' );
 		}
+
+		// Versions prior to 2.2.1-dev.1 did not have Google categories custom table, so the upgrade method needs to be called manually.
+		$this->upgrade( '2.2.1-dev.1' );
 	}
 
 
