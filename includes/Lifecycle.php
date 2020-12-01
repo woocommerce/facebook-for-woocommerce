@@ -42,6 +42,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.0',
 			'2.0.3',
 			'2.0.4',
+			'2.2.1',
 		];
 	}
 
@@ -336,5 +337,41 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 	}
 
+
+	/**
+	 * Upgrades to version 2.2.1
+	 *
+	 * @since 2.2.1-dev.1
+	 */
+	protected function upgrade_to_2_2_1() {
+
+		global $wpdb;
+
+		// nothing to create if we're already there
+		if ( self::validate_google_categories_table() ) {
+			return;
+		}
+
+		$wpdb->hide_errors();
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		dbDelta( Google_Categories::get_table_schema() );
+	}
+
+	/**
+	 * Validates that the table required by Google Categories is present in the database.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return bool true if all are found, false if not
+	 */
+	public static function validate_google_categories_table() {
+		global $wpdb;
+
+		$table_name = Google_Categories::get_table_name();
+
+		return $table_name === $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" );
+	}
 
 }

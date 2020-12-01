@@ -39,11 +39,12 @@ class Google_Categories {
 		if ( empty ( $categories ) ) {
 
 			// fetch from the URL
-			$categories = $this->fetch_categories_list_from_url();
+			// $categories = $this->fetch_categories_list_from_url();
 
-			if ( ! empty( $categories ) ) {
-				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
-			}
+
+			//			if ( ! empty( $categories ) ) {
+			//				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
+			//			}
 		}
 
 		return $categories;
@@ -160,6 +161,46 @@ class Google_Categories {
 		 * @param array $categories_list_url Google categories list URL
 		 */
 		return (string) apply_filters( 'wc_facebook_google_categories_list_url', 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt' );
+	}
+
+
+	/**
+	 * Gets the table name used for storing categories.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return string table name
+	 */
+	public static function get_table_name() {
+
+		global $wpdb;
+
+		return $wpdb->prefix . 'wc_facebook_google_categories';
+	}
+
+
+	/**
+	 * Returns the database schema needed to create the table.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return string database schema
+	 */
+	public static function get_table_schema() {
+
+		global $wpdb;
+
+		$table_name = self::get_table_name();
+		$collate    = $collate = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
+
+		return "CREATE TABLE {$table_name} (
+  id BIGINT(20) unsigned NOT NULL auto_increment,
+  parent_id BIGINT(20) NOT NULL default 0,
+  label VARCHAR(200) NOT NULL default '',
+  PRIMARY KEY (id ASC),
+  KEY parent_id (parent_id ASC)
+) $collate;
+		";
 	}
 
 }
