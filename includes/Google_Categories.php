@@ -48,9 +48,68 @@ class Google_Categories {
 				// mark when it's stored
 				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED, current_time( 'mysql' ), WEEK_IN_SECONDS );
 			}
+		} else {
+
+			// load from database/cached
+			$categories = $this->get_cached_categories_list();
+
 		}
 
 		return $categories;
+	}
+
+
+	/**
+	 * Gets cached categories list form database.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_cached_categories_list() {
+
+		$raw_categories_items = $this->get_items();
+
+		if ( empty( $raw_categories_items ) ) {
+			return [];
+		}
+
+		$categories = [];
+
+		foreach ( $raw_categories_items as $category_item ) {
+
+			$category_id        = (int) $category_item['id'];
+			$parent_category_id = (int) $category_item['parent_id'];
+
+			$category = [
+				'label'   => $category_item['label'],
+				'options' => [],
+				'parent'  => $parent_category_id,
+			];
+
+			if ( isset( $categories[ $parent_category_id ] ) ) {
+				$categories[ $parent_category_id ]['options'][ $category_id ] = $category['label'];
+			}
+
+			$categories[ $category_id ] = $category;
+		}
+
+		return $categories;
+	}
+
+
+	/**
+	 * Queries full categories list from database.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return array
+	 */
+	private function get_items() {
+
+		global $wpdb;
+
+		return (array) $wpdb->get_results( 'SELECT * FROM ' . self::get_table_name(), ARRAY_A );
 	}
 
 
