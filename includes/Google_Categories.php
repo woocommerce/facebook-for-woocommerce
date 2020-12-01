@@ -78,7 +78,72 @@ class Google_Categories {
 			] );
 		}
 
-		return wp_remote_retrieve_body( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		// fail if response body is empty
+		if ( empty( $response_body ) ) {
+			return new \WP_Error( 'wc_facebook_google_categories_empty_response', __( 'Google categories response is empty.', 'facebook-for-woocommerce' ) );
+		}
+
+		return $this->parse_categories_response( $response_body );
+	}
+
+
+	/**
+	 * Parses the categories response from Google.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param string $response_body categories response body from Google
+	 * @return array
+	 */
+	protected function parse_categories_response( $response_body ) {
+
+		$categories        = [];
+		$categories_body   = explode( "\n", $response_body );
+		$categories_labels = [];
+
+		// format: ID - Top level category > ... > Parent category > Category label
+		// example: 7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
+		foreach ( $categories_body as $category_line ) {
+
+			if ( strpos( $category_line, ' - ' ) === false ) {
+
+				// not a category, skip it
+				continue;
+			}
+
+			list( $category_id, $category_tree ) = explode( ' - ', $category_line );
+
+			$category_id    = (string) trim( $category_id );
+			$category_tree  = explode( ' > ', $category_tree );
+			$category_label = end( $category_tree );
+
+			$categories_labels[ $category_label ] = $category_id;
+
+			$category = [
+				'label'   => $category_label,
+				'options' => [],
+			];
+
+			if ( $category_label === $category_tree[0] ) {
+
+				// top-level category
+				$category['parent'] = '';
+
+			} else {
+
+				$parent_label       = $category_tree[ count( $category_tree ) - 2 ];
+				$parent_category    = isset( $categories_labels[ $parent_label ] ) ? $categories_labels[ $parent_label ] : '0';
+				$category['parent'] = (string) $parent_category;
+
+				// add category label to the parent's list of options
+				$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
+			}
+
+			$categories[ $category_id ] = $category;
+		}
+
+		return $categories;
 	}
 
 
