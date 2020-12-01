@@ -79,6 +79,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
 		private $commerce_handler;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Google_Categories google categories handler */
+		private $google_categories_handler;
+
 
 		/**
 		 * Constructs the plugin.
@@ -129,17 +132,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Commerce.php';
+				require_once __DIR__ . '/includes/Google_Categories.php';
 				require_once __DIR__ . '/includes/Events/Event.php';
 				require_once __DIR__ . '/includes/Events/Normalizer.php';
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
 				require_once __DIR__ . '/includes/Utilities/Shipment.php';
 
-				$this->product_feed            = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
-				$this->products_stock_handler  = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
-				$this->products_sync_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
-				$this->sync_background_handler = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
-				$this->commerce_handler        = new \SkyVerge\WooCommerce\Facebook\Commerce();
-				$this->fb_categories 					 = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
+				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
+				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
+				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
+				$this->google_categories_handler = new \SkyVerge\WooCommerce\Facebook\Google_Categories();
+				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
 
 				if ( is_ajax() ) {
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
