@@ -732,6 +732,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			return $this->commerce_handler;
 		}
 
+
+		/**
+		 * Gets Google categories handler instance.
+		 *
+		 * @since 2.2.1-dev.1
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Google_Categories Google categories handler instance
+		 */
+		public function get_google_categories_handler() {
+
+			return $this->google_categories_handler;
+		}
+
+
 		/**
 		 * Gets the settings page URL.
 		 *
