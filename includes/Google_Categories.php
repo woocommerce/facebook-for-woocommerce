@@ -76,22 +76,23 @@ class Google_Categories {
 
 		$categories = [];
 
+		// structure all categories semi-flat
 		foreach ( $raw_categories_items as $category_item ) {
-
-			$category_id        = (int) $category_item['id'];
-			$parent_category_id = (int) $category_item['parent_id'];
-
-			$category = [
+			$categories[ (int) $category_item['id'] ] = [
 				'label'   => $category_item['label'],
 				'options' => [],
-				'parent'  => $parent_category_id,
+				'parent'  => (int) $category_item['parent_id'],
 			];
+		}
+
+		// then insert sub-categories as options
+		foreach ( $raw_categories_items as $category_item ) {
+
+			$parent_category_id = (int) $category_item['parent_id'];
 
 			if ( isset( $categories[ $parent_category_id ] ) ) {
-				$categories[ $parent_category_id ]['options'][ $category_id ] = $category['label'];
+				$categories[ $parent_category_id ]['options'][ (int) $category_item['id'] ] = $category_item['label'];
 			}
-
-			$categories[ $category_id ] = $category;
 		}
 
 		return $categories;
@@ -109,7 +110,7 @@ class Google_Categories {
 
 		global $wpdb;
 
-		return (array) $wpdb->get_results( 'SELECT * FROM ' . self::get_table_name(), ARRAY_A );
+		return (array) $wpdb->get_results( 'SELECT * FROM ' . self::get_table_name() . ' ORDER BY id ASC', ARRAY_A );
 	}
 
 
