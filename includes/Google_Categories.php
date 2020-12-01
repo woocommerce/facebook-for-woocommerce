@@ -22,6 +22,9 @@ class Google_Categories {
 	/** @var string the WordPress option name where the last time the full categories list get updated is stored */
 	const OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED = 'wc_facebook_google_product_categories_update';
 
+	/** @var array 2nd level of cache for loading Google categories list */
+	private $categories_list;
+
 
 	/**
 	 * Gets the categories list.
@@ -32,6 +35,10 @@ class Google_Categories {
 	 */
 	public function get_categories() {
 
+		if ( ! empty( $this->categories_list ) ) {
+			return $this->categories_list;
+		}
+
 		// only fetch again if not fetched less than one week ago
 		$last_updated = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED );
 
@@ -40,7 +47,7 @@ class Google_Categories {
 			// fetch from the URL
 			$categories = $this->fetch_categories_list_from_url();
 
-			if ( ! empty( $categories ) ) {
+			if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
 
 				// store into database for later use
 				$this->store_categories_list( $categories );
@@ -54,6 +61,8 @@ class Google_Categories {
 			$categories = $this->get_cached_categories_list();
 
 		}
+
+		$this->categories_list = $categories;
 
 		return $categories;
 	}

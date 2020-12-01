@@ -51,30 +51,7 @@ class Google_Product_Category_Field {
 	 */
 	public function get_categories() {
 
-		// only fetch again if not fetched less than one hour ago
-		$categories = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES );
-
-		if ( empty ( $categories ) ) {
-
-			// fetch from the URL
-			$categories_response = wp_remote_get( 'https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt' );
-
-			$categories = $this->parse_categories_response( $categories_response );
-
-			if ( ! empty( $categories ) ) {
-
-				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
-				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories );
-			}
-		}
-
-		if ( empty( $categories ) ) {
-
-			// get the categories from the saved option
-			$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, [] );
-		}
-
-		return $categories;
+		return facebook_for_woocommerce()->get_google_categories_handler()->get_categories();
 	}
 
 
