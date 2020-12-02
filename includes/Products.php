@@ -1111,7 +1111,7 @@ class Products {
 
 		if ( empty( $value ) ) {
 			// Check normal product attributes
-			foreach ( self::get_available_product_attributes( $product ) as $slug => $attribute ) {
+			foreach ( $product->get_attributes() as $slug => $attribute ) {
 				if ( $product->is_type( 'variation' ) ) {
 					$attr_name = $slug;
 					$attr_val  = $attribute;
