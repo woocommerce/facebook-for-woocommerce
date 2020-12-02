@@ -10,8 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -69,7 +69,7 @@ class Settings {
 	public function render() {
 
 		$tabs        = $this->get_tabs();
-		$current_tab = SV_WC_Helper::get_requested_value( 'tab' );
+		$current_tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
 
 		if ( ! $current_tab ) {
 			$current_tab = current( array_keys( $tabs ) );
@@ -113,17 +113,17 @@ class Settings {
 	 */
 	public function save() {
 
-		if ( ! is_admin() || SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
+		if ( ! is_admin() || Framework\SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
 			return;
 		}
 
-		$screen = $this->get_screen( SV_WC_Helper::get_posted_value( 'screen_id' ) );
+		$screen = $this->get_screen( Framework\SV_WC_Helper::get_posted_value( 'screen_id' ) );
 
 		if ( ! $screen ) {
 			return;
 		}
 
-		if ( ! SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
+		if ( ! Framework\SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
 			return;
 		}
 
@@ -139,7 +139,7 @@ class Settings {
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
 
 			facebook_for_woocommerce()->get_message_handler()->add_error(
 				sprintf(

@@ -10,8 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -133,7 +132,7 @@ class Connection {
 				}
 			}
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
 				$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
@@ -165,7 +164,7 @@ class Connection {
 
 			$this->update_installation_data();
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
 				$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
@@ -181,7 +180,7 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws SV_WC_API_Exception
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	private function update_installation_data() {
 
@@ -234,25 +233,25 @@ class Connection {
 		try {
 
 			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT ) ) {
-				throw new SV_WC_API_Exception( 'Invalid nonce' );
+				throw new Framework\SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
 			$merchant_access_token = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 
 			if ( ! $merchant_access_token ) {
-				throw new SV_WC_API_Exception( 'Access token is missing' );
+				throw new Framework\SV_WC_API_Exception( 'Access token is missing' );
 			}
 
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 
 			if ( ! $system_user_access_token ) {
-				throw new SV_WC_API_Exception( 'System User access token is missing' );
+				throw new Framework\SV_WC_API_Exception( 'System User access token is missing' );
 			}
 
 			$system_user_id = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
 			if ( ! $system_user_id ) {
-				throw new SV_WC_API_Exception( 'System User ID is missing' );
+				throw new Framework\SV_WC_API_Exception( 'System User ID is missing' );
 			}
 
 			$this->update_access_token( $system_user_access_token );
@@ -266,7 +265,7 @@ class Connection {
 			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
 
 			// redirect to the Commerce onboarding if directed to do so
-			if ( ! empty( SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
+			if ( ! empty( Framework\SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
 
 				wp_redirect( $this->get_commerce_connect_url() );
 				exit;
@@ -274,7 +273,7 @@ class Connection {
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
 
@@ -310,7 +309,7 @@ class Connection {
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Uninstall successful', 'facebook-for-woocommerce' ) );
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 			facebook_for_woocommerce()->log( sprintf( 'Uninstall failed: %s', $exception->getMessage() ) );
 
@@ -352,7 +351,7 @@ class Connection {
 	 *
 	 * @param string $page_id desired Facebook page ID
 	 * @return string
-	 * @throws SV_WC_API_Exception
+	 * @throws Framework\SV_WC_API_Exception
 	 */
 	private function retrieve_page_access_token( $page_id ) {
 
@@ -367,7 +366,7 @@ class Connection {
 
 			facebook_for_woocommerce()->log( print_r( $body, true ) );
 
-			throw new SV_WC_API_Exception( sprintf(
+			throw new Framework\SV_WC_API_Exception( sprintf(
 				/* translators: Placeholders: %s - API error message */
 				__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
 				wp_remote_retrieve_response_message( $response )
@@ -379,7 +378,7 @@ class Connection {
 		// bail if the user isn't authorized to manage the page
 		if ( empty( $page_access_tokens[ $page_id ] ) ) {
 
-			throw new SV_WC_API_Exception( sprintf(
+			throw new Framework\SV_WC_API_Exception( sprintf(
 				/* translators: Placeholders: %s - Facebook page ID */
 				__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
 				$page_id

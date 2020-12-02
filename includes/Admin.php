@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -31,7 +31,7 @@ class Admin {
 	/** @var string the "sync disabled" sync mode slug */
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
-	/** @var \Admin\Product_Categories the product category admin handler */
+	/** @var Admin\Product_Categories the product category admin handler */
 	protected $product_categories;
 
 
@@ -996,7 +996,7 @@ class Admin {
 		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id();
 		$message_id     = 'wc-' . facebook_for_woocommerce()->get_id_dasherized() . '-product-disabled-sync';
 
-		if ( ( $count = get_transient( $transient_name ) ) && ( SV_WC_Helper::is_current_screen( 'edit-product' ) || SV_WC_Helper::is_current_screen( 'product' ) ) ) {
+		if ( ( $count = get_transient( $transient_name ) ) && ( Framework\SV_WC_Helper::is_current_screen( 'edit-product' ) || Framework\SV_WC_Helper::is_current_screen( 'product' ) ) ) {
 
 			$message = sprintf(
 				/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - <a> tag */
@@ -1036,7 +1036,7 @@ class Admin {
 		$show_notice_transient_name       = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_show_notice_' . get_current_user_id();
 		$affected_products_transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
 
-		if ( SV_WC_Helper::is_current_screen( 'edit-product' ) && get_transient( $show_notice_transient_name ) && ( $affected_products = get_transient( $affected_products_transient_name ) ) ) {
+		if ( Framework\SV_WC_Helper::is_current_screen( 'edit-product' ) && get_transient( $show_notice_transient_name ) && ( $affected_products = get_transient( $affected_products_transient_name ) ) ) {
 
 			$message = sprintf(
 				esc_html(
@@ -1083,7 +1083,7 @@ class Admin {
 
 		$transient_name = 'wc_' . facebook_for_woocommerce()->get_id() . '_enabling_virtual_products_sync_affected_products_' . get_current_user_id();
 
-		if ( isset( $_GET['facebook_show_affected_products'] ) && SV_WC_Helper::is_current_screen( 'edit-product' ) && $affected_products = get_transient( $transient_name ) ) {
+		if ( isset( $_GET['facebook_show_affected_products'] ) && Framework\SV_WC_Helper::is_current_screen( 'edit-product' ) && $affected_products = get_transient( $transient_name ) ) {
 
 			$query_vars['post__in'] = $affected_products;
 		}

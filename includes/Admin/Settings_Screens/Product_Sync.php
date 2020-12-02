@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The Messenger settings screen object.
@@ -59,9 +59,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
+		$tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
 
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && self::ID !== $tab ) ) {
+		if ( Admin\Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && self::ID !== $tab ) ) {
 			return;
 		}
 

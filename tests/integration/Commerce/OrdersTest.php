@@ -7,8 +7,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Tests the general Commerce orders handler class.
@@ -349,7 +348,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$api = $this->make( API::class, [
 			'get_new_orders' => function( $page_id ) {
 
-				throw new SV_WC_API_Exception( 'Error' );
+				throw new Framework\SV_WC_API_Exception( 'Error' );
 			},
 		] );
 
@@ -570,7 +569,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order = new \WC_Order();
 		$order->save();
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 		$this->expectExceptionMessage( 'Remote ID not found.' );
 
 		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
@@ -590,7 +589,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$order->save();
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 		$this->expectExceptionMessage( 'NOT_A_CARRIER is not a valid shipping carrier code.' );
 
 		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'NOT_A_CARRIER' );
@@ -611,7 +610,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order->update_meta_data( Orders::REMOTE_ID_META_KEY, '1234' );
 		$order->save();
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 		$this->expectExceptionMessage( 'No valid Facebook products were found.' );
 
 		$this->get_commerce_orders_handler()->fulfill_order( $order, '1234', 'FEDEX' );
@@ -669,7 +668,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property->setAccessible( true );
 		$property->setValue( facebook_for_woocommerce(), $api );
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 
 		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
 
@@ -748,7 +747,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		$method = \IntegrationTester::getMethod( Commerce\Orders::class, 'get_refund_items' );
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 
 		$method->invoke( new Commerce\Orders(), $refund );
 	}
@@ -868,7 +867,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$property->setAccessible( true );
 		$property->setValue( facebook_for_woocommerce(), $api );
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 
 		$this->get_commerce_orders_handler()->add_order_refund( $refund, 'REFUND_REASON_OTHER' );
 
@@ -1036,7 +1035,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		$order = new \WC_Order();
 		$order->save();
 
-		$this->expectException( SV_WC_Plugin_Exception::class );
+		$this->expectException( Framework\SV_WC_Plugin_Exception::class );
 		$this->expectExceptionMessage( 'Remote ID not found.' );
 
 		$this->get_commerce_orders_handler()->cancel_order( $order, 'asdf' );

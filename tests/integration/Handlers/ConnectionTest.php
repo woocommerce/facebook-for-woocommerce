@@ -1,7 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Compatibility;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Tests the Connection class.
@@ -486,7 +486,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_get_timezone_string_from_offset( $offset, $timezone_string ) {
 
-		if ( SV_WC_Plugin_Compatibility::is_wc_version_lt( '4.3.0' ) ) {
+		if ( Framework\SV_WC_Plugin_Compatibility::is_wc_version_lt( '4.3.0' ) ) {
 			$this->markTestSkipped();
 		}
 

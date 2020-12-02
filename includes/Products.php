@@ -10,7 +10,6 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use WC_Facebook_Product;
 
@@ -840,17 +839,17 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the color
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
 		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
 		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute_name );
@@ -936,17 +935,17 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the size
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
 		if ( $attribute_name !== self::get_product_size_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
 		$product->update_meta_data( self::SIZE_ATTRIBUTE_META_KEY, $attribute_name );
@@ -1032,17 +1031,17 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the pattern
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
 		if ( $attribute_name !== self::get_product_pattern_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new Framework\SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
 		$product->update_meta_data( self::PATTERN_ATTRIBUTE_META_KEY, $attribute_name );
