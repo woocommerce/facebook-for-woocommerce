@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
+use SkyVerge\WooCommerce\Facebook\Admin\Google_Product_Category_Field;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
@@ -348,6 +349,31 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_2_2_1() {
 
+		self::remove_google_categories_from_options();
+
+		self::create_google_categories_table();
+	}
+
+
+	/**
+	 * Removes Google Categories from options table.
+	 *
+	 * @since 2.2.1-dev.1
+	 */
+	private static function remove_google_categories_from_options() {
+
+		delete_option( Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+
+		delete_transient( Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES );
+	}
+
+	/**
+	 * Creates the table required by Google Categories is present in the database.
+	 *
+	 * @since 2.2.1-dev.1
+	 */
+	private static function create_google_categories_table() {
+
 		global $wpdb;
 
 		// nothing to create if we're already there
@@ -362,6 +388,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		dbDelta( Google_Categories::get_table_schema() );
 	}
 
+
 	/**
 	 * Validates that the table required by Google Categories is present in the database.
 	 *
@@ -369,7 +396,8 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 *
 	 * @return bool true if all are found, false if not
 	 */
-	public static function validate_google_categories_table() {
+	private static function validate_google_categories_table() {
+
 		global $wpdb;
 
 		$table_name = Google_Categories::get_table_name();
