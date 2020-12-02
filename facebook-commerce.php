@@ -1109,6 +1109,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->delete_product_item( $product_id );
 			$this->delete_product_group( $product_id );
 		}
+
+		// clear out both item and group IDs
+		delete_post_meta( $product_id, self::FB_PRODUCT_ITEM_ID );
+		delete_post_meta( $product_id, self::FB_PRODUCT_GROUP_ID );
 	}
 
 
