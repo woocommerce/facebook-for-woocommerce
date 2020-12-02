@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use SkyVerge\WooCommerce\Facebook\Google_Categories;
+
 defined( 'ABSPATH' ) or exit;
 
 /**
@@ -65,56 +67,12 @@ class Google_Product_Category_Field {
 	 */
 	protected function parse_categories_response( $categories_response ) {
 
-		$categories = [];
+		$categories    = [];
+		$response_body = $response_body = wp_remote_retrieve_body( $categories_response );
 
-		if ( is_array( $categories_response ) && isset( $categories_response['body'] ) ) {
+		if ( ! empty( $response_body ) ) {
 
-			$categories_body = $categories_response['body'];
-			$categories_body = explode( "\n", $categories_body );
-
-			// format: ID - Top level category > ... > Parent category > Category label
-			// example: 7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
-			foreach ( $categories_body as $category_line ) {
-
-				if ( strpos( $category_line, ' - ' ) === false ) {
-
-					// not a category, skip it
-					continue;
-				}
-
-				list( $category_id, $category_tree ) = explode( ' - ', $category_line );
-
-				$category_id    = (string) trim( $category_id );
-				$category_tree  = explode( ' > ', $category_tree );
-				$category_label = end( $category_tree );
-
-				$category = [
-					'label'   => $category_label,
-					'options' => [],
-				];
-
-				if ( $category_label === $category_tree[0] ) {
-
-					// top-level category
-					$category['parent'] = '';
-
-				} else {
-
-					$parent_label = $category_tree[ count( $category_tree ) - 2 ];
-
-					$parent_category = array_search( $parent_label, array_map( function ( $item ) {
-
-						return $item['label'];
-					}, $categories ) );
-
-					$category['parent'] = (string) $parent_category;
-
-					// add category label to the parent's list of options
-					$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
-				}
-
-				$categories[ (string) $category_id ] = $category;
-			}
+			$categories = Google_Categories::parse_categories_response_body( $categories_response['body'] );
 		}
 
 		return $categories;
@@ -132,7 +90,7 @@ class Google_Product_Category_Field {
 	 */
 	public function get_category_options( $category_id, $categories ) {
 
-		return array_filter( array_map( function ( $category ) use ( $category_id ) {
+		return array_filter( array_map( static function ( $category ) use ( $category_id ) {
 
 			return $category['parent'] === $category_id ? $category['label'] : false;
 		}, $categories ) );

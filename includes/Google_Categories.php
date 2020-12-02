@@ -212,7 +212,7 @@ class Google_Categories {
 			return new \WP_Error( 'wc_facebook_google_categories_empty_response', __( 'Google categories response is empty.', 'facebook-for-woocommerce' ) );
 		}
 
-		return $this->parse_categories_response( $response_body );
+		return self::parse_categories_response_body( $response_body );
 	}
 
 
@@ -224,7 +224,7 @@ class Google_Categories {
 	 * @param string $response_body categories response body from Google
 	 * @return array
 	 */
-	protected function parse_categories_response( $response_body ) {
+	public static function parse_categories_response_body( $response_body ) {
 
 		$categories        = [];
 		$categories_body   = explode( "\n", $response_body );
