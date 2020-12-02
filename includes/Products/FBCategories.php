@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The main product feed handler.

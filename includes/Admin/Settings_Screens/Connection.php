@@ -13,8 +13,8 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 
 /**
  * The Connection settings screen object.
