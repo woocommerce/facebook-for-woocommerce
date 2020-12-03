@@ -564,9 +564,7 @@ class Connection {
 		$scopes = [
 			'manage_business_extension',
 			'catalog_management',
-			'business_management',
 			'ads_management',
-			'ads_read',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
 		];
 

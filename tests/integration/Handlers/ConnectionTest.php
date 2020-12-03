@@ -150,9 +150,7 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		return [
 			'manage_business_extension' => [ 'manage_business_extension' ],
 			'catalog_management'        => [ 'catalog_management' ],
-			'business_management'       => [ 'business_management' ],
 			'ads_management'            => [ 'ads_management' ],
-			'ads_read'                  => [ 'ads_read' ],
 			'pages_read_engagement'     => [ 'pages_read_engagement' ],
 		];
 	}
