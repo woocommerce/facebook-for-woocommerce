@@ -6,3 +6,11 @@ body.taxonomy-fb_product_set .term-slug-wrap {
 .wc-facebook.product_cats.select2.visible {
 	display: block;
 }
+
+body.taxonomy-fb_product_set .select2-container {
+	display: table;
+	margin-bottom: 0;
+	position: relative;
+	table-layout: fixed;
+	width: 95% !important;
+}

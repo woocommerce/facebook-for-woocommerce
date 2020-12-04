@@ -171,7 +171,7 @@ class Product_Sets {
 		multiple="multiple"
 		disabled="disabled"
 		class="select2 wc-facebook product_cats"
-		style="display:none;max-width: 25em;width: 540px"
+		style="display:none;"
 		>
 		<?php foreach ( $product_cats as $product_cat ) : ?>
 			<?php $selected = ( is_array( $saved_items ) && in_array( $product_cat->term_id, $saved_items, true ) ) ? ' selected="selected"' : ''; ?>
