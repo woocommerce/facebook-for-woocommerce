@@ -129,7 +129,7 @@ class Admin {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
@@ -1209,16 +1209,6 @@ class Admin {
 			$product          = wc_get_product( $post );
 			$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 			?>
-
-			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
-				<div class='wc-facebook-commerce-options-group options_group'>
-					<?php
-					if ( $product instanceof \WC_Product ) {
-						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
-					}
-					?>
-			</div>
-			<?php endif; ?>
 
 			<div class='wc-facebook-commerce-options-group options_group'>
 				<?php \SkyVerge\WooCommerce\Facebook\Admin\Products::render_google_product_category_fields_and_enhanced_attributes( $product ); ?>

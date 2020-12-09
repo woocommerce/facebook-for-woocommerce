@@ -43,9 +43,6 @@ class Products {
 	/** @var string product image source option to use the parent product image in Facebook */
 	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
 
-	/** @var string the meta key used to flag if Commerce is enabled for the product */
-	const COMMERCE_ENABLED_META_KEY = '_wc_facebook_commerce_enabled';
-
 	/** @var string the meta key used to store the Google product category ID for the product */
 	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
 
@@ -456,54 +453,6 @@ class Products {
 		return (int) apply_filters( 'wc_facebook_product_price', $price, (float) $facebook_price, $product );
 	}
 
-
-	/**
-	 * Determines whether the product meets all of the criteria needed for Commerce.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 */
-	public static function is_product_ready_for_commerce( \WC_Product $product ) {
-
-		return $product->managing_stock()
-			&& self::get_product_price( $product )
-			&& self::is_commerce_enabled_for_product( $product )
-			&& self::product_should_be_synced( $product );
-	}
-
-
-	/**
-	 * Determines whether Commerce is enabled for the product.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @return bool
-	 */
-	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
-
-		if ( $product->is_type( 'variation' ) ) {
-			$product = wc_get_product( $product->get_parent_id() );
-		}
-
-		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
-	}
-
-
-	/**
-	 * Enables or disables Commerce for a product.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @param bool        $is_enabled whether or not Commerce is to be enabled
-	 */
-	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
-
-		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
-		$product->save_meta_data();
-	}
 
 
 	/**

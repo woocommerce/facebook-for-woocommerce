@@ -35,20 +35,6 @@
 	clear: both;
 }
 
-#woocommerce-product-data .wc_facebook_commerce_enabled_field label,
-#woocommerce-product-data .wc_facebook_commerce_fields label {
-	padding-right: 37px;
-	position: relative;
-	width: 113px;
-}
-#woocommerce-product-data .wc_facebook_commerce_enabled_field label .woocommerce-help-tip,
-#woocommerce-product-data .wc_facebook_commerce_fields label .woocommerce-help-tip {
-	margin: 0;
-	position: absolute;
-	top: 4px;
-	right: 12px;
-}
-
 #woocommerce-product-data #wc-facebook-google-product-category-fields {
 	width: 50%;
 }
