@@ -61,6 +61,8 @@ jQuery( document ).ready( ( $ ) => {
 				return facebook_for_woocommerce_product_categories;
 			} else if(typeof(facebook_for_woocommerce_settings_sync) !== 'undefined'){
 				return facebook_for_woocommerce_settings_sync;
+			} else if(typeof(facebook_for_woocommerce_settings_commerce) !== 'undefined'){
+				return facebook_for_woocommerce_settings_commerce;
 			} else {
 				return facebook_for_woocommerce_products_admin;
 			}

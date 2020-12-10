@@ -129,7 +129,7 @@ class Admin {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
@@ -161,8 +161,7 @@ class Admin {
 			}
 		}//end if
 
-		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script(
 			'wc-facebook-google-product-category-fields',
@@ -1434,6 +1433,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
 			'edit-product_cat',
 			'shop_order',
 		);
