@@ -16,15 +16,16 @@ class SettingsCest {
 	 */
 	public function try_menu_item( AcceptanceTester $I ) {
 
-		$I->amOnAdminPage( 'edit.php?post_type=shop_order' );
+		$I->amOnAdminPage( 'admin.php?page=wc-admin&path=%2Fmarketing' );
 
-		$I->see( 'Facebook', '#toplevel_page_woocommerce .wp-submenu li a' );
+		$I->see( 'Facebook', '#toplevel_page_woocommerce-marketing .wp-submenu li a' );
 
 		$I->click( 'Facebook' );
 
 		$I->see( 'Connection', '.woo-nav-tab-wrapper a' );
 		$I->see( 'Product sync', '.woo-nav-tab-wrapper a' );
 		$I->see( 'Messenger', '.woo-nav-tab-wrapper a' );
+		$I->see( 'Advertise', '.woo-nav-tab-wrapper a' );
 	}
 
 

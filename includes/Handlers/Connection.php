@@ -10,8 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 
 defined( 'ABSPATH' ) or exit;
 
