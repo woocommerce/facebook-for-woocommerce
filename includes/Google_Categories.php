@@ -31,6 +31,9 @@ class Google_Categories {
 	/**
 	 * Gets the categories list.
 	 *
+	 * TODO we need to figure out a way to of load the long loading time or
+	 *      re-kickstart the process of the merchant reloaded the page {NM 2020-12-11}
+	 *
 	 * @since 2.2.1-dev.1
 	 *
 	 * @return array
