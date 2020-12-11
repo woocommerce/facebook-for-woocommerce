@@ -47,7 +47,7 @@ class Google_Categories {
 		// only fetch again if not fetched less than one week ago
 		$last_updated = get_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED );
 
-		if ( empty ( $last_updated ) ) {
+		if ( empty( $last_updated ) ) {
 
 			$categories = [];
 
@@ -81,11 +81,11 @@ class Google_Categories {
 				// mark when it's stored
 				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES_UPDATED, current_time( 'mysql' ), WEEK_IN_SECONDS );
 			}
+
 		} else {
 
 			// load from database/cached
 			$categories = $this->get_cached_categories_list();
-
 		}
 
 		$this->categories_list = $categories;
