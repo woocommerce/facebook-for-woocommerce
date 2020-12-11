@@ -190,9 +190,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	private function render_us_only_limitation_notice() {
 
 		?>
-
 		<div class="notice notice-info"><p><?php esc_html_e( 'Instagram Checkout is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
-
 		<?php
 	}
 
@@ -234,6 +232,13 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 * @return array
 	 */
 	public function get_settings() {
+
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$commerce_handler   = facebook_for_woocommerce()->get_commerce_handler();
+
+		if ( ! $connection_handler->is_connected() || ! $commerce_handler->is_available() ) {
+			return [ [] ];
+		}
 
 		return [
 			[
