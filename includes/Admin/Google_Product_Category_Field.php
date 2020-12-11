@@ -50,6 +50,8 @@ class Google_Product_Category_Field {
 	 * Gets the full categories list from Google and stores it.
 	 *
 	 * @since 2.1.0
+	 *
+	 * @return array
 	 */
 	public function get_categories() {
 
