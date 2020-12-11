@@ -12,6 +12,8 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+
 /**
  * Base handler for loading the list of defined Google categories.
  *
@@ -44,10 +46,31 @@ class Google_Categories {
 
 		if ( empty ( $last_updated ) ) {
 
-			// fetch from the URL
-			$categories = $this->fetch_categories_list_from_url();
+			$categories = [];
 
-			if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
+			try {
+
+				// fetch from the URL
+				$categories = $this->fetch_categories_list_from_url();
+
+			} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+
+				$error_message = sprintf(
+					/* translators: Placeholders: %s - user-friendly error message */
+					__( 'Fetching Google categories error: %s', 'facebook-for-woocommerce' ),
+					$exception->getMessage()
+				);
+
+				// log exception error message
+				facebook_for_woocommerce()->log( $error_message );
+
+				// show notice error message
+				$message_handler = facebook_for_woocommerce()->get_message_handler();
+				$message_handler->add_error( $error_message );
+				$message_handler->show_messages();
+			}
+
+			if ( ! empty( $categories ) ) {
 
 				// store into database for later use
 				$this->store_categories_list( $categories );
@@ -132,8 +155,6 @@ class Google_Categories {
 	 */
 	private function store_categories_list( $categories ) {
 
-		global $wpdb;
-
 		$this->empty_db_table();
 
 		foreach ( $categories as $category_id => $category ) {
@@ -185,7 +206,8 @@ class Google_Categories {
 	 *
 	 * @since 2.2.1-dev.1
 	 *
-	 * @return array|\WP_Error
+	 * @return array
+	 * @throws Framework\SV_WC_Plugin_Exception
 	 */
 	private function fetch_categories_list_from_url() {
 
@@ -193,25 +215,24 @@ class Google_Categories {
 
 		// fail if URL is empty or undefined
 		if ( empty( $url ) ) {
-			return new \WP_Error( 'wc_facebook_google_categories_missing_url', __( 'Google categories URL is missing.', 'facebook-for-woocommerce' ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Google categories URL is missing.', 'facebook-for-woocommerce' ) );
 		}
 
 		// fetch from the URL
 		$response = wp_remote_get( $url );
 
-		// fail if response is not OK
 		$response_code = (int) wp_remote_retrieve_response_code( $response );
+
+		// fail if response is not OK
 		if ( 200 !== $response_code ) {
-			return new \WP_Error( 'wc_facebook_google_categories_response_error', __( 'Google categories URL returned error.', 'facebook-for-woocommerce' ), [
-				'response_code'       => $response_code,
-				'categories_list_url' => $url,
-			] );
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Google categories URL returned error.', 'facebook-for-woocommerce' ), $response_code );
 		}
 
 		$response_body = wp_remote_retrieve_body( $response );
+
 		// fail if response body is empty
 		if ( empty( $response_body ) ) {
-			return new \WP_Error( 'wc_facebook_google_categories_empty_response', __( 'Google categories response is empty.', 'facebook-for-woocommerce' ) );
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Google categories response is empty.', 'facebook-for-woocommerce' ) );
 		}
 
 		return self::parse_categories_response_body( $response_body );
@@ -278,6 +299,10 @@ class Google_Categories {
 
 
 	/**
+	 * Gets Google categories list URL.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
 	 * @return string
 	 */
 	private function get_categories_list_url() {
