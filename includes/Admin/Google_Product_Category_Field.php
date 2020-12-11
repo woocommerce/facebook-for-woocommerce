@@ -74,7 +74,7 @@ class Google_Product_Category_Field {
 
 		if ( ! empty( $response_body ) ) {
 
-			$categories = Google_Categories::parse_categories_response_body( $categories_response['body'] );
+			$categories = Google_Categories::parse_categories_response_body( $response_body );
 		}
 
 		return $categories;
