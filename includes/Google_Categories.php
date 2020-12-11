@@ -260,17 +260,32 @@ class Google_Categories {
 		// example: 7385 - Animals & Pet Supplies > Pet Supplies > Bird Supplies > Bird Cage Accessories
 		foreach ( $categories_body as $category_line ) {
 
+			// not a category, skip it
 			if ( strpos( $category_line, ' - ' ) === false ) {
-
-				// not a category, skip it
 				continue;
 			}
 
 			list( $category_id, $category_tree ) = explode( ' - ', $category_line );
 
-			$category_id    = (string) trim( $category_id );
-			$category_tree  = explode( ' > ', $category_tree );
+			// bail if category ID ot tree missing
+			if ( empty( $category_id ) || empty( $category_tree ) ) {
+				continue;
+			}
+
+			$category_id   = (string) trim( $category_id );
+			$category_tree = explode( ' > ', $category_tree );
+
+			// bail if category tree can't be split
+			if ( empty( $category_tree ) ) {
+				continue;
+			}
+
 			$category_label = end( $category_tree );
+
+			// bail if category label isn't set or empty for some reason
+			if ( empty( $category_label ) ) {
+				continue;
+			}
 
 			$categories_labels[ $category_label ] = $category_id;
 
