@@ -145,6 +145,8 @@ class Google_Categories {
 
 		global $wpdb;
 
+		self::maybe_create_table();
+
 		return (array) $wpdb->get_results( 'SELECT * FROM ' . self::get_table_name() . ' ORDER BY id ASC', ARRAY_A );
 	}
 
@@ -375,6 +377,49 @@ class Google_Categories {
   KEY parent_id (parent_id ASC)
 ) $collate;
 		";
+	}
+
+
+	/**
+	 * Validates that the table required by Google Categories is present in the database.
+	 *
+	 * @internal
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return bool true if all are found, false if not
+	 */
+	public static function is_table_exists() {
+
+		global $wpdb;
+
+		$table_name = self::get_table_name();
+
+		return $table_name === $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" );
+	}
+
+
+	/**
+	 * Creates the table required by Google Categories is present in the database.
+	 *
+	 * @internal
+	 *
+	 * @since 2.2.1-dev.1
+	 */
+	public static function maybe_create_table() {
+
+		global $wpdb;
+
+		// nothing to create if we're already there
+		if ( self::is_table_exists() ) {
+			return;
+		}
+
+		$wpdb->hide_errors();
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		dbDelta( self::get_table_schema() );
 	}
 
 }

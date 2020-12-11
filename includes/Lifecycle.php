@@ -351,7 +351,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		self::remove_google_categories_from_options();
 
-		self::create_google_categories_table();
+		Google_Categories::maybe_create_table();
 	}
 
 
@@ -367,42 +367,5 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		delete_transient( Google_Product_Category_Field::OPTION_GOOGLE_PRODUCT_CATEGORIES );
 	}
 
-	/**
-	 * Creates the table required by Google Categories is present in the database.
-	 *
-	 * @since 2.2.1-dev.1
-	 */
-	private static function create_google_categories_table() {
-
-		global $wpdb;
-
-		// nothing to create if we're already there
-		if ( self::validate_google_categories_table() ) {
-			return;
-		}
-
-		$wpdb->hide_errors();
-
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		dbDelta( Google_Categories::get_table_schema() );
-	}
-
-
-	/**
-	 * Validates that the table required by Google Categories is present in the database.
-	 *
-	 * @since 2.2.1-dev.1
-	 *
-	 * @return bool true if all are found, false if not
-	 */
-	private static function validate_google_categories_table() {
-
-		global $wpdb;
-
-		$table_name = Google_Categories::get_table_name();
-
-		return $table_name === $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" );
-	}
 
 }
