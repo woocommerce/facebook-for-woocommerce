@@ -319,6 +319,8 @@ class Google_Categories {
 	/**
 	 * Gets Google categories list URL.
 	 *
+	 * TODO maybe provide localized categories list, see https://support.google.com/merchants/answer/6324436?hl=en {NM 2020-12-11}
+	 *
 	 * @since 2.2.1-dev.1
 	 *
 	 * @return string
