@@ -137,8 +137,10 @@ class Google_Categories {
 		$this->empty_db_table();
 
 		foreach ( $categories as $category_id => $category ) {
-
-			$this->store_item( $category_id, $category['label'], $category['parent'] );
+			// make sure to store the item if both label and parent keys defined
+			if ( isset( $category['label'], $category['parent'] ) ) {
+				$this->store_item( $category_id, $category['label'], $category['parent'] );
+			}
 		}
 	}
 
