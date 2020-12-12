@@ -566,7 +566,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Orders::schedule_local_orders_update() */
 	public function test_schedule_local_orders_update_not_connected() {
 
-		// ensure Commerce is connected
+		// ensure Commerce is not connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( false );

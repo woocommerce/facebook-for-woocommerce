@@ -48,7 +48,7 @@ class Response extends API\Response  {
 	}
 
 
-  /**
+	/**
 	 * Gets the Commerce Merchant Settings ID associated with the page.
 	 *
 	 * @since 2.3.0

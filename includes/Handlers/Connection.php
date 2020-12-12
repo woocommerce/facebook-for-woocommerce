@@ -608,7 +608,7 @@ class Connection {
 		], home_url( '/' ) );
 
 		if ( $commerce_manager_id ) {
-			$connect_url = $site_url . "&commerce_manager_id={$commerce_manager_id}";
+			$connect_url = add_query_arg( 'commerce_manager_id ', $commerce_manager_id, $site_url );
 		} else {
 			// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
 			$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );

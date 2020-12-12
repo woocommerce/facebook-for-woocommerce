@@ -35,11 +35,8 @@ class Response extends API\Response  {
 	}
 
 
-
-
-
 	/**
-	 * Gets the etup status
+	 * Gets the setup status.
 	 *
 	 * @since 2.3.0
 	 *
