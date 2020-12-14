@@ -47,12 +47,7 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function __construct( $access_token ) {
 
-		$this->access_token = $access_token;
-
-		$this->request_headers = [
-			'Authorization' => "Bearer {$access_token}",
-		];
-
+		$this->set_access_token( $access_token );
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
 	}
@@ -80,7 +75,10 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function set_access_token( $access_token ) {
 
-		$this->access_token = $access_token;
+		$this->access_token    = $access_token;
+		$this->request_headers = [
+			'Authorization' => "Bearer {$access_token}",
+		];
 	}
 
 
