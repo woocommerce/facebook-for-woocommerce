@@ -64,6 +64,26 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see API::set_request_authorization_header() */
+	public function test_set_request_authorization_header() {
+
+		$api = new API( 'access_token' );
+
+		$property = new ReflectionProperty( $api, 'request_headers' );
+		$property->setAccessible( true );
+
+		$method = new ReflectionMethod( $api, 'set_request_authorization_header' );
+		$method->setAccessible( true );
+		$method->invokeArgs( $api, [ 'new_access_token' ] );
+
+		$request_headers = $property->getValue( $api );
+
+		$this->assertIsArray( $request_headers );
+		$this->assertArrayHasKey( 'Authorization', $request_headers );
+		$this->assertEquals( 'Bearer new_access_token', $request_headers['Authorization'] );
+	}
+
+
 	/** @see API::perform_request() */
 	public function test_do_post_parse_response_validation_retry() {
 
