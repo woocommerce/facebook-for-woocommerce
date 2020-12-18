@@ -34,7 +34,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		const INTEGRATION_ID = 'facebookcommerce';
 
 		/** @var string the product set categories meta name */
-		const PRODUCT_SET_META = 'wc_product_cats';
+		const PRODUCT_SET_META = '_wc_facebook_product_cats';
 
 
 		/** @var \WC_Facebookcommerce singleton instance */
