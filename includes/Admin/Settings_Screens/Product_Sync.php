@@ -271,6 +271,22 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			],
 
 			[
+				'id'       => \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE,
+				'title'    => __( 'Product Identifier', 'facebook-for-woocommerce' ),
+				'type'     => 'select',
+				'class'    => 'product-sync-field',
+				'desc_tip' => __( 'WooCommerce product attribute mapped to retailer_id on Facebook.
+					WARNING: use with caution, as changing this option after uploading products to Facebook may
+					result in having duplicate products in your Facebook catalog.', 'facebook-for-woocommerce' ),
+				'default'  => \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID,
+				'options'  => [
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID => __( 'SKU + Product ID', 'facebook-for-woocommerce' ),
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU            => __( 'SKU', 'facebook-for-woocommerce' ),
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID     => __( 'Product ID', 'facebook-for-woocommerce' ),
+				],
+			],
+
+			[
 				'id'                => \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS,
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
