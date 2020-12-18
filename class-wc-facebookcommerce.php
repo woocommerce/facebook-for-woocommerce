@@ -114,6 +114,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			add_action( 'init', [ $this, 'get_integration' ] );
 			add_action( 'init', [ $this, 'register_custom_taxonomy' ] );
+			add_filter( 'fb_product_set_row_actions', [ $this, 'product_set_links' ] );
 			add_filter( 'manage_edit-fb_product_set_columns', [ $this, 'manage_fb_product_set_columns' ] );
 
 			// Product Set breadcrumb filters
@@ -417,6 +418,22 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
+		}
+
+
+		/**
+		 * Filter FB Product Set Taxonomy table links
+		 *
+		 * @since 2.1.5
+		 *
+		 * @param array $actions Item Actions.
+		 *
+		 * @return array
+		 */
+		public function product_set_links( $actions ) {
+			unset( $actions['inline hide-if-no-js'] );
+			unset( $actions['view'] );
+			return $actions;
 		}
 
 
