@@ -190,6 +190,22 @@ class Products {
 
 
 	/**
+	 * Renders the Commerce settings fields.
+	 *
+	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
+	 *
+	 * @internal
+	 * @deprecated since 2.3.0
+	 * @since 2.1.0
+	 *
+	 * @param \WC_Product $product product object
+	 */
+	public static function render_commerce_fields( \WC_Product $product ) {
+
+ 			wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::render_commerce_fields()' );
+	}
+
+	/**
 	 * Saves the Commerce settings.
 	 *
 	 * @internal
