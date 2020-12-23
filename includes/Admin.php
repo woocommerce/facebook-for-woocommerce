@@ -161,8 +161,7 @@ class Admin {
 			}
 		}//end if
 
-		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script(
 			'wc-facebook-google-product-category-fields',
@@ -1210,16 +1209,6 @@ class Admin {
 			$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 			?>
 
-			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
-				<div class='wc-facebook-commerce-options-group options_group'>
-					<?php
-					if ( $product instanceof \WC_Product ) {
-						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
-					}
-					?>
-			</div>
-			<?php endif; ?>
-
 			<div class='wc-facebook-commerce-options-group options_group'>
 				<?php \SkyVerge\WooCommerce\Facebook\Admin\Products::render_google_product_category_fields_and_enhanced_attributes( $product ); ?>
 			</div>
@@ -1444,6 +1433,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
 			'edit-product_cat',
 			'shop_order',
 		);

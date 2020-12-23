@@ -89,7 +89,6 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 		] );
 
 		Products::enable_sync_for_products( [ $product ] );
-		Products::update_commerce_enabled_for_product( $product, true );
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
 
@@ -454,7 +453,6 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 		] );
 
 		Products::enable_sync_for_products( [ $product ] );
-		Products::update_commerce_enabled_for_product( $product, true );
 
 		return $product;
 	}

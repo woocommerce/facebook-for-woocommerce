@@ -43,9 +43,6 @@ class Products {
 	/** @var string product image source option to use the parent product image in Facebook */
 	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
 
-	/** @var string the meta key used to flag if Commerce is enabled for the product */
-	const COMMERCE_ENABLED_META_KEY = '_wc_facebook_commerce_enabled';
-
 	/** @var string the meta key used to store the Google product category ID for the product */
 	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
 
@@ -460,22 +457,27 @@ class Products {
 	/**
 	 * Determines whether the product meets all of the criteria needed for Commerce.
 	 *
+	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
+	 *
+	 * @deprecated since 2.3.0
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
 	 */
 	public static function is_product_ready_for_commerce( \WC_Product $product ) {
 
-		return $product->managing_stock()
-			&& self::get_product_price( $product )
-			&& self::is_commerce_enabled_for_product( $product )
-			&& self::product_should_be_synced( $product );
+		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::is_product_ready_for_commerce()' );
+
+		return false;
 	}
 
 
 	/**
 	 * Determines whether Commerce is enabled for the product.
 	 *
+	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
+	 *
+	 * @deprecated since 2.3.0
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
@@ -483,17 +485,18 @@ class Products {
 	 */
 	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
 
-		if ( $product->is_type( 'variation' ) ) {
-			$product = wc_get_product( $product->get_parent_id() );
-		}
+		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::is_commerce_enabled_for_product()' );
 
-		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
+		return false;
 	}
 
 
 	/**
 	 * Enables or disables Commerce for a product.
 	 *
+	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
+	 *
+	 * @deprecated since 2.3.0
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product the product object
@@ -501,8 +504,7 @@ class Products {
 	 */
 	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
 
-		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
-		$product->save_meta_data();
+		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::update_commerce_enabled_for_product()' );
 	}
 
 
