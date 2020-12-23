@@ -58,3 +58,7 @@
 .column-facebook_sync {
 	width: 11% !important;
 }
+
+.wc-facebook-settings .desc {
+	width: 400px;
+}
