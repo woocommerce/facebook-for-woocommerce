@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 2.2.0
+Stable tag: 2.2.1-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+2020.nn.nn - version 2.2.1-dev.1
+ * Tweak - Ask merchants to delete products when changing from sync to not sync state
 
 = 2020.11.19 - version 2.2.0 =
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
