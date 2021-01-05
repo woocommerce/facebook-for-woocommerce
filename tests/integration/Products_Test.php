@@ -581,7 +581,7 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * The steps below try to reproduce the scenario described in https://secure.helpscout.net/conversation/1369552988/155780/
 	 */
-	public function test_get_google_product_category_id_when_category_parent_doesnt_exists() {
+	public function test_get_google_product_category_id_from_highest_category() {
 		global $wpdb;
 
 		$product = $this->get_product();
