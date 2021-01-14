@@ -672,11 +672,14 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$category       = $category_handler->get_category_with_attrs( $google_category_id );
 			$all_attributes = $category['attributes'];
 			foreach ( $all_attributes as $attribute ) {
-				$value = Products::get_enhanced_catalog_attribute( $attribute['key'], $this->woo_product );
-
+				$value            = Products::get_enhanced_catalog_attribute( $attribute['key'], $this->woo_product );
+				$convert_to_array = ( true === $attribute['can_have_multiple_values'] && 'string' === $attribute['type'] );
 				if ( ! empty( $value ) &&
 					$category_handler->is_valid_value_for_attribute( $google_category_id, $attribute['key'], $value )
 				) {
+					if ( $convert_to_array ) {
+						$value = array_map( 'trim', explode( ',', $value ) );
+					}
 					$enhanced_data[ $attribute['key'] ] = $value;
 				}
 			}
