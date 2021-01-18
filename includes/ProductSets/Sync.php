@@ -23,13 +23,6 @@ class Sync {
 
 
 	/**
-	 * Prefix used with the product IDs
-	 *
-	 * @var string
-	 */
-	const PRODUCT_INDEX_PREFIX = 'wc_post_id_';
-
-	/**
 	 * Update action name
 	 *
 	 * @var string
@@ -368,9 +361,13 @@ class Sync {
 
 		// formats filter value
 		foreach ( $product_ids as $product_id ) {
+
+			$product        = new \WC_Product( $product_id );
+			$fb_retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
 			array_push(
 				$products,
-				array( 'retailer_id' => array( 'eq' => self::PRODUCT_INDEX_PREFIX . $product_id ) )
+				array( 'retailer_id' => array( 'eq' => $fb_retailer_id ) )
 			);
 		}
 		$data = array(
