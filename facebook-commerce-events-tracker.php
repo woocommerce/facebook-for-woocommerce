@@ -9,7 +9,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -22,51 +22,94 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 	}
 
 	class WC_Facebookcommerce_EventsTracker {
-		private $pixel;
-		private static $isEnabled = true;
-		const FB_PRIORITY_HIGH    = 2;
-		const FB_PRIORITY_LOW     = 11;
 
+
+		/** @deprecated since 2.2.0 */
+		const FB_PRIORITY_HIGH = 2;
+		/** @deprecated since 2.2.0 */
+		const FB_PRIORITY_LOW = 11;
+
+
+		/** @var \WC_Facebookcommerce_Pixel instance */
+		private $pixel;
 
 		/** @var string name of the session variable used to store search event data */
 		private $search_event_data_session_variable = 'wc_facebook_search_event_data';
 
 		/** @var Event search event instance */
 		private $search_event;
+
 		/** @var array with events tracked */
 		private $tracked_events;
+
 		/** @var AAMSettings aam settings instance, used to filter advanced matching fields*/
 		private $aam_settings;
 
+		/** @var bool whether the pixel should be enabled */
+		private $is_pixel_enabled;
+
+
+		/**
+		 * Events tracker constructor.
+		 *
+		 * @param $user_info
+		 * @param $aam_settings
+		 */
 		public function __construct( $user_info, $aam_settings ) {
-			$this->pixel = new WC_Facebookcommerce_Pixel( $user_info );
-			$this->aam_settings = $aam_settings;
-			$this->tracked_events = array();
 
-			add_action( 'wp_head', array( $this, 'apply_filters' ) );
+			if ( ! $this->is_pixel_enabled() ) {
+				return;
+			}
 
-			// Pixel Tracking Hooks
-			add_action(
-				'wp_head',
-				array( $this, 'inject_base_pixel' )
-			);
-			add_action(
-				'wp_footer',
-				array( $this, 'inject_base_pixel_noscript' )
-			);
+			$this->pixel          = new \WC_Facebookcommerce_Pixel( $user_info );
+			$this->aam_settings   = $aam_settings;
+			$this->tracked_events = [];
+
+			$this->add_hooks();
+		}
+
+
+		/**
+		 * Determines whether the Pixel should be enabled.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @return bool
+		 */
+		private function is_pixel_enabled() {
+
+			if ( null === $this->is_pixel_enabled ) {
+
+				/**
+				 * Filters whether the Pixel should be enabled.
+				 *
+				 * @param bool $enabled default true
+				 */
+				$this->is_pixel_enabled = (bool) apply_filters( 'facebook_for_woocommerce_integration_pixel_enabled', true );
+			}
+
+			return $this->is_pixel_enabled;
+		}
+
+
+		/**
+		 * Add events tracker hooks.
+		 *
+		 * @since 2.2.0
+		 */
+		private function add_hooks() {
+
+			// inject Pixel
+			add_action( 'wp_head',   [ $this, 'inject_base_pixel' ] );
+			add_action( 'wp_footer', [ $this, 'inject_base_pixel_noscript' ] );
 
 			// ViewContent for individual products
 			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
 			add_action( 'woocommerce_after_single_product', [ $this, 'maybe_inject_search_event' ] );
 
-			add_action(
-				'woocommerce_after_shop_loop',
-				array( $this, 'inject_view_category_event' )
-			);
-			add_action(
-				'pre_get_posts',
-				array( $this, 'inject_search_event' )
-			);
+			add_action( 'woocommerce_after_shop_loop', [ $this, 'inject_view_category_event' ] );
+
+			add_action( 'pre_get_posts',                             [ $this, 'inject_search_event' ] );
 			add_filter( 'woocommerce_redirect_single_search_result', [ $this, 'maybe_add_product_search_event_to_session' ] );
 
 			// AddToCart events
@@ -87,14 +130,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_thankyou',                   [ $this, 'inject_purchase_event' ], 40 );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
-			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], self::FB_PRIORITY_LOW );
+			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], 11 );
 		}
 
+
+		/**
+		 * Adds filter hooks.
+		 *
+		 * @internal
+		 *
+		 * @deprecated since 2.2.0
+		 */
 		public function apply_filters() {
-			self::$isEnabled = apply_filters(
-				'facebook_for_woocommerce_integration_pixel_enabled',
-				self::$isEnabled
-			);
+
+			wc_deprecated_function( __METHOD__, '2.2.0' );
 		}
 
 
@@ -103,7 +152,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_base_pixel() {
 
-			if ( self::$isEnabled ) {
+			if ( $this->is_pixel_enabled() ) {
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code();
 			}
@@ -117,7 +166,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_base_pixel_noscript() {
 
-			if ( self::$isEnabled ) {
+			if ( $this->is_pixel_enabled() ) {
 				// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 				echo $this->pixel->pixel_base_code_noscript();
 			}
@@ -130,7 +179,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_view_category_event() {
 			global $wp_query;
 
-			if ( ! self::$isEnabled || ! is_product_category() ) {
+			if ( ! $this->is_pixel_enabled() || ! is_product_category() ) {
 				return;
 			}
 
@@ -262,7 +311,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function maybe_inject_search_event() {
 
-			if ( ! self::$isEnabled ) {
+			if ( ! $this->is_pixel_enabled() ) {
 				return;
 			}
 
@@ -322,7 +371,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_search_event() {
 
-			if ( ! self::$isEnabled ) {
+			if ( ! $this->is_pixel_enabled() ) {
 				return;
 			}
 
@@ -439,7 +488,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_view_content_event() {
 			global $post;
 
-			if ( ! self::$isEnabled || ! isset( $post->ID ) ) {
+			if ( ! $this->is_pixel_enabled() || ! isset( $post->ID ) ) {
 				return;
 			}
 
@@ -502,7 +551,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function inject_add_to_cart_event( $cart_item_key, $product_id, $quantity, $variation_id ) {
 
 			// bail if pixel tracking disabled or invalid variables
-			if ( ! self::$isEnabled || ! $product_id || ! $quantity ) {
+			if ( ! $this->is_pixel_enabled() || ! $product_id || ! $quantity ) {
 				return;
 			}
 
@@ -569,7 +618,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function add_add_to_cart_event_fragment( $fragments ) {
 
-			if ( self::$isEnabled ) {
+			if ( $this->is_pixel_enabled() ) {
 
 				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
@@ -626,7 +675,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function add_conditional_add_to_cart_event_fragment( $fragments ) {
 
-			if ( self::$isEnabled ) {
+			if ( $this->is_pixel_enabled() ) {
 
 				$params = [
 					'content_ids'  => $this->get_cart_content_ids(),
@@ -718,7 +767,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_add_to_cart_redirect_event() {
 
-			if ( ! self::$isEnabled ) {
+			if ( ! $this->is_pixel_enabled() ) {
 				return;
 			}
 
@@ -740,7 +789,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_initiate_checkout_event() {
 
-			if ( ! self::$isEnabled || $this->pixel->is_last_event( 'InitiateCheckout' ) ) {
+			if ( ! $this->is_pixel_enabled() || $this->pixel->is_last_event( 'InitiateCheckout' ) ) {
 				return;
 			}
 
@@ -802,7 +851,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event_name = 'Purchase';
 
-			if ( ! self::$isEnabled || $this->pixel->is_last_event( $event_name ) ) {
+			if ( ! $this->is_pixel_enabled() || $this->pixel->is_last_event( $event_name ) ) {
 				return;
 			}
 
@@ -896,7 +945,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_subscribe_event( $order_id ) {
 
-			if ( ! self::$isEnabled || ! function_exists( 'wcs_get_subscriptions_for_order' ) || $this->pixel->is_last_event( 'Subscribe' )  ) {
+			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) || ! $this->is_pixel_enabled() || $this->pixel->is_last_event( 'Subscribe' )  ) {
 				return;
 			}
 

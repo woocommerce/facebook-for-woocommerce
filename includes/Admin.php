@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -30,6 +30,10 @@ class Admin {
 
 	/** @var string the "sync disabled" sync mode slug */
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
+
+
+	/** @var \Admin\Orders the orders admin handler */
+	protected $orders;
 
 	/** @var \Admin\Product_Categories the product category admin handler */
 	protected $product_categories;
@@ -52,9 +56,11 @@ class Admin {
 			return;
 		}
 
+		require_once __DIR__ . '/Admin/Orders.php';
 		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
 
+		$this->orders             = new Admin\Orders();
 		$this->product_categories = new Admin\Product_Categories();
 
 		// add a modal in admin product pages
@@ -155,8 +161,7 @@ class Admin {
 			}
 		}//end if
 
-		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script(
 			'wc-facebook-google-product-category-fields',
@@ -246,6 +251,19 @@ class Admin {
 		<?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the orders admin handler instance.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
+	 */
+	public function get_orders_handler() {
+
+		return $this->orders;
 	}
 
 
@@ -1191,16 +1209,6 @@ class Admin {
 			$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 			?>
 
-			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
-				<div class='wc-facebook-commerce-options-group options_group'>
-					<?php
-					if ( $product instanceof \WC_Product ) {
-						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
-					}
-					?>
-			</div>
-			<?php endif; ?>
-
 			<div class='wc-facebook-commerce-options-group options_group'>
 				<?php \SkyVerge\WooCommerce\Facebook\Admin\Products::render_google_product_category_fields_and_enhanced_attributes( $product ); ?>
 			</div>
@@ -1425,6 +1433,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
 			'edit-product_cat',
 			'shop_order',
 		);

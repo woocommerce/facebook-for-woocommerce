@@ -16,7 +16,7 @@ use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * API handler.
@@ -47,12 +47,7 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function __construct( $access_token ) {
 
-		$this->access_token = $access_token;
-
-		$this->request_headers = [
-			'Authorization' => "Bearer {$access_token}",
-		];
-
+		$this->set_access_token( $access_token );
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
 	}
@@ -81,6 +76,21 @@ class API extends Framework\SV_WC_API_Base {
 	public function set_access_token( $access_token ) {
 
 		$this->access_token = $access_token;
+
+		$this->set_request_authorization_header( $access_token );
+	}
+
+
+	/**
+	 * Sets the Authorization request header.
+	 *
+	 * @since 2.3.0-dev.1
+	 *
+	 * @param string $access_token the access token
+	 */
+	protected function set_request_authorization_header( $access_token ) {
+
+		$this->request_headers['Authorization'] = "Bearer {$access_token}";
 	}
 
 

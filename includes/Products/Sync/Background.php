@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The background sync handler.
@@ -289,7 +289,13 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
 		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
 
-			$data['additional_variant_attributes'] = $data['custom_data'];
+			$attributes = [];
+
+			foreach ($data['custom_data'] as $key => $val) {
+				$attributes[] = $key . ':' . $val;
+			}
+
+			$data['additional_variant_attribute'] = implode(',', $attributes);
 			unset( $data['custom_data'] );
 		}
 

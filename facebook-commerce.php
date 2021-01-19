@@ -13,7 +13,7 @@ use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -103,6 +103,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/** @var string the hook for the recurreing action that syncs products */
 	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
+
+	/** @var string the Facebook retailer id type setting ID */
+	const SETTING_FB_RETAILER_ID_TYPE = '_wc_facebook_retailer_id_type';
+
+	/** @var string use product SKU as the retailer ID in Facebook */
+	const FB_RETAILER_ID_TYPE_SKU = 'sku';
+
+	/** @var string use product ID as the retailer ID in Facebook */
+	const FB_RETAILER_ID_TYPE_PRODUCT_ID = 'product_id';
+
+	/** @var string use a combo of SKU and product ID as the retailer ID in Facebook */
+	const FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID = 'sku_product_id';
 
 
 	/** @var string|null the configured product catalog ID */

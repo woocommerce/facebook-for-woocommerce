@@ -13,8 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The Connection settings screen object.
@@ -79,9 +78,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 	 */
 	public function enqueue_assets() {
 
-		$tab = SV_WC_Helper::get_requested_value( 'tab' );
-
-		if ( Admin\Settings::PAGE_ID !== SV_WC_Helper::get_requested_value( 'page' ) || ( $tab && $this->get_id() !== SV_WC_Helper::get_requested_value( 'tab' ) ) ) {
+		if ( ! $this->is_current_screen_page() ) {
 			return;
 		}
 
@@ -158,7 +155,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 					$static_items['catalog']['value'] = $name;
 				}
 
-			} catch ( SV_WC_API_Exception $exception ) {}
+			} catch ( Framework\SV_WC_API_Exception $exception ) {}
 		}
 
 		?>
@@ -241,38 +238,11 @@ class Connection extends Admin\Abstract_Settings_Screen {
 		}
 
 		$subtitle = __( 'Use this WooCommerce and Facebook integration to:', 'facebook-for-woocommerce' );
-
 		$benefits = [
 			__( 'Create an ad in a few steps', 'facebook-for-woocommerce'),
 			__( 'Use built-in best practices for online sales', 'facebook-for-woocommerce'),
 			__( 'Get reporting on sales and revenue', 'facebook-for-woocommerce'),
 		];
-
-		if ( $is_connected ) {
-
-			$actions = [
-				'create-ad' => [
-					'label' => __( 'Create Ad', 'facebook-for-woocommerce' ),
-					'type'  => 'primary',
-					'url'   => 'https://www.facebook.com/ad_center/create/ad/?entry_point=facebook_ads_extension&page_id=' . facebook_for_woocommerce()->get_integration()->get_facebook_page_id(),
-				],
-				'manage' => [
-					'label' => __( 'Manage Connection', 'facebook-for-woocommerce' ),
-					'type'  => 'secondary',
-					'url'   => facebook_for_woocommerce()->get_connection_handler()->get_manage_url(),
-				],
-			];
-
-		} else {
-
-			$actions = [
-				'get-started' => [
-					'label' => __( 'Get Started', 'facebook-for-woocommerce' ),
-					'type'  => 'primary',
-					'url'   => facebook_for_woocommerce()->get_connection_handler()->get_connect_url(),
-				],
-			];
-		}
 
 		?>
 
@@ -291,22 +261,20 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 			<div class="actions">
 
-				<?php foreach ( $actions as $action_id => $action ) : ?>
-
-					<a
-						href="<?php echo esc_url( $action['url'] ); ?>"
-						class="button button-<?php echo esc_attr( $action['type'] ); ?>"
-						<?php echo ( 'get-started' !== $action_id ) ? 'target="_blank"' : ''; ?>
-					>
-						<?php echo esc_html( $action['label'] ); ?>
-					</a>
-
-				<?php endforeach; ?>
-
 				<?php if ( $is_connected ) : ?>
+
+					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_manage_url() ); ?>" class="button button-primary">
+						<?php esc_html_e( 'Manage Connection', 'facebook-for-woocommerce' ); ?>
+					</a>
 
 					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_disconnect_url() ); ?>" class="uninstall">
 						<?php esc_html_e( 'Uninstall', 'facebook-for-woocommerce' ); ?>
+					</a>
+
+				<?php else : ?>
+
+					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ); ?>" class="button button-primary" target="_blank">
+						<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
 					</a>
 
 				<?php endif; ?>

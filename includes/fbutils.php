@@ -90,12 +90,25 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @return string
 		 */
 		public static function get_fb_retailer_id( $woo_product ) {
-			$woo_id = $woo_product->get_id();
-
 			// Call $woo_product->get_id() instead of ->id to account for Variable
 			// products, which have their own variant_ids.
-			return $woo_product->get_sku() ? $woo_product->get_sku() . '_' .
-			$woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
+			$woo_id = $woo_product->get_id();
+			$sku = $woo_product->get_sku();
+			$retailer_id = $sku ? $sku . '_' . $woo_id : self::FB_RETAILER_ID_PREFIX . $woo_id;
+
+			switch ( get_option( \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE )) {
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU:
+					$retailer_id = $sku;
+					break;
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID:
+					$retailer_id = strval($woo_id);
+					break;
+				default:
+					// \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID
+					break;
+			}
+
+			return $retailer_id;
 		}
 
 		/**

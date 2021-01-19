@@ -5,7 +5,7 @@ use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Tests the API class.
@@ -61,6 +61,26 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$api->set_access_token( 'new_access_token' );
 
 		$this->assertEquals( 'new_access_token', $api->get_access_token() );
+	}
+
+
+	/** @see API::set_request_authorization_header() */
+	public function test_set_request_authorization_header() {
+
+		$api = new API( 'access_token' );
+
+		$property = new ReflectionProperty( $api, 'request_headers' );
+		$property->setAccessible( true );
+
+		$method = new ReflectionMethod( $api, 'set_request_authorization_header' );
+		$method->setAccessible( true );
+		$method->invokeArgs( $api, [ 'new_access_token' ] );
+
+		$request_headers = $property->getValue( $api );
+
+		$this->assertIsArray( $request_headers );
+		$this->assertArrayHasKey( 'Authorization', $request_headers );
+		$this->assertEquals( 'Bearer new_access_token', $request_headers['Authorization'] );
 	}
 
 
