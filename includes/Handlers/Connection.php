@@ -32,6 +32,9 @@ class Connection {
 	/** @var string WooCommerce connection proxy URL */
 	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
 
+	/** @var string the Standard Auth type */
+	const AUTH_TYPE_STANDARD = 'standard';
+
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT = 'wc_facebook_connect';
 
@@ -656,7 +659,6 @@ class Connection {
 		$scopes = [
 			'manage_business_extension',
 			'catalog_management',
-			'business_management',
 			'ads_management',
 			'ads_read',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
@@ -841,6 +843,7 @@ class Connection {
 			'wc-api'               => self::ACTION_CONNECT,
 			'external_business_id' => $this->get_external_business_id(),
 			'nonce'                => wp_create_nonce( self::ACTION_CONNECT ),
+			'type'                 => self::AUTH_TYPE_STANDARD,
 		], home_url( '/' ) );
 
 		/**

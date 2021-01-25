@@ -272,25 +272,6 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
-	 * Gets a business manager object from Facebook.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $business_manager_id business manager ID
-	 * @return API\Business_Manager\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function get_business_manager( $business_manager_id ) {
-
-		$request = new API\Business_Manager\Request( $business_manager_id );
-
-		$this->set_response_handler( API\Business_Manager\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
 	 * Gets a Catalog object from Facebook.
 	 *
 	 * @since 2.0.0
