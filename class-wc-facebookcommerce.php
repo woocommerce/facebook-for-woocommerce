@@ -12,7 +12,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.3.0-beta.2';
+		const VERSION = '2.3.0-beta.3';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -115,6 +115,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/Locale.php';
 				require_once __DIR__ . '/includes/AJAX.php';
 				require_once __DIR__ . '/includes/Handlers/Connection.php';
 				require_once __DIR__ . '/includes/Integrations/Integrations.php';
@@ -168,6 +169,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 					require_once __DIR__ . '/includes/Admin/Settings.php';
 					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
@@ -315,6 +317,29 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					'notice_class' => 'notice-error',
 				] );
 			}
+
+			if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
+
+				$is_marketing_enabled = is_callable( 'Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+				                        && Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+
+				if ( $is_marketing_enabled ) {
+
+					$this->get_admin_notice_handler()->add_admin_notice(
+						sprintf(
+							/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
+							esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
+							'<a href="' . esc_url( $this->get_settings_url() ) . '">','</a>'
+						),
+						'settings_moved_to_marketing',
+						[
+							'dismissible'             => true,
+							'always_show_on_settings' => false,
+							'notice_class'            => 'notice-info',
+						]
+					);
+				}
+			}
 		}
 
 
@@ -402,14 +427,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\Pixel\Events\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Pixel/Events/Request.php';
-				}
-
-				if ( ! class_exists( API\Business_Manager\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Business_Manager/Request.php';
-				}
-
-				if ( ! class_exists( API\Business_Manager\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Business_Manager/Response.php';
 				}
 
 				if ( ! class_exists( API\Catalog\Request::class ) ) {

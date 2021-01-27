@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * General handler for product admin functionality.
@@ -23,9 +23,6 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
  */
 class Products {
 
-
-	/** @var string Commerce enabled field */
-	const FIELD_COMMERCE_ENABLED = 'wc_facebook_commerce_enabled';
 
 	/** @var string Google Product category ID field */
 	const FIELD_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
@@ -195,51 +192,18 @@ class Products {
 	/**
 	 * Renders the Commerce settings fields.
 	 *
-	 * @internal
+	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
 	 *
+	 * @internal
+	 * @deprecated since 2.3.0
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Product $product product object
 	 */
 	public static function render_commerce_fields( \WC_Product $product ) {
 
-		?>
-		<p class="form-field <?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>_field">
-			<label for="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>">
-				<?php echo esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?>
-				<span class="woocommerce-help-tip"
-					  data-tip="<?php echo esc_attr_e( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ); ?>"></span>
-			</label>
-			<input type="checkbox" class="enable-if-sync-enabled"
-				   name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
-				   id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
-				   value="yes"
-				   <?php checked( Products_Handler::is_commerce_enabled_for_product( $product ) ); ?> />
-		</p>
-
-		<div id="product-not-ready-notice" style="display:none;">
-			<p>
-				<?php esc_html_e( 'This product does not meet the requirements to sell on Instagram.', 'facebook-for-woocommerce' ); ?>
-				<a href="#" id="product-not-ready-notice-open-modal"><?php esc_html_e( 'Click here to learn more.', 'facebook-for-woocommerce' ); ?></a>
-			</p>
-		</div>
-
-		<div id="variable-product-not-ready-notice" style="display:none;">
-			<p>
-			<?php
-			echo sprintf(
-				/* translators: Placeholders %1$s - strong opening tag, %2$s - strong closing tag */
-				esc_html__( 'To sell this product on Instagram, at least one variation must be synced to Facebook. You can control variation sync on the %1$sVariations%2$s tab with the %1$sFacebook Sync%2$s setting.', 'facebook-for-woocommerce' ),
-				'<strong>',
-				'</strong>'
-			);
-			?>
-			</p>
-		</div>
-
-		<?php
+ 			wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::render_commerce_fields()' );
 	}
-
 
 	/**
 	 * Saves the Commerce settings.
@@ -252,7 +216,6 @@ class Products {
 	 */
 	public static function save_commerce_fields( \WC_Product $product ) {
 
-		$commerce_enabled            = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( self::FIELD_COMMERCE_ENABLED ) );
 		$google_product_category_id  = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
 		$enhanced_catalog_attributes = Products_Handler::get_enhanced_catalog_attributes_from_request();
 
@@ -265,8 +228,6 @@ class Products {
 			// hence if it's unset we should clear the term meta for it.
 			Products_Handler::update_product_enhanced_catalog_attribute( $product, Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, null );
 		}
-
-		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
 
 		if ( $google_product_category_id !== Products_Handler::get_google_product_category_id( $product ) ) {
 

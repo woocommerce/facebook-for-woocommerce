@@ -39,9 +39,6 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 	// TODO: add test for render_google_product_category_fields()
 
 
-	// TODO: add test for render_commerce_fields()
-
-
 	/** @see Products::save_commerce_fields() */
 	public function test_save_commerce_fields() {
 		global $post;
@@ -49,7 +46,6 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 		$product = $this->tester->get_product( [ 'attributes' => $this->tester->create_product_attributes() ] );
 		$post    = get_post( $product->get_id() );
 
-		$_POST[ Admin\Products::FIELD_COMMERCE_ENABLED ] = 'yes';
 		$_POST[ Admin\Products::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = '1234';
 
 		$enhanced_catalog_prefix = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
@@ -58,7 +54,6 @@ class ProductsTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_products_handler()->save_commerce_fields( $product );
 		$gender = \SkyVerge\WooCommerce\Facebook\Products::get_enhanced_catalog_attribute( 'gender', $product );
 
-		$this->assertEquals( true, \SkyVerge\WooCommerce\Facebook\Products::is_commerce_enabled_for_product( $product ) );
 		$this->assertEquals( '1234', \SkyVerge\WooCommerce\Facebook\Products::get_google_product_category_id( $product ) );
 		$this->assertEquals( 'male', $gender );
 	}

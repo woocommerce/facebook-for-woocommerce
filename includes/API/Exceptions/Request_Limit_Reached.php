@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\API\Exceptions;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Exception thrown in response to a rate limiting error.

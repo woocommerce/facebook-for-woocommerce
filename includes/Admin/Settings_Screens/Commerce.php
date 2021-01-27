@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection as Connection_Handler;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * The Commerce settings screen object.
@@ -198,7 +198,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
 
 			$connect_url = $commerce_connect_url;
-
+      
 		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
 		} else {
 
@@ -344,6 +344,13 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 * @return array
 	 */
 	public function get_settings() {
+
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$commerce_handler   = facebook_for_woocommerce()->get_commerce_handler();
+
+		if ( ! $connection_handler->is_connected() || ! $commerce_handler->is_available() ) {
+			return [ [] ];
+		}
 
 		return [
 			[

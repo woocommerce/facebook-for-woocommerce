@@ -83,9 +83,14 @@ class Response extends API\Response  {
 	 */
 	public function get_page_id() {
 
+		// use empty to suppress any PHP warnings triggered if the returned data doesn't have a pages property
+		if ( empty( $this->get_data()->pages ) ) {
+			return '';
+		}
+
 		$pages = $this->get_data()->pages;
 
-		return ! empty( $pages ) && is_array( $pages ) ? current( $pages ) : '';
+		return is_array( $pages ) ? current( $pages ) : '';
 	}
 
 

@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 2.3.0-beta.2
+Stable tag: 2.3.0-beta.3
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,11 +39,17 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.3.0-beta.2 =
+= 2020.nn.nn - version 2.3.0-beta.3 =
  * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
  * Feature - Define custom product attributes such as gender, size, color, and pattern
+
+= 2020.11.19 - version 2.2.0 =
+ * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
+ * Tweak - Move the Facebook settings page into the Marketing menu item (WooCommerce 4.0+)
+ * Fix - Move the filter `facebook_for_woocommerce_integration_pixel_enabled` initialization to avoid possible uncaught JavaScript errors in front end
+ * Fix - Update field name and format for additional_variant_attribute to resolve Facebook catalog sync for variable products.
 
 = 2020.11.04 - version 2.1.4 =
  * Fix - Ensure product variant attributes are correctly handled when checking for enhanced attribute values.

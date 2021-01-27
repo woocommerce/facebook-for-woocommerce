@@ -7,8 +7,8 @@ use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\Commerce;
 use SkyVerge\WooCommerce\Facebook\Commerce\Orders;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
 
 /**
  * Tests the general Commerce orders handler class.

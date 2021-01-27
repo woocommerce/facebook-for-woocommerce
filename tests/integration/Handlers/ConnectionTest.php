@@ -1,7 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Compatibility;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Compatibility;
 
 /**
  * Tests the Connection class.
@@ -150,7 +150,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		return [
 			'manage_business_extension' => [ 'manage_business_extension' ],
 			'catalog_management'        => [ 'catalog_management' ],
-			'business_management'       => [ 'business_management' ],
 			'ads_management'            => [ 'ads_management' ],
 			'ads_read'                  => [ 'ads_read' ],
 			'pages_read_engagement'     => [ 'pages_read_engagement' ],

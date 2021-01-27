@@ -1,8 +1,8 @@
 #wc-facebook-connection-box {
 	width: 50%;
 	min-width: 720px;
-	color: rgb( 5, 5, 5 );
-	background: white url( '../../images/background.png' ) no-repeat;
+	color: #050505;
+	background: #FFF url( '../../images/background.png' ) no-repeat;
 	background-position: right 30px center;
 	padding: 10px 15px 20px;
 	box-shadow: 0 0 3px rgba( 0, 0, 0, 0.2 );
