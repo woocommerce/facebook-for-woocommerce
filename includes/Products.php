@@ -1304,7 +1304,17 @@ class Products {
 		if ( strpos( $fb_retailer_id, \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX ) !== false ) {
 			$product_id = str_replace( \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX, '', $fb_retailer_id );
 		} else {
-			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
+			switch ( get_option( \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE )) {
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU:
+					$product_id = wc_get_product_id_by_sku( $fb_retailer_id );
+					break;
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID:
+					$product_id = $fb_retailer_id;
+					break;
+				default:
+					$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
+					break;
+			}
 		}
 
 		$product = wc_get_product( $product_id );

@@ -1244,6 +1244,39 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Products::get_product_by_fb_retailer_id() */
+	public function test_get_product_by_fb_retailer_id_type_sku() {
+
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE, \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU );
+
+		$product = $this->get_product();
+		$product->set_sku( '123456_a' );
+		$product->save();
+
+		$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+		$product_found = Facebook\Products::get_product_by_fb_retailer_id( $retailer_id );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
+	}
+
+
+		/** @see Products::get_product_by_fb_retailer_id() */
+	public function test_get_product_by_fb_retailer_id_type_product_id() {
+
+		update_option( \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE, \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID );
+
+		$product = $this->get_product();
+		$product->set_sku( '123456_a' );
+		$product->save();
+
+		$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+		$product_found = Facebook\Products::get_product_by_fb_retailer_id( $retailer_id );
+		$this->assertInstanceOf( \WC_Product::class, $product_found );
+		$this->assertEquals( $product->get_id(), $product_found->get_id() );
+	}
+
 	/** Helper methods ************************************************************************************************/
 
 
