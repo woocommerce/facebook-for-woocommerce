@@ -26,11 +26,6 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// the API cannot be instantiated if an access token is not defined
 		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( 'fake_page_access_token' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( 'fake_commerce_manager_id' );
-		// This would usually covered as a hook on the init action but if the acceptance
-		// test setup doesn't already have a page acess token or commerece manager id
-		// then it'll have been skipped.
-		$this->get_commerce_orders_handler()->schedule_local_orders_update();
 
 		// create an instance of the API and load all the request and response classes
 		facebook_for_woocommerce()->get_api();
@@ -373,6 +368,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
 
@@ -403,6 +399,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
 
@@ -441,6 +438,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
 
@@ -557,10 +555,25 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
 
 		$this->assertNotFalse( as_next_scheduled_action( Orders::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) );
+	}
+
+
+	/** @see Orders::schedule_local_orders_update() */
+	public function test_schedule_local_orders_update_not_connected() {
+
+		// ensure Commerce is not connected
+		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( false );
+
+		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
+
+		$this->assertFalse( as_next_scheduled_action( Orders::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) );
 	}
 
 

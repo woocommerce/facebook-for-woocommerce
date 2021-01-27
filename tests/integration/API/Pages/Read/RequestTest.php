@@ -44,7 +44,7 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		$request = new Request( '1234' );
 
-		$this->assertEquals( [ 'fields' => 'name,link' ], $request->get_params() );
+		$this->assertEquals( [ 'fields' => 'name,link,commerce_merchant_settings' ], $request->get_params() );
 	}
 
 

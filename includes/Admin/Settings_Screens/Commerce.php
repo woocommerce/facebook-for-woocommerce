@@ -140,11 +140,65 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
+		/**
+		 * Build the basic static elements.
+		 *
+		 * Display useful Commerce related info:
+		 *
+		 * + Commerce Account ID: just the ID
+		 * + CTA: Checkout Method
+		 * + Shop Setup: Status
+		 * + Payment Setup: Status
+		 */
+
+		$commerce_manager_id = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manager_id();
+		$static_items = [
+			'commerce_manager' => [
+				'label' => __( 'Commerce Manager account', 'facebook-for-woocommerce' ),
+				'value' => $commerce_manager_id,
+				'url'   => "https://business.facebook.com/commerce_manager/{$commerce_manager_id}"
+			],
+			'shop_cta' => [
+				'label' => __( 'Shop Call to Action', 'facebook-for-woocommerce' ),
+			],
+			'shop_setup' => [
+				'label' => __( 'Shop Setup Status', 'facebook-for-woocommerce' ),
+			],
+			'payment_setup' => [
+				'label' => __( 'Payment Setup Status', 'facebook-for-woocommerce' ),
+			],
+		];
+
+		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
+
+		// If the Commerce Manager ID is set, update the shop / setup details
+		if ( $commerce_manager_id ) {
+
+			try {
+
+				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
+
+				if ( $cta = $response->get_cta() ) {
+					$static_items['shop_cta']['value'] = $cta;
+				}
+
+				if ( $setup_status = $response->get_setup_status() ) {
+					$static_items['shop_setup']['value'] = $setup_status->shop_setup;
+					$static_items['payment_setup']['value'] = $setup_status->payment_setup;
+				}
+
+				if ( $cta === 'ONSITE_CHECKOUT' && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
+					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
+				}
+
+			} catch ( SV_WC_API_Exception $exception ) {}
+		}
+
 		// if the user has authorized the pages_ready_engagement scope, they can go directly to the Commerce onboarding
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
 
-			$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
-
+			$connect_url = $commerce_connect_url;
+      
 		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
 		} else {
 
@@ -174,6 +228,62 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			</tbody>
 		</table>
 
+		<table class="form-table">
+			<tbody>
+
+				<?php foreach ( $static_items as $id => $item ) :
+
+					$item = wp_parse_args( $item, [
+						'label' => '',
+						'value' => '',
+						'url'   => '',
+					] );
+
+					?>
+
+					<tr valign="top" class="wc-facebook-connected-<?php echo esc_attr( $id ); ?>">
+
+						<th scope="row" class="titledesc">
+							<?php echo esc_html( $item['label'] ); ?>
+						</th>
+
+						<td class="forminp">
+
+							<?php if ( $item['url'] ) : ?>
+
+								<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank">
+
+									<?php echo esc_html( $item['value'] ); ?>
+
+									<span
+										class="dashicons dashicons-external"
+										style="margin-right: 8px; vertical-align: bottom; text-decoration: none;"
+									></span>
+
+								</a>
+
+							<?php elseif ( is_numeric( $item['value'] ) ) : ?>
+
+								<code><?php echo esc_html( $item['value'] ); ?></code>
+
+							<?php elseif ( ! empty( $item['value'] ) ) : ?>
+
+								<?php echo esc_html( $item['value'] ); ?>
+
+							<?php else : ?>
+
+								<?php echo '-' ?>
+
+							<?php endif; ?>
+
+						</td>
+					</tr>
+
+				<?php endforeach; ?>
+
+			</tbody>
+		</table>
+
 		<?php
 
 		if ( $commerce_handler->is_connected() ) {
@@ -190,7 +300,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	private function render_us_only_limitation_notice() {
 
 		?>
+
 		<div class="notice notice-info"><p><?php esc_html_e( 'Instagram Checkout is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
+
 		<?php
 	}
 

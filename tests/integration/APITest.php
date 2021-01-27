@@ -312,7 +312,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->assertInstanceOf( API\Pages\Read\Request::class, $api->get_request() );
 		$this->assertEquals( 'GET', $api->get_request()->get_method() );
 		$this->assertEquals( "/{$page_id}", $api->get_request()->get_path() );
-		$this->assertEquals( [ 'fields' => 'name,link' ], $api->get_request()->get_params() );
+		$this->assertEquals( [ 'fields' => 'name,link,commerce_merchant_settings' ], $api->get_request()->get_params() );
 		$this->assertEquals( [], $api->get_request()->get_data() );
 
 		$this->assertInstanceOf( API\Pages\Read\Response::class, $api->get_response() );
