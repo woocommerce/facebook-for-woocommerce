@@ -618,9 +618,11 @@ class Connection {
 
 			// build the final connect URL, direct to Facebook
 			$connect_url = add_query_arg( [
-				'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
-				'redirect_url' => urlencode( $redirect_url ),
-			], 'https://www.facebook.com/commerce_manager/onboarding/' );
+				'app_id'               => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+				'external_business_id' => $this->get_external_business_id(),
+				'tab'                  => 'Commerce',
+				'redirect_url'         => urlencode( $redirect_url ),
+			], 'https://www.facebook.com/facebook_business_extension' );
 		}
 
 		/**
@@ -928,6 +930,8 @@ class Connection {
 				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
+				'channel'              => 'COMMERCE',
+				'domain'               => (string) apply_filters( 'wc_facebook_connection_domain_url', home_url( ',') ),
 			],
 			'business_config' => [
 				'business' => [

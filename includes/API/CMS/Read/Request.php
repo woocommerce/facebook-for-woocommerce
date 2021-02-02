@@ -44,7 +44,7 @@ class Request extends API\Request  {
 	 */
 	public function get_params() {
 
-		return [ 'fields' => 'cta,setup_status' ];
+		return [ 'fields' => 'cta,has_onsite_intent,setup_status' ];
 	}
 
 

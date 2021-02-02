@@ -36,6 +36,19 @@ class Response extends API\Response  {
 
 
 	/**
+	 * Gets the Shop's onsite intent
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return string|null
+	 */
+	public function has_onsite_intent() {
+
+		return $this->has_onsite_intent;
+	}
+
+
+	/**
 	 * Gets the setup status.
 	 *
 	 * @since 2.3.0

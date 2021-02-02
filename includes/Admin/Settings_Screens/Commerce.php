@@ -158,8 +158,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				'value' => $commerce_manager_id,
 				'url'   => "https://business.facebook.com/commerce_manager/{$commerce_manager_id}"
 			],
-			'shop_cta' => [
-				'label' => __( 'Shop Call to Action', 'facebook-for-woocommerce' ),
+			'checkout_method' => [
+				'label' => __( 'Checkout Method', 'facebook-for-woocommerce' ),
 			],
 			'shop_setup' => [
 				'label' => __( 'Shop Setup Status', 'facebook-for-woocommerce' ),
@@ -178,8 +178,10 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
 
-				if ( $cta = $response->get_cta() ) {
-					$static_items['shop_cta']['value'] = $cta;
+				if ( $onsite_intent = $response->has_onsite_intent() ) {
+					$static_items['checkout_method']['value'] = 'Checkout on Facebook or Instagram';
+				} else {
+					$static_items['checkout_method']['value'] = 'Checkout on Another Website';
 				}
 
 				if ( $setup_status = $response->get_setup_status() ) {
@@ -187,7 +189,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					$static_items['payment_setup']['value'] = $setup_status->payment_setup;
 				}
 
-				if ( $cta === 'ONSITE_CHECKOUT' && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
+				if ( $onsite_intent && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
 					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
 				}
 
@@ -198,7 +200,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
 
 			$connect_url = $commerce_connect_url;
-      
+
 		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
 		} else {
 
@@ -206,8 +208,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		}
 
 		?>
-
-		<h2><?php esc_html_e( 'Instagram Checkout', 'facebook-for-woocommerce' ); ?></h2>
 
 		<table class="form-table">
 			<tbody>
