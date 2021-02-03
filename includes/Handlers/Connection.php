@@ -621,7 +621,7 @@ class Connection {
 				'app_id'               => $this->get_client_id(), // this endpoint calls the client ID "app ID"
 				'external_business_id' => $this->get_external_business_id(),
 				'tab'                  => 'Commerce',
-				'redirect_url'         => urlencode( $redirect_url ),
+				'redirect_uri'         => urlencode( $redirect_url ),
 			], 'https://www.facebook.com/facebook_business_extension' );
 		}
 

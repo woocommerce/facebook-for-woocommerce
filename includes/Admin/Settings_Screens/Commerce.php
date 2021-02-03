@@ -170,6 +170,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		];
 
 		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
+		$commerce_connect_message = 'Your Checkout Setup is not complete.';
+		$commerce_connect_caption = 'Finish Setup';
 
 		// If the Commerce Manager ID is set, update the shop / setup details
 		if ( $commerce_manager_id ) {
@@ -190,7 +192,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				}
 
 				if ( $onsite_intent && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
+					$commerce_connect_message = 'Your store is not connected to Instagram.';
 					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
+					$commerce_connect_caption = 'Connect';
 				}
 
 			} catch ( SV_WC_API_Exception $exception ) {}
@@ -217,10 +221,10 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 						<?php if ( $commerce_handler->is_connected() ) : ?>
 							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
 						<?php else: ?>
-							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( 'Your store is not connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
+							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( $commerce_connect_message, 'facebook-for-woocommerce' ); ?></p>
 
 							<p style="margin-top:24px">
-								<a class="button button-primary" href="<?php echo esc_url( $connect_url ); ?>"><?php esc_html_e( 'Connect', 'facebook-for-woocommerce' ); ?></a>
+								<a class="button button-primary" href="<?php echo esc_url( $connect_url ); ?>"><?php esc_html_e( $commerce_connect_caption, 'facebook-for-woocommerce' ); ?></a>
 							</p>
 						<?php endif; ?>
 					</td>
