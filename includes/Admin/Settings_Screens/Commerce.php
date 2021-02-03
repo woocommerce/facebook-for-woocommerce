@@ -197,7 +197,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					$commerce_connect_caption = 'Connect';
 				}
 
-			} catch ( SV_WC_API_Exception $exception ) {}
+			} catch ( Framework\SV_WC_API_Exception $exception ) {}
 		}
 
 		// if the user has authorized the pages_ready_engagement scope, they can go directly to the Commerce onboarding

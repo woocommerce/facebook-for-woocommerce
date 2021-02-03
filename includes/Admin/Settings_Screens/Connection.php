@@ -157,7 +157,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 					$static_items['page']['value'] = $name;
 				}
 
-			} catch ( SV_WC_API_Exception $exception ) {}
+			} catch ( Framework\SV_WC_API_Exception $exception ) {}
 		}
 
 		// if the catalog ID is set, update the URL and try to get its name for display
