@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Commerce Merchant Settings API response object.
  *
- * @since 2.3.0
+ * @since 2.3.3
  */
 class Response extends API\Response  {
 
@@ -25,7 +25,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Shop call to action.
 	 *
-	 * @since 2.3.0
+	 * @since 2.3.3
 	 *
 	 * @return string|null
 	 */
@@ -38,7 +38,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Shop's onsite intent
 	 *
-	 * @since 2.3.0
+	 * @since 2.3.3
 	 *
 	 * @return string|null
 	 */
@@ -49,15 +49,59 @@ class Response extends API\Response  {
 
 
 	/**
+	 * Gets the display name.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @return string|null
+	 */
+	public function get_display_name() {
+
+		return $this->display_name;
+	}
+
+
+	/**
 	 * Gets the setup status.
 	 *
-	 * @since 2.3.0
+	 * @since 2.3.3
 	 *
 	 * @return \stdClass
 	 */
 	public function get_setup_status() {
 
 		$data = ! empty( $this->setup_status->data ) && is_array( $this->setup_status->data ) ? $this->setup_status->data : [];
+
+		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+	}
+
+
+	/**
+	 * Gets the Instagram Channel data
+	 *
+	 * @since 2.3.3
+	 *
+	 * @return \stdClass
+	 */
+	public function get_instagram_channel() {
+
+		$data = ! empty( $this->instagram_channel->instagram_users->data ) && is_array( $this->instagram_channel->instagram_users->data ) ? $this->instagram_channel->instagram_users->data : [];
+
+		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+	}
+
+
+
+	/**
+	 * Gets the Facebook Channel data
+	 *
+	 * @since 2.3.3
+	 *
+	 * @return \stdClass
+	 */
+	public function get_facebook_channel() {
+
+		$data = ! empty( $this->facebook_channel->pages->data ) && is_array( $this->facebook_channel->pages->data ) ? $this->facebook_channel->pages->data : [];
 
 		return is_object( $data[0] ) ? $data[0] : new \stdClass();
 	}

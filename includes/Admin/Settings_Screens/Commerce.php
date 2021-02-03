@@ -32,8 +32,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	public function __construct() {
 
 		$this->id    = self::ID;
-		$this->label = __( 'Instagram Checkout', 'facebook-for-woocommerce' );
-		$this->title = __( 'Instagram Checkout', 'facebook-for-woocommerce' );
+		$this->label = __( 'Commerce', 'facebook-for-woocommerce' );
+		$this->title = __( 'Commerce', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
@@ -147,8 +147,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		 *
 		 * + Commerce Account ID: just the ID
 		 * + CTA: Checkout Method
-		 * + Shop Setup: Status
-		 * + Payment Setup: Status
+		 * + Facebook Channel
+		 * + IG Channel
 		 */
 
 		$commerce_manager_id = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manager_id();
@@ -161,17 +161,17 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			'checkout_method' => [
 				'label' => __( 'Checkout Method', 'facebook-for-woocommerce' ),
 			],
-			'shop_setup' => [
-				'label' => __( 'Shop Setup Status', 'facebook-for-woocommerce' ),
+			'fb_channel' => [
+				'label' => __( 'Facebook Channel', 'facebook-for-woocommerce' ),
 			],
-			'payment_setup' => [
-				'label' => __( 'Payment Setup Status', 'facebook-for-woocommerce' ),
+			'ig_channel' => [
+				'label' => __( 'Instagram Channel', 'facebook-for-woocommerce' ),
 			],
 		];
 
 		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
-		$commerce_connect_message = 'Your Checkout Setup is not complete.';
-		$commerce_connect_caption = 'Finish Setup';
+		$commerce_connect_message = 'Your store is not connected to Checkout on Instagram or Facebook.';
+		$commerce_connect_caption = 'Connect';
 
 		// If the Commerce Manager ID is set, update the shop / setup details
 		if ( $commerce_manager_id ) {
@@ -181,23 +181,31 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
 
 				if ( $onsite_intent = $response->has_onsite_intent() ) {
-					$static_items['checkout_method']['value'] = 'Checkout on Facebook or Instagram';
+					$static_items['checkout_method']['value'] = 'Checkout on Instagram or Facebook';
+					$commerce_connect_message = 'Your Checkout setup is not complete.';
+					$commerce_connect_caption = 'Finish Setup';
 				} else {
 					$static_items['checkout_method']['value'] = 'Checkout on Another Website';
 				}
 
-				if ( $setup_status = $response->get_setup_status() ) {
-					$static_items['shop_setup']['value'] = $setup_status->shop_setup;
-					$static_items['payment_setup']['value'] = $setup_status->payment_setup;
+				if ( $display_name = $response->get_display_name() ) {
+					$static_items['commerce_manager']['value'] = $display_name;
 				}
 
-				if ( $onsite_intent && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
-					$commerce_connect_message = 'Your store is not connected to Instagram.';
+				if ( $fb_channel = $response->get_facebook_channel() ) {
+					$static_items['fb_channel']['value'] = $fb_channel->id ? 'Enabled' : '';
+				}
+
+				if ( $ig_channel = $response->get_instagram_channel() ) {
+					$static_items['ig_channel']['value'] = $ig_channel->id ? 'Enabled' : '';
+				}
+
+				$setup_status = $response->get_setup_status();
+				if ( $onsite_intent && $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
 					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
-					$commerce_connect_caption = 'Connect';
 				}
 
-			} catch ( Framework\SV_WC_API_Exception $exception ) {}
+			} catch ( SV_WC_API_Exception $exception ) {}
 		}
 
 		// if the user has authorized the pages_ready_engagement scope, they can go directly to the Commerce onboarding
@@ -216,10 +224,10 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		<table class="form-table">
 			<tbody>
 				<tr valign="top" class="">
-					<th scope="row" class="titledesc"><?php esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?></th>
+					<th scope="row" class="titledesc"><?php esc_html_e( 'Sell on Instagram or Facebook', 'facebook-for-woocommerce' ); ?></th>
 					<td class="forminp">
 						<?php if ( $commerce_handler->is_connected() ) : ?>
-							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Instagram.', 'facebook-for-woocommerce' ); ?></p>
+							<p><span class="dashicons dashicons-yes-alt" style="color:#4CB454"></span> <?php esc_html_e( 'Your store is connected to Checkout.', 'facebook-for-woocommerce' ); ?></p>
 						<?php else: ?>
 							<p><span class="dashicons dashicons-dismiss" style="color:#dc3232"></span> <?php esc_html_e( $commerce_connect_message, 'facebook-for-woocommerce' ); ?></p>
 
@@ -305,7 +313,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		?>
 
-		<div class="notice notice-info"><p><?php esc_html_e( 'Instagram Checkout is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
+		<div class="notice notice-info"><p><?php esc_html_e( 'Checkout on Instagram or Facebook is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
 
 		<?php
 	}
@@ -384,7 +392,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		return sprintf(
 			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
-			__( 'Please %1$sconnect to Facebook%2$s to enable Instagram Checkout.', 'facebook-for-woocommerce' ),
+			__( 'Please %1$sconnect to Facebook%2$s to enable Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' ),
 			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
 		);
 	}
