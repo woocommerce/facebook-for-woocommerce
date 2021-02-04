@@ -158,24 +158,6 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			} catch ( Framework\SV_WC_API_Exception $exception ) {}
 		}
 
-		// if the business manager ID is set, try and get its name for display
-		if ( $static_items['business-manager']['value'] ) {
-
-			try {
-
-				$response = facebook_for_woocommerce()->get_api()->get_business_manager( $static_items['business-manager']['value'] );
-
-				if ( $name = $response->get_name() ) {
-					$static_items['business-manager']['value'] = $name;
-				}
-
-				if ( $url = $response->get_url() ) {
-					$static_items['business-manager']['url'] = $url;
-				}
-
-			} catch ( Framework\SV_WC_API_Exception $exception ) {}
-		}
-
 		?>
 
 		<table class="form-table">
