@@ -257,7 +257,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.2.1
 	 *
 	 * @return string
 	 */
@@ -283,7 +283,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.2.1
 	 *
 	 * @return string
 	 */

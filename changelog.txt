@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2020.nn.nn - version 2.2.1-dev.1
+2021.02.04 - version 2.2.1
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
 
 2020.11.19 - version 2.2.0
