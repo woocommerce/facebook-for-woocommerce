@@ -91,6 +91,8 @@ class Connection {
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+
+		add_filter( 'woocommerce_api_permissions_in_scope', array( $this, 'change_permissions' ) );
 	}
 
 
@@ -1035,4 +1037,20 @@ class Connection {
 	}
 
 
+	/**
+	 * Return WC Auth permissions
+	 *
+	 * @param array $permissions Permissions.
+	 * @return array
+	 */
+	public function change_permissions( $permissions ) {
+
+		if ( empty( $_REQUEST['app_name'] ) || 'Facebook for WooCommerce' !== $_REQUEST['app_name'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return $permissions;
+		}
+
+		return array(
+			__( 'Update FBE Installation data', 'facebook-for-wordpress' ),
+		);
+	}
 }
