@@ -41,6 +41,9 @@ class Connection {
 	/** @var string the action callback for the disconnection */
 	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
 
+	/** @var string the action callback for FBE redirection */
+	const ACTION_FBE_REDIRECT = 'wc_fbe_redirect';
+
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT_COMMERCE = 'wc_facebook_connect_commerce';
 
@@ -91,6 +94,10 @@ class Connection {
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+
+		add_action( 'woocommerce_api_' . self::ACTION_FBE_REDIRECT, [ $this, 'handle_fbe_redirect' ] );
+
+		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
 
 		add_filter( 'woocommerce_api_permissions_in_scope', array( $this, 'change_permissions' ) );
 	}
@@ -1034,6 +1041,100 @@ class Connection {
 	public function get_plugin() {
 
 		return $this->plugin;
+	}
+
+
+	/**
+	 * Register Extras REST API endpoint
+	 */
+	public function init_extras_endpoint() {
+
+		register_rest_route(
+			'facebook/v1',
+			'extras',
+			array(
+				array(
+					'methods'             => array( 'GET', 'POST' ),
+					'callback'            => array( $this, 'extras_callback' ),
+					'permission_callback' => array( $this, 'extras_permission_callback' ),
+				),
+			)
+		);
+	}
+
+
+	/**
+	 * Endpoint permissions
+	 * Woo Connect Bridge is sending the WebHook request using generated key.
+	 *
+	 * @return boolean
+	 */
+	public function extras_permission_callback() {
+
+		add_filter( 'woocommerce_rest_is_request_to_rest_api', '__return_true' );
+
+		$user = apply_filters( 'determine_current_user', null );
+
+		remove_filter( 'woocommerce_rest_is_request_to_rest_api', '__return_true' );
+
+		if ( empty( $user ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * WebHook Listener
+	 *
+	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
+	 */
+	public function extras_callback() {
+
+		$extras = $this->get_connect_parameters_extras();
+
+		wp_send_json( $extras );
+	}
+
+
+	/**
+	 * Process FBE App Store login flow redirection
+	 */
+	public function handle_fbe_redirect() {
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to finish App Store login.', 'facebook-for-woocommerce' ) );
+		}
+
+		$redirect_uri = base64_decode( $_REQUEST['redirect_uri'] ); //phpcs:ignore
+
+		// To ensure that we are not sharing any user data with other parties, only redirect to the redirect_uri if it matches the regular expression
+		if ( empty( $redirect_uri ) || ! preg_match( '/https?:\/\/(www\.|m\.|l\.)?(\d{5}\.od\.)?(facebook|instagram|whatsapp)\.com(\/.*)?/', explode( '?', $redirect_uri )[0] ) ) {
+			wp_safe_redirect( site_url() );
+			exit;
+		}
+
+		if ( empty( $_REQUEST['success'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			$url_params = [
+				'store_url'    => '',
+				'redirect_uri' => rawurlencode( $redirect_uri ),
+				'errors'       => [ 'You need to grant access to Facebook.' ],
+			];
+
+			$redirect_url = add_query_arg(
+				$url_params,
+				'https://connect.woocommerce.com/app-store-login/facebook'
+			);
+
+		} else {
+
+			$redirect_url = $redirect_uri . '&extras=' . rawurlencode_deep( wp_json_encode( $this->get_connect_parameters_extras() ) );
+		}
+
+		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		exit;
 	}
 
 
