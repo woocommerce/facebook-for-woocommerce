@@ -1148,7 +1148,7 @@ class Connection {
 
 		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
 		$this->update_access_token( $system_user_access_token );
-		$log_data[ self::OPTION_ACCESS_TOKEN ] = $system_user_access_token;
+		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
 
 		if ( ! empty( $entry['uid'] ) ) {
 			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
@@ -1157,7 +1157,7 @@ class Connection {
 
 		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
 		$this->update_merchant_access_token( $merchant_access_token );
-		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = $merchant_access_token;
+		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
 
 		if ( ! empty( $values->install_time ) ) {
 			update_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, sanitize_text_field( $values->install_time ) );
@@ -1334,7 +1334,7 @@ class Connection {
 	 */
 	public function change_permissions( $permissions ) {
 
-		if ( empty( $_REQUEST['app_name'] ) || 'Facebook for WooCommerce' !== $_REQUEST['app_name'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( empty( $_REQUEST['app_name'] ) || 'WooCommerce Integration' !== $_REQUEST['app_name'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return $permissions;
 		}
 
