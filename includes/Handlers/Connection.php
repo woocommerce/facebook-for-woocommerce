@@ -1338,8 +1338,8 @@ class Connection {
 			return $permissions;
 		}
 
-		return array(
-			__( 'Update FBE Installation data', 'facebook-for-wordpress' ),
-		);
+		$permissions[] = __( 'Update FBE Installation data', 'facebook-for-wordpress' );
+
+		return $permissions;
 	}
 }
