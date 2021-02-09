@@ -1308,7 +1308,7 @@ class Connection {
 			$url_params = [
 				'store_url'    => '',
 				'redirect_uri' => rawurlencode( $redirect_uri ),
-				'errors'       => [ 'You need to grant access to Facebook.' ],
+				'errors'       => [ 'You need to grant access to WooCommerce.' ],
 			];
 
 			$redirect_url = add_query_arg(
