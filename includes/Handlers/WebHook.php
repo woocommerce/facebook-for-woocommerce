@@ -30,7 +30,7 @@ class WebHook {
 	 *
 	 * @param \WC_Facebookcommerce $plugin Plugin instance.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
@@ -41,7 +41,7 @@ class WebHook {
 	/**
 	 * Register WebHook REST API endpoint
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 */
 	public function init_webhook_endpoint() {
 
@@ -62,6 +62,8 @@ class WebHook {
 	/**
 	 * Endpoint permissions
 	 * Woo Connect Bridge is sending the WebHook request using generated key.
+	 *
+	 * @since 2.2.1-dev.1
 	 *
 	 * @return boolean
 	 */
@@ -84,6 +86,7 @@ class WebHook {
 	/**
 	 * WebHook Listener
 	 *
+	 * @since 2.2.1-dev.1
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
 	 */
 	public function webhook_callback() {

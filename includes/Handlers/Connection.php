@@ -948,7 +948,7 @@ class Connection {
 	/**
 	 * Stores the given Instagram Business ID.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param string $id the ID
 	 */
@@ -961,7 +961,7 @@ class Connection {
 	/**
 	 * Stores the given Commerce merchant settings ID.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param string $id the ID
 	 */
@@ -1089,6 +1089,7 @@ class Connection {
 	/**
 	 * Process WebHook User object, install field
 	 *
+	 * @since 2.2.1-dev.1
 	 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#webhook
 	 *
 	 * @param object $data WebHook event data.
@@ -1234,6 +1235,8 @@ class Connection {
 
 	/**
 	 * Register Extras REST API endpoint
+	 *
+	 * @since 2.2.1-dev.1
 	 */
 	public function init_extras_endpoint() {
 
@@ -1254,6 +1257,8 @@ class Connection {
 	/**
 	 * Endpoint permissions
 	 * Woo Connect Bridge is sending the WebHook request using generated key.
+	 *
+	 * @since 2.2.1-dev.1
 	 *
 	 * @return boolean
 	 */
@@ -1276,6 +1281,7 @@ class Connection {
 	/**
 	 * WebHook Listener
 	 *
+	 * @since 2.2.1-dev.1
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
 	 */
 	public function extras_callback() {
@@ -1288,6 +1294,8 @@ class Connection {
 
 	/**
 	 * Process FBE App Store login flow redirection
+	 *
+	 * @since 2.2.1-dev.1
 	 */
 	public function handle_fbe_redirect() {
 
@@ -1328,6 +1336,8 @@ class Connection {
 
 	/**
 	 * Return WC Auth permissions
+	 *
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param array $permissions Permissions.
 	 * @return array
