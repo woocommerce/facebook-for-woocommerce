@@ -75,7 +75,6 @@ class WebHook {
 
 	/**
 	 * WebHook Listener
-	 * Send a JSON response back to Woo Connect Bridge.
 	 *
 	 * @since 2.2.1-dev.1
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
@@ -89,7 +88,6 @@ class WebHook {
 
 		if ( empty( $request_body ) ) {
 			return new \WP_REST_Response( null, 204 );
-			wp_send_json_error( null, 204 );
 		}
 
 		do_action( 'fbe_webhook', $request_body );
