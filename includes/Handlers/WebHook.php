@@ -16,9 +16,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * The connection handler.
+ * The WebHook handler.
  *
- * @since 2.0.0
+ * @since 2.2.1-dev.1
  */
 class WebHook {
 
