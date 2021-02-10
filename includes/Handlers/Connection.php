@@ -1150,6 +1150,9 @@ class Connection {
 		);
 
 		$values = ! empty( $event[0] ) ? $event[0]->value : '';
+		if ( empty( $values ) ) {
+			return;
+		}
 
 		/**
 		 * If profiles, pages and instagram_profiles fields are not included in the Webhook payload, this means the business has uninstalled FBE.
