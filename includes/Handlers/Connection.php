@@ -115,8 +115,6 @@ class Connection {
 		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
 
 		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
-
-		add_filter( 'woocommerce_api_permissions_in_scope', array( $this, 'change_permissions' ) );
 	}
 
 
@@ -1357,25 +1355,5 @@ class Connection {
 
 		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
-	}
-
-
-	/**
-	 * Return WC Auth permissions
-	 *
-	 * @since 2.2.1-dev.1
-	 *
-	 * @param array $permissions Permissions.
-	 * @return array
-	 */
-	public function change_permissions( $permissions ) {
-
-		if ( empty( $_REQUEST['app_name'] ) || 'WooCommerce Integration' !== $_REQUEST['app_name'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return $permissions;
-		}
-
-		$permissions[] = __( 'Update FBE Installation data', 'facebook-for-wordpress' );
-
-		return $permissions;
 	}
 }
