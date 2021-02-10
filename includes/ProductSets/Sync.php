@@ -356,10 +356,21 @@ class Sync {
 		global $wpdb;
 		$variation_ids = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = 'product_variation' AND post_parent IN (%s) ", implode( ',', $product_ids ) ) );
 		if ( ! empty( $variation_ids ) ) {
-			$product_ids = array_merge( $product_ids, wp_list_pluck( $variation_ids, 'ID' ) );
+
+			// product_variations: add retailer id to the products filter
+			foreach ( $variation_ids as $variation_id ) {
+
+				$product        = new \WC_Product_Variation( $variation_id->ID );
+				$fb_retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
+
+				array_push(
+					$products,
+					array( 'retailer_id' => array( 'eq' => $fb_retailer_id ) )
+				);
+			}
 		}
 
-		// formats filter value
+		// products: add retailer id to the products filter
 		foreach ( $product_ids as $product_id ) {
 
 			$product        = new \WC_Product( $product_id );
@@ -370,6 +381,7 @@ class Sync {
 				array( 'retailer_id' => array( 'eq' => $fb_retailer_id ) )
 			);
 		}
+
 		$data = array(
 			'name'   => $term->name,
 			'filter' => wp_json_encode( array( 'or' => $products ) ),
