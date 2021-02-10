@@ -85,6 +85,7 @@ class WebHook {
 
 	/**
 	 * WebHook Listener
+	 * Send a JSON response back to Woo Connect Bridge.
 	 *
 	 * @since 2.2.1-dev.1
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
@@ -93,31 +94,13 @@ class WebHook {
 	 */
 	public function webhook_callback( \WP_REST_Request $request ) {
 
-		$request_body = $this->parse_body( $request );
+		$request_body = json_decode( $request->get_body() );
 		if ( empty( $request_body ) ) {
-			return;
+			wp_send_json_error( null, 204 );
 		}
 
-		do_action( 'fbe_webhook', json_decode( file_get_contents( 'php://input' ) ) );
-	}
+		do_action( 'fbe_webhook', $request_body );
 
-
-	/**
-	 * Return request's body parsed
-	 *
-	 * @since 2.2.1-dev.1
-	 *
-	 * @param \WP_REST_Request $request The request.
-	 * @return array
-	 */
-	protected function parse_body( \WP_REST_Request $request ) {
-
-		$body = $request->get_body();
-
-		// "Sanitize" JSON object (trim object, remove tabs)
-		$body = trim( preg_replace( '/\t+/', '', $body ) );
-
-		// Transform JSON into a PHP array
-		return json_decode( $body, true );
+		wp_send_json_success();
 	}
 }
