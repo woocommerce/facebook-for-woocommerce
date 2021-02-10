@@ -46,7 +46,7 @@ class WebHook {
 	public function init_webhook_endpoint() {
 
 		register_rest_route(
-			'facebook/v1',
+			'wc-facebook/v1',
 			'webhook',
 			array(
 				array(
@@ -69,17 +69,7 @@ class WebHook {
 	 */
 	public function permission_callback() {
 
-		add_filter( 'woocommerce_rest_is_request_to_rest_api', '__return_true' );
-
-		$user = apply_filters( 'determine_current_user', null );
-
-		remove_filter( 'woocommerce_rest_is_request_to_rest_api', '__return_true' );
-
-		if ( empty( $user ) ) {
-			return false;
-		}
-
-		return true;
+		return current_user_can( 'manage_woocommerce' );
 	}
 
 
