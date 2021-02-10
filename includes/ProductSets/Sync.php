@@ -408,7 +408,7 @@ class Sync {
 			'hide_empty' => false,
 			'meta_query' => array(
 				array(
-					'key'     => 'wc_product_cats',
+					'key'     => \WC_Facebookcommerce::PRODUCT_SET_META,
 					'value'   => sprintf( ':%d;', $product_cat_id ),
 					'compare' => 'LIKE',
 				),
