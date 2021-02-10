@@ -776,7 +776,7 @@ class Connection {
 		/**
 		 * Filters App Store login URL.
 		 *
-		 * @since 2.0.0
+		 * @since 2.2.1-dev.1
 		 *
 		 * @param string $app_store_login_url the connection App Store login URL
 		 */
