@@ -32,6 +32,9 @@ class Connection {
 	/** @var string WooCommerce connection proxy URL */
 	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
 
+	/** @var string WooCommerce connection for APP Store login URL */
+	const APP_STORE_LOGIN_URL = 'https://connect.woocommerce.com/app-store-login/facebook/';
+
 	/** @var string the Standard Auth type */
 	const AUTH_TYPE_STANDARD = 'standard';
 
@@ -764,6 +767,26 @@ class Connection {
 
 
 	/**
+	 * Gets APP Store Login URL.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return string URL
+	 */
+	public function get_app_store_login_url() {
+
+		/**
+		 * Filters App Store login URL.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param string $app_store_login_url the connection App Store login URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_app_store_login_url', self::APP_STORE_LOGIN_URL );
+	}
+
+
+	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
 	 *
 	 * @since 2.0.0
@@ -1321,7 +1344,7 @@ class Connection {
 
 			$redirect_url = add_query_arg(
 				$url_params,
-				'https://connect.woocommerce.com/app-store-login/facebook'
+				$this->get_app_store_login_url()
 			);
 
 		} else {
