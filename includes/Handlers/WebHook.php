@@ -91,16 +91,19 @@ class WebHook {
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
 	 *
 	 * @param \WP_REST_Request $request The request.
+	 * @return \WP_REST_Response
 	 */
 	public function webhook_callback( \WP_REST_Request $request ) {
 
 		$request_body = json_decode( $request->get_body() );
+
 		if ( empty( $request_body ) ) {
+			return new \WP_REST_Response( null, 204 );
 			wp_send_json_error( null, 204 );
 		}
 
 		do_action( 'fbe_webhook', $request_body );
 
-		wp_send_json_success();
+		return new \WP_REST_Response( null, 200 );
 	}
 }

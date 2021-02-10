@@ -1279,8 +1279,7 @@ class Connection {
 
 
 	/**
-	 * Endpoint permissions
-	 * Woo Connect Bridge is sending the WebHook request using generated key.
+	 * FBE Extras endpoint permissions
 	 *
 	 * @since 2.2.1-dev.1
 	 *
@@ -1303,16 +1302,20 @@ class Connection {
 
 
 	/**
-	 * WebHook Listener
+	 * Return FBE extras
 	 *
 	 * @since 2.2.1-dev.1
-	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
+	 *
+	 * @return \WP_REST_Response
 	 */
 	public function extras_callback() {
 
 		$extras = $this->get_connect_parameters_extras();
+		if ( empty( $extras ) ) {
+			return new \WP_REST_Response( null, 204 );
+		}
 
-		wp_send_json( $extras );
+		return new \WP_REST_Response( $extras, 200 );
 	}
 
 
