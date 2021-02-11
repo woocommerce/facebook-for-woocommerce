@@ -114,6 +114,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			add_action( 'init', [ $this, 'get_integration' ] );
 			add_action( 'init', [ $this, 'register_custom_taxonomy' ] );
+			add_action( 'add_meta_boxes_product' , [ $this, 'remove_product_fb_product_set_metabox' ], 50 );
 			add_filter( 'fb_product_set_row_actions', [ $this, 'product_set_links' ] );
 			add_filter( 'manage_edit-fb_product_set_columns', [ $this, 'manage_fb_product_set_columns' ] );
 
@@ -380,6 +381,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			parent::log_api_request( $request, $response, $log_id );
+		}
+
+		/**
+		 * Remove Product Set metabox from Product edit page
+		 *
+		 * @since 2.2.1-dev.1
+		 */
+		public function remove_product_fb_product_set_metabox() {
+			remove_meta_box( 'fb_product_setdiv', 'product', 'side' );
 		}
 
 		/**
