@@ -738,7 +738,7 @@ class Connection {
 	/**
 	 * Gets Instagram Business ID value.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @return string
 	 */
@@ -751,7 +751,7 @@ class Connection {
 	/**
 	 * Gets Commerce merchant settings ID value.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @return string
 	 */
@@ -968,7 +968,7 @@ class Connection {
 	/**
 	 * Stores the given Instagram Business ID.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param string $id the ID
 	 */
@@ -981,7 +981,7 @@ class Connection {
 	/**
 	 * Stores the given Commerce merchant settings ID.
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param string $id the ID
 	 */
