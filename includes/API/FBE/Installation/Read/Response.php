@@ -98,7 +98,7 @@ class Response extends API\Response  {
 	 */
 	public function get_instagram_business_id() {
 
-		$instagram_profiles = $this->get_data()->instagram_profiles;
+		$instagram_profiles = ! empty( $this->get_data()->instagram_profiles ) ? $this->get_data()->instagram_profiles : '';
 
 		if ( empty( $instagram_profiles ) ) {
 			return '';
