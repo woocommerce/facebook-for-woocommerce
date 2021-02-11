@@ -36,8 +36,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		$this->title = __( 'Commerce', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-
-		add_action( 'woocommerce_admin_field_commerce_google_product_categories', [ $this, 'render_google_product_category_field' ] );
 	}
 
 
@@ -323,35 +321,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		<div class="notice notice-info"><p><?php esc_html_e( 'Checkout on Instagram or Facebook is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
 
-		<?php
-	}
-
-
-	/**
-	 * Renders the Google category field markup.
-	 *
-	 * @internal
-
-	 * @since 2.1.0-dev.1
-	 *
-	 * @param array $field field data
-	 */
-	public function render_google_product_category_field( $field ) {
-
-		$category_field = new Admin\Google_Product_Category_Field();
-
-		?>
-		<tr valign="top">
-			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?>
-					<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $field['desc_tip'] ); ?>"></span>
-				</label>
-			</th>
-			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
-				<?php $category_field->render( $field['id'] ); ?>
-				<input id="<?php echo esc_attr( $field['id'] ); ?>" type="hidden" name="<?php echo esc_attr( $field['id'] ); ?>" value="<?php echo esc_attr( $field['value'] ); ?>" />
-			</td>
-		</tr>
 		<?php
 	}
 
