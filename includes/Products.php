@@ -677,6 +677,11 @@ class Products {
 			while ( (int) $parent_category->parent !== 0 ) {
 
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+
+				if ( ! $parent_category instanceof \WP_Term ) {
+					break;
+				}
+
 				$level ++;
 			}
 
