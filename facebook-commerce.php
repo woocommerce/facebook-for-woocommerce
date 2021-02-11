@@ -1629,7 +1629,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Create or update product set
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param array $product_set_data Product Set data.
 	 * @param int   $product_set_id   Product Set Term Id.
@@ -1674,7 +1674,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Delete product set
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param int $fb_product_set_id Facebook Product Set ID.
 	 **/

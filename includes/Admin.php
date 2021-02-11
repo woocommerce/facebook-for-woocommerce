@@ -101,7 +101,7 @@ class Admin {
 	/**
 	 * Change custom taxonomy tip text
 	 *
-	 * @since 2.1.5
+	 * @since 2.2.1-dev.1
 	 *
 	 * @param string $translation Text translation.
 	 * @param string $text Original text.

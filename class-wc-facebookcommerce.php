@@ -395,7 +395,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Register FB Product Set Taxonomy
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 */
 		public function register_custom_taxonomy() {
 
@@ -434,7 +434,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Filter FB Product Set Taxonomy table links
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 *
 		 * @param array $actions Item Actions.
 		 *
@@ -450,7 +450,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Remove posts count column from FB Product Set custom taxonomy
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 *
 		 * @param array $columns Taxonomy columns.
 		 *
@@ -465,7 +465,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Filter WC Breadcrumbs when the page is FB Product Sets
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 *
 		 * @param array $breadcrumbs Page breadcrumbs.
 		 *
@@ -497,7 +497,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Return that FB Product Set page is a WC Conected Page
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 *
 		 * @param boolean $is_conected If it's connected or not.
 		 *
@@ -1011,7 +1011,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Return current page ID
 		 *
-		 * @since 2.1.5
+		 * @since 2.2.1-dev.1
 		 *
 		 * @return string
 		 */
