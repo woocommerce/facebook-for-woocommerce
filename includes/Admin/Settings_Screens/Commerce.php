@@ -170,8 +170,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		];
 
 		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
-		$commerce_connect_message = 'Your store is not connected to Checkout on Instagram or Facebook.';
-		$commerce_connect_caption = 'Connect';
+		$commerce_connect_message = __( 'Your Checkout setup is not complete.', 'facebook-for-woocommerce' );
+		$commerce_connect_caption = __( 'Finish Setup', 'facebook-for-woocommerce' );
 
 		// If the Commerce Manager ID is set, update the Commerce Account details
 		if ( $commerce_manager_id ) {
@@ -186,8 +186,13 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 				if ( $onsite_intent = $response->has_onsite_intent() ) {
 					$static_items['checkout_method']['value'] = 'Checkout on Instagram or Facebook';
-					$commerce_connect_message = 'Your Checkout setup is not complete.';
-					$commerce_connect_caption = 'Finish Setup';
+
+					$setup_status = $response->get_setup_status();
+					if ( $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
+						$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
+						$commerce_connect_message = __( 'Your store is not connected to Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' );
+						$commerce_connect_caption = __( 'Connect', 'facebook-for-woocommerce' );
+					}
 				} else {
 					$static_items['checkout_method']['value'] = 'Checkout on Another Website';
 				}
@@ -200,28 +205,24 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					$static_items['ig_channel']['value'] = $ig_channel->id ? 'Enabled' : '';
 				}
 
-				$setup_status = $response->get_setup_status();
-				if ( $onsite_intent && $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
-					$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
-				}
-
-			} catch ( SV_WC_API_Exception $exception ) {}
+			} catch ( Framework\SV_WC_API_Exception $exception ) {}
 		}
 
 		// if the user has authorized the pages_read_engagement scope, they can go directly to the Commerce onboarding
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
 
-			$connect_url = $commerce_connect_url;
+			if ( $commerce_connected = $commerce_handler->is_connected() ) {
+				$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manage_url();
+				$commerce_connect_message = __( 'Your store is connected to Checkout.', 'facebook-for-woocommerce' );
+				$commerce_connect_caption = __( 'Manage', 'facebook-for-woocommerce' );
+			} else {
+				$connect_url = $commerce_connect_url;
+			}
 
 		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
 		} else {
 
 			$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url( true );
-		}
-
-		if ( $commerce_connected = $commerce_handler->is_connected() ) {
-			$commerce_connect_message = 'Your store is connected to Checkout.';
-			$commerce_connect_caption = 'Manage';
 		}
 
 		?>

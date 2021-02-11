@@ -320,6 +320,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
+	/** @see Connection::is_commerce_setup_complete() */
+	public function test_is_commerce_setup_complete() {
+
+		$complete = true;
+		update_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
+
+		$this->assertSame( $complete, $this->get_connection()->is_commerce_setup_complete() );
+	}
+
+
 	/** @see Connection::get_proxy_url() */
 	public function test_get_proxy_url() {
 
@@ -619,6 +629,16 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_onsite_checkout_connected( $connected );
 
 		$this->assertSame( $connected, get_option( Connection::OPTION_ONSITE_CHECKOUT_CONNECTED ) );
+	}
+
+
+	/** @see Connection::update_commerce_setup_complete() */
+	public function test_update_commerce_setup_complete() {
+
+		$complete = true;
+		$this->get_connection()->update_commerce_setup_complete( $complete );
+
+		$this->assertSame( $complete, get_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE ) );
 	}
 
 

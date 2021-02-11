@@ -68,6 +68,9 @@ class Connection {
 	/** @var string the Commerce manager ID option name */
 	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
 
+	/** @var bool option that stores the Commerce setup status */
+	const OPTION_COMMERCE_SETUP_COMPLETE = 'wc_facebook_commerce_setup_complete';
+
 	/** @var bool option that stores the onsite checkout connected state */
 	const OPTION_ONSITE_CHECKOUT_CONNECTED = 'wc_facebook_onsite_checkout_connected';
 
@@ -209,7 +212,7 @@ class Connection {
 			// get and store the commerce merchant settings id for the configured page, if one exists
 			$page_response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
 			if ( $commerce_manager_id = $page_response->get_commerce_merchant_settings_id() ) {
-				$this->update_commerce_manager_id( sanitize_text_field( $commerce_manager_id ));
+				$this->update_commerce_installation_data( sanitize_text_field( $commerce_manager_id ) );
 			}
 		}
 
@@ -227,6 +230,31 @@ class Connection {
 
 		if ( $response->get_ad_account_id() ) {
 			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
+		}
+	}
+
+
+	/**
+	 * Retrieves and stores the connected Commerce account installation data.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @throws SV_WC_API_Exception
+	 */
+	public function update_commerce_installation_data( $commerce_manager_id ) {
+		$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
+		$this->update_commerce_manager_id( $commerce_manager_id );
+
+		$onsite_intent = $response->has_onsite_intent();
+		$setup_status = $response->get_setup_status();
+
+		$complete = $onsite_intent && $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP';
+		$this->update_commerce_setup_complete( $complete );
+
+		if ( $complete ) {
+			$oma_response = facebook_for_woocommerce()->get_api()->get_order_management_apps( $commerce_manager_id );
+			$this->update_onsite_checkout_connected( in_array( $this->get_client_id(), $oma_response->get_apps() ) );
 		}
 	}
 
@@ -351,6 +379,7 @@ class Connection {
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
 		$this->update_commerce_manager_id( '' );
+		$this->update_commerce_setup_complete( false );
 		$this->update_onsite_checkout_connected( false );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
@@ -389,19 +418,20 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Commerce manager ID is missing' );
 			}
 
-			// get a current access token for the configured page
-			$page_access_token = $this->retrieve_page_access_token( facebook_for_woocommerce()->get_integration()->get_facebook_page_id() );
+			// store the commerce manager ID if queried successfully
+			$this->update_commerce_installation_data( $commerce_manager_id );
 
-			$this->update_page_access_token( $page_access_token );
+			// if setup is complete but not already connected, need to enable order management
+			if ( $this->is_commerce_setup_complete() && ! $this->is_onsite_checkout_connected() ) {
+				// get a current access token for the configured page
+				$page_access_token = $this->retrieve_page_access_token( facebook_for_woocommerce()->get_integration()->get_facebook_page_id() );
 
-			// allow the commerce manager to manage orders for the page shop
-			$this->enable_order_management( $commerce_manager_id, $page_access_token );
+				$this->update_page_access_token( $page_access_token );
 
-			// store the commerce manager ID
-			$this->update_commerce_manager_id( $commerce_manager_id );
-
-			// finally, store the onsite checkout connected state if we've gotten this far
-			$this->update_onsite_checkout_connected( true );
+				// allow the commerce manager to manage orders for the page shop
+				$this->enable_order_management( $commerce_manager_id, $page_access_token );
+				$this->update_onsite_checkout_connected( true );
+			}
 
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 
@@ -637,6 +667,22 @@ class Connection {
 
 
 	/**
+	 * Gets the URL to manage the Commerce connection.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @return string
+	 */
+	public function get_commerce_manage_url() {
+
+		$app_id      = $this->get_client_id();
+		$business_id = $this->get_external_business_id();
+
+		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}&tab=Commerce";
+	}
+
+
+	/**
 	 * Gets the URL to manage the connection.
 	 *
 	 * @since 2.0.0
@@ -681,6 +727,7 @@ class Connection {
 			'catalog_management',
 			'ads_management',
 			'ads_read',
+			'instagram_basic',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
 		];
 
@@ -1048,6 +1095,19 @@ class Connection {
 
 
 	/**
+	 * Stores the Commerce setup completion state.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param bool $connected The Commerce setup completion state.
+	 */
+	public function update_commerce_setup_complete( $complete ) {
+
+		update_option( self::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
+	}
+
+
+	/**
 	 * Stores the given token value.
 	 *
 	 * @since 2.0.0
@@ -1111,6 +1171,19 @@ class Connection {
 	public function is_onsite_checkout_connected() {
 
 		return get_option( self::OPTION_ONSITE_CHECKOUT_CONNECTED, false );
+	}
+
+
+	/**
+	 * Determines whether Commerce setup is complete.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return bool
+	 */
+	public function is_commerce_setup_complete() {
+
+		return get_option( self::OPTION_COMMERCE_SETUP_COMPLETE, false );
 	}
 
 
