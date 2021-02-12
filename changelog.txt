@@ -1,7 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
 2020.nn.nn - version 2.2.1-dev.1
+ * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
+ * Tweak - Remove business_management permission from login scopes
 
 2020.11.19 - version 2.2.0
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
