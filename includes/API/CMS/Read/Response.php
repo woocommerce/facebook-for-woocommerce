@@ -70,9 +70,10 @@ class Response extends API\Response  {
 	 */
 	public function get_setup_status() {
 
-		$data = ! empty( $this->setup_status->data ) && is_array( $this->setup_status->data ) ? $this->setup_status->data : [];
+		$data = ! empty( $this->setup_status->data ) && is_array( $this->setup_status->data )
+			? $this->setup_status->data[0] : null;
 
-		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+		return is_object( $data ) ? $data : new \stdClass();
 	}
 
 
@@ -85,9 +86,10 @@ class Response extends API\Response  {
 	 */
 	public function get_instagram_channel() {
 
-		$data = ! empty( $this->instagram_channel->instagram_users->data ) && is_array( $this->instagram_channel->instagram_users->data ) ? $this->instagram_channel->instagram_users->data : [];
+		$data = ! empty( $this->instagram_channel->instagram_users->data ) && is_array( $this->instagram_channel->instagram_users->data )
+			? $this->instagram_channel->instagram_users->data[0] : null;
 
-		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+		return is_object( $data ) ? $data : new \stdClass();
 	}
 
 
@@ -101,9 +103,10 @@ class Response extends API\Response  {
 	 */
 	public function get_facebook_channel() {
 
-		$data = ! empty( $this->facebook_channel->pages->data ) && is_array( $this->facebook_channel->pages->data ) ? $this->facebook_channel->pages->data : [];
+		$data = ! empty( $this->facebook_channel->pages->data ) && is_array( $this->facebook_channel->pages->data )
+			? $this->facebook_channel->pages->data[0] : null;
 
-		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+		return is_object( $data ) ? $data : new \stdClass();
 	}
 
 

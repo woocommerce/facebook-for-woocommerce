@@ -49,21 +49,18 @@ class Response extends API\Response  {
 
 
 	/**
-	 * Gets the Commerce Merchant Settings ID associated with the page.
+	 * Gets the Commerce Merchant Settings associated with the page.
 	 *
 	 * @since 2.3.0
 	 *
-	 * @return string|null
+	 * @return \stdClass
 	 */
-	public function get_commerce_merchant_settings_id() {
+	public function get_commerce_merchant_settings() {
 
-		$data = $this->commerce_merchant_settings->data;
+		$data = ! empty( $this->commerce_merchant_settings->data ) && is_array( $this->commerce_merchant_settings->data )
+			? $this->commerce_merchant_settings->data[0] : null;
 
-		if (is_object( $data[0])) {
-			return $data[0]->id;
-		}
-
-		return '';
+		return is_object( $data ) ? $data : new \stdClass();
 	}
 
 

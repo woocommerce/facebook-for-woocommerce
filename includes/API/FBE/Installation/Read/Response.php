@@ -116,9 +116,9 @@ class Response extends API\Response  {
 	 */
 	public function get_data() {
 
-		$data = ! empty( $this->response_data->data ) && is_array( $this->response_data->data ) ? $this->response_data->data : [];
+		$data = ! empty( $this->response_data->data ) && is_array( $this->response_data->data ) ? $this->response_data->data[0] : null;
 
-		return is_object( $data[0] ) ? $data[0] : new \stdClass();
+		return is_object( $data ) ? $data : new \stdClass();
 	}
 
 

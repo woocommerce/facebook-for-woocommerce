@@ -44,7 +44,7 @@ class Request extends API\Request  {
 	 */
 	public function get_params() {
 
-		return [ 'fields' => 'cta,display_name,instagram_channel,facebook_channel,has_onsite_intent,setup_status' ];
+		return [ 'fields' => 'cta,display_name,instagram_channel,facebook_channel,has_onsite_intent,setup_status{shop_setup,payment_setup,review_status}' ];
 	}
 
 

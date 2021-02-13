@@ -36,6 +36,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		$this->title = __( 'Commerce', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		add_action( 'woocommerce_admin_field_commerce_google_product_categories', [ $this, 'render_google_product_category_field' ] );
 	}
 
 
@@ -125,8 +127,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render() {
 
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$is_debug_mode = $connection_handler->get_plugin()->get_integration()->is_debug_mode_enabled();
+
 		// if not connected, fall back to standard display
-		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+		if ( ! $connection_handler->is_connected() ) {
 			parent::render();
 			return;
 		}
@@ -149,7 +154,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		 * + IG Channel
 		 */
 
-		$commerce_manager_id = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manager_id();
+		$commerce_manager_id = $connection_handler->get_commerce_manager_id();
 		$static_items = [
 			'commerce_manager' => [
 				'label' => __( 'Commerce Manager account', 'facebook-for-woocommerce' ),
@@ -165,9 +170,30 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			'ig_channel' => [
 				'label' => __( 'Instagram Channel', 'facebook-for-woocommerce' ),
 			],
+			'details' => [
+				'type'  => 'title',
+				'label' => __( 'Setup Details', 'facebook-for-woocommerce' ),
+				'debug' => true,
+			],
+			'cta'     => [
+				'label' => __( 'Call to Action', 'facebook-for-woocommerce' ),
+				'debug' => true,
+			],
+			'shop_setup' => [
+				'label' => __( 'Shop Setup', 'facebook-for-woocommerce' ),
+				'debug' => true,
+			],
+			'payment_setup' => [
+				'label' => __( 'Payment Setup', 'facebook-for-woocommerce' ),
+				'debug' => true,
+			],
+			'review_status' => [
+				'label' => __( 'Review Status', 'facebook-for-woocommerce' ),
+				'debug' => true,
+			]
 		];
 
-		$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url();
+		$commerce_connect_url = $connection_handler->get_commerce_connect_url();
 		$commerce_connect_message = __( 'Your Checkout setup is not complete.', 'facebook-for-woocommerce' );
 		$commerce_connect_caption = __( 'Finish Setup', 'facebook-for-woocommerce' );
 
@@ -185,11 +211,25 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				if ( $onsite_intent = $response->has_onsite_intent() ) {
 					$static_items['checkout_method']['value'] = 'Checkout on Instagram or Facebook';
 
+					$cta = $response->get_cta();
 					$setup_status = $response->get_setup_status();
-					if ( $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP') {
-						$commerce_connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_connect_url( $commerce_manager_id );
-						$commerce_connect_message = __( 'Your store is not connected to Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' );
-						$commerce_connect_caption = __( 'Connect', 'facebook-for-woocommerce' );
+
+					if ( $cta && $setup_status ) {
+						$static_items['cta']['value'] = $cta;
+						$static_items['shop_setup']['value'] = $setup_status->shop_setup;
+						$static_items['payment_setup']['value'] = $setup_status->payment_setup;
+						$static_items['review_status']['value'] = $setup_status->review_status->status;
+
+						if (
+							$cta === 'ONSITE_CHECKOUT' &&
+							$setup_status->shop_setup === 'SETUP' &&
+							$setup_status->payment_setup === 'SETUP' &&
+							$setup_status->review_status->status === 'APPROVED'
+						) {
+							$commerce_connect_url = $connection_handler->get_commerce_connect_url( $commerce_manager_id );
+							$commerce_connect_message = __( 'Your store is not connected to Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' );
+							$commerce_connect_caption = __( 'Connect', 'facebook-for-woocommerce' );
+						}
 					}
 				} else {
 					$static_items['checkout_method']['value'] = 'Checkout on Another Website';
@@ -210,7 +250,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		if ( 'yes' === get_option( 'wc_facebook_has_authorized_pages_read_engagement' ) ) {
 
 			if ( $commerce_connected = $commerce_handler->is_connected() ) {
-				$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_commerce_manage_url();
+				$connect_url = $connection_handler->get_commerce_manage_url();
 				$commerce_connect_message = __( 'Your store is connected to Checkout.', 'facebook-for-woocommerce' );
 				$commerce_connect_caption = __( 'Manage', 'facebook-for-woocommerce' );
 			} else {
@@ -220,7 +260,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		// otherwise, they've connected FBE before that scope was requested so they need to re-auth and then go to the Commerce onboarding
 		} else {
 
-			$connect_url = facebook_for_woocommerce()->get_connection_handler()->get_connect_url( true );
+			$connect_url = $connection_handler->get_connect_url( true );
 		}
 
 		?>
@@ -252,50 +292,60 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				<?php foreach ( $static_items as $id => $item ) :
 
 					$item = wp_parse_args( $item, [
+						'type'  => '',
 						'label' => '',
 						'value' => '',
 						'url'   => '',
+						'debug' => '',
 					] );
 
 					?>
 
-					<tr valign="top" class="wc-facebook-connected-<?php echo esc_attr( $id ); ?>">
-
-						<th scope="row" class="titledesc">
-							<?php echo esc_html( $item['label'] ); ?>
-						</th>
-
-						<td class="forminp">
-
-							<?php if ( $item['url'] ) : ?>
-
-								<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank">
-
-									<?php echo esc_html( $item['value'] ); ?>
-
-									<span
-										class="dashicons dashicons-external"
-										style="margin-right: 8px; vertical-align: bottom; text-decoration: none;"
-									></span>
-
-								</a>
-
-							<?php elseif ( is_numeric( $item['value'] ) ) : ?>
-
-								<code><?php echo esc_html( $item['value'] ); ?></code>
-
-							<?php elseif ( ! empty( $item['value'] ) ) : ?>
-
-								<?php echo esc_html( $item['value'] ); ?>
-
+					<?php if ( ! $item['debug'] || $is_debug_mode ) : ?>
+						<tr valign="top" class="wc-facebook-connected-<?php echo esc_attr( $id ); ?> wc-facebook-<?php echo $item['debug'] ? 'debug' : 'nodebug'; ?>">
+							<?php if ( $item['type'] ) : ?>
+								<th scope="row" class="titledesc" colspan="2">
+									<h2><?php echo esc_html( $item['label'] ); ?></h2>
+								</th>
 							<?php else : ?>
 
-								<?php echo '-' ?>
+								<th scope="row" class="titledesc">
+									<?php echo esc_html( $item['label'] ); ?>
+								</th>
 
+								<td class="forminp">
+
+									<?php if ( $item['url'] ) : ?>
+
+										<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank">
+
+											<?php echo esc_html( $item['value'] ); ?>
+
+											<span
+												class="dashicons dashicons-external"
+												style="margin-right: 8px; vertical-align: bottom; text-decoration: none;"
+											></span>
+
+										</a>
+
+									<?php elseif ( is_numeric( $item['value'] ) ) : ?>
+
+										<code><?php echo esc_html( $item['value'] ); ?></code>
+
+									<?php elseif ( ! empty( $item['value'] ) ) : ?>
+
+										<?php echo esc_html( $item['value'] ); ?>
+
+									<?php else : ?>
+
+										<?php echo '-' ?>
+
+									<?php endif; ?>
+
+								</td>
 							<?php endif; ?>
-
-						</td>
-					</tr>
+						</tr>
+					<?php endif; ?>
 
 				<?php endforeach; ?>
 
@@ -321,6 +371,35 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		<div class="notice notice-info"><p><?php esc_html_e( 'Checkout on Instagram or Facebook is only available to merchants located in the United States.', 'facebook-for-woocommerce' ); ?></p></div>
 
+		<?php
+	}
+
+
+	/**
+	 * Renders the Google category field markup.
+	 *
+	 * @internal
+
+	 * @since 2.1.0-dev.1
+	 *
+	 * @param array $field field data
+	 */
+	public function render_google_product_category_field( $field ) {
+
+		$category_field = new Admin\Google_Product_Category_Field();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?>
+					<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $field['desc_tip'] ); ?>"></span>
+				</label>
+			</th>
+			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
+				<?php $category_field->render( $field['id'] ); ?>
+				<input id="<?php echo esc_attr( $field['id'] ); ?>" type="hidden" name="<?php echo esc_attr( $field['id'] ); ?>" value="<?php echo esc_attr( $field['value'] ); ?>" />
+			</td>
+		</tr>
 		<?php
 	}
 

@@ -211,8 +211,8 @@ class Connection {
 
 			// get and store the commerce merchant settings id for the configured page, if one exists
 			$page_response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
-			if ( $commerce_manager_id = $page_response->get_commerce_merchant_settings_id() ) {
-				$this->update_commerce_installation_data( sanitize_text_field( $commerce_manager_id ) );
+			if ( $cms = $page_response->get_commerce_merchant_settings() ) {
+				$this->update_commerce_installation_data( sanitize_text_field( $cms->id ) );
 			}
 		}
 
@@ -236,7 +236,8 @@ class Connection {
 
 	/**
 	 * Retrieves and stores the connected Commerce account installation data.
-	 *
+	 * Use following guidelines to determine eligibility for Order Management:
+	 * https://developers.facebook.com/docs/commerce-platform/platforms/onboarding/troubleshooting#shop_setup_status
 	 * @since 2.3.0
 	 *
 	 * @param string $commerce_manager_id Commerce Manager ID
@@ -249,7 +250,14 @@ class Connection {
 		$onsite_intent = $response->has_onsite_intent();
 		$setup_status = $response->get_setup_status();
 
-		$complete = $onsite_intent && $setup_status && $setup_status->shop_setup === 'SETUP' && $setup_status->payment_setup === 'SETUP';
+		$complete = (
+			$onsite_intent &&
+			$response->get_cta() === 'ONSITE_CHECKOUT' &&
+			$setup_status &&
+			$setup_status->shop_setup === 'SETUP' &&
+			$setup_status->payment_setup === 'SETUP' &&
+			$setup_status->review_status->status === 'APPROVED'
+		);
 		$this->update_commerce_setup_complete( $complete );
 
 		if ( $complete ) {
@@ -431,9 +439,9 @@ class Connection {
 				// allow the commerce manager to manage orders for the page shop
 				$this->enable_order_management( $commerce_manager_id, $page_access_token );
 				$this->update_onsite_checkout_connected( true );
-			}
 
-			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
+				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
+			}
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
