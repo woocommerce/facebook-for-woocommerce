@@ -147,7 +147,7 @@ class Admin {
 						'product_not_ready_modal_message'            => $this->get_product_not_ready_modal_message(),
 						'product_not_ready_modal_buttons'            => $this->get_product_not_ready_modal_buttons(),
 						'i18n'                                       => array(
-							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
+							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram or Facebook.', 'facebook-for-woocommerce' ),
 						),
 					)
 				);
@@ -209,7 +209,7 @@ class Admin {
 		ob_start();
 
 		?>
-		<p><?php esc_html_e( 'To sell this product on Instagram, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
+		<p><?php esc_html_e( 'To sell this product on Instagram or Facebook, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
 
 		<ul class="ul-disc">
 			<li><?php esc_html_e( 'Has a price defined', 'facebook-for-woocommerce' ); ?></li>

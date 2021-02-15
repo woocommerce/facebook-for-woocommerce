@@ -178,9 +178,11 @@ class Orders {
 		if ( Commerce\Orders::is_order_pending( $order ) ) {
 
 			$message = sprintf(
-				/* translators: Placeholders: %1$s - HTML <strong> tag, %2$s - HTML </strong> tag */
-				__( 'This order is currently being held by Instagram and cannot be edited. Once released by Instagram, it will move to %1$sProcessing%2$s or %1$sCancelled%2$s status.', 'facebook-for-woocommerce' ),
-				'<strong>', '</strong>'
+				/* translators: Placeholders: %1$s - sales channel name, %2$s - HTML <strong> tag, %3$s - HTML </strong> tag */
+				__( 'This order is currently being held by %1$s and cannot be edited. Once released by %1$s, it will move to %2$sProcessing%3$s or %2$sCancelled%3$s status.', 'facebook-for-woocommerce' ),
+				ucfirst( $order->get_created_via() ),
+				'<strong>',
+				'</strong>'
 			);
 
 			$plugin->get_admin_notice_handler()->add_admin_notice( $message, $plugin::PLUGIN_ID . '_commerce_order_pending_' . $order->get_id(), [
@@ -197,9 +199,9 @@ class Orders {
 			facebook_for_woocommerce()->get_message_handler()->add_error( sprintf(
 				_n(
 					/* translators: Placeholder: %s - order ID */
-					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram order %s so you can provide order details required by Instagram.',
+					'Heads up! Instagram and Facebook order statuses cannot be updated in bulk. Please update order %s so you can provide order details required by Instagram/Facebook.',
 					/* translators: Placeholder: %s - order IDs list */
-					'Heads up! Instagram order statuses can’t be updated in bulk. Please update Instagram orders %s individually so you can provide order details required by Instagram.',
+					'Heads up! Instagram and Facebook order statuses cannot be updated in bulk. Please update orders %s individually so you can provide order details required by Instagram/Facebook.',
 					count( $commerce_orders ),
 					'facebook-for-woocommerce'
 				),

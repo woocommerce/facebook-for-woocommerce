@@ -88,7 +88,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 		return sprintf(
 			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
-			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
+			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram or Facebook checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
 			'<strong>', '</strong>'
 		);
 	}
@@ -423,12 +423,13 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		return [
 			[
 				'type' => 'title',
+				'title' => 'Product Sync Settings'
 			],
 			[
 				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type'     => 'commerce_google_product_categories',
 				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
-				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined to sell via Instagram.', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined to sell via Instagram or Facebook.', 'facebook-for-woocommerce' ),
 			],
 			[
 				'type' => 'sectionend',
