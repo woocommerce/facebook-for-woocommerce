@@ -166,7 +166,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		<h2>
 
-			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
+			<?php esc_html_e( 'Product Sync', 'facebook-for-woocommerce' ); ?>
 
 			<?php if ( facebook_for_woocommerce()->get_connection_handler()->is_connected() ) : ?>
 				<a
