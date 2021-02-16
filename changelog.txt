@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021.nn.nn - version 2.3.0-dev.1
+2021.02.16 - version 2.3.0
  * Feature - Add ability to create and assign products to Facebook product sets
  * Feature - Add support for Facebook App store flow
  * Tweak - Ask merchants to delete products when changing from sync to not sync state

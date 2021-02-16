@@ -901,7 +901,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @return array
 	 */
@@ -1078,7 +1078,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @internal
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param \WC_Product $product WooCommerce product object
 	 */
@@ -1629,7 +1629,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Create or update product set
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param array $product_set_data Product Set data.
 	 * @param int   $product_set_id   Product Set Term Id.
@@ -1674,7 +1674,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Delete product set
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $fb_product_set_id Facebook Product Set ID.
 	 **/
