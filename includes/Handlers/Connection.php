@@ -68,6 +68,12 @@ class Connection {
 	/** @var string the Commerce manager ID option name */
 	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
 
+	/** @var string Instagram Business ID option name */
+	const OPTION_INSTAGRAM_BUSINESS_ID = 'wc_facebook_instagram_business_id';
+
+	/** @var string the Commerce merchant settings ID option name */
+	const OPTION_COMMERCE_MERCHANT_SETTINGS_ID = 'wc_facebook_commerce_merchant_settings_id';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
@@ -217,6 +223,14 @@ class Connection {
 		if ( $response->get_ad_account_id() ) {
 			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
 		}
+
+		if ( $response->get_instagram_business_id() ) {
+			$this->update_instagram_business_id( sanitize_text_field( $response->get_instagram_business_id() ) );
+		}
+
+		if ( $response->get_commerce_merchant_settings_id() ) {
+			$this->update_commerce_merchant_settings_id( sanitize_text_field( $response->get_commerce_merchant_settings_id() ) );
+		}
 	}
 
 
@@ -339,6 +353,8 @@ class Connection {
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
+		$this->update_instagram_business_id( '' );
+		$this->update_commerce_merchant_settings_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
@@ -570,6 +586,7 @@ class Connection {
 			'ads_management',
 			'ads_read',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
+			'instagram_basic',
 		];
 
 		/**
@@ -719,6 +736,32 @@ class Connection {
 
 
 	/**
+	 * Gets Instagram Business ID value.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_instagram_business_id() {
+
+		return get_option( self::OPTION_INSTAGRAM_BUSINESS_ID, '' );
+	}
+
+
+	/**
+	 * Gets Commerce merchant settings ID value.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @return string
+	 */
+	public function get_commerce_merchant_settings_id() {
+
+		return get_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0
@@ -818,6 +861,8 @@ class Connection {
 				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
+				'domain'               => home_url(),
+				'channel'              => 'COMMERCE_OFFSITE',
 			],
 			'business_config' => [
 				'business' => [
@@ -917,6 +962,32 @@ class Connection {
 	public function update_commerce_manager_id( $id ) {
 
 		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
+	}
+
+
+	/**
+	 * Stores the given Instagram Business ID.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_instagram_business_id( $id ) {
+
+		update_option( self::OPTION_INSTAGRAM_BUSINESS_ID, $id );
+	}
+
+
+	/**
+	 * Stores the given Commerce merchant settings ID.
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_commerce_merchant_settings_id( $id ) {
+
+		update_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, $id );
 	}
 
 

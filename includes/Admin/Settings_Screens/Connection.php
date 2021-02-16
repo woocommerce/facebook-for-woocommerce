@@ -140,6 +140,14 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'label' => __( 'Ad Manager account', 'facebook-for-woocommerce' ),
 				'value' => facebook_for_woocommerce()->get_connection_handler()->get_ad_account_id(),
 			],
+			'instagram-business-id' => [
+				'label' => __( 'Instagram Business ID', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_connection_handler()->get_instagram_business_id(),
+			],
+			'commerce-merchant-settings-id' => [
+				'label' => __( 'Commerce Merchant Settings ID', 'facebook-for-woocommerce' ),
+				'value' => facebook_for_woocommerce()->get_connection_handler()->get_commerce_merchant_settings_id(),
+			],
 		];
 
 		// if the catalog ID is set, update the URL and try to get its name for display

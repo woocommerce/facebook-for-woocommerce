@@ -13,7 +13,7 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	protected $data = '{"data":[{"business_manager_id":"1234","ad_account_id":"ad-account","pixel_id":"5678","profiles":["123"],"catalog_id":"456","pages":["123"]}]}';
+	protected $data = '{"data":[{"business_manager_id":"1234","ad_account_id":"ad-account","pixel_id":"5678","profiles":["123"],"catalog_id":"456","commerce_merchant_settings_id":"789","pages":["123"],"instagram_profiles":["345"]}]}';
 
 
 	public function _before() {
@@ -75,6 +75,24 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 		$response = new Response( $this->data );
 
 		$this->assertEquals( '456', $response->get_catalog_id() );
+	}
+
+
+	/** @see Response::get_instagram_business_id() */
+	public function test_get_instagram_business_id() {
+
+		$response = new Response( $this->data );
+
+		$this->assertEquals( '345', $response->get_instagram_business_id() );
+	}
+
+
+	/** @see Response::get_commerce_merchant_settings_id() */
+	public function test_get_commerce_merchant_settings_id() {
+
+		$response = new Response( $this->data );
+
+		$this->assertEquals( '789', $response->get_commerce_merchant_settings_id() );
 	}
 
 
