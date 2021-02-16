@@ -2,7 +2,7 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.5.3
+Tested up to: 5.6
 Stable tag: 2.3.0-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
