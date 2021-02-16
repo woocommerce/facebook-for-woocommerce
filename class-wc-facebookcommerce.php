@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.3.0-dev.1';
+		const VERSION = '2.3.0';
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -391,7 +391,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Remove Product Set metabox from Product edit page
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 */
 		public function remove_product_fb_product_set_metabox() {
 			remove_meta_box( 'fb_product_setdiv', 'product', 'side' );
@@ -400,7 +400,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Register FB Product Set Taxonomy
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 */
 		public function register_custom_taxonomy() {
 
@@ -439,7 +439,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Filter FB Product Set Taxonomy table links
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 *
 		 * @param array $actions Item Actions.
 		 *
@@ -455,7 +455,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Remove posts count column from FB Product Set custom taxonomy
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 *
 		 * @param array $columns Taxonomy columns.
 		 *
@@ -470,7 +470,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Filter WC Breadcrumbs when the page is FB Product Sets
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 *
 		 * @param array $breadcrumbs Page breadcrumbs.
 		 *
@@ -502,7 +502,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Return that FB Product Set page is a WC Conected Page
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 *
 		 * @param boolean $is_conected If it's connected or not.
 		 *
@@ -1016,7 +1016,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Return current page ID
 		 *
-		 * @since 2.3.0-dev.1
+		 * @since 2.3.0
 		 *
 		 * @return string
 		 */

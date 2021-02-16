@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The product set sync handler.
  *
- * @since 2.3.0-dev.1
+ * @since 2.3.0
  */
 class Sync {
 
@@ -46,7 +46,7 @@ class Sync {
 	/**
 	 * Product's Category Previous List
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var array
 	 */
@@ -55,7 +55,7 @@ class Sync {
 	/**
 	 * Product's Category New List
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var array
 	 */
@@ -64,7 +64,7 @@ class Sync {
 	/**
 	 * Product's Product Set Previous List
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var array
 	 */
@@ -73,7 +73,7 @@ class Sync {
 	/**
 	 * Product's Product Set New List
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var array
 	 */
@@ -82,7 +82,7 @@ class Sync {
 	/**
 	 * Categories field name
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var string
 	 */
@@ -92,7 +92,7 @@ class Sync {
 	/**
 	 * Sync constructor.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 */
 	public function __construct() {
 
@@ -105,7 +105,7 @@ class Sync {
 	/**
 	 * Adds needed hooks to support product set sync.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 */
 	public function add_hooks() {
 
@@ -136,7 +136,7 @@ class Sync {
 	/**
 	 * Stores the list of categories and product set of a product to compare later on 'save_post' hook.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param array $data Post Data.
 	 * @param array $post Post.
@@ -174,7 +174,7 @@ class Sync {
 	/**
 	 * Stores the list of categories and product set of a product to compare with the previous
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post Post Object.
@@ -203,7 +203,7 @@ class Sync {
 	/**
 	 * Check if must sync Product Sets from given lists
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param array $product_cats Product Category Term IDs.
 	 * @param array $product_sets Product Set Term IDs.
@@ -233,7 +233,7 @@ class Sync {
 	/**
 	 * Stores the list of categories of a product set to compare later.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $term_id Term ID.
 	 */
@@ -245,7 +245,7 @@ class Sync {
 	/**
 	 * Stores the list of categories of a product set to compare with the previous and check if must sync
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $term_id Term ID.
 	 */
@@ -260,7 +260,7 @@ class Sync {
 	/**
 	 * Check if must sync Product Set from FB when removing Product Cat
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $term_id Product Cat Term ID.
 	 */
@@ -280,7 +280,7 @@ class Sync {
 	/**
 	 * Call API to remove Product Set from FB
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $product_set_term_id Product Set Term ID.
 	 */
@@ -306,7 +306,7 @@ class Sync {
 	/**
 	 * Maybe sync product set
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $product_set_id FB Product Set Term ID.
 	 */
@@ -394,7 +394,7 @@ class Sync {
 	/**
 	 * Return the list of product sets of a given product category term
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param string $product_cat_id product cat Term ID.
 	 *
@@ -420,7 +420,7 @@ class Sync {
 	/**
 	 * Return the list of differences between two list of terms
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param string $taxonomy Taxonomy slug.
 	 *

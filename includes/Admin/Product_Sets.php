@@ -19,14 +19,14 @@ use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
 /**
  * General handler for the product set admin functionality.
  *
- * @since 2.3.0-dev.1
+ * @since 2.3.0
  */
 class Product_Sets {
 
 	/**
 	 * Allowed HTML for wp_kses
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var array
 	 */
@@ -47,7 +47,7 @@ class Product_Sets {
 	/**
 	 * Categories field name
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @var string
 	 */
@@ -57,7 +57,7 @@ class Product_Sets {
 	/**
 	 * Handler constructor.
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 */
 	public function __construct() {
 
@@ -76,7 +76,7 @@ class Product_Sets {
 	/**
 	 * Add field to FB Product Set new term
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 */
 	public function category_field_on_new() {
 		?>
@@ -91,7 +91,7 @@ class Product_Sets {
 	/**
 	 * Add field to FB Product Set new term
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param WP_Term $term Term object.
 	 */
@@ -117,7 +117,7 @@ class Product_Sets {
 	/**
 	 * Saves custom field data
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $term_id Term ID.
 	 * @param int $tt_id Term taxonomy ID.
@@ -142,7 +142,7 @@ class Product_Sets {
 	/**
 	 * Return field label HTML
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 */
 	protected function get_field_label() {
 		?>
@@ -154,7 +154,7 @@ class Product_Sets {
 	/**
 	 * Return field HTML
 	 *
-	 * @since 2.3.0-dev.1
+	 * @since 2.3.0
 	 *
 	 * @param int $term_id The Term ID that is editing.
 	 */
