@@ -39,8 +39,15 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-2021.02.16 - version 2.3.0
+= 2021.02.16 - version 2.3.0 =
+ * Feature - Add ability to create and assign products to Facebook product sets
+ * Feature - Add support for Facebook App store flow
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
+ * Tweak - Remove business_management permission from login scopes
+ * Tweak - Store paramaters for Commerce merchant settings ID and Instagram business ID
+ * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
+ * Fix - Fix random HELLO appearing in the category settings
+ * Fix - Make sure that list of strings params are now converted to actual arrays. Fixes an issue with the use of the additional_features parameter
 
 = 2020.11.19 - version 2.2.0 =
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce
