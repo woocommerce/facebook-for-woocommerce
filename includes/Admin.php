@@ -54,8 +54,10 @@ class Admin {
 
 		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
+		require_once __DIR__ . '/Admin/Product_Sets.php';
 
 		$this->product_categories = new Admin\Product_Categories();
+		$this->product_sets = new Admin\Product_Sets();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', array( $this, 'render_modal_template' ) );
@@ -91,8 +93,31 @@ class Admin {
 		// add Variation edit fields
 		add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'add_product_variation_edit_fields' ), 10, 3 );
 		add_action( 'woocommerce_save_product_variation', array( $this, 'save_product_variation_edit_fields' ), 10, 2 );
+
+		// add custom taxonomy for Product Sets
+		add_filter( 'gettext', array( $this, 'change_custom_taxonomy_tip' ), 20, 2 );
 	}
 
+	/**
+	 * Change custom taxonomy tip text
+	 *
+	 * @since 2.2.1-dev.1
+	 *
+	 * @param string $translation Text translation.
+	 * @param string $text Original text.
+	 *
+	 * @return string
+	 */
+	public function change_custom_taxonomy_tip( $translation, $text ) {
+
+		global $current_screen;
+
+		if ( isset( $current_screen->id ) && 'edit-fb_product_set' === $current_screen->id && 'The name is how it appears on your site.' === $text ) {
+			$translation = esc_html__( 'The name is how it appears on Facebook Catalog.', 'facebook-for-woocommerce' );
+		}
+
+		return $translation;
+	}
 
 	/**
 	 * Enqueues admin scripts.
@@ -117,6 +142,15 @@ class Admin {
 
 				// enqueue modal functions
 				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/facebook-for-woocommerce-modal.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+			}
+
+			if ( 'edit-fb_product_set' === $current_screen->id ) {
+
+				// enqueue WooCommerce Admin Styles because of Select2
+				wp_enqueue_style( 'woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_style( 'facebook-for-woocommerce-product-sets-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sets-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
+
+				wp_enqueue_script( 'facebook-for-woocommerce-product-sets', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-product-sets-admin.js', array( 'jquery', 'select2' ), \WC_Facebookcommerce::PLUGIN_VERSION, true );
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {

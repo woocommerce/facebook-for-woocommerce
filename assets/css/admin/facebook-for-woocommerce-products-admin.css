@@ -1,3 +1,7 @@
+#newfb_product_set_parent {
+	display: none;
+}
+
 #woocommerce-product-data .fb-product-image-source-field .wc-radios {
 	width: auto;
 }
