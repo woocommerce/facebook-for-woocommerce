@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) or exit;
 /**
  * The WebHook handler.
  *
- * @since 2.2.1-dev.1
+ * @since 2.3.0-dev.1
  */
 class WebHook {
 
@@ -30,7 +30,7 @@ class WebHook {
 	 *
 	 * @param \WC_Facebookcommerce $plugin Plugin instance.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
@@ -41,7 +41,7 @@ class WebHook {
 	/**
 	 * Register WebHook REST API endpoint
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 */
 	public function init_webhook_endpoint() {
 
@@ -63,7 +63,7 @@ class WebHook {
 	 * Endpoint permissions
 	 * Woo Connect Bridge is sending the WebHook request using generated key.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return boolean
 	 */
@@ -76,7 +76,7 @@ class WebHook {
 	/**
 	 * WebHook Listener
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
 	 *
 	 * @param \WP_REST_Request $request The request.

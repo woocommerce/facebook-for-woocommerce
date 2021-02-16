@@ -372,7 +372,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Store the original value of the given element for later use.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {jQuery} $syncModeSelect a jQuery element object
 		 */
@@ -385,7 +385,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Reverts the value of the given sync mode element to its original value.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {jQuery} $syncModeSelect a jQuery element object
 		 */
@@ -398,7 +398,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Determines whether we should show the product removed from sync confirm modal.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {jQuery} $syncModeSelect a jQuery object with one or more sync mode select elements
 		 * @return {boolean}
@@ -420,7 +420,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Gets the target product ID based on the given sync select element.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {jQuery} $syncModeSelect a jQuery element object
 		 */
@@ -439,7 +439,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Shows the product removed from sync confirm modal.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {jQuery} $syncModeSelect a jQuery element object
 		 */
@@ -463,7 +463,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Fills in product IDs to remove from Sync.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 */
 		function populateRemoveFromSyncProductIDsField() {
 
@@ -474,7 +474,7 @@ jQuery( document ).ready( function( $ ) {
 		/**
 		 * Removes the given product ID from the list of product to delete from Sync.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param {String} productID Product ID to remove
 		 */

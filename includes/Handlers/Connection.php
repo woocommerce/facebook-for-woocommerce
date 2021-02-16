@@ -756,7 +756,7 @@ class Connection {
 	/**
 	 * Gets Instagram Business ID value.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -769,7 +769,7 @@ class Connection {
 	/**
 	 * Gets Commerce merchant settings ID value.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -802,7 +802,7 @@ class Connection {
 	/**
 	 * Gets APP Store Login URL.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return string URL
 	 */
@@ -811,7 +811,7 @@ class Connection {
 		/**
 		 * Filters App Store login URL.
 		 *
-		 * @since 2.2.1-dev.1
+		 * @since 2.3.0-dev.1
 		 *
 		 * @param string $app_store_login_url the connection App Store login URL
 		 */
@@ -1006,7 +1006,7 @@ class Connection {
 	/**
 	 * Stores the given Instagram Business ID.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @param string $id the ID
 	 */
@@ -1019,7 +1019,7 @@ class Connection {
 	/**
 	 * Stores the given Commerce merchant settings ID.
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @param string $id the ID
 	 */
@@ -1147,7 +1147,7 @@ class Connection {
 	/**
 	 * Process WebHook User object, install field
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#webhook
 	 *
 	 * @param object $data WebHook event data.
@@ -1297,7 +1297,7 @@ class Connection {
 	/**
 	 * Register Extras REST API endpoint
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 */
 	public function init_extras_endpoint() {
 
@@ -1318,7 +1318,7 @@ class Connection {
 	/**
 	 * FBE Extras endpoint permissions
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return boolean
 	 */
@@ -1331,7 +1331,7 @@ class Connection {
 	/**
 	 * Return FBE extras
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return \WP_REST_Response
 	 */
@@ -1349,7 +1349,7 @@ class Connection {
 	/**
 	 * Process FBE App Store login flow redirection
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 */
 	public function handle_fbe_redirect() {
 

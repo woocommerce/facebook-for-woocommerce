@@ -101,7 +101,7 @@ class Admin {
 	/**
 	 * Change custom taxonomy tip text
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @param string $translation Text translation.
 	 * @param string $text Original text.
@@ -291,7 +291,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return string
 	 */
@@ -317,7 +317,7 @@ class Admin {
 	 *
 	 * @internal
 	 *
-	 * @since 2.2.1-dev.1
+	 * @since 2.3.0-dev.1
 	 *
 	 * @return string
 	 */
