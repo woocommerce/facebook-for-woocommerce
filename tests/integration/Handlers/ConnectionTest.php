@@ -150,7 +150,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		return [
 			'manage_business_extension' => [ 'manage_business_extension' ],
 			'catalog_management'        => [ 'catalog_management' ],
-			'business_management'       => [ 'business_management' ],
 			'ads_management'            => [ 'ads_management' ],
 			'ads_read'                  => [ 'ads_read' ],
 			'pages_read_engagement'     => [ 'pages_read_engagement' ],
@@ -308,6 +307,26 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		update_option( Connection::OPTION_COMMERCE_MANAGER_ID, $commerce_manager_id );
 
 		$this->assertSame( $commerce_manager_id, $this->get_connection()->get_commerce_manager_id() );
+	}
+
+
+	/** @see Connection::get_instagram_business_id() */
+	public function test_get_instagram_business_id() {
+
+		$instagram_business_id = 'instagram business id';
+		update_option( Connection::OPTION_INSTAGRAM_BUSINESS_ID, $instagram_business_id );
+
+		$this->assertSame( $instagram_business_id, $this->get_connection()->get_instagram_business_id() );
+	}
+
+
+	/** @see Connection::get_commerce_merchant_settings_id() */
+	public function test_get_commerce_merchant_settings_id() {
+
+		$commerce_merchant_settings_id = 'commerce merchant settings id';
+		update_option( Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, $commerce_merchant_settings_id );
+
+		$this->assertSame( $commerce_merchant_settings_id, $this->get_connection()->get_commerce_merchant_settings_id() );
 	}
 
 
@@ -600,6 +619,28 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_commerce_manager_id( $commerce_manager_id );
 
 		$this->assertSame( $commerce_manager_id, get_option( Connection::OPTION_COMMERCE_MANAGER_ID ) );
+	}
+
+
+	/** @see Connection::update_instagram_business_id() */
+	public function test_update_instagram_business_id() {
+
+		$instagram_business_id = 'instagram business id';
+
+		$this->get_connection()->update_instagram_business_id( $instagram_business_id );
+
+		$this->assertSame( $instagram_business_id, $this->get_connection()->get_instagram_business_id() );
+	}
+
+
+	/** @see Connection::update_commerce_merchant_settings_id() */
+	public function test_update_commerce_merchant_settings_id() {
+
+		$commerce_merchant_settings_id = 'commerce merchant settings id';
+
+		$this->get_connection()->update_commerce_merchant_settings_id( $commerce_merchant_settings_id );
+
+		$this->assertSame( $commerce_merchant_settings_id, $this->get_connection()->get_commerce_merchant_settings_id() );
 	}
 
 

@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.5.3
-Stable tag: 2.2.0
+Tested up to: 5.6
+Stable tag: 2.3.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,16 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.02.16 - version 2.3.0 =
+ * Feature - Add ability to create and assign products to Facebook product sets
+ * Feature - Add support for Facebook App store flow
+ * Tweak - Ask merchants to delete products when changing from sync to not sync state
+ * Tweak - Remove business_management permission from login scopes
+ * Tweak - Store paramaters for Commerce merchant settings ID and Instagram business ID
+ * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
+ * Fix - Fix random HELLO appearing in the category settings
+ * Fix - Make sure that list of strings params are now converted to actual arrays. Fixes an issue with the use of the additional_features parameter
 
 = 2020.11.19 - version 2.2.0 =
  * Feature - Add an Advertise tab in the Facebook settings page to manage Facebook ads from within WooCommerce

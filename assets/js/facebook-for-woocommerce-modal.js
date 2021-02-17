@@ -47,4 +47,13 @@
 		$( '.wc-backbone-modal-content' ).removeClass( 'processing' ).unblock();
 	}
 
+
+	/**
+	 * Closes the current modal.
+	 */
+	window.closeExistingModal = function() {
+
+		$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+	}
+
 })( jQuery );
