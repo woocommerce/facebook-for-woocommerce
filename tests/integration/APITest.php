@@ -574,7 +574,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$response_data = [
 			'paging' => [
-				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+				'next' => 'https://graph.facebook.com/v9.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
 			],
 		];
 
@@ -625,7 +625,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$response_data = [
 			'paging' => [
-				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+				'next' => 'https://graph.facebook.com/v9.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
 			],
 		];
 

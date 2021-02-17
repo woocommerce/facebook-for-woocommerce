@@ -32,7 +32,7 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/** @var string URI used for the request */
-	protected $request_uri = 'https://graph.facebook.com/v7.0';
+	protected $request_uri = 'https://graph.facebook.com/v9.0';
 
 	/** @var string the configured access token */
 	protected $access_token;
