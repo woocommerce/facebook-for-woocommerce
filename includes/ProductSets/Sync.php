@@ -350,10 +350,12 @@ class Sync {
 		);
 		$product_ids   = get_posts( $products_args );
 
+		// Removes the Product Set doesn't have products.
 		if ( empty( $product_ids ) ) {
 			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
 			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
 			do_action( 'fb_wc_product_set_delete', $fb_product_set_id );
+			return;
 		}
 
 		// gets products variations
