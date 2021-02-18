@@ -408,7 +408,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		public function delete_product_set_item( $product_set_id ) {
 
-			$params = ( true === apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', $product_set_id ) ) ? '?allow_live_product_set_deletion=true' : '';
+			$params = ( true === apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $product_set_id ) ) ? '?allow_live_product_set_deletion=true' : '';
 
 			$url = $this->build_url( $product_set_id, $params, '9.0' );
 

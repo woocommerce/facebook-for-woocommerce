@@ -127,10 +127,6 @@ class Sync {
 		// product cat and product set delete hooks, remove or check if must remove any product set
 		add_action( 'pre_delete_term', array( $this, 'sync_remove_product_set' ), 1, 2 );
 		add_action( 'delete_product_cat', array( $this, 'maybe_sync_product_set_on_product_cat_remove' ), 99 );
-
-		// filter Product Set delete method to allow live Product Sets deletion
-		// @see https://developers.facebook.com/docs/graph-api/changelog/version9.0#catalog-api
-		add_filter( 'wc_facebook_commerce_allow_live_product_set_deletion', '__return_true' );
 	}
 
 
