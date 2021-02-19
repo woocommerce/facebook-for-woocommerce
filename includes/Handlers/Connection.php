@@ -473,7 +473,9 @@ class Connection {
 				// allow the commerce manager to manage orders for the page shop
 				$this->enable_order_management( $commerce_manager_id, $page_access_token );
 				$this->update_onsite_checkout_connected( true );
+			}
 
+			if ( $this->is_onsite_checkout_connected() ) {
 				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
 			}
 

@@ -327,6 +327,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		update_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
 
 		$this->assertSame( $complete, $this->get_connection()->is_commerce_setup_complete() );
+	}
+
+
 	/** @see Connection::get_instagram_business_id() */
 	public function test_get_instagram_business_id() {
 
@@ -656,6 +659,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_commerce_setup_complete( $complete );
 
 		$this->assertSame( $complete, get_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE ) );
+	}
+
+
 	/** @see Connection::update_instagram_business_id() */
 	public function test_update_instagram_business_id() {
 
