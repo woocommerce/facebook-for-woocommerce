@@ -95,6 +95,38 @@ class Response extends API\Response  {
 
 
 	/**
+	 * Gets Instagram Business ID.
+	 *
+	 * @since 2.1.5
+	 *
+	 * @return string
+	 */
+	public function get_instagram_business_id() {
+
+		$instagram_profiles = ! empty( $this->get_data()->instagram_profiles ) ? $this->get_data()->instagram_profiles : '';
+
+		if ( empty( $instagram_profiles ) ) {
+			return '';
+		}
+
+		return is_array( $instagram_profiles ) ? current( $instagram_profiles ) : $instagram_profiles;
+	}
+
+
+	/**
+	 * Gets the commerce merchant settings ID.
+	 *
+	 * @since 2.1.5
+	 *
+	 * @return string
+	 */
+	public function get_commerce_merchant_settings_id() {
+
+		return ! empty( $this->get_data()->commerce_merchant_settings_id ) ? $this->get_data()->commerce_merchant_settings_id : '';
+	}
+
+
+	/**
 	 * Gets the profiles.
 	 *
 	 * @since 2.0.0

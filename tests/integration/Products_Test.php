@@ -433,6 +433,40 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
+	 * Tests that {@see Products::get_google_product_category_id_from_highest_category()} can
+	 * handle null or WP_Error return values from {@see get_term()}
+	 *
+	 * The steps below try to reproduce the scenario described in https://secure.helpscout.net/conversation/1369552988/155780/
+	 */
+	public function test_get_google_product_category_id_from_highest_category() {
+		global $wpdb;
+
+		$product = $this->get_product();
+
+		$parent_category = wp_insert_term( 'Animals & Pet Supplies', 'product_cat' );
+		$child_category  = wp_insert_term( 'Pet Supplies', 'product_cat', [ 'parent' => $parent_category['term_id'] ] );
+
+		// set the Google Product Category for the child category
+		Product_Categories::update_google_product_category_id( $child_category['term_id'], '9' );
+
+		// assign the child category to the product
+		wp_set_post_terms( $product->get_id(), [ (int) $child_category['term_id'] ], 'product_cat' );
+
+		// remove the parent category from the database to force get_term() to return null
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->term_taxonomy} WHERE term_id = %d AND taxonomy = %s", $parent_category['term_id'], 'product_cat' ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->terms} WHERE term_id = %d", $parent_category['term_id'] ) );
+
+		// make sure get_term() checks the database again
+		clean_term_cache( $parent_category['term_id'], 'product_cat' );
+
+		$method = new ReflectionMethod( Products::class, 'get_google_product_category_id_from_highest_category' );
+		$method->setAccessible( true );
+
+		$this->assertSame( '9', $method->invoke( null, $product ) );
+	}
+
+
+	/**
 	 * @see \SkyVerge\WooCommerce\Facebook\Products::update_google_product_category_id()
 	 *
 	 * @param string $google_product_category_id Google product category ID

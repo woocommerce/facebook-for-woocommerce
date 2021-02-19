@@ -116,6 +116,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string use a combo of SKU and product ID as the retailer ID in Facebook */
 	const FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID = 'sku_product_id';
 
+	/** @var string custom taxonomy FB product set ID */
+	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
 	/** @var string|null the configured product catalog ID */
 	public $product_catalog_id;
@@ -436,6 +438,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'fb_page_id'             => $this->get_facebook_page_id(),
 			'facebook_jssdk_version' => $this->get_js_sdk_version(),
 		] );
+
+		// Product Set hooks
+		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
+		add_action( 'fb_wc_product_set_delete', array( $this, 'delete_product_set_item' ), 99 );
 	}
 
 	/**
@@ -902,6 +908,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
+	 * Gets the IDs of products marked for deletion from Facebook when removed from Sync.
+	 *
+	 * @internal
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return array
+	 */
+	private function get_removed_from_sync_products_to_delete() {
+
+		$posted_products = Framework\SV_WC_Helper::get_posted_value( WC_Facebook_Product::FB_REMOVE_FROM_SYNC );
+		if ( empty( $posted_products ) ) {
+			return [];
+		}
+
+		return array_map( 'absint', explode( ',', $posted_products ) );
+	}
+
+
+	/**
 	 * Checks the product type and calls the corresponding on publish method.
 	 *
 	 * @internal
@@ -910,7 +936,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $wp_id post ID
 	 */
-	function on_product_save( $wp_id ) {
+	public function on_product_save( $wp_id ) {
 
 		$product = wc_get_product( $wp_id );
 
@@ -926,7 +952,27 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
 
-		if ( ! $product->is_type( 'variable' ) ) {
+		$products_to_delete_from_facebook = $this->get_removed_from_sync_products_to_delete();
+
+		if ( $product->is_type( 'variable' ) ) {
+
+			// check variations for deletion
+			foreach ( $products_to_delete_from_facebook as $delete_product_id ) {
+
+				$delete_product = wc_get_product( $delete_product_id );
+
+				if ( empty( $delete_product ) ) {
+					continue;
+				}
+
+				if ( Products::is_sync_enabled_for_product( $delete_product ) ) {
+					continue;
+				}
+
+				$this->delete_fb_product( $delete_product );
+			}
+
+		} else {
 
 			if ( $sync_enabled ) {
 
@@ -943,6 +989,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				}
 
 				Products::disable_sync_for_products( [ $product ] );
+
+				if ( in_array( $wp_id, $products_to_delete_from_facebook, true ) ) {
+
+					$this->delete_fb_product( $product );
+				}
 			}
 		}
 
@@ -1029,6 +1080,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
+		$this->delete_fb_product( $product );
+	}
+
+
+	/**
+	 * Deletes Facebook product.
+	 *
+	 * @internal
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param \WC_Product $product WooCommerce product object
+	 */
+	private function delete_fb_product( $product ) {
+
+		$product_id = $product->get_id();
+
 		if ( $product->is_type( 'variation' ) ) {
 
 			$retailer_id = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
@@ -1059,6 +1127,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->delete_product_item( $product_id );
 			$this->delete_product_group( $product_id );
 		}
+
+		// clear out both item and group IDs
+		delete_post_meta( $product_id, self::FB_PRODUCT_ITEM_ID );
+		delete_post_meta( $product_id, self::FB_PRODUCT_GROUP_ID );
 	}
 
 
@@ -1564,6 +1636,63 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		*/
 	}
 
+
+	/**
+	 * Create or update product set
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param array $product_set_data Product Set data.
+	 * @param int   $product_set_id   Product Set Term Id.
+	 **/
+	public function create_or_update_product_set_item( $product_set_data, $product_set_id ) {
+
+		// check if exists in FB
+		$fb_product_set_id = get_term_meta( $product_set_id, self::FB_PRODUCT_SET_ID, true );
+
+		// set data and execute API call
+		$method = empty( $fb_product_set_id ) ? 'create' : 'update';
+		$id     = empty( $fb_product_set_id ) ? $this->get_product_catalog_id() : $fb_product_set_id;
+		$result = $this->check_api_result(
+			call_user_func_array(
+				array(
+					$this->fbgraph,
+					$method . '_product_set_item',
+				),
+				array(
+					$id,
+					$product_set_data,
+				)
+			)
+		);
+
+		// update product set to set FB Product Set ID
+		if ( $result && empty( $fb_product_set_id ) ) {
+
+			// decode and get ID from result body
+			$decode_result     = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+			$fb_product_set_id = $decode_result->id;
+
+			update_term_meta(
+				$product_set_id,
+				self::FB_PRODUCT_SET_ID,
+				$fb_product_set_id
+			);
+		}
+	}
+
+
+	/**
+	 * Delete product set
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param int $fb_product_set_id Facebook Product Set ID.
+	 **/
+	public function delete_product_set_item( $fb_product_set_id ) {
+		$this->check_api_result( $this->fbgraph->delete_product_set_item( $fb_product_set_id ) );
+	}
+
 	/**
 	 * Saves settings via AJAX (to preserve window context for onboarding).
 	 *
@@ -1748,8 +1877,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param array $result
 	 */
 	function display_error_message_from_result( $result ) {
-
-		$msg = json_decode( $result['body'] )->error->message;
+		$error = json_decode( $result['body'] )->error;
+		$msg   = ( 'Fatal' === $error->message && ! empty( $error->error_user_title ) ) ? $error->error_user_title : $error_message;
 		$this->display_error_message( $msg );
 	}
 

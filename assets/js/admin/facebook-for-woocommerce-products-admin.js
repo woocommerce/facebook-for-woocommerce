@@ -47,8 +47,7 @@ jQuery( document ).ready( function( $ ) {
 
 					if ( response && ! response.success ) {
 
-						// close existing modals
-						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+						closeExistingModal();
 
 						// open new modal, populate template with AJAX response data
 						new $.WCBackboneModal.View( {
@@ -191,7 +190,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		function isSyncEnabledForSimpleProduct() {
 
-			return $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled';
+			return simpleProductSyncModeSelect.val() !== 'sync_disabled';
 		}
 
 
@@ -303,38 +302,246 @@ jQuery( document ).ready( function( $ ) {
 			return false;
 		}
 
+
+		/**
+		 * Store the original value of the given element for later use.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function storeSyncModeOriginalValue( $syncModeSelect ) {
+
+			$syncModeSelect.attr( 'data-original-value', $syncModeSelect.val() );
+		}
+
+
+		/**
+		 * Reverts the value of the given sync mode element to its original value.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function revertSyncModeToOriginalValue( $syncModeSelect ) {
+
+			$syncModeSelect.val( $syncModeSelect.attr( 'data-original-value') );
+		}
+
+
+		/**
+		 * Determines whether we should show the product removed from sync confirm modal.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery object with one or more sync mode select elements
+		 * @return {boolean}
+		 */
+		function shouldShowProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
+
+			let syncValuesStatus = $syncModeSelect.map( function ( index, selectElement ) {
+
+				let $syncMode     = $( selectElement );
+				let syncModeValue = $syncMode.val();
+
+				return 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
+			} ).toArray();
+
+			return syncValuesStatus.indexOf( true ) > -1;
+		}
+
+
+		/**
+		 * Gets the target product ID based on the given sync select element.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function getSyncTargetProductID( $syncModeSelect ) {
+
+			if ( simpleProductSyncModeSelect === $syncModeSelect ) {
+				// simple product
+				return $( 'input#post_ID' ).val();
+			}
+
+			// variable product
+			return $syncModeSelect.closest( '.woocommerce_variation' ).find( 'input[name^=variable_post_id]' ).val();
+		}
+
+
+		/**
+		 * Shows the product removed from sync confirm modal.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {jQuery} $syncModeSelect a jQuery element object
+		 */
+		function showProductRemovedFromSyncConfirmModal( $syncModeSelect ) {
+
+			closeExistingModal();
+
+			$maybeRemoveFromSyncModeSelect = $syncModeSelect;
+			maybeRemoveFromSyncProductID   = getSyncTargetProductID( $syncModeSelect )
+
+			new $.WCBackboneModal.View( {
+				target: 'facebook-for-woocommerce-modal',
+				string: {
+					message: facebook_for_woocommerce_products_admin.product_removed_from_sync_confirm_modal_message,
+					buttons: facebook_for_woocommerce_products_admin.product_removed_from_sync_confirm_modal_buttons
+				}
+			} );
+		}
+
+
+		/**
+		 * Fills in product IDs to remove from Sync.
+		 *
+		 * @since 2.3.0
+		 */
+		function populateRemoveFromSyncProductIDsField() {
+
+			$( facebook_for_woocommerce_products_admin.product_removed_from_sync_field_id ).val( removeFromSyncProductIDs.join( ',' ) );
+		}
+
+
+		/**
+		 * Removes the given product ID from the list of product to delete from Sync.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param {String} productID Product ID to remove
+		 */
+		function removeProductIDFromUnSyncList( productID ) {
+
+			removeFromSyncProductIDs = removeFromSyncProductIDs.filter( function ( value ) {
+				return value !== productID;
+			} );
+
+			populateRemoveFromSyncProductIDsField();
+		}
+
+		let $maybeRemoveFromSyncModeSelect = null;
+		let maybeRemoveFromSyncProductID = null;
+		let removeFromSyncProductIDs = [];
+
+		$( document.body ).on( 'click', 'button.button-product-removed-from-sync-delete', function () {
+
+			if ( maybeRemoveFromSyncProductID ) {
+
+				closeExistingModal();
+
+				removeFromSyncProductIDs.push( maybeRemoveFromSyncProductID );
+
+				populateRemoveFromSyncProductIDsField();
+			}
+		} )
+		.on( 'click', 'button.button-product-removed-from-sync-cancel', function () {
+
+			closeExistingModal();
+
+			if ( $maybeRemoveFromSyncModeSelect ) {
+				revertSyncModeToOriginalValue( $maybeRemoveFromSyncModeSelect );
+				$maybeRemoveFromSyncModeSelect = null;
+			}
+
+			populateRemoveFromSyncProductIDsField();
+		} );
+
+		// handle change events for the Sell on Instagram checkbox field
+		$( '#facebook_options #wc_facebook_commerce_enabled' ).on( 'change', function() {
+
+			let checked = $( this ).prop( 'checked' );
+
+			// toggle visibility of all commerce fields
+			if ( checked ) {
+				$( '.wc_facebook_commerce_fields' ).show();
+			} else {
+				$( '.wc_facebook_commerce_fields').hide();
+			}
+
+			// toggle visibility of attribute fields
+			if ( $( '.product_attributes' ).find( '.woocommerce_attribute' ).length ) {
+				$( '.show_if_has_attributes' ).show();
+			} else {
+				$( '.show_if_has_attributes' ).hide();
+			}
+
+			$( this ).prop( 'original', checked );
+		} ).trigger( 'change' );
+
 		// toggle Facebook settings fields for simple products
-		const syncModeSelect   = $( '#wc_facebook_sync_mode' );
-		const facebookSettingsPanel = syncModeSelect.closest( '.woocommerce_options_panel' );
+		const simpleProductSyncModeSelect = $( '#wc_facebook_sync_mode' );
+		const facebookSettingsPanel       = simpleProductSyncModeSelect.closest( '.woocommerce_options_panel' );
 
-		syncModeSelect.on( 'change', function() {
+		// store sync mode original value for later use
+		storeSyncModeOriginalValue( simpleProductSyncModeSelect );
 
-			let syncEnabled = $( this ).val() !== 'sync_disabled';
+		simpleProductSyncModeSelect.on( 'change', function() {
+
+			let syncEnabled = simpleProductSyncModeSelect.val() !== 'sync_disabled';
 
 			toggleFacebookSettings( syncEnabled, facebookSettingsPanel );
 			toggleFacebookCommerceSettings( syncEnabled, facebookSettingsPanel );
 
-			syncModeSelect.prop( 'original', $( this ).val() );
+			if ( syncEnabled ) {
+				removeProductIDFromUnSyncList( getSyncTargetProductID( simpleProductSyncModeSelect ) );
+			}
+
+			simpleProductSyncModeSelect.prop( 'original', simpleProductSyncModeSelect.val() );
+
+			if ( shouldShowProductRemovedFromSyncConfirmModal( simpleProductSyncModeSelect ) ) {
+				showProductRemovedFromSyncConfirmModal( simpleProductSyncModeSelect );
+			}
 
 		} ).trigger( 'change' );
 
 		$( '#_virtual' ).on( 'change', function () {
-			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), syncModeSelect );
+			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), simpleProductSyncModeSelect );
 		} ).trigger( 'change' );
 
+		const $productData = $( '#woocommerce-product-data' );
+
+		// check whether the product meets the requirements for Commerce
+		$productData.on(
+			'change',
+			'#_regular_price, #_manage_stock, #_stock, #wc_facebook_sync_mode, #fb_product_price',
+			function( event ) {
+
+				// allow validation handlers that run on change to run before we check any field values
+				setTimeout( function() {
+					toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+				}, 1 );
+			}
+		);
+
 		// toggle Facebook settings fields for variations
-		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function() {
+		$( '.woocommerce_variations' ).on( 'change', '.js-variable-fb-sync-toggle', function () {
 
-			toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
+			let $syncModeSelect = $( this );
+			let syncEnabled     = $syncModeSelect.val() !== 'sync_disabled';
 
-			$( this ).prop( 'original', $( this ).val() );
+			toggleFacebookSettings( syncEnabled, $syncModeSelect.closest( '.wc-metabox-content' ) );
+			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
+
+			if ( syncEnabled ) {
+				removeProductIDFromUnSyncList( getSyncTargetProductID( $syncModeSelect ) );
+			}
+
+			$syncModeSelect.prop( 'original', $syncModeSelect.val() );
+
+			if ( shouldShowProductRemovedFromSyncConfirmModal( $syncModeSelect ) ) {
+				showProductRemovedFromSyncConfirmModal( $syncModeSelect );
+			}
 		} );
 
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function () {
+		$productData.on( 'woocommerce_variations_loaded', function () {
 
-			$( '.js-variable-fb-sync-toggle' ).each( function () {
-				toggleFacebookSettings( $( this ).val() !== 'sync_disabled', $( this ).closest( '.wc-metabox-content' ) );
-				$( this ).prop( 'original', $( this ).val() );
+			$productData.find( '.js-variable-fb-sync-toggle' ).each( function ( index, element ) {
+				let $syncModeSelect = $( element );
+				toggleFacebookSettings( $syncModeSelect.val() !== 'sync_disabled', $syncModeSelect.closest( '.wc-metabox-content' ) );
+				$syncModeSelect.prop( 'original', $syncModeSelect.val() );
+				storeSyncModeOriginalValue( $syncModeSelect );
 			} );
 
 			$( '.variable_is_virtual' ).on( 'change', function () {
@@ -344,7 +551,7 @@ jQuery( document ).ready( function( $ ) {
 		} );
 
 		// show/hide Custom Image URL setting
-		$( '#woocommerce-product-data' ).on( 'change', '.js-fb-product-image-source', function() {
+		$productData.on( 'change', '.js-fb-product-image-source', function() {
 
 			let $container  = $( this ).closest( '.woocommerce_options_panel, .wc-metabox-content' );
 			let imageSource = $( this ).val();
@@ -356,7 +563,7 @@ jQuery( document ).ready( function( $ ) {
 		$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 
 		// trigger settings fields modifiers when variations are loaded
-		$( '#woocommerce-product-data' ).on( 'woocommerce_variations_loaded', function() {
+		$productData.on( 'woocommerce_variations_loaded', function() {
 			$( '.js-variable-fb-sync-toggle:visible' ).trigger( 'change' );
 			$( '.js-fb-product-image-source:checked:visible' ).trigger( 'change' );
 			$( '.variable_is_virtual:visible' ).trigger( 'change' );
@@ -367,8 +574,7 @@ jQuery( document ).ready( function( $ ) {
 
 			event.preventDefault();
 
-			// close existing modals
-			$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+			closeExistingModal();
 
 			new $.WCBackboneModal.View( {
 				target: 'facebook-for-woocommerce-modal',
@@ -398,7 +604,7 @@ jQuery( document ).ready( function( $ ) {
 				productCat       = [],
 				// this query will get tags when not using checkboxes
 				productTag       = $( 'textarea[name="tax_input[product_tag]"]' ).length ? $( 'textarea[name="tax_input[product_tag]"]' ).val().split( ',' ) : [],
-				syncEnabled      = $( '#wc_facebook_sync_mode' ).val() !== 'sync_disabled',
+				syncEnabled      = simpleProductSyncModeSelect.val() !== 'sync_disabled',
 				varSyncEnabled   = isSyncEnabledForVariableProduct();
 
 			$( '#taxonomy-product_cat input[name="tax_input[product_cat][]"]:checked' ).each( function() {
@@ -425,8 +631,7 @@ jQuery( document ).ready( function( $ ) {
 					// open modal if visibility checkbox is checked or if there are conflicting terms set for sync exclusion
 					if ( response && ! response.success && syncEnabled ) {
 
-						// close existing modals
-						$( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+						closeExistingModal();
 
 						// open new modal, populate template with AJAX response data
 						new $.WCBackboneModal.View( {

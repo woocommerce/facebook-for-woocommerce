@@ -1,19 +1,19 @@
-# Copyright (C) 2020 Facebook
+# Copyright (C) 2021 Facebook
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.2.0\n"
+"Project-Id-Version: Facebook for WooCommerce 2.4.0-dev.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2020-11-19 21:10:35+00:00\n"
+"POT-Creation-Date: 2021-02-19 18:50:19+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2020-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2021-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: class-wc-facebookcommerce.php:235
+#: class-wc-facebookcommerce.php:259
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -21,7 +21,7 @@ msgid ""
 "Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:250
+#: class-wc-facebookcommerce.php:274
 #. translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link
 #. HTML tag
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "under %1$sWooCommerce > Facebook%2$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:265
+#: class-wc-facebookcommerce.php:289
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -37,7 +37,7 @@ msgid ""
 "configuration, %3$scomplete the setup steps%4$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:293
+#: class-wc-facebookcommerce.php:317
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -46,7 +46,7 @@ msgid ""
 "Connection%4$s area."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:310
+#: class-wc-facebookcommerce.php:334
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -55,13 +55,51 @@ msgid ""
 "products."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:330
+#: class-wc-facebookcommerce.php:354
 #. translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing
 #. </a> HTML link tag
 msgid "Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:392
+#: class-wc-facebookcommerce.php:409
+msgid "FB Product Sets"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:410
+msgid "FB Product Set"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:418
+#. translators: Edit item label
+msgid "Edit %s"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:420
+#. translators: Add new label
+msgid "Add new %s"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:423
+#. translators: No items found text
+msgid "No %s found."
+msgstr ""
+
+#: class-wc-facebookcommerce.php:425
+#. translators: Search label
+msgid "Search %s."
+msgstr ""
+
+#: class-wc-facebookcommerce.php:427
+#. translators: Text label
+msgid "Separate %s with commas"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:429
+#. translators: Text label
+msgid "Choose from the most used %s"
+msgstr ""
+
+#: class-wc-facebookcommerce.php:545
 msgid "Cannot create the API instance because the access token is missing."
 msgstr ""
 
@@ -69,69 +107,69 @@ msgstr ""
 msgid "Facebook for WooCommerce"
 msgstr ""
 
-#: facebook-commerce.php:217
+#: facebook-commerce.php:231
 msgid "Facebook Commerce and Dynamic Ads (Pixel) Extension"
 msgstr ""
 
-#: facebook-commerce.php:634
+#: facebook-commerce.php:652
 msgid "Facebook ID:"
 msgstr ""
 
-#: facebook-commerce.php:642
+#: facebook-commerce.php:660
 msgid "Variant IDs:"
 msgstr ""
 
-#: facebook-commerce.php:660
+#: facebook-commerce.php:678
 msgid "Reset Facebook metadata"
 msgstr ""
 
-#: facebook-commerce.php:665
+#: facebook-commerce.php:683
 msgid "Delete product(s) on Facebook"
 msgstr ""
 
-#: facebook-commerce.php:673
+#: facebook-commerce.php:691
 msgid "This product is not yet synced to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:1423
+#: facebook-commerce.php:1507
 msgid "Nothing to update for product group for %1$s"
 msgstr ""
 
-#: facebook-commerce.php:1761
+#: facebook-commerce.php:1902
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API:  %1$s"
 msgstr ""
 
-#: facebook-commerce.php:2098
+#: facebook-commerce.php:2239
 msgid "Your connection has expired."
 msgstr ""
 
-#: facebook-commerce.php:2098
+#: facebook-commerce.php:2239
 msgid ""
 "Please click Manage connection > Advanced Options > Update Token to refresh "
 "your connection to Facebook."
 msgstr ""
 
-#: facebook-commerce.php:2105
+#: facebook-commerce.php:2246
 #. translators: Placeholders %s - error message
 msgid "There was an error trying to sync the products to Facebook. %s"
 msgstr ""
 
-#: facebook-commerce.php:2128 facebook-commerce.php:2301
+#: facebook-commerce.php:2269 facebook-commerce.php:2442
 msgid "Product sync is disabled."
 msgstr ""
 
-#: facebook-commerce.php:2135 facebook-commerce.php:2308
+#: facebook-commerce.php:2276 facebook-commerce.php:2449
 msgid "The plugin is not configured or the Catalog ID is missing."
 msgstr ""
 
-#: facebook-commerce.php:2158
+#: facebook-commerce.php:2299
 msgid ""
 "A product sync is in progress. Please wait until the sync finishes before "
 "starting a new one."
 msgstr ""
 
-#: facebook-commerce.php:2170 facebook-commerce.php:2322
+#: facebook-commerce.php:2311 facebook-commerce.php:2463
 msgid ""
 "We've detected that your Facebook Product Catalog is no longer valid. This "
 "may happen if it was deleted, but could also be a temporary error. If the "
@@ -139,33 +177,33 @@ msgid ""
 "and setup the plugin again."
 msgstr ""
 
-#: facebook-commerce.php:2346
+#: facebook-commerce.php:2487
 msgid "We couldn't create the feed or upload the product information."
 msgstr ""
 
-#: facebook-commerce.php:2814
+#: facebook-commerce.php:2955
 msgid "Hi! We're here to answer any questions you may have."
 msgstr ""
 
-#: facebook-commerce.php:3161
+#: facebook-commerce.php:3302
 msgid "Facebook for WooCommerce error:"
 msgstr ""
 
-#: facebook-commerce.php:3243
+#: facebook-commerce.php:3384
 msgid ""
 "There was an error trying to retrieve information about the Facebook page: "
 "%s"
 msgstr ""
 
-#: facebook-commerce.php:3294
+#: facebook-commerce.php:3435
 msgid "Get started with Messenger Customer Chat"
 msgstr ""
 
-#: facebook-commerce.php:3295
+#: facebook-commerce.php:3436
 msgid "Get started with Instagram Shopping"
 msgstr ""
 
-#: facebook-commerce.php:3530
+#: facebook-commerce.php:3671
 #. translators: Placeholders %1$s - original error message from Facebook API
 msgid "There was an issue connecting to the Facebook API: %s"
 msgstr ""
@@ -207,8 +245,9 @@ msgid "Go to Settings"
 msgstr ""
 
 #: includes/AJAX.php:337 includes/AJAX.php:406 includes/AJAX.php:470
-#: includes/Admin/Product_Categories.php:118
-#: includes/Admin/Settings_Screens/Product_Sync.php:142
+#: includes/Admin/Orders.php:262 includes/Admin/Product_Categories.php:118
+#: includes/Admin/Settings_Screens/Commerce.php:112
+#: includes/Admin/Settings_Screens/Product_Sync.php:144 includes/Admin.php:358
 msgid "Cancel"
 msgstr ""
 
@@ -250,8 +289,98 @@ msgstr ""
 msgid "Show advanced options"
 msgstr ""
 
+#: includes/Admin/Orders.php:150
+msgid "An unknown error occurred."
+msgstr ""
+
+#: includes/Admin/Orders.php:151
+msgid "Tracking Number is missing."
+msgstr ""
+
+#: includes/Admin/Orders.php:152
+msgid "Refund reason:"
+msgstr ""
+
+#: includes/Admin/Orders.php:153
+msgid "Choose the reason for refunding this order."
+msgstr ""
+
+#: includes/Admin/Orders.php:154
+msgid "Refund description (optional):"
+msgstr ""
+
+#: includes/Admin/Orders.php:155
+msgid "Note: the refund description will be visible by the customer."
+msgstr ""
+
+#: includes/Admin/Orders.php:182
+#. translators: Placeholders: %1$s - sales channel name, %2$s - HTML <strong>
+#. tag, %3$s - HTML </strong> tag
+msgid ""
+"This order is currently being held by %1$s and cannot be edited. Once "
+"released by %1$s, it will move to %2$sProcessing%3$s or %2$sCancelled%3$s "
+"status."
+msgstr ""
+
+#: includes/Admin/Orders.php:283
+msgid "Select the carrier and tracking number for this order:"
+msgstr ""
+
+#: includes/Admin/Orders.php:287
+msgid "Carrier"
+msgstr ""
+
+#: includes/Admin/Orders.php:293
+msgid "Tracking number"
+msgstr ""
+
+#: includes/Admin/Orders.php:311
+msgid "Submit order"
+msgstr ""
+
+#: includes/Admin/Orders.php:327
+msgid "Select a reason for refunding this order:"
+msgstr ""
+
+#: includes/Admin/Orders.php:345
+msgid "Submit refund"
+msgstr ""
+
+#: includes/Admin/Orders.php:361
+msgid "Select a reason for cancelling this order:"
+msgstr ""
+
+#: includes/Admin/Orders.php:383
+msgid "Submit cancellation"
+msgstr ""
+
+#: includes/Admin/Orders.php:402
+msgid "Customer request"
+msgstr ""
+
+#: includes/Admin/Orders.php:403
+msgid "Damaged product"
+msgstr ""
+
+#: includes/Admin/Orders.php:404
+msgid "Product not as described"
+msgstr ""
+
+#: includes/Admin/Orders.php:405
+msgid "Quality issue"
+msgstr ""
+
+#: includes/Admin/Orders.php:406
+msgid "Wrong item"
+msgstr ""
+
+#: includes/Admin/Orders.php:407 includes/Commerce/Orders.php:843
+msgid "Other"
+msgstr ""
+
 #: includes/Admin/Product_Categories.php:99
-#: includes/Admin/Settings_Screens/Product_Sync.php:106
+#: includes/Admin/Settings_Screens/Commerce.php:76
+#: includes/Admin/Settings_Screens/Product_Sync.php:108
 msgid ""
 "Products and categories that inherit this global setting (i.e. they do not "
 "have a specific Google product category set) will use the new default "
@@ -259,7 +388,8 @@ msgid ""
 msgstr ""
 
 #: includes/Admin/Product_Categories.php:122
-#: includes/Admin/Settings_Screens/Product_Sync.php:146
+#: includes/Admin/Settings_Screens/Commerce.php:116
+#: includes/Admin/Settings_Screens/Product_Sync.php:148
 msgid "Update default Google product category"
 msgstr ""
 
@@ -278,7 +408,8 @@ msgid ""
 msgstr ""
 
 #: includes/Admin/Product_Categories.php:232
-#: includes/Admin/Settings_Screens/Product_Sync.php:316
+#: includes/Admin/Settings_Screens/Commerce.php:431
+#: includes/Admin/Settings_Screens/Product_Sync.php:334
 msgid "Default Google product category"
 msgstr ""
 
@@ -286,91 +417,69 @@ msgstr ""
 msgid "Select default values for enhanced attributes within this category"
 msgstr ""
 
-#: includes/Admin/Product_Categories.php:367 includes/Admin/Products.php:114
+#: includes/Admin/Product_Categories.php:367 includes/Admin/Products.php:111
 msgid "Category Specific Attributes"
 msgstr ""
 
-#: includes/Admin/Products.php:96
+#: includes/Admin/Product_Sets.php:149
+msgid "WC Product Categories"
+msgstr ""
+
+#: includes/Admin/Product_Sets.php:181
+msgid "Map FB Product Set to WC Product Categories"
+msgstr ""
+
+#: includes/Admin/Products.php:93
 msgid "Select values for enhanced attributes for this product"
 msgstr ""
 
-#: includes/Admin/Products.php:135
+#: includes/Admin/Products.php:132
 msgid "Google product category"
 msgstr ""
 
-#: includes/Admin/Products.php:136
+#: includes/Admin/Products.php:133
 msgid ""
 "Choose the Google product category and (optionally) sub-categories "
 "associated with this product."
-msgstr ""
-
-#: includes/Admin/Products.php:209
-msgid "Sell on Instagram"
-msgstr ""
-
-#: includes/Admin/Products.php:211
-msgid ""
-"Enable to sell this product on Instagram. Products that are hidden in the "
-"Facebook catalog can be synced, but won’t be available for purchase."
-msgstr ""
-
-#: includes/Admin/Products.php:221
-msgid "This product does not meet the requirements to sell on Instagram."
-msgstr ""
-
-#: includes/Admin/Products.php:222
-msgid "Click here to learn more."
-msgstr ""
-
-#: includes/Admin/Products.php:231
-#. translators: Placeholders %1$s - strong opening tag, %2$s - strong closing
-#. tag
-msgid ""
-"To sell this product on Instagram, at least one variation must be synced to "
-"Facebook. You can control variation sync on the %1$sVariations%2$s tab with "
-"the %1$sFacebook Sync%2$s setting."
 msgstr ""
 
 #. Author of the plugin/theme
 msgid "Facebook"
 msgstr ""
 
-#: includes/Admin/Settings.php:106
+#: includes/Admin/Settings.php:108
 #: includes/Admin/Settings_Screens/Connection.php:34
 #: includes/Admin/Settings_Screens/Connection.php:35
 msgid "Connection"
 msgstr ""
 
-#: includes/Admin/Settings.php:109
+#: includes/Admin/Settings.php:111
 #: includes/Admin/Settings_Screens/Messenger.php:40
 #: includes/Admin/Settings_Screens/Messenger.php:41
 #: includes/Admin/Settings_Screens/Messenger.php:144
 msgid "Messenger"
 msgstr ""
 
-#: includes/Admin/Settings.php:112
-#: includes/Admin/Settings_Screens/Product_Sync.php:42
-#: includes/Admin/Settings_Screens/Product_Sync.php:43
-#: includes/Admin/Settings_Screens/Product_Sync.php:167
-#: includes/Admin/Settings_Screens/Product_Sync.php:262
+#: includes/Admin/Settings.php:114
+#: includes/Admin/Settings_Screens/Product_Sync.php:264
 msgid "Product sync"
 msgstr ""
 
-#: includes/Admin/Settings.php:115
+#: includes/Admin/Settings.php:117
 #: includes/Admin/Settings_Screens/Advertise.php:37
 #: includes/Admin/Settings_Screens/Advertise.php:38
 msgid "Advertise"
 msgstr ""
 
-#: includes/Admin/Settings.php:197
+#: includes/Admin/Settings.php:199
 msgid "You do not have permission to save these settings."
 msgstr ""
 
-#: includes/Admin/Settings.php:206
+#: includes/Admin/Settings.php:208
 msgid "Your settings have been saved."
 msgstr ""
 
-#: includes/Admin/Settings.php:213
+#: includes/Admin/Settings.php:215
 #. translators: Placeholders: %s - user-friendly error message
 msgid "Your settings could not be saved. %s"
 msgstr ""
@@ -385,6 +494,106 @@ msgstr ""
 msgid ""
 "If you are connected to Facebook but cannot display ads, please contact "
 "Facebook support."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:35
+#: includes/Admin/Settings_Screens/Commerce.php:36
+msgid "Commerce"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:91
+#: includes/Admin/Settings_Screens/Product_Sync.php:123
+#. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag
+msgid ""
+"Products and categories that inherit this global setting (they do not have "
+"a specific Google product category set) will use the new default "
+"immediately.  %1$sIf you have cleared the Google Product Category%2$s, "
+"items inheriting the default will not be available for Instagram or "
+"Facebook checkout. Are you sure you want to proceed?"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:160
+msgid "Commerce Manager account"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:165
+msgid "Checkout Method"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:168
+msgid "Facebook Channel"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:171
+msgid "Instagram Channel"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:175
+msgid "Setup Details"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:179
+msgid "Call to Action"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:183
+msgid "Shop Setup"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:187
+msgid "Payment Setup"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:191
+msgid "Review Status"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:197
+msgid "Your Checkout setup is not complete."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:198
+msgid "Finish Setup"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:230
+msgid "Your store is not connected to Checkout on Instagram or Facebook."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:231
+msgid "Connect"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:254
+msgid "Your store is connected to Checkout."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:255
+msgid "Manage"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:271
+msgid "Sell on Instagram or Facebook"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:372
+msgid ""
+"Checkout on Instagram or Facebook is only available to merchants located in "
+"the United States."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:432
+msgid ""
+"Choose a default Google product category for your products. Defaults can "
+"also be set for product categories. Products need at least two category "
+"levels defined to sell via Instagram or Facebook."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Commerce.php:452
+#. translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag
+msgid ""
+"Please %1$sconnect to Facebook%2$s to enable Checkout on Instagram or "
+"Facebook."
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Connection.php:57
@@ -416,55 +625,63 @@ msgstr ""
 msgid "Ad Manager account"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:253
-msgid "Reach the Right People and Sell More Online"
+#: includes/Admin/Settings_Screens/Connection.php:144
+msgid "Instagram Business ID"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:255
-msgid "Grow your business on Facebook"
-msgstr ""
-
-#: includes/Admin/Settings_Screens/Connection.php:258
-msgid "Use this WooCommerce and Facebook integration to:"
-msgstr ""
-
-#: includes/Admin/Settings_Screens/Connection.php:260
-msgid "Create an ad in a few steps"
+#: includes/Admin/Settings_Screens/Connection.php:148
+msgid "Commerce Merchant Settings ID"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Connection.php:261
+msgid "Reach the Right People and Sell More Online"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Connection.php:263
+msgid "Grow your business on Facebook"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Connection.php:266
+msgid "Use this WooCommerce and Facebook integration to:"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Connection.php:268
+msgid "Create an ad in a few steps"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Connection.php:269
 msgid "Use built-in best practices for online sales"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:262
+#: includes/Admin/Settings_Screens/Connection.php:270
 msgid "Get reporting on sales and revenue"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:285
+#: includes/Admin/Settings_Screens/Connection.php:293
 msgid "Manage Connection"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:289
+#: includes/Admin/Settings_Screens/Connection.php:297
 msgid "Uninstall"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:295
+#: includes/Admin/Settings_Screens/Connection.php:303
 msgid "Get Started"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:320
+#: includes/Admin/Settings_Screens/Connection.php:328
 msgid "Debug"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:326
+#: includes/Admin/Settings_Screens/Connection.php:334
 msgid "Enable debug mode"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:328
+#: includes/Admin/Settings_Screens/Connection.php:336
 msgid "Log plugin events for debugging"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Connection.php:329
+#: includes/Admin/Settings_Screens/Connection.php:337
 msgid "Only enable this if you are experiencing problems with the plugin."
 msgstr ""
 
@@ -505,19 +722,30 @@ msgstr ""
 msgid "Please try again."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:71
+#: includes/Admin/Settings_Screens/Product_Sets.php:33
+#: includes/Admin/Settings_Screens/Product_Sets.php:34
+msgid "Product Sets"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:42
+#: includes/Admin/Settings_Screens/Product_Sync.php:43
+#: includes/Admin/Settings_Screens/Product_Sync.php:169
+msgid "Product Sync"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:73
 #. translators: Placeholders: {count} number of remaining items
 msgid "{count} item remaining."
 msgid_plural "{count} items remaining."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:83
+#: includes/Admin/Settings_Screens/Product_Sync.php:85
 #. translators: Placeholders %s - html code for a spinner icon
 msgid "Your products will now be resynced to Facebook, this may take some time."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:84
+#: includes/Admin/Settings_Screens/Product_Sync.php:86
 msgid ""
 "Facebook for WooCommerce automatically syncs your products on "
 "create/update. Are you sure you want to force product resync?\n"
@@ -527,125 +755,146 @@ msgid ""
 "did not sync."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:85
+#: includes/Admin/Settings_Screens/Product_Sync.php:87
 msgid "Your products are syncing - you may safely leave this page %s"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:88
+#: includes/Admin/Settings_Screens/Product_Sync.php:90
 msgid "There was an error trying to sync the products to Facebook."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:89
+#: includes/Admin/Settings_Screens/Product_Sync.php:91
 msgid ""
 "Something went wrong while uploading the product information, please try "
 "again."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:121
-#. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag
-msgid ""
-"Products and categories that inherit this global setting (they do not have "
-"a specific Google product category set) will use the new default "
-"immediately.  %1$sIf you have cleared the Google Product Category%2$s, "
-"items inheriting the default will not be available for Instagram checkout. "
-"Are you sure you want to proceed?"
-msgstr ""
-
-#: includes/Admin/Settings_Screens/Product_Sync.php:175
+#: includes/Admin/Settings_Screens/Product_Sync.php:177
 msgid "Sync products"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:267
+#: includes/Admin/Settings_Screens/Product_Sync.php:269
 msgid "Enable product sync"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:275
-msgid "Exclude categories from sync"
+#: includes/Admin/Settings_Screens/Product_Sync.php:277
+msgid "Product Identifier"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:279
-msgid "Products in one or more of these categories will not sync to Facebook."
+#: includes/Admin/Settings_Screens/Product_Sync.php:280
+msgid "WooCommerce product attribute mapped to retailer_id on Facebook."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:283
-msgid "Search for a product category&hellip;"
+#: includes/Admin/Settings_Screens/Product_Sync.php:281
+msgid ""
+"WARNING: use with caution, as changing this option after syncing products "
+"to Facebook\n"
+"\t\t\t\t\tmay result in having duplicate products in your Facebook catalog."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:289
-msgid "Exclude tags from sync"
+#: includes/Admin/Settings_Screens/Product_Sync.php:285
+msgid "SKU + Product ID"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:286
+msgid "SKU"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:287
+msgid "Product ID"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Product_Sync.php:293
-msgid "Products with one or more of these tags will not sync to Facebook."
+msgid "Exclude categories from sync"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Product_Sync.php:297
+msgid "Products in one or more of these categories will not sync to Facebook."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:301
+msgid "Search for a product category&hellip;"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:307
+msgid "Exclude tags from sync"
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:311
+msgid "Products with one or more of these tags will not sync to Facebook."
+msgstr ""
+
+#: includes/Admin/Settings_Screens/Product_Sync.php:315
 msgid "Search for a product tag&hellip;"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:303
+#: includes/Admin/Settings_Screens/Product_Sync.php:321
 msgid "Product description sync"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:306
+#: includes/Admin/Settings_Screens/Product_Sync.php:324
 msgid "Choose which product description to display in the Facebook catalog."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:309
+#: includes/Admin/Settings_Screens/Product_Sync.php:327
 msgid "Standard description"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:310
+#: includes/Admin/Settings_Screens/Product_Sync.php:328
 msgid "Short description"
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:317
+#: includes/Admin/Settings_Screens/Product_Sync.php:335
 msgid ""
 "Choose a default Google product category for your products. Defaults can "
 "also be set for product categories. Products need at least two category "
 "levels defined for tax to be correctly applied."
 msgstr ""
 
-#: includes/Admin/Settings_Screens/Product_Sync.php:363
+#: includes/Admin/Settings_Screens/Product_Sync.php:381
 #. translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag
 msgid "Please %1$sconnect to Facebook%2$s to enable and manage product sync."
 msgstr ""
 
-#: includes/Admin.php:144
-msgid ""
-"Please enter a Google product category and at least one sub-category to "
-"sell this product on Instagram."
+#: includes/Admin.php:122
+msgid "The name is how it appears on Facebook Catalog."
 msgstr ""
 
-#: includes/Admin.php:166
+#: includes/Admin.php:187
+msgid ""
+"Please enter a Google product category and at least one sub-category to "
+"sell this product on Instagram or Facebook."
+msgstr ""
+
+#: includes/Admin.php:208
 msgid "Search main categories..."
 msgstr ""
 
-#: includes/Admin.php:167
+#: includes/Admin.php:209
 msgid "Choose a main category"
 msgstr ""
 
-#: includes/Admin.php:168
+#: includes/Admin.php:210
 msgid "Choose a category"
 msgstr ""
 
-#: includes/Admin.php:207
+#: includes/Admin.php:249
 msgid ""
-"To sell this product on Instagram, please ensure it meets the following "
-"requirements:"
+"To sell this product on Instagram or Facebook, please ensure it meets the "
+"following requirements:"
 msgstr ""
 
-#: includes/Admin.php:210
+#: includes/Admin.php:252
 msgid "Has a price defined"
 msgstr ""
 
-#: includes/Admin.php:213
+#: includes/Admin.php:255
 #. translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s -
 #. </strong> closing HTML tag
 msgid "Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab"
 msgstr ""
 
-#: includes/Admin.php:219
+#: includes/Admin.php:261
 #. translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s -
 #. </strong> closing HTML tag
 msgid ""
@@ -653,40 +902,57 @@ msgid ""
 "and hide\""
 msgstr ""
 
-#: includes/Admin.php:245
+#: includes/Admin.php:287
 msgid "Close"
 msgstr ""
 
-#: includes/Admin.php:277 includes/Admin.php:1121 includes/Admin.php:1256
+#: includes/Admin.php:323
+#. translators: Placeholders: %1$s - opening <a> link tag, %2$s - closing </a>
+#. link tag
+msgid ""
+"You're removing a product from the Facebook sync that is currently listed "
+"in your %1$sFacebook catalog%2$s. Would you like to delete the product from "
+"the Facebook catalog as well?"
+msgstr ""
+
+#: includes/Admin.php:350
+msgid "Remove from sync only"
+msgstr ""
+
+#: includes/Admin.php:354
+msgid "Remove from sync and delete"
+msgstr ""
+
+#: includes/Admin.php:390 includes/Admin.php:1234 includes/Admin.php:1364
 msgid "Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:304 includes/Admin.php:336
+#: includes/Admin.php:417 includes/Admin.php:449
 msgid "Sync and show"
 msgstr ""
 
-#: includes/Admin.php:306 includes/Admin.php:337
+#: includes/Admin.php:419 includes/Admin.php:450
 msgid "Sync and hide"
 msgstr ""
 
-#: includes/Admin.php:311 includes/Admin.php:338 includes/Admin.php:1125
-#: includes/Admin.php:1260
+#: includes/Admin.php:424 includes/Admin.php:451 includes/Admin.php:1238
+#: includes/Admin.php:1368
 msgid "Do not sync"
 msgstr ""
 
-#: includes/Admin.php:335
+#: includes/Admin.php:448
 msgid "Filter by Facebook sync setting"
 msgstr ""
 
-#: includes/Admin.php:748
+#: includes/Admin.php:861
 msgid "Include in Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:749
+#: includes/Admin.php:862
 msgid "Exclude from Facebook sync"
 msgstr ""
 
-#: includes/Admin.php:942
+#: includes/Admin.php:1055
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - <a> tag
 msgid ""
@@ -700,11 +966,11 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:949
+#: includes/Admin.php:1062
 msgid "Don't show this notice again"
 msgstr ""
 
-#: includes/Admin.php:983
+#: includes/Admin.php:1096
 #. translators: Placeholders: %1$s - number of affected products, %2$s opening
 #. HTML <a> tag, %3$s - closing HTML </a> tag, %4$s - opening HTML <a> tag,
 #. %5$s - closing HTML </a> tag
@@ -721,7 +987,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin.php:1049
+#: includes/Admin.php:1162
 #. translators: Placeholders: %1$s - opening HTML <strong> tag, %2$s - closing
 #. HTML </strong> tag, %3$s - opening HTML <a> tag, %4$s - closing HTML </a>
 #. tag
@@ -731,69 +997,69 @@ msgid ""
 "your Facebook catalog. You may still advertise Virtual products on Facebook."
 msgstr ""
 
-#: includes/Admin.php:1123 includes/Admin.php:1258
+#: includes/Admin.php:1236 includes/Admin.php:1366
 msgid "Sync and show in catalog"
 msgstr ""
 
-#: includes/Admin.php:1124 includes/Admin.php:1259
+#: includes/Admin.php:1237 includes/Admin.php:1367
 msgid "Sync and hide in catalog"
 msgstr ""
 
-#: includes/Admin.php:1134 includes/Admin.php:1272
+#: includes/Admin.php:1247 includes/Admin.php:1380
 msgid "Facebook Description"
 msgstr ""
 
-#: includes/Admin.php:1136 includes/Admin.php:1274
+#: includes/Admin.php:1249 includes/Admin.php:1382
 msgid ""
 "Custom (plain-text only) description for product on Facebook. If blank, "
 "product description will be used. If product description is blank, "
 "shortname will be used."
 msgstr ""
 
-#: includes/Admin.php:1147 includes/Admin.php:1287
+#: includes/Admin.php:1260 includes/Admin.php:1395
 msgid "Facebook Product Image"
 msgstr ""
 
-#: includes/Admin.php:1149 includes/Admin.php:1289
+#: includes/Admin.php:1262 includes/Admin.php:1397
 msgid ""
 "Choose the product image that should be synced to the Facebook catalog for "
 "this product. If using a custom image, please enter an absolute URL (e.g. "
 "https://domain.com/image.jpg)."
 msgstr ""
 
-#: includes/Admin.php:1151
+#: includes/Admin.php:1264
 msgid "Use WooCommerce image"
 msgstr ""
 
-#: includes/Admin.php:1152 includes/Admin.php:1293
+#: includes/Admin.php:1265 includes/Admin.php:1401
 msgid "Use custom image"
 msgstr ""
 
-#: includes/Admin.php:1163 includes/Admin.php:1305
+#: includes/Admin.php:1276 includes/Admin.php:1413
 msgid "Custom Image URL"
 msgstr ""
 
-#: includes/Admin.php:1174 includes/Admin.php:1318
+#: includes/Admin.php:1287 includes/Admin.php:1426
 #. translators: Placeholders %1$s - WC currency symbol
 msgid "Facebook Price (%1$s)"
 msgstr ""
 
-#: includes/Admin.php:1178 includes/Admin.php:1322
+#: includes/Admin.php:1291 includes/Admin.php:1430
 msgid ""
 "Custom price for product on Facebook. Please enter in monetary decimal (.) "
 "format without thousand separators and currency symbols. If blank, product "
 "price will be used."
 msgstr ""
 
-#: includes/Admin.php:1291
+#: includes/Admin.php:1399
 msgid "Use variation image"
 msgstr ""
 
-#: includes/Admin.php:1292
+#: includes/Admin.php:1400
 msgid "Use parent image"
 msgstr ""
 
-#: includes/Admin.php:1445
+#: includes/Admin.php:1554
 msgid "Close modal panel"
 msgstr ""
 
@@ -874,34 +1140,44 @@ msgstr ""
 msgid "Suspicious order"
 msgstr ""
 
-#: includes/Commerce/Orders.php:843
-msgid "Other"
-msgstr ""
-
-#: includes/Handlers/Connection.php:275
+#: includes/Handlers/Connection.php:357 includes/Handlers/Connection.php:479
 msgid "Connection complete! Thanks for using Facebook for WooCommerce."
 msgstr ""
 
-#: includes/Handlers/Connection.php:301
+#: includes/Handlers/Connection.php:383
 msgid "You do not have permission to uninstall Facebook Business Extension."
 msgstr ""
 
-#: includes/Handlers/Connection.php:311
+#: includes/Handlers/Connection.php:393
 msgid "Uninstall successful"
 msgstr ""
 
-#: includes/Handlers/Connection.php:317
+#: includes/Handlers/Connection.php:399
 msgid "Uninstall unsuccessful. Please try again."
 msgstr ""
 
-#: includes/Handlers/Connection.php:372
+#: includes/Handlers/Connection.php:486
+#. translators: Placeholders: %s - connection error message
+msgid "Connection failed: %s"
+msgstr ""
+
+#: includes/Handlers/Connection.php:524
 #. translators: Placeholders: %s - API error message
 msgid "Could not retrieve page access data. %s"
 msgstr ""
 
-#: includes/Handlers/Connection.php:384
+#: includes/Handlers/Connection.php:536
 #. translators: Placeholders: %s - Facebook page ID
 msgid "Page %s not authorized."
+msgstr ""
+
+#: includes/Handlers/Connection.php:569
+#. translators: Placeholders: %s - API error message
+msgid "Could not enable order management. %s"
+msgstr ""
+
+#: includes/Handlers/Connection.php:1578
+msgid "You do not have permission to finish App Store login."
 msgstr ""
 
 #: includes/Products/Sync/Background.php:65

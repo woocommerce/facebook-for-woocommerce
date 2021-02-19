@@ -160,8 +160,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				'timeout' => self::CURL_TIMEOUT,
 			];
 
-			$fbasync = new WC_Facebookcommerce_Async_Request();
 
+			$fbasync = new WC_Facebookcommerce_Async_Request();
 			$fbasync->query_url  = $url;
 			$fbasync->query_args = array();
 			$fbasync->post_args  = $request_args;
@@ -394,6 +394,24 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::_delete( $product_group_url );
 		}
 
+		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
+		public function create_product_set_item( $product_catalog_id, $data ) {
+			$url = $this->build_url( $product_catalog_id, '/product_sets', '8.0' );
+			return self::_post( $url, $data );
+		}
+
+		// POST https://graph.facebook.com/vX.X/{product-set-id}
+		public function update_product_set_item( $product_set_id, $data ) {
+			$url = $this->build_url( $product_set_id, '', '8.0' );
+			return self::_post( $url, $data );
+		}
+
+		public function delete_product_set_item( $product_set_id ) {
+			$url = $this->build_url( $product_set_id, '', '8.0' );
+			return self::_delete( $url );
+		}
+
+
 		public function log( $ems_id, $message, $error ) {
 			$log_url = $this->build_url( $ems_id, '/log_events' );
 
@@ -568,10 +586,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::_post( $url, $data );
 		}
 
-		private function build_url( $field_id, $param = '' ) {
-			return self::GRAPH_API_URL . (string) $field_id . $param;
+		private function build_url( $field_id, $param = '', $api_version = '' ) {
+			$api_url = self::GRAPH_API_URL;
+			if ( ! empty( $api_version ) ) {
+				$api_url = str_replace( '2.9', str_replace( 'v', '', trim( $api_version ) ), $api_url );
+			}
+			return $api_url . (string) $field_id . $param;
 		}
-
 	}
 
 endif;

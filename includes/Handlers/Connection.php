@@ -32,6 +32,9 @@ class Connection {
 	/** @var string WooCommerce connection proxy URL */
 	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
 
+	/** @var string WooCommerce connection for APP Store login URL */
+	const APP_STORE_LOGIN_URL = 'https://connect.woocommerce.com/app-store-login/facebook/';
+
 	/** @var string the Standard Auth type */
 	const AUTH_TYPE_STANDARD = 'standard';
 
@@ -40,6 +43,9 @@ class Connection {
 
 	/** @var string the action callback for the disconnection */
 	const ACTION_DISCONNECT = 'wc_facebook_disconnect';
+
+	/** @var string the action callback for FBE redirection */
+	const ACTION_FBE_REDIRECT = 'wc_fbe_redirect';
 
 	/** @var string the action callback for the connection */
 	const ACTION_CONNECT_COMMERCE = 'wc_facebook_connect_commerce';
@@ -74,6 +80,18 @@ class Connection {
 	/** @var bool option that stores the onsite checkout connected state */
 	const OPTION_ONSITE_CHECKOUT_CONNECTED = 'wc_facebook_onsite_checkout_connected';
 
+	/** @var string webhook event subscribed object */
+	const WEBHOOK_SUBSCRIBED_OBJECT = 'user';
+
+	/** @var string webhook event subscribed field */
+	const WEBHOOK_SUBSCRIBED_FIELD = 'fbe_install';
+
+	/** @var string Instagram Business ID option name */
+	const OPTION_INSTAGRAM_BUSINESS_ID = 'wc_facebook_instagram_business_id';
+
+	/** @var string the Commerce merchant settings ID option name */
+	const OPTION_COMMERCE_MERCHANT_SETTINGS_ID = 'wc_facebook_commerce_merchant_settings_id';
+
 	/** @var string|null the generated external merchant settings ID */
 	private $external_business_id;
 
@@ -99,6 +117,12 @@ class Connection {
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT_COMMERCE, [ $this, 'handle_connect_commerce' ] );
+
+		add_action( 'woocommerce_api_' . self::ACTION_FBE_REDIRECT, [ $this, 'handle_fbe_redirect' ] );
+
+		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
+
+		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
 	}
 
 
@@ -230,6 +254,14 @@ class Connection {
 
 		if ( $response->get_ad_account_id() ) {
 			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
+		}
+
+		if ( $response->get_instagram_business_id() ) {
+			$this->update_instagram_business_id( sanitize_text_field( $response->get_instagram_business_id() ) );
+		}
+
+		if ( $response->get_commerce_merchant_settings_id() ) {
+			$this->update_commerce_merchant_settings_id( sanitize_text_field( $response->get_commerce_merchant_settings_id() ) );
 		}
 	}
 
@@ -389,6 +421,8 @@ class Connection {
 		$this->update_commerce_manager_id( '' );
 		$this->update_commerce_setup_complete( false );
 		$this->update_onsite_checkout_connected( false );
+		$this->update_instagram_business_id( '' );
+		$this->update_commerce_merchant_settings_id( '' );
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
@@ -737,6 +771,7 @@ class Connection {
 			'ads_read',
 			'instagram_basic',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
+			'instagram_basic',
 		];
 
 		/**
@@ -886,6 +921,32 @@ class Connection {
 
 
 	/**
+	 * Gets Instagram Business ID value.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return string
+	 */
+	public function get_instagram_business_id() {
+
+		return get_option( self::OPTION_INSTAGRAM_BUSINESS_ID, '' );
+	}
+
+
+	/**
+	 * Gets Commerce merchant settings ID value.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return string
+	 */
+	public function get_commerce_merchant_settings_id() {
+
+		return get_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '' );
+	}
+
+
+	/**
 	 * Gets the proxy URL.
 	 *
 	 * @since 2.0.0
@@ -902,6 +963,26 @@ class Connection {
 		 * @param string $proxy_url the connection proxy URL
 		 */
 		return (string) apply_filters( 'wc_facebook_connection_proxy_url', self::PROXY_URL );
+	}
+
+
+	/**
+	 * Gets APP Store Login URL.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return string URL
+	 */
+	public function get_app_store_login_url() {
+
+		/**
+		 * Filters App Store login URL.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param string $app_store_login_url the connection App Store login URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_app_store_login_url', self::APP_STORE_LOGIN_URL );
 	}
 
 
@@ -1103,6 +1184,19 @@ class Connection {
 
 
 	/**
+	 * Stores the given Instagram Business ID.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_instagram_business_id( $id ) {
+
+		update_option( self::OPTION_INSTAGRAM_BUSINESS_ID, $id );
+	}
+
+
+	/**
 	 * Stores the Commerce setup completion state.
 	 *
 	 * @since 2.3.0
@@ -1112,6 +1206,19 @@ class Connection {
 	public function update_commerce_setup_complete( $complete ) {
 
 		update_option( self::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
+	}
+
+
+	/**
+	 * Stores the given Commerce merchant settings ID.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string $id the ID
+	 */
+	public function update_commerce_merchant_settings_id( $id ) {
+
+		update_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, $id );
 	}
 
 
@@ -1256,4 +1363,246 @@ class Connection {
 	}
 
 
+	/**
+	 * Process WebHook User object, install field
+	 *
+	 * @since 2.3.0
+	 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#webhook
+	 *
+	 * @param object $data WebHook event data.
+	 */
+	public function fbe_install_webhook( $data ) {
+
+		// Reject other objects other than subscribed object
+		if ( empty( $data ) || ! isset( $data->object ) || self::WEBHOOK_SUBSCRIBED_OBJECT !== $data->object ) {
+
+			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+				$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
+				$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			}
+
+			return;
+		}
+
+		$log_data = array();
+		if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+			$this->get_plugin()->log( 'WebHook User Event received' );
+			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		}
+
+		$entry = (array) $data->entry[0];
+		if ( empty( $entry ) ) {
+			return;
+		}
+
+		// Filter event by subscribed field
+		$event = array_filter(
+			$entry['changes'],
+			function( $change ) {
+				return self::WEBHOOK_SUBSCRIBED_FIELD === $change->field;
+			}
+		);
+
+		$values = ! empty( $event[0] ) ? $event[0]->value : '';
+		if ( empty( $values ) ) {
+			return;
+		}
+
+		/**
+		 * If profiles, pages and instagram_profiles fields are not included in the Webhook payload, this means the business has uninstalled FBE.
+		 * In this case also the field access_token will not be included.
+		 *
+		 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#what-s-included-with-webhooks-
+		 */
+		if ( empty( $values->access_token ) ) {
+
+			delete_option( 'wc_facebook_has_connected_fbe_2' );
+			delete_option( 'wc_facebook_has_authorized_pages_read_engagement' );
+
+			$this->disconnect();
+
+			return;
+		}
+
+		update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
+		update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
+
+		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
+		$this->update_access_token( $system_user_access_token );
+		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
+
+		if ( ! empty( $entry['uid'] ) ) {
+			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
+			$log_data[ self::OPTION_SYSTEM_USER_ID ] = sanitize_text_field( $entry['uid'] );
+		}
+
+		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
+		$this->update_merchant_access_token( $merchant_access_token );
+		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
+
+		if ( ! empty( $values->install_time ) ) {
+			update_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, sanitize_text_field( $values->install_time ) );
+			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ] = sanitize_text_field( $values->install_time );
+		}
+
+		if ( ! empty( $values->business_id ) ) {
+			update_option( self::OPTION_EXTERNAL_BUSINESS_ID, sanitize_text_field( $values->business_id ) );
+			$log_data[ self::OPTION_EXTERNAL_BUSINESS_ID ] = sanitize_text_field( $values->business_id );
+		}
+
+		if ( ! empty( $values->pixel_id ) ) {
+			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $values->pixel_id ) );
+			$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID ] = sanitize_text_field( $values->pixel_id );
+		}
+
+		if ( ! empty( $values->catalog_id ) ) {
+			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $values->catalog_id ) );
+			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ] = sanitize_text_field( $values->catalog_id );
+		}
+
+		if ( ! empty( $values->business_manager_id ) ) {
+			$this->update_business_manager_id( sanitize_text_field( $values->business_manager_id ) );
+			$log_data[ self::OPTION_BUSINESS_MANAGER_ID ] = sanitize_text_field( $values->business_manager_id );
+		}
+
+		if ( ! empty( $values->ad_account_id ) ) {
+			$this->update_ad_account_id( sanitize_text_field( $values->ad_account_id ) );
+			$log_data[ self::OPTION_AD_ACCOUNT_ID ] = sanitize_text_field( $values->ad_account_id );
+		}
+
+		if ( ! empty( $values->instagram_profiles ) ) {
+
+			$instagram_business_id = current( $values->instagram_profiles );
+
+			$this->update_instagram_business_id( sanitize_text_field( $instagram_business_id ) );
+			$log_data[ self::OPTION_INSTAGRAM_BUSINESS_ID ] = sanitize_text_field( $instagram_business_id );
+		}
+
+		if ( ! empty( $values->commerce_merchant_settings_id ) ) {
+			$this->update_commerce_merchant_settings_id( sanitize_text_field( $values->commerce_merchant_settings_id ) );
+			$log_data[ self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID ] = sanitize_text_field( $values->commerce_merchant_settings_id );
+		}
+
+		if ( ! empty( $values->pages ) ) {
+
+			$page_id = current( $values->pages );
+
+			try {
+
+				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $page_id ) );
+				$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = sanitize_text_field( $page_id );
+
+				// get and store a current access token for the configured page
+				$page_access_token = $this->retrieve_page_access_token( $page_id );
+
+				$this->update_page_access_token( $page_access_token );
+				$log_data[ self::OPTION_PAGE_ACCESS_TOKEN ] = sanitize_text_field( $page_access_token );
+
+			} catch ( \Exception $e ) {
+
+				if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+					$this->get_plugin()->log( 'Could not request Page Token: ' . $e->getMessage() );
+				}
+			}
+		}//end if
+
+		if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
+			$this->get_plugin()->log( 'WebHook User event saved data' );
+			$this->get_plugin()->log( print_r( $log_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		}
+	}
+
+
+	/**
+	 * Register Extras REST API endpoint
+	 *
+	 * @since 2.3.0
+	 */
+	public function init_extras_endpoint() {
+
+		register_rest_route(
+			'wc-facebook/v1',
+			'extras',
+			array(
+				array(
+					'methods'             => array( 'GET', 'POST' ),
+					'callback'            => array( $this, 'extras_callback' ),
+					'permission_callback' => array( $this, 'extras_permission_callback' ),
+				),
+			)
+		);
+	}
+
+
+	/**
+	 * FBE Extras endpoint permissions
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return boolean
+	 */
+	public function extras_permission_callback() {
+
+		return current_user_can( 'manage_woocommerce' );
+	}
+
+
+	/**
+	 * Return FBE extras
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function extras_callback() {
+
+		$extras = $this->get_connect_parameters_extras();
+		if ( empty( $extras ) ) {
+			return new \WP_REST_Response( null, 204 );
+		}
+
+		return new \WP_REST_Response( $extras, 200 );
+	}
+
+
+	/**
+	 * Process FBE App Store login flow redirection
+	 *
+	 * @since 2.3.0
+	 */
+	public function handle_fbe_redirect() {
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to finish App Store login.', 'facebook-for-woocommerce' ) );
+		}
+
+		$redirect_uri = base64_decode( $_REQUEST['redirect_uri'] ); //phpcs:ignore
+
+		// To ensure that we are not sharing any user data with other parties, only redirect to the redirect_uri if it matches the regular expression
+		if ( empty( $redirect_uri ) || ! preg_match( '/https?:\/\/(www\.|m\.|l\.)?(\d{5}\.od\.)?(facebook|instagram|whatsapp)\.com(\/.*)?/', explode( '?', $redirect_uri )[0] ) ) {
+			wp_safe_redirect( site_url() );
+			exit;
+		}
+
+		if ( empty( $_REQUEST['success'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			$url_params = [
+				'store_url'    => '',
+				'redirect_uri' => rawurlencode( $redirect_uri ),
+				'errors'       => [ 'You need to grant access to WooCommerce.' ],
+			];
+
+			$redirect_url = add_query_arg(
+				$url_params,
+				$this->get_app_store_login_url()
+			);
+
+		} else {
+
+			$redirect_url = $redirect_uri . '&extras=' . rawurlencode_deep( wp_json_encode( $this->get_connect_parameters_extras() ) );
+		}
+
+		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		exit;
+	}
 }

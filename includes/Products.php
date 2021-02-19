@@ -583,8 +583,14 @@ class Products {
 			$level           = 0;
 			$parent_category = $category;
 
-			while ( $parent_category->parent !== 0 ) {
+			while ( (int) $parent_category->parent !== 0 ) {
+
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+
+				if ( ! $parent_category instanceof \WP_Term ) {
+					break;
+				}
+
 				$level ++;
 			}
 
@@ -670,8 +676,14 @@ class Products {
 			$level           = 0;
 			$parent_category = $category;
 
-			while ( $parent_category->parent !== 0 ) {
+			while ( (int) $parent_category->parent !== 0 ) {
+
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
+
+				if ( ! $parent_category instanceof \WP_Term ) {
+					break;
+				}
+
 				$level ++;
 			}
 

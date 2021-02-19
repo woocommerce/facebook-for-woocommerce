@@ -24,6 +24,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		require_once 'includes/Admin/Settings_Screens/Product_Sync.php';
 		require_once 'includes/Admin/Settings_Screens/Messenger.php';
 		require_once 'includes/Admin/Settings_Screens/Commerce.php';
+		require_once 'includes/Admin/Settings_Screens/Advertise.php';
 	}
 
 
@@ -123,6 +124,7 @@ class SettingsTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertArrayHasKey( 'product_sync', $tabs );
 		$this->assertArrayHasKey( 'messenger', $tabs );
 		$this->assertArrayHasKey( 'commerce', $tabs );
+		$this->assertArrayHasKey( 'advertise', $tabs );
 	}
 
 

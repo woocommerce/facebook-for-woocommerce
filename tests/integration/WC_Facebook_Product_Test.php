@@ -70,6 +70,21 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 		$this->assertSame( '1234', $data['google_product_category'] );
 	}
 
+	/**
+	 * This is a regression test, used to check that we correctly set string
+	 * lists as arrays before we send them
+	 *
+	 * @see \WC_Facebook_Product::apply_enhanced_catalog_fields_from_attributes()
+	 * */
+	public function test_prepare_product_ready_for_commerce_google_product_category_with_additional_features() {
+		$product = $this->get_product_ready_for_commerce();
+		Products::update_google_product_category_id( $product, '1604' );
+		Products::update_product_enhanced_catalog_attribute( $product, 'additional_features', 'Embroidered, Nice' );
+		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+
+		$this->assertIsArray( $data['additional_features'] );
+		$this->assertSame( array( 'Embroidered', 'Nice' ), $data['additional_features'] );
+	}
 
 	/**
 	 * @see \WC_Facebook_Product::prepare_product()
