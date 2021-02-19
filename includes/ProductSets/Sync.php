@@ -346,7 +346,7 @@ class Sync {
 		);
 		$product_ids   = get_posts( $products_args );
 
-		// Removes the Product Set doesn't have products.
+		// Removes the Product Set if it doesn't have products.
 		if ( empty( $product_ids ) ) {
 			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
 			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
