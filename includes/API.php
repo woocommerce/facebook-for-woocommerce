@@ -274,15 +274,15 @@ class API extends Framework\SV_WC_API_Base {
 	/**
 	 * Gets a Commerce Merchant Settings object from Facebook.
 	 *
-	 * @since 2.3.0
+	 * @since 2.4.0
 	 *
-	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @param string $cms_id Commerce Merchant Settings ID
 	 * @return API\CMS\Read\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function get_commerce_merchant_settings( $commerce_manager_id ) {
+	public function get_commerce_merchant_settings( $cms_id ) {
 
-		$request = new API\CMS\Read\Request( $commerce_manager_id );
+		$request = new API\CMS\Read\Request( $cms_id );
 
 		$this->set_response_handler( API\CMS\Read\Response::class );
 
@@ -293,15 +293,15 @@ class API extends Framework\SV_WC_API_Base {
   /**
 	 * Gets the Order Management Apps for a given CMS ID.
 	 *
-	 * @since 2.3.0
+	 * @since 2.4.0
 	 *
-	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @param string $cms_id Commerce Merchant Settings ID
 	 * @return API\CMS\Order_Management\Response
 	 * @throws Framework\SV_WC_API_Exception
 	 */
-	public function get_order_management_apps( $commerce_manager_id ) {
+	public function get_order_management_apps( $cms_id ) {
 
-		$request = new API\CMS\Order_Management\Request( $commerce_manager_id );
+		$request = new API\CMS\Order_Management\Request( $cms_id );
 
 		$this->set_response_handler( API\CMS\Order_Management\Response::class );
 

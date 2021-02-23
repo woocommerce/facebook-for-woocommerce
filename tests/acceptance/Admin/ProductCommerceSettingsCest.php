@@ -26,13 +26,13 @@ class ProductCommerceSettingsCest {
 		 */
 		$I->haveOptionInDatabase( Connection::OPTION_ACCESS_TOKEN, '1234' );
 		$I->haveOptionInDatabase( Connection::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MANAGER_ID, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '1234' );
 		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234' );
 		$I->haveOptionInDatabase( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '1234' );
 
 		// set these in the database so that the Commerce fields are rendered
 		$I->haveOptionInDatabase( Connection::OPTION_PAGE_ACCESS_TOKEN, '1234' );
-		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MANAGER_ID, '1234' );
+		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '1234' );
 
 		// save two generic products
 		$this->sync_enabled_product  = $I->haveProductInDatabase();

@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Commerce Merchant Settings API request object.
  *
- * @since 2.3.0
+ * @since 2.4.0
  */
 class Request extends API\Request  {
 
@@ -25,20 +25,20 @@ class Request extends API\Request  {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.3.0
+	 * @since 2.4.0
 	 *
-	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @param string $cms_id Commerce Merchant Settings ID
 	 */
-	public function __construct( $commerce_manager_id ) {
+	public function __construct( $cms_id ) {
 
-		parent::__construct( "/{$commerce_manager_id}", 'GET' );
+		parent::__construct( "/{$cms_id}", 'GET' );
 	}
 
 
 	/**
 	 * Gets the request parameters.
 	 *
-	 * @since 2.3.0
+	 * @since 2.4.0
 	 *
 	 * @return array
 	 */

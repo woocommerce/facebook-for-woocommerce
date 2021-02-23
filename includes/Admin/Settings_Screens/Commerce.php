@@ -154,12 +154,12 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		 * + IG Channel
 		 */
 
-		$commerce_manager_id = $connection_handler->get_commerce_manager_id();
+		$cms_id = $connection_handler->get_commerce_merchant_settings_id();
 		$static_items = [
 			'commerce_manager' => [
 				'label' => __( 'Commerce Manager account', 'facebook-for-woocommerce' ),
-				'value' => $commerce_manager_id,
-				'url'   => "https://business.facebook.com/commerce_manager/{$commerce_manager_id}"
+				'value' => $cms_id,
+				'url'   => "https://business.facebook.com/commerce_manager/{$cms_id}"
 			],
 			'checkout_method' => [
 				'label' => __( 'Checkout Method', 'facebook-for-woocommerce' ),
@@ -197,12 +197,12 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		$commerce_connect_message = __( 'Your Checkout setup is not complete.', 'facebook-for-woocommerce' );
 		$commerce_connect_caption = __( 'Finish Setup', 'facebook-for-woocommerce' );
 
-		// If the Commerce Manager ID is set, update the Commerce Account details
-		if ( $commerce_manager_id ) {
+		// If the Commerce Merchant Settings ID is set, update the Commerce Account details
+		if ( $cms_id ) {
 
 			try {
 
-				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $commerce_manager_id );
+				$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $cms_id );
 
 				if ( $display_name = $response->get_display_name() ) {
 					$static_items['commerce_manager']['value'] = $display_name;
@@ -226,7 +226,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 							$setup_status->payment_setup === 'SETUP' &&
 							$setup_status->review_status->status === 'APPROVED'
 						) {
-							$commerce_connect_url = $connection_handler->get_commerce_connect_url( $commerce_manager_id );
+							$commerce_connect_url = $connection_handler->get_commerce_connect_url( $cms_id );
 							$commerce_connect_message = __( 'Your store is not connected to Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' );
 							$commerce_connect_caption = __( 'Connect', 'facebook-for-woocommerce' );
 						}
@@ -243,7 +243,9 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					$static_items['ig_channel']['value'] = $ig_channel->id ? 'Enabled' : '';
 				}
 
-			} catch ( Framework\SV_WC_API_Exception $exception ) {}
+			} catch ( Framework\SV_WC_API_Exception $exception ) {
+				facebook_for_woocommerce()->log( 'Error retrieving Commerce Merchant Settings: ' . $exception->getMessage() );
+			}
 		}
 
 		// if the user has authorized the pages_read_engagement scope, they can go directly to the Commerce onboarding

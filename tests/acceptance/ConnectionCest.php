@@ -73,7 +73,7 @@ class ConnectionCest {
 		], home_url( '/' ) ) );
 
 		$I->dontSeeOptionInDatabase( [
-			'option_name' => Connection::OPTION_COMMERCE_MANAGER_ID,
+			'option_name' => Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID,
 		] );
 
 		$I->see( '-1' );
@@ -94,7 +94,7 @@ class ConnectionCest {
 		], home_url( '/' ) ) );
 
 		$I->dontSeeOptionInDatabase( [
-			'option_name' => Connection::OPTION_COMMERCE_MANAGER_ID,
+			'option_name' => Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID,
 		] );
 	}
 
@@ -112,7 +112,7 @@ class ConnectionCest {
 		], home_url( '/' ) ) );
 
 		$I->dontSeeOptionInDatabase( [
-			'option_name' => Connection::OPTION_COMMERCE_MANAGER_ID,
+			'option_name' => Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID,
 		] );
 	}
 
@@ -136,7 +136,7 @@ class ConnectionCest {
 		], home_url( '/' ) ) );
 
 		$I->haveOptionInDatabase( Connection::OPTION_PAGE_ACCESS_TOKEN, 'PAGE_ACCESS_TOKEN' );
-		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MANAGER_ID, 'xyz' );
+		$I->haveOptionInDatabase( Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, 'xyz' );
 	}
 
 

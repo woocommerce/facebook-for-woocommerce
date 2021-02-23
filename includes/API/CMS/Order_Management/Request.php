@@ -27,11 +27,11 @@ class Request extends API\Request  {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param string $commerce_manager_id Commerce Manager ID
+	 * @param string $cms_id Commerce Merchant Settings ID
 	 */
-	public function __construct( $commerce_manager_id ) {
+	public function __construct( $cms_id ) {
 
-		parent::__construct( "/{$commerce_manager_id}/order_management_apps", 'GET' );
+		parent::__construct( "/{$cms_id}/order_management_apps", 'GET' );
 	}
 
 

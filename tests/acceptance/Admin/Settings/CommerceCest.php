@@ -12,7 +12,7 @@ class SettingsCommerceCest {
 
 		$I->haveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_ACCESS_TOKEN, '1235' );
 		$I->haveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_PAGE_ACCESS_TOKEN, '1235' );
-		$I->haveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_COMMERCE_MANAGER_ID, '1235' );
+		$I->haveOptionInDatabase( \SkyVerge\WooCommerce\Facebook\Handlers\Connection::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '1235' );
 
 		$I->loginAsAdmin();
 	}

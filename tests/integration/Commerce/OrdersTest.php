@@ -367,7 +367,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
@@ -398,7 +398,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
@@ -437,7 +437,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		$product = $this->tester->get_product();
@@ -464,7 +464,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 
 		$product = $this->tester->get_product( [
 			'manage_stock'   => true,
@@ -554,7 +554,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( true );
 
 		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();
@@ -568,7 +568,7 @@ class OrdersTest extends \Codeception\TestCase\WPTestCase {
 
 		// ensure Commerce is not connected
 		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( '1234' );
-		facebook_for_woocommerce()->get_connection_handler()->update_commerce_manager_id( '1234' );
+		facebook_for_woocommerce()->get_connection_handler()->update_commerce_merchant_settings_id( '1234' );
 		facebook_for_woocommerce()->get_connection_handler()->update_onsite_checkout_connected( false );
 
 		facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->schedule_local_orders_update();

@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Order Management Apps API response object.
  *
- * @since 2.3.3
+ * @since 2.4.0
  */
 class Response extends API\Response  {
 
@@ -25,7 +25,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the App IDs
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return string[]|null
 	 */

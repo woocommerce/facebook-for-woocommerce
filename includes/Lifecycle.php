@@ -337,4 +337,19 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	}
 
 
+	/**
+	 * Upgrades to version 2.4.0
+	 *
+	 * @since 2.4.0
+	 */
+	protected function upgrade_to_2_4_0() {
+
+		// Migrate previous Commerce Manager ID to Commerce Merchant Settings ID if one does not exist
+		$old_cms_id = get_option( 'wc_facebook_commerce_manager_id' );
+		if ( $old_cms_id && false === get_option( 'wc_facebook_commerce_merchant_settings_id' ) ) {
+			update_option( 'wc_facebook_commerce_merchant_settings_id', $old_cms_id );
+		}
+	}
+
+
 }

@@ -300,16 +300,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_commerce_manager_id() */
-	public function test_get_commerce_manager_id() {
-
-		$commerce_manager_id = 'commerce manager id';
-		update_option( Connection::OPTION_COMMERCE_MANAGER_ID, $commerce_manager_id );
-
-		$this->assertSame( $commerce_manager_id, $this->get_connection()->get_commerce_manager_id() );
-	}
-
-
 	/** @see Connection::is_onsite_checkout_connected() */
 	public function test_is_onsite_checkout_connected() {
 
@@ -629,16 +619,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$this->get_connection()->update_system_user_id( $system_user_id );
 
 		$this->assertSame( $system_user_id, $this->get_connection()->get_system_user_id() );
-	}
-
-
-	/** @see Connection::update_commerce_manager_id() */
-	public function test_update_commerce_manager_id() {
-
-		$commerce_manager_id = 'commerce manager id';
-		$this->get_connection()->update_commerce_manager_id( $commerce_manager_id );
-
-		$this->assertSame( $commerce_manager_id, get_option( Connection::OPTION_COMMERCE_MANAGER_ID ) );
 	}
 
 

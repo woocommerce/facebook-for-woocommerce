@@ -17,7 +17,7 @@ use SkyVerge\WooCommerce\Facebook\API;
 /**
  * Commerce Merchant Settings API response object.
  *
- * @since 2.3.3
+ * @since 2.4.0
  */
 class Response extends API\Response  {
 
@@ -25,7 +25,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Shop call to action.
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return string|null
 	 */
@@ -38,7 +38,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Shop's onsite intent
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return string|null
 	 */
@@ -51,7 +51,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the display name.
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return string|null
 	 */
@@ -64,7 +64,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the setup status.
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return \stdClass
 	 */
@@ -80,7 +80,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Instagram Channel data
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return \stdClass
 	 */
@@ -97,7 +97,7 @@ class Response extends API\Response  {
 	/**
 	 * Gets the Facebook Channel data
 	 *
-	 * @since 2.3.3
+	 * @since 2.4.0
 	 *
 	 * @return \stdClass
 	 */

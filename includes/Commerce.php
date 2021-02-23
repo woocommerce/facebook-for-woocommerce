@@ -115,7 +115,7 @@ class Commerce {
 
 		$category_id = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORY_ID, '' );
 
-		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_manager_id() ) &&
+		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_merchant_settings_id() ) &&
 			$connection_handler->is_onsite_checkout_connected();
 
 		/**
