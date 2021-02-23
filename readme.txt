@@ -39,8 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2020.nn.nn - version 2.3.1-dev.1 =
+= 2021.nn.nn - version 2.3.1-dev.1 =
  * Fix - Fix errors when product set is empty
+ * Fix - Ensure that events have an action_source
 
 = 2021.02.16 - version 2.3.0 =
  * Feature - Add ability to create and assign products to Facebook product sets
