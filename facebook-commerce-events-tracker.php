@@ -504,6 +504,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			} else {
 				$content_type = 'product';
 			}
+			
+			if ( $product->is_type( 'variable' ) ) {
+                            $product_price = $product->get_variation_price('min');
+                        } else {
+                            $product_price = $product->get_price();
+                        }
 
 			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
 
@@ -522,7 +528,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						]
 					),
 					'content_category' => $categories['name'],
-					'value'            => $product->get_price(),
+					'value'            => $product_price,
 					'currency'         => get_woocommerce_currency(),
 				],
 				'user_data' => $this->pixel->get_user_info(),
