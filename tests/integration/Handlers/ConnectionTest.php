@@ -116,8 +116,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$connect_url = $this->get_connection()->get_commerce_connect_url();
 
-		$this->assertStringContainsString( 'https://www.facebook.com/commerce_manager/onboarding/?app_id=', $connect_url );
-		$this->assertStringContainsString( 'redirect_url=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebookcommerce%2F%3Fsite_url%3D', $connect_url );
+		$this->assertStringContainsString( 'https://www.facebook.com/facebook_business_extension', $connect_url );
+		$this->assertStringContainsString( 'redirect_uri=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebookcommerce%2F%3Fsite_url%3D', $connect_url );
 		$this->assertStringContainsString( 'wc-api%253D' . Connection::ACTION_CONNECT_COMMERCE . '%2526nonce%253D', $connect_url );
 	}
 

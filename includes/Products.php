@@ -455,60 +455,6 @@ class Products {
 
 
 	/**
-	 * Determines whether the product meets all of the criteria needed for Commerce.
-	 *
-	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
-	 *
-	 * @deprecated since 2.3.0
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 */
-	public static function is_product_ready_for_commerce( \WC_Product $product ) {
-
-		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::is_product_ready_for_commerce()' );
-
-		return false;
-	}
-
-
-	/**
-	 * Determines whether Commerce is enabled for the product.
-	 *
-	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
-	 *
-	 * @deprecated since 2.3.0
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @return bool
-	 */
-	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
-
-		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::is_commerce_enabled_for_product()' );
-
-		return false;
-	}
-
-
-	/**
-	 * Enables or disables Commerce for a product.
-	 *
-	 * TODO remove this deprecated method by version 2.4.0 or by March 2021 {DK 2020-12-23}
-	 *
-	 * @deprecated since 2.3.0
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @param bool        $is_enabled whether or not Commerce is to be enabled
-	 */
-	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
-
-		wc_deprecated_function( __METHOD__, '2.3.0', __CLASS__ . '::update_commerce_enabled_for_product()' );
-	}
-
-
-	/**
 	 * Gets the Google product category ID stored for the product.
 	 *
 	 * If the product is a variation, it will get this value from its parent.
