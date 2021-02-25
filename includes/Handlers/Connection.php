@@ -288,8 +288,7 @@ class Connection {
 			$response->get_cta() === 'ONSITE_CHECKOUT' &&
 			$setup_status &&
 			$setup_status->shop_setup === 'SETUP' &&
-			$setup_status->payment_setup === 'SETUP' &&
-			$setup_status->review_status->status === 'APPROVED'
+			$setup_status->payment_setup !== 'NOT_SETUP'
 		);
 		$this->update_commerce_setup_complete( $complete );
 

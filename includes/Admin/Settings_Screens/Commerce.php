@@ -61,6 +61,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			'default_google_product_category_modal_message_empty' => $this->get_default_google_product_category_modal_message_empty(),
 			'default_google_product_category_modal_buttons'       => $this->get_default_google_product_category_modal_buttons(),
 		] );
+
 	}
 
 
@@ -220,11 +221,18 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 						$static_items['payment_setup']['value'] = $setup_status->payment_setup;
 						$static_items['review_status']['value'] = $setup_status->review_status->status;
 
+						if ( $review_status === 'REJECTED' ) {
+							facebook_for_woocommerce()->get_message_handler()->add_error( __( "Your shop does not follow Facebook's Merchant Agreement and is not visible to potential customers. Please go to Facebook Commerce Manager to learn more or to request a review.", 'facebook-for-woocommerce' ) );
+						}
+
+						if ( $setup_status->payment_setup === 'VERIFICATION_NEEDED' ) {
+							facebook_for_woocommerce()->get_message_handler()->add_warning( __( 'For your security, Facebook requires additional information to confirm your business identity. Please go to Facebook Commerce Manager to complete verification and prevent your shop from closing.', 'facebook-for-woocommerce' ) );
+						}
+
 						if (
 							$cta === 'ONSITE_CHECKOUT' &&
 							$setup_status->shop_setup === 'SETUP' &&
-							$setup_status->payment_setup === 'SETUP' &&
-							$setup_status->review_status->status === 'APPROVED'
+							$setup_status->payment_setup !== 'NOT_SETUP'
 						) {
 							$commerce_connect_url = $connection_handler->get_commerce_connect_url( $cms_id );
 							$commerce_connect_message = __( 'Your store is not connected to Checkout on Instagram or Facebook.', 'facebook-for-woocommerce' );
@@ -265,6 +273,8 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			$connect_url = $connection_handler->get_connect_url( true );
 		}
 
+		facebook_for_woocommerce()->get_message_handler()->show_messages();
+
 		?>
 
 		<table class="form-table">
@@ -294,11 +304,11 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 				<?php foreach ( $static_items as $id => $item ) :
 
 					$item = wp_parse_args( $item, [
-						'type'  => '',
-						'label' => '',
-						'value' => '',
-						'url'   => '',
-						'debug' => '',
+						'type'     => '',
+						'label'    => '',
+						'value'    => '',
+						'url'      => '',
+						'debug'    => '',
 					] );
 
 					?>
