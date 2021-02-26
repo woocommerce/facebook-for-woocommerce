@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.02.23 - version 2.3.1 =
+ * Fix - Fix errors when product set is empty
+ * Fix - Ensure that events have an action_source
 
 = 2021.02.16 - version 2.3.0 =
  * Feature - Add ability to create and assign products to Facebook product sets
