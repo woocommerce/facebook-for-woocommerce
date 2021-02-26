@@ -729,9 +729,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$label = wc_attribute_label( $original_variant_name, $product );
 
 				// Clean up variant name (e.g. pa_color should be color)
-				// Replace "custom_data:foo" with just "foo" so we can use the key
-				// Product item API expects "custom_data" instead of "custom_data:foo"
-				$new_name = str_replace( 'custom_data:', '', \WC_Facebookcommerce_Utils::sanitize_variant_name( $original_variant_name ) );
+				$new_name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $original_variant_name, false );
 
 				// Sometimes WC returns an array, sometimes it's an assoc array, depending
 				// on what type of taxonomy it's using.  array_values will guarantee we
