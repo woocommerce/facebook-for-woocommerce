@@ -1109,12 +1109,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// enqueue variations to be deleted in the background
 			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $retailer_ids );
 
-			$this->delete_product_group( $product_id );
-
 		} else {
 
 			$this->delete_product_item( $product_id );
-			$this->delete_product_group( $product_id );
 		}
 
 		// clear out both item and group IDs
@@ -1244,23 +1241,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// Check if product group has been published to FB.  If not, it's new.
-		// If yes, loop through variants and see if product items are published.
-		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $wp_id, $woo_product );
-
-		if ( $fb_product_group_id ) {
-
-			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
-
-			$this->update_product_group( $woo_product );
-
-		} else {
-
-			$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product->woo_product );
-
-			$this->create_product_group( $woo_product, $retailer_id, true );
-		}
-
 		$variation_ids = [];
 
 		// scheduled update for each variation that should be synced
@@ -1307,40 +1287,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
 
-			$this->update_product_item( $woo_product, $fb_product_item_id );
+			$this->create_or_update_product_item( $woo_product );
 
 			return $fb_product_item_id;
 
 		} else {
 
-			// Check if this is a new product item for an existing product group
-			if ( $woo_product->get_parent_id() ) {
-
-				$fb_product_group_id = $this->get_product_fbid(
-					self::FB_PRODUCT_GROUP_ID,
-					$woo_product->get_parent_id(),
-					$woo_product
-				);
-
-				// New variant added
-				if ( $fb_product_group_id ) {
-
-					return $this->create_product_simple( $woo_product, $fb_product_group_id );
-
-				} else {
-
-					WC_Facebookcommerce_Utils::fblog(
-						'Wrong! simple_product_publish called without group ID for
-              a variable product!',
-						[],
-						true
-					);
-				}
-
-			} else {
-
-				return $this->create_product_simple( $woo_product );  // new product
-			}
+			return $this->create_or_update_product_item( $woo_product );
 		}
 	}
 
@@ -1371,258 +1324,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Create product group and product, store fb-specific info
-	 **/
-	function create_product_simple( $woo_product, $fb_product_group_id = null ) {
+	 * Creates or updates a product, store fb-specific info
+	 *
+	 * @param \WC_Facebook_Product $woo_product
+	 */
+	function create_or_update_product_item( $woo_product ) {
 		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
-		if ( ! $fb_product_group_id ) {
-			$fb_product_group_id = $this->create_product_group(
-				$woo_product,
-				$retailer_id
-			);
-		}
-
-		if ( $fb_product_group_id ) {
-			$fb_product_item_id = $this->create_product_item(
-				$woo_product,
-				$retailer_id,
-				$fb_product_group_id
-			);
-			return $fb_product_item_id;
-		}
-	}
-
-	function create_product_group( $woo_product, $retailer_id, $variants = false ) {
-
-		$product_group_data = array(
-			'retailer_id' => $retailer_id,
-		);
-
-		if ( $variants ) {
-			$product_group_data['variants'] =
-			$woo_product->prepare_variants_for_group();
-		}
-
-		$create_product_group_result = $this->check_api_result(
-			$this->fbgraph->create_product_group(
-				$this->get_product_catalog_id(),
-				$product_group_data
-			),
-			$product_group_data,
-			$woo_product->get_id()
-		);
-
-		// New variant added
-		if ( $create_product_group_result ) {
-			$decode_result       = WC_Facebookcommerce_Utils::decode_json( $create_product_group_result['body'] );
-			$fb_product_group_id = $decode_result->id;
-
-			update_post_meta(
-				$woo_product->get_id(),
-				self::FB_PRODUCT_GROUP_ID,
-				$fb_product_group_id
-			);
-
-			/** TODO: restore when adopting FBE 2.0
-			$this->display_success_message(
-				'Created product group <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' .
-				$fb_product_group_id . '</a> on Facebook.'
-			);
-			*/
-
-			return $fb_product_group_id;
-		}
-	}
-
-	function create_product_item( $woo_product, $retailer_id, $product_group_id ) {
-
-		$product_data = $woo_product->prepare_product( $retailer_id );
-
-		$product_result = $this->check_api_result(
-			$this->fbgraph->create_product_item(
-				$product_group_id,
-				$product_data
-			),
-			$product_data,
-			$woo_product->get_id()
-		);
-
-		if ( $product_result ) {
-			$decode_result      = WC_Facebookcommerce_Utils::decode_json( $product_result['body'] );
-			$fb_product_item_id = $decode_result->id;
-
-			update_post_meta(
-				$woo_product->get_id(),
-				self::FB_PRODUCT_ITEM_ID,
-				$fb_product_item_id
-			);
-
-			/** TODO: restore when adopting FBE 2.0
-			$this->display_success_message(
-				'Created product item <a href="https://facebook.com/' .
-				$fb_product_item_id . '" target="_blank">' .
-				$fb_product_item_id . '</a> on Facebook.'
-			);
-			*/
-
-			return $fb_product_item_id;
-		}
-	}
-
-
-	/**
-	 * Update existing product group (variant data only)
-	 *
-	 * @param \WC_Facebook_Product $woo_product
-	 **/
-	function update_product_group( $woo_product ) {
-		$fb_product_group_id = $this->get_product_fbid(
-			self::FB_PRODUCT_GROUP_ID,
-			$woo_product->get_id(),
-			$woo_product
-		);
-
-		if ( ! $fb_product_group_id ) {
-			return;
-		}
-
-		$variants = $woo_product->prepare_variants_for_group();
-
-		if ( ! $variants ) {
-			WC_Facebookcommerce_Utils::log(
-				sprintf(
-					__(
-						'Nothing to update for product group for %1$s',
-						'facebook-for-woocommerce'
-					),
-					$fb_product_group_id
-				)
-			);
-			return;
-		}
-
-		// figure out the matching default variation
-		$default_product_fbid  = null;
-		$woo_default_variation = $this->get_product_group_default_variation( $woo_product );
-
-		if ( $woo_default_variation ) {
-			$default_product_fbid = $this->get_product_fbid(
-				self::FB_PRODUCT_ITEM_ID,
-				$woo_default_variation['variation_id']
-			);
-		}
-
-		$product_group_data = [
-			'variants' => $variants,
-		];
-
-		if ( $default_product_fbid ) {
-			$product_group_data['default_product_id'] = $default_product_fbid;
-		}
-
-		$result = $this->check_api_result(
-			$this->fbgraph->update_product_group(
-				$fb_product_group_id,
-				$product_group_data
-			)
-		);
-
-		/** TODO: restore when adopting FBE 2.0
-		if ( $result ) {
-			$this->display_success_message(
-				'Updated product group <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
-				'</a> on Facebook.'
-			);
-		}
-		*/
-	}
-
-
-	/**
-	 * Determines if there is a matching variation for the default attributes.
-	 *
-	 * @since 2.1.2
-	 *
-	 * @param \WC_Facebook_Product $woo_product
-	 * @return array|null
-	 */
-	private function get_product_group_default_variation( $woo_product ) {
-
-		$default_attributes = $woo_product->woo_product->get_default_attributes( 'edit' );
-
-		if ( empty( $default_attributes ) ) {
-			return null;
-		}
-
-		$default_variation  = null;
-		$product_variations = $woo_product->woo_product->get_available_variations();
-
-		foreach ( $product_variations as $variation ) {
-
-			$variation_attributes = $this->get_product_variation_attributes( $variation );
-
-			$matching_attributes = array_intersect_assoc( $default_attributes, $variation_attributes );
-
-			if ( count( $matching_attributes ) === count( $variation_attributes ) ) {
-				$default_variation = $variation;
-				break;
-			}
-		}
-
-		return $default_variation;
-	}
-
-
-	/**
-	 * Parses given product variation for it's attributes
-	 *
-	 * @since 2.1.2
-	 *
-	 * @param array $variation
-	 * @return array
-	 */
-	private function get_product_variation_attributes( $variation ) {
-
-		$final_attributes     = [];
-		$variation_attributes = $variation['attributes'];
-
-		foreach ( $variation_attributes as $attribute_name => $attribute_value ) {
-			$final_attributes[ str_replace( 'attribute_', '', $attribute_name ) ] = $attribute_value;
-		}
-
-		return $final_attributes;
-	}
-
-
-	/**
-	 * Update existing product
-	 **/
-	function update_product_item( $woo_product, $fb_product_item_id ) {
-		$product_data = $woo_product->prepare_product();
-
-		// send an empty string to clear the additional_image_urls property if the product has no additional images
-		if ( empty( $product_data['additional_image_urls'] ) ) {
-			$product_data['additional_image_urls'] = '';
-		}
-
-		$result = $this->check_api_result(
-			$this->fbgraph->update_product_item(
-				$fb_product_item_id,
-				$product_data
-			)
-		);
-
-		/** TODO: restore when adopting FBE 2.0
-		if ( $result ) {
-			$this->display_success_message(
-				'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
-				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
-			);
-		}
-		*/
+		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $retailer_id ] );
 	}
 
 
@@ -3479,30 +3188,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$wp_id
 		);
 		if ( $fb_product_item_id ) {
+			// TODO: Update this
 			$pi_result =
 			$this->fbgraph->delete_product_item( $fb_product_item_id );
 			WC_Facebookcommerce_Utils::log( $pi_result );
-		}
-	}
-
-
-	/**
-	 * Uses the Graph API to delete the Product Group associated with the given product.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param int $product_id product ID
-	 */
-	private function delete_product_group( $product_id ) {
-
-		$product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
-
-		if ( $product_group_id ) {
-
-			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
-			$pg_result = $this->fbgraph->delete_product_group( $product_group_id );
-
-			\WC_Facebookcommerce_Utils::log( $pg_result );
 		}
 	}
 
@@ -3578,8 +3267,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				 return;
 			}
 
-			$set_visibility = $this->fbgraph->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
-
+			// TODO: Update
+			$set_visibility = facebook_for_woocommerce()->get_api()->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
 			if ( $this->check_api_result( $set_visibility ) ) {
 				Products::set_product_visibility( $product, $should_set_visible );
 			}
@@ -3690,28 +3379,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return;
 	}
 
-
-	private function set_default_variant( $product_group_id, $product_item_id ) {
-		$result = $this->check_api_result(
-			$this->fbgraph->set_default_variant(
-				$product_group_id,
-				array( 'default_product_id' => $product_item_id )
-			)
-		);
-		if ( ! $result ) {
-			WC_Facebookcommerce_Utils::fblog(
-				'Fail to set default product item',
-				array(),
-				true
-			);
-		}
-	}
-
-	private function fb_wp_die() {
-		if ( ! $this->test_mode ) {
-			wp_die();
-		}
-	}
 
 	/**
 	 * Display test result.
