@@ -19,7 +19,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
-	private $base_uri;
+	private $base_facebook_uri;
 
 
 	/**
