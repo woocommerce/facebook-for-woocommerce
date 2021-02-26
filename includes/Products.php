@@ -1137,7 +1137,7 @@ class Products {
 					$attr_val  = $product->get_attribute( $slug );
 				}
 
-				if ( strtolower( $attr_name ) === $key ) {
+				if ( \WC_Facebookcommerce_Utils::sanitize_variant_name( $attr_name, false ) === $key ) {
 					$value = $attr_val;
 					break;
 				}
