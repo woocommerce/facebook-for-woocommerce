@@ -397,7 +397,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
 		public function create_product_set_item( $product_catalog_id, $data ) {
-			$url = $this->build_url( $product_catalog_id, '/product_sets', 'v8.0' );
+			$url = $this->build_url( $product_catalog_id, '/product_sets' );
 			return self::_post( $url, $data );
 		}
 
@@ -411,7 +411,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 			$params = ( true === apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $product_set_id ) ) ? '?allow_live_product_set_deletion=true' : '';
 
-			$url = $this->build_url( $product_set_id, $params, 'v9.0' );
+			$url = $this->build_url( $product_set_id, $params );
 
 			return self::_delete( $url );
 		}
