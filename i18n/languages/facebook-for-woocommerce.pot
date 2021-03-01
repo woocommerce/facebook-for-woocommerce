@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.3.2\n"
+"Project-Id-Version: Facebook for WooCommerce 2.3.1\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2021-03-01 23:02:03+00:00\n"
+"POT-Creation-Date: 2021-02-23 13:17:44+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -974,17 +974,17 @@ msgstr ""
 msgid "Uninstall unsuccessful. Please try again."
 msgstr ""
 
-#: includes/Handlers/Connection.php:411
+#: includes/Handlers/Connection.php:409
 #. translators: Placeholders: %s - API error message
 msgid "Could not retrieve page access data. %s"
 msgstr ""
 
-#: includes/Handlers/Connection.php:423
+#: includes/Handlers/Connection.php:421
 #. translators: Placeholders: %s - Facebook page ID
 msgid "Page %s not authorized."
 msgstr ""
 
-#: includes/Handlers/Connection.php:1359
+#: includes/Handlers/Connection.php:1357
 msgid "You do not have permission to finish App Store login."
 msgstr ""
 
@@ -1002,7 +1002,7 @@ msgid ""
 "%s: %s"
 msgstr ""
 
-#: includes/fbgraph.php:105
+#: includes/fbgraph.php:104
 msgid "HTTP %s: %s"
 msgstr ""
 
