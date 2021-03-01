@@ -170,11 +170,7 @@ class Orders {
 		// add/update items
 		foreach ( $remote_order->get_items() as $item ) {
 
-			$product = Products::get_product_by_fb_product_id( $item['product_id'] );
-
-			if ( empty( $product ) ) {
-				$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
-			}
+			$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
 
 			if ( ! $product instanceof \WC_Product ) {
 
