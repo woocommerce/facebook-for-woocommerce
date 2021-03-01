@@ -93,7 +93,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 					appId            : '<?php echo esc_js( $connection_handler->get_client_id() ); ?>',
 					autoLogAppEvents : true,
 					xfbml            : true,
-					version          : 'v8.0',
+					version          : 'v8.0', // Note: This expires on November 1 2022
 				} );
 			};
 		</script>

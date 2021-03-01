@@ -387,6 +387,7 @@ class Sync {
 		$data = array(
 			'name'   => $term->name,
 			'filter' => wp_json_encode( array( 'or' => $products ) ),
+			'metadata' => wp_json_encode( array( 'description' => $term->description ) ),
 		);
 
 		do_action( 'fb_wc_product_set_sync', $data, $product_set_id );
