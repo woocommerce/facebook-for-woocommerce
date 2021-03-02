@@ -373,8 +373,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action( 'before_delete_post', [ $this, 'on_product_delete' ] );
 
-				add_action( 'add_meta_boxes', array( $this, 'fb_product_metabox' ), 10, 1 );
-
 				add_action(
 					'transition_post_status',
 					array( $this, 'fb_change_product_published_status' ),
