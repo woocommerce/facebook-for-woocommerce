@@ -116,44 +116,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 
 	/**
-	 * @see API::do_post_parse_response_validation()
-	 *
-	 * @param int $code error code
-	 * @param string $exception expected exception class name
-	 *
-	 * @dataProvider provider_do_post_parse_response_validation
-	 */
-	public function test_do_post_parse_response_validation( $code, $exception ) {
-
-		$message = sprintf( '(#%d) Message describing the error', $code );
-
-		$this->expectException( $exception );
-		$this->expectExceptionCode( $code );
-		$this->expectExceptionMessageRegExp( '/' . preg_quote( $message, '/' ) . '/' );
-
-		// mock the response for the HTTP request
-		$args = [
-			'request_path'     => '1234/product_groups',
-			'response_body'    => [
-				'error' => [
-					'message'          => $message,
-					'type'             => 'OAuthException',
-					'code'             => $code,
-				]
-			],
-			'response_code'    => 400,
-			'response_message' => 'Bad Request',
-		];
-
-		$this->prepare_request_response( $args );
-
-		$api = new API( 'access_token' );
-
-		$api->create_product_group( '1234', [] );
-	}
-
-
-	/**
 	 * Intercepts HTTP requests and returns a prepared response.
 	 *
 	 * @param array $args {
@@ -192,45 +154,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 			return $response;
 		}, 10, 3 );
-	}
-
-
-	/** @see API::test_do_post_parse_response_validation() */
-	public function provider_do_post_parse_response_validation() {
-
-		return [
-			[ 4,     API\Exceptions\Request_Limit_Reached::class ],
-			[ 17,    API\Exceptions\Request_Limit_Reached::class ],
-			[ 32,    API\Exceptions\Request_Limit_Reached::class ],
-			[ 613,   API\Exceptions\Request_Limit_Reached::class ],
-			[ 80004, API\Exceptions\Request_Limit_Reached::class ],
-
-			[ null, Framework\SV_WC_API_Exception::class ],
-			[ 102,  Framework\SV_WC_API_Exception::class ],
-			[ 190,  Framework\SV_WC_API_Exception::class ],
-		];
-	}
-
-
-	/** @see API::do_post_parse_response_validation() */
-	public function test_do_post_parse_response_validation_with_a_valid_response() {
-
-		$product_group_id = '111001234947059';
-
-		$args = [
-			'request_path'  => '1234/product_groups',
-			'response_body' => [
-				'id' => $product_group_id,
-			],
-		];
-
-		$this->prepare_request_response( $args );
-
-		$api = new API( 'access_token' );
-
-		$response = $api->create_product_group( '1234', [] );
-
-		$this->assertEquals( $product_group_id, $response->get_id() );
 	}
 
 
@@ -377,74 +300,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see API::create_product_group() */
-	public function test_create_product_group() {
-
-		$catalog_id         = '123456';
-		$product_group_data = [ 'test' => 'test' ];
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->create_product_group( '123456', $product_group_data );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$catalog_id}/product_groups", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( $product_group_data, $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
-	}
-
-
-	/** @see API::update_product_group() */
-	public function test_update_product_group() {
-
-		$product_group_id   = '1234';
-		$product_group_data = [ 'test' => 'test' ];
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->update_product_group( $product_group_id, $product_group_data );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$product_group_id}", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( $product_group_data, $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
-	}
-
-
-	/** @see API::delete_product_group() */
-	public function test_delete_product_group() {
-
-		$product_group_id = '1234';
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->delete_product_group( $product_group_id );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'DELETE', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$product_group_id}", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( [], $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
-	}
-
-
 	/** @see API::get_product_group_products() */
 	public function test_get_product_group_products() {
 
@@ -493,74 +348,6 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( [], $api->get_request()->get_data() );
 
 		$this->assertInstanceOf( API\Catalog\Product_Item\Response::class, $api->get_response() );
-	}
-
-
-	/** @see API::create_product_item() */
-	public function test_create_product_item() {
-
-		$product_group_id = '123456';
-		$product_data     = [ 'test' => 'test' ];
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->create_product_item( $product_group_id, $product_data );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$product_group_id}/products", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( $product_data, $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
-	}
-
-
-	/** @see API::update_product_item() */
-	public function test_update_product_item() {
-
-		$product_item_id = '123456';
-		$product_data    = [ 'test' => 'test' ];
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->update_product_item( $product_item_id, $product_data );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'POST', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$product_item_id}", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( $product_data, $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
-	}
-
-
-	/** @see API::delete_product_item() */
-	public function test_delete_product_item() {
-
-		$product_item_id = '123456';
-
-		// test will fail if do_remote_request() is not called once
-		$api = $this->make( API::class, [
-			'do_remote_request' => \Codeception\Stub\Expected::once(),
-		] );
-
-		$api->delete_product_item( $product_item_id );
-
-		$this->assertInstanceOf( Request::class, $api->get_request() );
-		$this->assertEquals( 'DELETE', $api->get_request()->get_method() );
-		$this->assertEquals( "/{$product_item_id}", $api->get_request()->get_path() );
-		$this->assertEquals( [], $api->get_request()->get_params() );
-		$this->assertEquals( [], $api->get_request()->get_data() );
-
-		$this->assertInstanceOf( Response::class, $api->get_response() );
 	}
 
 
