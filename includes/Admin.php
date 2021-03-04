@@ -998,7 +998,7 @@ class Admin {
 
 				// schedule simple products to be updated or deleted from the catalog in the background
 				if ( Products::product_should_be_deleted( $product ) ) {
-					facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( $product->get_id() ) );
+					facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ) );
 				} else {
 					facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( array( $product->get_id() ) );
 				}

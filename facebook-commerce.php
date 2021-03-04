@@ -930,7 +930,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} else {
 
-			$this->delete_product_item( $product_id );
+			$this->delete_product_item( $product );
 		}
 
 	}
@@ -1029,7 +1029,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( Products::product_should_be_deleted( $woo_product ) ) {
 
-			$this->delete_product_item( $wp_id );
+			$this->delete_product_item( $woo_product );
 			return true;
 		}
 
@@ -2992,9 +2992,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<?php
 	}
 
+	/**
+	 * Deletes a product
+	 *
+	 * @param \WC_Facebook_Product $woo_product
+	 */
+	function delete_product_item( $woo_product ) {
+		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
-	function delete_product_item( $wp_id ) {
-		facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $wp_id ] );
+		facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ $retailer_id ] );
 	}
 
 
