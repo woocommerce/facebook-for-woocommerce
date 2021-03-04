@@ -1127,13 +1127,11 @@ class Products {
 		$value = $product->get_meta( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key );
 
 		if ( empty( $value ) ) {
-			$product_id = $product->get_id();
-
 			// Check normal product attributes
 			foreach ( $product->get_attributes() as $slug => $attribute ) {
 				if ( $product->is_type( 'variation' ) ) {
-					$attr_name      = $slug;
-					$attr_val       = \WC_Facebookcommerce_Utils::get_variant_option_name( $product_id, 'attribute_' . $slug, $attribute );
+					$attr_name = $slug;
+					$attr_val  = $attribute;
 				} else {
 					$attr_name = $attribute->get_name();
 					$attr_val  = $product->get_attribute( $slug );
