@@ -171,11 +171,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 			'ig_channel' => [
 				'label' => __( 'Instagram Channel', 'facebook-for-woocommerce' ),
 			],
-			'details' => [
-				'type'  => 'title',
-				'label' => __( 'Setup Details', 'facebook-for-woocommerce' ),
-				'debug' => true,
-			],
 			'cta'     => [
 				'label' => __( 'Call to Action', 'facebook-for-woocommerce' ),
 				'debug' => true,

@@ -1130,7 +1130,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param \WC_Facebook_Product $woo_product
 	 */
 	function create_or_update_product_item( $woo_product ) {
-		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $product->get_id() ] );
+		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $woo_product->get_id() ] );
 	}
 
 
