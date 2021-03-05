@@ -19,6 +19,11 @@ defined( 'ABSPATH' ) or exit;
  */
 abstract class Abstract_Settings_Screen {
 
+	/** @var string Admin message levels */
+	const LEVEL_ERROR   = 'error';
+	const LEVEL_WARNING = 'warning';
+	const LEVEL_INFO    = 'info';
+	const LEVEL_SUCCESS = 'success';
 
 	/** @var string screen ID */
 	protected $id;
@@ -207,6 +212,29 @@ abstract class Abstract_Settings_Screen {
 		 */
 		return (string) apply_filters( 'wc_facebook_admin_settings_' . $this->get_id() . '_screen_description', $this->description, $this );
 	}
+
+
+	/**
+	 * Renders an admin message
+	 *
+	 * @since 2.4.0
+	 */
+	public function render_admin_message( $level, $message ) {
+
+		?>
+			<div id="wp-admin-message-handler-<?php echo esc_attr( $level ) ?>"  class="notice-<?php echo esc_attr( $level ) ?> notice">
+				<ul>
+					<li>
+						<strong><?php esc_html_e( $message, 'facebook-for-woocommerce' ); ?></strong>
+					</li>
+				</ul>
+			</div>
+
+		<?php
+	}
+
+
+
 
 
 }

@@ -431,6 +431,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			return ( self::$store_name ) ? ( self::$store_name ) : 'A Store Has No Name';
 		}
 
+
+		/*
+		 * Get visible name for variant attribute rather than the slug
+		*/
+		public function get_variant_option_name( $wp_id, $label, $default_value ) {
+			$meta           = get_post_meta( $wp_id, $label, true );
+			$attribute_name = str_replace( 'attribute_', '', $label );
+			$term           = get_term_by( 'slug', $meta, $attribute_name );
+			return $term && $term->name ? $term->name : $default_value;
+		}
+
+
 		/*
 		* Change variant product field name from Woo taxonomy to FB name
 		*/

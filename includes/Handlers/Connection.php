@@ -283,9 +283,7 @@ class Connection {
 		$onsite_intent = $response->has_onsite_intent();
 		$setup_status = $response->get_setup_status();
 
-		$complete = (
-			$onsite_intent &&
-			$response->get_cta() === 'ONSITE_CHECKOUT' &&
+		$complete = (( $response->has_onsite_intent() || $response->get_cta() === 'ONSITE_CHECKOUT' ) &&
 			$setup_status &&
 			$setup_status->shop_setup === 'SETUP' &&
 			$setup_status->payment_setup !== 'NOT_SETUP'

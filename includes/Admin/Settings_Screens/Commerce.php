@@ -209,24 +209,42 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 					$static_items['commerce_manager']['value'] = $display_name;
 				}
 
-				if ( $onsite_intent = $response->has_onsite_intent() ) {
+				// Get Commerce Attributes
+				$cta = $response->get_cta();
+				$setup_status = $response->get_setup_status();
+				$review_status = null;
+
+				// Set Debug Info
+				$static_items['cta']['value'] = $cta;
+
+				if ( $setup_status ) {
+					$static_items['shop_setup']['value'] = $setup_status->shop_setup;
+					$static_items['payment_setup']['value'] = $setup_status->payment_setup;
+
+					if ( $setup_status->review_status ) {
+						$review_status = $setup_status->review_status->status;
+						$static_items['review_status']['value'] = $review_status;
+					}
+				}
+
+				// CTA may be offsite if setup is not complete,
+				// For test Commerce accounts has_onsite_intent is false, however, CTA will be onsite
+				if ( $response->has_onsite_intent() || $cta === 'ONSITE_CHECKOUT' ) {
 					$static_items['checkout_method']['value'] = 'Checkout on Instagram or Facebook';
 
-					$cta = $response->get_cta();
-					$setup_status = $response->get_setup_status();
-
-					if ( $cta && $setup_status ) {
-						$static_items['cta']['value'] = $cta;
-						$static_items['shop_setup']['value'] = $setup_status->shop_setup;
-						$static_items['payment_setup']['value'] = $setup_status->payment_setup;
-						$static_items['review_status']['value'] = $setup_status->review_status->status;
-
+					if ( $setup_status ) {
 						if ( $review_status === 'REJECTED' ) {
-							facebook_for_woocommerce()->get_message_handler()->add_error( __( "Your shop does not follow Facebook's Merchant Agreement and is not visible to potential customers. Please go to Facebook Commerce Manager to learn more or to request a review.", 'facebook-for-woocommerce' ) );
+							$this->render_admin_message(
+								self::LEVEL_ERROR,
+								"Your shop does not follow Facebook's Merchant Agreement and is not visible to potential customers. Please go to Facebook Commerce Manager to learn more or to request a review."
+							);
 						}
 
 						if ( $setup_status->payment_setup === 'VERIFICATION_NEEDED' ) {
-							facebook_for_woocommerce()->get_message_handler()->add_warning( __( 'For your security, Facebook requires additional information to confirm your business identity. Please go to Facebook Commerce Manager to complete verification and prevent your shop from closing.', 'facebook-for-woocommerce' ) );
+							$this->render_admin_message(
+								self::LEVEL_WARNING,
+								"For your security, Facebook requires additional information to confirm your business identity. Please go to Facebook Commerce Manager to complete verification and prevent your shop from closing."
+							);
 						}
 
 						if (
@@ -272,8 +290,6 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 
 			$connect_url = $connection_handler->get_connect_url( true );
 		}
-
-		facebook_for_woocommerce()->get_message_handler()->show_messages();
 
 		?>
 
@@ -435,7 +451,7 @@ class Commerce extends Admin\Abstract_Settings_Screen {
 		return [
 			[
 				'type' => 'title',
-				'title' => 'Product Sync Settings'
+				'title' => 'Product Settings'
 			],
 			[
 				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
