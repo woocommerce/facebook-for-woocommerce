@@ -40,7 +40,7 @@ class Response extends API\Response  {
 	 *
 	 * @since 2.4.0
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
 	public function has_onsite_intent() {
 
