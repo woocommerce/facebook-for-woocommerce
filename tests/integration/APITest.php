@@ -19,6 +19,8 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 	/** @var \IntegrationTester */
 	protected $tester;
 
+	private $base_facebook_uri;
+
 
 	/**
 	 * Runs before each test.
@@ -32,6 +34,8 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		// create an instance of the API and load all the request and response classes
 		facebook_for_woocommerce()->get_api();
+
+		$this->base_facebook_uri = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
 	}
 
 
@@ -574,7 +578,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$response_data = [
 			'paging' => [
-				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+				'next' => $this->base_facebook_uri . '/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
 			],
 		];
 
@@ -625,7 +629,7 @@ class APITest extends \Codeception\TestCase\WPTestCase {
 
 		$response_data = [
 			'paging' => [
-				'next' => 'https://graph.facebook.com/v7.0/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
+				'next' => $this->base_facebook_uri . '/1234/products?fields=id,retailer_id&limit=1000&after=ABCD',
 			],
 		];
 
