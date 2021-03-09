@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.2
+Stable tag: 2.3.3-dev.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.03.09 - version 2.3.3-dev.1 =
+ * Fix - Fix for WooCommerce variation attribute sync not matching Enhanced Catalog attributes
+ * Fix - Fix to enable display names to be used for variant attribute values
 
 = 2021.03.02 - version 2.3.2 =
  * Tweak - Bump Facebook Marketing API version to 9.0
