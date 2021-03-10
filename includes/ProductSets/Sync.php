@@ -346,10 +346,12 @@ class Sync {
 		);
 		$product_ids   = get_posts( $products_args );
 
+		// Removes the Product Set if it doesn't have products.
 		if ( empty( $product_ids ) ) {
 			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
 			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
 			do_action( 'fb_wc_product_set_delete', $fb_product_set_id );
+			return;
 		}
 
 		// gets products variations
@@ -385,6 +387,7 @@ class Sync {
 		$data = array(
 			'name'   => $term->name,
 			'filter' => wp_json_encode( array( 'or' => $products ) ),
+			'metadata' => wp_json_encode( array( 'description' => $term->description ) ),
 		);
 
 		do_action( 'fb_wc_product_set_sync', $data, $product_set_id );

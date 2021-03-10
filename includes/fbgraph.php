@@ -24,7 +24,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 	 * FB Graph API helper functions
 	 */
 	class WC_Facebookcommerce_Graph_API {
-		const GRAPH_API_URL = 'https://graph.facebook.com/v2.9/';
+		const GRAPH_API_URL = 'https://graph.facebook.com/';
+		const API_VERSION   = 'v9.0';
 		const CURL_TIMEOUT  = 500;
 
 		/**
@@ -396,18 +397,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
 		public function create_product_set_item( $product_catalog_id, $data ) {
-			$url = $this->build_url( $product_catalog_id, '/product_sets', '8.0' );
+			$url = $this->build_url( $product_catalog_id, '/product_sets' );
 			return self::_post( $url, $data );
 		}
 
 		// POST https://graph.facebook.com/vX.X/{product-set-id}
 		public function update_product_set_item( $product_set_id, $data ) {
-			$url = $this->build_url( $product_set_id, '', '8.0' );
+			$url = $this->build_url( $product_set_id, '' );
 			return self::_post( $url, $data );
 		}
 
 		public function delete_product_set_item( $product_set_id ) {
-			$url = $this->build_url( $product_set_id, '', '8.0' );
+
+			$params = ( true === apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $product_set_id ) ) ? '?allow_live_product_set_deletion=true' : '';
+
+			$url = $this->build_url( $product_set_id, $params );
+
 			return self::_delete( $url );
 		}
 
@@ -589,7 +594,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		private function build_url( $field_id, $param = '', $api_version = '' ) {
 			$api_url = self::GRAPH_API_URL;
 			if ( ! empty( $api_version ) ) {
-				$api_url = str_replace( '2.9', str_replace( 'v', '', trim( $api_version ) ), $api_url );
+				$api_url = $api_url . $api_version . '/';
+			} else {
+				$api_url = $api_url . self::API_VERSION . '/';
 			}
 			return $api_url . (string) $field_id . $param;
 		}
