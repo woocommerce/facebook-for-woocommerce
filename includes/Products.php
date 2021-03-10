@@ -426,16 +426,14 @@ class Products {
 
 			$price = $facebook_price;
 
-		} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
+		} elseif ( $product->is_type( 'composite' ) ) {
 
-			$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
+			$price = $product->get_composite_price( 'min', true );
 
-		} elseif ( class_exists( 'WC_Product_Bundle' )
-		     && empty( $product->get_regular_price() )
-		     && 'bundle' === $product->get_type() ) {
+		} elseif ( $product->is_type( 'bundle' ) ) {
 
 			// if product is a product bundle with individually priced items, we rely on their pricing
-			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_bundle_price() ] );
+			$price = $product->get_bundle_price( 'min', true );
 
 		} elseif ( $product->is_type( 'mix-and-match' ) && $product->is_priced_per_product() ) {
 			
