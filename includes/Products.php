@@ -438,8 +438,9 @@ class Products {
 			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_bundle_price() ] );
 
 		} elseif ( $product->is_type( 'mix-and-match' ) && $product->is_priced_per_product() ) {
+			
 			// If product is Mix and Match product with individually priced items, we rely on their pricing.
-			$price = wc_get_price_to_display( $product, [ 'price' => $product->get_container_price() ] );
+			$price = $product->get_container_price( 'min', true );
 
 		} else {
 
