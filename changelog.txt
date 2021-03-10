@@ -1,7 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
 2021.03.xx - version 2.3.3
- * Tweak - Use the container price for Mix and Match products with per-item pricing mode
+ * Tweak - Use the container price for Mix and Match 2.0 products with per-item pricing mode
  * Tweak - Use bundle price and composite price methods for Bundle and Composite product types.
 
 2021.03.02 - version 2.3.2
