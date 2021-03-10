@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021.03.xx - version 2.3.3
+ * Tweak - Use the container price for Mix and Match products with per-item pricing mode
+
 2021.03.02 - version 2.3.2
  * Tweak - Bump Facebook Marketing API version to 9.0
 
