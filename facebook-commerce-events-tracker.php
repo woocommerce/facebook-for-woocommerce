@@ -505,7 +505,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$content_type = 'product';
 			}
 			
-			if ( $product->is_type( 'variable' ) ) {
+			if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
                             $product_price = $product->get_variation_price('min');
                         } else {
                             $product_price = $product->get_price();
