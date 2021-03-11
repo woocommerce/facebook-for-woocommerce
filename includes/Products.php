@@ -1206,50 +1206,6 @@ class Products {
 
 
 	/**
-	 * Gets a product by its Facebook product ID, from the `fb_product_item_id` or `fb_product_group_id`.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $fb_product_id Facebook product ID
-	 * @return \WC_Product|null
-	 */
-	public static function get_product_by_fb_product_id( $fb_product_id ) {
-
-		$product = null;
-
-		// try to by the `fb_product_item_id` meta
-		$products = wc_get_products(
-			array(
-				'limit'      => 1,
-				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
-				'meta_value' => $fb_product_id,
-			)
-		);
-
-		if ( ! empty( $products ) ) {
-			$product = current( $products );
-		}
-
-		if ( empty( $product ) ) {
-			// try to by the `fb_product_group_id` meta
-			$products = wc_get_products(
-				array(
-					'limit'      => 1,
-					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
-					'meta_value' => $fb_product_id,
-				)
-			);
-
-			if ( ! empty( $products ) ) {
-				$product = current( $products );
-			}
-		}
-
-		return ! empty( $product ) ? $product : null;
-	}
-
-
-	/**
 	 * Gets a product by its Facebook retailer ID.
 	 *
 	 * @see \WC_Facebookcommerce_Utils::get_fb_retailer_id().

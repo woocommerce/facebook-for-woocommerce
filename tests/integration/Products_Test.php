@@ -1216,41 +1216,6 @@ class Products_Test extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Products::get_product_by_fb_product_id() */
-	public function test_get_product_by_fb_product_id_item_id() {
-
-		$product = $this->get_product();
-
-		$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, '444444', true );
-		$product->save_meta_data();
-
-		$product_found = Facebook\Products::get_product_by_fb_product_id( '444444' );
-		$this->assertInstanceOf( \WC_Product::class, $product_found );
-		$this->assertEquals( $product->get_id(), $product_found->get_id() );
-	}
-
-
-	/** @see Products::get_product_by_fb_product_id() */
-	public function test_get_product_by_fb_product_id_group_id() {
-
-		$product = $this->get_product();
-
-		$product->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, '123456', true );
-		$product->save_meta_data();
-
-		$product_found = Facebook\Products::get_product_by_fb_product_id( '123456' );
-		$this->assertInstanceOf( \WC_Product::class, $product_found );
-		$this->assertEquals( $product->get_id(), $product_found->get_id() );
-	}
-
-
-	/** @see Products::get_product_by_fb_product_id() */
-	public function test_get_product_by_fb_product_id_not_found() {
-
-		$this->assertEquals( null, Facebook\Products::get_product_by_fb_product_id( '777777' ) );
-	}
-
-
 	/** @see Products::get_product_by_fb_retailer_id() */
 	public function test_get_product_by_fb_retailer_id_with_sku() {
 

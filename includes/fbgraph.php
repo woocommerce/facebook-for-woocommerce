@@ -362,38 +362,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 
-		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
-		public function create_product_group( $product_catalog_id, $data ) {
-			$url = $this->build_url( $product_catalog_id, '/product_groups' );
-			return self::_post( $url, $data );
-		}
-
-		// POST https://graph.facebook.com/vX.X/{product-group-id}/products
-		public function create_product_item( $product_group_id, $data ) {
-			$url = $this->build_url( $product_group_id, '/products' );
-			return self::_post( $url, $data );
-		}
-
-		public function update_product_group( $product_catalog_id, $data ) {
-			$url = $this->build_url( $product_catalog_id );
-			return self::_post( $url, $data );
-		}
-
-		public function update_product_item( $product_id, $data ) {
-			$url = $this->build_url( $product_id );
-			return self::_post( $url, $data );
-		}
-
-		public function delete_product_item( $product_item_id ) {
-			$product_item_url = $this->build_url( $product_item_id );
-			return self::_delete( $product_item_url );
-		}
-
-		public function delete_product_group( $product_group_id ) {
-			$product_group_url = $this->build_url( $product_group_id );
-			return self::_delete( $product_group_url );
-		}
-
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
 		public function create_product_set_item( $product_catalog_id, $data ) {
 			$url = $this->build_url( $product_catalog_id, '/product_sets', '8.0' );
@@ -580,11 +548,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $ids;
 		}
 
-
-		public function set_default_variant( $product_group_id, $data ) {
-			$url = $this->build_url( $product_group_id );
-			return self::_post( $url, $data );
-		}
 
 		private function build_url( $field_id, $param = '', $api_version = '' ) {
 			$api_url = self::GRAPH_API_URL;
