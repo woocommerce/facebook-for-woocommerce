@@ -371,7 +371,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Saves errors or messages to WooCommerce Log (woocommerce/logs/plugin-id-xxx.txt)
 		 *
-		 * @since 2.3.1-dev.1
+		 * @since 2.3.3
 		 * @param string $message error or message to save to log
 		 * @param string $log_id optional log id to segment the files by, defaults to plugin id
 		 */
