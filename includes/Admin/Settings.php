@@ -10,9 +10,10 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-use \Automattic\WooCommerce\Admin\Features\Navigation\Menu;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Plugin_Exception;
+use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
+use \Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
+use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -58,7 +59,7 @@ class Settings {
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 
-		$this->use_woo_nav = class_exists( Menu::class );
+		$this->use_woo_nav = class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
 	}
 
 
@@ -273,7 +274,7 @@ class Settings {
 			return;
 		}
 
-		Menu::add_plugin_category(
+		WooAdminMenu::add_plugin_category(
 			array(
 				'id'         => 'facebook-for-woocommerce',
 				'title'      => __( 'Facebook', 'facebook-for-woocommerce' ),
@@ -287,7 +288,7 @@ class Settings {
 				? 'edit-tags.php?taxonomy=fb_product_set&post_type=product'
 				: 'wc-facebook&tab=' . $screen->get_id();
 
-			Menu::add_plugin_item(
+			WooAdminMenu::add_plugin_item(
 				array(
 					'id'     => 'facebook-for-woocommerce-'. $screen->get_id(),
 					'parent' => 'facebook-for-woocommerce',
