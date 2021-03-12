@@ -11,7 +11,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
-use \Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
+use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use \Automattic\WooCommerce\Admin\Features\Navigation\Menu;
