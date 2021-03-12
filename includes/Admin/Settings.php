@@ -204,13 +204,15 @@ class Settings {
 
 		<div class="wrap woocommerce">
 
-			<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
+			<?php if ( ! $this->use_woo_nav ): ?>
+				<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
 
-				<?php foreach ( $tabs as $id => $label ) : ?>
-					<a href="<?php echo esc_html( admin_url( 'admin.php?page=' . self::PAGE_ID . '&tab=' . esc_attr( $id ) ) ); ?>" class="nav-tab <?php echo $current_tab === $id ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>
-				<?php endforeach; ?>
+					<?php foreach ( $tabs as $id => $label ) : ?>
+						<a href="<?php echo esc_html( admin_url( 'admin.php?page=' . self::PAGE_ID . '&tab=' . esc_attr( $id ) ) ); ?>" class="nav-tab <?php echo $current_tab === $id ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>
+					<?php endforeach; ?>
 
-			</nav>
+				</nav>
+			<?php endif; ?>
 
 			<?php facebook_for_woocommerce()->get_message_handler()->show_messages(); ?>
 
