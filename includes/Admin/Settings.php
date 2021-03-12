@@ -10,6 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use \Automattic\WooCommerce\Admin\Features\Navigation\Menu;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
@@ -83,6 +84,48 @@ class Settings {
 		);
 
 		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
+
+		if ( ! class_exists( '\Automattic\WooCommerce\Admin\Features\Navigation\Menu' ) ) {
+			return;
+		}
+
+		Menu::add_plugin_category(
+			array(
+				'id'         => 'facebook-for-woocommerce',
+				'title'      => __( 'Facebook', 'facebook-for-woocommerce' ),
+				'capability' => 'manage_woocommerce',
+			)
+		);
+
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-connection',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Connection', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook',
+				'order'  => 1,
+			)
+		);
+
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-product-sync',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Product sync', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook&tab=product_sync',
+				'order'  => 2,
+			)
+		);
+
+		Menu::add_plugin_item(
+			array(
+				'id'     => 'facebook-for-woocommerce-messenger',
+				'parent' => 'facebook-for-woocommerce',
+				'title'  => __( 'Messenger', 'facebook-for-woocommerce' ),
+				'url'    => 'wc-facebook&tab=messenger',
+				'order'  => 3,
+			)
+		);
 	}
 
 
