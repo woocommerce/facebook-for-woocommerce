@@ -368,6 +368,21 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			new WP_Facebook_Integration();
 		}
 
+		/**
+		 * Saves errors or messages to WooCommerce Log (woocommerce/logs/plugin-id-xxx.txt)
+		 *
+		 * @since 2.3.3
+		 * @param string $message error or message to save to log
+		 * @param string $log_id optional log id to segment the files by, defaults to plugin id
+		 */
+		public function log( $message, $log_id = null ) {
+			// bail if logging isn't enabled
+			if ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) {
+				return;
+			}
+
+			parent::log( $message, $log_id );
+		}
 
 		/**
 		 * Logs an API request.
