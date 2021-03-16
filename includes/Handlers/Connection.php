@@ -690,9 +690,9 @@ class Connection {
 			// build the final connect URL, direct to Facebook
 			$connect_url = add_query_arg( [
 				'app_id'               => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+				'app_redirect_uri'     => urlencode( $redirect_url ),
 				'external_business_id' => $this->get_external_business_id(),
 				'tab'                  => 'Commerce',
-				'redirect_uri'         => urlencode( $redirect_url ),
 			], 'https://www.facebook.com/facebook_business_extension' );
 		}
 
