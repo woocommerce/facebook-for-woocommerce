@@ -22,8 +22,11 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
  * @since 1.11.0
  */
 class FBCategories {
+	/** @var string the WordPress option name where the full categories list is stored */
+	const OPTION_GOOGLE_PRODUCT_CATEGORIES = 'wc_facebook_google_product_categories';
+
 	const ACTION_PRIORITY = 9;
-	const CATEGORY_FILE   = 'fb_google_product_categories_en_US_simple.json';
+	const CATEGORY_FILE   = 'taxonomy-with-ids.en-US.txt';
 	const ATTRIBUTES_FILE = 'fb_google_category_to_attribute_mapping.json';
 	/**
 	 * FBCategory constructor.
@@ -35,12 +38,12 @@ class FBCategories {
 		$this->attributes_filepath = realpath( __DIR__ ) . '/' . self::ATTRIBUTES_FILE;
 		$this->categories_data     = null;
 		$this->attributes_data     = null;
+		$this->categories          = null;
 	}
 
 	private function ensure_data_is_loaded() {
-		if ( ! $this->categories_data ) {
-			$cat_file_contents     = @file_get_contents( $this->categories_filepath );
-			$this->categories_data = json_decode( $cat_file_contents, true );
+		if ( empty( $this->categories_data ) ) {
+			$this->categories_data = $this->load_categories_file();
 		}
 		if ( ! $this->attributes_data ) {
 			$attr_file_contents    = @file_get_contents( $this->attributes_filepath );
@@ -114,5 +117,85 @@ class FBCategories {
 	public function is_category( $id ) {
 		$this->ensure_data_is_loaded();
 		return isset( $this->categories_data[ $id ] );
+	}
+
+	public function get_categories_raw() {
+		$this->ensure_data_is_loaded();
+		return $this->categories_data;
+	}
+
+	public function get_categories() {
+		if( $this->categories ) {
+			return $this->categories;
+		}
+
+		$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, [] );
+
+		if ( empty ( $categories ) ) {
+			$raw_categories = $this->get_categories_raw();
+			$categories     = $this->parse_categories( $raw_categories );
+
+			if ( ! empty( $categories ) ) {
+				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, 'no' );
+			}
+		}
+
+		return $categories;
+	}
+
+	protected function load_categories_file() {
+		$category_file_contents = @file_get_contents( $this->categories_filepath );
+		$category_file_lines    = explode( "\n", $category_file_contents );
+		$raw_categories         = array();
+		foreach ( $category_file_lines as $category_line ) {
+
+			if ( strpos( $category_line, ' - ' ) === false ) {
+				// not a category, skip it
+				continue;
+			}
+
+			list( $category_id, $category_name ) = explode( ' - ', $category_line );
+
+			$raw_categories[ (string) trim( $category_id ) ] = trim( $category_name );
+		}
+		return $raw_categories;
+	}
+
+	protected function parse_categories( $raw_categories ) {
+		$categories = [];
+		foreach ( $raw_categories as $category_id => $category_tree ) {
+
+			$category_tree  = explode( ' > ', $category_tree );
+			$category_label = end( $category_tree );
+
+			$category = [
+				'label'   => $category_label,
+				'options' => [],
+			];
+
+			if ( $category_label === $category_tree[0] ) {
+
+				// top-level category
+				$category['parent'] = '';
+
+			} else {
+
+				$parent_label = $category_tree[ count( $category_tree ) - 2 ];
+
+				$parent_category = array_search( $parent_label, array_map( function ( $item ) {
+
+					return $item['label'];
+				}, $categories ) );
+
+				$category['parent'] = (string) $parent_category;
+
+				// add category label to the parent's list of options
+				$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
+			}
+
+			$categories[ (string) $category_id ] = $category;
+		}
+
+		return $categories;
 	}
 }
