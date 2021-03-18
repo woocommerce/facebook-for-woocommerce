@@ -24,7 +24,7 @@ class Google_Product_Category_Field {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $input_id element that should receive the latest concrete category ID value
+	 * @param string $input_id element that should receive the latest concrete category ID value.
 	 */
 	public function render( $input_id ) {
 		$facebook_category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
@@ -35,6 +35,5 @@ class Google_Product_Category_Field {
 		);
 
 		wc_enqueue_js( $facebook_category_fields );
-
 	}
 }
