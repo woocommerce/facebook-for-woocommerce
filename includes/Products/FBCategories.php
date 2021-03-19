@@ -36,14 +36,13 @@ class FBCategories {
 	public function __construct() {
 		$this->categories_filepath = realpath( __DIR__ ) . '/' . self::CATEGORY_FILE;
 		$this->attributes_filepath = realpath( __DIR__ ) . '/' . self::ATTRIBUTES_FILE;
-		$this->categories_data     = null;
 		$this->attributes_data     = null;
 		$this->categories          = null;
 	}
 
 	private function ensure_data_is_loaded() {
-		if ( empty( $this->categories_data ) ) {
-			$this->categories_data = $this->load_categories_file();
+		if ( empty( $this->categories ) ) {
+			$this->categories = $this->prepare_categories();
 		}
 		if ( ! $this->attributes_data ) {
 			$attr_file_contents    = @file_get_contents( $this->attributes_filepath );
@@ -69,7 +68,7 @@ class FBCategories {
 		return array_shift( $attributes );
 	}
 
-	public function is_valid_value_for_attribute( $category_id, $attribute_key, $value ) {
+	public function is_valid_value_for_attribute( $category_id, $attribute_key, $value ) { //OK
 		$this->ensure_data_is_loaded();
 		$attribute = $this->get_attribute( $category_id, $attribute_key );
 
@@ -91,18 +90,19 @@ class FBCategories {
 	public function get_category( $id ) {
 		$this->ensure_data_is_loaded();
 		if ( $this->is_category( $id ) ) {
-			return $this->categories_data[ $id ];
+			return $this->categories[ $id ];
 		} else {
 			return null;
 		}
 	}
 
-	public function get_category_depth( $id ) {
+	public function is_root_category( $id ) {
 		if ( ! $this->is_category( $id ) ) {
-			return 0;
+			return null;
 		}
+
 		$category = $this->get_category( $id );
-		return count( explode( '>', $category ) );
+		return empty( $category[ 'parent' ] );
 	}
 
 	public function get_category_with_attrs( $id ) {
@@ -116,34 +116,30 @@ class FBCategories {
 
 	public function is_category( $id ) {
 		$this->ensure_data_is_loaded();
-		return isset( $this->categories_data[ $id ] );
-	}
-
-	public function get_categories_raw() {
-		$this->ensure_data_is_loaded();
-		return $this->categories_data;
+		return isset( $this->categories[ $id ] );
 	}
 
 	public function get_categories() {
-		if( $this->categories ) {
-			return $this->categories;
-		}
+		$this->ensure_data_is_loaded();
 
+		return $this->categories;
+	}
+
+	public function prepare_categories() {
 		$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, [] );
 
 		if ( empty ( $categories ) ) {
-			$raw_categories = $this->get_categories_raw();
-			$categories     = $this->parse_categories( $raw_categories );
+			$categories_data = $this->load_categories();
+			$categories = $this->parse_categories( $categories_data );
 
 			if ( ! empty( $categories ) ) {
 				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, 'no' );
 			}
 		}
-
 		return $categories;
 	}
 
-	protected function load_categories_file() {
+	protected function load_categories() {
 		$category_file_contents = @file_get_contents( $this->categories_filepath );
 		$category_file_lines    = explode( "\n", $category_file_contents );
 		$raw_categories         = array();
@@ -198,4 +194,5 @@ class FBCategories {
 
 		return $categories;
 	}
+
 }
