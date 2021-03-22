@@ -88,6 +88,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
 		private $commerce_handler;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Tracker */
+		private $tracker;
 
 		/**
 		 * Constructs the plugin.
@@ -152,6 +154,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Events/Normalizer.php';
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
 				require_once __DIR__ . '/includes/Utilities/Shipment.php';
+				require_once __DIR__ . '/includes/Utilities/Tracker.php';
 
 				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
@@ -184,6 +187,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
 				$this->webhook_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\WebHook( $this );
+
+				if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+					$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
+				}
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
