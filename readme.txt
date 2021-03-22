@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2021.03.09 - version 2.3.3-dev.1 =
+= 2021.nn.nn - version 2.3.3-dev.1 =
  * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.
  * Fix - Enable display names to be used for variant attribute values.
  * Fix - Performance, do not auto-load Google Categories option.
@@ -57,7 +57,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Add support for Facebook App store flow
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
  * Tweak - Remove business_management permission from login scopes
- * Tweak - Store paramaters for Commerce merchant settings ID and Instagram business ID
+ * Tweak - Store parameters for Commerce merchant settings ID and Instagram business ID
  * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
  * Fix - Fix random HELLO appearing in the category settings
  * Fix - Make sure that list of strings params are now converted to actual arrays. Fixes an issue with the use of the additional_features parameter
