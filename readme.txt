@@ -40,8 +40,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2021.03.09 - version 2.3.3-dev.1 =
- * Fix - Fix for WooCommerce variation attribute sync not matching Enhanced Catalog attributes
- * Fix - Fix to enable display names to be used for variant attribute values
+ * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.
+ * Fix - Enable display names to be used for variant attribute values.
+ * Fix - Performance, do not auto-load Google Categories option.
+ * Fix - Logs being recorded even with debug option disabled.
 
 = 2021.03.02 - version 2.3.2 =
  * Tweak - Bump Facebook Marketing API version to 9.0
