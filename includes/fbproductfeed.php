@@ -752,7 +752,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				static::get_value_from_product_data( $product_data, 'currency' )
 			) . ',' .
 			static::get_value_from_product_data( $product_data, 'availability' ) . ',' .
-			$item_group_id . ',' .
+			apply_filters( 'facebook_for_woocommerce_prepare_product_item_group_id', $item_group_id, $product_data, $woo_product->woo_product ) . ',' .
 			static::get_value_from_product_data( $product_data, 'checkout_url' ) . ',' .
 			static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) ) . ',' .
 			static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' .

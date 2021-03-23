@@ -268,6 +268,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		// product variations use the parent product's retailer ID as the retailer product group ID
 		// $data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
 		$data['item_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+		$data['item_group_id'] = apply_filters( 'facebook_for_woocommerce_prepare_product_item_group_id', $data['item_group_id'], $data, $product );
 
 		return $this->normalize_product_data( $data );
 	}
