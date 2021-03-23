@@ -139,12 +139,34 @@ class FBCategories {
 	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
 	 */
 	public function get_category_with_attrs( $category_id ) {
-		$this->ensure_data_is_loaded( true );
-		if ( $this->is_category( $category_id ) ) {
-			return $this->attributes_data[ $category_id ];
-		} else {
+		$this->ensure_data_is_loaded();
+		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
+
+		if ( isset( $this->attributes_data[ $category_id ] ) ) {
+			return $this->attributes_data[ $category_id ];
+		}
+
+		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for category with id: %s not found', $category_id ) );
+		// Category has no attributes entry - it should be add but for now check parent category.
+		if ( $this->is_root_category( $category_id ) ) {
+			return null;
+		}
+
+		$parent_category_id = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
+
+		if ( isset( $this->attributes_data[ $parent_category_id ] ) ) {
+			return $this->attributes_data[ $parent_category_id ];
+		}
+
+		/*
+		* We could check further as we have 3 levels of product categories.
+		* This would meant that we have a big problem with mapping - let this fail and log the problem.
+		*/
+		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for parent category with id: %s not found', $parent_category_id ) );
+
+		return null;
 	}
 
 	/**
