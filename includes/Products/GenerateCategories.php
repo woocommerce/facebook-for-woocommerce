@@ -10,6 +10,11 @@
 class GenerateCategories {
 	const CATEGORIES_FILE_NAME = 'GoogleProductTaxonomy.php';
 
+	/**
+	 * Prepare categories file. It can be later required in a script.
+	 *
+	 * @param string $file Path to file.
+	 */
 	public function prepare_categories( $file ) {
 		$categories_data = $this->load_categories( $file );
 		$categories      = $this->parse_categories( $categories_data );
@@ -29,14 +34,19 @@ class GenerateCategories {
 		file_put_contents( $this::CATEGORIES_FILE_NAME, $export );
 	}
 
+	/**
+	 * Load categories from a file.
+	 *
+	 * @param string $file Path to file.
+	 */
 	protected function load_categories( $file ) {
-		$category_file_contents = @file_get_contents( $file );
+		$category_file_contents = @file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$category_file_lines    = explode( "\n", $category_file_contents );
 		$raw_categories         = array();
 		foreach ( $category_file_lines as $category_line ) {
 
 			if ( strpos( $category_line, ' - ' ) === false ) {
-				// not a category, skip it
+				// Not a category, skip it.
 				continue;
 			}
 
@@ -47,35 +57,41 @@ class GenerateCategories {
 		return $raw_categories;
 	}
 
+	/**
+	 * Parse categories file lines and combine them to create an array of relations between categories.
+	 *
+	 * @param array $raw_categories Path to file.
+	 */
 	protected function parse_categories( $raw_categories ) {
-		$categories = [];
+		$categories = array();
 		foreach ( $raw_categories as $category_id => $category_tree ) {
 
 			$category_tree  = explode( ' > ', $category_tree );
 			$category_label = end( $category_tree );
-
-			$category = [
+			$category       = array(
 				'label'   => $category_label,
-				'options' => [],
-			];
+				'options' => array(),
+			);
 
 			if ( $category_label === $category_tree[0] ) {
-
-				// top-level category
+				// This is a top-level category.
 				$category['parent'] = '';
-
 			} else {
-
 				$parent_label = $category_tree[ count( $category_tree ) - 2 ];
 
-				$parent_category = array_search( $parent_label, array_map( function ( $item ) {
-
-					return $item['label'];
-				}, $categories ) );
+				$parent_category = array_search(
+					$parent_label,
+					array_map(
+						function ( $item ) {
+							return $item['label'];
+						},
+						$categories
+					)
+				);
 
 				$category['parent'] = (string) $parent_category;
 
-				// add category label to the parent's list of options
+				// Add category label to the parent's list of options.
 				$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
 			}
 
@@ -87,10 +103,10 @@ class GenerateCategories {
 
 }
 
-if ( ! is_file( $argv[ 1 ] ) ) {
-    echo "Not a file!";
-    exit;
+if ( ! is_file( $argv[1] ) ) {
+	echo 'Not a file!';
+	exit;
 }
 
 $generator = new GenerateCategories();
-$generator->prepare_categories( $argv[ 1 ] );
+$generator->prepare_categories( $argv[1] );
