@@ -131,9 +131,9 @@ class FBCategories {
 	}
 
 	/**
-	 * Checks if category is root category - it has no parents.
+	 * Get attributes for the category.
 	 *
-	 * @param string $category_id   Id of the category for which attribute we want to check the value.
+	 * @param string $category_id   Id of the category for which we want to fetch attributes.
 	 *
 	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
 	 */
