@@ -1,4 +1,9 @@
-array (
+<?php
+namespace SkyVerge\WooCommerce\Facebook\Products;
+// This file was generated using GenerateCategories.php, do not modify it manually
+// php GenerateCategories.php taxonomy-with-ids.en-US.txt
+class GoogleProductTaxonomy {
+	public const TAXONOMY = array (
   1 => 
   array (
     'label' => 'Animals & Pet Supplies',
@@ -50217,3 +50222,4 @@ array (
     'parent' => '3540',
   ),
 )
+;}

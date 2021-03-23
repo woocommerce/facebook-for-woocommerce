@@ -8,13 +8,23 @@
  * @since 1.11.0
  */
 class GenerateCategories {
-	const CATEGORIES_FILE_NAME = 'FB_GOOGLE_CATEGORIES.php';
+	const CATEGORIES_FILE_NAME = 'GoogleProductTaxonomy.php';
 
 	public function prepare_categories( $file ) {
 		$categories_data = $this->load_categories( $file );
 		$categories      = $this->parse_categories( $categories_data );
-        $export          = var_export( $categories, true );
-        file_put_contents( $this::CATEGORIES_FILE_NAME, $export );
+
+		// File content START.
+		$export  = '<?php' . PHP_EOL .
+		'// This file was generated using GenerateCategories.php, do not modify manually' . PHP_EOL .
+		'// php GenerateCategories.php taxonomy-with-ids.en-US.txt' . PHP_EOL .
+		'class GoogleProductTaxonomy {' . PHP_EOL .
+		'	public $taxonomy = ' . PHP_EOL;
+		$export .= var_export( $categories, true );
+		$export .= ';}' . PHP_EOL;
+		// File content END.
+
+		file_put_contents( $this::CATEGORIES_FILE_NAME, $export );
 	}
 
 	protected function load_categories( $file ) {
