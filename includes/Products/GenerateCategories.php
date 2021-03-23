@@ -28,7 +28,15 @@ class GenerateCategories {
 		'class GoogleProductTaxonomy {' . PHP_EOL .
 		'	public const TAXONOMY = %s' . PHP_EOL .
 		';}' . PHP_EOL;
-		$export        = sprintf( $export_string, var_export( $categories, true ) );
+
+		$export = sprintf(
+			$export_string,
+			preg_replace(
+				'/\s/',
+				'',
+				var_export( $categories, true ) // phpcs:ignore
+			)
+		);
 		// File content END.
 
 		file_put_contents( $this::CATEGORIES_FILE_NAME, $export );
