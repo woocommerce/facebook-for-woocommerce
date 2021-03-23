@@ -188,9 +188,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->connection_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this );
 				$this->webhook_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\WebHook( $this );
 
-				if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-					$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
-				}
+				$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
