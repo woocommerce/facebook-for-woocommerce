@@ -22,11 +22,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
  * @since 1.11.0
  */
 class FBCategories {
-	/** @var string the WordPress option name where the full categories list is stored */
-	const OPTION_GOOGLE_PRODUCT_CATEGORIES = 'wc_facebook_google_product_categories';
 
 	const ACTION_PRIORITY = 9;
-	const CATEGORY_FILE   = 'taxonomy-with-ids.en-US.txt';
 	const ATTRIBUTES_FILE = 'fb_google_category_to_attribute_mapping.json';
 	/**
 	 * FBCategory constructor.
@@ -34,16 +31,12 @@ class FBCategories {
 	 * @since 1.11.0
 	 */
 	public function __construct() {
-		$this->categories_filepath = realpath( __DIR__ ) . '/' . self::CATEGORY_FILE;
 		$this->attributes_filepath = realpath( __DIR__ ) . '/' . self::ATTRIBUTES_FILE;
 		$this->attributes_data     = null;
-		$this->categories          = null;
 	}
 
 	private function ensure_data_is_loaded() {
-		if ( empty( $this->categories ) ) {
-			$this->categories = $this->prepare_categories();
-		}
+		require_once __DIR__ . '/GoogleProductTaxonomy.php';
 		if ( ! $this->attributes_data ) {
 			$attr_file_contents    = @file_get_contents( $this->attributes_filepath );
 			$this->attributes_data = json_decode( $attr_file_contents, true );
@@ -90,7 +83,7 @@ class FBCategories {
 	public function get_category( $id ) {
 		$this->ensure_data_is_loaded();
 		if ( $this->is_category( $id ) ) {
-			return $this->categories[ $id ];
+			return GoogleProductTaxonomy::TAXONOMY[ $id ];
 		} else {
 			return null;
 		}
@@ -116,83 +109,13 @@ class FBCategories {
 
 	public function is_category( $id ) {
 		$this->ensure_data_is_loaded();
-		return isset( $this->categories[ $id ] );
+		return isset( GoogleProductTaxonomy::TAXONOMY[ $id ] );
 	}
 
 	public function get_categories() {
 		$this->ensure_data_is_loaded();
 
-		return $this->categories;
-	}
-
-	public function prepare_categories() {
-		$categories = get_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, [] );
-
-		if ( empty ( $categories ) ) {
-			$categories_data = $this->load_categories();
-			$categories = $this->parse_categories( $categories_data );
-
-			if ( ! empty( $categories ) ) {
-				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, 'no' );
-			}
-		}
-		return $categories;
-	}
-
-	protected function load_categories() {
-		$category_file_contents = @file_get_contents( $this->categories_filepath );
-		$category_file_lines    = explode( "\n", $category_file_contents );
-		$raw_categories         = array();
-		foreach ( $category_file_lines as $category_line ) {
-
-			if ( strpos( $category_line, ' - ' ) === false ) {
-				// not a category, skip it
-				continue;
-			}
-
-			list( $category_id, $category_name ) = explode( ' - ', $category_line );
-
-			$raw_categories[ (string) trim( $category_id ) ] = trim( $category_name );
-		}
-		return $raw_categories;
-	}
-
-	protected function parse_categories( $raw_categories ) {
-		$categories = [];
-		foreach ( $raw_categories as $category_id => $category_tree ) {
-
-			$category_tree  = explode( ' > ', $category_tree );
-			$category_label = end( $category_tree );
-
-			$category = [
-				'label'   => $category_label,
-				'options' => [],
-			];
-
-			if ( $category_label === $category_tree[0] ) {
-
-				// top-level category
-				$category['parent'] = '';
-
-			} else {
-
-				$parent_label = $category_tree[ count( $category_tree ) - 2 ];
-
-				$parent_category = array_search( $parent_label, array_map( function ( $item ) {
-
-					return $item['label'];
-				}, $categories ) );
-
-				$category['parent'] = (string) $parent_category;
-
-				// add category label to the parent's list of options
-				$categories[ $parent_category ]['options'][ $category_id ] = $category_label;
-			}
-
-			$categories[ (string) $category_id ] = $category;
-		}
-
-		return $categories;
+		return GoogleProductTaxonomy::TAXONOMY;
 	}
 
 }
