@@ -15,13 +15,15 @@ class GenerateCategories {
 		$categories      = $this->parse_categories( $categories_data );
 
 		// File content START.
-		$export  = '<?php' . PHP_EOL .
-		'// This file was generated using GenerateCategories.php, do not modify manually' . PHP_EOL .
+		$export_string =
+		'<?php' . PHP_EOL .
+		'namespace SkyVerge\WooCommerce\Facebook\Products;' . PHP_EOL .
+		'// This file was generated using GenerateCategories.php, do not modify it manually' . PHP_EOL .
 		'// php GenerateCategories.php taxonomy-with-ids.en-US.txt' . PHP_EOL .
 		'class GoogleProductTaxonomy {' . PHP_EOL .
-		'	public $taxonomy = ' . PHP_EOL;
-		$export .= var_export( $categories, true );
-		$export .= ';}' . PHP_EOL;
+		'	public const TAXONOMY = %s' . PHP_EOL .
+		';}' . PHP_EOL;
+		$export        = sprintf( $export_string, var_export( $categories, true ) );
 		// File content END.
 
 		file_put_contents( $this::CATEGORIES_FILE_NAME, $export );
