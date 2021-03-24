@@ -419,10 +419,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 
-		/*
+		/**
 		 * Get visible name for variant attribute rather than the slug
-		*/
-		public function get_variant_option_name( $wp_id, $label, $default_value ) {
+		 *
+		 * @param int    $wp_id         Post ID.
+		 * @param string $label         Attribute label.
+		 * @param string $default_value Default value to use if the term has no name.
+		 * @return string Term name or the default value.
+		 */
+		public static function get_variant_option_name( $wp_id, $label, $default_value ) {
 			$meta           = get_post_meta( $wp_id, $label, true );
 			$attribute_name = str_replace( 'attribute_', '', $label );
 			$term           = get_term_by( 'slug', $meta, $attribute_name );
