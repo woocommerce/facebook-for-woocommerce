@@ -29,21 +29,29 @@ class Tracker {
 	public function __construct() {
 		add_filter(
 			'woocommerce_tracker_data',
-			[ $this, 'add_tracker_data' ]
+			array( $this, 'add_tracker_data' )
 		);
 	}
 
-	public function add_tracker_data( array $data = [] ) {
+	/**
+	 * Append our tracker properties.
+	 *
+	 * @param array $data The current tracker snapshot data.
+	 * @return array $data Snapshot updated with our data.
+	 * @since %VERSION%
+	 */
+	public function add_tracker_data( array $data = array() ) {
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 		if ( ! $connection_handler ) {
-			return;
+			return $data;
 		}
 
 		if ( ! isset( $data['extensions'] ) ) {
-			$data['extensions'] = [];
+			$data['extensions'] = array();
 		}
 
-		$data['extensions']['facebook-for-woocommerce']['is-connected'] = $connection_handler->is_connected();
+		$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
+		$data['extensions']['facebook-for-woocommerce']['is-connected'] = $connection_is_happy;
 
 		return $data;
 	}
