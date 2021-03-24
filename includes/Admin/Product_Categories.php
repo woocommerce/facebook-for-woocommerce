@@ -59,7 +59,7 @@ class Product_Categories {
 
 			wp_enqueue_script(
 				'wc-facebook-product-categories',
-					facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/product-categories.js',
+				facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/product-categories.js',
 				array(
 					'jquery',
 					'wc-backbone-modal',
