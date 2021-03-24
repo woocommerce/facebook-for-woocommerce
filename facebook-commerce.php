@@ -595,7 +595,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_metabox_jsx',
 			plugins_url(
-				'/assets/js/metabox.min.js',
+				'/assets/js/admin/metabox.min.js',
 				__FILE__
 			),
 			[],
