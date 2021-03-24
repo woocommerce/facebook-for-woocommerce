@@ -418,10 +418,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			return ( self::$store_name ) ? ( self::$store_name ) : 'A Store Has No Name';
 		}
 
+
+		/*
+		 * Get visible name for variant attribute rather than the slug
+		*/
+		public function get_variant_option_name( $wp_id, $label, $default_value ) {
+			$meta           = get_post_meta( $wp_id, $label, true );
+			$attribute_name = str_replace( 'attribute_', '', $label );
+			$term           = get_term_by( 'slug', $meta, $attribute_name );
+			return $term && $term->name ? $term->name : $default_value;
+		}
+
+
 		/*
 		* Change variant product field name from Woo taxonomy to FB name
 		*/
-		public static function sanitize_variant_name( $name ) {
+		public static function sanitize_variant_name( $name, $use_custom_data = true ) {
 			$name = str_replace( array( 'attribute_', 'pa_' ), '', strtolower( $name ) );
 
 			// British spelling
@@ -429,15 +441,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 				$name = self::FB_VARIANT_COLOR;
 			}
 
-			switch ( $name ) {
-				case self::FB_VARIANT_SIZE:
-				case self::FB_VARIANT_COLOR:
-				case self::FB_VARIANT_GENDER:
-				case self::FB_VARIANT_PATTERN:
-					break;
-				default:
-					$name = 'custom_data:' . strtolower( $name );
-					break;
+			if ( $use_custom_data ) {
+				switch ( $name ) {
+					case self::FB_VARIANT_SIZE:
+					case self::FB_VARIANT_COLOR:
+					case self::FB_VARIANT_GENDER:
+					case self::FB_VARIANT_PATTERN:
+						break;
+					default:
+						$name = 'custom_data:' . strtolower( $name );
+						break;
+				}
 			}
 
 			return $name;
