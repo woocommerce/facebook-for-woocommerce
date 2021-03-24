@@ -439,13 +439,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			);
 		}
 
-		public function get_variant_option_name( $label, $default_value ) {
-			// For the given label, get the Visible name rather than the slug
-			$meta           = get_post_meta( $this->id, $label, true );
-			$attribute_name = str_replace( 'attribute_', '', $label );
-			$term           = get_term_by( 'slug', $meta, $attribute_name );
-			return $term && $term->name ? $term->name : $default_value;
-		}
 
 		public function update_visibility( $is_product_page, $visible_box_checked ) {
 			$visibility = get_post_meta( $this->id, self::FB_VISIBILITY, true );
@@ -670,7 +663,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$enhanced_data = array();
 
 			$category       = $category_handler->get_category_with_attrs( $google_category_id );
-			$all_attributes = $category['attributes'];
+			$all_attributes = $this->get_matched_attributes_for_product( $this->woo_product, $category['attributes'] );
+
 			foreach ( $all_attributes as $attribute ) {
 				$value            = Products::get_enhanced_catalog_attribute( $attribute['key'], $this->woo_product );
 				$convert_to_array = (
@@ -691,6 +685,33 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			return array_merge( $product_data, $enhanced_data );
 		}
+
+
+		/**
+		 * Filters list of attributes to only those available for a given product
+		 *
+		 * @param \WC_Product $product WooCommerce Product
+		 * @param array $all_attributes List of Enhanced Catalog attributes to match
+		 * @return array
+		 */
+		public function get_matched_attributes_for_product( $product, $all_attributes ) {
+			$matched_attributes = array();
+			$sanitized_keys = array_map(
+				function( $key ) {
+						return \WC_Facebookcommerce_Utils::sanitize_variant_name( $key, false );
+				},
+				array_keys( $product->get_attributes() )
+			);
+
+			$matched_attributes = array_filter( $all_attributes,
+				function( $attribute ) use ($sanitized_keys) {
+					return in_array( $attribute['key'], $sanitized_keys );
+				}
+			);
+
+			return $matched_attributes;
+		}
+
 
 		/**
 		 * Normalizes variant data for Facebook.
@@ -729,14 +750,12 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$label = wc_attribute_label( $original_variant_name, $product );
 
 				// Clean up variant name (e.g. pa_color should be color)
-				// Replace "custom_data:foo" with just "foo" so we can use the key
-				// Product item API expects "custom_data" instead of "custom_data:foo"
-				$new_name = str_replace( 'custom_data:', '', \WC_Facebookcommerce_Utils::sanitize_variant_name( $original_variant_name ) );
+				$new_name = \WC_Facebookcommerce_Utils::sanitize_variant_name( $original_variant_name, false );
 
 				// Sometimes WC returns an array, sometimes it's an assoc array, depending
 				// on what type of taxonomy it's using.  array_values will guarantee we
 				// only get a flat array of values.
-				if ( $options = $this->get_variant_option_name( $label, $attributes[ $original_variant_name ] ) ) {
+				if ( $options = \WC_Facebookcommerce_Utils::get_variant_option_name( $this->id, $label, $attributes[ $original_variant_name ] ) ) {
 
 					if ( is_array( $options ) ) {
 

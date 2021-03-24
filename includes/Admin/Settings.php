@@ -10,6 +10,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
+use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
+use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
@@ -30,6 +32,13 @@ class Settings {
 	/** @var Abstract_Settings_Screen[] */
 	private $screens;
 
+	/**
+	 * Whether the new Woo nav should be used.
+	 *
+	 * @var bool
+	 */
+	public $use_woo_nav;
+
 
 	/**
 	 * Settings constructor.
@@ -49,6 +58,8 @@ class Settings {
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
+
+		$this->use_woo_nav = class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
 	}
 
 
@@ -83,6 +94,7 @@ class Settings {
 		);
 
 		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
+		$this->register_woo_nav_menu_items();
 	}
 
 
@@ -148,13 +160,15 @@ class Settings {
 
 		<div class="wrap woocommerce">
 
-			<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
+			<?php if ( ! $this->use_woo_nav ): ?>
+				<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
 
-				<?php foreach ( $tabs as $id => $label ) : ?>
-					<a href="<?php echo esc_html( admin_url( 'admin.php?page=' . self::PAGE_ID . '&tab=' . esc_attr( $id ) ) ); ?>" class="nav-tab <?php echo $current_tab === $id ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>
-				<?php endforeach; ?>
+					<?php foreach ( $tabs as $id => $label ) : ?>
+						<a href="<?php echo esc_html( admin_url( 'admin.php?page=' . self::PAGE_ID . '&tab=' . esc_attr( $id ) ) ); ?>" class="nav-tab <?php echo $current_tab === $id ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>
+					<?php endforeach; ?>
 
-			</nav>
+				</nav>
+			<?php endif; ?>
 
 			<?php facebook_for_woocommerce()->get_message_handler()->show_messages(); ?>
 
@@ -290,6 +304,43 @@ class Settings {
 		 * @param array $tabs tab data, as $id => $label
 		 */
 		return (array) apply_filters( 'wc_facebook_admin_settings_tabs', $tabs, $this );
+	}
+
+	/**
+	 * Register nav items for new Woo nav.
+	 *
+	 * @since 2.3.3
+	 */
+	private function register_woo_nav_menu_items() {
+		if ( ! $this->use_woo_nav ) {
+			return;
+		}
+
+		WooAdminMenu::add_plugin_category(
+			array(
+				'id'         => 'facebook-for-woocommerce',
+				'title'      => __( 'Facebook', 'facebook-for-woocommerce' ),
+				'capability' => 'manage_woocommerce',
+			)
+		);
+
+		$order = 1;
+		foreach( $this->get_screens() as $screen_id => $screen ) {
+			$url = $screen instanceof Settings_Screens\Product_Sets
+				? 'edit-tags.php?taxonomy=fb_product_set&post_type=product'
+				: 'wc-facebook&tab=' . $screen->get_id();
+
+			WooAdminMenu::add_plugin_item(
+				array(
+					'id'     => 'facebook-for-woocommerce-'. $screen->get_id(),
+					'parent' => 'facebook-for-woocommerce',
+					'title'  => $screen->get_label(),
+					'url'    => $url,
+					'order'  => $order,
+				)
+			);
+			$order++;
+		}
 	}
 
 

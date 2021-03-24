@@ -64,7 +64,7 @@ class Google_Product_Category_Field {
 			if ( ! empty( $categories ) ) {
 
 				set_transient( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, WEEK_IN_SECONDS );
-				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories );
+				update_option( self::OPTION_GOOGLE_PRODUCT_CATEGORIES, $categories, 'no' );
 			}
 		}
 

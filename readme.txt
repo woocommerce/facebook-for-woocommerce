@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2021.03.22 - version 2.3.3 =
+ * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.
+ * Fix - Enable display names to be used for variant attribute values.
+ * Fix - Performance, do not auto-load Google Categories option.
+ * Fix - Logs being recorded even with debug option disabled.
+
 = 2021.03.02 - version 2.3.2 =
  * Tweak - Bump Facebook Marketing API version to 9.0
 
@@ -51,7 +57,7 @@ When opening a bug on GitHub, please give us as many details as possible.
  * Feature - Add support for Facebook App store flow
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
  * Tweak - Remove business_management permission from login scopes
- * Tweak - Store paramaters for Commerce merchant settings ID and Instagram business ID
+ * Tweak - Store parameters for Commerce merchant settings ID and Instagram business ID
  * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
  * Fix - Fix random HELLO appearing in the category settings
  * Fix - Make sure that list of strings params are now converted to actual arrays. Fixes an issue with the use of the additional_features parameter
