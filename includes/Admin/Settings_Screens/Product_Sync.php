@@ -64,7 +64,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		}
 
 		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
-		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/admin/modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 		wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/settings-sync.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		/* translators: Placeholders: {count} number of remaining items */
