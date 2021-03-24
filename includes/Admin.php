@@ -157,7 +157,7 @@ class Admin {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
