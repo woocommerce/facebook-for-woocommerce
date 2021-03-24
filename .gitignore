@@ -23,3 +23,6 @@ codeception.yml
 
 /bin/*
 .DS_Store
+
+#webpack
+/assets/build

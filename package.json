@@ -13,5 +13,9 @@
   "devDependencies": {
     "@wordpress/scripts": "^14.0.0",
     "sake": "github:skyverge/sake"
+  },
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
   }
 }
