@@ -15,7 +15,7 @@
     "sake": "github:skyverge/sake"
   },
   "scripts": {
-    "build": "wp-scripts build",
+    "build": "NODE_ENV=production wp-scripts build",
     "start": "wp-scripts start"
   }
 }
