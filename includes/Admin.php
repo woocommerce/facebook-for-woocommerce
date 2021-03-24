@@ -141,7 +141,12 @@ class Admin {
 			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
-				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/modal.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script(
+					'facebook-for-woocommerce-modal',
+					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/modal.js',
+					array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
+					\WC_Facebookcommerce::PLUGIN_VERSION
+				);
 			}
 
 			if ( 'edit-fb_product_set' === $current_screen->id ) {
@@ -150,14 +155,25 @@ class Admin {
 				wp_enqueue_style( 'woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 				wp_enqueue_style( 'facebook-for-woocommerce-product-sets-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sets-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-product-sets', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-sets-admin.js', array( 'jquery', 'select2' ), \WC_Facebookcommerce::PLUGIN_VERSION, true );
+				wp_enqueue_script(
+					'facebook-for-woocommerce-product-sets',
+					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/product-sets-admin.js',
+					array( 'jquery', 'select2' ),
+					\WC_Facebookcommerce::PLUGIN_VERSION,
+					true
+				);
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script(
+					'facebook-for-woocommerce-products-admin',
+					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/products-admin.js',
+					[ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ],
+					\WC_Facebookcommerce::PLUGIN_VERSION
+				);
 
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
@@ -192,8 +208,12 @@ class Admin {
 			}
 		}//end if
 
-		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script(
+			'wc-facebook-google-product-category-fields',
+			facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/google-product-category-fields.js',
+			array( 'jquery' ),
+			\WC_Facebookcommerce::PLUGIN_VERSION
+		);
 
 		wp_localize_script(
 			'wc-facebook-google-product-category-fields',
