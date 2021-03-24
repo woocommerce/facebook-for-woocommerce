@@ -199,7 +199,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$image_urls = array_filter( array_unique( $image_urls ) );
 
 			if ( empty( $image_urls ) ) {
-				$image_urls[] = plugin_dir_url( dirname( __FILE__ ) ) . 'assets/images/woocommerce-placeholder-768x768.png';
+				$image_urls[] = plugin_dir_url( dirname( __FILE__ ) ) . 'assets/images/woocommerce-placeholder.png';
 			}
 
 			return $image_urls;
