@@ -45,8 +45,6 @@ class Tracker {
 
 		$data['extensions']['facebook-for-woocommerce']['is-connected'] = $connection_handler->is_connected();
 
-		wc_get_logger()->debug( print_r( $data, true ) );
-
 		return $data;
 	}
 }
