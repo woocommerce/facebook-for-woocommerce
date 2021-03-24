@@ -150,7 +150,7 @@ class Admin {
 				wp_enqueue_style( 'woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 				wp_enqueue_style( 'facebook-for-woocommerce-product-sets-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sets-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-product-sets', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-product-sets-admin.js', array( 'jquery', 'select2' ), \WC_Facebookcommerce::PLUGIN_VERSION, true );
+				wp_enqueue_script( 'facebook-for-woocommerce-product-sets', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/product-sets-admin.js', array( 'jquery', 'select2' ), \WC_Facebookcommerce::PLUGIN_VERSION, true );
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {
