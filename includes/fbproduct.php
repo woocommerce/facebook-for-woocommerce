@@ -199,8 +199,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$image_urls = array_filter( array_unique( $image_urls ) );
 
 			if ( empty( $image_urls ) ) {
-				// TODO: replace or remove this placeholder - placeholdit.imgix.net is no longer available {WV 2020-01-21}
-				$image_urls[] = sprintf( 'https://placeholdit.imgix.net/~text?txtsize=33&name=%s&w=530&h=530', rawurlencode( strip_tags( $this->woo_product->get_title() ) ) );
+				$image_urls[] = plugin_dir_url( dirname( __FILE__ ) ) . 'assets/images/woocommerce-placeholder-768x768.png';
 			}
 
 			return $image_urls;
