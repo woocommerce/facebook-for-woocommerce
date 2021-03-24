@@ -948,6 +948,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			return __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 		}
 
+		/**
+		 * Gets the url for the assets build directory.
+		 *
+		 * @since 2.3.4
+		 *
+		 * @return string
+		 */
+		public function get_asset_build_dir_url() {
+			return $this->get_plugin_url() . '/assets/build';
+		}
+
 
 		/** Conditional methods ***************************************************************************************/
 

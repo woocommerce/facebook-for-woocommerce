@@ -143,7 +143,7 @@ class Admin {
 				// enqueue modal functions
 				wp_enqueue_script(
 					'facebook-for-woocommerce-modal',
-					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/modal.js',
+						facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/modal.js',
 					array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
 					\WC_Facebookcommerce::PLUGIN_VERSION
 				);
@@ -157,7 +157,7 @@ class Admin {
 
 				wp_enqueue_script(
 					'facebook-for-woocommerce-product-sets',
-					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/product-sets-admin.js',
+						facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/product-sets-admin.js',
 					array( 'jquery', 'select2' ),
 					\WC_Facebookcommerce::PLUGIN_VERSION,
 					true
@@ -170,7 +170,7 @@ class Admin {
 
 				wp_enqueue_script(
 					'facebook-for-woocommerce-products-admin',
-					facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/products-admin.js',
+						facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/products-admin.js',
 					[ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ],
 					\WC_Facebookcommerce::PLUGIN_VERSION
 				);
@@ -210,7 +210,7 @@ class Admin {
 
 		wp_enqueue_script(
 			'wc-facebook-google-product-category-fields',
-			facebook_for_woocommerce()->get_plugin_url() . '/assets/build/admin/google-product-category-fields.js',
+				facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/google-product-category-fields.js',
 			array( 'jquery' ),
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
