@@ -141,7 +141,7 @@ class Admin {
 			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
-				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/modal.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-modal', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/modal.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 			}
 
 			if ( 'edit-fb_product_set' === $current_screen->id ) {
