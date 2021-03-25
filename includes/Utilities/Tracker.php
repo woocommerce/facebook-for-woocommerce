@@ -17,14 +17,14 @@ defined( 'ABSPATH' ) or exit;
  *
  * See https://woocommerce.com/usage-tracking/ for more information.
  *
- * @since %VERSION%
+ * @since 2.3.4
  */
 class Tracker {
 
 	/**
 	 * Constructor.
 	 *
-	 * @since %VERSION%
+	 * @since 2.3.4
 	 */
 	public function __construct() {
 		add_filter(
@@ -38,7 +38,7 @@ class Tracker {
 	 *
 	 * @param array $data The current tracker snapshot data.
 	 * @return array $data Snapshot updated with our data.
-	 * @since %VERSION%
+	 * @since 2.3.4
 	 */
 	public function add_tracker_data( array $data = array() ) {
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
