@@ -198,8 +198,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$image_urls = array_merge( $image_urls, $this->get_gallery_urls() );
 			$image_urls = array_filter( array_unique( $image_urls ) );
 
-			// Regenerate indexes after filtering.
-			// The array_filter does not touches indexes so we may end up with gaps.
+			// Regenerate $image_url PHP array indexes after filtering.
+			// The array_filter does not touches indexes so if something gets removed we may end up with gaps.
 			// Later parts of the code expect something to exist under the 0 index.
 			$image_urls = array_values( $image_urls );
 
