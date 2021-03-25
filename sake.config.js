@@ -5,6 +5,11 @@ module.exports = {
   deploy: {
     type: 'wp'
   },
+  paths: {
+    exclude: [
+      'bin'
+    ]
+  },
   framework: 'v5',
   deployAssets: false
 };
