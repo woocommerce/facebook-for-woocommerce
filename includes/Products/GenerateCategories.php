@@ -32,7 +32,10 @@ class GenerateCategories {
 		$export = sprintf(
 			$export_string,
 			preg_replace(
-				'/\s/',
+				array(
+					'/[\n\r]/',
+					'/\s\s+/',
+				),
 				'',
 				var_export( $categories, true ) // phpcs:ignore
 			)
