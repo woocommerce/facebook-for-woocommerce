@@ -280,6 +280,7 @@ class Product_Categories {
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
 		if (
+			empty( $category_id ) ||
 			$category_handler->is_category( $category_id ) &&
 			$category_handler->is_root_category( $category_id )
 		) {
@@ -323,6 +324,7 @@ class Product_Categories {
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
 		if (
+			empty( $category_id ) ||
 			$category_handler->is_category( $category_id ) &&
 			$category_handler->is_root_category( $category_id )
 		) {

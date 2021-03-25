@@ -69,6 +69,7 @@ class Products {
 		);
 
 		if (
+			empty( $category_id ) ||
 			$category_handler->is_category( $category_id ) &&
 			$category_handler->is_root_category( $category_id )
 		) {
