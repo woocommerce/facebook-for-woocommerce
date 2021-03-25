@@ -34,11 +34,13 @@ class FBCategories {
 
 	/**
 	 * This function ensures that everything is loaded before the we start using the data.
+	 *
+	 * @param bool $with_attributes Do we need attributes data or just categories.
 	 */
-	private function ensure_data_is_loaded() {
+	private function ensure_data_is_loaded( $with_attributes = false ) {
 		// This makes the GoogleProductTaxonomy available.
 		require_once __DIR__ . '/GoogleProductTaxonomy.php';
-		if ( ! $this->attributes_data ) {
+		if ( $with_attributes && ! $this->attributes_data ) {
 			$attr_file_contents    = @file_get_contents( $this->attributes_filepath ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$this->attributes_data = json_decode( $attr_file_contents, true );
 		}
@@ -53,7 +55,7 @@ class FBCategories {
 	 * @return null|string Attribute.
 	 */
 	private function get_attribute( $category_id, $attribute_key ) {
-		$this->ensure_data_is_loaded();
+		$this->ensure_data_is_loaded( true );
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
@@ -80,7 +82,6 @@ class FBCategories {
 	 * @return boolean Is this a valid value for the attribute.
 	 */
 	public function is_valid_value_for_attribute( $category_id, $attribute_key, $value ) {
-		$this->ensure_data_is_loaded();
 		$attribute = $this->get_attribute( $category_id, $attribute_key );
 
 		if ( is_null( $attribute ) ) {
@@ -138,7 +139,7 @@ class FBCategories {
 	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
 	 */
 	public function get_category_with_attrs( $category_id ) {
-		$this->ensure_data_is_loaded();
+		$this->ensure_data_is_loaded( true );
 		if ( $this->is_category( $category_id ) ) {
 			return $this->attributes_data[ $category_id ];
 		} else {
