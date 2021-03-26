@@ -74,48 +74,8 @@ class Sync {
 	 * @since 2.0.0
 	 */
 	public function create_or_update_all_products() {
-
-		// Get all published products ids. This includes parent products of variations.
-		$product_args = array(
-			'fields'         => 'ids',
-			'post_status'    => 'publish',
-			'post_type'      => 'product',
-			'posts_per_page' => -1,
-		);
-		$product_ids  = get_posts( $product_args );
-
-		// Get all variations ids with their parents ids.
-		$variation_args     = array(
-			'fields'         => 'id=>parent',
-			'post_status'    => 'publish',
-			'post_type'      => 'product_variation',
-			'posts_per_page' => -1,
-		);
-		$variation_products = get_posts( $variation_args );
-
-		/*
-		 * Collect all parent products.
-		 * Exclude variations which parents are not 'publish'.
-		 */
-		$parent_product_ids = array();
-		foreach ( $variation_products as $post_id => $parent_id ) {
-			/*
-			 * Keep track of all parents to remove them from the list of products to sync.
-			 * Use key to automatically remove duplicated items.
-			 */
-			$parent_product_ids[ $parent_id ] = true;
-
-			// Include variations with published parents only.
-			if ( in_array( $parent_id, $product_ids ) ) {
-				$product_ids[] = $post_id;
-			}
-		}
-
-		// Remove parent products because those can't be represented as Product Items.
-		$product_ids = array_diff( $product_ids, array_keys( $parent_product_ids ) );
-
 		// Queue up these IDs for sync. they will only be included in the final requests if they should be synced.
-		$this->create_or_update_products( $product_ids );
+		$this->create_or_update_products( \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync() );
 	}
 
 

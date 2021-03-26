@@ -434,6 +434,52 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			return $term && $term->name ? $term->name : $default_value;
 		}
 
+		/**
+		 * Get all products for synchronization tasks.
+		 *
+		 * @return array IDs of all product for synchronization.
+		 */
+		public static function get_all_product_ids_for_sync() {
+			// Get all published products ids. This includes parent products of variations.
+			$product_args = array(
+				'fields'         => 'ids',
+				'post_status'    => 'publish',
+				'post_type'      => 'product',
+				'posts_per_page' => -1,
+			);
+			$product_ids  = get_posts( $product_args );
+
+			// Get all variations ids with their parents ids.
+			$variation_args     = array(
+				'fields'         => 'id=>parent',
+				'post_status'    => 'publish',
+				'post_type'      => 'product_variation',
+				'posts_per_page' => -1,
+			);
+			$variation_products = get_posts( $variation_args );
+
+			/*
+			* Collect all parent products.
+			* Exclude variations which parents are not 'publish'.
+			*/
+			$parent_product_ids = array();
+			foreach ( $variation_products as $post_id => $parent_id ) {
+				/*
+				* Keep track of all parents to remove them from the list of products to sync.
+				* Use key to automatically remove duplicated items.
+				*/
+				$parent_product_ids[ $parent_id ] = true;
+
+				// Include variations with published parents only.
+				if ( in_array( $parent_id, $product_ids ) ) {
+					$product_ids[] = $post_id;
+				}
+			}
+
+			// Remove parent products because those can't be represented as Product Items.
+			return array_diff( $product_ids, array_keys( $parent_product_ids ) );
+		}
+
 
 		/*
 		* Change variant product field name from Woo taxonomy to FB name
