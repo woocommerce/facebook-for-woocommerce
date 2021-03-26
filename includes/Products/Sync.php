@@ -75,39 +75,46 @@ class Sync {
 	 */
 	public function create_or_update_all_products() {
 
-		$product_ids        = [];
-		$parent_product_ids = [];
+		// Get all published products ids. This includes parent products of variations.
+		$product_args = array(
+			'fields'         => 'ids',
+			'post_status'    => 'publish',
+			'post_type'      => 'product',
+			'posts_per_page' => -1,
+		);
+		$product_ids  = get_posts( $product_args );
 
-		// loop through all published products and product variations to get their IDs
-		$args = [
+		// Get all variations ids with their parents ids.
+		$variation_args     = array(
 			'fields'         => 'id=>parent',
 			'post_status'    => 'publish',
-			'post_type'      => [ 'product', 'product_variation' ],
+			'post_type'      => 'product_variation',
 			'posts_per_page' => -1,
-		];
+		);
+		$variation_products = get_posts( $variation_args );
 
-		foreach ( get_posts( $args ) as $post_id => $parent_id ) {
+		/*
+		 * Collect all parent products.
+		 * Exclude variations which parents are not 'publish'.
+		 */
+		$parent_product_ids = array();
+		foreach ( $variation_products as $post_id => $parent_id ) {
+			/*
+			 * Keep track of all parents to remove them from the list of products to sync.
+			 * Use key to automatically remove duplicated items.
+			 */
+			$parent_product_ids[ $parent_id ] = true;
 
-			if ( 'product_variation' === get_post_type( $post_id ) ) {
-
-				// keep track of all parents to remove them from the list of products to sync
-				$parent_product_ids[] = $parent_id;
-
-				// include variations with published parents only
-				if ( 'publish' === get_post_status( $parent_id ) ) {
-					$product_ids[] = $post_id;
-				}
-
-			} else {
-
+			// Include variations with published parents only.
+			if ( in_array( $parent_id, $product_ids ) ) {
 				$product_ids[] = $post_id;
 			}
 		}
 
-		// remove parent products because those can't be represented as Product Items
-		$product_ids = array_diff( $product_ids, $parent_product_ids );
+		// Remove parent products because those can't be represented as Product Items.
+		$product_ids = array_diff( $product_ids, array_keys( $parent_product_ids ) );
 
-		// queue up these IDs for sync. they will only be included in the final requests if they should be synced
+		// Queue up these IDs for sync. they will only be included in the final requests if they should be synced.
 		$this->create_or_update_products( $product_ids );
 	}
 
