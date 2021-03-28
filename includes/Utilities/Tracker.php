@@ -41,20 +41,19 @@ class Tracker {
 	 * @since 2.3.4
 	 */
 	public function add_tracker_data( array $data = array() ) {
-		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
-		if ( ! $connection_handler ) {
-			return $data;
-		}
-
 		if ( ! isset( $data['extensions'] ) ) {
 			$data['extensions'] = array();
 		}
 
-		$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
+		$connection_is_happy = false;
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		if ( $connection_handler ) {
+			$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
+		}
 		$data['extensions']['facebook-for-woocommerce']['is-connected'] = wc_bool_to_string( $connection_is_happy );
 
 		// Debug logging - remove before merge.
-		facebook_for_woocommerce()->log( 'Added Facebook connection state to tracker snapshot: ' . print_r( $data, true ) );
+		wc_get_logger()->debug( 'Added Facebook connection state to tracker snapshot: ' . print_r( $data, true ) );
 
 		return $data;
 	}
