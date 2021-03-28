@@ -51,7 +51,10 @@ class Tracker {
 		}
 
 		$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
-		$data['extensions']['facebook-for-woocommerce']['is-connected'] = $connection_is_happy;
+		$data['extensions']['facebook-for-woocommerce']['is-connected'] = wc_bool_to_string( $connection_is_happy );
+
+		// Debug logging - remove before merge.
+		facebook_for_woocommerce()->log( 'Added Facebook connection state to tracker snapshot: ' . print_r( $data, true ) );
 
 		return $data;
 	}
