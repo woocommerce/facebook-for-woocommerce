@@ -52,9 +52,6 @@ class Tracker {
 		}
 		$data['extensions']['facebook-for-woocommerce']['is-connected'] = wc_bool_to_string( $connection_is_happy );
 
-		// Debug logging - remove before merge.
-		wc_get_logger()->debug( 'Added Facebook connection state to tracker snapshot: ' . print_r( $data, true ) );
-
 		return $data;
 	}
 }
