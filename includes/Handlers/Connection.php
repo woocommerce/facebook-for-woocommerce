@@ -880,6 +880,7 @@ class Connection {
 			'response_type' => 'code',
 			'scope'         => implode( ',', $this->get_scopes() ),
 			'extras'        => json_encode( $this->get_connect_parameters_extras() ),
+			'debug'         => $this->get_plugin()->get_integration()->is_debug_mode_enabled(),
 		] );
 	}
 
