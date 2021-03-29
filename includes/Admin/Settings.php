@@ -14,7 +14,6 @@ use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
-use \Automattic\WooCommerce\Admin\Features\Navigation\Menu;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -138,49 +137,6 @@ class Settings {
 				'title'     => $crumbs
 			] );
 		}
-		add_submenu_page( 'woocommerce', __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ), __( 'Facebook', 'facebook-for-woocommerce' ), 'manage_woocommerce', self::PAGE_ID, array( $this, 'render' ), 5 );
-
-		if ( ! class_exists( '\Automattic\WooCommerce\Admin\Features\Navigation\Menu' ) ) {
-			return;
-		}
-
-		Menu::add_plugin_category(
-			array(
-				'id'         => 'facebook-for-woocommerce',
-				'title'      => __( 'Facebook', 'facebook-for-woocommerce' ),
-				'capability' => 'manage_woocommerce',
-			)
-		);
-
-		Menu::add_plugin_item(
-			array(
-				'id'     => 'facebook-for-woocommerce-connection',
-				'parent' => 'facebook-for-woocommerce',
-				'title'  => __( 'Connection', 'facebook-for-woocommerce' ),
-				'url'    => 'wc-facebook',
-				'order'  => 1,
-			)
-		);
-
-		Menu::add_plugin_item(
-			array(
-				'id'     => 'facebook-for-woocommerce-product-sync',
-				'parent' => 'facebook-for-woocommerce',
-				'title'  => __( 'Product sync', 'facebook-for-woocommerce' ),
-				'url'    => 'wc-facebook&tab=product_sync',
-				'order'  => 2,
-			)
-		);
-
-		Menu::add_plugin_item(
-			array(
-				'id'     => 'facebook-for-woocommerce-messenger',
-				'parent' => 'facebook-for-woocommerce',
-				'title'  => __( 'Messenger', 'facebook-for-woocommerce' ),
-				'url'    => 'wc-facebook&tab=messenger',
-				'order'  => 3,
-			)
-		);
 	}
 
 
