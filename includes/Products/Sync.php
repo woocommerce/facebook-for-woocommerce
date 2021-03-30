@@ -75,6 +75,8 @@ class Sync {
 	 */
 	public function create_or_update_all_products() {
 
+		do_action( 'qm/start', 'facebook_for_woocommerce__create_or_update_all_products' );
+
 		$product_ids        = [];
 		$parent_product_ids = [];
 
@@ -109,6 +111,8 @@ class Sync {
 
 		// queue up these IDs for sync. they will only be included in the final requests if they should be synced
 		$this->create_or_update_products( $product_ids );
+
+		do_action( 'qm/stop', 'facebook_for_woocommerce__create_or_update_all_products' );
 	}
 
 

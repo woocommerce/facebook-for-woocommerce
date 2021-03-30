@@ -46,6 +46,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	public function process_job( $job, $items_per_batch = null ) {
 
+		do_action( 'qm/start', 'facebook_for_woocommerce__background_product_sync__process_job' );
+
 		if ( ! $this->start_time ) {
 			$this->start_time = time();
 		}
@@ -93,6 +95,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		if ( $job->progress >= count( $job->{$data_key} ) ) {
 			$job = $this->complete_job( $job );
 		}
+
+		do_action( 'qm/stop', 'facebook_for_woocommerce__background_product_sync__process_job' );
 
 		return $job;
 	}

@@ -90,6 +90,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 */
 		public function generate_feed() {
 
+			do_action( 'qm/start', 'facebook_for_woocommerce__generate_feed' );
+
 			\WC_Facebookcommerce_Utils::log( 'Generating a fresh product feed file' );
 
 			try {
@@ -108,6 +110,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				\WC_Facebookcommerce_Utils::log( $exception->getMessage() );
 			}
+
+			do_action( 'qm/stop', 'facebook_for_woocommerce__generate_feed' );
 		}
 
 
