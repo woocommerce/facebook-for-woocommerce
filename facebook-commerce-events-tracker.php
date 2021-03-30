@@ -565,11 +565,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$event_data = [
 				'event_name'  => 'AddToCart',
 				'custom_data' => [
-					'content_ids'  => $this->get_cart_content_ids(),
-					'content_name' => $this->get_cart_content_names(),
+					'content_name' => $product->get_title(),
+					'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type' => 'product',
-					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'contents'     => wp_json_encode(
+						[
+							[
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => 1,
+							]
+						]
+					),
+					'value'        => $product->get_price(),
 					'currency'     => get_woocommerce_currency(),
 				],
 				'user_data' => $this->pixel->get_user_info(),
@@ -620,12 +627,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( $this->is_pixel_enabled() ) {
 
+				#FIXME: How do ew retrieve the product added to cart?
+				$product = wc_get_product( ... );
+
 				$params = [
-					'content_ids'  => $this->get_cart_content_ids(),
-					'content_name' => $this->get_cart_content_names(),
+					'content_name' => $product->get_title(),
+					'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type' => 'product',
-					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'contents'     => wp_json_encode(
+						[
+							[
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => 1,
+							]
+						]
+					),
+					'value'        => $product->get_price(),
 					'currency'     => get_woocommerce_currency(),
 				];
 
@@ -677,12 +694,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( $this->is_pixel_enabled() ) {
 
+				#FIXME: How do ew retrieve the product added to cart?
+				$product = wc_get_product( ... );
+
 				$params = [
-					'content_ids'  => $this->get_cart_content_ids(),
-					'content_name' => $this->get_cart_content_names(),
+					'content_name' => $product->get_title(),
+					'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type' => 'product',
-					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'contents'     => wp_json_encode(
+						[
+							[
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => 1,
+							]
+						]
+					),
+					'value'        => $product->get_price(),
 					'currency'     => get_woocommerce_currency(),
 				];
 
