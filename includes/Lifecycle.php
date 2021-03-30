@@ -42,7 +42,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.0',
 			'2.0.3',
 			'2.0.4',
-			'2.3.3',
 		];
 	}
 
@@ -335,19 +334,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
 			$handler->dispatch();
 		}
-	}
-
-	/**
-	 * Upgrades to version 2.3.3
-	 *
-	 * @since 2.3.3.
-	 */
-	protected function upgrade_to_2_3_3() {
-		$sync_enabled = 'yes' === get_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC, 'yes' );
-		if ( ! $sync_enabled ) {
-			return;
-		}
-		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 	}
 
 }
