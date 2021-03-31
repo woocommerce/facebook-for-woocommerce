@@ -59,7 +59,7 @@ class Settings {
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 
-		$this->use_woo_nav = class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
+		$this->use_woo_nav = false; //class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
 	}
 
 
