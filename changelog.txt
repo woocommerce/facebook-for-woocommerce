@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021.nn.nn - version 2.3.5-dev.1
+ * Fix - critical issue for pre 5.0.0 WC sites
+
 2021.03.30 - version 2.3.4
  * Feature - Add connection state to WooCommerce Usage Tracking.
  * Feature - Register WooCommerce Navigation items.
