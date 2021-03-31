@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.5-dev.1
+Stable tag: 2.3.5
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2021.nn.nn - version 2.3.5-dev.1 =
+= 2021.03.31 - version 2.3.5 =
  * Fix - critical issue for pre 5.0.0 WC sites
 
 = 2021.03.30 - version 2.3.4 =
