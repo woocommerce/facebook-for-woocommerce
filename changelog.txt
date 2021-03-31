@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021.nn.nn - version 2.3.4-dev.1
+2021.03.30 - version 2.3.4
  * Feature - Add connection state to WooCommerce Usage Tracking.
  * Feature - Register WooCommerce Navigation items.
  * Fix - Disable product sync on 2.3.3 update ( temporary fix ).
