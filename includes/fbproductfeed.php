@@ -892,6 +892,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		}
 
 		public function get_product_wpid() {
+
+			wc_deprecated_function( __METHOD__, '2.3.6', '\\WC_Facebookcommerce_Utils::get_all_product_ids_for_sync()' );
+
 			$post_ids = WC_Facebookcommerce_Utils::get_wp_posts(
 				null,
 				null,
