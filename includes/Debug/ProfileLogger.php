@@ -10,6 +10,13 @@ defined( 'ABSPATH' ) || exit;
 class ProfileLogger {
 
 	/**
+	 * Is profile logging enabled.
+	 *
+	 * @var bool
+	 */
+	protected $is_enabled = false;
+
+	/**
 	 * Active processes in the current request.
 	 *
 	 * @var ProfileLoggerProcess[]
@@ -22,6 +29,15 @@ class ProfileLogger {
 	 * @var ProfileLoggerProcess[]
 	 */
 	protected $past_processes = array();
+
+	/**
+	 * ProfileLogger constructor.
+	 *
+	 * @param bool $is_enabled
+	 */
+	public function __construct( $is_enabled ) {
+		$this->is_enabled = $is_enabled;
+	}
 
 	/**
 	 * Check if a process is running.
@@ -42,6 +58,10 @@ class ProfileLogger {
 	 * @return ProfileLoggerProcess|null
 	 */
 	public function start( $process_name ) {
+		if ( ! $this->is_enabled ) {
+			return null;
+		}
+
 		if ( $this->is_running( $process_name ) ) {
 			$this->log( "$process_name - Failed to start process because it's already started." );
 			return null;
@@ -60,6 +80,10 @@ class ProfileLogger {
 	 * @return ProfileLoggerProcess|null
 	 */
 	public function stop( $process_name ) {
+		if ( ! $this->is_enabled ) {
+			return null;
+		}
+
 		if ( ! $this->is_running( $process_name ) ) {
 			$this->log( "{$process_name} - Failed to stop process because it hasn't started." );
 			return null;
