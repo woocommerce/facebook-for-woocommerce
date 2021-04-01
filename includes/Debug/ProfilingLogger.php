@@ -124,7 +124,7 @@ class ProfilingLogger {
 	 * @param string $message
 	 */
 	protected function log( $message ) {
-		wc_get_logger()->log( 'debug', $message, array( 'source' => 'facebook-for-wc-profile' ) );
+		wc_get_logger()->log( 'debug', $message, array( 'source' => 'facebook-for-wc-profiling' ) );
 	}
 
 }

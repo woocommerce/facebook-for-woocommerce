@@ -155,8 +155,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Events/AAMSettings.php';
 				require_once __DIR__ . '/includes/Utilities/Shipment.php';
 				require_once __DIR__ . '/includes/Utilities/Tracker.php';
-				require_once __DIR__ . '/includes/Debug/ProfileLogger.php';
-				require_once __DIR__ . '/includes/Debug/ProfileLoggerProcess.php';
+				require_once __DIR__ . '/includes/Debug/ProfilingLogger.php';
+				require_once __DIR__ . '/includes/Debug/ProfilingLoggerProcess.php';
 
 				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
@@ -893,11 +893,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
-		 * Gets the debug profile logger
+		 * Gets the debug profiling logger instance.
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger
 		 */
-		public function get_debug_profile_logger() {
+		public function get_profiling_logger() {
 			static $instance = null;
 			if ( null === $instance ) {
 				$is_enabled = defined( 'FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED' ) && FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED;
