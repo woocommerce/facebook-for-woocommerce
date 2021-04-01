@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021.nn.nn - version 2.3.6
+ * Tweak - Improve full sync performance. 
+
 2021.03.31 - version 2.3.5
  * Fix - critical issue for pre 5.0.0 WC sites
 
