@@ -25,7 +25,7 @@ class GenerateCategoryAttributeMapping {
 
 		$source_data = json_decode( file_get_contents( $plugin_root . self::SOURCE_FILE_NAME ), true );
 
-		foreach ( $source_data as $category ) {
+		foreach ( $source_data as $category_id => $category ) {
 			foreach ( $category['attributes'] as &$attr ) {
 
 				// hash the attribute array to determine unique entries
@@ -38,7 +38,7 @@ class GenerateCategoryAttributeMapping {
 				$attr = $hash;
 			}
 
-			$this->category_export[] = $category;
+			$this->category_export[ $category_id ] = $category;
 		}
 
 		file_put_contents( $plugin_root . $this::EXPORT_CATEGORIES_FILE_NAME, json_encode( $this->category_export ) );
