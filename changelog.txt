@@ -1,5 +1,20 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021.nn.nn - version 2.3.6
+ * Tweak - Improve full sync performance.
+ * Fix - Fatal error for product categories with missing attributes.
+
+2021.03.31 - version 2.3.5
+ * Fix - Critical issue for pre 5.0.0 WC sites.
+
+2021.03.30 - version 2.3.4
+ * Feature - Add connection state to WooCommerce Usage Tracking.
+ * Feature - Register WooCommerce Navigation items.
+ * Fix - Disable product sync on 2.3.3 update ( temporary fix ).
+ * Fix - Add default placeholder for products with no image set.
+ * Fix - Undefined array key error for products without 'Product image' set.
+ * Dev - PHP Deprecated: Non-static method should not be called statically.
+
 2021.03.22 - version 2.3.3
  * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.
  * Fix - Enable display names to be used for variant attribute values.

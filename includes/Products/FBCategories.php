@@ -10,9 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Products;
 
-defined( 'ABSPATH' ) or exit;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The main product feed handler.
@@ -22,8 +20,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
  * @since 1.11.0
  */
 class FBCategories {
-	const ACTION_PRIORITY = 9;
-	const CATEGORY_FILE   = 'fb_google_product_categories_en_US_simple.json';
+
 	const ATTRIBUTES_FILE = 'fb_google_category_to_attribute_mapping.json';
 	/**
 	 * FBCategory constructor.
@@ -31,25 +28,34 @@ class FBCategories {
 	 * @since 1.11.0
 	 */
 	public function __construct() {
-		$this->categories_filepath = realpath( __DIR__ ) . '/' . self::CATEGORY_FILE;
 		$this->attributes_filepath = realpath( __DIR__ ) . '/' . self::ATTRIBUTES_FILE;
-		$this->categories_data     = null;
 		$this->attributes_data     = null;
 	}
 
-	private function ensure_data_is_loaded() {
-		if ( ! $this->categories_data ) {
-			$cat_file_contents     = @file_get_contents( $this->categories_filepath );
-			$this->categories_data = json_decode( $cat_file_contents, true );
-		}
-		if ( ! $this->attributes_data ) {
-			$attr_file_contents    = @file_get_contents( $this->attributes_filepath );
+	/**
+	 * This function ensures that everything is loaded before the we start using the data.
+	 *
+	 * @param bool $with_attributes Do we need attributes data or just categories.
+	 */
+	private function ensure_data_is_loaded( $with_attributes = false ) {
+		// This makes the GoogleProductTaxonomy available.
+		require_once __DIR__ . '/GoogleProductTaxonomy.php';
+		if ( $with_attributes && ! $this->attributes_data ) {
+			$attr_file_contents    = @file_get_contents( $this->attributes_filepath ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$this->attributes_data = json_decode( $attr_file_contents, true );
 		}
 	}
 
+	/**
+	 * Fetches the attribute from a category using attribute key.
+	 *
+	 * @param string $category_id   Id of the category for which attribute we want to fetch.
+	 * @param string $attribute_key The key of the attribute.
+	 *
+	 * @return null|string Attribute.
+	 */
 	private function get_attribute( $category_id, $attribute_key ) {
-		$this->ensure_data_is_loaded();
+		$this->ensure_data_is_loaded( true );
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
@@ -66,15 +72,23 @@ class FBCategories {
 		return array_shift( $attributes );
 	}
 
+	/**
+	 * Checks if $value is correct for a given category attribute.
+	 *
+	 * @param string $category_id   Id of the category for which attribute we want to check the value.
+	 * @param string $attribute_key The key of the attribute.
+	 * @param string $value         Value of the attribute.
+	 *
+	 * @return boolean Is this a valid value for the attribute.
+	 */
 	public function is_valid_value_for_attribute( $category_id, $attribute_key, $value ) {
-		$this->ensure_data_is_loaded();
 		$attribute = $this->get_attribute( $category_id, $attribute_key );
 
 		if ( is_null( $attribute ) ) {
 			return false;
 		}
 
-		// TODO: can perform more validations here
+		// TODO: can perform more validations here.
 		switch ( $attribute['type'] ) {
 			case 'enum':
 				return in_array( $value, $attribute['enum_values'] );
@@ -85,34 +99,96 @@ class FBCategories {
 		}
 	}
 
-	public function get_category( $id ) {
+	/**
+	 * Fetches given category.
+	 *
+	 * @param string $category_id Id of the category we want to fetch.
+	 *
+	 * @return null|array Null if category was not found or the category array.
+	 */
+	public function get_category( $category_id ) {
 		$this->ensure_data_is_loaded();
-		if ( $this->is_category( $id ) ) {
-			return $this->categories_data[ $id ];
+		if ( $this->is_category( $category_id ) ) {
+			return GoogleProductTaxonomy::TAXONOMY[ $category_id ];
 		} else {
 			return null;
 		}
 	}
 
-	public function get_category_depth( $id ) {
-		if ( ! $this->is_category( $id ) ) {
-			return 0;
-		}
-		$category = $this->get_category( $id );
-		return count( explode( '>', $category ) );
-	}
-
-	public function get_category_with_attrs( $id ) {
-		$this->ensure_data_is_loaded();
-		if ( $this->is_category( $id ) ) {
-			return $this->attributes_data[ $id ];
-		} else {
+	/**
+	 * Checks if category is root category - it has no parents.
+	 *
+	 * @param string $category_id   Id of the category for which attribute we want to check the value.
+	 *
+	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
+	 */
+	public function is_root_category( $category_id ) {
+		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
+
+		$category = $this->get_category( $category_id );
+		return empty( $category['parent'] );
 	}
 
-	public function is_category( $id ) {
-		$this->ensure_data_is_loaded();
-		return isset( $this->categories_data[ $id ] );
+	/**
+	 * Get attributes for the category.
+	 *
+	 * @param string $category_id   Id of the category for which we want to fetch attributes.
+	 *
+	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
+	 */
+	public function get_category_with_attrs( $category_id ) {
+		$this->ensure_data_is_loaded( true );
+		if ( ! $this->is_category( $category_id ) ) {
+			return null;
+		}
+
+		if ( isset( $this->attributes_data[ $category_id ] ) ) {
+			return $this->attributes_data[ $category_id ];
+		}
+
+		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for category with id: %s not found', $category_id ) );
+		// Category has no attributes entry - it should be add but for now check parent category.
+		if ( $this->is_root_category( $category_id ) ) {
+			return null;
+		}
+
+		$parent_category_id = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
+
+		if ( isset( $this->attributes_data[ $parent_category_id ] ) ) {
+			return $this->attributes_data[ $parent_category_id ];
+		}
+
+		/*
+		* We could check further as we have 3 levels of product categories.
+		* This would meant that we have a big problem with mapping - let this fail and log the problem.
+		*/
+		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for parent category with id: %s not found', $parent_category_id ) );
+
+		return null;
 	}
+
+	/**
+	 * Checks if given category id is valid.
+	 *
+	 * @param string $category_id   Id of the category which we check.
+	 *
+	 * @return boolean Is the id a valid category id.
+	 */
+	public function is_category( $category_id ) {
+		$this->ensure_data_is_loaded();
+		return isset( GoogleProductTaxonomy::TAXONOMY[ $category_id ] );
+	}
+
+	/**
+	 * Get all categories.
+	 *
+	 * @return array All categories data.
+	 */
+	public function get_categories() {
+		$this->ensure_data_is_loaded();
+		return GoogleProductTaxonomy::TAXONOMY;
+	}
+
 }

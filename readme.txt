@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.3
+Stable tag: 2.3.5
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,17 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.03.31 - version 2.3.5 =
+ * Fix - critical issue for pre 5.0.0 WC sites
+
+= 2021.03.30 - version 2.3.4 =
+ * Feature - Add connection state to WooCommerce Usage Tracking.
+ * Feature - Register WooCommerce Navigation items.
+ * Fix - Disable product sync on 2.3.3 update ( temporary fix ).
+ * Fix - Add default placeholder for products with no image set.
+ * Fix - Undefined array key error for products without 'Product image' set.
+ * Dev - PHP Deprecated: Non-static method should not be called statically.
 
 = 2021.03.22 - version 2.3.3 =
  * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.

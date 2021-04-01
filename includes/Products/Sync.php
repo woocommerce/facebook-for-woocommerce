@@ -74,41 +74,8 @@ class Sync {
 	 * @since 2.0.0
 	 */
 	public function create_or_update_all_products() {
-
-		$product_ids        = [];
-		$parent_product_ids = [];
-
-		// loop through all published products and product variations to get their IDs
-		$args = [
-			'fields'         => 'id=>parent',
-			'post_status'    => 'publish',
-			'post_type'      => [ 'product', 'product_variation' ],
-			'posts_per_page' => -1,
-		];
-
-		foreach ( get_posts( $args ) as $post_id => $parent_id ) {
-
-			if ( 'product_variation' === get_post_type( $post_id ) ) {
-
-				// keep track of all parents to remove them from the list of products to sync
-				$parent_product_ids[] = $parent_id;
-
-				// include variations with published parents only
-				if ( 'publish' === get_post_status( $parent_id ) ) {
-					$product_ids[] = $post_id;
-				}
-
-			} else {
-
-				$product_ids[] = $post_id;
-			}
-		}
-
-		// remove parent products because those can't be represented as Product Items
-		$product_ids = array_diff( $product_ids, $parent_product_ids );
-
-		// queue up these IDs for sync. they will only be included in the final requests if they should be synced
-		$this->create_or_update_products( $product_ids );
+		// Queue up these IDs for sync. they will only be included in the final requests if they should be synced.
+		$this->create_or_update_products( \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync() );
 	}
 
 

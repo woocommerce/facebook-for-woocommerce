@@ -446,29 +446,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @return int[]
 		 */
 		private function get_product_ids() {
-
-			$post_ids = $this->get_product_wpid();
-
-			// remove variations with unpublished parents
-			$post_ids = array_filter( $post_ids,
-				function ( $post_id ) {
-					return ( 'product_variation' !== get_post_type( $post_id )
-					         || 'publish' === get_post( wp_get_post_parent_id( $post_id ) )->post_status );
-				}
-			);
-
-			$all_parent_product = array_map(
-				function( $post_id ) {
-					if ( 'product_variation' === get_post_type( $post_id ) ) {
-						return wp_get_post_parent_id( $post_id );
-					}
-				},
-				$post_ids
-			);
-
-			$all_parent_product = array_filter( array_unique( $all_parent_product ) );
-
-			return array_diff( $post_ids, $all_parent_product );
+			return \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
 		}
 
 
@@ -914,6 +892,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		}
 
 		public function get_product_wpid() {
+
+			wc_deprecated_function( __METHOD__, '2.3.6', '\\WC_Facebookcommerce_Utils::get_all_product_ids_for_sync()' );
+
 			$post_ids = WC_Facebookcommerce_Utils::get_wp_posts(
 				null,
 				null,

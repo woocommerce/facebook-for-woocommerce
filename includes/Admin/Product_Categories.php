@@ -279,7 +279,11 @@ class Product_Categories {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY, $term );
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
-		if ( $category_handler->get_category_depth( $category_id ) < 2 ) {
+		if (
+			empty( $category_id ) ||
+			$category_handler->is_category( $category_id ) &&
+			$category_handler->is_root_category( $category_id )
+		) {
 			// show nothing
 			?>
 				<tr class='form-field'>
@@ -319,7 +323,11 @@ class Product_Categories {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY );
 		$category_handler          = facebook_for_woocommerce()->get_facebook_category_handler();
 
-		if ( $category_handler->get_category_depth( $category_id ) < 2 ) {
+		if (
+			empty( $category_id ) ||
+			$category_handler->is_category( $category_id ) &&
+			$category_handler->is_root_category( $category_id )
+		) {
 			// show nothing
 			return;
 		}
