@@ -343,8 +343,14 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 2.3.6
 	 */
 	protected function upgrade_to_2_3_6() {
+		// Delete unused options.
 		delete_option( 'wc_facebook_google_product_categories' );
 		delete_transient( 'wc_facebook_google_product_categories' );
+
+		// Stop feed generation.
+		$action = facebook_for_woocommerce()->get_product_feed_handler()::GENERATE_FEED_ACTION;
+		as_unschedule_all_actions( $action );
+
 	}
 
 }

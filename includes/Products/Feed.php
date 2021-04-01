@@ -53,8 +53,8 @@ class Feed {
 	 */
 	private function add_hooks() {
 
-		// schedule the recurring feed generation
-		add_action( 'init', [ $this, 'schedule_feed_generation' ] );
+		// schedule the recurring feed generation -  temporarily disabled.
+		// add_action( 'init', [ $this, 'schedule_feed_generation' ] );
 
 		// regenerate the product feed
 		add_action( self::GENERATE_FEED_ACTION, [ $this, 'regenerate_feed' ] );
