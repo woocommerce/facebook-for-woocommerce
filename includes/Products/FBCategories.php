@@ -139,7 +139,7 @@ class FBCategories {
 	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
 	 */
 	public function get_category_with_attrs( $category_id ) {
-		$this->ensure_data_is_loaded();
+		$this->ensure_data_is_loaded( true );
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
