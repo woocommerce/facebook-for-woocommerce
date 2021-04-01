@@ -24,13 +24,6 @@ class ProfilingLogger {
 	protected $active_processes = array();
 
 	/**
-	 * Past processes in the current request.
-	 *
-	 * @var ProfilingLoggerProcess[]
-	 */
-	protected $past_processes = array();
-
-	/**
 	 * ProfileLogger constructor.
 	 *
 	 * @param bool $is_enabled
@@ -73,7 +66,7 @@ class ProfilingLogger {
 	}
 
 	/**
-	 * Stop and a process.
+	 * Stop a process and log the memory and time usage.
 	 *
 	 * @param string $process_name
 	 *
@@ -90,27 +83,8 @@ class ProfilingLogger {
 		}
 
 		$process = $this->active_processes[ $process_name ];
-		$process->stop();
-
-		// Move to past processes array
 		unset( $this->active_processes[ $process_name ] );
-		$this->past_processes = $process;
-
-		return $process;
-	}
-
-	/**
-	 * Stop a process and log the memory and time usage.
-	 *
-	 * @param string $process_name
-	 *
-	 * @return ProfilingLoggerProcess|null
-	 */
-	public function stop_and_log( $process_name ) {
-		$process = $this->stop( $process_name );
-		if ( ! $process ) {
-			return null;
-		}
+		$process->stop();
 
 		$memory = number_format( $process->get_memory_used() / 1000, 2 );
 		$time   = number_format( $process->get_time_used(), 2 );
