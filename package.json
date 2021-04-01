@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "sake": "github:skyverge/sake"
+  },
+  "scripts": {
+    "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php"
   }
 }

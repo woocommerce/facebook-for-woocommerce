@@ -3,7 +3,11 @@
 /**
  * Class GenerateCategoryAttributeMapping
  *
- * Optimizes the 18 MB fb_google_category_to_attribute_mapping.json file by extracting duplicate field data.
+ * Optimizes the 18 MB `fb_google_category_to_attribute_mapping.json` file by extracting duplicate attribute field data
+ * into two separate JSON files.
+ *
+ * `google_category_to_attribute_mapping.json` Is the same as the original file but attribute arrays have been replaced with hashes
+ * `google_category_to_attribute_mapping_fields.json` Is a look-up file containing with the attribute field array with hashes as keys.
  */
 class GenerateCategoryAttributeMapping {
 
