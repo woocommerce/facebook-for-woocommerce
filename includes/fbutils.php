@@ -437,6 +437,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Get all products for synchronization tasks.
 		 *
+		 * Warning: While changing this code please make sure that it scales properly.
+		 * Sites with big product catalogs should not experience memory problems.
+		 *
 		 * @return array IDs of all product for synchronization.
 		 */
 		public static function get_all_product_ids_for_sync() {
