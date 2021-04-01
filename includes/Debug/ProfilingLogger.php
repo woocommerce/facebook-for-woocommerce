@@ -5,9 +5,9 @@ namespace SkyVerge\WooCommerce\Facebook\Debug;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class ProfileLogger
+ * Class ProfilingLogger
  */
-class ProfileLogger {
+class ProfilingLogger {
 
 	/**
 	 * Is profile logging enabled.
@@ -19,14 +19,14 @@ class ProfileLogger {
 	/**
 	 * Active processes in the current request.
 	 *
-	 * @var ProfileLoggerProcess[]
+	 * @var ProfilingLoggerProcess[]
 	 */
 	protected $active_processes = array();
 
 	/**
 	 * Past processes in the current request.
 	 *
-	 * @var ProfileLoggerProcess[]
+	 * @var ProfilingLoggerProcess[]
 	 */
 	protected $past_processes = array();
 
@@ -55,7 +55,7 @@ class ProfileLogger {
 	 *
 	 * @param string $process_name
 	 *
-	 * @return ProfileLoggerProcess|null
+	 * @return ProfilingLoggerProcess|null
 	 */
 	public function start( $process_name ) {
 		if ( ! $this->is_enabled ) {
@@ -67,7 +67,7 @@ class ProfileLogger {
 			return null;
 		}
 
-		$this->active_processes[ $process_name ] = new ProfileLoggerProcess();
+		$this->active_processes[ $process_name ] = new ProfilingLoggerProcess();
 
 		return $this->active_processes[ $process_name ];
 	}
@@ -77,7 +77,7 @@ class ProfileLogger {
 	 *
 	 * @param string $process_name
 	 *
-	 * @return ProfileLoggerProcess|null
+	 * @return ProfilingLoggerProcess|null
 	 */
 	public function stop( $process_name ) {
 		if ( ! $this->is_enabled ) {
@@ -104,7 +104,7 @@ class ProfileLogger {
 	 *
 	 * @param string $process_name
 	 *
-	 * @return ProfileLoggerProcess|null
+	 * @return ProfilingLoggerProcess|null
 	 */
 	public function stop_and_log( $process_name ) {
 		$process = $this->stop( $process_name );

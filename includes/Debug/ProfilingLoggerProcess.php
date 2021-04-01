@@ -5,9 +5,9 @@ namespace SkyVerge\WooCommerce\Facebook\Debug;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class ProfileLoggerProcess
+ * Class ProfilingLoggerProcess
  */
-class ProfileLoggerProcess {
+class ProfilingLoggerProcess {
 
 	/** @var int */
 	protected $start_memory;

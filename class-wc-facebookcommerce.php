@@ -895,13 +895,13 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Gets the debug profile logger
 		 *
-		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfileLogger
+		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger
 		 */
 		public function get_debug_profile_logger() {
 			static $instance = null;
 			if ( null === $instance ) {
 				$is_enabled = defined( 'FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED' ) && FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED;
-				$instance = new \SkyVerge\WooCommerce\Facebook\Debug\ProfileLogger( $is_enabled );
+				$instance = new \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger( $is_enabled );
 			}
 
 			return $instance;
