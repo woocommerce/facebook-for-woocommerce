@@ -127,11 +127,11 @@ class FBCategories {
 			return null;
 		}
 
-		$attribute_data = $this->get_raw_attributes_data();
+		$attributes_data = $this->get_raw_attributes_data();
 
 		if ( isset( $attributes_data[ $category_id ] ) ) {
 			$category = $attributes_data[ $category_id ];
-			if ( isset( $category['attributes'] ) ) {
+			if ( isset( $category['attributes'] ) && is_array( $category['attributes'] ) ) {
 				foreach ( $category['attributes'] as &$attribute ) {
 					// replace attribute hash with field array
 					$attribute = $this->get_attribute_field_by_hash( $attribute );
@@ -152,7 +152,7 @@ class FBCategories {
 		if ( isset( $attributes_data[ $parent_category_id ] ) ) {
 			// TODO clean up
 			$category = $attributes_data[ $parent_category_id ];
-			if ( isset( $category['attributes'] ) ) {
+			if ( isset( $category['attributes'] ) && is_array( $category['attributes'] ) ) {
 				foreach ( $category['attributes'] as &$attribute ) {
 					// replace attribute hash with field array
 					$attribute = $this->get_attribute_field_by_hash( $attribute );
