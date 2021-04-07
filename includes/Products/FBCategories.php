@@ -21,34 +21,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class FBCategories {
 
-	const ATTRIBUTES_FILE       = '/data/google_category_to_attribute_mapping.json';
-	const ATTRIBUTES_FIELD_FILE = '/data/google_category_to_attribute_mapping_fields.json';
-
-	/**
-	 * @var array of attributes data
-	 */
-	protected $attributes_data;
-
-	/**
-	 * @var array of attributes fields data
-	 */
-	protected $attributes_fields_data;
-
 	/**
 	 * This function ensures that everything is loaded before the we start using the data.
-	 *
-	 * @param bool $with_attributes Do we need attributes data or just categories.
 	 */
-	private function ensure_data_is_loaded( $with_attributes = false ) {
+	private function ensure_data_is_loaded() {
 		// This makes the GoogleProductTaxonomy available.
 		require_once __DIR__ . '/GoogleProductTaxonomy.php';
-		if ( $with_attributes && ! $this->attributes_data ) {
-			$file_contents         = @file_get_contents( facebook_for_woocommerce()->get_plugin_path() . self::ATTRIBUTES_FILE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$this->attributes_data = json_decode( $file_contents, true );
-
-			$file_contents                = @file_get_contents( facebook_for_woocommerce()->get_plugin_path() . self::ATTRIBUTES_FIELD_FILE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$this->attributes_fields_data = json_decode( $file_contents, true );
-		}
 	}
 
 	/**
@@ -144,13 +122,15 @@ class FBCategories {
 	 * @return null|boolean|array Null if category was not found or boolean that determines if this is a root category or not.
 	 */
 	public function get_category_with_attrs( $category_id ) {
-		$this->ensure_data_is_loaded( true );
+		$this->ensure_data_is_loaded();
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
 
-		if ( isset( $this->attributes_data[ $category_id ] ) ) {
-			$category = $this->attributes_data[ $category_id ];
+		$attribute_data = $this->get_raw_attributes_data();
+
+		if ( isset( $attributes_data[ $category_id ] ) ) {
+			$category = $attributes_data[ $category_id ];
 			if ( isset( $category['attributes'] ) ) {
 				foreach ( $category['attributes'] as &$attribute ) {
 					// replace attribute hash with field array
@@ -169,9 +149,9 @@ class FBCategories {
 
 		$parent_category_id = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
 
-		if ( isset( $this->attributes_data[ $parent_category_id ] ) ) {
+		if ( isset( $attributes_data[ $parent_category_id ] ) ) {
 			// TODO clean up
-			$category = $this->attributes_data[ $parent_category_id ];
+			$category = $attributes_data[ $parent_category_id ];
 			if ( isset( $category['attributes'] ) ) {
 				foreach ( $category['attributes'] as &$attribute ) {
 					// replace attribute hash with field array
@@ -221,11 +201,55 @@ class FBCategories {
 	 * @return array|null
 	 */
 	protected function get_attribute_field_by_hash( $hash ) {
-		if ( isset( $this->attributes_fields_data[ $hash ] ) ) {
-			return $this->attributes_fields_data[ $hash ];
+		$fields_data = $this->get_raw_attributes_fields_data();
+
+		if ( isset( $fields_data[ $hash ] ) ) {
+			return $fields_data[ $hash ];
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Get the raw category attributes data from the JSON file.
+	 *
+	 * @return array
+	 */
+	protected function get_raw_attributes_data() {
+		static $data = null;
+
+		if ( null === $data ) {
+			$contents = file_get_contents( facebook_for_woocommerce()->get_plugin_path() . '/data/google_category_to_attribute_mapping.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			if ( $contents ) {
+				$data = json_decode( $contents, true );
+			} else {
+				$data = [];
+				facebook_for_woocommerce()->log( 'Error reading category attributes JSON data.' );
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get the raw category attributes fields data from the JSON file.
+	 *
+	 * @retrun array
+	 */
+	protected function get_raw_attributes_fields_data() {
+		static $data = null;
+
+		if ( null === $data ) {
+			$contents = file_get_contents( facebook_for_woocommerce()->get_plugin_path() . '/data/google_category_to_attribute_mapping_fields.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			if ( $contents ) {
+				$data = json_decode( $contents, true );
+			} else {
+				$data = [];
+				facebook_for_woocommerce()->log( 'Error reading category attributes fields JSON data.' );
+			}
+		}
+
+		return $data;
 	}
 
 }
