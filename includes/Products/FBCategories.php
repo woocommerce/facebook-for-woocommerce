@@ -21,16 +21,18 @@ defined( 'ABSPATH' ) || exit;
  */
 class FBCategories {
 
-	const ATTRIBUTES_FILE = 'fb_google_category_to_attribute_mapping.json';
+	const ATTRIBUTES_FILE       = '/data/google_category_to_attribute_mapping.json';
+	const ATTRIBUTES_FIELD_FILE = '/data/google_category_to_attribute_mapping_fields.json';
+
 	/**
-	 * FBCategory constructor.
-	 *
-	 * @since 1.11.0
+	 * @var array of attributes data
 	 */
-	public function __construct() {
-		$this->attributes_filepath = realpath( __DIR__ ) . '/' . self::ATTRIBUTES_FILE;
-		$this->attributes_data     = null;
-	}
+	protected $attributes_data;
+
+	/**
+	 * @var array of attributes fields data
+	 */
+	protected $attributes_fields_data;
 
 	/**
 	 * This function ensures that everything is loaded before the we start using the data.
@@ -41,8 +43,11 @@ class FBCategories {
 		// This makes the GoogleProductTaxonomy available.
 		require_once __DIR__ . '/GoogleProductTaxonomy.php';
 		if ( $with_attributes && ! $this->attributes_data ) {
-			$attr_file_contents    = @file_get_contents( $this->attributes_filepath ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$this->attributes_data = json_decode( $attr_file_contents, true );
+			$file_contents         = @file_get_contents( facebook_for_woocommerce()->get_plugin_path() . self::ATTRIBUTES_FILE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$this->attributes_data = json_decode( $file_contents, true );
+
+			$file_contents                = @file_get_contents( facebook_for_woocommerce()->get_plugin_path() . self::ATTRIBUTES_FIELD_FILE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$this->attributes_fields_data = json_decode( $file_contents, true );
 		}
 	}
 
@@ -52,17 +57,17 @@ class FBCategories {
 	 * @param string $category_id   Id of the category for which attribute we want to fetch.
 	 * @param string $attribute_key The key of the attribute.
 	 *
-	 * @return null|string Attribute.
+	 * @return null|array Attribute.
 	 */
 	private function get_attribute( $category_id, $attribute_key ) {
-		$this->ensure_data_is_loaded( true );
-		if ( ! $this->is_category( $category_id ) ) {
+		$category = $this->get_category_with_attrs( $category_id );
+		if ( ! is_array( $category ) ) {
 			return null;
 		}
-		$all_attributes = $this->attributes_data[ $category_id ]['attributes'];
-		$attributes     = array_filter(
-			$all_attributes,
-			function( $attr ) use ( $attribute_key ) {
+
+		$attributes = array_filter(
+			$category['attributes'],
+			function ( $attr ) use ( $attribute_key ) {
 				return ( $attribute_key === $attr['key'] );
 			}
 		);
@@ -136,7 +141,7 @@ class FBCategories {
 	 *
 	 * @param string $category_id   Id of the category for which we want to fetch attributes.
 	 *
-	 * @return null|boolean Null if category was not found or boolean that determines if this is a root category or not.
+	 * @return null|boolean|array Null if category was not found or boolean that determines if this is a root category or not.
 	 */
 	public function get_category_with_attrs( $category_id ) {
 		$this->ensure_data_is_loaded( true );
@@ -145,7 +150,15 @@ class FBCategories {
 		}
 
 		if ( isset( $this->attributes_data[ $category_id ] ) ) {
-			return $this->attributes_data[ $category_id ];
+			$category = $this->attributes_data[ $category_id ];
+			if ( isset( $category['attributes'] ) ) {
+				foreach ( $category['attributes'] as &$attribute ) {
+					// replace attribute hash with field array
+					$attribute = $this->get_attribute_field_by_hash( $attribute );
+				}
+			}
+
+			return $category;
 		}
 
 		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for category with id: %s not found', $category_id ) );
@@ -157,7 +170,16 @@ class FBCategories {
 		$parent_category_id = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
 
 		if ( isset( $this->attributes_data[ $parent_category_id ] ) ) {
-			return $this->attributes_data[ $parent_category_id ];
+			// TODO clean up
+			$category = $this->attributes_data[ $parent_category_id ];
+			if ( isset( $category['attributes'] ) ) {
+				foreach ( $category['attributes'] as &$attribute ) {
+					// replace attribute hash with field array
+					$attribute = $this->get_attribute_field_by_hash( $attribute );
+				}
+			}
+
+			return $category;
 		}
 
 		/*
@@ -189,6 +211,21 @@ class FBCategories {
 	public function get_categories() {
 		$this->ensure_data_is_loaded();
 		return GoogleProductTaxonomy::TAXONOMY;
+	}
+
+	/**
+	 * Get category attribute field by it's hash.
+	 *
+	 * @param string $hash
+	 *
+	 * @return array|null
+	 */
+	protected function get_attribute_field_by_hash( $hash ) {
+		if ( isset( $this->attributes_fields_data[ $hash ] ) ) {
+			return $this->attributes_fields_data[ $hash ];
+		} else {
+			return null;
+		}
 	}
 
 }
