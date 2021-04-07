@@ -3,7 +3,7 @@
 ## Profiling Logger
 
 The profiling logger can be used to log the time and memory usage of a process in a single request. 
-Results are logged to WooCommerce logs with the name `facebook-for-wc-profiling`.
+Results are logged to WooCommerce logs with the name `facebook_for_woocommerce_profiling`.
 
 ## Enabling
 
