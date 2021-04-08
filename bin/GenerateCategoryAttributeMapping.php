@@ -7,7 +7,7 @@
  * into two separate JSON files.
  *
  * `google_category_to_attribute_mapping.json` Is the same as the original file but attribute arrays have been replaced with hashes
- * `google_category_to_attribute_mapping_fields.json` Is a look-up file containing with the attribute field array with hashes as keys.
+ * `google_category_to_attribute_mapping_fields.json` Is a look-up file containing the attribute field array with hashes as keys.
  */
 class GenerateCategoryAttributeMapping {
 
