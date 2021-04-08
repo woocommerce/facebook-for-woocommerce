@@ -15,6 +15,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 
 defined( 'ABSPATH' ) or exit;
 
+// define( 'WOOCOMMERCE_CONNECT_SERVER_HOST', 'connect.woocommerce.com' );
+define( 'WOOCOMMERCE_CONNECT_SERVER_HOST', 'connect.woocommerce.local' );
+
 /**
  * The connection handler.
  *
@@ -30,7 +33,7 @@ class Connection {
 	const OAUTH_URL = 'https://facebook.com/dialog/oauth';
 
 	/** @var string WooCommerce connection proxy URL */
-	const PROXY_URL = 'https://connect.woocommerce.com/auth/facebook/';
+	const PROXY_URL = 'https://' . WOOCOMMERCE_CONNECT_SERVER_HOST . '/auth/facebook/';
 
 	/** @var string WooCommerce connection for APP Store login URL */
 	const APP_STORE_LOGIN_URL = 'https://connect.woocommerce.com/app-store-login/facebook/';
@@ -540,7 +543,7 @@ class Connection {
 		], home_url( '/' ) );
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://' . WOOCOMMERCE_CONNECT_SERVER_HOST . '/auth/facebookcommerce/' );
 
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg( [
