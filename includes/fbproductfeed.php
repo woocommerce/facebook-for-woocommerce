@@ -89,6 +89,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @since 1.11.0
 		 */
 		public function generate_feed() {
+			$profiling_logger = facebook_for_woocommerce()->get_profiling_logger();
+			$profiling_logger->start( 'generate_feed' );
 
 			do_action( 'qm/start', 'facebook_for_woocommerce__generate_feed' );
 
@@ -111,7 +113,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				\WC_Facebookcommerce_Utils::log( $exception->getMessage() );
 			}
 
-			do_action( 'qm/stop', 'facebook_for_woocommerce__generate_feed' );
+			$profiling_logger->stop( 'generate_feed' );
 		}
 
 

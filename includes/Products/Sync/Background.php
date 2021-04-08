@@ -46,7 +46,8 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 */
 	public function process_job( $job, $items_per_batch = null ) {
 
-		do_action( 'qm/start', 'facebook_for_woocommerce__background_product_sync__process_job' );
+		$profiling_logger = facebook_for_woocommerce()->get_profiling_logger();
+		$profiling_logger->start( 'background_product_sync__process_job' );
 
 		if ( ! $this->start_time ) {
 			$this->start_time = time();
@@ -96,7 +97,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$job = $this->complete_job( $job );
 		}
 
-		do_action( 'qm/stop', 'facebook_for_woocommerce__background_product_sync__process_job' );
+		$profiling_logger->stop( 'background_product_sync__process_job' );
 
 		return $job;
 	}
