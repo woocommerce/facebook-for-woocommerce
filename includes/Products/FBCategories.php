@@ -32,27 +32,24 @@ class FBCategories {
 	/**
 	 * Fetches the attribute from a category using attribute key.
 	 *
-	 * @param string $category_id   Id of the category for which attribute we want to fetch.
-	 * @param string $attribute_key The key of the attribute.
+	 * @param string $category_id          Id of the category for which attribute we want to fetch.
+	 * @param string $target_attribute_key The key of the attribute.
 	 *
 	 * @return null|array Attribute.
 	 */
-	private function get_attribute( $category_id, $attribute_key ) {
-		$category = $this->get_category_with_attrs( $category_id );
-		if ( ! is_array( $category ) ) {
+	private function get_attribute( $category_id, $target_attribute_key ) {
+		$attributes = $this->get_attributes( $category_id );
+		if ( ! is_array( $attributes ) ) {
 			return null;
 		}
 
-		$attributes = array_filter(
-			$category['attributes'],
-			function ( $attr ) use ( $attribute_key ) {
-				return ( $attribute_key === $attr['key'] );
+		foreach ( $attributes as $attribute ) {
+			if ( $target_attribute_key === $attribute['key'] ) {
+				return $attribute;
 			}
-		);
-		if ( empty( $attributes ) ) {
-			return null;
 		}
-		return array_shift( $attributes );
+
+		return null;
 	}
 
 	/**
@@ -115,57 +112,69 @@ class FBCategories {
 	}
 
 	/**
-	 * Get attributes for the category.
+	 * Get the attributes data array for a specific category.
 	 *
-	 * @param string $category_id   Id of the category for which we want to fetch attributes.
+	 * @param string $category_id Id of the category for which we want to fetch attributes.
 	 *
-	 * @return null|boolean|array Null if category was not found or boolean that determines if this is a root category or not.
+	 * @return null|array Null if no attributes were found or category is invalid, otherwise array of attributes.
 	 */
-	public function get_category_with_attrs( $category_id ) {
+	public function get_attributes( $category_id ) {
+		if ( ! $this->is_category( $category_id ) ) {
+			return null;
+		}
+
+		$all_attributes_data = $this->get_raw_attributes_data();
+		if ( ! isset( $all_attributes_data[ $category_id ] ) ) {
+			return null;
+		}
+
+		$category = $all_attributes_data[ $category_id ];
+
+		if ( ! isset( $category['attributes'] ) || ! is_array( $category['attributes'] ) ) {
+			return null;
+		}
+
+		$return_attributes = array();
+		foreach ( $category['attributes'] as $attribute_hash ) {
+			// Get attribute array from the stored hash version
+			$return_attributes[] = $this->get_attribute_field_by_hash( $attribute_hash );
+		}
+
+		return $return_attributes;
+	}
+
+	/**
+	 * Get the attributes data array for a specific category but if they are not found fallback to the parent categories attributes.
+	 *
+	 * @param string $category_id Id of the category for which we want to fetch attributes.
+	 *
+	 * @return null|array Null if no attributes were found or category is invalid, otherwise array of attributes.
+	 */
+	public function get_attributes_with_fallback_to_parent_category( $category_id ) {
 		$this->ensure_data_is_loaded();
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
 
-		$attributes_data = $this->get_raw_attributes_data();
-
-		if ( isset( $attributes_data[ $category_id ] ) ) {
-			$category = $attributes_data[ $category_id ];
-			if ( isset( $category['attributes'] ) && is_array( $category['attributes'] ) ) {
-				foreach ( $category['attributes'] as &$attribute ) {
-					// replace attribute hash with field array
-					$attribute = $this->get_attribute_field_by_hash( $attribute );
-				}
-			}
-
-			return $category;
+		$attributes = $this->get_attributes( $category_id );
+		if ( $attributes ) {
+			return $attributes;
 		}
 
 		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for category with id: %s not found', $category_id ) );
-		// Category has no attributes entry - it should be add but for now check parent category.
+		// Category has no attributes entry - it should be added but for now check parent category.
 		if ( $this->is_root_category( $category_id ) ) {
 			return null;
 		}
 
-		$parent_category_id = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
-
-		if ( isset( $attributes_data[ $parent_category_id ] ) ) {
-			// TODO clean up
-			$category = $attributes_data[ $parent_category_id ];
-			if ( isset( $category['attributes'] ) && is_array( $category['attributes'] ) ) {
-				foreach ( $category['attributes'] as &$attribute ) {
-					// replace attribute hash with field array
-					$attribute = $this->get_attribute_field_by_hash( $attribute );
-				}
-			}
-
-			return $category;
+		$parent_category_id         = GoogleProductTaxonomy::TAXONOMY[ $category_id ]['parent'];
+		$parent_category_attributes = $this->get_attributes( $parent_category_id );
+		if ( $parent_category_attributes ) {
+			return $parent_category_attributes;
 		}
 
-		/*
-		* We could check further as we have 3 levels of product categories.
-		* This would meant that we have a big problem with mapping - let this fail and log the problem.
-		*/
+		// We could check further as we have 3 levels of product categories.
+		// This would meant that we have a big problem with mapping - let this fail and log the problem.
 		facebook_for_woocommerce()->log( sprintf( 'Google Product Category to Facebook attributes mapping for parent category with id: %s not found', $parent_category_id ) );
 
 		return null;
