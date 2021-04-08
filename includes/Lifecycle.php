@@ -42,7 +42,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.0',
 			'2.0.3',
 			'2.0.4',
-			'2.3.3',
+			'2.3.6',
 		];
 	}
 
@@ -338,16 +338,13 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	}
 
 	/**
-	 * Upgrades to version 2.3.3
+	 * Upgrades to version 2.3.6
 	 *
-	 * @since 2.3.3.
+	 * @since 2.3.6
 	 */
-	protected function upgrade_to_2_3_3() {
-		$sync_enabled = 'yes' === get_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC, 'yes' );
-		if ( ! $sync_enabled ) {
-			return;
-		}
-		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+	protected function upgrade_to_2_3_6() {
+		delete_option( 'wc_facebook_google_product_categories' );
+		delete_transient( 'wc_facebook_google_product_categories' );
 	}
 
 }

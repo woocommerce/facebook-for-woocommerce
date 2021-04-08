@@ -276,7 +276,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 					</a>
 
 					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_disconnect_url() ); ?>" class="uninstall">
-						<?php esc_html_e( 'Uninstall', 'facebook-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Disconnect', 'facebook-for-woocommerce' ); ?>
 					</a>
 
 				<?php else : ?>

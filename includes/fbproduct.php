@@ -198,9 +198,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$image_urls = array_merge( $image_urls, $this->get_gallery_urls() );
 			$image_urls = array_filter( array_unique( $image_urls ) );
 
+			// Regenerate $image_url PHP array indexes after filtering.
+			// The array_filter does not touches indexes so if something gets removed we may end up with gaps.
+			// Later parts of the code expect something to exist under the 0 index.
+			$image_urls = array_values( $image_urls );
+
 			if ( empty( $image_urls ) ) {
-				// TODO: replace or remove this placeholder - placeholdit.imgix.net is no longer available {WV 2020-01-21}
-				$image_urls[] = sprintf( 'https://placeholdit.imgix.net/~text?txtsize=33&name=%s&w=530&h=530', rawurlencode( strip_tags( $this->woo_product->get_title() ) ) );
+				$image_urls[] = facebook_for_woocommerce()->get_plugin_url() . '/assets/images/woocommerce-placeholder.png';
 			}
 
 			return $image_urls;
@@ -215,7 +219,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 *
 		 * @since 2.0.2
 		 *
-		 * @param array $image_urls all image URLs for the product
+		 * @param array $image_urls all image URLs for the product.
 		 * @return array
 		 */
 		private function get_additional_image_urls( $image_urls ) {
