@@ -48,6 +48,11 @@ class GenerateCategoryAttributeMapping {
 		file_put_contents( $plugin_root . $this::EXPORT_CATEGORIES_FILE_NAME, json_encode( $this->category_export ) );
 		file_put_contents( $plugin_root . $this::EXPORT_FIELDS_FILE_NAME, json_encode( $this->field_export ) );
 	}
+	
+			echo sprintf( "Files successfully generated: \n %s \n %s \n",
+			$plugin_root . $this::EXPORT_CATEGORIES_FILE_NAME,
+			$plugin_root . $this::EXPORT_FIELDS_FILE_NAME
+		);
 
 
 }
