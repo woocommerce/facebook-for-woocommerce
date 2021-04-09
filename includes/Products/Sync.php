@@ -74,8 +74,13 @@ class Sync {
 	 * @since 2.0.0
 	 */
 	public function create_or_update_all_products() {
+		$profiling_logger = facebook_for_woocommerce()->get_profiling_logger();
+		$profiling_logger->start( 'create_or_update_all_products' );
+
 		// Queue up these IDs for sync. they will only be included in the final requests if they should be synced.
 		$this->create_or_update_products( \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync() );
+
+		$profiling_logger->stop( 'create_or_update_all_products' );
 	}
 
 
