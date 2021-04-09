@@ -666,8 +666,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			}
 			$enhanced_data = array();
 
-			$category       = $category_handler->get_category_with_attrs( $google_category_id );
-			$all_attributes = $this->get_matched_attributes_for_product( $this->woo_product, $category['attributes'] );
+			$category_attrs = $category_handler->get_attributes_with_fallback_to_parent_category( $google_category_id );
+			$all_attributes = $this->get_matched_attributes_for_product( $this->woo_product, $category_attrs );
 
 			foreach ( $all_attributes as $attribute ) {
 				$value            = Products::get_enhanced_catalog_attribute( $attribute['key'], $this->woo_product );
