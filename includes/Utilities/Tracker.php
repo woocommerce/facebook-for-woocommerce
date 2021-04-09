@@ -45,12 +45,21 @@ class Tracker {
 			$data['extensions'] = array();
 		}
 
+		// Is the site connected?
+		// @since 2.3.4
 		$connection_is_happy = false;
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 		if ( $connection_handler ) {
 			$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
 		}
 		$data['extensions']['facebook-for-woocommerce']['is-connected'] = wc_bool_to_string( $connection_is_happy );
+
+		// What features are enabled on this site?
+		// @since %VERSION%
+		$product_sync_enabled = facebook_for_woocommerce()->get_integration()->is_product_sync_enabled();
+		$data['extensions']['facebook-for-woocommerce']['product-sync-enabled'] = wc_bool_to_string( $product_sync_enabled );
+		$messenger_enabled = facebook_for_woocommerce()->get_integration()->is_messenger_enabled();
+		$data['extensions']['facebook-for-woocommerce']['messenger-enabled'] = wc_bool_to_string( $messenger_enabled );
 
 		return $data;
 	}
