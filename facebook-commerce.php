@@ -68,6 +68,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the "enable product sync" setting ID */
 	const SETTING_ENABLE_PRODUCT_SYNC = 'wc_facebook_enable_product_sync';
 
+	/** @var string the product description mode setting ID */
+	const SETTING_FEED_FILE_GENERATION_ENABLED = 'wc_facebook_feed_file_generation_enabled';
+
 	/** @var string the excluded product category IDs setting ID */
 	const SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS = 'wc_facebook_excluded_product_category_ids';
 
@@ -3177,6 +3180,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === get_option( self::SETTING_ENABLE_PRODUCT_SYNC, 'yes' ), $this );
+	}
+
+	/**
+	 * Determines whether feed file generation is enabled in Sync settings.
+	 *
+	 * @since 2.5.0
+	 *
+	 * @return bool
+	 */
+	public function is_feed_file_generation_enabled() {
+		return (bool) ( 'yes' === get_option( self::SETTING_FEED_FILE_GENERATION_ENABLED, 'yes' ) );
 	}
 
 

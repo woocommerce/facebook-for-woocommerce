@@ -318,6 +318,27 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			],
 			[ 'type' => 'sectionend' ],
 
+			[
+				'name' => __( 'Feed File Settings', 'woocommerce' ),
+				'type' => 'title',
+				'id'   => 'feed_file_settings',
+			],
+
+			[
+				'id'      => \WC_Facebookcommerce_Integration::SETTING_FEED_FILE_GENERATION_ENABLED,
+				'title'   => __( 'Enable feed file generation.', 'facebook-for-woocommerce' ),
+				'desc'    => sprintf(
+					/* translators: url to documentation section. */
+					__( 'Feed file is used for cyclic catalog content synchronization. Please check the documentation at %s to learn if this option should be enabled for your store.', 'facebook-for-woocommerce' ),
+					'<a href="' . facebook_for_woocommerce()->get_documentation_url() . '#feed-file-settings">Feed File Settings</a>',
+				),
+				'type'    => 'checkbox',
+				'label'   => ' ',
+				'default' => 'yes',
+			],
+
+			[ 'type' => 'sectionend', 'id' => 'feed_file_settings' ],
+
 		];
 	}
 
