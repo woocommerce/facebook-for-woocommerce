@@ -15,6 +15,7 @@
     "sake": "github:skyverge/sake"
   },
   "scripts": {
+    "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
     "build": "NODE_ENV=production wp-scripts build",
     "start": "wp-scripts start"
   }

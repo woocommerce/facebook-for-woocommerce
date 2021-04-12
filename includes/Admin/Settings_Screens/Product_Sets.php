@@ -30,8 +30,8 @@ class Product_Sets extends Admin\Abstract_Settings_Screen {
 	public function __construct() {
 
 		$this->id    = self::ID;
-		$this->label = __( 'Product Sets', 'facebook-for-woocommerce' );
-		$this->title = __( 'Product Sets', 'facebook-for-woocommerce' );
+		$this->label = __( 'Product sets', 'facebook-for-woocommerce' );
+		$this->title = __( 'Product sets', 'facebook-for-woocommerce' );
 	}
 
 	public function render() {
