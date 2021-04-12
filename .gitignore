@@ -21,5 +21,4 @@ codeception.yml
 /tests/unit.suite.yml
 /tests/_data/dump.sql
 
-/bin/*
 .DS_Store
