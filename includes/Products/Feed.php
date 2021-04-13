@@ -162,7 +162,7 @@ class Feed {
 		$integration = facebook_for_woocommerce()->get_integration();
 
 		// only schedule if configured
-		if ( ! $integration || ! $integration->is_configured() || ! $integration->is_product_sync_enabled() ) {
+		if ( true /*! $integration || ! $integration->is_configured() || ! $integration->is_product_sync_enabled() */ ) {
 			as_unschedule_all_actions( self::GENERATE_FEED_ACTION );
 			return;
 		}
