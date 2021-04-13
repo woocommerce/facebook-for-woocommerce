@@ -272,19 +272,18 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
-			$merchant_access_token = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$connection_error         = ! empty( $_GET['connection_error'] ) ? sanitize_text_field( $_GET['connection_error'] ) : '';
+			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
+			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
 			if ( ! $merchant_access_token ) {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
 			}
 
-			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
-
 			if ( ! $system_user_access_token ) {
 				throw new SV_WC_API_Exception( 'System User access token is missing' );
 			}
-
-			$system_user_id = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
 			if ( ! $system_user_id ) {
 				throw new SV_WC_API_Exception( 'System User ID is missing' );
