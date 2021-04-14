@@ -290,10 +290,15 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
-			$connection_error         = ! empty( $_GET['connection_error'] ) ? sanitize_text_field( $_GET['connection_error'] ) : '';
+			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
+			$error_code               = ! empty( $_GET['err_code'] ) ? sanitize_text_field( $_GET['err_code'] ) : '';
 			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
+
+			if ( $is_error && $proxy_error_message = $this->get_message_for_error_code( $error_code ) ) {
+				throw new SV_WC_API_Exception( $proxy_error_message );
+			}
 
 			if ( ! $merchant_access_token ) {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
@@ -1403,5 +1408,26 @@ class Connection {
 
 		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
+	}
+
+	/**
+	 * Returns error message based on err_code from PROXY
+	 *
+	 * @param string $err_code The error code coming from Proxy.
+	 *
+	 * @return string|null
+	 */
+	protected function get_message_for_error_code( string $err_code ): ?string {
+		foreach ( $this->proxy_error_messages as $code => $message ) {
+			if ( $err_code === $code ) {
+				return $message;
+			}
+
+			if ( strpos( $err_code, $code ) === 0 ) {
+				return sprintf( $message, implode( ', ', explode( ':', str_replace( $code, '', $err_code ) ) ) );
+			}
+		}
+
+		return null;
 	}
 }
