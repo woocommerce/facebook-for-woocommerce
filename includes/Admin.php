@@ -1525,6 +1525,7 @@ class Admin {
 			'product',
 			'edit-product',
 			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
 			'edit-product_cat',
 			'shop_order',
 		);
