@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.0
+Stable tag: 2.3.5
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,18 +39,42 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2021.nn.nn - version 2.4.0-dev.1 =
+= 2021.nn.nn - version 3.0.0-dev.1 =
  * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
  * Feature - Manage Facebook & Instagram generated orders in WooCommerce
  * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
  * Feature - Define custom product attributes such as gender, size, color, and pattern
+
+= 2021.03.31 - version 2.3.5 =
+ * Fix - critical issue for pre 5.0.0 WC sites
+
+= 2021.03.30 - version 2.3.4 =
+ * Feature - Add connection state to WooCommerce Usage Tracking.
+ * Feature - Register WooCommerce Navigation items.
+ * Fix - Disable product sync on 2.3.3 update ( temporary fix ).
+ * Fix - Add default placeholder for products with no image set.
+ * Fix - Undefined array key error for products without 'Product image' set.
+ * Dev - PHP Deprecated: Non-static method should not be called statically.
+
+= 2021.03.22 - version 2.3.3 =
+ * Fix - WooCommerce variation attribute sync not matching Enhanced Catalog attributes.
+ * Fix - Enable display names to be used for variant attribute values.
+ * Fix - Performance, do not auto-load Google Categories option.
+ * Fix - Logs being recorded even with debug option disabled.
+
+= 2021.03.02 - version 2.3.2 =
+ * Tweak - Bump Facebook Marketing API version to 9.0
+
+= 2021.02.23 - version 2.3.1 =
+ * Fix - Fix errors when product set is empty
+ * Fix - Ensure that events have an action_source
 
 = 2021.02.16 - version 2.3.0 =
  * Feature - Add ability to create and assign products to Facebook product sets
  * Feature - Add support for Facebook App store flow
  * Tweak - Ask merchants to delete products when changing from sync to not sync state
  * Tweak - Remove business_management permission from login scopes
- * Tweak - Store paramaters for Commerce merchant settings ID and Instagram business ID
+ * Tweak - Store parameters for Commerce merchant settings ID and Instagram business ID
  * Fix - Fix Products::get_google_product_category_id_from_highest_category() to handle WP_Error
  * Fix - Fix random HELLO appearing in the category settings
  * Fix - Make sure that list of strings params are now converted to actual arrays. Fixes an issue with the use of the additional_features parameter

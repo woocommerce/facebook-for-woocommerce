@@ -88,6 +88,7 @@ class Event {
 	protected function prepare_data( $data ) {
 
 		$this->data = wp_parse_args( $data, [
+			'action_source'    => 'website',
 			'event_time'       => time(),
 			'event_id'         => $this->generate_event_id(),
 			'event_source_url' => $this->get_current_url(),

@@ -42,7 +42,8 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.0',
 			'2.0.3',
 			'2.0.4',
-			'2.4.0',
+			'2.3.6',
+			'3.0.0',
 		];
 	}
 
@@ -337,13 +338,22 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 	}
 
+	/**
+	 * Upgrades to version 2.3.6
+	 *
+	 * @since 2.3.6
+	 */
+	protected function upgrade_to_2_3_6() {
+		delete_option( 'wc_facebook_google_product_categories' );
+		delete_transient( 'wc_facebook_google_product_categories' );
+	}
 
 	/**
-	 * Upgrades to version 2.4.0
+	 * Upgrades to version 3.0.0 ft. Instagram Checkout
 	 *
 	 * @since 2.4.0
 	 */
-	protected function upgrade_to_2_4_0() {
+	protected function upgrade_to_3_0_0() {
 
 		// Migrate previous Commerce Manager ID to Commerce Merchant Settings ID if one does not exist
 		$old_cms_id = get_option( 'wc_facebook_commerce_manager_id' );

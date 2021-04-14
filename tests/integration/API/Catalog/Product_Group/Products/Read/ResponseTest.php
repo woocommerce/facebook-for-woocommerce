@@ -21,17 +21,11 @@ class ResponseTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\API\Response::class ) ) {
-			require_once 'includes/API/Response.php';
-		}
+		// the API cannot be instantiated if an access token is not defined
+		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
-		if ( ! trait_exists( \SkyVerge\WooCommerce\Facebook\API\Traits\Paginated_Response::class, false ) ) {
-			require_once 'includes/API/Traits/Paginated_Response.php';
-		}
-
-		if ( ! class_exists( Response::class ) ) {
-			require_once 'includes/API/Catalog/Product_Group/Products/Read/Response.php';
-		}
+		// create an instance of the API and load all the request and response classes
+		facebook_for_woocommerce()->get_api();
 	}
 
 

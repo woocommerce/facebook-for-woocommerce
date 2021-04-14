@@ -121,6 +121,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	public function test_prepare_data( $property, $expected ) {
 
 		$data = [
+			'action_source'    => 'other',
 			'event_time'       => '1234',
 			'event_id'         => 'event-id',
 			'event_source_url' => 'current-url',
@@ -142,6 +143,7 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 	public function provider_prepare_data() {
 
 		return [
+		  'action source'     => [ 'action_source',    'other' ],
 			'event time'        => [ 'event_time',       '1234' ],
 			'event id'          => [ 'event_id',         'event-id' ],
 			'event source url'  => [ 'event_source_url', 'current-url' ],
@@ -280,6 +282,16 @@ class EventTest extends \Codeception\TestCase\WPTestCase {
 
 		$this->assertArrayHasKey( 'test', $actual );
 		$this->assertEquals( 'test', $actual['test'] );
+	}
+
+	/** @see Event::get_data(), Event::prepare_data() */
+	public function test_default_value_for_action_source() {
+
+		$event  = new Event( [] );
+		$actual = $event->get_data();
+
+		$this->assertArrayHasKey( 'action_source', $actual );
+		$this->assertEquals( 'website', $actual['action_source'] );
 	}
 
 
