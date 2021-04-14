@@ -383,8 +383,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * @param string $log_id optional log id to segment the files by, defaults to plugin id
 		 */
 		public function log( $message, $log_id = null ) {
-			// bail if logging isn't enabled
-			if ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) {
+			// bail if logging isn't enabled, always enabled if is not connected.
+			if ( ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) && $this->get_connection_handler()->is_connected() ) {
 				return;
 			}
 
