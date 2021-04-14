@@ -92,6 +92,8 @@ class Connection {
 	/** @var \WC_Facebookcommerce */
 	private $plugin;
 
+	/** @var array */
+	protected $proxy_error_messages;
 
 	/**
 	 * Constructs a new Connection.
@@ -115,6 +117,22 @@ class Connection {
 		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
 
 		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
+
+		$this->proxy_error_messages = apply_filters( 'facebook_for_woocommerce_proxy_error_messages',
+			[
+				'business_manager_id_missing'       => __( 'Business Manager ID is missing', 'facebook-for-commerce' ),
+				'catalog_id_missing'                => __( 'Catalog ID is missing', 'facebook-for-commerce' ),
+				'pixel_id_missing'                  => __( 'Pixel ID is missing', 'facebook-for-commerce' ),
+				'page_id_missing'                   => __( 'Page ID is missing', 'facebook-for-commerce' ),
+				'permissions_response_data_invalid' => __( 'Permissions response data invalid', 'facebook-for-commerce' ),
+				'user_data_invalid'                 => __( 'System User response data invalid', 'facebook-for-commerce' ),
+				'user_access_token_missing'         => __( 'System User access token is missing', 'facebook-for-commerce' ),
+				'fbe_user_data_invalid'             => __( 'Get FBE System User response data invalid', 'facebook-for-commerce' ),
+				'user_access_token_missing'         => __( 'System User access token is missing', 'facebook-for-commerce' ),
+				'user_id_missing'                   => __( 'System User ID missing', 'facebook-for-commerce' ),
+				'token_permission_missing_'         => __( 'The following access token permissions are missing: %s', 'facebook-for-commerce' ),
+			]
+		);
 	}
 
 
