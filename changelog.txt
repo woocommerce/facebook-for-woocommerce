@@ -4,7 +4,7 @@
  * Tweak - Add an initial performance debug mode to measure resource usage in some areas
  * Tweak - Add 3 usage tracking properties: "is-connected", "product-sync-enabled", "messenger-enabled"
  * Fix - High memory usage when starting full catalog sync
- * Fix - High memory usage of Google Product Category attribute data retrieval
+ * Fix - High memory usage of Google Product Category data
  * Fix - Fatal error for product categories with missing attributes
  * Fix - Connection data is now correctly cleared when using the "Disconnect" button
  * Fix – Error modals when setting default exclude categories in Product sync now work correctly
