@@ -5,6 +5,10 @@
  * @version 2.5.0
  */
 
+namespace SkyVerge\WooCommerce\Facebook\Products;
+
+use Error;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -12,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Include dependencies.
  */
-if ( ! class_exists( 'WC_CSV_Batch_Exporter', false ) ) {
-	include_once WC_ABSPATH . 'includes/export/abstract-wc-csv-batch-exporter.php';
+if ( ! class_exists( 'WC_Product_CSV_Exporter', false ) ) {
+	include_once WC_ABSPATH . 'includes/export/class-wc-product-csv-exporter.php';
 }
 
 /**
  * WC_Product_CSV_Exporter Class.
  */
-class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
+class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
 	/**
 	 * Type of export used in filter names.
@@ -27,6 +31,22 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	 * @var string
 	 */
 	protected $export_type = 'product';
+
+
+	/**
+	 * Filename to export to.
+	 *
+	 * @var string
+	 */
+	protected $filename = 'product_catalog.csv';
+
+
+	/**
+	 * Batch limit.
+	 *
+	 * @var integer
+	 */
+	protected $limit = 1;
 
 	/**
 	 * Should meta be exported?
@@ -36,25 +56,22 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	protected $enable_meta_export = false;
 
 	/**
-	 * Which product types are being exported.
-	 *
-	 * @var array
-	 */
-	protected $product_types_to_export = array();
-
-	/**
 	 * Products belonging to what category should be exported.
 	 *
 	 * @var string
 	 */
 	protected $product_category_to_export = array();
 
+	// Refactor feed handler into this class;
+	protected $feed_handler;
+
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		parent::__construct();
-		$this->set_product_types_to_export( array_merge( array_keys( wc_get_product_types() ), array( 'variation' ) ) );
+			parent::__construct();
+
+			$this->feed_handler = new \WC_Facebook_Product_Feed();
 	}
 
 	/**
@@ -69,18 +86,7 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	}
 
 	/**
-	 * Product types to export.
-	 *
-	 * @param array $product_types_to_export List of types to export.
-	 *
-	 * @since 3.1.0
-	 */
-	public function set_product_types_to_export( $product_types_to_export ) {
-		$this->product_types_to_export = array_map( 'wc_clean', $product_types_to_export );
-	}
-
-	/**
-	 * Product category to export
+	 * Product category to export.
 	 *
 	 * @param string $product_category_to_export Product category slug to export, empty string exports all.
 	 *
@@ -92,22 +98,95 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	}
 
 	/**
+	 * Return a filename.
+	 *
+	 * @return string
+	 */
+	public function get_filename() {
+		return sanitize_file_name( $this->filename );
+	}
+
+	public function get_feed_directory() {
+		$upload_dir = wp_upload_dir();
+		return trailingslashit( $upload_dir['basedir'] ) . 'facebook_for_woocommerce/';
+	}
+
+	/**
+	 * Get file path to export to.
+	 *
+	 * @return string
+	 */
+	protected function get_file_path() {
+		return $this->get_feed_directory() . $this->get_filename();
+	}
+
+	protected $attribute_variants = array();
+
+	/**
 	 * Return an array of columns to export.
 	 *
 	 * @since  3.1.0
 	 * @return array
 	 */
 	public function get_default_column_names() {
-		return apply_filters(
-			"woocommerce_product_export_{$this->export_type}_default_columns",
-			array(
-				'id'                 => __( 'ID', 'woocommerce' ),
-			)
+		return array(
+			'id'     => 'id',
+			'title'  => 'title',
+			'description' => 'description',
+			'image_link' => 'image_link',
+			'link' => 'link',
+			'product_type' => 'product_type',
+			'brand' => 'brand',
+			'price' => 'price',
+			'availability' => 'availability',
+			'item_group_id' => 'item_group_id',
+			'checkout_url' => 'checkout_url',
+			'additional_image_link' => 'additional_image_link',
+			'sale_price_effective_date' => 'sale_price_effective_date',
+			'sale_price' => 'sale_price',
+			'condition' => 'condition',
+			'visibility' => 'visibility',
+			'gender' => 'gender',
+			'color' => 'color',
+			'size' => 'size',
+			'pattern' => 'pattern',
+			'google_product_category' => 'google_product_category',
+			'default_product' => 'default_product',
+			'variant' => 'variant',
 		);
-			// return 'id,title,description,image_link,link,product_type,' .
-			// 'brand,price,availability,item_group_id,checkout_url,' .
-			// 'additional_image_link,sale_price_effective_date,sale_price,condition,' .
-			// 'visibility,gender,color,size,pattern,google_product_category,default_product,variant' . PHP_EOL;
+	}
+
+	public function prepare_feed_folder() {
+		$catalog_feed_directory = trailingslashit( $this->get_feed_directory() );
+
+		if ( ! wp_mkdir_p( $catalog_feed_directory ) ) {
+			throw new Error( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
+		}
+
+		$files = [
+			[
+				'base'    => $catalog_feed_directory,
+				'file'    => 'index.html',
+				'content' => '',
+			],
+			[
+				'base'    => $catalog_feed_directory,
+				'file'    => '.htaccess',
+				'content' => 'deny from all',
+			],
+		];
+
+		foreach ( $files as $file ) {
+
+			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
+
+				if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+
+					fwrite( $file_handle, $file['content'] );
+					fclose( $file_handle );
+				}
+			}
+		}
 	}
 
 	/**
@@ -116,57 +195,30 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	 * @since 3.1.0
 	 */
 	public function prepare_data_to_export() {
+		$page = $this->get_page();
+		$limit = $this->get_limit();
+		$all_products = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
+		$batch = array_slice( $all_products, ( $page - 1 ) * $limit, $limit );
 		$args = array(
-			'status'   => array( 'publish' ),
-			'type'     => array( 'product', 'product_variation' ),
-			'limit'    => $this->get_limit(),
-			'page'     => $this->get_page(),
-			'orderby'  => array(
-				'ID' => 'ASC',
-			),
-			'return'   => 'objects',
-			'paginate' => true,
+			'status'  => array( 'publish' ),
+			'type'    => $this->product_types_to_export,
+			'include' => array_values( $batch ),
+			'limit'   => $limit,
+			'return'  => 'objects',
 		);
 
-		if ( ! empty( $this->product_category_to_export ) ) {
-			$args['category'] = $this->product_category_to_export;
-		}
 		$products = wc_get_products( $args );
 
-		$this->total_rows  = $products->total;
+		$prods = array();
 		$this->row_data    = array();
-		$variable_products = array();
-
-		foreach ( $products->products as $product ) {
-			// Check if the category is set, this means we need to fetch variations seperately as they are not tied to a category.
-			if ( ! empty( $args['category'] ) && $product->is_type( 'variable' ) ) {
-				$variable_products[] = $product->get_id();
-			}
-
+		foreach ( $products as $product ) {
+			$prods[] = $product->get_id();
 			$this->row_data[] = $this->generate_row_data( $product );
 		}
 
-		// If a category was selected we loop through the variations as they are not tied to a category so will be excluded by default.
-		if ( ! empty( $variable_products ) ) {
-			foreach ( $variable_products as $parent_id ) {
-				$products = wc_get_products(
-					array(
-						'parent' => $parent_id,
-						'type'   => array( 'variation' ),
-						'return' => 'objects',
-						'limit'  => -1,
-					)
-				);
-
-				if ( ! $products ) {
-					continue;
-				}
-
-				foreach ( $products as $product ) {
-					$this->row_data[] = $this->generate_row_data( $product );
-				}
-			}
-		}
+		$missing1 = array_diff( $batch, $prods );
+		$missing2 = array_diff( $prods, $batch );
+		$missing2[] = false;
 	}
 
 	/**
@@ -177,41 +229,11 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 	 * @return array
 	 */
 	protected function generate_row_data( $product ) {
-		$columns = $this->get_column_names();
-		$row     = array();
-		foreach ( $columns as $column_id => $column_name ) {
-			$column_id = strstr( $column_id, ':' ) ? current( explode( ':', $column_id ) ) : $column_id;
-			$value     = '';
-
-			// Skip some columns if dynamically handled later or if we're being selective.
-			if ( in_array( $column_id, array( 'downloads', 'attributes', 'meta' ), true ) || ! $this->is_column_exporting( $column_id ) ) {
-				continue;
-			}
-
-			if ( has_filter( "woocommerce_product_export_{$this->export_type}_column_{$column_id}" ) ) {
-				// Filter for 3rd parties.
-				$value = apply_filters( "woocommerce_product_export_{$this->export_type}_column_{$column_id}", '', $product, $column_id );
-
-			} elseif ( is_callable( array( $this, "get_column_value_{$column_id}" ) ) ) {
-				// Handle special columns which don't map 1:1 to product data.
-				$value = $this->{"get_column_value_{$column_id}"}( $product );
-
-			} elseif ( is_callable( array( $product, "get_{$column_id}" ) ) ) {
-				// Default and custom handling.
-				$value = $product->{"get_{$column_id}"}( 'edit' );
-			}
-
-			if ( 'description' === $column_id || 'short_description' === $column_id ) {
-				$value = $this->filter_description_field( $value );
-			}
-
-			$row[ $column_id ] = $value;
-		}
-
-		$this->prepare_downloads_for_export( $product, $row );
-		$this->prepare_attributes_for_export( $product, $row );
-		$this->prepare_meta_for_export( $product, $row );
-		return apply_filters( 'woocommerce_product_export_row_data', $row, $product );
+		$fb_product = new \WC_Facebook_Product( $product );
+		return $this->feed_handler->prepare_product_for_feed(
+			$fb_product,
+			$this->attribute_variants
+		);
 	}
 
 	/**
@@ -546,32 +568,6 @@ class FB_Feed_Generator extends WC_CSV_Batch_Exporter {
 		$description = str_replace( '\n', "\\\\n", $description );
 		$description = str_replace( "\n", '\n', $description );
 		return $description;
-	}
-	/**
-	 * Export downloads.
-	 *
-	 * @param WC_Product $product Product being exported.
-	 * @param array      $row     Row being exported.
-	 *
-	 * @since 3.1.0
-	 */
-	protected function prepare_downloads_for_export( $product, &$row ) {
-		if ( $product->is_downloadable() && $this->is_column_exporting( 'downloads' ) ) {
-			$downloads = $product->get_downloads( 'edit' );
-
-			if ( $downloads ) {
-				$i = 1;
-				foreach ( $downloads as $download ) {
-					/* translators: %s: download number */
-					$this->column_names[ 'downloads:name' . $i ] = sprintf( __( 'Download %d name', 'woocommerce' ), $i );
-					/* translators: %s: download number */
-					$this->column_names[ 'downloads:url' . $i ] = sprintf( __( 'Download %d URL', 'woocommerce' ), $i );
-					$row[ 'downloads:name' . $i ]               = $download->get_name();
-					$row[ 'downloads:url' . $i ]                = $download->get_file();
-					$i++;
-				}
-			}
-		}
 	}
 
 	/**

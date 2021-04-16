@@ -142,6 +142,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/Product_Categories.php';
 				require_once __DIR__ . '/includes/Products.php';
 				require_once __DIR__ . '/includes/Products/Feed.php';
+				require_once __DIR__ . '/includes/Products/class-fb-feed-generator.php';
 				require_once __DIR__ . '/includes/Products/FBCategories.php';
 				require_once __DIR__ . '/includes/Products/Stock.php';
 				require_once __DIR__ . '/includes/Products/Sync.php';
