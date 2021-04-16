@@ -281,7 +281,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 				<?php else : ?>
 
-					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ); ?>" class="button button-primary" target="_blank">
+					<a href="<?php echo esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ); ?>" class="button button-primary">
 						<?php esc_html_e( 'Get Started', 'facebook-for-woocommerce' ); ?>
 					</a>
 
