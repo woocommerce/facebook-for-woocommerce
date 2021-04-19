@@ -51,7 +51,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
-		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-feed-status.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-feed-status.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		$settings = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
 
@@ -60,7 +60,9 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			'facebook_for_woocommerce_feed_status',
 			array(
 				'ajax_url'               => admin_url( 'admin-ajax.php' ),
+				'feed_generation_nonce'  => wp_create_nonce( FB_Feed_Generator::FEED_GENERATION_NONCE ),
 				'generation_in_progress' => $this->is_generation_in_progress(),
+				'generation_progress'    => 10,
 				'i18n'                   => array(
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync' => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
@@ -75,25 +77,23 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 
 	public function render() {
 		?>
-		<div class="wrap woocommerce">
 		<h1><?php esc_html_e( 'Facebook Feed Generator', 'woocommerce' ); ?></h1>
-			<div class="woocommerce-exporter-wrapper">
-				<form class="woocommerce-feed-generator">
-					<header>
-						<span class="spinner is-active"></span>
-						<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'woocommerce' ); ?></p>
-					</header>
-					<section>
-						<progress class="woocommerce-exporter-progress" max="100" value="0"></progress>
-					</section>
-					<section>
-						<progress class="woocommerce-exporter-progress" max="100" value="0"></progress>
-					</section>
-					<div class="wc-actions">
-						<button type="submit" class="woocommerce-exporter-button button button-primary" value="<?php esc_attr_e( 'Generate Feed', 'woocommerce' ); ?>"><?php esc_html_e( 'Generate Feed', 'woocommerce' ); ?></button>
-					</div>
-				</form>
-			</div>
+		<div class="facebook-for-woocommerce-feed-status-wrapper">
+			<form class="facebook-for-woocommerce-feed-generator">
+				<header>
+					<span class="spinner is-active"></span>
+					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'woocommerce' ); ?></p>
+				</header>
+				<section>
+					This will be the stats section.
+				</section>
+				<section>
+					<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>
+				</section>
+				<div class="wc-actions">
+					<button type="submit" class="facebook-woocommerce-feed-generator-button button button-primary" value="<?php esc_attr_e( 'Generate Feed', 'woocommerce' ); ?>"><?php esc_html_e( 'Generate Feed', 'woocommerce' ); ?></button>
+				</div>
+			</form>
 		</div>
 		<?php
 		parent::render();
