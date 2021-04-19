@@ -170,11 +170,7 @@ class Orders {
 		// add/update items
 		foreach ( $remote_order->get_items() as $item ) {
 
-			$product = Products::get_product_by_fb_product_id( $item['product_id'] );
-
-			if ( empty( $product ) ) {
-				$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
-			}
+			$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
 
 			if ( ! $product instanceof \WC_Product ) {
 
@@ -521,7 +517,13 @@ class Orders {
 	 * @since 2.1.0
 	 */
 	public function schedule_local_orders_update() {
-		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+		// only schedule if connected
+		if ( ! facebook_for_woocommerce()->get_commerce_handler()->is_connected() ) {
+			as_unschedule_all_actions( self::ACTION_FETCH_ORDERS );
+			return;
+		}
+
+		if ( ! as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
 
 			$interval = $this->get_order_update_interval();
 

@@ -25,9 +25,9 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	/** @see Connection::__construct() */
 	public function test_constructor() {
 
-        $connection = $this->get_connection();
+		$connection = $this->get_connection();
 
-        $this->assertInstanceOf( Connection::class, $connection );
+		$this->assertInstanceOf( Connection::class, $connection );
 	}
 
 
@@ -116,8 +116,8 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 
 		$connect_url = $this->get_connection()->get_commerce_connect_url();
 
-		$this->assertStringContainsString( 'https://www.facebook.com/commerce_manager/onboarding/?app_id=', $connect_url );
-		$this->assertStringContainsString( 'redirect_url=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebookcommerce%2F%3Fsite_url%3D', $connect_url );
+		$this->assertStringContainsString( 'https://www.facebook.com/facebook_business_extension', $connect_url );
+		$this->assertStringContainsString( 'redirect_uri=https%3A%2F%2Fconnect.woocommerce.com%2Fauth%2Ffacebookcommerce%2F%3Fsite_url%3D', $connect_url );
 		$this->assertStringContainsString( 'wc-api%253D' . Connection::ACTION_CONNECT_COMMERCE . '%2526nonce%253D', $connect_url );
 	}
 
@@ -300,13 +300,23 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::get_commerce_manager_id() */
-	public function test_get_commerce_manager_id() {
+	/** @see Connection::is_onsite_checkout_connected() */
+	public function test_is_onsite_checkout_connected() {
 
-		$commerce_manager_id = 'commerce manager id';
-		update_option( Connection::OPTION_COMMERCE_MANAGER_ID, $commerce_manager_id );
+		$connected = true;
+		update_option( Connection::OPTION_ONSITE_CHECKOUT_CONNECTED, $connected );
 
-		$this->assertSame( $commerce_manager_id, $this->get_connection()->get_commerce_manager_id() );
+		$this->assertSame( $connected, $this->get_connection()->is_onsite_checkout_connected() );
+	}
+
+
+	/** @see Connection::is_commerce_setup_complete() */
+	public function test_is_commerce_setup_complete() {
+
+		$complete = true;
+		update_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
+
+		$this->assertSame( $complete, $this->get_connection()->is_commerce_setup_complete() );
 	}
 
 
@@ -612,13 +622,23 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 
-	/** @see Connection::update_commerce_manager_id() */
-	public function test_update_commerce_manager_id() {
+	/** @see Connection::update_onsite_checkout_connected() */
+	public function test_update_onsite_checkout_connected() {
 
-		$commerce_manager_id = 'commerce manager id';
-		$this->get_connection()->update_commerce_manager_id( $commerce_manager_id );
+		$connected = true;
+		$this->get_connection()->update_onsite_checkout_connected( $connected );
 
-		$this->assertSame( $commerce_manager_id, get_option( Connection::OPTION_COMMERCE_MANAGER_ID ) );
+		$this->assertSame( $connected, get_option( Connection::OPTION_ONSITE_CHECKOUT_CONNECTED ) );
+	}
+
+
+	/** @see Connection::update_commerce_setup_complete() */
+	public function test_update_commerce_setup_complete() {
+
+		$complete = true;
+		$this->get_connection()->update_commerce_setup_complete( $complete );
+
+		$this->assertSame( $complete, get_option( Connection::OPTION_COMMERCE_SETUP_COMPLETE ) );
 	}
 
 
@@ -691,7 +711,6 @@ class ConnectionTest extends \Codeception\TestCase\WPTestCase {
 		$connection = $this->get_connection();
 
 		$connection->update_access_token( 'access token' );
-		$connection->update_commerce_manager_id( 'manager id' );
 
 		$this->assertTrue( $connection->is_connected() );
 	}

@@ -21,11 +21,13 @@ class RequestTest extends \Codeception\TestCase\WPTestCase {
 
 		parent::_before();
 
-		// the API cannot be instantiated if an access token is not defined
-		facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
+		if ( ! class_exists( \SkyVerge\WooCommerce\Facebook\API\Request::class ) ) {
+			// the API cannot be instantiated if an access token is not defined
+			facebook_for_woocommerce()->get_connection_handler()->update_access_token( 'access_token' );
 
-		// create an instance of the API and load all the request and response classes
-		facebook_for_woocommerce()->get_api();
+			// create an instance of the API and load all the request and response classes
+			facebook_for_woocommerce()->get_api();
+		}
 	}
 
 

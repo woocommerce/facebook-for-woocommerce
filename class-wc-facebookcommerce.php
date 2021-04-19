@@ -197,10 +197,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 					require_once __DIR__ . '/includes/Admin/Settings.php';
 					require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sets.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
+					require_once __DIR__ . '/includes/Admin/Settings_Screens/Commerce.php';
 					require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
 					require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
 					require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
@@ -725,6 +727,22 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Orders/Response.php';
 				}
 
+				if ( ! class_exists( API\CMS\Read\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/CMS/Read/Request.php';
+				}
+
+				if ( ! class_exists( API\CMS\Read\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/CMS/Read/Response.php';
+				}
+
+				if ( ! class_exists( API\CMS\Order_Management\Request::class ) ) {
+					require_once __DIR__ . '/includes/API/CMS/Order_Management/Request.php';
+				}
+
+				if ( ! class_exists( API\CMS\Order_Management\Response::class ) ) {
+					require_once __DIR__ . '/includes/API/CMS/Order_Management/Response.php';
+				}
+
 				$this->api = new SkyVerge\WooCommerce\Facebook\API( $access_token );
 
 			} else {
@@ -1098,6 +1116,5 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		return \WC_Facebookcommerce::instance();
 	}
-
 
 endif;

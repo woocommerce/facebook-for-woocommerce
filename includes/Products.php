@@ -43,9 +43,6 @@ class Products {
 	/** @var string product image source option to use the parent product image in Facebook */
 	const PRODUCT_IMAGE_SOURCE_CUSTOM = 'custom';
 
-	/** @var string the meta key used to flag if Commerce is enabled for the product */
-	const COMMERCE_ENABLED_META_KEY = '_wc_facebook_commerce_enabled';
-
 	/** @var string the meta key used to store the Google product category ID for the product */
 	const GOOGLE_PRODUCT_CATEGORY_META_KEY = '_wc_facebook_google_product_category';
 
@@ -454,55 +451,6 @@ class Products {
 		 * @param \WC_Product $product product object
 		 */
 		return (int) apply_filters( 'wc_facebook_product_price', $price, (float) $facebook_price, $product );
-	}
-
-
-	/**
-	 * Determines whether the product meets all of the criteria needed for Commerce.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 */
-	public static function is_product_ready_for_commerce( \WC_Product $product ) {
-
-		return $product->managing_stock()
-			&& self::get_product_price( $product )
-			&& self::is_commerce_enabled_for_product( $product )
-			&& self::product_should_be_synced( $product );
-	}
-
-
-	/**
-	 * Determines whether Commerce is enabled for the product.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @return bool
-	 */
-	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
-
-		if ( $product->is_type( 'variation' ) ) {
-			$product = wc_get_product( $product->get_parent_id() );
-		}
-
-		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
-	}
-
-
-	/**
-	 * Enables or disables Commerce for a product.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param \WC_Product $product the product object
-	 * @param bool        $is_enabled whether or not Commerce is to be enabled
-	 */
-	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
-
-		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
-		$product->save_meta_data();
 	}
 
 
@@ -1258,50 +1206,6 @@ class Products {
 
 
 	/**
-	 * Gets a product by its Facebook product ID, from the `fb_product_item_id` or `fb_product_group_id`.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $fb_product_id Facebook product ID
-	 * @return \WC_Product|null
-	 */
-	public static function get_product_by_fb_product_id( $fb_product_id ) {
-
-		$product = null;
-
-		// try to by the `fb_product_item_id` meta
-		$products = wc_get_products(
-			array(
-				'limit'      => 1,
-				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
-				'meta_value' => $fb_product_id,
-			)
-		);
-
-		if ( ! empty( $products ) ) {
-			$product = current( $products );
-		}
-
-		if ( empty( $product ) ) {
-			// try to by the `fb_product_group_id` meta
-			$products = wc_get_products(
-				array(
-					'limit'      => 1,
-					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
-					'meta_value' => $fb_product_id,
-				)
-			);
-
-			if ( ! empty( $products ) ) {
-				$product = current( $products );
-			}
-		}
-
-		return ! empty( $product ) ? $product : null;
-	}
-
-
-	/**
 	 * Gets a product by its Facebook retailer ID.
 	 *
 	 * @see \WC_Facebookcommerce_Utils::get_fb_retailer_id().
@@ -1316,7 +1220,17 @@ class Products {
 		if ( strpos( $fb_retailer_id, \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX ) !== false ) {
 			$product_id = str_replace( \WC_Facebookcommerce_Utils::FB_RETAILER_ID_PREFIX, '', $fb_retailer_id );
 		} else {
-			$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
+			switch ( get_option( \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE )) {
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU:
+					$product_id = wc_get_product_id_by_sku( $fb_retailer_id );
+					break;
+				case \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID:
+					$product_id = $fb_retailer_id;
+					break;
+				default:
+					$product_id = substr( $fb_retailer_id, strrpos( $fb_retailer_id, '_' ) + 1 );
+					break;
+			}
 		}
 
 		$product = wc_get_product( $product_id );

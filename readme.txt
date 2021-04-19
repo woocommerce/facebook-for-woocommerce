@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2021.nn.nn - version 3.0.0-dev.1 =
+ * Feature - Integrate with Instagram Checkout so customers can purchase your products directly on Facebook platforms
+ * Feature - Manage Facebook & Instagram generated orders in WooCommerce
+ * Feature - Sync product inventory counts between your Facebook catalog and WooCommerce shop
+ * Feature - Define custom product attributes such as gender, size, color, and pattern
+
 = 2021.03.31 - version 2.3.5 =
  * Fix - critical issue for pre 5.0.0 WC sites
 

@@ -93,6 +93,19 @@ class Response extends Framework\SV_WC_API_JSON_Response {
 
 
 	/**
+	 * Gets the API error subcode.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @return int|null
+	 */
+	public function get_api_error_subcode() {
+
+		return isset( $this->error->error_subcode ) ? (int) $this->error->error_subcode : null;
+	}
+
+
+	/**
 	 * Gets the user error message.
 	 *
 	 * @since 2.1.0

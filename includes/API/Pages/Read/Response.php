@@ -48,4 +48,20 @@ class Response extends API\Response  {
 	}
 
 
+	/**
+	 * Gets the Commerce Merchant Settings associated with the page.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return \stdClass
+	 */
+	public function get_commerce_merchant_settings() {
+
+		$data = ! empty( $this->commerce_merchant_settings->data ) && is_array( $this->commerce_merchant_settings->data )
+			? $this->commerce_merchant_settings->data[0] : null;
+
+		return is_object( $data ) ? $data : new \stdClass();
+	}
+
+
 }

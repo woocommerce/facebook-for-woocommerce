@@ -31,6 +31,10 @@ class Admin {
 	/** @var string the "sync disabled" sync mode slug */
 	const SYNC_MODE_SYNC_DISABLED = 'sync_disabled';
 
+
+	/** @var \Admin\Orders the orders admin handler */
+	protected $orders;
+
 	/** @var \Admin\Product_Categories the product category admin handler */
 	protected $product_categories;
 
@@ -52,10 +56,12 @@ class Admin {
 			return;
 		}
 
+		require_once __DIR__ . '/Admin/Orders.php';
 		require_once __DIR__ . '/Admin/Products.php';
 		require_once __DIR__ . '/Admin/Product_Categories.php';
 		require_once __DIR__ . '/Admin/Product_Sets.php';
 
+		$this->orders             = new Admin\Orders();
 		$this->product_categories = new Admin\Product_Categories();
 		$this->product_sets = new Admin\Product_Sets();
 
@@ -162,7 +168,7 @@ class Admin {
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
 					'facebook_for_woocommerce_products_admin',
-					[
+					array(
 						'ajax_url'                                        => admin_url( 'admin-ajax.php' ),
 						'enhanced_attribute_optional_selector'            => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
 						'enhanced_attribute_page_type_edit_category'      => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
@@ -177,10 +183,10 @@ class Admin {
 						'product_removed_from_sync_confirm_modal_message' => $this->get_product_removed_from_sync_confirm_modal_message(),
 						'product_removed_from_sync_confirm_modal_buttons' => $this->get_product_removed_from_sync_confirm_modal_buttons(),
 						'product_removed_from_sync_field_id'              => '#' . \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
-						'i18n'                                            => [
-							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
-						],
-					]
+						'i18n'                                            => array(
+							'missing_google_product_category_message'       => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram or Facebook.', 'facebook-for-woocommerce' ),
+						),
+					)
 				);
 
 			}//end if
@@ -192,8 +198,7 @@ class Admin {
 			}
 		}//end if
 
-		// wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script( 'wc-facebook-google-product-category-fields', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/google-product-category-fields.min.js', array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script(
 			'wc-facebook-google-product-category-fields',
@@ -241,7 +246,7 @@ class Admin {
 		ob_start();
 
 		?>
-		<p><?php esc_html_e( 'To sell this product on Instagram, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
+		<p><?php esc_html_e( 'To sell this product on Instagram or Facebook, please ensure it meets the following requirements:', 'facebook-for-woocommerce' ); ?></p>
 
 		<ul class="ul-disc">
 			<li><?php esc_html_e( 'Has a price defined', 'facebook-for-woocommerce' ); ?></li>
@@ -283,6 +288,19 @@ class Admin {
 		<?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Gets the orders admin handler instance.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return \SkyVerge\WooCommerce\Facebook\Admin\Orders
+	 */
+	public function get_orders_handler() {
+
+		return $this->orders;
 	}
 
 
@@ -980,7 +998,7 @@ class Admin {
 
 				// schedule simple products to be updated or deleted from the catalog in the background
 				if ( Products::product_should_be_deleted( $product ) ) {
-					facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( $product->get_id() ) );
+					facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ) );
 				} else {
 					facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( array( $product->get_id() ) );
 				}
@@ -1290,16 +1308,6 @@ class Admin {
 			$product          = wc_get_product( $post );
 			$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 			?>
-
-			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
-				<div class='wc-facebook-commerce-options-group options_group'>
-					<?php
-					if ( $product instanceof \WC_Product ) {
-						\SkyVerge\WooCommerce\Facebook\Admin\Products::render_commerce_fields( $product );
-					}
-					?>
-			</div>
-			<?php endif; ?>
 
 			<div class='wc-facebook-commerce-options-group options_group'>
 				<?php \SkyVerge\WooCommerce\Facebook\Admin\Products::render_google_product_category_fields_and_enhanced_attributes( $product ); ?>

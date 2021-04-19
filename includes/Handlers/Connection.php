@@ -71,8 +71,11 @@ class Connection {
 	/** @var string the page access token option name */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
-	/** @var string the Commerce manager ID option name */
-	const OPTION_COMMERCE_MANAGER_ID = 'wc_facebook_commerce_manager_id';
+	/** @var bool option that stores the Commerce setup status */
+	const OPTION_COMMERCE_SETUP_COMPLETE = 'wc_facebook_commerce_setup_complete';
+
+	/** @var bool option that stores the onsite checkout connected state */
+	const OPTION_ONSITE_CHECKOUT_CONNECTED = 'wc_facebook_onsite_checkout_connected';
 
 	/** @var string webhook event subscribed object */
 	const WEBHOOK_SUBSCRIBED_OBJECT = 'user';
@@ -109,6 +112,8 @@ class Connection {
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, [ $this, 'handle_connect' ] );
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, [ $this, 'handle_disconnect' ] );
+
+		add_action( 'woocommerce_api_' . self::ACTION_CONNECT_COMMERCE, [ $this, 'handle_connect_commerce' ] );
 
 		add_action( 'woocommerce_api_' . self::ACTION_FBE_REDIRECT, [ $this, 'handle_fbe_redirect' ] );
 
@@ -216,6 +221,8 @@ class Connection {
 
 		$page_id = sanitize_text_field( $response->get_page_id() );
 
+		$cms_id = sanitize_text_field( $response->get_commerce_merchant_settings_id() );
+
 		if ( $page_id ) {
 
 			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
@@ -224,6 +231,14 @@ class Connection {
 			$page_access_token = $this->retrieve_page_access_token( $page_id );
 
 			$this->update_page_access_token( $page_access_token );
+
+			if ( !$cms_id ) {
+				// attempt to fetch commerce merchant settings id for the configured page, if none is set for FBE
+				$page_response = facebook_for_woocommerce()->get_api()->get_page( $page_id );
+				if ( $cms = $page_response->get_commerce_merchant_settings() ) {
+					$cms_id = sanitize_text_field( $cms->id );
+				}
+			}
 		}
 
 		if ( $response->get_pixel_id() ) {
@@ -246,8 +261,38 @@ class Connection {
 			$this->update_instagram_business_id( sanitize_text_field( $response->get_instagram_business_id() ) );
 		}
 
-		if ( $response->get_commerce_merchant_settings_id() ) {
-			$this->update_commerce_merchant_settings_id( sanitize_text_field( $response->get_commerce_merchant_settings_id() ) );
+		if ( $cms_id ) {
+			$this->update_commerce_installation_data( $cms_id );
+		}
+	}
+
+
+	/**
+	 * Retrieves and stores the connected Commerce account installation data.
+	 * Use following guidelines to determine eligibility for Order Management:
+	 * https://developers.facebook.com/docs/commerce-platform/platforms/onboarding/troubleshooting#shop_setup_status
+	 * @since 2.3.0
+	 *
+	 * @param string $cms_id Commerce Merchant Settings ID
+	 * @throws SV_WC_API_Exception
+	 */
+	public function update_commerce_installation_data( $cms_id ) {
+		$response = facebook_for_woocommerce()->get_api()->get_commerce_merchant_settings( $cms_id );
+		$this->update_commerce_merchant_settings_id( $cms_id );
+
+		$onsite_intent = $response->has_onsite_intent();
+		$setup_status = $response->get_setup_status();
+
+		$complete = (( $response->has_onsite_intent() || $response->get_cta() === 'ONSITE_CHECKOUT' ) &&
+			$setup_status &&
+			$setup_status->shop_setup === 'SETUP' &&
+			$setup_status->payment_setup !== 'NOT_SETUP'
+		);
+		$this->update_commerce_setup_complete( $complete );
+
+		if ( $complete ) {
+			$oma_response = facebook_for_woocommerce()->get_api()->get_order_management_apps( $cms_id );
+			$this->update_onsite_checkout_connected( in_array( $this->get_client_id(), $oma_response->get_apps() ) );
 		}
 	}
 
@@ -370,6 +415,8 @@ class Connection {
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
+		$this->update_commerce_setup_complete( false );
+		$this->update_onsite_checkout_connected( false );
 		$this->update_instagram_business_id( '' );
 		$this->update_commerce_merchant_settings_id( '' );
 
@@ -378,6 +425,71 @@ class Connection {
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
 
 		delete_transient( 'wc_facebook_business_configuration_refresh' );
+	}
+
+
+	/**
+	 * Handles the connection redirect from Commerce onboarding.
+	 *
+	 * @internal
+	 *
+	 * @since 2.1.0-dev.1
+	 */
+	public function handle_connect_commerce() {
+
+		// don't handle anything unless the user can manage WooCommerce settings
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		try {
+
+			facebook_for_woocommerce()->log( 'Processing Facebook commerce connection.' );
+
+			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT_COMMERCE ) ) {
+				throw new SV_WC_API_Exception( 'Invalid nonce' );
+			}
+
+			$cms_id = ! empty( $_GET['commerce_manager_id'] ) ? sanitize_text_field( $_GET['commerce_manager_id'] ) : '';
+
+			if ( ! $cms_id ) {
+				throw new SV_WC_API_Exception( 'Commerce Merchant Settings ID is missing' );
+			}
+
+			// store the commerce manager ID if queried successfully
+			$this->update_commerce_installation_data( $cms_id );
+
+			// if setup is complete but not already connected, need to enable order management
+			if ( $this->is_commerce_setup_complete() && ! $this->is_onsite_checkout_connected() ) {
+				// get a current access token for the configured page
+				$page_access_token = $this->retrieve_page_access_token( facebook_for_woocommerce()->get_integration()->get_facebook_page_id() );
+
+				$this->update_page_access_token( $page_access_token );
+
+				// allow the commerce manager to manage orders for the page shop
+				$this->enable_order_management( $cms_id, $page_access_token );
+				$this->update_onsite_checkout_connected( true );
+			}
+
+			if ( $this->is_onsite_checkout_connected() ) {
+				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection complete! Thanks for using Facebook for WooCommerce.', 'facebook-for-woocommerce' ) );
+			}
+
+		} catch ( SV_WC_API_Exception $exception ) {
+
+			$message = sprintf(
+				/* translators: Placeholders: %s - connection error message */
+				__( 'Connection failed: %s', 'facebook-for-woocommerce' ),
+				$exception->getMessage()
+			);
+
+			facebook_for_woocommerce()->log( $message );
+
+			facebook_for_woocommerce()->get_message_handler()->add_error( $message );
+		}
+
+		wp_safe_redirect( add_query_arg( 'tab', 'commerce', facebook_for_woocommerce()->get_settings_url() ) );
+		exit;
 	}
 
 
@@ -425,6 +537,37 @@ class Connection {
 		}
 
 		return $page_access_tokens[ $page_id ];
+	}
+
+
+	/**
+	 * Enables order management for the given Commerce Account.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $cms_id Commerce Merchant Settings ID
+	 * @param string $page_access_token page access token
+	 * @throws SV_WC_API_Exception
+	 */
+	private function enable_order_management( $cms_id, $page_access_token ) {
+
+		facebook_for_woocommerce()->log( 'Enabling order management' );
+
+		$response = wp_remote_post( "https://graph.facebook.com/{$cms_id}/order_management_apps?access_token={$page_access_token}" );
+
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+
+		if ( ! is_array( $body ) || empty( $body['success'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+
+			facebook_for_woocommerce()->log( print_r( $body, true ) );
+
+			throw new SV_WC_API_Exception( sprintf(
+				/* translators: Placeholders: %s - API error message */
+				__( 'Could not enable order management. %s', 'facebook for woocommerce' ),
+				wp_remote_retrieve_response_message( $response )
+			) );
+		}
 	}
 
 
@@ -531,7 +674,7 @@ class Connection {
 	 *
 	 * @return string
 	 */
-	public function get_commerce_connect_url() {
+	public function get_commerce_connect_url( $cms_id = null ) {
 
 		// build the site URL to which the user will ultimately return
 		$site_url = add_query_arg( [
@@ -539,14 +682,20 @@ class Connection {
 			'nonce'  => wp_create_nonce( self::ACTION_CONNECT_COMMERCE ),
 		], home_url( '/' ) );
 
-		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+		if ( $cms_id ) {
+			$connect_url = add_query_arg( 'commerce_manager_id', $cms_id, $site_url );
+		} else {
+			// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
+			$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
 
-		// build the final connect URL, direct to Facebook
-		$connect_url = add_query_arg( [
-			'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
-			'redirect_url' => urlencode( $redirect_url ),
-		], 'https://www.facebook.com/commerce_manager/onboarding/' );
+			// build the final connect URL, direct to Facebook
+			$connect_url = add_query_arg( [
+				'app_id'               => $this->get_client_id(), // this endpoint calls the client ID "app ID"
+				'app_redirect_uri'     => urlencode( $redirect_url ),
+				'external_business_id' => $this->get_external_business_id(),
+				'tab'                  => 'Commerce',
+			], 'https://www.facebook.com/facebook_business_extension' );
+		}
 
 		/**
 		 * Filters the URL used to connect to Facebook Commerce.
@@ -556,6 +705,22 @@ class Connection {
 		 * @param string $connect_url connect URL
 		 */
 		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
+	}
+
+
+	/**
+	 * Gets the URL to manage the Commerce connection.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @return string
+	 */
+	public function get_commerce_manage_url() {
+
+		$app_id      = $this->get_client_id();
+		$business_id = $this->get_external_business_id();
+
+		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}&tab=Commerce";
 	}
 
 
@@ -604,6 +769,7 @@ class Connection {
 			'catalog_management',
 			'ads_management',
 			'ads_read',
+			'instagram_basic',
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
 			'instagram_basic',
 		];
@@ -738,19 +904,6 @@ class Connection {
 	public function get_system_user_id() {
 
 		return get_option( self::OPTION_SYSTEM_USER_ID, '' );
-	}
-
-
-	/**
-	 * Gets the Commerce manager ID value.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return string
-	 */
-	public function get_commerce_manager_id() {
-
-		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
 	}
 
 
@@ -900,8 +1053,8 @@ class Connection {
 				'timezone'             => $this->get_timezone_string(),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
-				'domain'               => home_url(),
-				'channel'              => 'COMMERCE_OFFSITE',
+				'channel'              => 'COMMERCE',
+				'domain'               => (string) apply_filters( 'wc_facebook_connection_domain_url', home_url( ',') ),
 			],
 			'business_config' => [
 				'business' => [
@@ -992,15 +1145,15 @@ class Connection {
 
 
 	/**
-	 * Stores the given Commerce manager ID.
+	 * Stores the given onsite checkout connected state.
 	 *
-	 * @since 2.1.0
+	 * @since 2.3.0
 	 *
-	 * @param string $id the ID
+	 * @param bool $connected The onsite checkout state
 	 */
-	public function update_commerce_manager_id( $id ) {
+	public function update_onsite_checkout_connected( $connected ) {
 
-		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
+		update_option( self::OPTION_ONSITE_CHECKOUT_CONNECTED, $connected );
 	}
 
 
@@ -1014,6 +1167,19 @@ class Connection {
 	public function update_instagram_business_id( $id ) {
 
 		update_option( self::OPTION_INSTAGRAM_BUSINESS_ID, $id );
+	}
+
+
+	/**
+	 * Stores the Commerce setup completion state.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param bool $connected The Commerce setup completion state.
+	 */
+	public function update_commerce_setup_complete( $complete ) {
+
+		update_option( self::OPTION_COMMERCE_SETUP_COMPLETE, $complete );
 	}
 
 
@@ -1081,6 +1247,32 @@ class Connection {
 	public function is_connected() {
 
 		return (bool) $this->get_access_token();
+	}
+
+
+	/**
+	 * Determines whether onsite checkout is connected.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return bool
+	 */
+	public function is_onsite_checkout_connected() {
+
+		return get_option( self::OPTION_ONSITE_CHECKOUT_CONNECTED, false );
+	}
+
+
+	/**
+	 * Determines whether Commerce setup is complete.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @return bool
+	 */
+	public function is_commerce_setup_complete() {
+
+		return get_option( self::OPTION_COMMERCE_SETUP_COMPLETE, false );
 	}
 
 
@@ -1261,7 +1453,7 @@ class Connection {
 		}
 
 		if ( ! empty( $values->commerce_merchant_settings_id ) ) {
-			$this->update_commerce_merchant_settings_id( sanitize_text_field( $values->commerce_merchant_settings_id ) );
+			$this->update_commerce_installation_data( sanitize_text_field( $values->commerce_merchant_settings_id ) );
 			$log_data[ self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID ] = sanitize_text_field( $values->commerce_merchant_settings_id );
 		}
 

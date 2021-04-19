@@ -47,12 +47,7 @@ class API extends Framework\SV_WC_API_Base {
 	 */
 	public function __construct( $access_token ) {
 
-		$this->access_token = $access_token;
-
-		$this->request_headers = [
-			'Authorization' => "Bearer {$access_token}",
-		];
-
+		$this->set_access_token( $access_token );
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
 	}
@@ -81,6 +76,21 @@ class API extends Framework\SV_WC_API_Base {
 	public function set_access_token( $access_token ) {
 
 		$this->access_token = $access_token;
+
+		$this->set_request_authorization_header( $access_token );
+	}
+
+
+	/**
+	 * Sets the Authorization request header.
+	 *
+	 * @since 2.3.0-dev.1
+	 *
+	 * @param string $access_token the access token
+	 */
+	protected function set_request_authorization_header( $access_token ) {
+
+		$this->request_headers['Authorization'] = "Bearer {$access_token}";
 	}
 
 
@@ -262,6 +272,44 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
+	 * Gets a Commerce Merchant Settings object from Facebook.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $cms_id Commerce Merchant Settings ID
+	 * @return API\CMS\Read\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_commerce_merchant_settings( $cms_id ) {
+
+		$request = new API\CMS\Read\Request( $cms_id );
+
+		$this->set_response_handler( API\CMS\Read\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+  /**
+	 * Gets the Order Management Apps for a given CMS ID.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $cms_id Commerce Merchant Settings ID
+	 * @return API\CMS\Order_Management\Response
+	 * @throws Framework\SV_WC_API_Exception
+	 */
+	public function get_order_management_apps( $cms_id ) {
+
+		$request = new API\CMS\Order_Management\Request( $cms_id );
+
+		$this->set_response_handler( API\CMS\Order_Management\Response::class );
+
+		return $this->perform_request( $request );
+	}
+
+
+	/**
 	 * Gets a Catalog object from Facebook.
 	 *
 	 * @since 2.0.0
@@ -389,78 +437,6 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
-	 * Creates a Product Group object.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @param array $data product group data
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function create_product_group( $catalog_id, $data ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$catalog_id}/product_groups",
-			'method' => 'POST',
-		] );
-
-		$request->set_data( $data );
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Updates the default product item and the available variation attributes of a product group.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id product group ID
-	 * @param array $data product group data
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function update_product_group( $product_group_id, $data ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$product_group_id}",
-			'method' => 'POST',
-		] );
-
-		$request->set_data( $data );
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Deletes a Product Group object.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function delete_product_group( $product_group_id ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$product_group_id}",
-			'method' => 'DELETE',
-		] );
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
 	 * Gets a list of Product Items in the given Product Group.
 	 *
 	 * @since 2.0.0
@@ -495,78 +471,6 @@ class API extends Framework\SV_WC_API_Base {
 		$request = new \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find\Request( $catalog_id, $retailer_id );
 
 		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Creates a Product Item object.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id parent product ID
-	 * @param array $data product data
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function create_product_item( $product_group_id, $data ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$product_group_id}/products",
-			'method' => 'POST',
-		] );
-
-		$request->set_data( $data );
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Updates a Product Item object.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_item_id product item ID
-	 * @param array $data product data
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function update_product_item( $product_item_id, $data ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$product_item_id}",
-			'method' => 'POST',
-		] );
-
-		$request->set_data( $data );
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Deletes a Product Item object.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_item_id product item ID
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function delete_product_item( $product_item_id ) {
-
-		$request = $this->get_new_request( [
-			'path'   => "/{$product_item_id}",
-			'method' => 'DELETE',
-		] );
-
-		$this->set_response_handler( Response::class );
 
 		return $this->perform_request( $request );
 	}

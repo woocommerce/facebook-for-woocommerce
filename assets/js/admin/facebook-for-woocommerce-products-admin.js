@@ -144,64 +144,6 @@ jQuery( document ).ready( function( $ ) {
 
 
 		/**
-		 * Disables and changes the checked status of the Sell on Instagram setting field.
-		 *
-		 * Additionally, shows/hides messages explaining that the product is not ready for Commerce.
-		 *
-		 * @since 2.1.0
-		 *
-		 * @param {boolean} enabled whether the setting field should be enabled or not
-		 * @param {jQuery} $container a common ancestor of all the elements that need to modified
-		 */
-		function toggleFacebookSellOnInstagramSetting( enabled, $container ) {
-
-			let $field = $container.find( '#wc_facebook_commerce_enabled' );
-			let checked = $field.prop( 'original' );
-
-			$field.prop( 'checked', enabled ? checked : false ).prop( 'disabled', ! enabled );
-
-			// trigger change to hide fields based on the new state
-			$field.trigger( 'change' );
-
-			// restore previously stored value so that we can later restore the field to the status it had before we disabled it here
-			$field.prop( 'original', checked );
-
-			$container.find( '#product-not-ready-notice, #variable-product-not-ready-notice' ).hide();
-
-			if ( isVariableProduct() && ! isSyncEnabledForVariableProduct() ) {
-				$container.find( '#variable-product-not-ready-notice' ).show();
-			} else if ( ! enabled ) {
-				$container.find( '#product-not-ready-notice' ).show();
-			}
-		}
-
-
-		/**
-		 * Determines whether product properties are configured using appropriate values for Commerce.
-		 *
-		 * @since 2.1.0
-		 *
-		 * @return {boolean}
-		 */
-		function isProductReadyForCommerce() {
-
-			if ( ! isSyncEnabledForProduct() ) {
-				return false;
-			}
-
-			if ( ! isPriceDefinedForProduct() ) {
-				return false;
-			}
-
-			if ( ! isStockManagementEnabledForProduct() ) {
-				return false;
-			}
-
-			return true;
-		}
-
-
-		/**
 		 * Determines whether the product or one of its variations has Facebook Sync enabled.
 		 *
 		 * @since 2.1.0
@@ -334,14 +276,6 @@ jQuery( document ).ready( function( $ ) {
 		 * @return {boolean}
 		 */
 		function shouldShowMissingGoogleProductCategoryAlert() {
-
-			if ( ! $( '#wc_facebook_commerce_enabled' ).prop( 'checked' ) ) {
-				return false;
-			}
-
-			if ( ! isProductReadyForCommerce() ) {
-				return false;
-			}
 
 			let selectedCategories = $( '.wc_facebook_commerce_fields .wc-facebook-google-product-category-select' ).map( ( i, element ) => {
 				return $( element ).val() ? $( element ).val() : null;
@@ -614,8 +548,6 @@ jQuery( document ).ready( function( $ ) {
 				const jsSyncModeToggle = $( this ).closest( '.wc-metabox-content' ).find( '.js-variable-fb-sync-toggle' );
 				toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), jsSyncModeToggle );
 			} );
-
-			toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), $( '#facebook_options' ) );
 		} );
 
 		// show/hide Custom Image URL setting
@@ -652,9 +584,6 @@ jQuery( document ).ready( function( $ ) {
 				}
 			} );
 		} );
-
-		// toggle Sell on Instagram checkbox on page load
-		toggleFacebookSellOnInstagramSetting( isProductReadyForCommerce(), facebookSettingsPanel );
 
 		let submitProductSave = false;
 

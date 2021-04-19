@@ -39,8 +39,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	public function __construct() {
 
 		$this->id    = self::ID;
-		$this->label = __( 'Product sync', 'facebook-for-woocommerce' );
-		$this->title = __( 'Product sync', 'facebook-for-woocommerce' );
+		$this->label = __( 'Product Sync', 'facebook-for-woocommerce' );
+		$this->title = __( 'Product Sync', 'facebook-for-woocommerce' );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
@@ -62,6 +62,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		if ( ! $this->is_current_screen_page() ) {
 			return;
 		}
+
+		wp_enqueue_style( 'wc-facebook-admin-product-sync', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-product-sync.css', [], \WC_Facebookcommerce::VERSION );
 
 		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
 		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/facebook-for-woocommerce-modal.min.js' ), [ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ], \WC_Facebookcommerce::PLUGIN_VERSION );
@@ -118,7 +120,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		return sprintf(
 			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
-			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
+			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram or Facebook checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
 			'<strong>', '</strong>'
 		);
 	}
@@ -164,7 +166,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		<h2>
 
-			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
+			<?php esc_html_e( 'Product Sync', 'facebook-for-woocommerce' ); ?>
 
 			<?php if ( facebook_for_woocommerce()->get_connection_handler()->is_connected() ) : ?>
 				<a
@@ -268,6 +270,22 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'type'    => 'checkbox',
 				'label'   => ' ',
 				'default' => 'yes',
+			],
+
+			[
+				'id'       => \WC_Facebookcommerce_Integration::SETTING_FB_RETAILER_ID_TYPE,
+				'title'    => __( 'Product Identifier', 'facebook-for-woocommerce' ),
+				'type'     => 'select',
+				'class'    => 'product-sync-field',
+				'desc_tip' => __( 'WooCommerce product attribute mapped to retailer_id on Facebook.', 'facebook-for-woocommerce' ),
+				'desc'     => __( 'WARNING: use with caution, as changing this option after syncing products to Facebook
+					may result in having duplicate products in your Facebook catalog.', 'facebook-for-woocommerce' ),
+				'default'  => \WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID,
+				'options'  => [
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU_PRODUCT_ID => __( 'SKU + Product ID', 'facebook-for-woocommerce' ),
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_SKU            => __( 'SKU', 'facebook-for-woocommerce' ),
+					\WC_Facebookcommerce_Integration::FB_RETAILER_ID_TYPE_PRODUCT_ID     => __( 'Product ID', 'facebook-for-woocommerce' ),
+				],
 			],
 
 			[

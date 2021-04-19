@@ -9,6 +9,37 @@
 
 jQuery( document ).ready( function( $ ) {
 
+  let $form = $( 'form.wc-facebook-settings' );
+  let $defaultCategoryField = $( '#wc_facebook_google_product_category_id' );
+  let defaultCategoryId = $defaultCategoryField.val();
+
+  $form.on( 'submit', function( event ) {
+
+		debugger;
+    if ( $form.data( 'allow-submit' ) || $defaultCategoryField.val() === defaultCategoryId ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    $( '#wc-backbone-modal-dialog .modal-close' ).trigger( 'click' );
+
+    new $.WCBackboneModal.View( {
+      target: 'facebook-for-woocommerce-modal',
+      string: {
+        message: $defaultCategoryField.val() ? facebook_for_woocommerce_settings_sync.default_google_product_category_modal_message : facebook_for_woocommerce_settings_sync.default_google_product_category_modal_message_empty,
+        buttons: facebook_for_woocommerce_settings_sync.default_google_product_category_modal_buttons
+      }
+    } );
+
+    $( document.body )
+      .off( 'wc_backbone_modal_response.facebook_for_commerce' )
+      .on( 'wc_backbone_modal_response.facebook_for_commerce', function() {
+        $form.data( 'allow-submit', true ).find( ':submit' ).trigger( 'click' );
+      } );
+  } );
+
+
 	/**
 	 * Gets any new excluded categories being added.
 	 *
