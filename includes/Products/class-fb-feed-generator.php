@@ -25,6 +25,10 @@ if ( ! class_exists( 'WC_Product_CSV_Exporter', false ) ) {
  */
 class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
+	const FEED_GENERATION_TRIGGER = 'wc_facebook_for_woocommerce_feed_trigger';
+	const FEED_GENERATION_STEP    = 'wc_facebook_for_woocommerce_feed_step';
+	const FEED_ACTIONS_GROUP      = 'wc_facebook_for_woocommerce_feed_actions';
+	const RUNNING_FEED_SETTINGS   = 'wc_facebook_for_woocommerce_running_feed_settings';
 	/**
 	 * Type of export used in filter names.
 	 *
@@ -46,7 +50,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 *
 	 * @var integer
 	 */
-	protected $limit = 1;
+	protected $limit = 10;
 
 	/**
 	 * Should meta be exported?
@@ -69,9 +73,9 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 * Constructor.
 	 */
 	public function __construct() {
-			parent::__construct();
-
-			$this->feed_handler = new \WC_Facebook_Product_Feed();
+		parent::__construct();
+		$this->feed_handler = new \WC_Facebook_Product_Feed();
+		add_action( self::FEED_GENERATION_STEP, array( $this, 'execute_feed_generation_step' ) );
 	}
 
 	/**
@@ -189,6 +193,36 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
+	public function execute_feed_generation_step() {
+		$settings = get_option( self::RUNNING_FEED_SETTINGS );
+		$this->set_page( $settings['page'] );
+		$this->generate_file();
+		$settings['page'] += 1;
+		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
+			delete_option( self::RUNNING_FEED_SETTINGS );
+			as_unschedule_all_actions( self::FEED_GENERATION_STEP );
+		} else {
+			update_option(
+				self::RUNNING_FEED_SETTINGS,
+				$settings,
+				false
+			);
+		}
+	}
+
+	static function prepare_feed_generation() {
+		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
+		update_option(
+			self::RUNNING_FEED_SETTINGS,
+			array(
+				'ids'  => $products_ids,
+				'page' => 1,
+			),
+			false
+		);
+		as_schedule_recurring_action( time(), MINUTE_IN_SECONDS, self::FEED_GENERATION_STEP );
+	}
+
 	/**
 	 * Prepare data for export.
 	 *
@@ -197,7 +231,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function prepare_data_to_export() {
 		$page = $this->get_page();
 		$limit = $this->get_limit();
-		$all_products = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
 		$batch = array_slice( $all_products, ( $page - 1 ) * $limit, $limit );
 		$args = array(
 			'status'  => array( 'publish' ),

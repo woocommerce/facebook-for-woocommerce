@@ -69,8 +69,6 @@ class WC_Facebook_Loader {
 		if ( $this->is_environment_compatible() ) {
 			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
 		}
-		// Add performance testing menu - development specific.
-		require_once __DIR__ . '/includes/Products/new_feed_test.php';
 	}
 
 
