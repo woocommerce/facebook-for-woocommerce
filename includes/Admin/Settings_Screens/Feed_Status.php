@@ -79,15 +79,30 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			<form class="facebook-for-woocommerce-feed-generator">
 				<header>
 					<span class="spinner is-active"></span>
-					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'woocommerce' ); ?></p>
+					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'facebook-for-woocommerce' ); ?></p>
 				</header>
 				<section>
-					<p><?php echo sprintf( esc_html__( 'Total number of products: %s ', 'woocommerce' ), $settings['total'] ) ?></p>
-					<p><?php echo sprintf( esc_html__( 'Current batch number: %s', 'woocommerce' ), $settings['page'] ) ?></p>
-					<p><?php echo sprintf( esc_html__( 'Started timestamp: %s', 'woocommerce' ), $settings['start'] ) ?></p>
+					<p><?php echo sprintf( esc_html__( 'Total number of products: %s ', 'facebook-for-woocommerce' ), $settings['total'] ) ?></p>
+					<p><?php echo sprintf( esc_html__( 'Current batch number: %s', 'facebook-for-woocommerce' ), $settings['page'] ) ?></p>
+					<p><?php echo sprintf( esc_html__( 'Started timestamp: %s', 'facebook-for-woocommerce' ), $settings['start'] ) ?></p>
 				</section>
 				<section>
 					<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>
+					<?php
+					if ( $settings['done'] ) {
+						esc_html_e( ' Done in: ' . ( ( $settings['end'] - $settings['start'] ) / 60 ) . ' minutes.', 'facebook-for-woocommerce' );
+					}
+					?>
+				</section>
+				<section>
+					<p>
+						<?php
+						$next = as_next_scheduled_action( FB_Feed_Generator::FEED_SCHEDULE_ACTION );
+						if ( $next ) {
+							esc_html_e( 'Next feed generation scheduled at: ' . date( 'Y-m-d H:i:s', $next ), 'facebook-for-woocommerce' );
+						}
+						?>
+					</p>
 				</section>
 				<div class="wc-actions">
 					<button type="submit" class="facebook-woocommerce-feed-generator-button button button-primary" value="<?php esc_attr_e( 'Generate Feed', 'woocommerce' ); ?>"><?php esc_html_e( 'Generate Feed', 'woocommerce' ); ?></button>
