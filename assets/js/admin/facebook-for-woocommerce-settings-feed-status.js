@@ -17,9 +17,9 @@ jQuery( document ).ready( function( $ ) {
 		$form.on( 'submit', { feedGenerationForm: this }, this.onSubmit );
 		if ( facebook_for_woocommerce_feed_status.generation_in_progress ) {
 			this.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', true );
-			setTimeout( function() {
-				this.processStep();
-			}, 30000 );
+			this.processStep();
+		} else {
+			this.$form.find('.spinner').removeClass('is-active');
 		}
 	};
 
@@ -30,36 +30,40 @@ jQuery( document ).ready( function( $ ) {
 		event.preventDefault();
 
 		event.data.feedGenerationForm.$form.addClass( 'woocommerce-exporter__exporting' );
+		event.data.feedGenerationForm.$form.find('.spinner').addClass('is-active');
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-progress').val( 0 );
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', true );
-		event.data.feedGenerationForm.processStep();
+		event.data.feedGenerationForm.processStep( true );
 	};
 
 	/**
 	 * Process the current export step.
 	 */
-	 feedGenerationForm.prototype.processStep = function() {
+	 feedGenerationForm.prototype.processStep = function( generate = false ) {
+		var $this = this;
 		$.ajax( {
 			type: 'POST',
 			url: facebook_for_woocommerce_feed_status.ajax_url,
 			data: {
-				action           : 'facebook_for_woocommerce_do_ajax_feed_generate',
-				security         : facebook_for_woocommerce_feed_status.feed_generation_nonce
+				action   : 'facebook_for_woocommerce_do_ajax_feed',
+				security : facebook_for_woocommerce_feed_status.feed_generation_nonce,
+				generate : generate,
 			},
 			dataType: 'json',
 			success: function( response ) {
 				if ( response.success ) {
-					if ( 'done' === response.data.step ) {
+					if ( response.data.done ) {
 						setTimeout( function() {
 							$this.$form.removeClass( 'woocommerce-exporter__exporting' );
-							$this.$form.find('.woocommerce-exporter-button').prop( 'disabled', false );
+							$this.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', false );
+							$this.$form.find('.spinner').removeClass('is-active');
 						}, 2000 );
 					} else {
 						setTimeout( function() {
 							$this.processStep();
 						}, 30000 );
 					}
-					$this.$form.find('.woocommerce-exporter-progress').val( response.data.percentage )
+					$this.$form.find('.facebook-woocommerce-feed-generator-progress').val( response.data.percentage )
 				}
 			}
 		} ).fail( function( response ) {

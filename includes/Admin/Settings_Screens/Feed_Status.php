@@ -31,7 +31,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 	public function __construct() {
 
 		$this->id    = self::ID;
-		$this->label = __( 'Facebook Feed Status', 'facebook-for-woocommerce' );
+		$this->label = __( 'Feed Status', 'facebook-for-woocommerce' );
 		$this->title = $this->label;
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -61,8 +61,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			array(
 				'ajax_url'               => admin_url( 'admin-ajax.php' ),
 				'feed_generation_nonce'  => wp_create_nonce( FB_Feed_Generator::FEED_GENERATION_NONCE ),
-				'generation_in_progress' => $this->is_generation_in_progress(),
-				'generation_progress'    => 10,
+				'generation_in_progress' => FB_Feed_Generator::is_generation_in_progress(),
+				'generation_progress'    => $settings['total'] !== 0 ? intval( ( ( $settings['page'] * FB_Feed_Generator::FEED_GENERATION_LIMIT ) / $settings['total'] ) * 100 ) : 0,
 				'i18n'                   => array(
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync' => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
@@ -71,13 +71,10 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 		);
 	}
 
-	private function is_generation_in_progress() {
-		return false !== as_next_scheduled_action( FB_Feed_Generator::FEED_GENERATION_STEP );
-	}
-
 	public function render() {
+		$settings = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
 		?>
-		<h1><?php esc_html_e( 'Facebook Feed Generator', 'woocommerce' ); ?></h1>
+		<h1><?php esc_html_e( 'Feed Status', 'woocommerce' ); ?></h1>
 		<div class="facebook-for-woocommerce-feed-status-wrapper">
 			<form class="facebook-for-woocommerce-feed-generator">
 				<header>
@@ -85,7 +82,9 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'woocommerce' ); ?></p>
 				</header>
 				<section>
-					This will be the stats section.
+					<p><?php echo sprintf( esc_html__( 'Total number of products: %s ', 'woocommerce' ), $settings['total'] ) ?></p>
+					<p><?php echo sprintf( esc_html__( 'Current batch number: %s', 'woocommerce' ), $settings['page'] ) ?></p>
+					<p><?php echo sprintf( esc_html__( 'Started timestamp: %s', 'woocommerce' ), $settings['start'] ) ?></p>
 				</section>
 				<section>
 					<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>

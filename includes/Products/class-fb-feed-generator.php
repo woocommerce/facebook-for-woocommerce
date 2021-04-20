@@ -28,8 +28,12 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	const FEED_GENERATION_TRIGGER = 'wc_facebook_for_woocommerce_feed_trigger';
 	const FEED_GENERATION_STEP    = 'wc_facebook_for_woocommerce_feed_step';
 	const FEED_ACTIONS_GROUP      = 'wc_facebook_for_woocommerce_feed_actions';
+	const FEED_SCHEDULE_ACTION    = 'wc_facebook_for_woocommerce_feed_schedule_action';
+	const FEED_AJAX_GENERATE_FEED = 'facebook_for_woocommerce_do_ajax_feed';
 	const RUNNING_FEED_SETTINGS   = 'wc_facebook_for_woocommerce_running_feed_settings';
+	const FEED_SCHEDULE_SETTINGS  = 'wc_facebook_for_woocommerce_feed_schedule';
 	const FEED_GENERATION_NONCE   = 'wc_facebook_for_woocommerce_feed_generation_nonce';
+	const FEED_GENERATION_LIMIT   = 500;
 	/**
 	 * Type of export used in filter names.
 	 *
@@ -51,7 +55,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 *
 	 * @var integer
 	 */
-	protected $limit = 10;
+	protected $limit = self::FEED_GENERATION_LIMIT;
 
 	/**
 	 * Should meta be exported?
@@ -76,30 +80,18 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function __construct() {
 		parent::__construct();
 		$this->feed_handler = new \WC_Facebook_Product_Feed();
+		add_action( 'init', array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( self::FEED_GENERATION_STEP, array( $this, 'execute_feed_generation_step' ) );
+		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
+		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
 	}
 
-	/**
-	 * Should meta be exported?
-	 *
-	 * @param bool $enable_meta_export Should meta be exported.
-	 *
-	 * @since 3.1.0
-	 */
-	public function enable_meta_export( $enable_meta_export ) {
-		$this->enable_meta_export = (bool) $enable_meta_export;
-	}
-
-	/**
-	 * Product category to export.
-	 *
-	 * @param string $product_category_to_export Product category slug to export, empty string exports all.
-	 *
-	 * @since  3.5.0
-	 * @return void
-	 */
-	public function set_product_category_to_export( $product_category_to_export ) {
-		$this->product_category_to_export = array_map( 'sanitize_title_with_dashes', $product_category_to_export );
+	public function maybe_schedule_feed_generation() {
+		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION ) ) {
+			return;
+		}
+		$timestamp = strtotime( 'today midnight +1 day' );
+		as_schedule_recurring_action( $timestamp, DAY_IN_SECONDS, self::FEED_SCHEDULE_ACTION );
 	}
 
 	/**
@@ -199,8 +191,14 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		$this->set_page( $settings['page'] );
 		$this->generate_file();
 		$settings['page'] += 1;
-		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
-			delete_option( self::RUNNING_FEED_SETTINGS );
+		if ( ( ( $settings['page'] - 1 ) * $this->limit ) >= count( $settings['ids'] ) ) {
+			$settings['done'] = true;
+			$settings['end']  = time();
+			update_option(
+				self::RUNNING_FEED_SETTINGS,
+				$settings,
+				false
+			);
 			as_unschedule_all_actions( self::FEED_GENERATION_STEP );
 		} else {
 			update_option(
@@ -216,12 +214,43 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		update_option(
 			self::RUNNING_FEED_SETTINGS,
 			array(
-				'ids'  => $products_ids,
-				'page' => 1,
+				'ids'   => $products_ids,
+				'page'  => 1,
+				'done'  => false,
+				'start' => time(),
+				'total' => count( $products_ids ),
 			),
 			false
 		);
+		as_unschedule_all_actions( self::FEED_GENERATION_STEP );
 		as_schedule_recurring_action( time(), MINUTE_IN_SECONDS, self::FEED_GENERATION_STEP );
+	}
+
+	public function ajax_feed_handle() {
+		if ( 'true' === $_POST['generate'] ) {
+			$this->prepare_feed_generation();
+		}
+		$settings = get_option( self::RUNNING_FEED_SETTINGS );
+
+		if ( $settings['done'] ) {
+			wp_send_json_success(
+				array(
+					'done'       => true,
+					'percentage' => 100,
+				)
+			);
+		} else {
+			wp_send_json_success(
+				array(
+					'done'       => false,
+					'percentage' => intval( ( ( $settings['page'] * $this->limit ) / $settings['total'] ) * 100 ),
+				)
+			);
+		}
+	}
+
+	public static function is_generation_in_progress() {
+		return false !== as_next_scheduled_action( self::FEED_GENERATION_STEP );
 	}
 
 	/**
@@ -232,7 +261,14 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function prepare_data_to_export() {
 		$page = $this->get_page();
 		$limit = $this->get_limit();
-		$batch = array_slice( $all_products, ( $page - 1 ) * $limit, $limit );
+		$settings = get_option( self::RUNNING_FEED_SETTINGS );
+		if ( empty( $settings['ids'] ) ) {
+			return;
+		}
+		$batch = array_slice( $settings['ids'], ( $page - 1 ) * $limit, $limit );
+		if ( empty( $batch ) ) {
+			return;
+		}
 		$args = array(
 			'status'  => array( 'publish' ),
 			'type'    => $this->product_types_to_export,
@@ -249,10 +285,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			$prods[] = $product->get_id();
 			$this->row_data[] = $this->generate_row_data( $product );
 		}
-
-		$missing1 = array_diff( $batch, $prods );
-		$missing2 = array_diff( $prods, $batch );
-		$missing2[] = false;
 	}
 
 	/**
@@ -681,41 +713,4 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
-	/**
-	 * Export meta data.
-	 *
-	 * @param WC_Product $product Product being exported.
-	 * @param array      $row Row data.
-	 *
-	 * @since 3.1.0
-	 */
-	protected function prepare_meta_for_export( $product, &$row ) {
-		if ( $this->enable_meta_export ) {
-			$meta_data = $product->get_meta_data();
-
-			if ( count( $meta_data ) ) {
-				$meta_keys_to_skip = apply_filters( 'woocommerce_product_export_skip_meta_keys', array(), $product );
-
-				$i = 1;
-				foreach ( $meta_data as $meta ) {
-					if ( in_array( $meta->key, $meta_keys_to_skip, true ) ) {
-						continue;
-					}
-
-					// Allow 3rd parties to process the meta, e.g. to transform non-scalar values to scalar.
-					$meta_value = apply_filters( 'woocommerce_product_export_meta_value', $meta->value, $meta, $product, $row );
-
-					if ( ! is_scalar( $meta_value ) ) {
-						continue;
-					}
-
-					$column_key = 'meta:' . esc_attr( $meta->key );
-					/* translators: %s: meta data name */
-					$this->column_names[ $column_key ] = sprintf( __( 'Meta: %s', 'woocommerce' ), $meta->key );
-					$row[ $column_key ]                = $meta_value;
-					$i ++;
-				}
-			}
-		}
-	}
 }
