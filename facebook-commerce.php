@@ -12,7 +12,7 @@ use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\Products\Feed;
+use SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -412,9 +412,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Must be outside of admin for cron to schedule correctly.
 		add_action( 'sync_all_fb_products_using_feed', [ $this, 'handle_scheduled_resync_action' ], self::FB_PRIORITY_MID );
-
-		// handle the special background feed generation action
-		add_action( 'wc_facebook_generate_product_catalog_feed', [ $this, 'handle_generate_product_catalog_feed' ] );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$aam_settings = $this->load_aam_settings_of_pixel();
@@ -866,7 +863,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			format: 'csv'
 		},
 		feedPrepared: {
-			feedUrl: '<?php echo esc_url_raw( Feed::get_feed_data_url() ); ?>',
+			feedUrl: '<?php echo esc_url_raw( FB_Feed_Generator::get_feed_data_url() ); ?>',
 			feedPingUrl: '',
 			feedMigrated: <?php echo $this->is_feed_migrated() ? 'true' : 'false'; ?>,
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -3838,26 +3835,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->schedule_resync( $resync_offset );
 		}
 	}
-
-	/**
-	 * Handles the schedule feed generation action, triggered by the REST API.
-	 *
-	 * @since 1.11.0
-	 */
-	public function handle_generate_product_catalog_feed() {
-
-		$feed_handler = new WC_Facebook_Product_Feed();
-
-		try {
-
-			$feed_handler->generate_feed();
-
-		} catch ( \Exception $exception ) {
-
-			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
-		}
-	}
-
 
 	/** Deprecated methods ********************************************************************************************/
 

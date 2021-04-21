@@ -57,30 +57,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->feed_id             = $feed_id;
 		}
 
-
-		/**
-		 * Schedules a new feed generation.
-		 *
-		 * @since 1.11.0
-		 */
-		public function schedule_feed_generation() {
-
-			// don't schedule another if one's already scheduled or in progress
-			if ( false !== as_next_scheduled_action( 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' ) ) {
-				return;
-			}
-
-			\WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
-
-			// if async priority actions are supported (AS 3.0+)
-			if ( function_exists( 'as_enqueue_async_action' ) ) {
-				as_enqueue_async_action( 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' );
-			} else {
-				as_schedule_single_action( time(), 'wc_facebook_generate_product_catalog_feed', [], 'facebook-for-woocommerce' );
-			}
-		}
-
-
 		/**
 		 * Generates the product catalog feed.
 		 *
