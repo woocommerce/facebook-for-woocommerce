@@ -49,6 +49,13 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 */
 	protected $filename = 'product_catalog.csv';
 
+	/**
+	 * Temporary export file.
+	 *
+	 * @var string
+	 */
+	protected $temp_filename = 'temp_product_catalog.csv';
+
 
 	/**
 	 * Batch limit.
@@ -103,6 +110,15 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		return sanitize_file_name( $this->filename );
 	}
 
+	/**
+	 * Return a filename.
+	 *
+	 * @return string
+	 */
+	public function get_temp_filename() {
+		return sanitize_file_name( $this->temp_filename );
+	}
+
 	public function get_feed_directory() {
 		$upload_dir = wp_upload_dir();
 		return trailingslashit( $upload_dir['basedir'] ) . 'facebook_for_woocommerce/';
@@ -114,7 +130,8 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 * @return string
 	 */
 	protected function get_file_path() {
-		return $this->get_feed_directory() . $this->get_filename();
+		// Parent class will write to the 
+		return $this->get_feed_directory() . $this->get_temp_filename();
 	}
 
 	protected $attribute_variants = array();
@@ -186,6 +203,19 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
+		/**
+	 * Generate the CSV file.
+	 *
+	 * @since 3.1.0
+	 */
+	public function generate_file() {
+		if ( 1 === $this->get_page() && file_exists( ( $this->get_file_path() ) ) ) {
+			@unlink( $this->get_file_path() ); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_unlink, Generic.PHP.NoSilencedErrors.Discouraged,
+		}
+		$this->prepare_data_to_export();
+		$this->write_csv_data( $this->get_csv_data() );
+	}
+
 	public function execute_feed_generation_step() {
 		$settings = get_option( self::RUNNING_FEED_SETTINGS );
 		$this->set_page( $settings['page'] );
@@ -199,19 +229,34 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 				$settings,
 				false
 			);
-			as_unschedule_action( self::FEED_GENERATION_STEP );
-			as_unschedule_all_actions( self::FEED_GENERATION_STEP );
+			$this->replace_feed_file_with_temp_file();
 		} else {
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
 				false
 			);
+			as_enqueue_async_action( self::FEED_GENERATION_STEP );
 		}
 	}
 
-	static function prepare_feed_generation() {
+	/**
+	 * Last step of the feed generation procedure.
+	 * We have been writing to the temporary file until now.
+	 * We can safely delate old feed file and replace it with
+	 * the content of temporary file.
+	 */
+	public function replace_feed_file_with_temp_file() {
+		@rename(
+			$this->get_feed_directory() . $this->get_temp_filename(),
+			$this->get_feed_directory() . $this->get_filename()
+		); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_rename, Generic.PHP.NoSilencedErrors.Discouraged,
+	}
+
+	public function prepare_feed_generation() {
+		$this->prepare_feed_folder();
 		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
+		$products_ids = array_slice( $products_ids, 0, 25, true );
 		update_option(
 			self::RUNNING_FEED_SETTINGS,
 			array(
@@ -224,7 +269,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			false
 		);
 		as_unschedule_all_actions( self::FEED_GENERATION_STEP );
-		as_schedule_recurring_action( time() + 30, MINUTE_IN_SECONDS, self::FEED_GENERATION_STEP );
+		as_enqueue_async_action( self::FEED_GENERATION_STEP );
 	}
 
 	public function ajax_feed_handle() {
@@ -302,21 +347,4 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			$this->attribute_variants
 		);
 	}
-
-
-	/**
-	 * Filter description field for export.
-	 * Convert newlines to '\n'.
-	 *
-	 * @param string $description Product description text to filter.
-	 *
-	 * @since  3.5.4
-	 * @return string
-	 */
-	protected function filter_description_field( $description ) {
-		$description = str_replace( '\n', "\\\\n", $description );
-		$description = str_replace( "\n", '\n', $description );
-		return $description;
-	}
-
 }
