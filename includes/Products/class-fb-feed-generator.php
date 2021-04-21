@@ -35,6 +35,8 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	const FEED_GENERATION_NONCE   = 'wc_facebook_for_woocommerce_feed_generation_nonce';
 	const REQUEST_FEED_ACTION     = 'wc_facebook_get_feed_data';
 	const FEED_GENERATION_LIMIT   = 10;
+	const OPTION_FEED_URL_SECRET  = 'wc_facebook_feed_url_secret';
+
 	/**
 	 * Type of export used in filter names.
 	 *
