@@ -61,7 +61,7 @@ jQuery( document ).ready( function( $ ) {
 					} else {
 						setTimeout( function() {
 							$this.processStep();
-						}, 30000 );
+						}, 10000 );
 					}
 					$this.$form.find('.facebook-woocommerce-feed-generator-progress').val( response.data.percentage )
 				}
