@@ -209,7 +209,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
-		/**
+	/**
 	 * Generate the CSV file.
 	 *
 	 * @since 3.1.0
@@ -220,6 +220,21 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 		$this->prepare_data_to_export();
 		$this->write_csv_data( $this->get_csv_data() );
+	}
+
+	/**
+	 * Write data to the file.
+	 *
+	 * @since 3.1.0
+	 * @param string $data Data.
+	 */
+	protected function write_csv_data( $data ) {
+
+		if ( ! @file_exists( $this->get_file_path() ) ) { // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+			@file_put_contents( $this->get_file_path(), $this->export_column_headers() ); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
+			@chmod( $this->get_file_path(), 0664 ); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.chmod_chmod, WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged
+		}
+		@file_put_contents( $this->get_file_path(), $data, FILE_APPEND ); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
 	}
 
 	public function execute_feed_generation_step() {
@@ -463,7 +478,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
 		return add_query_arg( $query_args, home_url( '/' ) );
 	}
-
 
 	/**
 	 * Gets the secret value that should be included in the Feed URL.
