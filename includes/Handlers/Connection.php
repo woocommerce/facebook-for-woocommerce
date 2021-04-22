@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use SkyVerge\WooCommerce\Facebook\API\Exceptions\Connect_WC_API_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -297,7 +298,7 @@ class Connection {
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
 			if ( $is_error && $proxy_error_message = $this->get_message_for_error_code( $error_code ) ) {
-				throw new SV_WC_API_Exception( $proxy_error_message );
+				throw new Connect_WC_API_Exception( $proxy_error_message );
 			}
 
 			if ( ! $merchant_access_token ) {
@@ -334,6 +335,11 @@ class Connection {
 		} catch ( SV_WC_API_Exception $exception ) {
 
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
+
+			set_transient( 'wc_facebook_connection_failed', time(), 30 );
+		} catch ( Connect_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. No %s provided', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
