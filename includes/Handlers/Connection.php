@@ -118,22 +118,6 @@ class Connection {
 		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
 
 		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
-
-		$this->proxy_error_messages = apply_filters( 'facebook_for_woocommerce_proxy_error_messages',
-			[
-				'business_manager_id_missing'       => __( 'Business Manager ID is missing', 'facebook-for-commerce' ),
-				'catalog_id_missing'                => __( 'Catalog ID is missing', 'facebook-for-commerce' ),
-				'pixel_id_missing'                  => __( 'Pixel ID is missing', 'facebook-for-commerce' ),
-				'page_id_missing'                   => __( 'Page ID is missing', 'facebook-for-commerce' ),
-				'permissions_response_data_invalid' => __( 'Permissions response data invalid', 'facebook-for-commerce' ),
-				'user_data_invalid'                 => __( 'System User response data invalid', 'facebook-for-commerce' ),
-				'user_access_token_missing'         => __( 'System User access token is missing', 'facebook-for-commerce' ),
-				'fbe_user_data_invalid'             => __( 'Get FBE System User response data invalid', 'facebook-for-commerce' ),
-				'user_access_token_missing'         => __( 'System User access token is missing', 'facebook-for-commerce' ),
-				'user_id_missing'                   => __( 'System User ID missing', 'facebook-for-commerce' ),
-				'token_permission_missing_'         => __( 'The following access token permissions are missing: %s', 'facebook-for-commerce' ),
-			]
-		);
 	}
 
 
@@ -297,8 +281,8 @@ class Connection {
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
-			if ( $is_error && $proxy_error_message = $this->get_message_for_error_code( $error_code ) ) {
-				throw new Connect_WC_API_Exception( $proxy_error_message );
+			if ( $is_error && $error_code ) {
+				throw new Connect_WC_API_Exception( $error_code );
 			}
 
 			if ( ! $merchant_access_token ) {
@@ -1414,26 +1398,5 @@ class Connection {
 
 		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
-	}
-
-	/**
-	 * Returns error message based on err_code from PROXY
-	 *
-	 * @param string $err_code The error code coming from Proxy.
-	 *
-	 * @return string|null
-	 */
-	protected function get_message_for_error_code( string $err_code ): ?string {
-		foreach ( $this->proxy_error_messages as $code => $message ) {
-			if ( $err_code === $code ) {
-				return $message;
-			}
-
-			if ( strpos( $err_code, $code ) === 0 ) {
-				return sprintf( $message, implode( ', ', explode( ':', str_replace( $code, '', $err_code ) ) ) );
-			}
-		}
-
-		return null;
 	}
 }
