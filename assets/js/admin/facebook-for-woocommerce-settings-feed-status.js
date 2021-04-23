@@ -11,11 +11,15 @@ jQuery( document ).ready( function( $ ) {
 		this.$form.find('.facebook-woocommerce-feed-generator-progress').val( facebook_for_woocommerce_feed_status.generation_progress );
 
 		// Methods.
-		this.processStep = this.processStep.bind( this );
+		this.processStep  = this.processStep.bind( this );
+		this.feedFileInfo = this.feedFileInfo.bind( this );
+
+		this.feedFileInfo( facebook_for_woocommerce_feed_status.file );
 
 		// Events.
 		$form.on( 'submit', { feedGenerationForm: this }, this.onSubmit );
 		if ( facebook_for_woocommerce_feed_status.generation_in_progress ) {
+			this.$form.find('.facebook-for-woocommerce-feed-status-is-generating').show();
 			this.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', true );
 			this.processStep();
 		} else {
@@ -32,9 +36,37 @@ jQuery( document ).ready( function( $ ) {
 		event.data.feedGenerationForm.$form.addClass( 'woocommerce-exporter__exporting' );
 		event.data.feedGenerationForm.$form.find('.spinner').addClass('is-active');
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-progress').val( 0 );
+		event.data.feedGenerationForm.$form.find('.facebook-for-woocommerce-feed-status-batch').text( 0 );
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', true );
 		event.data.feedGenerationForm.processStep( true );
 	};
+
+	feedGenerationForm.prototype.feedFileInfo = function( fileData ) {
+		if ( null === fileData ) {
+			return;
+		}
+		var start = new Date( parseInt( fileData['start'] * 1000 ) );
+		this.$form.find('.facebook-for-woocommerce-feed-file-started').text(
+			start.toString()
+		);
+		var end = new Date( parseInt( fileData['end'] * 1000 ) );
+		this.$form.find('.facebook-for-woocommerce-feed-file-ended').text(
+			end.toString()
+		);
+		this.$form.find('.facebook-for-woocommerce-feed-file-processing-duration').text(
+			( ( parseInt( fileData['end'] ) - parseInt( fileData['start'] ) ) / 60 ).toFixed( 2 )
+		);
+		this.$form.find('.facebook-for-woocommerce-feed-file-items-count').text(
+			fileData['total']
+		);
+		this.$form.find('.facebook-for-woocommerce-feed-file-size').text(
+			fileData['size']
+		);
+		this.$form.find('.facebook-for-woocommerce-feed-file-location').text(
+			fileData['location']
+		);
+		this.$form.find('.facebook-for-woocommerce-feed-status-file-info').show();
+	}
 
 	/**
 	 * Process the current export step.
@@ -57,13 +89,18 @@ jQuery( document ).ready( function( $ ) {
 							$this.$form.removeClass( 'woocommerce-exporter__exporting' );
 							$this.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', false );
 							$this.$form.find('.spinner').removeClass('is-active');
+							$this.$form.find('.facebook-for-woocommerce-feed-status-is-generating').hide();
 						}, 2000 );
 					} else {
+						$this.$form.find('.facebook-for-woocommerce-feed-status-is-generating').show();
 						setTimeout( function() {
 							$this.processStep();
 						}, 10000 );
 					}
-					$this.$form.find('.facebook-woocommerce-feed-generator-progress').val( response.data.percentage )
+					$this.$form.find('.facebook-woocommerce-feed-generator-progress').val( response.data.percentage );
+					$this.$form.find('.facebook-for-woocommerce-feed-status-batch').text( response.data.page );
+					$this.$form.find('.facebook-for-woocommerce-feed-status-total').text( response.data.total );
+					$this.feedFileInfo( response.data.file );
 				}
 			}
 		} ).fail( function( response ) {

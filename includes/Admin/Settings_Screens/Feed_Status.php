@@ -51,6 +51,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
+		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-feed-status.css', [], \WC_Facebookcommerce::VERSION );
+
 		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-feed-status.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		$settings = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
@@ -60,6 +62,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			'facebook_for_woocommerce_feed_status',
 			array(
 				'ajax_url'               => admin_url( 'admin-ajax.php' ),
+				'file'                   => get_option( FB_Feed_Generator::FEED_FILE_INFO, null ),
 				'feed_generation_nonce'  => wp_create_nonce( FB_Feed_Generator::FEED_GENERATION_NONCE ),
 				'generation_in_progress' => FB_Feed_Generator::is_generation_in_progress(),
 				'generation_progress'    => $settings['total'] !== 0 ? intval( ( ( $settings['page'] * FB_Feed_Generator::FEED_GENERATION_LIMIT ) / $settings['total'] ) * 100 ) : 0,
@@ -78,21 +81,43 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 		<div class="facebook-for-woocommerce-feed-status-wrapper">
 			<form class="facebook-for-woocommerce-feed-generator">
 				<header>
-					<span class="spinner is-active"></span>
 					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'facebook-for-woocommerce' ); ?></p>
 				</header>
-				<section>
-					<p><?php echo sprintf( esc_html__( 'Total number of products: %s ', 'facebook-for-woocommerce' ), $settings['total'] ) ?></p>
-					<p><?php echo sprintf( esc_html__( 'Current batch number: %s', 'facebook-for-woocommerce' ), $settings['page'] ) ?></p>
-					<p><?php echo sprintf( esc_html__( 'Started timestamp: %s', 'facebook-for-woocommerce' ), $settings['start'] ) ?></p>
+				<hr>
+				<section class="facebook-for-woocommerce-feed-status-is-generating" >
+					<span class="spinner is-active"></span>
+					<?php esc_html_e( 'Generating new feed file.', 'facebook-for-woocommerce' ); ?>
+					<p ><?php esc_html_e( 'Total number of products to process: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-total"> <?php echo $settings['total'] ?></span>
+					</p>
+					<p><?php esc_html_e( 'Current batch number: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-batch"/>
+					</p>
+					<p><?php esc_html_e( 'Started timestamp: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-timestamp"/>
+					</p>
+					<p>
+						<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>
+					</p>
+					<hr>
 				</section>
-				<section>
-					<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>
-					<?php
-					if ( $settings['done'] ) {
-						esc_html_e( ' Done in: ' . ( ( $settings['end'] - $settings['start'] ) / 60 ) . ' minutes.', 'facebook-for-woocommerce' );
-					}
-					?>
+				<section class="facebook-for-woocommerce-feed-status-file-info" >
+					<?php esc_html_e( 'Current feed file information', 'facebook-for-woocommerce' ); ?>
+					<p>
+						<?php esc_html_e( 'Started: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-started"></span><br>
+						<?php esc_html_e( 'Ended: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-ended"></span><br>
+						<?php esc_html_e( 'Processing took[minutes]: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-processing-duration"></span><br>
+						<?php esc_html_e( 'Items in file: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-items-count"></span><br>
+						<?php esc_html_e( 'File size[MB]: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-size"></span><br>
+						<?php esc_html_e( 'File location: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-file-location"></span><br>
+					</p>
+					<hr>
 				</section>
 				<section>
 					<p>
@@ -103,6 +128,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 						}
 						?>
 					</p>
+					<hr>
 				</section>
 				<div class="wc-actions">
 					<button type="submit" class="facebook-woocommerce-feed-generator-button button button-primary" value="<?php esc_attr_e( 'Generate Feed', 'woocommerce' ); ?>"><?php esc_html_e( 'Generate Feed', 'woocommerce' ); ?></button>

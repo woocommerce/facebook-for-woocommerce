@@ -33,8 +33,9 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	const RUNNING_FEED_SETTINGS   = 'wc_facebook_for_woocommerce_running_feed_settings';
 	const FEED_SCHEDULE_SETTINGS  = 'wc_facebook_for_woocommerce_feed_schedule';
 	const FEED_GENERATION_NONCE   = 'wc_facebook_for_woocommerce_feed_generation_nonce';
+	const FEED_FILE_INFO          = 'wc_facebook_for_woocommerce_feed_file_info';
 	const REQUEST_FEED_ACTION     = 'wc_facebook_get_feed_data';
-	const FEED_GENERATION_LIMIT   = 10;
+	const FEED_GENERATION_LIMIT   = 500;
 	const OPTION_FEED_URL_SECRET  = 'wc_facebook_feed_url_secret';
 
 	/**
@@ -100,11 +101,11 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	}
 
 	public function maybe_schedule_feed_generation() {
-		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION ) ) {
+		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION, null, self::FEED_ACTIONS_GROUP ) ) {
 			return;
 		}
 		$timestamp = strtotime( 'today midnight +1 day' );
-		as_schedule_recurring_action( $timestamp, DAY_IN_SECONDS, self::FEED_SCHEDULE_ACTION );
+		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION, array(), self::FEED_ACTIONS_GROUP );
 	}
 
 	/**
@@ -136,7 +137,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 * @return string
 	 */
 	protected function get_file_path() {
-		// Parent class will write to the 
+		// Parent class will write to the temp file first so this is why we are using temp.
 		return $this->get_feed_directory() . $this->get_temp_filename();
 	}
 
@@ -239,19 +240,35 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
 	public function execute_feed_generation_step() {
 		$settings = get_option( self::RUNNING_FEED_SETTINGS );
+		if ( $settings['done'] ) {
+			// We should not be here - add logging.
+			return;
+		}
 		$this->set_page( $settings['page'] );
 		$this->generate_file();
-		$settings['page'] += 1;
-		if ( ( ( $settings['page'] - 1 ) * $this->limit ) >= count( $settings['ids'] ) ) {
+		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
 			$settings['done'] = true;
 			$settings['end']  = time();
+			// Store all feed info so it will not get overwritten.
+			$file = $this->get_feed_directory() . $this->get_filename();
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
 				false
 			);
+			update_option(
+				self::FEED_FILE_INFO,
+				array(
+					'total'    => $settings['total'],
+					'start'    => $settings['start'],
+					'end'      => $settings['end'],
+					'location' => $file,
+					'size'     => round( filesize( $file ) / 1024 / 1024, 2 ),
+				)
+			);
 			$this->replace_feed_file_with_temp_file();
 		} else {
+			$settings['page'] += 1;
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
@@ -277,7 +294,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function prepare_feed_generation() {
 		$this->prepare_feed_folder();
 		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
-		$products_ids = array_slice( $products_ids, 0, 25, true );
+		$products_ids = array_slice( $products_ids, 0, 5000, true );
 		update_option(
 			self::RUNNING_FEED_SETTINGS,
 			array(
@@ -299,18 +316,30 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 		$settings = get_option( self::RUNNING_FEED_SETTINGS );
 
+		$response = array(
+			'done'       => false,
+			'percentage' => 0,
+			'total'      => $settings['total'],
+			'page'       => $settings['page'],
+			'file'       => get_option( self::FEED_FILE_INFO, null ),
+		);
 		if ( $settings['done'] ) {
 			wp_send_json_success(
-				array(
-					'done'       => true,
-					'percentage' => 100,
+				array_merge(
+					$response,
+					array(
+						'done'       => true,
+						'percentage' => 100,
+					)
 				)
 			);
 		} else {
 			wp_send_json_success(
-				array(
-					'done'       => false,
-					'percentage' => intval( ( ( $settings['page'] * $this->limit ) / $settings['total'] ) * 100 ),
+				array_merge(
+					$response,
+					array(
+						'percentage' => intval( ( ( ( $settings['page'] - 1 ) * $this->limit ) / $settings['total'] ) * 100 ),
+					)
 				)
 			);
 		}
