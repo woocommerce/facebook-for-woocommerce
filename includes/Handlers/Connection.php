@@ -323,7 +323,7 @@ class Connection {
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		} catch ( Connect_WC_API_Exception $exception ) {
 
-			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. No %s provided', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Facebook API returned error code: %s', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
