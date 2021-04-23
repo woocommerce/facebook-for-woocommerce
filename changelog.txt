@@ -1,10 +1,13 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021.nn.nn - version 2.3.6
- * Tweak - Improve full sync performance.
- * Fix - Fatal error for product categories with missing attributes.
- * Tweak - Reset all option when using Disconnect button.
- * Fix - Excessive memory usage of Google Product Category attribute data retrieval
+2021.04.23 - version 2.4.0
+ * New - Add WooCommerce Usage Tracking properties: "product-sync-enabled", "messenger-enabled"
+ * Fix - High memory usage when starting full catalog sync
+ * Fix - High memory usage of Google Product Category data
+ * Fix - Fatal error for product categories with missing attributes
+ * Fix - Connection data is now correctly cleared when using the "Disconnect" button
+ * Fix – Error modals when setting default exclude categories in Product sync now work correctly
+ * Dev - Add an initial performance debug mode to measure resource usage in some areas
 
 2021.03.31 - version 2.3.5
  * Fix - Critical issue for pre 5.0.0 WC sites.

@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Facebook for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Facebook for WooCommerce 2.3.5\n"
+"Project-Id-Version: Facebook for WooCommerce 2.4.0\n"
 "Report-Msgid-Bugs-To: "
 "https://woocommerce.com/my-account/marketplace-ticket-form/\n"
-"POT-Creation-Date: 2021-03-31 17:03:40+00:00\n"
+"POT-Creation-Date: 2021-04-23 04:36:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: class-wc-facebookcommerce.php:262
+#: class-wc-facebookcommerce.php:264
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -21,7 +21,7 @@ msgid ""
 "Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:277
+#: class-wc-facebookcommerce.php:279
 #. translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link
 #. HTML tag
 msgid ""
@@ -29,7 +29,7 @@ msgid ""
 "under %1$sWooCommerce > Facebook%2$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:292
+#: class-wc-facebookcommerce.php:294
 #. translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing
 #. strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag
 msgid ""
@@ -37,7 +37,7 @@ msgid ""
 "configuration, %3$scomplete the setup steps%4$s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:320
+#: class-wc-facebookcommerce.php:322
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -46,7 +46,7 @@ msgid ""
 "Connection%4$s area."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:337
+#: class-wc-facebookcommerce.php:339
 #. translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s -
 #. <a> tag, %4$s - </a> tag
 msgid ""
@@ -55,51 +55,51 @@ msgid ""
 "products."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:357
+#: class-wc-facebookcommerce.php:359
 #. translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing
 #. </a> HTML link tag
 msgid "Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:427
+#: class-wc-facebookcommerce.php:429
 msgid "FB Product Sets"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:428
+#: class-wc-facebookcommerce.php:430
 msgid "FB Product Set"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:436
+#: class-wc-facebookcommerce.php:438
 #. translators: Edit item label
 msgid "Edit %s"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:438
+#: class-wc-facebookcommerce.php:440
 #. translators: Add new label
 msgid "Add new %s"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:441
+#: class-wc-facebookcommerce.php:443
 #. translators: No items found text
 msgid "No %s found."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:443
+#: class-wc-facebookcommerce.php:445
 #. translators: Search label
 msgid "Search %s."
 msgstr ""
 
-#: class-wc-facebookcommerce.php:445
+#: class-wc-facebookcommerce.php:447
 #. translators: Text label
 msgid "Separate %s with commas"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:447
+#: class-wc-facebookcommerce.php:449
 #. translators: Text label
 msgid "Choose from the most used %s"
 msgstr ""
 
-#: class-wc-facebookcommerce.php:563
+#: class-wc-facebookcommerce.php:565
 msgid "Cannot create the API instance because the access token is missing."
 msgstr ""
 
@@ -284,7 +284,7 @@ msgstr ""
 msgid "Save changes"
 msgstr ""
 
-#: includes/Admin/Enhanced_Catalog_Attribute_Fields.php:104
+#: includes/Admin/Enhanced_Catalog_Attribute_Fields.php:103
 msgid "Show advanced options"
 msgstr ""
 
@@ -320,11 +320,11 @@ msgstr ""
 msgid "Default Google product category"
 msgstr ""
 
-#: includes/Admin/Product_Categories.php:349
+#: includes/Admin/Product_Categories.php:357
 msgid "Select default values for enhanced attributes within this category"
 msgstr ""
 
-#: includes/Admin/Product_Categories.php:367 includes/Admin/Products.php:114
+#: includes/Admin/Product_Categories.php:375 includes/Admin/Products.php:118
 msgid "Category Specific Attributes"
 msgstr ""
 
@@ -336,39 +336,39 @@ msgstr ""
 msgid "Map FB Product Set to WC Product Categories"
 msgstr ""
 
-#: includes/Admin/Products.php:96
+#: includes/Admin/Products.php:100
 msgid "Select values for enhanced attributes for this product"
 msgstr ""
 
-#: includes/Admin/Products.php:135
+#: includes/Admin/Products.php:139
 msgid "Google product category"
 msgstr ""
 
-#: includes/Admin/Products.php:136
+#: includes/Admin/Products.php:140
 msgid ""
 "Choose the Google product category and (optionally) sub-categories "
 "associated with this product."
 msgstr ""
 
-#: includes/Admin/Products.php:209
+#: includes/Admin/Products.php:213
 msgid "Sell on Instagram"
 msgstr ""
 
-#: includes/Admin/Products.php:211
+#: includes/Admin/Products.php:215
 msgid ""
 "Enable to sell this product on Instagram. Products that are hidden in the "
 "Facebook catalog can be synced, but won’t be available for purchase."
 msgstr ""
 
-#: includes/Admin/Products.php:221
+#: includes/Admin/Products.php:225
 msgid "This product does not meet the requirements to sell on Instagram."
 msgstr ""
 
-#: includes/Admin/Products.php:222
+#: includes/Admin/Products.php:226
 msgid "Click here to learn more."
 msgstr ""
 
-#: includes/Admin/Products.php:231
+#: includes/Admin/Products.php:235
 #. translators: Placeholders %1$s - strong opening tag, %2$s - strong closing
 #. tag
 msgid ""
@@ -499,7 +499,7 @@ msgid "Manage Connection"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Connection.php:279
-msgid "Uninstall"
+msgid "Disconnect"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Connection.php:285
@@ -561,7 +561,7 @@ msgstr ""
 
 #: includes/Admin/Settings_Screens/Product_Sets.php:33
 #: includes/Admin/Settings_Screens/Product_Sets.php:34
-msgid "Product Sets"
+msgid "Product sets"
 msgstr ""
 
 #: includes/Admin/Settings_Screens/Product_Sync.php:71
@@ -873,7 +873,7 @@ msgstr ""
 msgid "Use parent image"
 msgstr ""
 
-#: includes/Admin.php:1545
+#: includes/Admin.php:1546
 msgid "Close modal panel"
 msgstr ""
 
@@ -959,7 +959,7 @@ msgid "Other"
 msgstr ""
 
 #: includes/Handlers/Connection.php:310
-msgid "Connection complete! Thanks for using Facebook for WooCommerce."
+msgid "Connection successful!"
 msgstr ""
 
 #: includes/Handlers/Connection.php:336
@@ -967,36 +967,32 @@ msgid "You do not have permission to uninstall Facebook Business Extension."
 msgstr ""
 
 #: includes/Handlers/Connection.php:346
-msgid "Uninstall successful"
+msgid "Disconnection successful."
 msgstr ""
 
-#: includes/Handlers/Connection.php:352
-msgid "Uninstall unsuccessful. Please try again."
-msgstr ""
-
-#: includes/Handlers/Connection.php:411
+#: includes/Handlers/Connection.php:410
 #. translators: Placeholders: %s - API error message
 msgid "Could not retrieve page access data. %s"
 msgstr ""
 
-#: includes/Handlers/Connection.php:423
+#: includes/Handlers/Connection.php:422
 #. translators: Placeholders: %s - Facebook page ID
 msgid "Page %s not authorized."
 msgstr ""
 
-#: includes/Handlers/Connection.php:1359
+#: includes/Handlers/Connection.php:1358
 msgid "You do not have permission to finish App Store login."
 msgstr ""
 
-#: includes/Products/Sync/Background.php:65
+#: includes/Products/Sync/Background.php:68
 msgid "Job data key \"%s\" not set"
 msgstr ""
 
-#: includes/Products/Sync/Background.php:69
+#: includes/Products/Sync/Background.php:72
 msgid "Job data key \"%s\" is not an array"
 msgstr ""
 
-#: includes/Products/Sync/Background.php:153
+#: includes/Products/Sync/Background.php:158
 msgid ""
 "There was an error trying sync products using the Catalog Batch API for job "
 "%s: %s"
@@ -1018,19 +1014,19 @@ msgstr ""
 msgid "Dismiss"
 msgstr ""
 
-#: includes/fbproductfeed.php:484
+#: includes/fbproductfeed.php:466
 msgid "Could not create product catalog feed directory"
 msgstr ""
 
-#: includes/fbproductfeed.php:550
+#: includes/fbproductfeed.php:532
 msgid "Could not open the product catalog temporary feed file for writing"
 msgstr ""
 
-#: includes/fbproductfeed.php:557
+#: includes/fbproductfeed.php:539
 msgid "Could not open the product catalog feed file for writing"
 msgstr ""
 
-#: includes/fbproductfeed.php:601
+#: includes/fbproductfeed.php:583
 msgid "Could not rename the product catalog feed file"
 msgstr ""
 
