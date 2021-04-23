@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021.nn.nn - version 2.4.0-dev.1
+2021.04.23 - version 2.4.0
  * New - Add WooCommerce Usage Tracking properties: "product-sync-enabled", "messenger-enabled"
  * Fix - High memory usage when starting full catalog sync
  * Fix - High memory usage of Google Product Category data
