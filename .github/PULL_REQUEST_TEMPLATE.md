@@ -25,5 +25,5 @@ Closes # .
 ### Changelog entry
 
 <!-- Add suggested changelog entry here. For example: -->
-> Fix / Tweak / Dev - Remove duplicate visibility meta entries from postmeta table
+> Fix / Dev / New - Remove duplicate visibility meta entries from postmeta table
 <!-- See [previous releases](../../releases) for more examples. -->
