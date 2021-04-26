@@ -37,6 +37,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	const REQUEST_FEED_ACTION     = 'wc_facebook_get_feed_data';
 	const FEED_GENERATION_LIMIT   = 500;
 	const OPTION_FEED_URL_SECRET  = 'wc_facebook_feed_url_secret';
+	const FEED_NAME               = 'Facebook For WooCommerce Feed.';
 
 	/**
 	 * Type of export used in filter names.
@@ -92,6 +93,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		parent::__construct();
 		$this->feed_handler = new \WC_Facebook_Product_Feed();
 		add_action( 'init', array( $this, 'maybe_schedule_feed_generation' ) );
+		add_action( 'init', array( $this, 'maybe_create_catalog_feed' ) );
 		add_action( self::FEED_GENERATION_STEP, array( $this, 'execute_feed_generation_step' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
@@ -106,6 +108,13 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 		$timestamp = strtotime( 'today midnight +1 day' );
 		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION, array(), self::FEED_ACTIONS_GROUP );
+	}
+
+	public function maybe_create_catalog_feed() {
+		// Crate Facebook Catalog feed if we don't have one yet.
+		if ( '' == facebook_for_woocommerce()->get_integration()->get_feed_id() ) {
+			$this->create_feed();
+		}
 	}
 
 	/**
@@ -175,6 +184,42 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			'default_product' => 'default_product',
 			'variant' => 'variant',
 		);
+	}
+
+	private function create_feed() {
+		$result = \WC_Facebookcommerce_Utils::$fbgraph->create_feed(
+			facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
+			array( 'name' => self::FEED_NAME )
+		);
+
+		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+			facebook_for_woocommerce()->log( json_encode( $result ) );
+			return null;
+		}
+		$decode_result = \WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+		$feed_id       = $decode_result->id;
+		if ( ! $feed_id ) {
+			facebook_for_woocommerce()->log(
+				'Response from creating feed not return feed id!'
+			);
+			return null;
+		}
+		facebook_for_woocommerce()->get_integration()->update_feed_id( $feed_id );
+		return $feed_id;
+	}
+
+	public static function get_feed_update_schedule() {
+		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_update_schedule(
+			facebook_for_woocommerce()->get_integration()->get_feed_id()
+		);
+		return  $feed_schedule_info;
+	}
+
+	public static function get_feed_schedule() {
+		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_schedule(
+			facebook_for_woocommerce()->get_integration()->get_feed_id()
+		);
+		return $feed_schedule_info;
 	}
 
 	public function prepare_feed_folder() {

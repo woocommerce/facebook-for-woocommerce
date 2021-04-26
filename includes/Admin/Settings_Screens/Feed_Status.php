@@ -76,6 +76,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 
 	public function render() {
 		$settings = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
+		$feed_id  = facebook_for_woocommerce()->get_integration()->get_feed_id();
+		$feed_schedule = FB_Feed_Generator::get_feed_update_schedule();
 		?>
 		<h1><?php esc_html_e( 'Feed Status', 'woocommerce' ); ?></h1>
 		<div class="facebook-for-woocommerce-feed-status-wrapper">
@@ -84,6 +86,19 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 					<p><?php esc_html_e( 'This pages shows the status and statistics of the feed file generation', 'facebook-for-woocommerce' ); ?></p>
 				</header>
 				<hr>
+				<section class="facebook-for-woocommerce-feed-status-catalog-info" >
+					<?php esc_html_e( 'Facebook catalog feeed settings', 'facebook-for-woocommerce' ); ?>
+					<p ><?php esc_html_e( 'Feed id: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-catalog-feed-id"> <?php echo $feed_id ?></span>
+					</p>
+					<p ><?php esc_html_e( 'Feed upload schedule info ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-catalog-feed-schedule">
+						<pre>
+<?php echo json_encode( json_decode( $feed_schedule ), JSON_PRETTY_PRINT ) ?></span>
+						</pre>
+					</p>
+					<hr>
+				</section>
 				<section class="facebook-for-woocommerce-feed-status-is-generating" >
 					<span class="spinner is-active"></span>
 					<?php esc_html_e( 'Generating new feed file.', 'facebook-for-woocommerce' ); ?>
@@ -101,6 +116,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 					</p>
 					<hr>
 				</section>
+
 				<section class="facebook-for-woocommerce-feed-status-file-info" >
 					<?php esc_html_e( 'Current feed file information', 'facebook-for-woocommerce' ); ?>
 					<p>
