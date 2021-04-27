@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.3.5
+Stable tag: 2.4.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,15 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.04.23 - version 2.4.0 =
+ * Tweak - Add an initial performance debug mode to measure resource usage in some areas
+ * Tweak - Add 3 usage tracking properties: "is-connected", "product-sync-enabled", "messenger-enabled"
+ * Fix - High memory usage when starting full catalog sync
+ * Fix - High memory usage of Google Product Category data
+ * Fix - Fatal error for product categories with missing attributes
+ * Fix - Connection data is now correctly cleared when using the "Disconnect" button
+ * Fix – Error modals when setting default exclude categories in Product sync now work correctly
 
 = 2021.03.31 - version 2.3.5 =
  * Fix - critical issue for pre 5.0.0 WC sites
