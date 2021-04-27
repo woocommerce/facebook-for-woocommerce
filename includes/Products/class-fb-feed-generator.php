@@ -215,6 +215,13 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		return  $feed_schedule_info;
 	}
 
+	public static function get_feed_latest_upload() {
+		$feed_latest_update_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_latest_upload(
+			facebook_for_woocommerce()->get_integration()->get_feed_id()
+		);
+		return  $feed_latest_update_info;
+	}
+
 	public static function get_feed_schedule() {
 		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_schedule(
 			facebook_for_woocommerce()->get_integration()->get_feed_id()
