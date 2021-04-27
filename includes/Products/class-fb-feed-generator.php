@@ -34,8 +34,8 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	const FEED_SCHEDULE_SETTINGS  = 'wc_facebook_for_woocommerce_feed_schedule';
 	const FEED_GENERATION_NONCE   = 'wc_facebook_for_woocommerce_feed_generation_nonce';
 	const FEED_FILE_INFO          = 'wc_facebook_for_woocommerce_feed_file_info';
-	const REQUEST_FEED_ACTION     = 'wc_facebook_get_feed_data';
-	const FEED_GENERATION_LIMIT   = 500;
+	const REQUEST_FEED_ACTION     = 'facebook_for_woocommerce_get_feed';
+	const FEED_GENERATION_LIMIT   = 50;
 	const OPTION_FEED_URL_SECRET  = 'wc_facebook_feed_url_secret';
 	const FEED_NAME               = 'Facebook For WooCommerce Feed.';
 
@@ -99,7 +99,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
 
 		//Just copied and not integrated yet.
-		//add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, [ $this, 'handle_feed_data_request' ] );
+		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, [ $this, 'handle_feed_request' ] );
 	}
 
 	public function maybe_schedule_feed_generation() {
@@ -294,13 +294,15 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
 			$settings['done'] = true;
 			$settings['end']  = time();
-			// Store all feed info so it will not get overwritten.
-			$file = $this->get_feed_directory() . $this->get_filename();
+			
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
 				false
 			);
+			$this->replace_feed_file_with_temp_file();
+			// Store all feed info so it will not get overwritten.
+			$file = $this->get_feed_directory() . $this->get_filename();
 			update_option(
 				self::FEED_FILE_INFO,
 				array(
@@ -311,7 +313,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 					'size'     => round( filesize( $file ) / 1024 / 1024, 2 ),
 				)
 			);
-			$this->replace_feed_file_with_temp_file();
+
 		} else {
 			$settings['page'] += 1;
 			update_option(
@@ -339,7 +341,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function prepare_feed_generation() {
 		$this->prepare_feed_folder();
 		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
-		$products_ids = array_slice( $products_ids, 0, 5000, true );
+		$products_ids = array_slice( $products_ids, 0, 150, true );
 		update_option(
 			self::RUNNING_FEED_SETTINGS,
 			array(
@@ -445,29 +447,19 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
 	/**
 	 * Handles the feed data request.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
 	 */
-	public function handle_feed_data_request() {
+	public function handle_feed_request() {
 
-		\WC_Facebookcommerce_Utils::log( 'Facebook is requesting the product feed.' );
+		$feed_file = get_option( self::FEED_FILE_INFO );
 
-		$feed_handler = new \WC_Facebook_Product_Feed();
-		$file_path    = $feed_handler->get_file_path();
-
-		// regenerate if the file doesn't exist
-		if ( ! empty( $_GET['regenerate'] ) || ! file_exists( $file_path ) ) {
-			$feed_handler->generate_feed();
-		}
+		$file_path = $feed_file['location'];
 
 		try {
 
 			// bail early if the feed secret is not included or is not valid
-			if ( Feed::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
-			}
+			// if ( Feed::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
+			// 	throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			// }
 
 			// bail early if the file can't be read
 			if ( ! is_readable( $file_path ) ) {
@@ -492,22 +484,22 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			// fpassthru might be disabled in some hosts (like Flywheel)
 			if ( $this->is_fpassthru_disabled() || ! @fpassthru( $file ) ) {
 
-				\WC_Facebookcommerce_Utils::log( 'fpassthru is disabled: getting file contents' );
+				//\WC_Facebookcommerce_Utils::log( 'fpassthru is disabled: getting file contents' );
 
 				$contents = @stream_get_contents( $file );
 
-				if ( ! $contents ) {
-					throw new Framework\SV_WC_Plugin_Exception( 'Could not get feed file contents.', 500 );
-				}
+				// if ( ! $contents ) {
+				// 	throw new Framework\SV_WC_Plugin_Exception( 'Could not get feed file contents.', 500 );
+				// }
 
 				echo $contents;
 			}
 
 		} catch ( \Exception $exception ) {
 
-			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
+			// \WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
 
-			status_header( $exception->getCode() );
+			// status_header( $exception->getCode() );
 		}
 
 		exit;
