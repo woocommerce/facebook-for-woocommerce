@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use SkyVerge\WooCommerce\Facebook\API\Exceptions\Connect_WC_API_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -92,6 +93,8 @@ class Connection {
 	/** @var \WC_Facebookcommerce */
 	private $plugin;
 
+	/** @var array */
+	protected $proxy_error_messages;
 
 	/**
 	 * Constructs a new Connection.
@@ -272,19 +275,23 @@ class Connection {
 				throw new SV_WC_API_Exception( 'Invalid nonce' );
 			}
 
-			$merchant_access_token = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
+			$error_code               = ! empty( $_GET['err_code'] ) ? sanitize_text_field( $_GET['err_code'] ) : '';
+			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
+			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
+
+			if ( $is_error && $error_code ) {
+				throw new Connect_WC_API_Exception( $error_code );
+			}
 
 			if ( ! $merchant_access_token ) {
 				throw new SV_WC_API_Exception( 'Access token is missing' );
 			}
 
-			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
-
 			if ( ! $system_user_access_token ) {
 				throw new SV_WC_API_Exception( 'System User access token is missing' );
 			}
-
-			$system_user_id = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
 			if ( ! $system_user_id ) {
 				throw new SV_WC_API_Exception( 'System User ID is missing' );
@@ -312,6 +319,11 @@ class Connection {
 		} catch ( SV_WC_API_Exception $exception ) {
 
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
+
+			set_transient( 'wc_facebook_connection_failed', time(), 30 );
+		} catch ( Connect_WC_API_Exception $exception ) {
+
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Facebook API returned error code: %s', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
