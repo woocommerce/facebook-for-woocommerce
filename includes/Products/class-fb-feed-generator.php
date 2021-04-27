@@ -348,7 +348,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	public function prepare_feed_generation() {
 		$this->prepare_feed_folder();
 		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
-		$products_ids = array_slice( $products_ids, 0, 150, true );
+		//$products_ids = array_slice( $products_ids, 0, 150, true );
 		update_option(
 			self::RUNNING_FEED_SETTINGS,
 			array(
