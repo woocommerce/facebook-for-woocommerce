@@ -26,7 +26,7 @@ class GenerateCategories {
 		'// This file was generated using GenerateCategories.php, do not modify it manually' . PHP_EOL .
 		'// php GenerateCategories.php taxonomy-with-ids.en-US.txt' . PHP_EOL .
 		'class GoogleProductTaxonomy {' . PHP_EOL .
-		'	public const TAXONOMY = %s' . PHP_EOL .
+		'	const TAXONOMY = %s' . PHP_EOL .
 		';}' . PHP_EOL;
 
 		$export = sprintf(
