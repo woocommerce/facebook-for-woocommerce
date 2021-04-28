@@ -1,7 +1,4 @@
-*** Facebook for WooCommerce Changelog ***=
-
-2021.nn.nn - version 2.4.1
- * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
+*** Facebook for WooCommerce Changelog ***
 
 2021.04.23 - version 2.4.0
  * New - Add WooCommerce Usage Tracking properties: "product-sync-enabled", "messenger-enabled"
