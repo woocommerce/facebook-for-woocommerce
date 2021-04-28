@@ -55,7 +55,7 @@ jobs:
           composer --version
       - name: Install Composer dependencies
         run: |
-          composer install --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction
+          composer install --no-dev --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction
           echo "${PWD}/vendor/bin" >> $GITHUB_PATH
       - name: Log PHPCS debug information
         run: phpcs -i
