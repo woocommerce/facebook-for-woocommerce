@@ -72,6 +72,11 @@ class GenerateProductFeed extends AbstractChainedJob {
 				throw new Exception( 'Product not found.' );
 			}
 
+			if ( 'variable' === $product->get_type() ) {
+				// Skip variable products
+				return;
+			}
+
 			// TODO
 
 		} catch ( Exception $e ) {
