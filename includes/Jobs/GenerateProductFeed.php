@@ -6,7 +6,7 @@ use Automattic\WooCommerce\ActionSchedulerJobFramework\AbstractChainedJob;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Utilities\BatchQueryOffset;
 use Exception;
 use WC_Facebookcommerce;
-use WP_Query;
+use WC_Product;
 
 /**
  * Class GenerateProductFeed
@@ -44,37 +44,29 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	protected function get_items_for_batch( int $batch_number, array $args ): array {
 		$product_args = [
-			'fields'         => 'ids',
-			'post_status'    => 'publish',
-			'post_type'      => [ 'product', 'product_variation' ],
-			'posts_per_page' => $this->get_batch_size(),
-			'offset'         => $this->get_query_offset( $batch_number ),
-			'orderby'        => 'ID',
-			'order'          => 'ASC',
+			'status'  => 'publish',
+			'type'    => [ 'simple', 'variation' ],
+			'limit'   => $this->get_batch_size(),
+			'offset'  => $this->get_query_offset( $batch_number ),
+			'orderby' => 'ID',
+			'order'   => 'ASC',
 		];
 
-		$query = new WP_Query( $product_args );
-		return $query->posts;
+		return wc_get_products( $product_args );
 	}
 
 	/**
 	 * Process a single item.
 	 *
-	 * @param string|int|array $item A single item from the get_items_for_batch() method.
-	 * @param array            $args The args for the job.
+	 * @param WC_Product $product A single item from the get_items_for_batch() method.
+	 * @param array      $args The args for the job.
 	 *
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
-	protected function process_item( $item, array $args ) {
+	protected function process_item( $product, array $args ) {
 		try {
-			$product = wc_get_product( $item );
 			if ( ! $product ) {
 				throw new Exception( 'Product not found.' );
-			}
-
-			if ( 'variable' === $product->get_type() ) {
-				// Skip variable products
-				return;
 			}
 
 			// TODO
@@ -83,7 +75,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 			facebook_for_woocommerce()->log(
 				sprintf(
 					'Error processing item #%d - %s',
-					$item,
+					$product instanceof WC_Product ? $product->get_id() : 0,
 					$e->getMessage()
 				),
 				WC_Facebookcommerce::PLUGIN_ID . '_generate_feed'
