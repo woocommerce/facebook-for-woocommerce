@@ -91,6 +91,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Tracker */
 		private $tracker;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry */
+		public $job_registry;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -128,6 +131,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'woocommerce_navigation_get_breadcrumbs', [ $this, 'wc_page_breadcrumbs_filter' ], 99 );
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+				require_once __DIR__ . '/vendor/autoload.php';
 
 				include_once 'facebook-commerce.php';
 
@@ -192,6 +196,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->webhook_handler = new \SkyVerge\WooCommerce\Facebook\Handlers\WebHook( $this );
 
 				$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
+
+				// Init jobs
+				$this->job_registry = new \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry();
+				add_action( 'init', [ $this->job_registry, 'init' ] );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
