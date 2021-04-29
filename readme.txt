@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2021.04.29 - version 2.4.1
+ * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
 
 = 2021.04.23 - version 2.4.0 =
  * Tweak - Add an initial performance debug mode to measure resource usage in some areas
