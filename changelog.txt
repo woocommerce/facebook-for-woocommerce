@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021.nn.nn - version 2.4.1-dev.1
+2021.04.29 - version 2.4.1
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
 
 2021.04.23 - version 2.4.0
