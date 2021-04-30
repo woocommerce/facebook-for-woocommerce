@@ -232,7 +232,7 @@ class FBCategories {
 			if ( $contents ) {
 				$data = json_decode( $contents, true );
 			} else {
-				$data = [];
+				$data = array();
 				facebook_for_woocommerce()->log( 'Error reading category attributes JSON data.' );
 			}
 		}
@@ -253,7 +253,7 @@ class FBCategories {
 			if ( $contents ) {
 				$data = json_decode( $contents, true );
 			} else {
-				$data = [];
+				$data = array();
 				facebook_for_woocommerce()->log( 'Error reading category attributes fields JSON data.' );
 			}
 		}

@@ -16,19 +16,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 	class WC_Facebookcommerce_Pixel {
 
 
-		const SETTINGS_KEY = 'facebook_config';
-		const PIXEL_ID_KEY = 'pixel_id';
-		const USE_PII_KEY  = 'use_pii';
-		const USE_S2S_KEY= 'use_s2s';
+		const SETTINGS_KEY     = 'facebook_config';
+		const PIXEL_ID_KEY     = 'pixel_id';
+		const USE_PII_KEY      = 'use_pii';
+		const USE_S2S_KEY      = 'use_s2s';
 		const ACCESS_TOKEN_KEY = 'access_token';
 
 		/** @var string cache key for pixel script block output  */
-		const PIXEL_RENDER     = 'pixel_render';
+		const PIXEL_RENDER = 'pixel_render';
 		/** @var string cache key for pixel noscript block output */
 		const NO_SCRIPT_RENDER = 'no_script_render';
 
 		/** @var array script render memoization helper */
-		public static $render_cache = [];
+		public static $render_cache = array();
 
 		private $user_info;
 
@@ -89,12 +89,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			 *
 			 * @param string $js_code
 			 */
-			return apply_filters( 'facebook_woocommerce_pixel_init', sprintf(
-				"fbq('init', '%s', %s, %s);\n",
-				esc_js( self::get_pixel_id() ),
-				json_encode( $this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-				json_encode( [ 'agent' => $agent_string ], JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
-			) );
+			return apply_filters(
+				'facebook_woocommerce_pixel_init',
+				sprintf(
+					"fbq('init', '%s', %s, %s);\n",
+					esc_js( self::get_pixel_id() ),
+					json_encode( $this->user_info, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
+					json_encode( array( 'agent' => $agent_string ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+				)
+			);
 		}
 
 
@@ -108,7 +111,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			$pixel_id = self::get_pixel_id();
 
 			// bail if no ID or already rendered
-			if ( empty( $pixel_id )|| ! empty( self::$render_cache[ self::PIXEL_RENDER ] ) ) {
+			if ( empty( $pixel_id ) || ! empty( self::$render_cache[ self::PIXEL_RENDER ] ) ) {
 				return '';
 			}
 
@@ -129,7 +132,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 				<?php echo $this->get_pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ) ?> );
+				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( array(), 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -223,7 +226,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $method name of the pixel's fbq() function to call
 		 * @return string
 		 */
@@ -243,7 +246,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $method name of the pixel's fbq() function to call
 		 * @return string
 		 */
@@ -267,10 +270,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * Prints or enqueues the JavaScript code to track an event.
 		 *
 		 * Preferred method to inject events in a page.
+		 *
 		 * @see \WC_Facebookcommerce_Pixel::build_event()
 		 *
 		 * @param string $event_name the name of the event to track
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $method name of the pixel's fbq() function to call
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
@@ -295,7 +299,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $listener name of the JavaScript event to listen for
 		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
 		 * @return string
@@ -334,7 +338,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * The tracking code will be executed when the given JavaScript event is triggered.
 		 *
 		 * @param string $event_name
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $listener name of the JavaScript event to listen for
 		 * @param string $jsonified_pii JavaScript code representing an object of data for Advanced Matching
 		 * @return string
@@ -354,7 +358,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @since 1.10.2
 		 *
 		 * @param string $event_name the name of the event to track
-		 * @param array $params custom event parameters
+		 * @param array  $params custom event parameters
 		 * @param string $listened_event name of the JavaScript event to listen for
 		 * @return string
 		 */
@@ -388,7 +392,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @see \WC_Facebookcommerce_Pixel::inject_event() for the preferred method to inject an event.
 		 *
 		 * @param string $event_name event name
-		 * @param array $params event params
+		 * @param array  $params event params
 		 * @param string $method optional, defaults to 'track'
 		 * @return string
 		 */
@@ -417,7 +421,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			if ( ! empty( $event_id ) ) {
 				$event = sprintf(
 					"/* %s Facebook Integration Event Tracking */\n" .
-					"fbq('set', 'agent', '%s', '%s');\n".
+					"fbq('set', 'agent', '%s', '%s');\n" .
 					"fbq('%s', '%s', %s, %s);",
 					WC_Facebookcommerce_Utils::getIntegrationName(),
 					Event::get_platform_identifier(),
@@ -425,14 +429,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 					esc_js( $method ),
 					esc_js( $event_name ),
 					json_encode( self::build_params( $params, $event_name ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ),
-					json_encode( [ 'eventID' => $event_id ], JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
+					json_encode( array( 'eventID' => $event_id ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT )
 				);
 
 			} else {
 
 				$event = sprintf(
 					"/* %s Facebook Integration Event Tracking */\n" .
-					"fbq('set', 'agent', '%s', '%s');\n".
+					"fbq('set', 'agent', '%s', '%s');\n" .
 					"fbq('%s', '%s', %s);",
 					WC_Facebookcommerce_Utils::getIntegrationName(),
 					Event::get_platform_identifier(),
@@ -454,11 +458,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @since 1.10.2
 		 *
-		 * @param array $params user defined parameters
+		 * @param array  $params user defined parameters
 		 * @param string $event the event name the params are for
 		 * @return array
 		 */
-		private static function build_params( $params = [], $event = '' ) {
+		private static function build_params( $params = array(), $event = '' ) {
 
 			$params = array_replace( Event::get_version_info(), $params );
 
@@ -492,7 +496,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			 *
 			 * @param array $custom_attributes
 			 */
-			$custom_attributes = (array) apply_filters( 'wc_facebook_pixel_script_attributes', [ 'type' => 'text/javascript' ] );
+			$custom_attributes = (array) apply_filters( 'wc_facebook_pixel_script_attributes', array( 'type' => 'text/javascript' ) );
 
 			foreach ( $custom_attributes as $tag => $value ) {
 				$script_attributes .= ' ' . $tag . '="' . esc_attr( $value ) . '"';
@@ -608,9 +612,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return get_option(
 				self::SETTINGS_KEY,
 				array(
-					self::PIXEL_ID_KEY => '0',
-					self::USE_PII_KEY  => 0,
-					self::USE_S2S_KEY => false,
+					self::PIXEL_ID_KEY     => '0',
+					self::USE_PII_KEY      => 0,
+					self::USE_S2S_KEY      => false,
 					self::ACCESS_TOKEN_KEY => '',
 				)
 			);
@@ -636,7 +640,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @return string[]
 		 */
-		public function get_user_info(){
+		public function get_user_info() {
 			return $this->user_info;
 		}
 	}

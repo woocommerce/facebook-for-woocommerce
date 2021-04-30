@@ -30,7 +30,7 @@ trait Rate_Limited_API {
 	 * @since 2.0.0
 	 *
 	 * @param string $rate_limit_id request ID for rate limiting
-	 * @param int $delay delay in seconds
+	 * @param int    $delay delay in seconds
 	 */
 	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
 
@@ -68,7 +68,7 @@ trait Rate_Limited_API {
 	 * @since 2.0.0
 	 *
 	 * @param Rate_Limited_Response $response API response object
-	 * @param array $headers API response headers
+	 * @param array                 $headers API response headers
 	 * @return int delay in seconds
 	 */
 	protected function calculate_rate_limit_delay( $response, $headers ) {

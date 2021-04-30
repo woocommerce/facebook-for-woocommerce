@@ -35,8 +35,8 @@ if ( ! class_exists( 'WC_Facebook_WPML_Injector' ) ) :
 			self::$default_lang = apply_filters( 'wpml_default_language', null );
 
 			if ( is_admin() ) {
-				add_action( 'icl_menu_footer',     [ $this, 'wpml_support' ] );
-				add_action( 'icl_ajx_custom_call', [ $this, 'wpml_ajax_support' ], 10, 2 );
+				add_action( 'icl_menu_footer', array( $this, 'wpml_support' ) );
+				add_action( 'icl_ajx_custom_call', array( $this, 'wpml_ajax_support' ), 10, 2 );
 			}
 		}
 

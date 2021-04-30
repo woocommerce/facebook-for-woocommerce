@@ -76,7 +76,7 @@ class Settings {
 		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 
 			$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-			                        && \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+									&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
 
 			if ( $is_marketing_enabled ) {
 
@@ -88,8 +88,9 @@ class Settings {
 			$root_menu_item,
 			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
 			__( 'Facebook', 'facebook-for-woocommerce' ),
-			'manage_woocommerce', self::PAGE_ID,
-			[ $this, 'render' ],
+			'manage_woocommerce',
+			self::PAGE_ID,
+			array( $this, 'render' ),
 			5
 		);
 
@@ -109,33 +110,35 @@ class Settings {
 
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
 
-			$crumbs = [
+			$crumbs = array(
 				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
-			];
+			);
 
 			if ( ! empty( $_GET['tab'] ) ) {
 				switch ( $_GET['tab'] ) {
-					case Settings_Screens\Connection::ID :
+					case Settings_Screens\Connection::ID:
 						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Messenger::ID :
+						break;
+					case Settings_Screens\Messenger::ID:
 						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Product_Sync::ID :
+						break;
+					case Settings_Screens\Product_Sync::ID:
 						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
-					break;
-					case Settings_Screens\Advertise::ID :
+						break;
+					case Settings_Screens\Advertise::ID:
 						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
-					break;
+						break;
 				}
 			}
 
-			wc_admin_connect_page( [
-				'id'        => self::PAGE_ID,
-				'screen_id' => $screen_id,
-				'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
-				'title'     => $crumbs
-			] );
+			wc_admin_connect_page(
+				array(
+					'id'        => self::PAGE_ID,
+					'screen_id' => $screen_id,
+					'path'      => add_query_arg( 'page', self::PAGE_ID, 'admin.php' ),
+					'title'     => $crumbs,
+				)
+			);
 		}
 	}
 
@@ -160,7 +163,7 @@ class Settings {
 
 		<div class="wrap woocommerce">
 
-			<?php if ( ! $this->use_woo_nav ): ?>
+			<?php if ( ! $this->use_woo_nav ) : ?>
 				<nav class="nav-tab-wrapper woo-nav-tab-wrapper">
 
 					<?php foreach ( $tabs as $id => $label ) : ?>
@@ -325,14 +328,14 @@ class Settings {
 		);
 
 		$order = 1;
-		foreach( $this->get_screens() as $screen_id => $screen ) {
+		foreach ( $this->get_screens() as $screen_id => $screen ) {
 			$url = $screen instanceof Settings_Screens\Product_Sets
 				? 'edit-tags.php?taxonomy=fb_product_set&post_type=product'
 				: 'wc-facebook&tab=' . $screen->get_id();
 
 			WooAdminMenu::add_plugin_item(
 				array(
-					'id'     => 'facebook-for-woocommerce-'. $screen->get_id(),
+					'id'     => 'facebook-for-woocommerce-' . $screen->get_id(),
 					'parent' => 'facebook-for-woocommerce',
 					'title'  => $screen->get_label(),
 					'url'    => $url,

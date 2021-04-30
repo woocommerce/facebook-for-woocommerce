@@ -48,7 +48,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 	 * @since 2.0.3
 	 *
 	 * @param object $job
-	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
+	 * @param int    $items_per_batch number of items to process in a single request. Defaults to unlimited.
 	 * @return object
 	 */
 	public function process_job( $job, $items_per_batch = null ) {
@@ -56,7 +56,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 		// don't do anything until the job used to hide virtual variations is done
 		$handler = facebook_for_woocommerce()->get_background_handle_virtual_products_variations_instance();
 
-		if ( $handler && $handler->get_jobs( [ 'status' => [ 'processing', 'queued' ] ] ) ) {
+		if ( $handler && $handler->get_jobs( array( 'status' => array( 'processing', 'queued' ) ) ) ) {
 			return $job;
 		}
 
@@ -142,10 +142,12 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 
 			if ( false === $wpdb->query( $wpdb->prepare( $sql, $result->post_id, $result->last_meta_id ) ) ) {
 
-				facebook_for_woocommerce()->log( sprintf(
-					'There was an error trying to set products and variations meta data. %s',
-					$wpdb->last_error
-				) );
+				facebook_for_woocommerce()->log(
+					sprintf(
+						'There was an error trying to set products and variations meta data. %s',
+						$wpdb->last_error
+					)
+				);
 
 				continue;
 			}

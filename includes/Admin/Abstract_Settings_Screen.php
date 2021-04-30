@@ -118,6 +118,7 @@ abstract class Abstract_Settings_Screen {
 	 * Gets the settings.
 	 *
 	 * Should return a multi-dimensional array of settings in the format expected by \WC_Admin_Settings
+	 *
 	 * @return array
 	 */
 	abstract public function get_settings();
