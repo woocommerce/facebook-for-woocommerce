@@ -128,35 +128,15 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'woocommerce_navigation_get_breadcrumbs', [ $this, 'wc_page_breadcrumbs_filter' ], 99 );
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+				require_once __DIR__ . '/vendor/autoload.php';
 
 				include_once 'facebook-commerce.php';
 
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
-				require_once __DIR__ . '/includes/Locale.php';
-				require_once __DIR__ . '/includes/AJAX.php';
-				require_once __DIR__ . '/includes/Handlers/Connection.php';
-				require_once __DIR__ . '/includes/Handlers/WebHook.php';
-				require_once __DIR__ . '/includes/Integrations/Integrations.php';
-				require_once __DIR__ . '/includes/Product_Categories.php';
-				require_once __DIR__ . '/includes/Products.php';
-				require_once __DIR__ . '/includes/Products/Feed.php';
-				require_once __DIR__ . '/includes/Products/FBCategories.php';
-				require_once __DIR__ . '/includes/Products/Stock.php';
-				require_once __DIR__ . '/includes/Products/Sync.php';
-				require_once __DIR__ . '/includes/Products/Sync/Background.php';
-				require_once __DIR__ . '/includes/ProductSets/Sync.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
-				require_once __DIR__ . '/includes/Commerce.php';
-				require_once __DIR__ . '/includes/Events/Event.php';
-				require_once __DIR__ . '/includes/Events/Normalizer.php';
-				require_once __DIR__ . '/includes/Events/AAMSettings.php';
-				require_once __DIR__ . '/includes/Utilities/Shipment.php';
-				require_once __DIR__ . '/includes/Utilities/Tracker.php';
-				require_once __DIR__ . '/includes/Debug/ProfilingLogger.php';
-				require_once __DIR__ . '/includes/Debug/ProfilingLoggerProcess.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
 				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
