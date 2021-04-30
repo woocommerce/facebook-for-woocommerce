@@ -45,7 +45,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.0'
+          php-version: '7.4'
           coverage: none
           tools: composer, cs2pr, phpcs
 
@@ -55,7 +55,7 @@ jobs:
           composer --version
       - name: Install Composer dependencies
         run: |
-          composer install --no-dev --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction
+          composer install --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction
           echo "${PWD}/vendor/bin" >> $GITHUB_PATH
       - name: Log PHPCS debug information
         run: phpcs -i
