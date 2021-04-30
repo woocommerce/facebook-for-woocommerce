@@ -2,7 +2,6 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
-use Automattic\WooCommerce\ActionSchedulerJobFramework\AbstractChainedJob;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Utilities\BatchQueryOffset;
 use Exception;
 use WC_Facebookcommerce;
