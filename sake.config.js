@@ -11,5 +11,6 @@ module.exports = {
     ]
   },
   framework: 'v5',
-  deployAssets: false
+  deployAssets: false,
+  autoload: true,
 };
