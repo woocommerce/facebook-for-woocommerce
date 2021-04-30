@@ -43,16 +43,31 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
 	protected function get_items_for_batch( int $batch_number, array $args ): array {
-		$product_args = [
-			'status'  => 'publish',
-			'type'    => [ 'simple', 'variation' ],
-			'limit'   => $this->get_batch_size(),
-			'offset'  => $this->get_query_offset( $batch_number ),
-			'orderby' => 'ID',
-			'order'   => 'ASC',
-		];
+		global $wpdb;
 
-		return wc_get_products( $product_args );
+		$product_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT post.ID
+				FROM wp_posts as post
+				LEFT JOIN wp_posts as parent ON post.post_parent = parent.ID
+				WHERE
+					( post.post_type = 'product_variation' AND parent.post_status = 'publish' )
+				OR
+					( post.post_type = 'product' AND post.post_status = 'publish' )
+				ORDER BY post.ID ASC
+				LIMIT %d OFFSET %d",
+				$this->get_batch_size(),
+				$this->get_query_offset( $batch_number )
+			)
+		);
+
+		return wc_get_products(
+			[
+				'type'    => [ 'simple', 'variation' ],
+				'include' => $product_ids,
+				'orderby' => 'none',
+			]
+		);
 	}
 
 	/**
@@ -69,7 +84,10 @@ class GenerateProductFeed extends AbstractChainedJob {
 				throw new Exception( 'Product not found.' );
 			}
 
-			// TODO
+			facebook_for_woocommerce()->log(
+				$product->get_id(),
+				WC_Facebookcommerce::PLUGIN_ID . '_generate_feed_test'
+			);
 
 		} catch ( Exception $e ) {
 			facebook_for_woocommerce()->log(
@@ -99,6 +117,15 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	public function get_plugin_name(): string {
 		return WC_Facebookcommerce::PLUGIN_ID;
+	}
+
+	/**
+	 * Get the job's batch size.
+	 *
+	 * @return int
+	 */
+	protected function get_batch_size(): int {
+		return 15;
 	}
 
 }
