@@ -15,7 +15,7 @@ use WC_Product;
  */
 class GenerateProductFeed extends AbstractChainedJob {
 
-	use BatchQueryOffset;
+	use BatchQueryOffset, LoggingTrait;
 
 	/**
 	 * Called before starting the job.
@@ -91,19 +91,15 @@ class GenerateProductFeed extends AbstractChainedJob {
 				throw new Exception( 'Product not found.' );
 			}
 
-			facebook_for_woocommerce()->log(
-				$product->get_id(),
-				WC_Facebookcommerce::PLUGIN_ID . '_generate_feed_test'
-			);
+			$this->log( $product->get_id() );
 
 		} catch ( Exception $e ) {
-			facebook_for_woocommerce()->log(
+			$this->log(
 				sprintf(
 					'Error processing item #%d - %s',
 					$product instanceof WC_Product ? $product->get_id() : 0,
 					$e->getMessage()
-				),
-				WC_Facebookcommerce::PLUGIN_ID . '_generate_feed'
+				)
 			);
 		}
 	}
