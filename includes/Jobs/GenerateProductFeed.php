@@ -61,6 +61,11 @@ class GenerateProductFeed extends AbstractChainedJob {
 			)
 		);
 
+		// Ensure some products were selected before calling wc_get_products()
+		if ( empty( $product_ids ) ) {
+			return [];
+		}
+
 		$product_ids = array_map( 'intval', $product_ids );
 
 		return wc_get_products(
