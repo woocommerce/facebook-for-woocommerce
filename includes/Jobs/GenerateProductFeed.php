@@ -61,6 +61,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 			)
 		);
 
+		$product_ids = array_map( 'intval', $product_ids );
+
 		return wc_get_products(
 			[
 				'type'    => [ 'simple', 'variation' ],
