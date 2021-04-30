@@ -47,7 +47,7 @@ jobs:
         with:
           php-version: '7.4'
           coverage: none
-          tools: composer, cs2pr
+          tools: composer, cs2pr, phpcs
 
       - name: Log debug information
         run: |
