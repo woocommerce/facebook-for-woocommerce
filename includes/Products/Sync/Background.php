@@ -282,21 +282,26 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param array $data product data
+	 * @param array $data product data.
 	 * @return array
 	 */
 	private function normalize_product_data( $data ) {
 
-		// allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter
+		// Allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter.
 		$data['condition'] = 'new';
 
-		// attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field
+		// Attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field.
 		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
 
 			$attributes = array();
 
 			foreach ( $data['custom_data'] as $key => $val ) {
-				$attributes[] = $key . ':' . $val;
+				$attribute_value = str_replace(
+					',',
+					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ' ),
+					$val
+				);
+				$attributes[]    = $key . ':' . $attribute_value;
 			}
 
 			$data['additional_variant_attribute'] = implode( ',', $attributes );
