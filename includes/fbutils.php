@@ -211,40 +211,40 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		public static function get_user_info( $aam_settings ) {
 			$current_user = wp_get_current_user();
-			if ( 0 === $current_user->ID || $aam_settings == null || !$aam_settings->get_enable_automatic_matching() ) {
+			if ( 0 === $current_user->ID || $aam_settings == null || ! $aam_settings->get_enable_automatic_matching() ) {
 				// User not logged in or pixel not configured with automatic advance matching
 				return array();
 			} else {
 				// Keys documented in
 				// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
-				$user_data = array(
-					'em' => $current_user->user_email,
-					'fn' => $current_user->user_firstname,
-					'ln' => $current_user->user_lastname,
-					'external_id' => strval($current_user->ID),
+				$user_data            = array(
+					'em'          => $current_user->user_email,
+					'fn'          => $current_user->user_firstname,
+					'ln'          => $current_user->user_lastname,
+					'external_id' => strval( $current_user->ID ),
 				);
-				$user_id = $current_user->ID;
-				$user_data['ct'] = get_user_meta($user_id, 'billing_city', true);
-				$user_data['zp'] = get_user_meta($user_id, 'billing_postcode', true);
-				$user_data['country'] = get_user_meta($user_id, 'billing_country', true);
-				$user_data['st'] = get_user_meta($user_id, 'billing_state', true);
-				$user_data['ph'] = get_user_meta($user_id, 'billing_phone', true);
+				$user_id              = $current_user->ID;
+				$user_data['ct']      = get_user_meta( $user_id, 'billing_city', true );
+				$user_data['zp']      = get_user_meta( $user_id, 'billing_postcode', true );
+				$user_data['country'] = get_user_meta( $user_id, 'billing_country', true );
+				$user_data['st']      = get_user_meta( $user_id, 'billing_state', true );
+				$user_data['ph']      = get_user_meta( $user_id, 'billing_phone', true );
 				// Each field that is not present in AAM settings or is empty is deleted from user data
-				foreach ($user_data as $field => $value) {
-					if( $value === null || $value === ''
-						|| !in_array($field, $aam_settings->get_enabled_automatic_matching_fields())
-					){
-						unset($user_data[$field]);
+				foreach ( $user_data as $field => $value ) {
+					if ( $value === null || $value === ''
+						|| ! in_array( $field, $aam_settings->get_enabled_automatic_matching_fields() )
+					) {
+						unset( $user_data[ $field ] );
 					}
 				}
 				// Country is a special case, it is returned as country in AAM settings
 				// But used as cn in pixel
-				if(array_key_exists('country', $user_data)){
-					$country = $user_data['country'];
+				if ( array_key_exists( 'country', $user_data ) ) {
+					$country         = $user_data['country'];
 					$user_data['cn'] = $country;
-					unset($user_data['country']);
+					unset( $user_data['country'] );
 				}
-				$user_data = Normalizer::normalize_array($user_data, true);
+				$user_data = Normalizer::normalize_array( $user_data, true );
 				return $user_data;
 			}
 		}

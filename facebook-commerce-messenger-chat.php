@@ -42,7 +42,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 
 			if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) :
 
-				printf( "
+				printf(
+					"
 					<div
 						attribution=\"fbe_woocommerce\"
 						class=\"fb-customerchat\"

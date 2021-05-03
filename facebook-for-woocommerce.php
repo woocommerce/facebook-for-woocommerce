@@ -107,7 +107,7 @@ class WC_Facebook_Loader {
 
 		$this->load_framework();
 
-		require_once( plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php' );
+		require_once plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php';
 
 		// fire it up!
 		if ( function_exists( 'facebook_for_woocommerce' ) ) {
@@ -124,7 +124,7 @@ class WC_Facebook_Loader {
 	private function load_framework() {
 
 		if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginFramework\\' . $this->get_framework_version_namespace() . '\\SV_WC_Plugin' ) ) {
-			require_once( plugin_dir_path( __FILE__ ) . 'vendor/skyverge/wc-plugin-framework/woocommerce/class-sv-wc-plugin.php' );
+			require_once plugin_dir_path( __FILE__ ) . 'vendor/skyverge/wc-plugin-framework/woocommerce/class-sv-wc-plugin.php';
 		}
 	}
 
@@ -204,23 +204,34 @@ class WC_Facebook_Loader {
 
 		if ( ! $this->is_wp_compatible() ) {
 
-			$this->add_admin_notice( 'update_wordpress', 'error', sprintf(
-				'%s requires WordPress version %s or higher. Please %supdate WordPress &raquo;%s',
-				'<strong>' . self::PLUGIN_NAME . '</strong>',
-				self::MINIMUM_WP_VERSION,
-				'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">', '</a>'
-			) );
+			$this->add_admin_notice(
+				'update_wordpress',
+				'error',
+				sprintf(
+					'%s requires WordPress version %s or higher. Please %supdate WordPress &raquo;%s',
+					'<strong>' . self::PLUGIN_NAME . '</strong>',
+					self::MINIMUM_WP_VERSION,
+					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
+					'</a>'
+				)
+			);
 		}
 
 		if ( ! $this->is_wc_compatible() ) {
 
-			$this->add_admin_notice( 'update_woocommerce', 'error', sprintf(
-				'%1$s requires WooCommerce version %2$s or higher. Please %3$supdate WooCommerce%4$s to the latest version, or %5$sdownload the minimum required version &raquo;%6$s',
-				'<strong>' . self::PLUGIN_NAME . '</strong>',
-				self::MINIMUM_WC_VERSION,
-				'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">', '</a>',
-				'<a href="' . esc_url( 'https://downloads.wordpress.org/plugin/woocommerce.' . self::MINIMUM_WC_VERSION . '.zip' ) . '">', '</a>'
-			) );
+			$this->add_admin_notice(
+				'update_woocommerce',
+				'error',
+				sprintf(
+					'%1$s requires WooCommerce version %2$s or higher. Please %3$supdate WooCommerce%4$s to the latest version, or %5$sdownload the minimum required version &raquo;%6$s',
+					'<strong>' . self::PLUGIN_NAME . '</strong>',
+					self::MINIMUM_WC_VERSION,
+					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
+					'</a>',
+					'<a href="' . esc_url( 'https://downloads.wordpress.org/plugin/woocommerce.' . self::MINIMUM_WC_VERSION . '.zip' ) . '">',
+					'</a>'
+				)
+			);
 		}
 	}
 
@@ -302,7 +313,7 @@ class WC_Facebook_Loader {
 
 		$this->notices[ $slug ] = array(
 			'class'   => $class,
-			'message' => $message
+			'message' => $message,
 		);
 	}
 

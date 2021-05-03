@@ -43,7 +43,7 @@ class Admin {
 	public function __construct() {
 
 		// enqueue admin scripts
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		$plugin = facebook_for_woocommerce();
 
@@ -57,7 +57,7 @@ class Admin {
 		require_once __DIR__ . '/Admin/Product_Sets.php';
 
 		$this->product_categories = new Admin\Product_Categories();
-		$this->product_sets = new Admin\Product_Sets();
+		$this->product_sets       = new Admin\Product_Sets();
 
 		// add a modal in admin product pages
 		add_action( 'admin_footer', array( $this, 'render_modal_template' ) );
@@ -157,30 +157,30 @@ class Admin {
 
 				wp_enqueue_style( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-products-admin.css', array(), \WC_Facebookcommerce::PLUGIN_VERSION );
 
-				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', [ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ], \WC_Facebookcommerce::PLUGIN_VERSION );
+				wp_enqueue_script( 'facebook-for-woocommerce-products-admin', facebook_for_woocommerce()->get_plugin_url() . '/assets/js/admin/facebook-for-woocommerce-products-admin.min.js', array( 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'facebook-for-woocommerce-modal' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 				wp_localize_script(
 					'facebook-for-woocommerce-products-admin',
 					'facebook_for_woocommerce_products_admin',
-					[
-						'ajax_url'                                        => admin_url( 'admin-ajax.php' ),
-						'enhanced_attribute_optional_selector'            => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
-						'enhanced_attribute_page_type_edit_category'      => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
-						'enhanced_attribute_page_type_add_category'       => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
-						'enhanced_attribute_page_type_edit_product'       => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
-						'is_sync_enabled_for_product'                     => $this->is_sync_enabled_for_current_product(),
-						'set_product_visibility_nonce'                    => wp_create_nonce( 'set-products-visibility' ),
-						'set_product_sync_prompt_nonce'                   => wp_create_nonce( 'set-product-sync-prompt' ),
-						'set_product_sync_bulk_action_prompt_nonce'       => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
-						'product_not_ready_modal_message'                 => $this->get_product_not_ready_modal_message(),
-						'product_not_ready_modal_buttons'                 => $this->get_product_not_ready_modal_buttons(),
+					array(
+						'ajax_url'                        => admin_url( 'admin-ajax.php' ),
+						'enhanced_attribute_optional_selector' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
+						'enhanced_attribute_page_type_edit_category' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
+						'enhanced_attribute_page_type_add_category' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
+						'enhanced_attribute_page_type_edit_product' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+						'is_sync_enabled_for_product'     => $this->is_sync_enabled_for_current_product(),
+						'set_product_visibility_nonce'    => wp_create_nonce( 'set-products-visibility' ),
+						'set_product_sync_prompt_nonce'   => wp_create_nonce( 'set-product-sync-prompt' ),
+						'set_product_sync_bulk_action_prompt_nonce' => wp_create_nonce( 'set-product-sync-bulk-action-prompt' ),
+						'product_not_ready_modal_message' => $this->get_product_not_ready_modal_message(),
+						'product_not_ready_modal_buttons' => $this->get_product_not_ready_modal_buttons(),
 						'product_removed_from_sync_confirm_modal_message' => $this->get_product_removed_from_sync_confirm_modal_message(),
 						'product_removed_from_sync_confirm_modal_buttons' => $this->get_product_removed_from_sync_confirm_modal_buttons(),
-						'product_removed_from_sync_field_id'              => '#' . \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
-						'i18n'                                            => [
+						'product_removed_from_sync_field_id' => '#' . \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
+						'i18n'                            => array(
 							'missing_google_product_category_message' => __( 'Please enter a Google product category and at least one sub-category to sell this product on Instagram.', 'facebook-for-woocommerce' ),
-						],
-					]
+						),
+					)
 				);
 
 			}//end if
@@ -245,18 +245,30 @@ class Admin {
 
 		<ul class="ul-disc">
 			<li><?php esc_html_e( 'Has a price defined', 'facebook-for-woocommerce' ); ?></li>
-			<li><?php echo esc_html( sprintf(
+			<li>
+			<?php
+			echo esc_html(
+				sprintf(
 				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
-				__( 'Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab', 'facebook-for-woocommerce' ),
-				'<strong>',
-				'</strong>'
-			) ); ?></li>
-			<li><?php echo esc_html( sprintf(
+					__( 'Has %1$sManage Stock%2$s enabled on the %1$sInventory%2$s tab', 'facebook-for-woocommerce' ),
+					'<strong>',
+					'</strong>'
+				)
+			);
+			?>
+			</li>
+			<li>
+			<?php
+			echo esc_html(
+				sprintf(
 				/* translators: Placeholders: %1$s - <strong> opening HTML tag, %2$s - </strong> closing HTML tag */
-				__( 'Has the %1$sFacebook Sync%2$s setting set to "Sync and show" or "Sync and hide"', 'facebook-for-woocommerce' ),
-				'<strong>',
-				'</strong>'
-			) ); ?></li>
+					__( 'Has the %1$sFacebook Sync%2$s setting set to "Sync and show" or "Sync and hide"', 'facebook-for-woocommerce' ),
+					'<strong>',
+					'</strong>'
+				)
+			);
+			?>
+			</li>
 		</ul>
 		<?php
 
@@ -300,12 +312,16 @@ class Admin {
 		ob_start();
 
 		?>
-		<p><?php printf(
+		<p>
+		<?php
+		printf(
 			/* translators: Placeholders: %1$s - opening <a> link tag, %2$s - closing </a> link tag */
-				__( 'You\'re removing a product from the Facebook sync that is currently listed in your %1$sFacebook catalog%2$s. Would you like to delete the product from the Facebook catalog as well?', 'facebook-for-woocommerce' ),
-				'<a href="https://www.facebook.com/products" target="_blank">',
-				'</a>'
-			); ?></p>
+			__( 'You\'re removing a product from the Facebook sync that is currently listed in your %1$sFacebook catalog%2$s. Would you like to delete the product from the Facebook catalog as well?', 'facebook-for-woocommerce' ),
+			'<a href="https://www.facebook.com/products" target="_blank">',
+			'</a>'
+		);
+		?>
+			</p>
 		<?php
 
 		return ob_get_clean();
@@ -400,7 +416,6 @@ class Admin {
 			} else {
 				esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' );
 			}
-
 		} else {
 
 			esc_html_e( 'Do not sync', 'facebook-for-woocommerce' );
@@ -1278,10 +1293,12 @@ class Admin {
 					)
 				);
 
-				woocommerce_wp_hidden_input( [
-					'id'    => \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
-					'value' => '',
-				] );
+				woocommerce_wp_hidden_input(
+					array(
+						'id'    => \WC_Facebook_Product::FB_REMOVE_FROM_SYNC,
+						'value' => '',
+					)
+				);
 
 				?>
 			</div>

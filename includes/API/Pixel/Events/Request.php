@@ -30,7 +30,7 @@ class Request extends API\Request {
 	/**
 	 * Request constructor.
 	 *
-	 * @param string $pixel_id
+	 * @param string  $pixel_id
 	 * @param Event[] $events events to send
 	 */
 	public function __construct( $pixel_id, array $events ) {
@@ -50,10 +50,10 @@ class Request extends API\Request {
 	 */
 	public function get_data() {
 
-		$data = [
-			'data'          => [],
+		$data = array(
+			'data'          => array(),
 			'partner_agent' => Event::get_platform_identifier(),
-		];
+		);
 
 		foreach ( $this->events as $event ) {
 
@@ -88,7 +88,7 @@ class Request extends API\Request {
 		 * @param array $data request data
 		 * @param Request $request request object
 		 */
-		return apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this);
+		return apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
 	}
 
 

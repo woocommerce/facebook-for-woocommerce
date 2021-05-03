@@ -25,7 +25,7 @@ class Event {
 	 *
 	 * @see https://developers.facebook.com/docs/marketing-api/server-side-api/payload-helper
 	 */
-	protected $data = [];
+	protected $data = array();
 
 
 	/**
@@ -39,11 +39,11 @@ class Event {
 	 */
 	public static function get_version_info() {
 
-		return [
+		return array(
 			'source'        => 'woocommerce',
 			'version'       => WC()->version,
 			'pluginVersion' => facebook_for_woocommerce()->get_version(),
-		];
+		);
 	}
 
 
@@ -69,7 +69,7 @@ class Event {
 	 *
 	 * @param array $data event data
 	 */
-	public function __construct( $data = [] ) {
+	public function __construct( $data = array() ) {
 
 		$this->prepare_data( $data );
 	}
@@ -87,14 +87,17 @@ class Event {
 	 */
 	protected function prepare_data( $data ) {
 
-		$this->data = wp_parse_args( $data, [
-			'action_source'    => 'website',
-			'event_time'       => time(),
-			'event_id'         => $this->generate_event_id(),
-			'event_source_url' => $this->get_current_url(),
-			'custom_data'      => [],
-			'user_data'        => [],
-		] );
+		$this->data = wp_parse_args(
+			$data,
+			array(
+				'action_source'    => 'website',
+				'event_time'       => time(),
+				'event_id'         => $this->generate_event_id(),
+				'event_source_url' => $this->get_current_url(),
+				'custom_data'      => array(),
+				'user_data'        => array(),
+			)
+		);
 
 		$this->prepare_user_data( $this->data['user_data'] );
 	}
@@ -110,20 +113,23 @@ class Event {
 	 * @param array $data user data
 	 */
 	protected function prepare_user_data( $data ) {
-		$this->data['user_data'] = wp_parse_args( $data, [
-			'client_ip_address' => $this->get_client_ip(),
-			'client_user_agent' => $this->get_client_user_agent(),
-			'click_id'          => $this->get_click_id(),
-			'browser_id'        => $this->get_browser_id(),
-		] );
+		$this->data['user_data'] = wp_parse_args(
+			$data,
+			array(
+				'client_ip_address' => $this->get_client_ip(),
+				'client_user_agent' => $this->get_client_user_agent(),
+				'click_id'          => $this->get_click_id(),
+				'browser_id'        => $this->get_browser_id(),
+			)
+		);
 
 		// Country key is not the same in pixel and CAPI events, see:
 		// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
 		// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
-		if(array_key_exists('cn', $this->data['user_data'])){
-			$country = $this->data['user_data']['cn'];
+		if ( array_key_exists( 'cn', $this->data['user_data'] ) ) {
+			$country                            = $this->data['user_data']['cn'];
 			$this->data['user_data']['country'] = $country;
-			unset($this->data['user_data']['cn']);
+			unset( $this->data['user_data']['cn'] );
 		}
 
 		$this->data['user_data'] = Normalizer::normalize_array( $this->data['user_data'], false );
@@ -142,11 +148,11 @@ class Event {
 	 *
 	 * @return array
 	 */
-	protected function hash_pii_data( $user_data ){
-		$keys_to_hash = ['em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country', 'external_id'];
-		foreach( $keys_to_hash as $key ){
-			if(array_key_exists($key, $user_data)){
-				$user_data[$key] = hash('sha256', $user_data[$key], false);
+	protected function hash_pii_data( $user_data ) {
+		$keys_to_hash = array( 'em', 'fn', 'ln', 'ph', 'ct', 'st', 'zp', 'country', 'external_id' );
+		foreach ( $keys_to_hash as $key ) {
+			if ( array_key_exists( $key, $user_data ) ) {
+				$user_data[ $key ] = hash( 'sha256', $user_data[ $key ], false );
 			}
 		}
 		return $user_data;
@@ -174,25 +180,24 @@ class Event {
 		} catch ( \Exception $e ) {
 
 			// fall back to mt_rand if random_bytes is unavailable
-			return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-
+			return sprintf(
+				'%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 				// 32 bits for "time_low"
-				mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
-
+				mt_rand( 0, 0xffff ),
+				mt_rand( 0, 0xffff ),
 				// 16 bits for "time_mid"
 				mt_rand( 0, 0xffff ),
-
 				// 16 bits for "time_hi_and_version",
 				// four most significant bits holds version number 4
 				mt_rand( 0, 0x0fff ) | 0x4000,
-
 				// 16 bits, 8 bits for "clk_seq_hi_res",
 				// 8 bits for "clk_seq_low",
 				// two most significant bits holds zero and one for variant DCE1.1
 				mt_rand( 0, 0x3fff ) | 0x8000,
-
 				// 48 bits for "node"
-				mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+				mt_rand( 0, 0xffff ),
+				mt_rand( 0, 0xffff ),
+				mt_rand( 0, 0xffff )
 			);
 		}
 	}
@@ -345,7 +350,7 @@ class Event {
 	 */
 	public function get_user_data() {
 
-		return ! empty( $this->data['user_data'] ) ? $this->data['user_data'] : [];
+		return ! empty( $this->data['user_data'] ) ? $this->data['user_data'] : array();
 	}
 
 
@@ -358,7 +363,7 @@ class Event {
 	 */
 	public function get_custom_data() {
 
-		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : [];
+		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : array();
 	}
 
 }
