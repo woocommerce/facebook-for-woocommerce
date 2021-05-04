@@ -55,9 +55,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
-		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
-		private $product_feed;
-
 		/** @var Background_Handle_Virtual_Products_Variations instance */
 		protected $background_handle_virtual_products_variations;
 
@@ -138,11 +135,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
+				require_once __DIR__ . '/includes/Products/class-fb-feed-generator.php';
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
-				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->feed_generator            = new \SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
@@ -776,19 +774,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_ajax_handler() {
 
 			return $this->ajax;
-		}
-
-
-		/**
-		 * Gets the product feed handler.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return \SkyVerge\WooCommerce\Facebook\Products\Feed
-		 */
-		public function get_product_feed_handler() {
-
-			return $this->product_feed;
 		}
 
 		/**
