@@ -16,9 +16,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		include_once 'includes/fbutils.php';
 	}
 
+	/**
+	 * Messenger chat handler class.
+	 */
 	class WC_Facebookcommerce_MessengerChat {
 
-
+		/**
+		 * Class constructor.
+		 *
+		 * @param array $settings FB page settings array.
+		 */
 		public function __construct( $settings ) {
 
 			$this->page_id = isset( $settings['fb_page_id'] )

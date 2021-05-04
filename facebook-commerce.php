@@ -27,7 +27,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * @var string the WordPress option name where the page access token is stored
+	 * The WordPress option name where the page access token is stored.
+	 *
+	 * @var string option name.
 	 * @deprecated 2.1.0
 	 */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
@@ -136,7 +138,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** Legacy properties *********************************************************************************************/
 
 
-	// TODO probably some of these meta keys need to be moved to Facebook\Products {FN 2020-01-13}
+	// TODO probably some of these meta keys need to be moved to Facebook\Products {FN 2020-01-13}.
 	const FB_PRODUCT_GROUP_ID    = 'fb_product_group_id';
 	const FB_PRODUCT_ITEM_ID     = 'fb_product_item_id';
 	const FB_PRODUCT_DESCRIPTION = 'fb_product_description';
@@ -155,7 +157,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	// Number of days to query tip.
 	const FB_TIP_QUERY = 1;
 
-	// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}
+	// TODO: this constant is no longer used and can probably be removed {WV 2020-01-21}.
 	const FB_VARIANT_IMAGE = 'fb_image';
 
 	const FB_ADMIN_MESSAGE_PREPEND = '<b>Facebook for WooCommerce</b><br/>';
@@ -171,9 +173,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function init_pixel() {
 		WC_Facebookcommerce_Pixel::initialize();
 
-		// Migrate WC customer pixel_id from WC settings to WP options.
-		// This is part of a larger effort to consolidate all the FB-specific
-		// settings for all plugin integrations.
+		/**
+		 * Migrate WC customer pixel_id from WC settings to WP options.
+		 * This is part of a larger effort to consolidate all the FB-specific
+		 * settings for all plugin integrations.
+		 */
 		if ( is_admin() ) {
 
 			$pixel_id          = WC_Facebookcommerce_Pixel::get_pixel_id();
@@ -188,8 +192,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
 			}
 
-			// migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
-			// so that it works the same way the pixel ID does
+			/**
+			 * Migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			 * so that it works the same way the pixel ID does
+			 */
 			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
 			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
 
@@ -204,7 +210,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Init and hook in the integration.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function __construct() {
@@ -215,11 +220,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->id                 = WC_Facebookcommerce::INTEGRATION_ID;
 		$this->method_title       = __(
 			'Facebook for WooCommerce',
-			'facebook-for-commerce'
+			'facebook-for-woocommerce'
 		);
 		$this->method_description = __(
 			'Facebook Commerce and Dynamic Ads (Pixel) Extension',
-			'facebook-for-commerce'
+			'facebook-for-woocommerce'
 		);
 
 		// Load the settings.
@@ -227,20 +232,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$pixel_id = WC_Facebookcommerce_Pixel::get_pixel_id();
 
-		// if there is a pixel option saved and no integration setting saved, inherit the pixel option
+		// If there is a pixel option saved and no integration setting saved, inherit the pixel option.
 		if ( $pixel_id && ! $this->get_facebook_pixel_id() ) {
 			$this->settings[ self::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_id;
 		}
 
 		$advanced_matching_enabled = WC_Facebookcommerce_Pixel::get_use_pii_key();
 
-		// if Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting,
-		// inherit the pixel option
+		// If Advanced Matching (use_pii) is enabled on the saved pixel option and not on the saved integration setting, inherit the pixel option.
 		if ( $advanced_matching_enabled && ! $this->is_advanced_matching_enabled() ) {
 			$this->settings[ self::SETTING_ENABLE_ADVANCED_MATCHING ] = $advanced_matching_enabled;
 		}
 
-		// For now, the values of use s2s and access token will be the ones returned from WC_Facebookcommerce_Pixel
+		// For now, the values of use s2s and access token will be the ones returned from WC_Facebookcommerce_Pixel.
 		$use_s2s                                 = WC_Facebookcommerce_Pixel::get_use_s2s();
 		$this->settings[ self::SETTING_USE_S2S ] = $use_s2s;
 
@@ -260,7 +264,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
 
-		// Hooks
 		if ( is_admin() ) {
 
 			$this->init_pixel();
@@ -340,27 +343,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				self::FB_PRIORITY_MID
 			);
 
-			// don't duplicate product FBID meta
+			// Don't duplicate product FBID meta.
 			add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'fb_duplicate_product_reset_meta' ) );
 
-			// add product processing hooks if the plugin is configured only
+			// Add product processing hooks if the plugin is configured only.
 			if ( $this->is_configured() && $this->get_product_catalog_id() ) {
 
-				// on_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information
+				// On_product_save() must run with priority larger than 20 to make sure WooCommerce has a chance to save the submitted product information.
 				add_action( 'woocommerce_process_product_meta', array( $this, 'on_product_save' ), 40 );
 
 				add_action(
 					'woocommerce_product_quick_edit_save',
-					array( $this, 'on_quick_and_bulk_edit_save' ),
-					10,  // Action priority
-					1    // Args passed to on_quick_and_bulk_edit_save ('product')
+					array( $this, 'on_quick_and_bulk_edit_save' )
 				);
 
 				add_action(
 					'woocommerce_product_bulk_edit_save',
-					array( $this, 'on_quick_and_bulk_edit_save' ),
-					10,  // Action priority
-					1    // Args passed to on_quick_and_bulk_edit_save ('product')
+					array( $this, 'on_quick_and_bulk_edit_save' )
 				);
 
 				add_action( 'before_delete_post', array( $this, 'on_product_delete' ) );
@@ -400,9 +399,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					self::FB_PRIORITY_MID
 				);
 
-				// used to remove the 'you need to resync' message
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				if ( isset( $_GET['remove_sticky'] ) ) {
+				// Used to remove the 'you need to resync' message.
+				if ( isset( $_GET['remove_sticky'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->remove_sticky_message();
 				}
 			}
@@ -413,7 +411,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Must be outside of admin for cron to schedule correctly.
 		add_action( 'sync_all_fb_products_using_feed', array( $this, 'handle_scheduled_resync_action' ), self::FB_PRIORITY_MID );
 
-		// handle the special background feed generation action
+		// Handle the special background feed generation action.
 		add_action( 'wc_facebook_generate_product_catalog_feed', array( $this, 'handle_generate_product_catalog_feed' ) );
 
 		if ( $this->get_facebook_pixel_id() ) {
@@ -422,7 +420,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->events_tracker = new WC_Facebookcommerce_EventsTracker( $user_info, $aam_settings );
 		}
 
-		// initialize the messenger chat features
+		// Initialize the messenger chat features.
 		$this->messenger_chat = new WC_Facebookcommerce_MessengerChat(
 			array(
 				'fb_page_id'             => $this->get_facebook_page_id(),
@@ -430,7 +428,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
-		// Product Set hooks
+		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
 		add_action( 'fb_wc_product_set_delete', array( $this, 'delete_product_set_item' ), 99 );
 	}
@@ -444,7 +442,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function load_aam_settings_of_pixel() {
 		$installed_pixel = $this->get_facebook_pixel_id();
-		// If no pixel is installed, reading the DB is not needed
+		// If no pixel is installed, reading the DB is not needed.
 		if ( ! $installed_pixel ) {
 			return null;
 		}
@@ -452,22 +450,21 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$saved_value      = get_transient( $config_key );
 		$refresh_interval = 20 * MINUTE_IN_SECONDS;
 		$aam_settings     = null;
-		// If wc_facebook_aam_settings is present in the DB
-		// it is converted into an AAMSettings object
+		// If wc_facebook_aam_settings is present in the DB it is converted into an AAMSettings object.
 		if ( $saved_value !== false ) {
 			$cached_aam_settings = new AAMSettings( json_decode( $saved_value, true ) );
 			// This condition is added because
 			// it is possible that the AAMSettings saved do not belong to the current
 			// installed pixel
 			// because the admin could have changed the connection to Facebook
-			// during the refresh interval
+			// during the refresh interval.
 			if ( $cached_aam_settings->get_pixel_id() == $installed_pixel ) {
 				$aam_settings = $cached_aam_settings;
 			}
 		}
 		// If the settings are not present or invalid
 		// they are fetched from Facebook domain
-		// and cached in WP database if they are not null
+		// and cached in WP database if they are not null.
 		if ( ! $aam_settings ) {
 			$aam_settings = AAMSettings::build_from_pixel_id( $installed_pixel );
 			if ( $aam_settings ) {
@@ -478,7 +475,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	public function load_background_sync_process() {
-		// Attempt to load background processing (Woo 3.x.x only)
+		// Attempt to load background processing (Woo 3.x.x only).
 		include_once 'includes/fbbackground.php';
 		if ( class_exists( 'WC_Facebookcommerce_Background_Process' ) ) {
 			if ( ! isset( $this->background_processor ) ) {
@@ -536,7 +533,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 * @deprecated since 1.10.0
 	 *
-	 * @param array $tabs array of tabs
+	 * @param array $tabs Array of tabs.
 	 * @return array
 	 */
 	public function fb_new_product_tab( $tabs ) {
@@ -565,7 +562,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 * @deprecated since 1.10.0
 	 *
-	 * @param array $existing_columns array of columns and labels
+	 * @param array $existing_columns Array of columns and labels.
 	 * @return array
 	 */
 	public function fb_product_columns( $existing_columns ) {
@@ -582,7 +579,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @internal
 	 * @deprecated since 1.10.0
 	 *
-	 * @param string $column name of the column to display
+	 * @param string $column Name of the column to display.
 	 */
 	public function fb_render_product_columns( $column ) {
 

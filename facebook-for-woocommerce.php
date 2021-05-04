@@ -28,26 +28,34 @@ defined( 'ABSPATH' ) or exit;
 class WC_Facebook_Loader {
 
 
-	/** minimum PHP version required by this plugin */
+	// Minimum PHP version required by this plugin.
 	const MINIMUM_PHP_VERSION = '5.6.0';
 
-	/** minimum WordPress version required by this plugin */
+	// Minimum WordPress version required by this plugin.
 	const MINIMUM_WP_VERSION = '4.4';
 
-	/** minimum WooCommerce version required by this plugin */
+	// Minimum WooCommerce version required by this plugin.
 	const MINIMUM_WC_VERSION = '3.5.0';
 
-	/** SkyVerge plugin framework version used by this plugin */
+	// SkyVerge plugin framework version used by this plugin.
 	const FRAMEWORK_VERSION = '5.10.0';
 
-	/** the plugin name, for displaying notices */
+	// The plugin name, for displaying notices.
 	const PLUGIN_NAME = 'Facebook for WooCommerce';
 
 
-	/** @var \WC_Facebook_Loader single instance of this class */
+	/**
+	 * This class instance.
+	 *
+	 * @var \WC_Facebook_Loader single instance of this class.
+	 */
 	private static $instance;
 
-	/** @var array the admin notices to add */
+	/**
+	 * Admin notices to add.
+	 *
+	 * @var array Array of admin notices.
+	 */
 	private $notices = array();
 
 
@@ -65,7 +73,7 @@ class WC_Facebook_Loader {
 
 		add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
 
-		// if the environment check fails, initialize the plugin
+		// If the environment check fails, initialize the plugin.
 		if ( $this->is_environment_compatible() ) {
 			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
 		}
@@ -305,9 +313,9 @@ class WC_Facebook_Loader {
 	 *
 	 * @since 1.10.0
 	 *
-	 * @param string $slug the slug for the notice
-	 * @param string $class the css class for the notice
-	 * @param string $message the notice message
+	 * @param string $slug    The slug for the notice.
+	 * @param string $class   The css class for the notice.
+	 * @param string $message The notice message.
 	 */
 	private function add_admin_notice( $slug, $class, $message ) {
 
