@@ -9,7 +9,7 @@ This is the development repository for the Facebook for WooCommerce plugin.
 ## Support
 The best place to get support is the [WordPress.org Facebook for WooCommerce forum](https://wordpress.org/support/plugin/facebook-for-woocommerce/).
 
-If you have a WooCommerce.com account, you can [open a ticket on WooCommerce.com](https://woocommerce.com/my-account/create-a-ticket/).
+If you have a WooCommerce.com account, you can [start a chat or open a ticket on WooCommerce.com](https://woocommerce.com/my-account/create-a-ticket/).
 
 ## Development 
 ### Developing
