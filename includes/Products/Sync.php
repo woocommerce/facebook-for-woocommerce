@@ -32,7 +32,7 @@ class Sync {
 	const ACTION_DELETE = 'DELETE';
 
 	/** @var array the array of requests to schedule for sync */
-	protected $requests = [];
+	protected $requests = array();
 
 
 	/**
@@ -53,11 +53,11 @@ class Sync {
 	 */
 	public function add_hooks() {
 
-		add_action( 'shutdown', [ $this, 'schedule_sync' ] );
+		add_action( 'shutdown', array( $this, 'schedule_sync' ) );
 
 		// stock update actions
-		add_action( 'woocommerce_product_set_stock', [ $this, 'handle_stock_update' ] );
-		add_action( 'woocommerce_variation_set_stock', [ $this, 'handle_stock_update' ] );
+		add_action( 'woocommerce_product_set_stock', array( $this, 'handle_stock_update' ) );
+		add_action( 'woocommerce_variation_set_stock', array( $this, 'handle_stock_update' ) );
 	}
 
 
@@ -134,7 +134,7 @@ class Sync {
 		}
 
 		// add the product to the list of products to be updated
-		$this->create_or_update_products( [ $product->get_id() ] );
+		$this->create_or_update_products( array( $product->get_id() ) );
 	}
 
 
@@ -150,7 +150,7 @@ class Sync {
 		if ( ! empty( $this->requests ) ) {
 
 			$job_handler = facebook_for_woocommerce()->get_products_sync_background_handler();
-			$job         = $job_handler->create_job( [ 'requests' => $this->requests ] );
+			$job         = $job_handler->create_job( array( 'requests' => $this->requests ) );
 
 			$job_handler->dispatch();
 
@@ -182,9 +182,11 @@ class Sync {
 	 */
 	public static function is_sync_in_progress() {
 
-		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs( [
-			'status' => 'processing',
-		] );
+		$jobs = facebook_for_woocommerce()->get_products_sync_background_handler()->get_jobs(
+			array(
+				'status' => 'processing',
+			)
+		);
 
 		return ! empty( $jobs );
 	}

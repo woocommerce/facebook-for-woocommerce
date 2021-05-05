@@ -27,7 +27,7 @@ class Messenger {
 	private $default_locale;
 
 	/** @var string[] approved domains */
-	private $domains = [];
+	private $domains = array();
 
 
 	/**
@@ -35,13 +35,16 @@ class Messenger {
 	 *
 	 * @param array $data configuration data
 	 */
-	public function __construct( array $data = [] ) {
+	public function __construct( array $data = array() ) {
 
-		$data = wp_parse_args( $data, [
-			'enabled'        => false,
-			'default_locale' => '',
-			'domains'        => [],
-		] );
+		$data = wp_parse_args(
+			$data,
+			array(
+				'enabled'        => false,
+				'default_locale' => '',
+				'domains'        => array(),
+			)
+		);
 
 		$this->set_enabled( $data['enabled'] );
 		$this->set_default_locale( $data['default_locale'] );
@@ -87,7 +90,7 @@ class Messenger {
 		if ( is_array( $this->domains ) ) {
 			$domains = array_map( 'trailingslashit', $this->domains );
 		} else {
-			$domains = [];
+			$domains = array();
 		}
 
 		return $domains;
@@ -129,7 +132,7 @@ class Messenger {
 	 */
 	public function add_domain( $domain ) {
 
-		$domains = is_array( $this->domains ) ? $this->domains : [];
+		$domains = is_array( $this->domains ) ? $this->domains : array();
 
 		$domains[] = $domain;
 

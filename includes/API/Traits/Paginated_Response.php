@@ -65,7 +65,7 @@ trait Paginated_Response {
 	 */
 	public function get_data() {
 
-		return ! empty( $this->response_data->data ) ? $this->response_data->data : [];
+		return ! empty( $this->response_data->data ) ? $this->response_data->data : array();
 	}
 
 

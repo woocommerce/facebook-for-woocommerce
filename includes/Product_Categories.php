@@ -41,7 +41,7 @@ class Product_Categories {
 	 *
 	 * @since 2.2.0
 	 *
-	 * @param int $id category ID
+	 * @param int    $id category ID
 	 * @param string $category_id Google product category ID
 	 */
 	public static function update_google_product_category_id( $id, $category_id ) {

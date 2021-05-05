@@ -48,9 +48,9 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 */
 	private function add_hooks() {
 
-		add_action( 'admin_head', [ $this, 'output_scripts' ] );
+		add_action( 'admin_head', array( $this, 'output_scripts' ) );
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
 
@@ -67,7 +67,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
-		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-advertise.css', [], \WC_Facebookcommerce::VERSION );
+		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-advertise.css', array(), \WC_Facebookcommerce::VERSION );
 	}
 
 
@@ -113,23 +113,23 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
 
 		if ( ! $connection_handler || ! $connection_handler->is_connected() ) {
-			return [];
+			return array();
 		}
 
-		return [
-			'business_config' => [
-				'business' => [
+		return array(
+			'business_config' => array(
+				'business' => array(
 					'name' => $connection_handler->get_business_name(),
-				],
-			],
-			'setup'           => [
+				),
+			),
+			'setup'           => array(
 				'external_business_id' => $connection_handler->get_external_business_id(),
 				'timezone'             => $this->parse_timezone( wc_timezone_string(), wc_timezone_offset() ),
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
-			],
+			),
 			'repeat'          => false,
-		];
+		);
 	}
 
 
@@ -200,7 +200,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 			printf(
 				/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
 				esc_html__( 'Please %1$sconnect your store%2$s to Facebook to create ads.', 'facebook-for-woocommerce' ),
-				'<a href="' . esc_url( add_query_arg( [ 'tab' => Connection::ID ], facebook_for_woocommerce()->get_settings_url() ) ) . '">',
+				'<a href="' . esc_url( add_query_arg( array( 'tab' => Connection::ID ), facebook_for_woocommerce()->get_settings_url() ) ) . '">',
 				'</a>'
 			);
 
@@ -238,7 +238,7 @@ class Advertise extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_settings() {
 
-		return [];
+		return array();
 	}
 
 

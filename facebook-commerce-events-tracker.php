@@ -63,7 +63,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$this->pixel          = new \WC_Facebookcommerce_Pixel( $user_info );
 			$this->aam_settings   = $aam_settings;
-			$this->tracked_events = [];
+			$this->tracked_events = array();
 
 			$this->add_hooks();
 		}
@@ -100,37 +100,37 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		private function add_hooks() {
 
 			// inject Pixel
-			add_action( 'wp_head',   [ $this, 'inject_base_pixel' ] );
-			add_action( 'wp_footer', [ $this, 'inject_base_pixel_noscript' ] );
+			add_action( 'wp_head', array( $this, 'inject_base_pixel' ) );
+			add_action( 'wp_footer', array( $this, 'inject_base_pixel_noscript' ) );
 
 			// ViewContent for individual products
-			add_action( 'woocommerce_after_single_product', [ $this, 'inject_view_content_event' ] );
-			add_action( 'woocommerce_after_single_product', [ $this, 'maybe_inject_search_event' ] );
+			add_action( 'woocommerce_after_single_product', array( $this, 'inject_view_content_event' ) );
+			add_action( 'woocommerce_after_single_product', array( $this, 'maybe_inject_search_event' ) );
 
-			add_action( 'woocommerce_after_shop_loop', [ $this, 'inject_view_category_event' ] );
+			add_action( 'woocommerce_after_shop_loop', array( $this, 'inject_view_category_event' ) );
 
-			add_action( 'pre_get_posts',                             [ $this, 'inject_search_event' ] );
-			add_filter( 'woocommerce_redirect_single_search_result', [ $this, 'maybe_add_product_search_event_to_session' ] );
+			add_action( 'pre_get_posts', array( $this, 'inject_search_event' ) );
+			add_filter( 'woocommerce_redirect_single_search_result', array( $this, 'maybe_add_product_search_event_to_session' ) );
 
 			// AddToCart events
-			add_action( 'woocommerce_add_to_cart', [ $this, 'inject_add_to_cart_event' ], 40, 4 );
+			add_action( 'woocommerce_add_to_cart', array( $this, 'inject_add_to_cart_event' ), 40, 4 );
 			// AddToCart while AJAX is enabled
-			add_action( 'woocommerce_ajax_added_to_cart', [ $this, 'add_filter_for_add_to_cart_fragments' ] );
+			add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'add_filter_for_add_to_cart_fragments' ) );
 			// AddToCart while using redirect to cart page
 			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
-				add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'set_last_product_added_to_cart_upon_redirect' ], 10, 2 );
-				add_action( 'woocommerce_ajax_added_to_cart',   [ $this, 'set_last_product_added_to_cart_upon_ajax_redirect' ] );
-				add_action( 'woocommerce_after_cart',           [ $this, 'inject_add_to_cart_redirect_event' ], 10, 2 );
+				add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'set_last_product_added_to_cart_upon_redirect' ), 10, 2 );
+				add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'set_last_product_added_to_cart_upon_ajax_redirect' ) );
+				add_action( 'woocommerce_after_cart', array( $this, 'inject_add_to_cart_redirect_event' ), 10, 2 );
 			}
 
 			// InitiateCheckout events
-			add_action( 'woocommerce_after_checkout_form', [ $this, 'inject_initiate_checkout_event' ] );
+			add_action( 'woocommerce_after_checkout_form', array( $this, 'inject_initiate_checkout_event' ) );
 			// Purchase and Subscribe events
-			add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'inject_purchase_event' ] );
-			add_action( 'woocommerce_thankyou',                   [ $this, 'inject_purchase_event' ], 40 );
+			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ) );
+			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
-			add_action( 'wpcf7_contact_form', [ $this, 'inject_lead_event_hook' ], 11 );
+			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
 		}
 
 
@@ -195,8 +195,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// if any product is a variant, fire the pixel with
 			// content_type: product_group
 			$content_type = 'product';
-			$product_ids  = [];
-			$contents     = [];
+			$product_ids  = array();
+			$contents     = array();
 
 			foreach ( $products as $product ) {
 
@@ -204,10 +204,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					continue;
 				}
 
-				$contents[] = [
+				$contents[] = array(
 					'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
 					'quantity' => 1, // consider category results a quantity of 1
-				];
+				);
 
 				$product_ids = array_merge(
 					$product_ids,
@@ -221,17 +221,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$categories = WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
 
 			$event_name = 'ViewCategory';
-			$event_data = [
-				'event_name' => $event_name,
-				'custom_data' => [
+			$event_data = array(
+				'event_name'  => $event_name,
+				'custom_data' => array(
 					'content_name'     => $categories['name'],
 					'content_category' => $categories['categories'],
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
 					'contents'         => $contents,
-				],
-				'user_data' => $this->pixel->get_user_info()
-			];
+				),
+				'user_data'   => $this->pixel->get_user_info(),
+			);
 
 			$event = new Event( $event_data );
 
@@ -296,7 +296,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function add_product_search_event_to_session( Event $event ) {
 
-			if ( isset( WC()->session ) && is_callable( [ WC()->session, 'has_session' ] ) && WC()->session->has_session() ) {
+			if ( isset( WC()->session ) && is_callable( array( WC()->session, 'has_session' ) ) && WC()->session->has_session() ) {
 				WC()->session->set( $this->search_event_data_session_variable, $event->get_data() );
 			}
 		}
@@ -317,7 +317,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$this->search_event = $this->get_product_search_event_from_session();
 
-			if ( ! $this->search_event  ) {
+			if ( ! $this->search_event ) {
 				return;
 			}
 
@@ -335,7 +335,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_product_search_event_from_session() {
 
-			if ( ! isset( WC()->session ) || ! is_callable( [ WC()->session, 'get' ] ) ) {
+			if ( ! isset( WC()->session ) || ! is_callable( array( WC()->session, 'get' ) ) ) {
 				return null;
 			}
 
@@ -382,8 +382,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 
 				// needs to run before wc_template_redirect, normally hooked with priority 10
-				add_action( 'template_redirect',            [ $this, 'send_search_event' ], 5 );
-				add_action( 'woocommerce_before_shop_loop', [ $this, 'actually_inject_search_event' ] );
+				add_action( 'template_redirect', array( $this, 'send_search_event' ), 5 );
+				add_action( 'woocommerce_before_shop_loop', array( $this, 'actually_inject_search_event' ) );
 			}
 		}
 
@@ -417,8 +417,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				// if any product is a variant, fire the pixel with content_type: product_group
 				$content_type = 'product';
-				$product_ids  = [];
-				$contents     = [];
+				$product_ids  = array();
+				$contents     = array();
 				$total_value  = 0.00;
 
 				foreach ( $wp_query->posts as $post ) {
@@ -431,10 +431,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 					$product_ids = array_merge( $product_ids, WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) );
 
-					$contents[] = [
+					$contents[] = array(
 						'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
 						'quantity' => 1, // consider the search results a quantity of 1
-					];
+					);
 
 					$total_value += (float) $product->get_price();
 
@@ -443,18 +443,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					}
 				}
 
-				$event_data = [
+				$event_data = array(
 					'event_name'  => 'Search',
-					'custom_data' => [
+					'custom_data' => array(
 						'content_type'  => $content_type,
 						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 						'contents'      => $contents,
 						'search_string' => get_search_query(),
 						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
-					],
-					'user_data' => $this->pixel->get_user_info()
-				];
+					),
+					'user_data'   => $this->pixel->get_user_info(),
+				);
 
 				$this->search_event = new Event( $event_data );
 			}
@@ -472,11 +472,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = $this->get_search_event();
 
-			$this->pixel->inject_event( $event->get_name(), [
-				'event_id'    => $event->get_id(),
-				'event_name'  => $event->get_name(),
-				'custom_data' => $event->get_custom_data(),
-			] );
+			$this->pixel->inject_event(
+				$event->get_name(),
+				array(
+					'event_id'    => $event->get_id(),
+					'event_name'  => $event->get_name(),
+					'custom_data' => $event->get_custom_data(),
+				)
+			);
 		}
 
 
@@ -499,7 +502,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			// if product is variable or grouped, fire the pixel with content_type: product_group
-			if ( $product->is_type( [ 'variable', 'grouped' ] ) ) {
+			if ( $product->is_type( array( 'variable', 'grouped' ) ) ) {
 				$content_type = 'product_group';
 			} else {
 				$content_type = 'product';
@@ -507,26 +510,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
 
-			$event_data = [
+			$event_data = array(
 				'event_name'  => 'ViewContent',
-				'custom_data' => [
+				'custom_data' => array(
 					'content_name'     => $product->get_title(),
 					'content_ids'      => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
 					'content_type'     => $content_type,
 					'contents'         => wp_json_encode(
-						[
-							[
+						array(
+							array(
 								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
 								'quantity' => 1,
-							]
-						]
+							),
+						)
 					),
 					'content_category' => $categories['name'],
 					'value'            => $product->get_price(),
 					'currency'         => get_woocommerce_currency(),
-				],
-				'user_data' => $this->pixel->get_user_info(),
-			];
+				),
+				'user_data'   => $this->pixel->get_user_info(),
+			);
 
 			$event = new Event( $event_data );
 
@@ -544,9 +547,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @internal
 		 *
 		 * @param string $cart_item_key the cart item key
-		 * @param int $product_id the product identifier
-		 * @param int $quantity the added product quantity
-		 * @param int $variation_id the product variation identifier
+		 * @param int    $product_id the product identifier
+		 * @param int    $quantity the added product quantity
+		 * @param int    $variation_id the product variation identifier
 		 */
 		public function inject_add_to_cart_event( $cart_item_key, $product_id, $quantity, $variation_id ) {
 
@@ -562,18 +565,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$event_data = [
+			$event_data = array(
 				'event_name'  => 'AddToCart',
-				'custom_data' => [
+				'custom_data' => array(
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				],
-				'user_data' => $this->pixel->get_user_info(),
-			];
+				),
+				'user_data'   => $this->pixel->get_user_info(),
+			);
 
 			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
 
@@ -601,7 +604,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function add_filter_for_add_to_cart_fragments() {
 
 			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
-				add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'add_add_to_cart_event_fragment' ] );
+				add_filter( 'woocommerce_add_to_cart_fragments', array( $this, 'add_add_to_cart_event_fragment' ) );
 			}
 		}
 
@@ -620,17 +623,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( $this->is_pixel_enabled() ) {
 
-				$params = [
+				$params = array(
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				];
+				);
 
 				// send the event ID to prevent duplication
-				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
+				if ( ! empty( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
 
 					$params['event_id'] = $event_id;
 				}
@@ -658,7 +661,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		public function add_filter_for_conditional_add_to_cart_fragment() {
 
 			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
-				add_filter( 'woocommerce_add_to_cart_fragments', [ $this, 'add_conditional_add_to_cart_event_fragment' ] );
+				add_filter( 'woocommerce_add_to_cart_fragments', array( $this, 'add_conditional_add_to_cart_event_fragment' ) );
 			}
 		}
 
@@ -677,17 +680,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			if ( $this->is_pixel_enabled() ) {
 
-				$params = [
+				$params = array(
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				];
+				);
 
 				// send the event ID to prevent duplication
-				if ( ! empty ( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
+				if ( ! empty( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
 
 					$params['event_id'] = $event_id;
 				}
@@ -720,7 +723,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @since 1.10.2
 		 *
-		 * @param string $redirect URL redirecting to (usually cart)
+		 * @param string           $redirect URL redirecting to (usually cart)
 		 * @param null|\WC_Product $product the product just added to the cart
 		 * @return string
 		 */
@@ -794,9 +797,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			$event_name = 'InitiateCheckout';
-			$event_data = [
+			$event_data = array(
 				'event_name'  => $event_name,
-				'custom_data' => [
+				'custom_data' => array(
 					'num_items'    => $this->get_cart_num_items(),
 					'content_ids'  => $this->get_cart_content_ids(),
 					'content_name' => $this->get_cart_content_names(),
@@ -804,9 +807,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'contents'     => $this->get_cart_contents(),
 					'value'        => $this->get_cart_total(),
 					'currency'     => get_woocommerce_currency(),
-				],
-				'user_data' => $this->pixel->get_user_info()
-			];
+				),
+				'user_data'   => $this->pixel->get_user_info(),
+			);
 
 			// if there is only one item in the cart, send its first category
 			if ( ( $cart = WC()->cart ) && count( $cart->get_cart() ) === 1 ) {
@@ -880,9 +883,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			$content_type  = 'product';
-			$contents      = [];
-			$product_ids   = [ [] ];
-			$product_names = [];
+			$contents      = array();
+			$product_ids   = array( array() );
+			$product_names = array();
 
 			foreach ( $order->get_items() as $item ) {
 
@@ -905,18 +908,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 			// Advanced matching information is extracted from the order
-			$event_data = [
+			$event_data = array(
 				'event_name'  => $event_name,
-				'custom_data' => [
+				'custom_data' => array(
 					'content_ids'  => wp_json_encode( array_merge( ... $product_ids ) ),
 					'content_name' => wp_json_encode( $product_names ),
 					'contents'     => wp_json_encode( $contents ),
 					'content_type' => $content_type,
 					'value'        => $order->get_total(),
 					'currency'     => get_woocommerce_currency(),
-				],
-				'user_data' => $this->get_user_data_from_billing_address($order)
-			];
+				),
+				'user_data'   => $this->get_user_data_from_billing_address( $order ),
+			);
 
 			$event = new Event( $event_data );
 
@@ -945,7 +948,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_subscribe_event( $order_id ) {
 
-			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) || ! $this->is_pixel_enabled() || $this->pixel->is_last_event( 'Subscribe' )  ) {
+			if ( ! function_exists( 'wcs_get_subscriptions_for_order' ) || ! $this->is_pixel_enabled() || $this->pixel->is_last_event( 'Subscribe' ) ) {
 				return;
 			}
 
@@ -955,15 +958,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				$event_name = 'Subscribe';
 
 				// TODO consider including (int|float) 'predicted_ltv': "Predicted lifetime value of a subscriber as defined by the advertiser and expressed as an exact value." {FN 2020-03-20}
-				$event_data = [
+				$event_data = array(
 					'event_name'  => $event_name,
-					'custom_data' => [
+					'custom_data' => array(
 						'sign_up_fee' => $subscription->get_sign_up_fee(),
 						'value'       => $subscription->get_total(),
 						'currency'    => get_woocommerce_currency(),
-					],
-					'user_data' => $this->pixel->get_user_info()
-				];
+					),
+					'user_data'   => $this->pixel->get_user_info(),
+				);
 
 				$event = new Event( $event_data );
 
@@ -1026,7 +1029,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			try {
 
-				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), [ $event ] );
+				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
 
 				$success = true;
 
@@ -1065,7 +1068,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_cart_content_ids() {
 
-			$product_ids = [ [] ];
+			$product_ids = array( array() );
 
 			if ( $cart = WC()->cart ) {
 
@@ -1091,7 +1094,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_cart_content_names() {
 
-			$product_names = [];
+			$product_names = array();
 
 			if ( $cart = WC()->cart ) {
 
@@ -1117,7 +1120,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		private function get_cart_contents() {
 
-			$cart_contents = [];
+			$cart_contents = array();
 
 			if ( $cart = WC()->cart ) {
 
@@ -1157,28 +1160,28 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @return array
 		 */
-		private function get_user_data_from_billing_address($order) {
-			if($this->aam_settings == null || !$this->aam_settings->get_enable_automatic_matching() ){
+		private function get_user_data_from_billing_address( $order ) {
+			if ( $this->aam_settings == null || ! $this->aam_settings->get_enable_automatic_matching() ) {
 				return array();
 			}
-			$user_data= array();
+			$user_data       = array();
 			$user_data['fn'] = $order->get_billing_first_name();
 			$user_data['ln'] = $order->get_billing_last_name();
 			$user_data['em'] = $order->get_billing_email();
 			// get_user_id() returns 0 if the current user is a guest
-			$user_data['external_id'] = $order->get_user_id() === 0 ? null : strval($order->get_user_id());
-			$user_data['zp'] = $order->get_billing_postcode();
-			$user_data['st'] = $order->get_billing_state();
+			$user_data['external_id'] = $order->get_user_id() === 0 ? null : strval( $order->get_user_id() );
+			$user_data['zp']          = $order->get_billing_postcode();
+			$user_data['st']          = $order->get_billing_state();
 			// We can use country as key because this information is for CAPI events only
 			$user_data['country'] = $order->get_billing_country();
-			$user_data['ct'] = $order->get_billing_city();
-			$user_data['ph'] = $order->get_billing_phone();
+			$user_data['ct']      = $order->get_billing_city();
+			$user_data['ph']      = $order->get_billing_phone();
 			// The fields contain country, so we do not need to add a condition
-			foreach ($user_data as $field => $value) {
-				if( $value === null || $value === '' ||
-					!in_array($field, $this->aam_settings->get_enabled_automatic_matching_fields())
-				){
-					unset($user_data[$field]);
+			foreach ( $user_data as $field => $value ) {
+				if ( $value === null || $value === '' ||
+					! in_array( $field, $this->aam_settings->get_enabled_automatic_matching_fields() )
+				) {
+					unset( $user_data[ $field ] );
 				}
 			}
 			return $user_data;
@@ -1189,7 +1192,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 *
 		 * @return array
 		 */
-		public function get_tracked_events(){
+		public function get_tracked_events() {
 			return $this->tracked_events;
 		}
 

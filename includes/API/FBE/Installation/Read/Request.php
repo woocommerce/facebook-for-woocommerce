@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\Facebook\API\FBE\Installation;
  *
  * @since 2.0.0
  */
-class Request extends Installation\Request  {
+class Request extends Installation\Request {
 
 
 	/**
@@ -33,9 +33,9 @@ class Request extends Installation\Request  {
 
 		parent::__construct( 'fbe_installs', 'GET' );
 
-		$this->params = [
+		$this->params = array(
 			'fbe_external_business_id' => $external_business_id,
-		];
+		);
 	}
 
 
