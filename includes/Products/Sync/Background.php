@@ -298,7 +298,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			foreach ( $data['custom_data'] as $key => $val ) {
 				$attribute_value = str_replace(
 					',',
-					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ' ),
+					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ', $val ),
 					$val
 				);
 				$attributes[]    = $key . ':' . $attribute_value;
