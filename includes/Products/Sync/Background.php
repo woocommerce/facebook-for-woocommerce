@@ -296,6 +296,21 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 			$attributes = array();
 
 			foreach ( $data['custom_data'] as $key => $val ) {
+				/**
+				 * Filter: facebook_for_woocommerce_variant_attribute_comma_replacement
+				 *
+				 * The Facebook API expects a comma-separated list of attributes in `additional_variant_attribute` field.
+				 * https://developers.facebook.com/docs/marketing-api/catalog/reference/
+				 * This means that WooCommerce product attributes included in this field should avoid the comma (`,`) character.
+				 * Facebook for WooCommerce replaces any `,` with a space by default.
+				 * This filter allows a site to provide a different replacement string.
+				 *
+				 * @since 2.5.0
+				 *
+				 * @param string $replacement The default replacement string (`,`).
+				 * @param string $value Attribute value.
+				 * @return string Return the desired replacement string.
+				 */
 				$attribute_value = str_replace(
 					',',
 					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ', $val ),
