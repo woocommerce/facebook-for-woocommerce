@@ -16,7 +16,11 @@
 	<config name="testVersion" value="7.0-" />
 
 	<!-- Rules -->
-	<rule ref="WooCommerce-Core" />
+	<rule ref="WooCommerce-Core">
+		<!-- We use the PSR-4 naming convention rather than the WP one -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+	</rule>
 
 	<!-- Language domain -->
 	<rule ref="WordPress.WP.I18n">
