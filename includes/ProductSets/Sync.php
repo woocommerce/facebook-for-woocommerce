@@ -385,8 +385,8 @@ class Sync {
 		}
 
 		$data = array(
-			'name'   => $term->name,
-			'filter' => wp_json_encode( array( 'or' => $products ) ),
+			'name'     => $term->name,
+			'filter'   => wp_json_encode( array( 'or' => $products ) ),
 			'metadata' => wp_json_encode( array( 'description' => $term->description ) ),
 		);
 

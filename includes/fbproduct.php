@@ -430,7 +430,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			// Convert all slug_names in $option_values into the visible names that
 			// advertisers have set to be the display names for a given attribute value
 			$terms = get_the_terms( $this->id, $key );
-			return ! is_array( $terms ) ? [] : array_map(
+			return ! is_array( $terms ) ? array() : array_map(
 				function ( $slug_name ) use ( $terms ) {
 					foreach ( $terms as $term ) {
 						if ( $term->slug === $slug_name ) {
@@ -695,20 +695,21 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 * Filters list of attributes to only those available for a given product
 		 *
 		 * @param \WC_Product $product WooCommerce Product
-		 * @param array $all_attributes List of Enhanced Catalog attributes to match
+		 * @param array       $all_attributes List of Enhanced Catalog attributes to match
 		 * @return array
 		 */
 		public function get_matched_attributes_for_product( $product, $all_attributes ) {
 			$matched_attributes = array();
-			$sanitized_keys = array_map(
+			$sanitized_keys     = array_map(
 				function( $key ) {
 						return \WC_Facebookcommerce_Utils::sanitize_variant_name( $key, false );
 				},
 				array_keys( $product->get_attributes() )
 			);
 
-			$matched_attributes = array_filter( $all_attributes,
-				function( $attribute ) use ($sanitized_keys) {
+			$matched_attributes = array_filter(
+				$all_attributes,
+				function( $attribute ) use ( $sanitized_keys ) {
 					return in_array( $attribute['key'], $sanitized_keys );
 				}
 			);

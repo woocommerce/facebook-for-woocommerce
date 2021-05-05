@@ -48,7 +48,7 @@ class Tracker {
 		// Is the site connected?
 		// @since 2.3.4
 		$connection_is_happy = false;
-		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$connection_handler  = facebook_for_woocommerce()->get_connection_handler();
 		if ( $connection_handler ) {
 			$connection_is_happy = $connection_handler->is_connected() && ! get_transient( 'wc_facebook_connection_invalid' );
 		}

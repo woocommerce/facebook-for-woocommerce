@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\Facebook\API;
  *
  * @since 2.1.0
  */
-class Request extends API\Orders\Abstract_Request  {
+class Request extends API\Orders\Abstract_Request {
 
 
 	use API\Traits\Idempotent_Request;
@@ -31,7 +31,7 @@ class Request extends API\Orders\Abstract_Request  {
 	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
-	 * @param array $refund_data refund data
+	 * @param array  $refund_data refund data
 	 */
 	public function __construct( $remote_id, $refund_data ) {
 
