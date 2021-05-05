@@ -94,7 +94,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		$this->feed_handler = new \WC_Facebook_Product_Feed();
 		add_action( 'init', array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( 'init', array( $this, 'maybe_create_catalog_feed' ) );
-		add_action( self::FEED_GENERATION_STEP, array( $this, 'execute_feed_generation_step' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
 
