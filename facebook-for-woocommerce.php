@@ -14,11 +14,12 @@
  * Text Domain: facebook-for-woocommerce
  * WC requires at least: 3.5.0
  * WC tested up to: 5.2.2
+ * Requires PHP: 7.0
  *
  * @package FacebookCommerce
  */
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The plugin loader class.
@@ -29,7 +30,7 @@ class WC_Facebook_Loader {
 
 
 	// Minimum PHP version required by this plugin.
-	const MINIMUM_PHP_VERSION = '5.6.0';
+	const MINIMUM_PHP_VERSION = '7.0.0';
 
 	// Minimum WordPress version required by this plugin.
 	const MINIMUM_WP_VERSION = '4.4';
