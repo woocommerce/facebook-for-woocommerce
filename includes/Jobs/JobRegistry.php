@@ -4,6 +4,8 @@ namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionScheduler;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Class JobRegistry
  *

@@ -5,6 +5,8 @@ namespace SkyVerge\WooCommerce\Facebook\Jobs;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\AbstractChainedJob as FrameworkAbstractChainedJob;
 use Exception;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Class AbstractChainedJob
  *

@@ -7,6 +7,8 @@ use Exception;
 use WC_Facebookcommerce;
 use WC_Product;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Class GenerateProductFeed
  *

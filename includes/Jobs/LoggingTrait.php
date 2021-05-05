@@ -4,6 +4,8 @@ namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
 use WC_Facebookcommerce;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Trait LoggingTrait
  *
