@@ -17,6 +17,7 @@
 
 	<!-- Rules -->
 	<rule ref="WooCommerce-Core">
+		<!-- We use the PSR-4 naming convention rather than the WP one -->
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
 	</rule>
