@@ -60,17 +60,27 @@ class GenerateProductFeed extends AbstractChainedJob {
 			)
 		);
 
-		// Ensure some products were selected before calling wc_get_products()
-		if ( empty( $product_ids ) ) {
-			return [];
-		}
+		return array_map( 'intval', $product_ids );
+	}
 
-		$product_ids = array_map( 'intval', $product_ids );
-
+	/**
+	 * Filter-like function that runs before items in a batch are processed.
+	 *
+	 * For example, this could be useful for pre-fetching full objects.
+	 *
+	 * @param array $items
+	 *
+	 * @return array
+	 */
+	protected function filter_items_before_processing( array $items ): array {
+		// Pre-fetch full product objects.
+		// Variable products will be filtered out here since we don't need them for the feed. It's important to not
+		// filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
+		// the job will end prematurely thinking it has nothing more to process.
 		return wc_get_products(
 			[
 				'type'    => [ 'simple', 'variation' ],
-				'include' => $product_ids,
+				'include' => $items,
 				'orderby' => 'none',
 			]
 		);
