@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021.nn.nn - version 2.5.0
+ *  Ensure variable product attribute values containing , sync correctly to Facebook additional_variant_attribute field.
+
 2021.04.29 - version 2.4.1
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
 
