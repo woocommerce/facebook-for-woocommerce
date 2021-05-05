@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\Facebook\API;
  *
  * @since 2.1.0
  */
-class Request extends API\Orders\Abstract_Request  {
+class Request extends API\Orders\Abstract_Request {
 
 
 	/**
@@ -28,36 +28,39 @@ class Request extends API\Orders\Abstract_Request  {
 	 * @since 2.1.0
 	 *
 	 * @param string $remote_id remote order ID
-	 * @param array $fields fields to be returned
+	 * @param array  $fields fields to be returned
 	 */
-	public function __construct( $remote_id, $fields = [] ) {
+	public function __construct( $remote_id, $fields = array() ) {
 
 		parent::__construct( "/{$remote_id}", 'GET' );
 
 		if ( empty( $fields ) ) {
 
 			// request all top-level fields
-			$fields = implode( ',', [
-				'id',
-				'order_status',
-				'created',
-				'last_updated',
-				'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
-				'ship_by_date',
-				'merchant_order_id',
-				'channel',
-				'selected_shipping_option',
-				'shipping_address',
-				'estimated_payment_details',
-				'buyer_details',
-			] );
+			$fields = implode(
+				',',
+				array(
+					'id',
+					'order_status',
+					'created',
+					'last_updated',
+					'items{id,retailer_id,product_id,quantity,price_per_unit,tax_details}',
+					'ship_by_date',
+					'merchant_order_id',
+					'channel',
+					'selected_shipping_option',
+					'shipping_address',
+					'estimated_payment_details',
+					'buyer_details',
+				)
+			);
 
 		} elseif ( is_array( $fields ) ) {
 
 			$fields = implode( ',', $fields );
 		}
 
-		$this->set_params( [ 'fields' => $fields ] );
+		$this->set_params( array( 'fields' => $fields ) );
 	}
 
 

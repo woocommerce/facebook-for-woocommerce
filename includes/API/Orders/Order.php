@@ -87,7 +87,7 @@ class Order {
 	 */
 	public function get_items() {
 
-		return ! empty( $this->data['items']['data'] ) ? $this->data['items']['data'] : [];
+		return ! empty( $this->data['items']['data'] ) ? $this->data['items']['data'] : array();
 	}
 
 
@@ -115,7 +115,7 @@ class Order {
 	 */
 	public function get_selected_shipping_option() {
 
-		return isset( $this->data['selected_shipping_option'] ) ? $this->data['selected_shipping_option'] : [];
+		return isset( $this->data['selected_shipping_option'] ) ? $this->data['selected_shipping_option'] : array();
 	}
 
 
@@ -130,7 +130,7 @@ class Order {
 	 */
 	public function get_shipping_address() {
 
-		return isset( $this->data['shipping_address'] ) ? $this->data['shipping_address'] : [];
+		return isset( $this->data['shipping_address'] ) ? $this->data['shipping_address'] : array();
 	}
 
 
@@ -145,7 +145,7 @@ class Order {
 	 */
 	public function get_estimated_payment_details() {
 
-		return isset( $this->data['estimated_payment_details'] ) ? $this->data['estimated_payment_details'] : [];
+		return isset( $this->data['estimated_payment_details'] ) ? $this->data['estimated_payment_details'] : array();
 	}
 
 
@@ -160,7 +160,7 @@ class Order {
 	 */
 	public function get_buyer_details() {
 
-		return isset( $this->data['buyer_details'] ) ? $this->data['buyer_details'] : [];
+		return isset( $this->data['buyer_details'] ) ? $this->data['buyer_details'] : array();
 	}
 
 

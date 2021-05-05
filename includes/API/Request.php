@@ -32,7 +32,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	protected $retry_count = 0;
 
 	/** @var int[] the response codes that should trigger a retry */
-	protected $retry_codes = [];
+	protected $retry_codes = array();
 
 
 	/**

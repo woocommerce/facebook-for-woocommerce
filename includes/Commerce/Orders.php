@@ -106,7 +106,7 @@ class Orders {
 	 */
 	public static function is_commerce_order( \WC_Order $order ) {
 
-		return in_array( $order->get_created_via(), [ 'instagram', 'facebook' ], true );
+		return in_array( $order->get_created_via(), array( 'instagram', 'facebook' ), true );
 	}
 
 
@@ -120,12 +120,14 @@ class Orders {
 	 */
 	public function find_local_order( $remote_id ) {
 
-		$orders = wc_get_orders( [
-			'limit'      => 1,
-			'status'     => 'any',
-			'meta_key'   => self::REMOTE_ID_META_KEY,
-			'meta_value' => $remote_id,
-		] );
+		$orders = wc_get_orders(
+			array(
+				'limit'      => 1,
+				'status'     => 'any',
+				'meta_key'   => self::REMOTE_ID_META_KEY,
+				'meta_value' => $remote_id,
+			)
+		);
 
 		return ! empty( $orders ) ? current( $orders ) : null;
 	}
@@ -158,7 +160,7 @@ class Orders {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param Order $remote_order Orders API order object
+	 * @param Order     $remote_order Orders API order object
 	 * @param \WC_Order $local_order local order object
 	 * @return \WC_Order
 	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
@@ -212,10 +214,12 @@ class Orders {
 			$matching_wc_order_item->set_subtotal( $item['quantity'] * $item['price_per_unit']['amount'] );
 			$matching_wc_order_item->set_total( $item['quantity'] * $item['price_per_unit']['amount'] );
 			// we use the estimated_tax because the captured_tax represents the tax after the order/item has been shipped and we don't fulfill order at the line-item level
-			$matching_wc_order_item->set_taxes( [
-				'subtotal' => [ $item['tax_details']['estimated_tax']['amount'] ],
-				'total'    => [ $item['tax_details']['estimated_tax']['amount'] ],
-			] );
+			$matching_wc_order_item->set_taxes(
+				array(
+					'subtotal' => array( $item['tax_details']['estimated_tax']['amount'] ),
+					'total'    => array( $item['tax_details']['estimated_tax']['amount'] ),
+				)
+			);
 			$matching_wc_order_item->save();
 
 			if ( ! empty( $item['tax_details']['estimated_tax']['amount'] ) ) {
@@ -250,9 +254,11 @@ class Orders {
 		}
 
 		$matching_shipping_order_item->set_total( $selected_shipping_option['price']['amount'] );
-		$matching_shipping_order_item->set_taxes( [
-			'total' => [ $selected_shipping_option['calculated_tax']['amount'] ],
-		] );
+		$matching_shipping_order_item->set_taxes(
+			array(
+				'total' => array( $selected_shipping_option['calculated_tax']['amount'] ),
+			)
+		);
 		$matching_shipping_order_item->save();
 
 		// add tax item
@@ -399,7 +405,6 @@ class Orders {
 				} else {
 					$local_order = $this->update_local_order( $remote_order, $local_order );
 				}
-
 			} catch ( \Exception $exception ) {
 
 				if ( ! empty( $local_order ) ) {
@@ -422,10 +427,13 @@ class Orders {
 					$local_order->set_status( 'processing' );
 
 					/* translators: Placeholders: %1$s - order remote id, %2$s - order created by */
-					$local_order->add_order_note( sprintf( __( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
-						$remote_order->get_id(),
-						ucfirst( $remote_order->get_channel() )
-					) );
+					$local_order->add_order_note(
+						sprintf(
+							__( 'Order %1$s paid in %2$s', 'facebook-for-woocommerce' ),
+							$remote_order->get_id(),
+							ucfirst( $remote_order->get_channel() )
+						)
+					);
 
 				} catch ( SV_WC_API_Exception $exception ) {
 
@@ -521,11 +529,11 @@ class Orders {
 	 * @since 2.1.0
 	 */
 	public function schedule_local_orders_update() {
-		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID ) ) {
+		if ( facebook_for_woocommerce()->get_commerce_handler()->is_connected() && false === as_next_scheduled_action( self::ACTION_FETCH_ORDERS, array(), \WC_Facebookcommerce::PLUGIN_ID ) ) {
 
 			$interval = $this->get_order_update_interval();
 
-			as_schedule_recurring_action( time() + $interval, $interval, self::ACTION_FETCH_ORDERS, [], \WC_Facebookcommerce::PLUGIN_ID );
+			as_schedule_recurring_action( time() + $interval, $interval, self::ACTION_FETCH_ORDERS, array(), \WC_Facebookcommerce::PLUGIN_ID );
 		}
 	}
 
@@ -538,15 +546,15 @@ class Orders {
 	public function add_hooks() {
 
 		// schedule a recurring ACTION_FETCH_ORDERS action, if not already scheduled
-		add_action( 'init', [ $this, 'schedule_local_orders_update' ] );
+		add_action( 'init', array( $this, 'schedule_local_orders_update' ) );
 
-		add_action( self::ACTION_FETCH_ORDERS, [ $this, 'update_local_orders' ] );
+		add_action( self::ACTION_FETCH_ORDERS, array( $this, 'update_local_orders' ) );
 
 		// prevent sending emails for Commerce orders
-		add_action( 'woocommerce_email_enabled_customer_completed_order',          [ $this, 'maybe_stop_order_email' ], 10, 2 );
-		add_action( 'woocommerce_email_enabled_customer_processing_order',         [ $this, 'maybe_stop_order_email' ], 10, 2 );
-		add_action( 'woocommerce_email_enabled_customer_refunded_order',           [ $this, 'maybe_stop_order_email' ], 10, 2 );
-		add_action( 'woocommerce_email_enabled_customer_partially_refunded_order', [ $this, 'maybe_stop_order_email' ], 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_completed_order', array( $this, 'maybe_stop_order_email' ), 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_processing_order', array( $this, 'maybe_stop_order_email' ), 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_refunded_order', array( $this, 'maybe_stop_order_email' ), 10, 2 );
+		add_action( 'woocommerce_email_enabled_customer_partially_refunded_order', array( $this, 'maybe_stop_order_email' ), 10, 2 );
 	}
 
 
@@ -562,8 +570,8 @@ class Orders {
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
-	 * @param string $tracking_number shipping tracking number
-	 * @param string $carrier shipping carrier
+	 * @param string    $tracking_number shipping tracking number
+	 * @param string    $carrier shipping carrier
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public function fulfill_order( \WC_Order $order, $tracking_number, $carrier ) {
@@ -583,17 +591,17 @@ class Orders {
 				throw new SV_WC_Plugin_Exception( sprintf( __( '%s is not a valid shipping carrier code.', 'facebook-for-woocommerce' ), $carrier ) );
 			}
 
-			$items = [];
+			$items = array();
 
 			/** @var \WC_Order_Item_Product $item */
 			foreach ( $order->get_items() as $item ) {
 
 				if ( $product = $item->get_product() ) {
 
-					$items[] = [
+					$items[] = array(
 						'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
 						'quantity'    => $item->get_quantity(),
-					];
+					);
 				}
 			}
 
@@ -601,32 +609,36 @@ class Orders {
 				throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
 			}
 
-			$fulfillment_data = [
+			$fulfillment_data = array(
 				'items'         => $items,
-				'tracking_info' => [
+				'tracking_info' => array(
 					'carrier'         => $carrier,
 					'tracking_number' => $tracking_number,
-				],
-			];
+				),
+			);
 
 			$plugin = facebook_for_woocommerce();
 
 			$plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() )->fulfill_order( $remote_id, $fulfillment_data );
 
-			$order->add_order_note( sprintf(
+			$order->add_order_note(
+				sprintf(
 				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
-				__( '%s order fulfilled.', 'facebook-for-woocommerce' ),
-				ucfirst( $order->get_created_via() )
-			) );
+					__( '%s order fulfilled.', 'facebook-for-woocommerce' ),
+					ucfirst( $order->get_created_via() )
+				)
+			);
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
-			$order->add_order_note( sprintf(
+			$order->add_order_note(
+				sprintf(
 				/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
-				__( '%1$s order could not be fulfilled. %2$s', 'facebook-for-woocommerce' ),
-				ucfirst( $order->get_created_via() ),
-				$exception->getMessage()
-			) );
+					__( '%1$s order could not be fulfilled. %2$s', 'facebook-for-woocommerce' ),
+					ucfirst( $order->get_created_via() ),
+					$exception->getMessage()
+				)
+			);
 
 			throw $exception;
 		}
@@ -639,7 +651,7 @@ class Orders {
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Order_Refund $refund order refund object
-	 * @param string $reason_code refund reason code
+	 * @param string           $reason_code refund reason code
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public function add_order_refund( \WC_Order_Refund $refund, $reason_code ) {
@@ -648,14 +660,14 @@ class Orders {
 
 		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
 
-		$valid_reason_codes = [
+		$valid_reason_codes = array(
 			self::REFUND_REASON_BUYERS_REMORSE,
 			self::REFUND_REASON_DAMAGED_GOODS,
 			self::REFUND_REASON_NOT_AS_DESCRIBED,
 			self::REFUND_REASON_QUALITY_ISSUE,
 			self::REFUND_REASON_OTHER,
 			self::REFUND_REASON_WRONG_ITEM,
-		];
+		);
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
 			$reason_code = self::REFUND_REASON_OTHER;
@@ -675,9 +687,9 @@ class Orders {
 				throw new SV_WC_Plugin_Exception( __( 'Remote ID for parent order not found.', 'facebook-for-woocommerce' ) );
 			}
 
-			$refund_data = [
+			$refund_data = array(
 				'reason_code' => $reason_code,
-			];
+			);
 
 			if ( ! empty( $reason_text = $refund->get_reason() ) ) {
 				$refund_data['reason_text'] = $reason_text;
@@ -690,32 +702,36 @@ class Orders {
 
 			if ( ! empty( $refund->get_shipping_total() ) ) {
 
-				$refund_data['shipping'] = [
-					'shipping_refund' => [
+				$refund_data['shipping'] = array(
+					'shipping_refund' => array(
 						'amount'   => abs( $refund->get_shipping_total() ),
 						'currency' => $refund->get_currency(),
-					],
-				];
+					),
+				);
 			}
 
 			$api->add_order_refund( $remote_id, $refund_data );
 
-			$parent_order->add_order_note( sprintf(
+			$parent_order->add_order_note(
+				sprintf(
 				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
-				__( 'Order refunded on %s.', 'facebook-for-woocommerce' ),
-				ucfirst( $parent_order->get_created_via() )
-			) );
+					__( 'Order refunded on %s.', 'facebook-for-woocommerce' ),
+					ucfirst( $parent_order->get_created_via() )
+				)
+			);
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
 			if ( ! empty( $parent_order ) && $parent_order instanceof \WC_Order ) {
 
-				$parent_order->add_order_note( sprintf(
+				$parent_order->add_order_note(
+					sprintf(
 					/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
-					__( 'Could not refund %1$s order: %2$s', 'facebook-for-woocommerce' ),
-					ucfirst( $parent_order->get_created_via() ),
-					$exception->getMessage()
-				) );
+						__( 'Could not refund %1$s order: %2$s', 'facebook-for-woocommerce' ),
+						ucfirst( $parent_order->get_created_via() ),
+						$exception->getMessage()
+					)
+				);
 
 			} else {
 
@@ -739,16 +755,16 @@ class Orders {
 	 */
 	private function get_refund_items( \WC_Order_Refund $refund ) {
 
-		$items = [];
+		$items = array();
 
 		/** @var \WC_Order_Item_Product $item */
 		foreach ( $refund->get_items() as $item ) {
 
 			if ( $product = $item->get_product() ) {
 
-				$refund_item = [
+				$refund_item = array(
 					'retailer_id' => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-				];
+				);
 
 				if ( ! empty( $item->get_quantity() ) ) {
 
@@ -756,10 +772,10 @@ class Orders {
 
 				} else {
 
-					$refund_item['item_refund_amount'] = [
+					$refund_item['item_refund_amount'] = array(
 						'amount'   => abs( $item->get_total() ),
 						'currency' => $refund->get_currency(),
-					];
+					);
 				}
 
 				$items[] = $refund_item;
@@ -780,7 +796,7 @@ class Orders {
 	 * @since 2.1.0
 	 *
 	 * @param \WC_Order $order order object
-	 * @param string $reason_code cancellation reason code
+	 * @param string    $reason_code cancellation reason code
 	 * @throws SV_WC_Plugin_Exception
 	 */
 	public function cancel_order( \WC_Order $order, $reason_code ) {
@@ -792,7 +808,7 @@ class Orders {
 		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
 
 		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = Orders::CANCEL_REASON_OTHER;
+			$reason_code = self::CANCEL_REASON_OTHER;
 		}
 
 		try {
@@ -805,20 +821,24 @@ class Orders {
 
 			$api->cancel_order( $remote_id, $reason_code );
 
-			$order->add_order_note( sprintf(
+			$order->add_order_note(
+				sprintf(
 				/* translators: Placeholder: %s - sales channel name, like Facebook or Instagram */
-				__( '%s order cancelled.', 'facebook-for-woocommerce' ),
-				ucfirst( $order->get_created_via() )
-			) );
+					__( '%s order cancelled.', 'facebook-for-woocommerce' ),
+					ucfirst( $order->get_created_via() )
+				)
+			);
 
 		} catch ( SV_WC_Plugin_Exception $exception ) {
 
-			$order->add_order_note( sprintf(
+			$order->add_order_note(
+				sprintf(
 				/* translators: Placeholders: %1$s - sales channel name, like Facebook or Instagram, %2$s - error message */
-				__( '%1$s order could not be cancelled. %2$s', 'facebook-for-woocommerce' ),
-				ucfirst( $order->get_created_via() ),
-				$exception->getMessage()
-			) );
+					__( '%1$s order could not be cancelled. %2$s', 'facebook-for-woocommerce' ),
+					ucfirst( $order->get_created_via() ),
+					$exception->getMessage()
+				)
+			);
 
 			throw $exception;
 		}
@@ -834,14 +854,14 @@ class Orders {
 	 */
 	public function get_cancellation_reasons() {
 
-		return [
+		return array(
 
 			self::CANCEL_REASON_CUSTOMER_REQUESTED => __( 'Customer requested cancellation', 'facebook-for-woocommerce' ),
 			self::CANCEL_REASON_OUT_OF_STOCK       => __( 'Product(s) are out of stock', 'facebook-for-woocommerce' ),
 			self::CANCEL_REASON_INVALID_ADDRESS    => __( 'Customer address is invalid', 'facebook-for-woocommerce' ),
 			self::CANCEL_REASON_SUSPICIOUS_ORDER   => __( 'Suspicious order', 'facebook-for-woocommerce' ),
 			self::CANCEL_REASON_OTHER              => __( 'Other', 'facebook-for-woocommerce' ),
-		];
+		);
 	}
 
 
@@ -852,7 +872,7 @@ class Orders {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param bool $is_enabled whether the email is enabled in the first place
+	 * @param bool      $is_enabled whether the email is enabled in the first place
 	 * @param \WC_Order $order order object
 	 * @return bool
 	 */
@@ -877,7 +897,6 @@ class Orders {
 			 * @param bool $is_enabled whether the email is enabled
 			 * @param \WC_Order $order order object
 			 * @param Orders $this admin orders instance
-			 *
 			 */
 			$is_enabled = (bool) apply_filters( 'wc_facebook_commerce_send_woocommerce_emails', $is_enabled, $order, $this );
 		}

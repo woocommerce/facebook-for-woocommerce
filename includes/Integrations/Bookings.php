@@ -27,7 +27,7 @@ class Bookings {
 	 */
 	public function __construct() {
 
-		add_action( 'init', [ $this, 'add_hooks' ] );
+		add_action( 'init', array( $this, 'add_hooks' ) );
 	}
 
 
@@ -38,8 +38,8 @@ class Bookings {
 	 */
 	public function add_hooks() {
 
-		if ( facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php') ) {
-			add_filter( 'wc_facebook_product_price', [ $this, 'get_product_price' ], 10, 3 );
+		if ( facebook_for_woocommerce()->is_plugin_active( 'woocommerce-bookings.php' ) ) {
+			add_filter( 'wc_facebook_product_price', array( $this, 'get_product_price' ), 10, 3 );
 		}
 	}
 
@@ -51,8 +51,8 @@ class Bookings {
 	 *
 	 * @since 2.0.0-dev.3
 	 *
-	 * @param int $price product price in cents
-	 * @param float $facebook_price user defined facebook price
+	 * @param int         $price product price in cents
+	 * @param float       $facebook_price user defined facebook price
 	 * @param \WC_Product $product product object
 	 * @return int
 	 */
@@ -61,9 +61,9 @@ class Bookings {
 		if ( ! $facebook_price && $product instanceof \WC_Product && $this->is_bookable_product( $product ) ) {
 
 			$product      = new \WC_Product_Booking( $product );
-			$display_cost = is_callable( [ $product, 'get_display_cost' ] ) ? $product->get_display_cost() : 0;
+			$display_cost = is_callable( array( $product, 'get_display_cost' ) ) ? $product->get_display_cost() : 0;
 
-			$price = (int) round( wc_get_price_to_display( $product, [ 'price' => $display_cost ] ) * 100 );
+			$price = (int) round( wc_get_price_to_display( $product, array( 'price' => $display_cost ) ) * 100 );
 		}
 
 		return $price;
