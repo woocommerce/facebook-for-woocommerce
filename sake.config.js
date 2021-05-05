@@ -1,15 +1,16 @@
 module.exports = {
 	plugin: {
-		id: 'facebook-for-woocommerce'
+		id: 'facebook-for-woocommerce',
 	},
 	deploy: {
-		type: 'wp'
+		type: 'wp',
 	},
 	paths: {
 		exclude: [
-		'bin'
-		]
+			'bin',
+		],
 	},
 	framework: 'v5',
-	deployAssets: false
+	deployAssets: false,
+	autoload: true,
 };
