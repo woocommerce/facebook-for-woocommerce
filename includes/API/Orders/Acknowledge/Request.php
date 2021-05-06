@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\Facebook\API;
  *
  * @since 2.1.0
  */
-class Request extends API\Orders\Abstract_Request  {
+class Request extends API\Orders\Abstract_Request {
 
 
 	use API\Traits\Idempotent_Request;
@@ -37,10 +37,12 @@ class Request extends API\Orders\Abstract_Request  {
 
 		parent::__construct( "/{$remote_id}/acknowledge_order", 'POST' );
 
-		$this->set_data( [
-			'merchant_order_reference' => $merchant_order_reference,
-			'idempotency_key'          => $this->get_idempotency_key(),
-		] );
+		$this->set_data(
+			array(
+				'merchant_order_reference' => $merchant_order_reference,
+				'idempotency_key'          => $this->get_idempotency_key(),
+			)
+		);
 	}
 
 

@@ -40,10 +40,10 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Messenger', 'facebook-for-woocommerce' );
 		$this->title = __( 'Messenger', 'facebook-for-woocommerce' );
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
-		add_action( 'woocommerce_admin_field_messenger_locale',   [ $this, 'render_locale_field' ] );
-		add_action( 'woocommerce_admin_field_messenger_greeting', [ $this, 'render_greeting_field' ] );
+		add_action( 'woocommerce_admin_field_messenger_locale', array( $this, 'render_locale_field' ) );
+		add_action( 'woocommerce_admin_field_messenger_greeting', array( $this, 'render_greeting_field' ) );
 	}
 
 
@@ -115,11 +115,14 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 			</th>
 			<td class="forminp forminp-<?php echo esc_attr( sanitize_title( $field['type'] ) ); ?>">
 				<p>
-					<?php printf(
+					<?php
+					printf(
 						/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 						esc_html__( '%1$sClick here%2$s to manage your Messenger greeting and colors.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_manage_url() ) . '" target="_blank">', '</a>'
-					); ?>
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_manage_url() ) . '" target="_blank">',
+						'</a>'
+					);
+					?>
 				</p>
 			</td>
 		</tr>
@@ -138,38 +141,38 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 
 		$is_enabled = $this->remote_configuration && $this->remote_configuration->is_enabled();
 
-		$settings = [
+		$settings = array(
 
-			[
+			array(
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
 				'type'  => 'title',
-			],
+			),
 
-			[
+			array(
 				'id'      => \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
 				'title'   => __( 'Enable Messenger', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
 				'desc'    => __( 'Enable and customize Facebook Messenger on your store', 'facebook-for-woocommerce' ),
 				'default' => 'no',
 				'value'   => $is_enabled ? 'yes' : 'no',
-			],
-		];
+			),
+		);
 
 		// only add the static configuration display if messenger is enabled
 		if ( $is_enabled ) {
 
-			$settings[] = [
+			$settings[] = array(
 				'title' => __( 'Language', 'facebook-for-woocommerce' ),
 				'type'  => 'messenger_locale',
-			];
+			);
 
-			$settings[] = [
+			$settings[] = array(
 				'title' => __( 'Greeting & Colors', 'facebook-for-woocommerce' ),
 				'type'  => 'messenger_greeting',
-			];
+			);
 		}
 
-		$settings[] = [ 'type' => 'sectionend' ];
+		$settings[] = array( 'type' => 'sectionend' );
 
 		return $settings;
 	}
@@ -187,7 +190,8 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 		return sprintf(
 			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 			__( 'Please %1$sconnect to Facebook%2$s to enable and manage Facebook Messenger.', 'facebook-for-woocommerce' ),
-			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">',
+			'</a>'
 		);
 	}
 
@@ -235,11 +239,14 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 			?>
 			<div class="notice notice-error">
 				<p>
-					<?php printf(
+					<?php
+					printf(
 					/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 						esc_html__( 'There was an error communicating with the Facebook Business Extension. %1$sClick here%2$s to manage your Messenger settings.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( $plugin->get_connection_handler()->get_manage_url() ) . '" target="_blank">', '</a>'
-					); ?>
+						'<a href="' . esc_url( $plugin->get_connection_handler()->get_manage_url() ) . '" target="_blank">',
+						'</a>'
+					);
+					?>
 				</p>
 			</div>
 			<?php

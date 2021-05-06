@@ -39,7 +39,7 @@ if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 		private static $instance;
 
 		/** @var WC_Facebookcommerce_Integration full integration object */
-		public static $commerce  = null;
+		public static $commerce = null;
 		/** @var WC_Facebookcommerce_Graph_API */
 		public static $fbgraph   = null;
 		public static $test_mode = false;

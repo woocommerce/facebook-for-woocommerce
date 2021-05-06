@@ -19,7 +19,7 @@ use SkyVerge\WooCommerce\Facebook\API;
  *
  * @since 2.0.0
  */
-class Request extends API\Request  {
+class Request extends API\Request {
 
 
 	/**
