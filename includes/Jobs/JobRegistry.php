@@ -3,6 +3,9 @@
 namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionScheduler;
+use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
+use SkyVerge\WooCommerce\Facebook\Feed\FeedDataExporter;
+
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,9 +25,10 @@ class JobRegistry {
 	 * Instantiate and init all jobs for the plugin.
 	 */
 	public function init() {
-		$action_scheduler_proxy = new ActionScheduler();
-
-		$this->generate_product_feed_job = new GenerateProductFeed( $action_scheduler_proxy );
+		$action_scheduler_proxy          = new ActionScheduler();
+		$feed_file_handler               = new FeedFileHandler();
+		$feed_data_exporter              = new FeedDataExporter();
+		$this->generate_product_feed_job = new GenerateProductFeed( $action_scheduler_proxy, $feed_file_handler, $feed_data_exporter );
 		$this->generate_product_feed_job->init();
 	}
 

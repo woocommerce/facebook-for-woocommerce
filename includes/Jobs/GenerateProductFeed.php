@@ -2,6 +2,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
+use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionSchedulerInterface;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Utilities\BatchQueryOffset;
 use Exception;
 use WC_Facebookcommerce;
@@ -19,17 +20,81 @@ class GenerateProductFeed extends AbstractChainedJob {
 	use BatchQueryOffset, LoggingTrait;
 
 	/**
+	 * Array of processing results.
+	 *
+	 * @var array $processed_items.
+	 */
+	protected $processed_items = array();
+
+	/**
+	 * Feed file creation and manipulation utility.
+	 *
+	 * @var FacebookFeedFileHandler $feed_file_handler.
+	 */
+	protected $feed_file_handler;
+
+	/**
+	 * Feed file creation and manipulation utility.
+	 *
+	 * @var FeedDataExporter $feed_data_exporter.
+	 */
+	protected $feed_data_exporter;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ActionSchedulerInterface $action_scheduler   Action Scheduler facade.
+	 * @param FacebookFeedFileHandler  $feed_file_handler  Feed file creation and manipulation handler.
+	 * @param FeedDataExporter         $feed_data_exporter Handling of file data.
+	 */
+	public function __construct( ActionSchedulerInterface $action_scheduler, $feed_file_handler, $feed_data_exporter ) {
+		parent::__construct( $action_scheduler );
+		$this->feed_file_handler  = $feed_file_handler;
+		$this->feed_data_exporter = $feed_data_exporter;
+	}
+
+	/**
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		// Optionally override this method in child class.
+		$this->feed_file_handler->prepare_feed_folder();
+		$this->feed_file_handler->create_fresh_feed_temporary_file();
+		$this->feed_file_handler->write_to_feed_temporary_file(
+			$this->feed_data_exporter->generate_header()
+		);
 	}
 
 	/**
 	 * Called after the finishing the job.
 	 */
 	protected function handle_end() {
-		// Optionally override this method in child class.
+		$this->feed_file_handler->replace_feed_file_with_temp_file();
+	}
+
+	/**
+	 * Handle processing a chain batch.
+	 *
+	 * @hooked {plugin_name}/jobs/{job_name}/chain_batch
+	 *
+	 * @param int   $batch_number The batch number for the new batch.
+	 * @param array $args         The args for the job.
+	 *
+	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
+	 */
+	public function handle_batch_action( int $batch_number, array $args ) {
+		$this->processed_items = array();
+		parent::handle_batch_action( $batch_number, $args );
+		$this->write_processed_items_to_feed();
+	}
+
+	public function write_processed_items_to_feed() {
+		if ( empty( $this->processed_items ) ) {
+			return;
+		}
+		//$this->feed_file_handler->write_to_feed_temporary_file( var_export( $this->processed_items, true ) );
+		$this->feed_file_handler->write_to_feed_temporary_file(
+			$this->feed_data_exporter->format_items_for_feed( $this->processed_items )
+		);
 	}
 
 	/**
@@ -101,7 +166,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 			if ( ! $product ) {
 				throw new Exception( 'Product not found.' );
 			}
-
+			$this->processed_items[] = $this->feed_data_exporter->generate_row_data( $product );
 			$this->log( $product->get_id() );
 
 		} catch ( Exception $e ) {

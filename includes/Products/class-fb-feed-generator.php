@@ -25,7 +25,6 @@ if ( ! class_exists( 'WC_Product_CSV_Exporter', false ) ) {
  */
 class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 
-	const FEED_GENERATION_TRIGGER = 'wc_facebook_for_woocommerce_feed_trigger';
 	const FEED_GENERATION_STEP    = 'wc_facebook_for_woocommerce_feed_step';
 	const FEED_ACTIONS_GROUP      = 'wc_facebook_for_woocommerce_feed_actions';
 	const FEED_SCHEDULE_ACTION    = 'wc_facebook_for_woocommerce_feed_schedule_action';
@@ -45,22 +44,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 * @var string
 	 */
 	protected $export_type = 'product';
-
-
-	/**
-	 * Filename to export to.
-	 *
-	 * @var string
-	 */
-	protected $filename = 'product_catalog.csv';
-
-	/**
-	 * Temporary export file.
-	 *
-	 * @var string
-	 */
-	protected $temp_filename = 'temp_product_catalog.csv';
-
 
 	/**
 	 * Batch limit.
@@ -116,75 +99,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
-	/**
-	 * Return a filename.
-	 *
-	 * @return string
-	 */
-	public function get_filename() {
-		return sanitize_file_name( $this->filename );
-	}
-
-	/**
-	 * Return a filename.
-	 *
-	 * @return string
-	 */
-	public function get_temp_filename() {
-		return sanitize_file_name( $this->temp_filename );
-	}
-
-	public function get_feed_directory() {
-		$upload_dir = wp_upload_dir();
-		return trailingslashit( $upload_dir['basedir'] ) . 'facebook_for_woocommerce/';
-	}
-
-	/**
-	 * Get file path to export to.
-	 *
-	 * @return string
-	 */
-	protected function get_file_path() {
-		// Parent class will write to the temp file first so this is why we are using temp.
-		return $this->get_feed_directory() . $this->get_temp_filename();
-	}
-
-	protected $attribute_variants = array();
-
-	/**
-	 * Return an array of columns to export.
-	 *
-	 * @since  3.1.0
-	 * @return array
-	 */
-	public function get_default_column_names() {
-		return array(
-			'id'     => 'id',
-			'title'  => 'title',
-			'description' => 'description',
-			'image_link' => 'image_link',
-			'link' => 'link',
-			'product_type' => 'product_type',
-			'brand' => 'brand',
-			'price' => 'price',
-			'availability' => 'availability',
-			'item_group_id' => 'item_group_id',
-			'checkout_url' => 'checkout_url',
-			'additional_image_link' => 'additional_image_link',
-			'sale_price_effective_date' => 'sale_price_effective_date',
-			'sale_price' => 'sale_price',
-			'condition' => 'condition',
-			'visibility' => 'visibility',
-			'gender' => 'gender',
-			'color' => 'color',
-			'size' => 'size',
-			'pattern' => 'pattern',
-			'google_product_category' => 'google_product_category',
-			'default_product' => 'default_product',
-			'variant' => 'variant',
-		);
-	}
-
 	private function create_feed() {
 		$result = \WC_Facebookcommerce_Utils::$fbgraph->create_feed(
 			facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
@@ -207,6 +121,8 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		return $feed_id;
 	}
 
+	protected $attribute_variants = array();
+
 	public static function get_feed_update_schedule() {
 		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_update_schedule(
 			facebook_for_woocommerce()->get_integration()->get_feed_id()
@@ -226,39 +142,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			facebook_for_woocommerce()->get_integration()->get_feed_id()
 		);
 		return $feed_schedule_info;
-	}
-
-	public function prepare_feed_folder() {
-		$catalog_feed_directory = trailingslashit( $this->get_feed_directory() );
-
-		if ( ! wp_mkdir_p( $catalog_feed_directory ) ) {
-			throw new Error( __( 'Could not create product catalog feed directory', 'facebook-for-woocommerce' ), 500 );
-		}
-
-		$files = [
-			[
-				'base'    => $catalog_feed_directory,
-				'file'    => 'index.html',
-				'content' => '',
-			],
-			[
-				'base'    => $catalog_feed_directory,
-				'file'    => '.htaccess',
-				'content' => 'deny from all',
-			],
-		];
-
-		foreach ( $files as $file ) {
-
-			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
-
-				if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
-
-					fwrite( $file_handle, $file['content'] );
-					fclose( $file_handle );
-				}
-			}
-		}
 	}
 
 	/**
@@ -300,7 +183,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
 			$settings['done'] = true;
 			$settings['end']  = time();
-			
+
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
@@ -331,36 +214,10 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
-	/**
-	 * Last step of the feed generation procedure.
-	 * We have been writing to the temporary file until now.
-	 * We can safely delate old feed file and replace it with
-	 * the content of temporary file.
-	 */
-	public function replace_feed_file_with_temp_file() {
-		@rename(
-			$this->get_feed_directory() . $this->get_temp_filename(),
-			$this->get_feed_directory() . $this->get_filename()
-		); // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_rename, Generic.PHP.NoSilencedErrors.Discouraged,
-	}
 
 	public function prepare_feed_generation() {
-		$this->prepare_feed_folder();
-		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
-		//$products_ids = array_slice( $products_ids, 0, 150, true );
-		update_option(
-			self::RUNNING_FEED_SETTINGS,
-			array(
-				'ids'   => $products_ids,
-				'page'  => 1,
-				'done'  => false,
-				'start' => time(),
-				'total' => count( $products_ids ),
-			),
-			false
-		);
-		as_unschedule_all_actions( self::FEED_GENERATION_STEP );
-		as_enqueue_async_action( self::FEED_GENERATION_STEP );
+		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
+		$generate_feed_job->queue_start();
 	}
 
 	public function ajax_feed_handle() {
@@ -376,26 +233,8 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			'page'       => $settings['page'],
 			'file'       => get_option( self::FEED_FILE_INFO, null ),
 		);
-		if ( $settings['done'] ) {
-			wp_send_json_success(
-				array_merge(
-					$response,
-					array(
-						'done'       => true,
-						'percentage' => 100,
-					)
-				)
-			);
-		} else {
-			wp_send_json_success(
-				array_merge(
-					$response,
-					array(
-						'percentage' => intval( ( ( ( $settings['page'] - 1 ) * $this->limit ) / $settings['total'] ) * 100 ),
-					)
-				)
-			);
-		}
+
+		wp_send_json_success( $response );
 	}
 
 	public static function is_generation_in_progress() {
@@ -436,20 +275,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		}
 	}
 
-	/**
-	 * Take a product and generate row data from it for export.
-	 *
-	 * @param WC_Product $product WC_Product object.
-	 *
-	 * @return array
-	 */
-	protected function generate_row_data( $product ) {
-		$fb_product = new \WC_Facebook_Product( $product );
-		return $this->feed_handler->prepare_product_for_feed(
-			$fb_product,
-			$this->attribute_variants
-		);
-	}
 
 	/**
 	 * Handles the feed data request.
