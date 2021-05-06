@@ -2,8 +2,6 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Feed;
 
-use Error;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -13,8 +11,22 @@ defined( 'ABSPATH' ) || exit;
  */
 class FeedDataExporter {
 
-	// TODO Refactor feed handler into this class;
+	// TODO Refactor feed handler into this class.
+	/**
+	 * Various feed utilities.
+	 *
+	 * @var FeedHandler Various feed utilities.
+	 */
 	protected $feed_handler;
+
+
+	/**
+	 * Cached attributes variants.
+	 *
+	 * @since 2.5.0
+	 * @var array $attribute_variants Array of variants attributes.
+	 */
+	protected $attribute_variants = array();
 
 	/**
 	 * Return an array of columns to export.
@@ -60,7 +72,7 @@ class FeedDataExporter {
 	/**
 	 * Export column headers in CSV format.
 	 *
-	 * @since 3.1.0
+	 * @since 2.5.0
 	 * @return string
 	 */
 	public function generate_header() {
@@ -84,8 +96,8 @@ class FeedDataExporter {
 	/**
 	 * Take a product and generate row data from it for export.
 	 *
+	 * @since 2.5.0
 	 * @param WC_Product $product WC_Product object.
-	 *
 	 * @return array
 	 */
 	public function generate_row_data( $product ) {
@@ -96,6 +108,12 @@ class FeedDataExporter {
 		);
 	}
 
+	/**
+	 * Format exported products data into CSV compatible form.
+	 *
+	 * @since 2.5.0
+	 * @param array $rows Rows of product information to export.
+	 */
 	public function format_items_for_feed( $rows ) {
 		$buffer = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
 		ob_start();
@@ -103,6 +121,7 @@ class FeedDataExporter {
 		foreach ( $rows as $row ) {
 			$this->export_row( $row, $buffer );
 		}
+
 		$items = ob_get_clean();
 		fclose( $buffer );
 		return $items;

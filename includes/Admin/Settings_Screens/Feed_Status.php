@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator;
@@ -34,9 +34,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Feed Status', 'facebook-for-woocommerce' );
 		$this->title = $this->label;
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
-
 
 	/**
 	 * Enqueues the assets.
@@ -51,11 +50,9 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
-		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-feed-status.css', [], \WC_Facebookcommerce::VERSION );
+		wp_enqueue_style( 'wc-facebook-admin-advertise-settings', facebook_for_woocommerce()->get_plugin_url() . '/assets/css/admin/facebook-for-woocommerce-feed-status.css', array(), \WC_Facebookcommerce::VERSION );
 
-		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-feed-status.js' ), [ 'jquery' ], \WC_Facebookcommerce::PLUGIN_VERSION );
-
-		$settings = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
+		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-feed-status.js' ), array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
 		wp_localize_script(
 			'facebook-for-woocommerce-feed-status',
@@ -64,8 +61,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 				'ajax_url'               => admin_url( 'admin-ajax.php' ),
 				'file'                   => get_option( FB_Feed_Generator::FEED_FILE_INFO, null ),
 				'feed_generation_nonce'  => wp_create_nonce( FB_Feed_Generator::FEED_GENERATION_NONCE ),
-				'generation_in_progress' => FB_Feed_Generator::is_generation_in_progress(),
-				'generation_progress'    => $settings['total'] !== 0 ? intval( ( ( $settings['page'] * FB_Feed_Generator::FEED_GENERATION_LIMIT ) / $settings['total'] ) * 100 ) : 0,
+				'generation_in_progress' => facebook_for_woocommerce()->job_registry->generate_product_feed_job->is_running(),
+				'generation_progress'    => 'todo',
 				'i18n'                   => array(
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync' => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
@@ -75,7 +72,6 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 	}
 
 	public function render() {
-		$settings           = get_option( FB_Feed_Generator::RUNNING_FEED_SETTINGS, array() );
 		$feed_id            = facebook_for_woocommerce()->get_integration()->get_feed_id();
 		$feed_schedule      = FB_Feed_Generator::get_feed_update_schedule();
 		$feed_latest_upload = FB_Feed_Generator::get_feed_latest_upload();
@@ -90,18 +86,18 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 				<section class="facebook-for-woocommerce-feed-status-catalog-info" >
 					<?php esc_html_e( 'Facebook catalog feeed settings', 'facebook-for-woocommerce' ); ?>
 					<p ><?php esc_html_e( 'Feed id: ', 'facebook-for-woocommerce' ); ?>
-						<span class="facebook-for-woocommerce-feed-status-catalog-feed-id"> <?php echo $feed_id ?></span>
+						<span class="facebook-for-woocommerce-feed-status-catalog-feed-id"> <?php echo $feed_id; ?></span>
 					</p>
 					<p ><?php esc_html_e( 'Feed upload schedule: ', 'facebook-for-woocommerce' ); ?>
 						<span class="facebook-for-woocommerce-feed-status-catalog-feed-schedule">
 						<pre>
-<?php echo json_encode( json_decode( $feed_schedule ), JSON_PRETTY_PRINT ) ?></span>
+		<?php echo json_encode( json_decode( $feed_schedule ), JSON_PRETTY_PRINT ); ?></span>
 						</pre>
 					</p>
 					<p ><?php esc_html_e( 'Feed latest upload: ', 'facebook-for-woocommerce' ); ?>
 						<span class="facebook-for-woocommerce-feed-status-catalog-feed-latest-upload">
 						<pre>
-<?php echo json_encode( json_decode( $feed_latest_upload ), JSON_PRETTY_PRINT ) ?></span>
+		<?php echo json_encode( json_decode( $feed_latest_upload ), JSON_PRETTY_PRINT ); ?></span>
 						</pre>
 					</p>
 					<hr>
@@ -110,7 +106,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 					<span class="spinner is-active"></span>
 					<?php esc_html_e( 'Generating new feed file.', 'facebook-for-woocommerce' ); ?>
 					<p ><?php esc_html_e( 'Total number of products to process: ', 'facebook-for-woocommerce' ); ?>
-						<span class="facebook-for-woocommerce-feed-status-total"> <?php echo $settings['total'] ?></span>
+						<span class="facebook-for-woocommerce-feed-status-total"> <?php echo 'todo'; ?></span>
 					</p>
 					<p><?php esc_html_e( 'Current batch number: ', 'facebook-for-woocommerce' ); ?>
 						<span class="facebook-for-woocommerce-feed-status-batch"/>
