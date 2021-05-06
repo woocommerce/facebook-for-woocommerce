@@ -40,8 +40,8 @@ class Stock {
 	 */
 	private function add_hooks() {
 
-		add_action( 'woocommerce_variation_set_stock', [ $this, 'set_product_stock' ] );
-		add_action( 'woocommerce_product_set_stock',   [ $this, 'set_product_stock' ] );
+		add_action( 'woocommerce_variation_set_stock', array( $this, 'set_product_stock' ) );
+		add_action( 'woocommerce_product_set_stock', array( $this, 'set_product_stock' ) );
 	}
 
 
@@ -81,12 +81,15 @@ class Stock {
 
 		if ( $product->is_type( 'variable' ) ) {
 
-			return array_filter( array_map( 'wc_get_product', $product->get_children() ), function ( $item ) {
-				return $item instanceof \WC_Product;
-			} );
+			return array_filter(
+				array_map( 'wc_get_product', $product->get_children() ),
+				function ( $item ) {
+					return $item instanceof \WC_Product;
+				}
+			);
 		}
 
-		return [ $product ];
+		return array( $product );
 	}
 
 
@@ -103,11 +106,11 @@ class Stock {
 
 		if ( Products::product_should_be_deleted( $product ) ) {
 
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( [ \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ] );
+			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ) );
 			return;
 		}
 
-		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( [ $product->get_id() ] );
+		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( array( $product->get_id() ) );
 	}
 
 

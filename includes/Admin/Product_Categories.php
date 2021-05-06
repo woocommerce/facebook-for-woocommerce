@@ -269,7 +269,7 @@ class Product_Categories {
 	 * @since 2.1.0
 	 *
 	 * @param \WP_Term $term current taxonomy term object.
-	 * @param string $category_id passed in category id
+	 * @param string   $category_id passed in category id
 	 */
 	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term, $category_id = null ) {
 		if ( empty( $category_id ) ) {

@@ -19,11 +19,11 @@ use SkyVerge\WooCommerce\Facebook\API;
  *
  * @since 2.0.0
  */
-class Request extends API\Request  {
+class Request extends API\Request {
 
 
 	/** @var array an array of item update requests */
-	protected $requests = [];
+	protected $requests = array();
 
 	/** @var bool determines whether updates for products that are not currently in the catalog should create new items */
 	protected $allow_upsert = true;
@@ -115,13 +115,13 @@ class Request extends API\Request  {
 	 * @since 2.0.0
 	 */
 	public function get_data() {
-		# TODO: Make it so the item type is based on the actual item type
+		// TODO: Make it so the item type is based on the actual item type
 
-		return [
+		return array(
 			'allow_upsert' => $this->get_allow_upsert(),
 			'requests'     => $this->get_requests(),
 			'item_type'    => 'PRODUCT_ITEM',
-		];
+		);
 	}
 
 

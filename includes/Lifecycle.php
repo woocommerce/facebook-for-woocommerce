@@ -35,15 +35,15 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		parent::__construct( $plugin );
 
-		$this->upgrade_versions = [
+		$this->upgrade_versions = array(
 			'1.10.0',
 			'1.10.1',
 			'1.11.0',
 			'2.0.0',
 			'2.0.3',
 			'2.0.4',
-			'2.3.6',
-		];
+			'2.4.0',
+		);
 	}
 
 
@@ -86,7 +86,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	private function migrate_1_9_settings() {
 
-		$values = get_option( 'woocommerce_facebookcommerce_settings', [] );
+		$values = get_option( 'woocommerce_facebookcommerce_settings', array() );
 
 		// preserve legacy values
 		if ( false === get_option( 'woocommerce_facebookcommerce_legacy_settings' ) ) {
@@ -94,14 +94,14 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		// migrate options from woocommerce_facebookcommerce_settings
-		$options = [
+		$options = array(
 			'fb_api_key'                       => \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN,
 			'fb_product_catalog_id'            => \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID,
 			'fb_external_merchant_settings_id' => \WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID,
 			'fb_feed_id'                       => \WC_Facebookcommerce_Integration::OPTION_FEED_ID,
 			'facebook_jssdk_version'           => \WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION,
 			'pixel_install_time'               => \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME,
-		];
+		);
 
 		foreach ( $options as $old_index => $new_option_name ) {
 
@@ -125,10 +125,10 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			}
 		}
 
-		$new_settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
+		$new_settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', array() );
 
 		// migrate settings from woocommerce_facebookcommerce_settings
-		$settings = [
+		$settings = array(
 			'fb_page_id'                                  => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
 			'fb_pixel_id'                                 => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
 			'fb_pixel_use_pii'                            => \WC_Facebookcommerce_Integration::SETTING_ENABLE_ADVANCED_MATCHING,
@@ -136,7 +136,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'msger_chat_customization_locale'             => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE,
 			'msger_chat_customization_greeting_text_code' => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
 			'msger_chat_customization_theme_color_code'   => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
-		];
+		);
 
 		foreach ( $settings as $old_index => $new_index ) {
 
@@ -174,7 +174,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		// maybe remove old settings entries
-		$old_indexes = array_merge( array_keys( $options ), array_keys( $settings ), [ 'fb_settings_heading', 'fb_upload_id', 'upload_end_time' ] );
+		$old_indexes = array_merge( array_keys( $options ), array_keys( $settings ), array( 'fb_settings_heading', 'fb_upload_id', 'upload_end_time' ) );
 
 		foreach ( $old_indexes as $old_index ) {
 			unset( $new_settings[ $old_index ] );
@@ -212,7 +212,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_1_11_0() {
 
-		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', [] );
+		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', array() );
 
 		// moves the upload ID to a standalone option
 		if ( ! empty( $settings['fb_upload_id'] ) ) {
@@ -232,7 +232,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
 
 			// create_job() expects an non-empty array of attributes
-			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
+			$handler->create_job( array( 'created_at' => current_time( 'mysql' ) ) );
 			$handler->dispatch();
 		}
 
@@ -242,7 +242,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		if ( is_array( $settings ) ) {
 
-			$settings_map = [
+			$settings_map = array(
 				'facebook_pixel_id'             => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
 				'facebook_page_id'              => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
 				'enable_product_sync'           => \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
@@ -254,7 +254,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 				'messenger_greeting'            => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
 				'messenger_color_hex'           => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
 				'enable_debug_mode'             => \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
-			];
+			);
 
 			foreach ( $settings_map as $old_name => $new_name ) {
 
@@ -289,7 +289,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
 
 			// create_job() expects an non-empty array of attributes
-			$handler->create_job( [ 'created_at' => current_time( 'mysql' ) ] );
+			$handler->create_job( array( 'created_at' => current_time( 'mysql' ) ) );
 			$handler->dispatch();
 		}
 	}
@@ -338,11 +338,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	}
 
 	/**
-	 * Upgrades to version 2.3.6
+	 * Upgrades to version 2.4.0
 	 *
-	 * @since 2.3.6
+	 * @since 2.4.0
 	 */
-	protected function upgrade_to_2_3_6() {
+	protected function upgrade_to_2_4_0() {
 		delete_option( 'wc_facebook_google_product_categories' );
 		delete_transient( 'wc_facebook_google_product_categories' );
 	}

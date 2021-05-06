@@ -42,11 +42,11 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		$this->label = __( 'Product sync', 'facebook-for-woocommerce' );
 		$this->title = __( 'Product sync', 'facebook-for-woocommerce' );
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
-		add_action( 'woocommerce_admin_field_product_sync_title', [ $this, 'render_title' ] );
+		add_action( 'woocommerce_admin_field_product_sync_title', array( $this, 'render_title' ) );
 
-		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', [ $this, 'render_google_product_category_field' ] );
+		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', array( $this, 'render_google_product_category_field' ) );
 	}
 
 
@@ -63,45 +63,49 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			return;
 		}
 
-		wp_enqueue_script( 'wc-backbone-modal', null, [ 'backbone' ] );
+		wp_enqueue_script( 'wc-backbone-modal', null, array( 'backbone' ) );
 		wp_enqueue_script(
 			'facebook-for-woocommerce-modal',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/modal.js',
-			[ 'jquery', 'wc-backbone-modal', 'jquery-blockui' ],
+			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_enqueue_script(
 			'facebook-for-woocommerce-settings-sync',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/settings-sync.js',
-			[ 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ],
+			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ),
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 
 		/* translators: Placeholders: {count} number of remaining items */
 		$sync_remaining_items_string = _n_noop( '{count} item remaining.', '{count} items remaining.', 'facebook-for-woocommerce' );
 
-		wp_localize_script( 'facebook-for-woocommerce-settings-sync', 'facebook_for_woocommerce_settings_sync', [
-			'ajax_url'                        => admin_url( 'admin-ajax.php' ),
-			'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
-			'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
-			'sync_status_nonce'               => wp_create_nonce( self::ACTION_GET_SYNC_STATUS ),
-			'sync_in_progress'                => Sync::is_sync_in_progress(),
-			'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
-			'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),
-			'i18n'                            => [
-				/* translators: Placeholders %s - html code for a spinner icon */
-				'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
-				'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
-				'sync_in_progress'              => sprintf( esc_html__( 'Your products are syncing - you may safely leave this page %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
-				'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
-				'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
-				'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
-				'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
-			],
-			'default_google_product_category_modal_message'       => $this->get_default_google_product_category_modal_message(),
-			'default_google_product_category_modal_message_empty' => $this->get_default_google_product_category_modal_message_empty(),
-			'default_google_product_category_modal_buttons'       => $this->get_default_google_product_category_modal_buttons(),
-		] );
+		wp_localize_script(
+			'facebook-for-woocommerce-settings-sync',
+			'facebook_for_woocommerce_settings_sync',
+			array(
+				'ajax_url'                        => admin_url( 'admin-ajax.php' ),
+				'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
+				'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
+				'sync_status_nonce'               => wp_create_nonce( self::ACTION_GET_SYNC_STATUS ),
+				'sync_in_progress'                => Sync::is_sync_in_progress(),
+				'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
+				'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),
+				'i18n'                            => array(
+					/* translators: Placeholders %s - html code for a spinner icon */
+					'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
+					'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
+					'sync_in_progress'              => sprintf( esc_html__( 'Your products are syncing - you may safely leave this page %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
+					'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
+					'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
+					'general_error'                 => esc_html__( 'There was an error trying to sync the products to Facebook.', 'facebook-for-woocommerce' ),
+					'feed_upload_error'             => esc_html__( 'Something went wrong while uploading the product information, please try again.', 'facebook-for-woocommerce' ),
+				),
+				'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
+				'default_google_product_category_modal_message_empty' => $this->get_default_google_product_category_modal_message_empty(),
+				'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
+			)
+		);
 	}
 
 	/**
@@ -129,7 +133,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		return sprintf(
 			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
 			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
-			'<strong>', '</strong>'
+			'<strong>',
+			'</strong>'
 		);
 	}
 
@@ -226,16 +231,20 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	private function disable_sync_for_excluded_products( $product_cat_ids, $product_tag_ids ) {
 
 		// disable sync for all products belonging to excluded categories
-		Products::disable_sync_for_products_with_terms( [
-			'taxonomy'   => 'product_cat',
-			'include'    => $product_cat_ids,
-		] );
+		Products::disable_sync_for_products_with_terms(
+			array(
+				'taxonomy' => 'product_cat',
+				'include'  => $product_cat_ids,
+			)
+		);
 
 		// disable sync for all products belonging to excluded tags
-		Products::disable_sync_for_products_with_terms( [
-			'taxonomy'   => 'product_tag',
-			'include'    => $product_tag_ids,
-		] );
+		Products::disable_sync_for_products_with_terms(
+			array(
+				'taxonomy' => 'product_tag',
+				'include'  => $product_tag_ids,
+			)
+		);
 	}
 
 
@@ -248,87 +257,91 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 */
 	public function get_settings() {
 
-		$term_query = new \WP_Term_Query( [
-			'taxonomy'   => 'product_cat',
-			'hide_empty' => false,
-			'fields'     => 'id=>name',
-		] );
+		$term_query = new \WP_Term_Query(
+			array(
+				'taxonomy'   => 'product_cat',
+				'hide_empty' => false,
+				'fields'     => 'id=>name',
+			)
+		);
 
 		$product_categories = $term_query->get_terms();
 
-		$term_query = new \WP_Term_Query( [
-			'taxonomy'     => 'product_tag',
-			'hide_empty'   => false,
-			'hierarchical' => false,
-			'fields'       => 'id=>name',
-		] );
+		$term_query = new \WP_Term_Query(
+			array(
+				'taxonomy'     => 'product_tag',
+				'hide_empty'   => false,
+				'hierarchical' => false,
+				'fields'       => 'id=>name',
+			)
+		);
 
 		$product_tags = $term_query->get_terms();
 
-		return [
+		return array(
 
-			[
+			array(
 				'type'  => 'product_sync_title',
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
-			],
+			),
 
-			[
+			array(
 				'id'      => \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
 				'type'    => 'checkbox',
 				'label'   => ' ',
 				'default' => 'yes',
-			],
+			),
 
-			[
+			array(
 				'id'                => \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS,
 				'title'             => __( 'Exclude categories from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products in one or more of these categories will not sync to Facebook.', 'facebook-for-woocommerce' ),
-				'default'           => [],
-				'options'           => is_array( $product_categories ) ? $product_categories : [],
-				'custom_attributes' => [
+				'default'           => array(),
+				'options'           => is_array( $product_categories ) ? $product_categories : array(),
+				'custom_attributes' => array(
 					'data-placeholder' => __( 'Search for a product category&hellip;', 'facebook-for-woocommerce' ),
-				],
-			],
+				),
+			),
 
-			[
+			array(
 				'id'                => \WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS,
 				'title'             => __( 'Exclude tags from sync', 'facebook-for-woocommerce' ),
 				'type'              => 'multiselect',
 				'class'             => 'wc-enhanced-select product-sync-field',
 				'css'               => 'min-width: 300px;',
 				'desc_tip'          => __( 'Products with one or more of these tags will not sync to Facebook.', 'facebook-for-woocommerce' ),
-				'default'           => [],
-				'options'           => is_array( $product_tags ) ? $product_tags : [],
-				'custom_attributes' => [
+				'default'           => array(),
+				'options'           => is_array( $product_tags ) ? $product_tags : array(),
+				'custom_attributes' => array(
 					'data-placeholder' => __( 'Search for a product tag&hellip;', 'facebook-for-woocommerce' ),
-				],
-			],
+				),
+			),
 
-			[
+			array(
 				'id'       => \WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE,
 				'title'    => __( 'Product description sync', 'facebook-for-woocommerce' ),
 				'type'     => 'select',
 				'class'    => 'product-sync-field',
 				'desc_tip' => __( 'Choose which product description to display in the Facebook catalog.', 'facebook-for-woocommerce' ),
 				'default'  => \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD,
-				'options'  => [
+				'options'  => array(
 					\WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD => __( 'Standard description', 'facebook-for-woocommerce' ),
 					\WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT    => __( 'Short description', 'facebook-for-woocommerce' ),
-				],
-			],
-			[
+				),
+			),
+			array(
 				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type'     => 'product_sync_google_product_categories',
 				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
 				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined for tax to be correctly applied.', 'facebook-for-woocommerce' ),
-			],
-			[ 'type' => 'sectionend' ],
+			),
+			array( 'type' => 'sectionend' ),
 
-		];
+		);
 	}
 
 	/**
@@ -371,7 +384,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		return sprintf(
 			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 			__( 'Please %1$sconnect to Facebook%2$s to enable and manage product sync.', 'facebook-for-woocommerce' ),
-			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">', '</a>'
+			'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_connect_url() ) . '">',
+			'</a>'
 		);
 	}
 

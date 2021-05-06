@@ -43,7 +43,7 @@ class Enhanced_Catalog_Attribute_Fields {
 	}
 
 	private function extract_attribute( &$attributes, $key ) {
-		$index     = array_search($key, array_column( $attributes, 'key' ));
+		$index     = array_search( $key, array_column( $attributes, 'key' ) );
 		$extracted = false === $index ? array() : array_splice( $attributes, $index, 1 );
 		return empty( $extracted ) ? null : array_shift( $extracted );
 	}
