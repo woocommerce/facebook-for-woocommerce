@@ -200,7 +200,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	private function create_feed() {
 		$result = \WC_Facebookcommerce_Utils::$fbgraph->create_feed(
 			facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
-			array( 'name' => self::FEED_NAME )
+			array( 'name' => self::FEED_NAME, 'schedule' => $this->get_feed_upload_schedule() )
 		);
 
 		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
@@ -312,7 +312,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
 			$settings['done'] = true;
 			$settings['end']  = time();
-			
+
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
