@@ -7,47 +7,24 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Products;
 
-use Error;
+use SkyVerge\WooCommerce\Facebook\Feed\FeedDataExporter;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Include dependencies.
+ * FB_Feed_Generator Class.
  */
-if ( ! class_exists( 'WC_Product_CSV_Exporter', false ) ) {
-	include_once WC_ABSPATH . 'includes/export/class-wc-product-csv-exporter.php';
-}
+class FB_Feed_Generator {
 
-/**
- * WC_Product_CSV_Exporter Class.
- */
-class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
-
-	const FEED_ACTIONS_GROUP      = 'wc_facebook_for_woocommerce_feed_actions';
 	const FEED_SCHEDULE_ACTION    = 'wc_facebook_for_woocommerce_feed_schedule_action';
 	const FEED_AJAX_GENERATE_FEED = 'facebook_for_woocommerce_do_ajax_feed';
 	const FEED_GENERATION_NONCE   = 'wc_facebook_for_woocommerce_feed_generation_nonce';
 	const FEED_FILE_INFO          = 'wc_facebook_for_woocommerce_feed_file_info';
 	const REQUEST_FEED_ACTION     = 'facebook_for_woocommerce_get_feed';
-	const FEED_GENERATION_LIMIT   = 50;
 	const OPTION_FEED_URL_SECRET  = 'wc_facebook_feed_url_secret';
 	const FEED_NAME               = 'Facebook For WooCommerce Feed.';
-
-	/**
-	 * Type of export used in filter names.
-	 *
-	 * @var string
-	 */
-	protected $export_type = 'product';
-
-	/**
-	 * Batch limit.
-	 *
-	 * @var integer
-	 */
-	protected $limit = self::FEED_GENERATION_LIMIT;
 
 	/**
 	 * Should meta be exported?
@@ -70,7 +47,6 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 * Constructor.
 	 */
 	public function __construct() {
-		parent::__construct();
 		$this->feed_handler = new \WC_Facebook_Product_Feed();
 		add_action( 'init', array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( 'init', array( $this, 'maybe_create_catalog_feed' ) );
@@ -78,15 +54,15 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
 
 		//Just copied and not integrated yet.
-		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, [ $this, 'handle_feed_request' ] );
+		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, array( $this, 'handle_feed_request' ) );
 	}
 
 	public function maybe_schedule_feed_generation() {
-		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION, null, self::FEED_ACTIONS_GROUP ) ) {
+		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION ) ) {
 			return;
 		}
 		$timestamp = strtotime( 'today midnight +1 day' );
-		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION, array(), self::FEED_ACTIONS_GROUP );
+		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION );
 	}
 
 	public function maybe_create_catalog_feed() {
@@ -149,11 +125,17 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 			$this->prepare_feed_generation();
 		}
 
+		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
+		$processing_count  = FeedDataExporter::get_number_of_items_for_processing();
+		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
+		$processed         = $generate_feed_job->get_number_of_items_processed();
+		$progress          = $processing_count ? intval( ( $processed / $processing_count ) * 100 ) : 0;
+
 		$response = array(
-			'done'       => false,
-			'percentage' => 0,
-			'total'      => 0,
-			'page'       => 0,
+			'done'       => ! $generate_feed_job->is_running(),
+			'percentage' => $progress,
+			'total'      => $processing_count,
+			'processed'  => $processed,
 			'file'       => get_option( self::FEED_FILE_INFO, null ),
 		);
 

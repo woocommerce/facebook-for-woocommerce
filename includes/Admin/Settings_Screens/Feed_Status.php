@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator;
-
+use SkyVerge\WooCommerce\Facebook\Feed\FeedDataExporter;
 
 /**
  * The Messenger settings screen object.
@@ -54,6 +54,10 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 
 		wp_enqueue_script( 'facebook-for-woocommerce-feed-status', plugins_url( '/facebook-for-woocommerce/assets/js/admin/facebook-for-woocommerce-settings-feed-status.js' ), array( 'jquery' ), \WC_Facebookcommerce::PLUGIN_VERSION );
 
+		$processing_count  = FeedDataExporter::get_number_of_items_for_processing();
+		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
+		$processed         = $generate_feed_job->get_number_of_items_processed();
+		$progress          = $processing_count ? intval( ( $processed / $processing_count ) * 100 ) : 0;
 		wp_localize_script(
 			'facebook-for-woocommerce-feed-status',
 			'facebook_for_woocommerce_feed_status',
@@ -61,8 +65,8 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 				'ajax_url'               => admin_url( 'admin-ajax.php' ),
 				'file'                   => get_option( FB_Feed_Generator::FEED_FILE_INFO, null ),
 				'feed_generation_nonce'  => wp_create_nonce( FB_Feed_Generator::FEED_GENERATION_NONCE ),
-				'generation_in_progress' => facebook_for_woocommerce()->job_registry->generate_product_feed_job->is_running(),
-				'generation_progress'    => 'todo',
+				'generation_in_progress' => $generate_feed_job->is_running(),
+				'generation_progress'    => $progress,
 				'i18n'                   => array(
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync' => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
@@ -76,7 +80,7 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 		$feed_schedule      = FB_Feed_Generator::get_feed_update_schedule();
 		$feed_latest_upload = FB_Feed_Generator::get_feed_latest_upload();
 		?>
-		<h1><?php esc_html_e( 'Feed Status', 'woocommerce' ); ?></h1>
+		<h1><?php esc_html_e( 'Feed Status', 'facebook-for-woocommerce' ); ?></h1>
 		<div class="facebook-for-woocommerce-feed-status-wrapper">
 			<form class="facebook-for-woocommerce-feed-generator">
 				<header>
@@ -103,19 +107,19 @@ class Feed_Status extends Admin\Abstract_Settings_Screen {
 					<hr>
 				</section>
 				<section class="facebook-for-woocommerce-feed-status-is-generating" >
-					<span class="spinner is-active"></span>
 					<?php esc_html_e( 'Generating new feed file.', 'facebook-for-woocommerce' ); ?>
 					<p ><?php esc_html_e( 'Total number of products to process: ', 'facebook-for-woocommerce' ); ?>
 						<span class="facebook-for-woocommerce-feed-status-total"> <?php echo 'todo'; ?></span>
 					</p>
-					<p><?php esc_html_e( 'Current batch number: ', 'facebook-for-woocommerce' ); ?>
-						<span class="facebook-for-woocommerce-feed-status-batch"/>
+					<p><?php esc_html_e( 'Processed items: ', 'facebook-for-woocommerce' ); ?>
+						<span class="facebook-for-woocommerce-feed-status-processed"/>
 					</p>
 					<p><?php esc_html_e( 'Started timestamp: ', 'facebook-for-woocommerce' ); ?>
 						<span class="facebook-for-woocommerce-feed-status-timestamp"/>
 					</p>
 					<p>
 						<progress class="facebook-woocommerce-feed-generator-progress" max="100" value="0"></progress>
+						<span class="spinner is-active"></span>
 					</p>
 					<hr>
 				</section>

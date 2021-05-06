@@ -19,7 +19,6 @@ class FeedDataExporter {
 	 */
 	protected $feed_handler;
 
-
 	/**
 	 * Cached attributes variants.
 	 *
@@ -27,6 +26,9 @@ class FeedDataExporter {
 	 * @var array $attribute_variants Array of variants attributes.
 	 */
 	protected $attribute_variants = array();
+
+	const CURRENTLY_PROCESSING_COUNT = 'facebook_for_woocommerce_feed_processing_count';
+
 
 	/**
 	 * Return an array of columns to export.
@@ -70,6 +72,21 @@ class FeedDataExporter {
 	}
 
 	/**
+	 * Get the total number of items for processing.
+	 *
+	 * @since 2.5.0
+	 * @return int
+	 */
+	public function calculate_number_of_items_for_processing() {
+		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
+		update_option( self::CURRENTLY_PROCESSING_COUNT, count( $products_ids ) );
+	}
+
+	static function get_number_of_items_for_processing() {
+		return get_option( self::CURRENTLY_PROCESSING_COUNT, 0 );
+	}
+
+	/**
 	 * Export column headers in CSV format.
 	 *
 	 * @since 2.5.0
@@ -91,7 +108,6 @@ class FeedDataExporter {
 		fclose( $buffer );
 		return $header;
 	}
-
 
 	/**
 	 * Take a product and generate row data from it for export.

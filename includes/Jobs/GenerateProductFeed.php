@@ -62,6 +62,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$this->feed_file_handler->write_to_feed_temporary_file(
 			$this->feed_data_exporter->generate_header()
 		);
+		$this->feed_data_exporter->calculate_number_of_items_for_processing();
 	}
 
 	/**
@@ -87,11 +88,13 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$this->write_processed_items_to_feed();
 	}
 
+	/**
+	 * After processing send items to the feed file.
+	 */
 	public function write_processed_items_to_feed() {
 		if ( empty( $this->processed_items ) ) {
 			return;
 		}
-		//$this->feed_file_handler->write_to_feed_temporary_file( var_export( $this->processed_items, true ) );
 		$this->feed_file_handler->write_to_feed_temporary_file(
 			$this->feed_data_exporter->format_items_for_feed( $this->processed_items )
 		);

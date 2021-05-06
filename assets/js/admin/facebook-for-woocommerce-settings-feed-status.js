@@ -36,7 +36,7 @@ jQuery( document ).ready( function( $ ) {
 		event.data.feedGenerationForm.$form.addClass( 'woocommerce-exporter__exporting' );
 		event.data.feedGenerationForm.$form.find('.spinner').addClass('is-active');
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-progress').val( 0 );
-		event.data.feedGenerationForm.$form.find('.facebook-for-woocommerce-feed-status-batch').text( 0 );
+		event.data.feedGenerationForm.$form.find('.facebook-for-woocommerce-feed-status-processed').text( 0 );
 		event.data.feedGenerationForm.$form.find('.facebook-woocommerce-feed-generator-button').prop( 'disabled', true );
 		event.data.feedGenerationForm.processStep( true );
 	};
@@ -98,7 +98,7 @@ jQuery( document ).ready( function( $ ) {
 						}, 10000 );
 					}
 					$this.$form.find('.facebook-woocommerce-feed-generator-progress').val( response.data.percentage );
-					$this.$form.find('.facebook-for-woocommerce-feed-status-batch').text( response.data.page );
+					$this.$form.find('.facebook-for-woocommerce-feed-status-processed').text( response.data.processed );
 					$this.$form.find('.facebook-for-woocommerce-feed-status-total').text( response.data.total );
 					$this.feedFileInfo( response.data.file );
 				}
