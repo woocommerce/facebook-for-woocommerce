@@ -586,5 +586,24 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		return $secret;
 	}
 
+	/**
+	 * Function will return the default parameters for the feed's upload schedule
+	 *
+	 * @link https://developers.facebook.com/docs/marketing-api/reference/product-feed-schedule/
+	 */
+	public function get_feed_upload_schedule() {
+		$schedule = new \stdClass();
 
+		$schedule->interval = 'DAILY';
+		$schedule->url      = esc_url_raw( $this->get_feed_uri() );
+		$schedule->hour     = ( new \WC_DateTime( '+1 hour', new \DateTimeZone( 'UTC' ) ) )->date( 'H' );
+		$schedule->timezone = 'UTC';
+
+		/**
+		 * Filters the value of the default feed schedule settings.
+		 *
+		 * @param  \stdClass  $schedule  Object contains the settings to be passed to fbgraph to configure upload schedule.
+		 */
+		return apply_filters( 'facebook_for_woocommerce_feed_upload_schedule_settings', $schedule );
+	}
 }
