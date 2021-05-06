@@ -141,6 +141,17 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	}
 
 	/**
+	 * Returns the feed uri.
+	 *
+	 * @return string
+	 */
+	public function get_feed_uri() {
+		$upload_dir = wp_upload_dir();
+
+		return sprintf( '%s/%s/%s', $upload_dir['baseurl'], 'facebook_for_woocommerce', $this->get_filename() );
+	}
+
+	/**
 	 * Get file path to export to.
 	 *
 	 * @return string
