@@ -19,6 +19,8 @@ If you have a WooCommerce.com account, you can [start a chat or open a ticket on
 	- `composer install`
 - Build assets:
 	- `npm start` to build a development version
+- Linting:
+	- `npm run lint:php` to run PHPCS linter on all PHP files
 
 #### Production build
 This plugin uses a custom build tool called [`sake`](https://github.com/skyverge/sake). 
