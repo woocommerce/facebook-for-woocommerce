@@ -1195,10 +1195,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product = wc_get_product( $product_id );
 
-		if ( ! $this->product_should_be_synced( $product ) ) {
-			return;
-		}
-
 		if ( $product->is_type( 'variable' ) ) {
 			$this->on_variable_product_publish( $product_id );
 		} else {
