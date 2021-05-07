@@ -14,6 +14,7 @@
     "sake": "github:skyverge/sake"
   },
   "scripts": {
-    "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php"
+    "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
+    "lint:php": "vendor/bin/phpcs . -p -s --colors "
   }
 }
