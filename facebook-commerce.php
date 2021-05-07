@@ -1346,25 +1346,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the product with the given ID should be synced.
 	 *
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate instead
+	 *
 	 * @since 2.0.0
 	 *
 	 * @param \WC_Product|false $product product object
 	 */
 	public function product_should_be_synced( $product ) {
-
-		$should_be_synced = $this->is_product_sync_enabled();
-
-		// can't sync if we don't have a valid product object
-		if ( $should_be_synced && ! $product instanceof \WC_Product ) {
-			$should_be_synced = false;
+		try {
+			facebook_for_woocommerce()->get_product_sync_validator()->validate( $product );
+			return true;
+		} catch ( \Exception $e ) {
+			return false;
 		}
-
-		// make sure the given product is enabled for sync
-		if ( $should_be_synced && ! Products::product_should_be_synced( $product ) ) {
-			$should_be_synced = false;
-		}
-
-		return $should_be_synced;
 	}
 
 
