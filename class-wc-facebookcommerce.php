@@ -91,6 +91,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Tracker */
 		private $tracker;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry */
+		public $job_registry;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -172,6 +175,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->webhook_handler    = new \SkyVerge\WooCommerce\Facebook\Handlers\WebHook( $this );
 
 				$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
+
+				// Init jobs
+				$this->job_registry = new \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry();
+				add_action( 'init', [ $this->job_registry, 'init' ] );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
