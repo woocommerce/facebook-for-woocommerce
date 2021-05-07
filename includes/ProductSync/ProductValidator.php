@@ -60,16 +60,40 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	public function validate() {
-		if ( $this->integration->is_product_sync_enabled() ) {
-			throw new ProductExcludedException( 'Product sync is globally disabled.' );
-		}
-
+		$this->validate_sync_enabled_globally();
 		$this->validate_product_status();
 		$this->validate_product_stock_status();
 		$this->validate_product_sync_field();
 		$this->validate_product_price();
 		$this->validate_product_visibility();
 		$this->validate_product_categories_and_tags();
+	}
+
+	/**
+	 * Validate whether a given product should be synced to Facebook but skip the status check for backwards compatibility.
+	 *
+	 * @internal Do not use this as it will likely be removed.
+	 *
+	 * @throws ProductExcludedException If product should not be synced.
+	 */
+	public function validate_but_skip_status_check() {
+		$this->validate_sync_enabled_globally();
+		$this->validate_product_stock_status();
+		$this->validate_product_sync_field();
+		$this->validate_product_price();
+		$this->validate_product_visibility();
+		$this->validate_product_categories_and_tags();
+	}
+
+	/**
+	 * Check whether product sync is globally disabled.
+	 *
+	 * @throws ProductExcludedException If product should not be synced.
+	 */
+	protected function validate_sync_enabled_globally() {
+		if ( $this->integration->is_product_sync_enabled() ) {
+			throw new ProductExcludedException( 'Product sync is globally disabled.' );
+		}
 	}
 
 	/**

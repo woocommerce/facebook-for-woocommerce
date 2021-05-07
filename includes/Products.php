@@ -217,7 +217,7 @@ class Products {
 	 */
 	public static function published_product_should_be_synced( \WC_Product $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_but_skip_status_check();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;
