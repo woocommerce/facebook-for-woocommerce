@@ -16,7 +16,7 @@ assignees: ''
 ## ✍️ Describe the bug
 <!-- Describe the bug in detail. Feel free to add appropriate screenshots that display the bug! -->
 
-##🚶‍♀️ Steps to reproduce
+## 🚶‍♀️ Steps to reproduce
 <!-- List steps that others can take to consistently reproduce the bug. -->
 
 1. The first step
