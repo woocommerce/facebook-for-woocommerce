@@ -13,6 +13,7 @@ use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -912,6 +913,20 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			if ( null === $instance ) {
 				$is_enabled = defined( 'FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED' ) && FACEBOOK_FOR_WOOCOMMERCE_PROFILING_LOG_ENABLED;
 				$instance   = new \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger( $is_enabled );
+			}
+
+			return $instance;
+		}
+
+		/**
+		 * Get the product sync validator class.
+		 *
+		 * @return ProductSyncValidator
+		 */
+		public function get_product_sync_validator() {
+			static $instance = null;
+			if ( null === $instance ) {
+				$instance = new ProductSyncValidator( $this->get_integration() );
 			}
 
 			return $instance;
