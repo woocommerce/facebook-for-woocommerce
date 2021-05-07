@@ -86,6 +86,38 @@ class ProductValidator {
 	}
 
 	/**
+	 * Check if a product has excluded categories or tags.
+	 *
+	 * @return bool True if it should be excluded.
+	 */
+	public function is_excluded_by_category_or_tag(): bool {
+		try {
+			$this->validate_product_categories_and_tags();
+		} catch ( ProductExcludedException $e ) {
+			// Product failed category and tag validation so it's excluded
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the product is excluded by the product sync field value.
+	 *
+	 * @return bool True if it should be excluded.
+	 */
+	public function is_excluded_by_product_sync_field(): bool {
+		try {
+			$this->validate_product_sync_field();
+		} catch ( ProductExcludedException $e ) {
+			// Product failed validation so it's excluded
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check whether product sync is globally disabled.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
