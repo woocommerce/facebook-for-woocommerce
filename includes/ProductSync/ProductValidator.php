@@ -37,7 +37,7 @@ class ProductValidator {
 	/**
 	 * Validate whether a given product should be synced to Facebook.
 	 *
-	 * @param WC_Product $product
+	 * @param WC_Product $product A product object. Accepts both variations and variable products.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
