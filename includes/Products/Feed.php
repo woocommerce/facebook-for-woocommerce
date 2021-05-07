@@ -158,10 +158,14 @@ class Feed {
 	 */
 	public function schedule_feed_generation() {
 
-		$integration = facebook_for_woocommerce()->get_integration();
+		$integration   = facebook_for_woocommerce()->get_integration();
+		$configured_ok = $integration && $integration->is_configured();
 
-		// only schedule if configured
-		if ( ! $integration || ! $integration->is_configured() || ! $integration->is_product_sync_enabled() ) {
+		// Only schedule feed job if store has not opted out of product sync.
+		$store_allows_sync = $configured_ok && $integration->is_product_sync_enabled();
+		// Only schedule if has not opted out of feed generation (e.g. large stores).
+		$store_allows_feed = $configured_ok && $integration->is_legacy_feed_file_generation_enabled();
+		if ( ! $store_allows_sync || ! $store_allows_feed ) {
 			as_unschedule_all_actions( self::GENERATE_FEED_ACTION );
 			return;
 		}
