@@ -172,7 +172,7 @@ class ProductValidator {
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
-	public function validate_product_categories_and_tags() {
+	protected function validate_product_categories_and_tags() {
 		$product = $this->product_parent ?: $this->product;
 
 		$excluded_categories = $this->integration->get_excluded_product_category_ids();
@@ -195,7 +195,7 @@ class ProductValidator {
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
-	public function validate_product_sync_field() {
+	protected function validate_product_sync_field() {
 		$invalid_exception = new ProductExcludedException( 'Sync disabled in product field.' );
 
 		if ( $this->product->is_type( 'variable' ) ) {
