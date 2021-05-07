@@ -1354,7 +1354,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function product_should_be_synced( $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator()->validate( $product );
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;

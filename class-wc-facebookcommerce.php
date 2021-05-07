@@ -921,12 +921,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Get the product sync validator class.
 		 *
+		 * @param WC_Product $product A product object to be validated.
+		 *
 		 * @return ProductSyncValidator
 		 */
-		public function get_product_sync_validator() {
+		public function get_product_sync_validator( WC_Product $product ) {
 			static $instance = null;
 			if ( null === $instance ) {
-				$instance = new ProductSyncValidator( $this->get_integration() );
+				$instance = new ProductSyncValidator( $this->get_integration(), $product );
 			}
 
 			return $instance;

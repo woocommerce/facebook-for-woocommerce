@@ -195,7 +195,7 @@ class Products {
 	 */
 	public static function product_should_be_synced( \WC_Product $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator()->validate( $product );
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;
@@ -217,7 +217,7 @@ class Products {
 	 */
 	public static function published_product_should_be_synced( \WC_Product $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator()->validate( $product );
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;
@@ -256,7 +256,7 @@ class Products {
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator()->validate_product_sync_field( $product );
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_product_sync_field();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;
@@ -276,7 +276,7 @@ class Products {
 	 */
 	public static function is_sync_excluded_for_product_terms( \WC_Product $product ) {
 		try {
-			facebook_for_woocommerce()->get_product_sync_validator()->validate_product_categories_and_tags( $product );
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_product_categories_and_tags();
 			return true;
 		} catch ( \Exception $e ) {
 			return false;
