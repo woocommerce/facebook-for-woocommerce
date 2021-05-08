@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class responsible for batching feed generation.
+ *
+ * @package feed
+ */
 
 namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
@@ -70,7 +75,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 *
 	 * For example, this could be useful for pre-fetching full objects.
 	 *
-	 * @param array $items
+	 * @param array $items Items for filtering.
 	 *
 	 * @return array
 	 */
