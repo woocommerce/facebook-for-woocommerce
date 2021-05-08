@@ -910,7 +910,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				$product_item_ids = array_merge( $product_item_ids, $response->get_ids() );
 
-			// Get up to two additional pages of results.
+				// Get up to two additional pages of results.
 			} while ( $response = facebook_for_woocommerce()->get_api()->next( $response, 2 ) );
 
 		} catch ( Framework\SV_WC_API_Exception $e ) {
@@ -1318,8 +1318,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since 2.0.2
 	 *
-	 * @param string   $new_status Product new status.
-	 * @param string   $old_status Product old status.
+	 * @param string $new_status Product new status.
+	 * @param string $old_status Product old status.
 	 * @return bool
 	 */
 	private function should_update_visibility_for_product_status_change( $new_status, $old_status ) {
