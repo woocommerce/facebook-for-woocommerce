@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\API\Traits;
 
 use SkyVerge\WooCommerce\Facebook\API\Response;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Rate limited API trait.

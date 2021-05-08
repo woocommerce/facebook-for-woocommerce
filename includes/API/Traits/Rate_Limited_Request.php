@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\Traits;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Rate limited request trait.

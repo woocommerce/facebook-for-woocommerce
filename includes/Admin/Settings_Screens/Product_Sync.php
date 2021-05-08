@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Products;

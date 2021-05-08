@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\User;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * User API response object

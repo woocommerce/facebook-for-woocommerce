@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The base settings screen object.

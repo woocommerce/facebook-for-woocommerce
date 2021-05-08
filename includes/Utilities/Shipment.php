@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Utility class for shipment functionality.

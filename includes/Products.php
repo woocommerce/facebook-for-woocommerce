@@ -14,7 +14,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use WC_Facebook_Product;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Products handler.

@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\AJAX;
 use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;

@@ -4024,5 +4024,4 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
-
 }

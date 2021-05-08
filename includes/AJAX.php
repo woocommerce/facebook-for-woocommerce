@@ -13,7 +13,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * AJAX handler.

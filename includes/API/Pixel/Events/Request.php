@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\Pixel\Events;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Events\Event;

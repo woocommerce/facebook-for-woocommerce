@@ -14,7 +14,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 use SkyVerge\WooCommerce\Facebook\API\Exceptions\Connect_WC_API_Exception;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The connection handler.

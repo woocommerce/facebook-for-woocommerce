@@ -15,7 +15,7 @@ use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
 use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin settings handler.

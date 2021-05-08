@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Products\Sync;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;

@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 

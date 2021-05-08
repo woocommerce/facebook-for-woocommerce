@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Helper class with utility methods for getting and setting various product category values.

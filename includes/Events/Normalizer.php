@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Events;
 
 use InvalidArgumentException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Normalizer class.

@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Events;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Event object.

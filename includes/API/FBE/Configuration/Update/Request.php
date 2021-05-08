@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\FBE\Configuration\Update;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
 

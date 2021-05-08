@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin handler.

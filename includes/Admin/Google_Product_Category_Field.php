@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Google product category field.

@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The Facebook for WooCommerce plugin lifecycle handler.

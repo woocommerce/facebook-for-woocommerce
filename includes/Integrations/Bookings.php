@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Integrations;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Integration with WooCommerce Bookings.

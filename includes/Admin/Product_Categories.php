@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 

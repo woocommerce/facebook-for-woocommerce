@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\User\Permissions\Delete;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use SkyVerge\WooCommerce\Facebook\API;
 

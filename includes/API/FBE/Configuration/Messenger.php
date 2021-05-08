@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\API\FBE\Configuration;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The messenger configuration object.
