@@ -91,7 +91,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_sync_enabled_globally() {
-		if ( $this->integration->is_product_sync_enabled() ) {
+		if ( ! $this->integration->is_product_sync_enabled() ) {
 			throw new ProductExcludedException( 'Product sync is globally disabled.' );
 		}
 	}
@@ -170,7 +170,7 @@ class ProductValidator {
 			foreach ( $this->product->get_children() as $child_id ) {
 				$child_product = wc_get_product( $child_id );
 				if ( $child_product && 'no' !== $child_product->get_meta( self::SYNC_ENABLED_META_KEY ) ) {
-					break;
+					return;
 				}
 			}
 
