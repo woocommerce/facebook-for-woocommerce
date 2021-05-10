@@ -622,11 +622,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function fb_product_meta_box_html() {
 		global $post;
 
-		$woo_product         = new WC_Facebook_Product( $post->ID );
+		$fb_product          = new WC_Facebook_Product( $post->ID );
 		$fb_product_group_id = null;
+		$should_sync         = true;
+		$no_sync_reason      = '';
 
-		if ( $woo_product->woo_product instanceof \WC_Product && Products::product_should_be_synced( $woo_product->woo_product ) ) {
-			$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $woo_product );
+		if ( $fb_product->woo_product instanceof \WC_Product ) {
+			try {
+				facebook_for_woocommerce()->get_product_sync_validator( $fb_product->woo_product )->validate();
+			} catch ( \Exception $e ) {
+				$should_sync    = false;
+				$no_sync_reason = $e->getMessage();
+			}
+		}
+
+		if ( $should_sync || $fb_product->woo_product->is_type( 'variable' ) ) {
+			$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
 		}
 
 		?>
@@ -637,20 +648,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			?>
 
-			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?> <a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>"
-																					   target="_blank"><?php echo esc_html( $fb_product_group_id ); ?></a>
+			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
+			<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>" target="_blank"><?php echo esc_html( $fb_product_group_id ); ?></a>
 
-			<?php if ( WC_Facebookcommerce_Utils::is_variable_type( $woo_product->get_type() ) ) : ?>
+			<?php if ( WC_Facebookcommerce_Utils::is_variable_type( $fb_product->get_type() ) ) : ?>
 
-				<?php if ( $product_item_ids_by_variation_id = $this->get_variation_product_item_ids( $woo_product, $fb_product_group_id ) ) : ?>
+				<?php if ( $product_item_ids_by_variation_id = $this->get_variation_product_item_ids( $fb_product, $fb_product_group_id ) ) : ?>
 
 					<p>
 						<?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
 
 						<?php foreach ( $product_item_ids_by_variation_id as $variation_id => $product_item_id ) : ?>
 
-							<?php echo esc_html( $variation_id ); ?>: <a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>"
-																		 target="_blank"><?php echo esc_html( $product_item_id ); ?></a><br/>
+							<?php echo esc_html( $variation_id ); ?>:
+							<a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>" target="_blank"><?php echo esc_html( $product_item_id ); ?></a><br/>
 
 						<?php endforeach; ?>
 					</p>
@@ -673,6 +684,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			<?php
 
+		} elseif ( ! $should_sync ) {
+			?>
+				<b><?php echo esc_html( $no_sync_reason ); ?></b>
+			<?php
 		} else {
 
 			?>

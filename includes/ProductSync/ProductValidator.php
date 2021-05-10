@@ -190,8 +190,9 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_price() {
-		// Permit simple and variable products to have an empty price
-		if ( in_array( $this->product_parent->get_type(), array( 'simple', 'variable' ), true ) ) {
+		// Permit simple and variable products to have an empty price.
+		$product = $this->product->is_type( 'variation' ) ? wc_get_product( $this->product->get_parent_id() ) : $this->product;
+		if ( in_array( $product->get_type(), array( 'simple', 'variable' ), true ) ) {
 			return;
 		}
 
