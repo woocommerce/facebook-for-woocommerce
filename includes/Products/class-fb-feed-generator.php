@@ -163,27 +163,30 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 	 */
 	public function get_default_column_names() {
 		return array(
+			// Required
 			'id'     => 'id',
 			'title'  => 'title',
 			'description' => 'description',
-			'image_link' => 'image_link',
-			'link' => 'link',
-			'product_type' => 'product_type',
-			'brand' => 'brand',
-			'price' => 'price',
 			'availability' => 'availability',
+			'condition' => 'condition',
+			'price' => 'price',
+			'link' => 'link',
+			'image_link' => 'image_link',
+			'brand' => 'brand',
+			// Optional
 			'item_group_id' => 'item_group_id',
-			'checkout_url' => 'checkout_url',
+			'visibility' => 'visibility',
+			'sale_price' => 'sale_price',
+			'google_product_category' => 'google_product_category',
+			'product_type' => 'product_type',
 			'additional_image_link' => 'additional_image_link',
 			'sale_price_effective_date' => 'sale_price_effective_date',
-			'sale_price' => 'sale_price',
-			'condition' => 'condition',
-			'visibility' => 'visibility',
 			'gender' => 'gender',
 			'color' => 'color',
 			'size' => 'size',
 			'pattern' => 'pattern',
-			'google_product_category' => 'google_product_category',
+			// Not available in graph api
+			'checkout_url' => 'checkout_url',
 			'default_product' => 'default_product',
 			'variant' => 'variant',
 		);
@@ -304,7 +307,7 @@ class FB_Feed_Generator extends \WC_Product_CSV_Exporter {
 		if ( ( $settings['page'] * $this->limit ) >= count( $settings['ids'] ) ) {
 			$settings['done'] = true;
 			$settings['end']  = time();
-			
+
 			update_option(
 				self::RUNNING_FEED_SETTINGS,
 				$settings,
