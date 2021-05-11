@@ -102,6 +102,31 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		return $job;
 	}
 
+	/**
+	 * Handles job completion.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param \stdClass|object|string $job Job instance or ID.
+	 * @return \stdClass|object|false on failure
+	 */
+	public function complete_job( $job ) {
+
+		if ( is_string( $job ) ) {
+			$job = $this->get_job( $job );
+		}
+
+		if ( ! $job ) {
+			return false;
+		}
+
+		$job->status       = 'completed';
+		$job->completed_at = current_time( 'mysql' );
+
+		$this->delete_job( $job );
+		return $job;
+	}
+
 
 	/**
 	 * Processes multiple items.
