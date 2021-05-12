@@ -12,11 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Automattic\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
-
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use SkyVerge\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
 
 if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 

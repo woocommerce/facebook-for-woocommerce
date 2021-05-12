@@ -1,7 +1,7 @@
 <?php
 declare( strict_types=1 );
 
-namespace Automattic\WooCommerce\Facebook\Proxies;
+namespace SkyVerge\WooCommerce\Facebook\Proxies;
 
 use WC_Site_Tracking;
 use WC_Tracks;

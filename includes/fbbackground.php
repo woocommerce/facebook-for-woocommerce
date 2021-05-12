@@ -8,7 +8,7 @@
  * @package FacebookCommerce
  */
 
-use Automattic\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
+use SkyVerge\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
