@@ -39,7 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2021.04.29 - version 2.4.1
+= 2021-xx-xx - version 2.5.0 =
+ * Ensure variable product attribute values containing , sync correctly to Facebook additional_variant_attribute field.
+
+= 2021.04.29 - version 2.4.1 =
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
 
 = 2021.04.23 - version 2.4.0 =
