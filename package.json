@@ -10,6 +10,9 @@
   "bugs": {
     "url": "https://wordpress.org/support/plugin/facebook-for-woocommerce"
   },
+  "config": {
+    "wp_org_slug": "facebook-for-woocommerce"
+  },
   "devDependencies": {
     "@wordpress/scripts": "^14.0.0",
     "sake": "github:skyverge/sake"
