@@ -8,6 +8,8 @@
  * @package FacebookCommerce
  */
 
+use Automattic\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -148,6 +150,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Background_Process' ) ) :
 		 * performed, or, call parent::complete().
 		 */
 		protected function complete() {
+			WC_Tracks::record_event( 'product_sync_background_sync_completed' );
+
 			$commerce = $this->commerce;  // PHP5 compatibility for static access
 			delete_transient( $commerce::FB_SYNC_IN_PROGRESS );
 			delete_transient( $commerce::FB_SYNC_REMAINING );

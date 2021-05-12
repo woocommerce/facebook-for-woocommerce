@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Automattic\WooCommerce\Facebook\Proxies\Tracks as WC_Tracks;
+
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
@@ -92,6 +94,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$profiling_logger = facebook_for_woocommerce()->get_profiling_logger();
 			$profiling_logger->start( 'generate_feed' );
 
+			WC_Tracks::record_event( 'product_sync_feed_generate_started' );
+
 			\WC_Facebookcommerce_Utils::log( 'Generating a fresh product feed file' );
 
 			try {
@@ -106,9 +110,18 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 				\WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
 
+				WC_Tracks::record_event(
+					'product_sync_feed_generate_completed',
+					array(
+						'time' => $generation_time,
+					)
+				);
+
 			} catch ( \Exception $exception ) {
 
 				\WC_Facebookcommerce_Utils::log( $exception->getMessage() );
+
+				WC_Tracks::record_event( 'product_sync_feed_generate_feed_error' );
 			}
 
 			$profiling_logger->stop( 'generate_feed' );
