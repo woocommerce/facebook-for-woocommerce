@@ -123,7 +123,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_sync_enabled_globally() {
-		if ( $this->integration->is_product_sync_enabled() ) {
+		if ( ! $this->integration->is_product_sync_enabled() ) {
 			throw new ProductExcludedException( 'Product sync is globally disabled.' );
 		}
 	}
