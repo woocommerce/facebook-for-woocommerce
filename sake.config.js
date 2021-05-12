@@ -6,6 +6,7 @@ module.exports = {
 		type: 'wp',
 	},
 	paths: {
+		js: false,
 		exclude: [
 			'bin',
 		],
@@ -13,7 +14,4 @@ module.exports = {
 	framework: 'v5',
 	deployAssets: false,
 	autoload: true,
-	paths: {
-		js: false
-	}
 };
