@@ -933,12 +933,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * @return ProductSyncValidator
 		 */
 		public function get_product_sync_validator( WC_Product $product ) {
-			static $instance = null;
-			if ( null === $instance ) {
-				$instance = new ProductSyncValidator( $this->get_integration(), $product );
-			}
-
-			return $instance;
+			return new ProductSyncValidator( $this->get_integration(), $product );
 		}
 
 		/**
