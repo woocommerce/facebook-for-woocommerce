@@ -80,7 +80,6 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 			}
 		}
 
-		// job complete! :)
 		if ( $this->count_remaining_products() === 0 ) {
 
 			update_option( 'wc_facebook_background_remove_duplicate_visibility_meta_complete', 'yes' );
@@ -91,6 +90,30 @@ class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Backgr
 		return $job;
 	}
 
+	/**
+	 * Handles job completion.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param \stdClass|object|string $job Job instance or ID.
+	 * @return \stdClass|object|false on failure.
+	 */
+	public function complete_job( $job ) {
+
+		if ( is_string( $job ) ) {
+			$job = $this->get_job( $job );
+		}
+
+		if ( ! $job ) {
+			return false;
+		}
+
+		$job->status       = 'completed';
+		$job->completed_at = current_time( 'mysql' );
+
+		$this->delete_job( $job );
+		return $job;
+	}
 
 	/**
 	 * Counts the number of virtual products or product variations with sync enabled and visible.

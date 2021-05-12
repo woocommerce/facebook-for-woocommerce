@@ -108,7 +108,7 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 	 * @since 2.6.0
 	 *
 	 * @param \stdClass|object|string $job Job instance or ID.
-	 * @return \stdClass|object|false on failure
+	 * @return \stdClass|object|false on failure.
 	 */
 	public function complete_job( $job ) {
 
@@ -126,7 +126,6 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 		$this->delete_job( $job );
 		return $job;
 	}
-
 
 	/**
 	 * Processes multiple items.
