@@ -22,3 +22,6 @@ codeception.yml
 /tests/_data/dump.sql
 
 .DS_Store
+
+#webpack
+/assets/build

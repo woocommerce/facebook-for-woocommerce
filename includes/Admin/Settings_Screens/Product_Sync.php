@@ -64,8 +64,18 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		}
 
 		wp_enqueue_script( 'wc-backbone-modal', null, array( 'backbone' ) );
-		wp_enqueue_script( 'facebook-for-woocommerce-modal', plugins_url( '/facebook-for-woocommerce/assets/js/admin/modal.min.js' ), array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ), \WC_Facebookcommerce::PLUGIN_VERSION );
-		wp_enqueue_script( 'facebook-for-woocommerce-settings-sync', plugins_url( '/facebook-for-woocommerce/assets/js/admin/settings-sync.min.js' ), array( 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ), \WC_Facebookcommerce::PLUGIN_VERSION );
+		wp_enqueue_script(
+			'facebook-for-woocommerce-modal',
+			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/modal.js',
+			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
+			\WC_Facebookcommerce::PLUGIN_VERSION
+		);
+		wp_enqueue_script(
+			'facebook-for-woocommerce-settings-sync',
+			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/settings-sync.js',
+			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ),
+			\WC_Facebookcommerce::PLUGIN_VERSION
+		);
 
 		/* translators: Placeholders: {count} number of remaining items */
 		$sync_remaining_items_string = _n_noop( '{count} item remaining.', '{count} items remaining.', 'facebook-for-woocommerce' );

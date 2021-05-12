@@ -27,8 +27,7 @@ This plugin uses a custom build tool called [`sake`](https://github.com/skyverge
 
 If you have `sake` set up on your system, these commands can be used to generate a production build.
 
-- `npx sake build` builds to `/build/facebook-for-woocommerce`.
-- `npx sake zip` builds and zips to `/build/facebook-for-woocommerce.{version}.zip`.
+- `npm run build` builds and zips to `/build/facebook-for-woocommerce.{version}.zip`.
 
 ### Releasing
 Refer to the [wiki for details of how to build and release the plugin](https://github.com/woocommerce/facebook-for-woocommerce/wiki/Build-&-Release). 

@@ -596,10 +596,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 		wp_enqueue_script(
 			'wc_facebook_metabox_jsx',
-			plugins_url(
-				'/assets/js/admin/metabox.min.js',
-				__FILE__
-			),
+			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/metabox.js',
 			array(),
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
@@ -810,10 +807,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// load banner assets
 		wp_enqueue_script(
 			'wc_facebook_infobanner_jsx',
-			plugins_url(
-				'/assets/js/admin/infobanner.min.js',
-				__FILE__
-			),
+			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/infobanner.js',
 			array(),
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
