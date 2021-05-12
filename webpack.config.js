@@ -1,7 +1,8 @@
 // Load the default @wordpress/scripts config object
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
-const legacyAdminFileNames = [
+// Legacy jQuery UI powered admin files
+const jQueryUIAdminFileNames = [
 	'google-product-category-fields',
 	'infobanner',
 	'metabox',
@@ -14,17 +15,18 @@ const legacyAdminFileNames = [
 	'settings-sync',
 ];
 
-const legacyAdminFileEntries = {};
+const jQueryUIAdminFileEntries = {};
 
-legacyAdminFileNames.forEach( ( name ) => {
-	legacyAdminFileEntries[ `admin/${ name }` ] = `./assets/js/admin/${ name }.js`;
+jQueryUIAdminFileNames.forEach( ( name ) => {
+	jQueryUIAdminFileEntries[ `admin/${ name }` ] = `./assets/js/admin/${ name }.js`;
 } );
 
 module.exports = {
 	...defaultConfig,
 	entry: {
+		// Use admin/index.js for any new React-powered UI
 		'admin/index.js': './assets/js/admin/index.js',
-		...legacyAdminFileEntries,
+		...jQueryUIAdminFileEntries,
 	},
 	output: {
 		filename: '[name].js',
