@@ -202,7 +202,8 @@ class ProductValidator {
 			foreach ( $this->product->get_children() as $child_id ) {
 				$child_product = wc_get_product( $child_id );
 				if ( $child_product && 'no' !== $child_product->get_meta( self::SYNC_ENABLED_META_KEY ) ) {
-					break;
+					// At least one product is "sync-enabled" so bail before exception.
+					return;
 				}
 			}
 
