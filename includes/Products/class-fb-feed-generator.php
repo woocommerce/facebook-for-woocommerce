@@ -49,7 +49,6 @@ class FB_Feed_Generator {
 	public function __construct() {
 		$this->feed_handler = new \WC_Facebook_Product_Feed();
 		add_action( 'admin_init', array( $this, 'maybe_schedule_feed_generation' ) );
-		add_action( 'init', array( $this, 'maybe_create_catalog_feed' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 		add_action( 'wp_ajax_' . self::FEED_AJAX_GENERATE_FEED, array( $this, 'ajax_feed_handle' ) );
 
@@ -63,49 +62,6 @@ class FB_Feed_Generator {
 		}
 		$timestamp = strtotime( 'today midnight +1 day' );
 		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION );
-	}
-
-	public function maybe_create_catalog_feed() {
-		// Crate Facebook Catalog feed if we don't have one yet.
-		if ( '' == facebook_for_woocommerce()->get_integration()->get_feed_id() ) {
-			$this->create_feed();
-		}
-	}
-
-	private function create_feed() {
-		$result = \WC_Facebookcommerce_Utils::$fbgraph->create_feed(
-			facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
-			array( 'name' => self::FEED_NAME )
-		);
-
-		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-			facebook_for_woocommerce()->log( json_encode( $result ) );
-			return null;
-		}
-		$decode_result = \WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-		$feed_id       = $decode_result->id;
-		if ( ! $feed_id ) {
-			facebook_for_woocommerce()->log(
-				'Response from creating feed not return feed id!'
-			);
-			return null;
-		}
-		facebook_for_woocommerce()->get_integration()->update_feed_id( $feed_id );
-		return $feed_id;
-	}
-
-	public static function get_feed_update_schedule() {
-		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_update_schedule(
-			facebook_for_woocommerce()->get_integration()->get_feed_id()
-		);
-		return  $feed_schedule_info;
-	}
-
-	public static function get_feed_latest_upload() {
-		$feed_latest_update_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_latest_upload(
-			facebook_for_woocommerce()->get_integration()->get_feed_id()
-		);
-		return  $feed_latest_update_info;
 	}
 
 	public static function get_feed_schedule() {

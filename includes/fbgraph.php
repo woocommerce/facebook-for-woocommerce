@@ -490,20 +490,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			);
 		}
 
-		public function get_feed_update_schedule( $facebook_feed_id  ) {
-			$url = $this->build_url( $facebook_feed_id, '/?fields=update_schedule', 'v10.0' );
-			return  wp_remote_retrieve_body(
-				self::_get( $url )
-			);
-		}
-
-		public function get_feed_latest_upload( $facebook_feed_id  ) {
-			$url = $this->build_url( $facebook_feed_id, '/?fields=latest_upload', 'v10.0' );
-			return  wp_remote_retrieve_body(
-				self::_get( $url )
-			);
-		}
-
 		public function get_upload_status( $facebook_upload_id ) {
 			$url = $this->build_url( $facebook_upload_id, '/?fields=end_time' );
 			// success API call will return
