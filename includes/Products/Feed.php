@@ -157,7 +157,7 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	public function schedule_feed_generation() {
-		$integration  = facebook_for_woocommerce()->get_integration();
+		$integration   = facebook_for_woocommerce()->get_integration();
 		$configured_ok = $integration && $integration->is_configured();
 
 		// Only schedule feed job if store has not opted out of product sync.
