@@ -64,13 +64,6 @@ class FB_Feed_Generator {
 		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION );
 	}
 
-	public static function get_feed_schedule() {
-		$feed_schedule_info = \WC_Facebookcommerce_Utils::$fbgraph->get_feed_schedule(
-			facebook_for_woocommerce()->get_integration()->get_feed_id()
-		);
-		return $feed_schedule_info;
-	}
-
 	public function prepare_feed_generation() {
 		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
 		$generate_feed_job->queue_start();
