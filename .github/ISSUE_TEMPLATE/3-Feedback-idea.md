@@ -11,6 +11,8 @@ assignees: ''
 
 If you have an idea for how we could improve Facebook for WooCommerce, please let us know by [contacting our support team](https://woocommerce.com/my-account/create-a-ticket/)! We'd love to learn more about the problem you're facing and how Facebook for WooCommerce could help solve it.
 
+Check the [Facebook for WooCommerce ideas board](https://ideas.woocommerce.com/forums/133476-woocommerce?category_id=398356) to see and vote on ideas.
+
 ## Developers
 
 We welcome your contributions. 🙌 Here are a few tips to help us work together:

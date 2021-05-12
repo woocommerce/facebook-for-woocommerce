@@ -40,6 +40,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the WordPress option name where the external merchant settings ID is stored */
 	const OPTION_EXTERNAL_MERCHANT_SETTINGS_ID = 'wc_facebook_external_merchant_settings_id';
 
+	/** @var string Option name for disabling feed. */
+ 	const OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED = 'wc_facebook_legacy_feed_file_generation_enabled';
+
 	/** @var string the WordPress option name where the feed ID is stored */
 	const OPTION_FEED_ID = 'wc_facebook_feed_id';
 
@@ -3168,6 +3171,26 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_product_sync_enabled', 'yes' === get_option( self::SETTING_ENABLE_PRODUCT_SYNC, 'yes' ), $this );
 	}
+
+	/**
+ 	 * Return true if (legacy) feed generation is enabled.
+ 	 *
+ 	 * Feed generation for product sync is enabled by default, and generally recommended.
+ 	 * Large stores, or stores running on shared hosting (low resources) may have issues
+ 	 * with feed generation. This option allows those stores to disable generation to
+ 	 * work around the issue.
+ 	 *
+ 	 * Note - this is temporary. In a future release, an improved feed system will be
+ 	 * implemented, which should work well for all stores. This option will not disable
+ 	 * the new improved implementation.
+ 	 *
+ 	 * @since 2.5.0
+ 	 *
+ 	 * @return bool
+ 	 */
+ 	public function is_legacy_feed_file_generation_enabled() {
+ 		return (bool) ( 'yes' === get_option( self::OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED, 'yes' ) );
+ 	}
 
 
 	/**
