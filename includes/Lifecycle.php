@@ -43,6 +43,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.3',
 			'2.0.4',
 			'2.4.0',
+			'2.5.0',
 		);
 	}
 
@@ -345,6 +346,20 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	protected function upgrade_to_2_4_0() {
 		delete_option( 'wc_facebook_google_product_categories' );
 		delete_transient( 'wc_facebook_google_product_categories' );
+	}
+
+	/**
+	 * Upgrades to version 2.5.0
+	 *
+	 * @since 2.5.0
+	 */
+	protected function upgrade_to_2_5_0() {
+		/**
+		 * Since 2.5.0 the feed generation interval is increased to 24h.
+		 * Update procedure just needs to remove all current actions.
+		 * The Feed class will reschedule new generation with proper cadence.
+		 */
+		as_unschedule_all_actions( \SkyVerge\WooCommerce\Facebook\Products\Feed::GENERATE_FEED_ACTION );
 	}
 
 }
