@@ -355,7 +355,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 */
 	protected function upgrade_to_2_5_0() {
 		/**
-		 * Since 2.5.0 the feed generation interval is increased to 2.5.0.
+		 * Since 2.5.0 the feed generation interval is increased to 24h.
 		 * Update procedure just needs to remove all current actions.
 		 * The Feed class will reschedule new generation with proper cadence.
 		 */
