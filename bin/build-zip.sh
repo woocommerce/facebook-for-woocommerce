@@ -20,7 +20,7 @@ npm run build:assets
 echo "Building zip with Sake..."
 npx sake zip || exit
 
-echo "Moving zip..."
+echo "Copying zip to project folder..."
 find $BUILD_PATH -name "facebook-for-woocommerce.*.zip" -exec cp {} $FINAL_ZIP \; || exit;
 
 echo "Build done!"
