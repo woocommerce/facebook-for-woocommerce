@@ -33,8 +33,11 @@ class FeedDataExporter {
 	/**
 	 * Return an array of columns to export.
 	 *
-	 * @since  2.5.0
 	 * @return array
+	 * @since  2.5.0
+	 * @link https://www.facebook.com/business/help/1898524300466211?id=725943027795860
+	 * @link https://www.facebook.com/business/help/120325381656392?id=725943027795860 Required fields for products
+	 * @link https://developers.facebook.com/docs/marketing-api/catalog/reference/#da-commerce full list of optional fields for products
 	 */
 	public function get_column_names() {
 		return array(
