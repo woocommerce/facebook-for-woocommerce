@@ -54,7 +54,7 @@ class Feed {
 	private function add_hooks() {
 
 		// schedule the recurring feed generation
-		add_action( 'init', array( $this, 'schedule_feed_generation' ) );
+		add_action( 'admin_init', array( $this, 'schedule_feed_generation' ) );
 
 		// regenerate the product feed
 		add_action( self::GENERATE_FEED_ACTION, array( $this, 'regenerate_feed' ) );
@@ -157,7 +157,6 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	public function schedule_feed_generation() {
-
 		$integration   = facebook_for_woocommerce()->get_integration();
 		$configured_ok = $integration && $integration->is_configured();
 
@@ -174,10 +173,11 @@ class Feed {
 		 * Filters the frequency with which the product feed data is generated.
 		 *
 		 * @since 1.11.0
+		 * @since 2.5.0 Feed generation interval increased to 24h.
 		 *
 		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
 		 */
-		$interval = apply_filters( 'wc_facebook_feed_generation_interval', MINUTE_IN_SECONDS * 15 );
+		$interval = apply_filters( 'wc_facebook_feed_generation_interval', DAY_IN_SECONDS );
 
 		if ( ! as_next_scheduled_action( self::GENERATE_FEED_ACTION ) ) {
 			as_schedule_recurring_action( time(), max( 2, $interval ), self::GENERATE_FEED_ACTION, array(), facebook_for_woocommerce()->get_id_dasherized() );
