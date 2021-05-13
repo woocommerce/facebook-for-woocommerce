@@ -23,6 +23,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var string the plugin version */
 		const VERSION = '2.4.1'; // WRCS: DEFINED_VERSION.
+		const VERSION_1 = '2.4.1'; // WRCS: DEFINED_VERSION.
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -270,7 +271,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 						$message = sprintf(
 							/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
-							__( 'For your convenience, the Facebook for WooCommerce settings are now located under %1$sWooCommerce > Facebook%2$s.', 'facebook-for-woocommerce' ),
+							__( 'For your benefit, the Facebook for WooCommerce settings are now located under %1$sWooCommerce > Facebook%2$s.', 'facebook-for-woocommerce' ),
 							'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
 							'</a>'
 						);

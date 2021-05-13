@@ -34,6 +34,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	const OPTION_PAGE_ACCESS_TOKEN = 'wc_facebook_page_access_token';
 
+	const ANOTHER_VERSION = '2.4.1'; // WRCS: DEFINED_VERSION.
+
 	/** @var string the WordPress option name where the product catalog ID is stored */
 	const OPTION_PRODUCT_CATALOG_ID = 'wc_facebook_product_catalog_id';
 

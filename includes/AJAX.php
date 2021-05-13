@@ -78,7 +78,7 @@ class AJAX {
 		try {
 
 			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Invalid nonce.', 'facebook-for-woocommerce' ) );
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Non valid nonce.', 'facebook-for-woocommerce' ) );
 			}
 
 			$order_id    = Framework\SV_WC_Helper::get_posted_value( 'order_id' );
