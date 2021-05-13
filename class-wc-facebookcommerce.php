@@ -13,6 +13,7 @@ use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use SkyVerge\WooCommerce\Facebook\Heartbeat;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -94,6 +95,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry */
 		public $job_registry;
 
+		/** @var Heartbeat */
+		public $heartbeat;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -141,6 +145,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
+
+				$this->heartbeat = new Heartbeat( WC()->queue() );
+				$this->heartbeat->init();
 
 				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
