@@ -25,7 +25,7 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		// Use admin/index.js for any new React-powered UI
-		'admin/index.js': './assets/js/admin/index.js',
+		'admin/index': './assets/js/admin/index.js',
 		...jQueryUIAdminFileEntries,
 	},
 	output: {
