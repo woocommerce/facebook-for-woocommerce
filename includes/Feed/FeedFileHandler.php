@@ -13,6 +13,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class FeedFileHandler {
 
+	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
+	const REQUEST_FEED_ACTION    = 'facebook_for_woocommerce_get_feed';
+
 	/**
 	 * Filename to export to.
 	 *
@@ -154,5 +157,45 @@ class FeedFileHandler {
 			$this->get_temporary_file_path(),
 			$this->get_file_path()
 		);
+	}
+
+	/**
+	 * Gets the secret value that should be included in the Feed URL.
+	 *
+	 * Generates a new secret and stores it in the database if no value is set.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @return string
+	 */
+	public static function get_feed_secret() {
+
+		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
+
+		if  ( ! $secret ) {
+
+			$secret = wp_hash( 'products-feed-' . time() );
+
+			update_option( self::OPTION_FEED_URL_SECRET, $secret );
+		}
+
+		return $secret;
+	}
+
+	/**
+	 * Gets the URL for retrieving the product feed data.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @return string
+	 */
+	public static function get_feed_data_url() {
+
+		$query_args = array(
+			'wc-api' => self::REQUEST_FEED_ACTION,
+			'secret' => self::get_feed_secret(),
+		);
+
+		return add_query_arg( $query_args, home_url( '/' ) );
 	}
 }
