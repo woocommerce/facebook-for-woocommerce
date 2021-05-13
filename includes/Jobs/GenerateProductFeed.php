@@ -148,11 +148,11 @@ class GenerateProductFeed extends AbstractChainedJob {
 		// filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
 		// the job will end prematurely thinking it has nothing more to process.
 		return wc_get_products(
-			[
-				'type'    => [ 'simple', 'variation' ],
+			array(
+				'type'    => array( 'simple', 'variation' ),
 				'include' => $items,
 				'orderby' => 'none',
-			]
+			)
 		);
 	}
 

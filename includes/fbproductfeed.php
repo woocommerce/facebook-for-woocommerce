@@ -21,22 +21,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	 */
 	class WC_Facebook_Product_Feed {
 
-
-		/** @var string transient name for storing the average feed generation time */
-		const TRANSIENT_AVERAGE_FEED_GENERATION_TIME = 'wc_facebook_average_feed_generation_time';
-
-		/** @var string product catalog feed file directory inside the uploads folder */
-		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
-
-		/** @var string product catalog feed file name - %s will be replaced with a hash */
-		const FILE_NAME = 'product_catalog_%s.csv';
-
-
-		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
-		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
-		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
-		const FB_PRODUCT_GROUP_ID            = 'fb_product_group_id';
-		const FB_VISIBILITY                  = 'fb_visibility';
+		const FB_ADDITIONAL_IMAGES_FOR_FEED = 5;
+		const FB_PRODUCT_GROUP_ID           = 'fb_product_group_id';
+		const FB_VISIBILITY                 = 'fb_visibility';
 
 		private $has_default_product_count = 0;
 		private $no_default_product_count  = 0;
@@ -160,36 +147,36 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			if ( Products::product_should_be_deleted( $woo_product->woo_product ) ) {
 				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
-			$feed_row = array();
-			$feed_row['id']          = $product_data['retailer_id'];
-			$feed_row['title']       = $woo_product->woo_product->get_title();
-			$feed_row['description'] = static::get_value_from_product_data( $product_data, 'description' );
-			$feed_row['image_link']  = static::get_value_from_product_data( $product_data, 'image_url' );
-			$feed_row['link']        = static::get_value_from_product_data( $product_data, 'url' );
-			$feed_row['product_type'] = static::get_value_from_product_data( $product_data, 'category' );
-			$feed_row['brand'] = static::get_value_from_product_data( $product_data, 'brand' );
-			$feed_row['price'] = static::format_price_for_feed(
+			$feed_row                              = array();
+			$feed_row['id']                        = $product_data['retailer_id'];
+			$feed_row['title']                     = $woo_product->woo_product->get_title();
+			$feed_row['description']               = static::get_value_from_product_data( $product_data, 'description' );
+			$feed_row['image_link']                = static::get_value_from_product_data( $product_data, 'image_url' );
+			$feed_row['link']                      = static::get_value_from_product_data( $product_data, 'url' );
+			$feed_row['product_type']              = static::get_value_from_product_data( $product_data, 'category' );
+			$feed_row['brand']                     = static::get_value_from_product_data( $product_data, 'brand' );
+			$feed_row['price']                     = static::format_price_for_feed(
 				static::get_value_from_product_data( $product_data, 'price', 0 ),
 				static::get_value_from_product_data( $product_data, 'currency' )
 			);
-			$feed_row['availability'] = static::get_value_from_product_data( $product_data, 'availability' );
-			$feed_row['item_group_id'] = $item_group_id;
-			$feed_row['checkout_url'] = static::get_value_from_product_data( $product_data, 'checkout_url' );
-			$feed_row['additional_image_link'] = static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) );
-			$feed_row['sale_price_effective_date'] = static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' .static::get_value_from_product_data( $product_data, 'sale_price_end_date' );
-			$feed_row['sale_price'] = static::format_price_for_feed(
+			$feed_row['availability']              = static::get_value_from_product_data( $product_data, 'availability' );
+			$feed_row['item_group_id']             = $item_group_id;
+			$feed_row['checkout_url']              = static::get_value_from_product_data( $product_data, 'checkout_url' );
+			$feed_row['additional_image_link']     = static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) );
+			$feed_row['sale_price_effective_date'] = static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . static::get_value_from_product_data( $product_data, 'sale_price_end_date' );
+			$feed_row['sale_price']                = static::format_price_for_feed(
 				static::get_value_from_product_data( $product_data, 'sale_price', 0 ),
 				static::get_value_from_product_data( $product_data, 'currency' )
 			);
-			$feed_row['condition'] = 'new';
-			$feed_row['visibility'] = static::get_value_from_product_data( $product_data, 'visibility' );
-			$feed_row['gender'] = static::get_value_from_product_data( $product_data, 'gender' );
-			$feed_row['color'] = static::get_value_from_product_data( $product_data, 'color' );
-			$feed_row['size'] = static::get_value_from_product_data( $product_data, 'size' );
-			$feed_row['pattern'] = static::get_value_from_product_data( $product_data, 'pattern' );
-			$feed_row['google_product_category'] = static::get_value_from_product_data( $product_data, 'google_product_category' );
-			$feed_row['default_product'] = static::get_value_from_product_data( $product_data, 'default_product' );
-			$feed_row['variant'] = static::get_value_from_product_data( $product_data, 'variant' );
+			$feed_row['condition']                 = 'new';
+			$feed_row['visibility']                = static::get_value_from_product_data( $product_data, 'visibility' );
+			$feed_row['gender']                    = static::get_value_from_product_data( $product_data, 'gender' );
+			$feed_row['color']                     = static::get_value_from_product_data( $product_data, 'color' );
+			$feed_row['size']                      = static::get_value_from_product_data( $product_data, 'size' );
+			$feed_row['pattern']                   = static::get_value_from_product_data( $product_data, 'pattern' );
+			$feed_row['google_product_category']   = static::get_value_from_product_data( $product_data, 'google_product_category' );
+			$feed_row['default_product']           = static::get_value_from_product_data( $product_data, 'default_product' );
+			$feed_row['variant']                   = static::get_value_from_product_data( $product_data, 'variant' );
 
 			return $feed_row;
 		}

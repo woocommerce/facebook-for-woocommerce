@@ -172,7 +172,7 @@ class FeedFileHandler {
 
 		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
 
-		if  ( ! $secret ) {
+		if ( ! $secret ) {
 
 			$secret = wp_hash( 'products-feed-' . time() );
 

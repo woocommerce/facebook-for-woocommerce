@@ -176,7 +176,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// Init jobs
 				$this->job_registry = new \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry();
-				add_action( 'init', [ $this->job_registry, 'init' ] );
+				add_action( 'init', array( $this->job_registry, 'init' ) );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {

@@ -98,7 +98,6 @@ class FeedFileUploadHandler {
 
 				echo $contents; // phpcs::ignore WordPress.Security.EscapeOutput.OutputNotEscaped .
 			}
-
 		} catch ( \Exception $exception ) {
 
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
