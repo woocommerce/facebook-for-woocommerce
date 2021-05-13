@@ -62,7 +62,6 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$this->feed_file_handler->write_to_feed_temporary_file(
 			$this->feed_data_exporter->generate_header()
 		);
-		$this->feed_data_exporter->calculate_number_of_items_for_processing();
 	}
 
 	/**

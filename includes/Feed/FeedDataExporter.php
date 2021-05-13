@@ -72,21 +72,6 @@ class FeedDataExporter {
 	}
 
 	/**
-	 * Get the total number of items for processing.
-	 *
-	 * @since 2.5.0
-	 * @return int
-	 */
-	public function calculate_number_of_items_for_processing() {
-		$products_ids = \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync();
-		update_option( self::CURRENTLY_PROCESSING_COUNT, count( $products_ids ) );
-	}
-
-	static function get_number_of_items_for_processing() {
-		return get_option( self::CURRENTLY_PROCESSING_COUNT, 0 );
-	}
-
-	/**
 	 * Export column headers in CSV format.
 	 *
 	 * @since 2.5.0
