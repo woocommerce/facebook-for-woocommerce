@@ -3,8 +3,6 @@
 /**
  * The main product feed handler.
  *
- * This will eventually replace \WC_Facebook_Product_Feed as we refactor and move its functionality here.
- *
  * @since 1.11.0
  */
 class GenerateCategories {

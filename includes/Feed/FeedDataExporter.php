@@ -11,13 +11,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class FeedDataExporter {
 
-	// TODO Refactor feed handler into this class.
 	/**
 	 * Various feed utilities.
 	 *
-	 * @var FeedHandler Various feed utilities.
+	 * @var FeedProductFormatter Various feed utilities.
 	 */
-	protected $feed_handler;
+	protected $product_formatter;
 
 	/**
 	 * Cached attributes variants.
@@ -68,7 +67,7 @@ class FeedDataExporter {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->feed_handler = new \WC_Facebook_Product_Feed();
+		$this->product_formatter = new \FeedProductFormatter();
 	}
 
 	/**
@@ -103,7 +102,7 @@ class FeedDataExporter {
 	 */
 	public function generate_row_data( $product ) {
 		$fb_product = new \WC_Facebook_Product( $product );
-		return $this->feed_handler->prepare_product_for_feed(
+		return $this->product_formatter->prepare_product_for_feed(
 			$fb_product,
 			$this->attribute_variants
 		);

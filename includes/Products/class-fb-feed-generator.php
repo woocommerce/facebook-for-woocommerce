@@ -34,14 +34,10 @@ class FB_Feed_Generator {
 	 */
 	protected $product_category_to_export = array();
 
-	// Refactor feed handler into this class.
-	protected $feed_handler;
-
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->feed_handler = new \WC_Facebook_Product_Feed();
 		add_action( 'admin_init', array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 	}

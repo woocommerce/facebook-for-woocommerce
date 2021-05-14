@@ -400,7 +400,6 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		 * Determines whether a product should be excluded from all-products sync or the feed file.
 		 *
 		 * @see SkyVerge\WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
-		 * @see WC_Facebook_Product_Feed::write_product_feed_file()
 		 *
 		 * @deprecated 2.0.2
 		 */
