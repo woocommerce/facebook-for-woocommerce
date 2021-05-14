@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version 2.5.0
+2021-xx-xx - version 2.5.0-rc1
  *  Ensure variable product attribute values containing , sync correctly to Facebook additional_variant_attribute field.
 
 2021.04.29 - version 2.4.1
