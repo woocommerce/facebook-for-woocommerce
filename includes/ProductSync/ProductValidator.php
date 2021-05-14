@@ -16,30 +16,38 @@ use WC_Facebookcommerce_Integration;
 class ProductValidator {
 
 	/**
-	 * @var string the meta key used to flag whether a product should be synced in Facebook
+	 * The meta key used to flag whether a product should be synced in Facebook
+	 *
+	 * @var string
 	 */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 	/**
+	 * The FB integration instance.
+	 *
 	 * @var WC_Facebookcommerce_Integration
 	 */
 	protected $integration;
 
 	/**
-	 * @var WC_Product The product object to validate.
+	 * The product object to validate.
+	 *
+	 * @var WC_Product
 	 */
 	protected $product;
 
 	/**
-	 * @var WC_Product The product parent object if the product has a parent.
+	 * The product parent object if the product has a parent.
+	 *
+	 * @var WC_Product
 	 */
 	protected $product_parent;
 
 	/**
 	 * ProductValidator constructor.
 	 *
-	 * @param WC_Facebookcommerce_Integration $integration
-	 * @param WC_Product                      $product The product to validate. Accepts both variations and variable products.
+	 * @param WC_Facebookcommerce_Integration $integration The FB integration instance.
+	 * @param WC_Product                      $product     The product to validate. Accepts both variations and variable products.
 	 */
 	public function __construct( WC_Facebookcommerce_Integration $integration, WC_Product $product ) {
 		$this->product = $product;
@@ -94,7 +102,7 @@ class ProductValidator {
 		try {
 			$this->validate_product_categories_and_tags();
 		} catch ( ProductExcludedException $e ) {
-			// Product failed category and tag validation so it's excluded
+			// Product failed category and tag validation so it's excluded.
 			return true;
 		}
 
@@ -110,7 +118,7 @@ class ProductValidator {
 		try {
 			$this->validate_product_sync_field();
 		} catch ( ProductExcludedException $e ) {
-			// Product failed validation so it's excluded
+			// Product failed validation so it's excluded.
 			return true;
 		}
 
@@ -134,7 +142,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_status() {
-		$product = $this->product_parent ?: $this->product;
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'publish' !== $product->get_status() ) {
 			throw new ProductExcludedException( 'Product is not published.' );
@@ -160,7 +168,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_visibility() {
-		$product = $this->product_parent ?: $this->product;
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'visible' !== $product->get_catalog_visibility() ) {
 			throw new ProductExcludedException( 'Product is hidden from catalog and search.' );
@@ -173,7 +181,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_categories_and_tags() {
-		$product = $this->product_parent ?: $this->product;
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		$excluded_categories = $this->integration->get_excluded_product_category_ids();
 		if ( $excluded_categories ) {
@@ -223,9 +231,9 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_price() {
-		$primary_product = $this->product_parent ?: $this->product;
+		$primary_product = $this->product_parent ? $this->product_parent : $this->product;
 
-		// Variable and simple products are allowed to have no price
+		// Variable and simple products are allowed to have no price.
 		if ( in_array( $primary_product->get_type(), array( 'simple', 'variable' ), true ) ) {
 			return;
 		}
