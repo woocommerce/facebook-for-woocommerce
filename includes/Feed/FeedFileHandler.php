@@ -67,7 +67,6 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_file_path() {
-		// Parent class will write to the temp file first so this is why we are using temp.
 		return $this->get_feed_directory() . $this->get_filename();
 	}
 
@@ -78,7 +77,6 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_temporary_file_path() {
-		// Parent class will write to the temp file first so this is why we are using temp.
 		return $this->get_feed_directory() . $this->get_temp_filename();
 	}
 
