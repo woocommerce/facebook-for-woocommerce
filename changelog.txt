@@ -1,7 +1,16 @@
 *** Facebook for WooCommerce Changelog ***
 
 2021-xx-xx - version 2.5.0-rc1
- *  Ensure variable product attribute values containing , sync correctly to Facebook additional_variant_attribute field.
+ * New - Option to allow larger sites to opt-out of feed generation (product sync) job #1932
+ * Fix - Reduce default feed generation (product sync) interval to once per day to reduce overhead #1942
+ * Fix - Trigger feed (product sync) job from to `admin_init` to reduce impact on front-end requests #1939
+ * Fix - Ensure variable product attribute values containing comma (`,`) sync correctly #1922
+ * Fix - Use existing / current tab for connection `Get Started` button #1885
+ * Dev - Require PHP version 7.0 or newer #1908
+ * Dev - Adopt Composer autoloader to avoid manually `require`ing PHP class files #1919
+ * Dev - Adopt WooRelease release tool for deploying releases #1947
+ * Dev - Add `phpcs` tooling to help standardise PHP code style #1911
+ * Dev - Add JobRegistry engine for managing periodic background batch jobs #1913
 
 2021.04.29 - version 2.4.1
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
