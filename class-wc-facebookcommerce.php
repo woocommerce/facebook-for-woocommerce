@@ -23,7 +23,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.4.1';
+		const VERSION = WC_Facebook_Loader::PLUGIN_VERSION;
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -1012,6 +1012,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_plugin_name() {
 
 			return __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
+		}
+
+		/**
+		 * Gets the url for the assets build directory.
+		 *
+		 * @since 2.3.4
+		 *
+		 * @return string
+		 */
+		public function get_asset_build_dir_url() {
+			return $this->get_plugin_url() . '/assets/build';
 		}
 
 
