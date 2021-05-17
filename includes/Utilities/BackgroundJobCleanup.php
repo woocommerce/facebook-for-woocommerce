@@ -46,12 +46,14 @@ class BackgroundJobCleanup {
 	public function clean_up_old_completed_options() {
 		global $wpdb;
 
-		// Query notes:
-		// - Matching product sync job only (Products\Sync\Background class).
-		// - Matching "completed" status by sniffing json option value.
-		// - Order by lowest id, to delete older rows first.
-		// - Limit number of rows (periodic task will eventually remove all).
-		// Using `get_results` so we can limit number of items; `delete` doesn't allow this.
+		/**
+		 * Query notes:
+		 * - Matching product sync job only (Products\Sync\Background class).
+		 * - Matching "completed" status by sniffing json option value.
+		 * - Order by lowest id, to delete older rows first.
+		 * - Limit number of rows (periodic task will eventually remove all).
+		 * Using `get_results` so we can limit number of items; `delete` doesn't allow this.
+		 */
 		$deleted_rows = $wpdb->query(
 			"DELETE
 			FROM {$wpdb->options}
