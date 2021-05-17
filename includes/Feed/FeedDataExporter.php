@@ -4,6 +4,8 @@ namespace SkyVerge\WooCommerce\Facebook\Feed;
 
 defined( 'ABSPATH' ) || exit;
 
+use SkyVerge\WooCommerce\Facebook\Feed\FeedProductFormatter;
+
 /**
  * Class FeedDataExporter
  *
@@ -67,7 +69,7 @@ class FeedDataExporter {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->product_formatter = new \FeedProductFormatter();
+		$this->product_formatter = new FeedProductFormatter();
 	}
 
 	/**

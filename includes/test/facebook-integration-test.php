@@ -19,7 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once dirname( __DIR__ ) . '/fbutils.php';
-require_once 'fbproductfeed-test.php';
 
 if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 
