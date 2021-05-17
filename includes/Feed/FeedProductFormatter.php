@@ -13,8 +13,6 @@ use SkyVerge\WooCommerce\Facebook\Products;
 class FeedProductFormatter {
 
 	const FB_ADDITIONAL_IMAGES_FOR_FEED = 5;
-	const FB_PRODUCT_GROUP_ID           = 'fb_product_group_id';
-	const FB_VISIBILITY                 = 'fb_visibility';
 
 	/**
 	 * Assembles product payload in feed upload for initial sync.
