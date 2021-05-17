@@ -62,9 +62,7 @@ class BackgroundJobCleanup {
 		);
 
 		if ( $deleted_rows ) {
-			facebook_for_woocommerce()->log( 'Deleted $deleted_rows old completed jobs from wp_options table.' );
-		} else {
-			facebook_for_woocommerce()->log( 'Nothing to clean up?' );
+			facebook_for_woocommerce()->log( "Deleted $deleted_rows old completed jobs from wp_options table." );
 		}
 	}
 
