@@ -56,7 +56,7 @@ class BackgroundJobCleanup {
 			"DELETE
 			FROM {$wpdb->options}
 			WHERE option_name LIKE 'wc_facebook_background_product_sync_job_%'
-			AND option_value LIKE '%%\"status\":\"completed\"%'
+			AND option_value LIKE '%\"status\":\"completed\"%'
 			ORDER BY option_id ASC
 			LIMIT 10"
 		);
