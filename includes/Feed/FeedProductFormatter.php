@@ -145,6 +145,13 @@ class FeedProductFormatter {
 		return $feed_row;
 	}
 
+	/**
+	 * Format additional urls into the feed requirements.
+	 *
+	 * @since 2.6.0
+	 * @param array $product_image_urls Array of urls to images.
+	 * @return string Stringified list of urls.
+	 */
 	private static function format_additional_image_url( $product_image_urls ) {
 		// Returns the top 5 additional image urls separated by a comma according to feed api rules.
 		$product_image_urls = array_slice(
@@ -159,10 +166,27 @@ class FeedProductFormatter {
 		}
 	}
 
+	/**
+	 * Change WC price format to Feed price format.
+	 *
+	 * @since 2.6.0
+	 * @param float  $value Value to format.
+	 * @param string $currency Currency of value.
+	 * @return string Formatted price value.
+	 */
 	private static function format_price_for_feed( $value, $currency ) {
 		return (string) ( round( $value / (float) 100, 2 ) ) . $currency;
 	}
 
+	/**
+	 * Variant values formatting for the feed.
+	 *
+	 * @since 2.6.0
+	 * @param string $product_field Field to search for.
+	 * @param string $value Value of the field.
+	 * @param array  $parent_attribute_values Array of attributes.
+	 * @param array  $variant_feed_column Array of variants for feed column.
+	 */
 	private static function format_variant_for_feed( $product_field, $value, $parent_attribute_values, &$variant_feed_column ) {
 		if ( ! array_key_exists( $product_field, $parent_attribute_values ) ) {
 			return;

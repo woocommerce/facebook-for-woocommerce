@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class FeedFileHandler
  *
- * @since 2.5.0
+ * @since 2.6.0
  */
 class FeedFileHandler {
 
@@ -33,7 +33,7 @@ class FeedFileHandler {
 	/**
 	 * Location of feed CSV files.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 */
 	public function get_feed_directory() {
 		$upload_dir = wp_upload_dir();
@@ -43,7 +43,7 @@ class FeedFileHandler {
 	/**
 	 * Return the CSV feed filename.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @return string
 	 */
 	public function get_filename() {
@@ -53,7 +53,7 @@ class FeedFileHandler {
 	/**
 	 * Return a filename.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @return string
 	 */
 	public function get_temp_filename() {
@@ -63,7 +63,7 @@ class FeedFileHandler {
 	/**
 	 * Get file path to export to.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @return string
 	 */
 	public function get_file_path() {
@@ -73,7 +73,7 @@ class FeedFileHandler {
 	/**
 	 * Get file path to export to.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @return string
 	 */
 	public function get_temporary_file_path() {
@@ -84,7 +84,7 @@ class FeedFileHandler {
 	 * Setup feed location folder.
 	 * Prevent unauthorized access.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @throws Error Folder creation not possible.
 	 */
 	public function prepare_feed_folder() {
@@ -122,7 +122,7 @@ class FeedFileHandler {
 	 * Setup empty CSV file for temporary output.
 	 * Remove old file, create a new one, set appropriate permissions.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 */
 	public function create_fresh_feed_temporary_file() {
 		if ( file_exists( ( $this->get_temporary_file_path() ) ) ) {
@@ -135,7 +135,7 @@ class FeedFileHandler {
 	/**
 	 * Write data to temporary CSV file.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @param string $data Data to write to the file.
 	 */
 	public function write_to_feed_temporary_file( $data ) {
@@ -148,7 +148,7 @@ class FeedFileHandler {
 	 * We can safely delate old feed file and replace it with
 	 * the content of temporary file.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 */
 	public function replace_feed_file_with_temp_file() {
 		rename( // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_rename, Generic.PHP.NoSilencedErrors.Discouraged,
@@ -163,7 +163,7 @@ class FeedFileHandler {
 	 * Generates a new secret and stores it in the database if no value is set.
 	 *
 	 * @since 1.11.0
-	 *
+	 * @since 2.6.0 moved from Feed class( now deleted )
 	 * @return string
 	 */
 	public static function get_feed_secret() {
@@ -184,7 +184,7 @@ class FeedFileHandler {
 	 * Gets the URL for retrieving the product feed data.
 	 *
 	 * @since 1.11.0
-	 *
+	 * @since 2.6.0 moved from Feed class( now deleted )
 	 * @return string
 	 */
 	public static function get_feed_data_url() {

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class FeedFileUploadHandler
  *
- * @since 2.5.0
+ * @since 2.6.0
  */
 class FeedFileUploadHandler {
 
@@ -53,6 +53,9 @@ class FeedFileUploadHandler {
 
 	/**
 	 * Handles the feed data request.
+	 *
+	 * @since 2.6.0
+	 * @throws Framework\SV_WC_Plugin_Exception Feed request not possible.
 	 */
 	public function handle_feed_request() {
 
@@ -96,7 +99,7 @@ class FeedFileUploadHandler {
 					throw new Framework\SV_WC_Plugin_Exception( 'Could not get feed file contents.', 500 );
 				}
 
-				echo $contents; // phpcs::ignore WordPress.Security.EscapeOutput.OutputNotEscaped .
+				echo $contents; // phpcs::ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} catch ( \Exception $exception ) {
 
@@ -114,7 +117,7 @@ class FeedFileUploadHandler {
 	 * Helper method, do not open to public.
 	 *
 	 * @since 1.11.0
-	 *
+	 * @since 2.6.0 moved.
 	 * @return bool
 	 */
 	private function is_fpassthru_disabled() {
