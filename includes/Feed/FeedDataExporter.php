@@ -9,7 +9,7 @@ use SkyVerge\WooCommerce\Facebook\Feed\FeedProductFormatter;
 /**
  * Class FeedDataExporter
  *
- * @since 2.5.0
+ * @since 2.6.0
  */
 class FeedDataExporter {
 
@@ -23,7 +23,7 @@ class FeedDataExporter {
 	/**
 	 * Cached attributes variants.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @var array $attribute_variants Array of variants attributes.
 	 */
 	protected $attribute_variants = array();
@@ -34,7 +34,7 @@ class FeedDataExporter {
 	/**
 	 * Return an array of columns to export.
 	 *
-	 * @since  2.5.0
+	 * @since  2.6.0
 	 * @return array
 	 */
 	public function get_column_names() {
@@ -75,7 +75,7 @@ class FeedDataExporter {
 	/**
 	 * Export column headers in CSV format.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @return string
 	 */
 	public function generate_header() {
@@ -98,7 +98,7 @@ class FeedDataExporter {
 	/**
 	 * Take a product and generate row data from it for export.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @param WC_Product $product WC_Product object.
 	 * @return array
 	 */
@@ -113,7 +113,7 @@ class FeedDataExporter {
 	/**
 	 * Format exported products data into CSV compatible form.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @param array $rows Rows of product information to export.
 	 */
 	public function format_items_for_feed( $rows ) {
@@ -132,7 +132,7 @@ class FeedDataExporter {
 	/**
 	 * Export rows to an array ready for the CSV.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @param array    $row_data Data to export.
 	 * @param resource $buffer Output buffer.
 	 */
@@ -154,21 +154,11 @@ class FeedDataExporter {
 	/**
 	 * Format and escape data ready for the CSV file.
 	 *
-	 * @since 2.5.0
+	 * @since 2.6.0
 	 * @param  string $data Data to format.
 	 * @return string
 	 */
 	public function format_data( $data ) {
-		if ( ! is_scalar( $data ) ) {
-			if ( is_a( $data, 'WC_Datetime' ) ) {
-				$data = $data->date( 'Y-m-d G:i:s' );
-			} else {
-				$data = ''; // Not supported.
-			}
-		} elseif ( is_bool( $data ) ) {
-			$data = $data ? 1 : 0;
-		}
-
 		$use_mb = function_exists( 'mb_convert_encoding' );
 
 		if ( $use_mb ) {
