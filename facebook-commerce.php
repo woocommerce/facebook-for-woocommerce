@@ -12,7 +12,6 @@ use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Events\AAMSettings;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! defined( 'ABSPATH' ) ) {

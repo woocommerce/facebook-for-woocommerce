@@ -123,7 +123,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
-			// Product Set breadcrumb filters
+			// Product Set breadcrumb filters.
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
 			add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
 
@@ -135,11 +135,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
-				require_once __DIR__ . '/includes/Products/class-fb-feed-generator.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
-				$this->feed_generator            = new \SkyVerge\WooCommerce\Facebook\Products\FB_Feed_Generator();
+				$this->feed_scheduler            = new \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
