@@ -1,22 +1,15 @@
 <?php
-/**
- * Handles Facebook Product feed CSV file generation.
- *
- * @version 2.5.0
- */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
-
-use SkyVerge\WooCommerce\Facebook\Feed\FeedDataExporter;
+namespace SkyVerge\WooCommerce\Facebook\Feed;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * FB_Feed_Generator Class.
+ * FeedScheduler Class.
  */
-class FB_Feed_Generator {
+class FeedScheduler {
 
 	const FEED_SCHEDULE_ACTION = 'wc_facebook_for_woocommerce_feed_schedule_action';
 
@@ -42,6 +35,11 @@ class FB_Feed_Generator {
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 	}
 
+	/**
+	 * Schedule next feed generation if not scheduled already.
+	 *
+	 * @since 2.6.0
+	 */
 	public function maybe_schedule_feed_generation() {
 		if ( false !== as_next_scheduled_action( self::FEED_SCHEDULE_ACTION ) ) {
 			return;
@@ -50,6 +48,12 @@ class FB_Feed_Generator {
 		as_schedule_single_action( $timestamp, self::FEED_SCHEDULE_ACTION );
 	}
 
+	/**
+	 * Feed file generation entry point. Triggering queue_start triggers the
+	 * feed file generation job. Whole process is handled by the job class.
+	 *
+	 * @since 2.6.0
+	 */
 	public function prepare_feed_generation() {
 		$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
 		$generate_feed_job->queue_start();
