@@ -54,7 +54,7 @@ class BackgroundJobCleanup {
 		 * - Limit number of rows (periodic task will eventually remove all).
 		 * Using `get_results` so we can limit number of items; `delete` doesn't allow this.
 		 */
-		$deleted_rows = $wpdb->query(
+		$wpdb->query(
 			"DELETE
 			FROM {$wpdb->options}
 			WHERE option_name LIKE 'wc_facebook_background_product_sync_job_%'
@@ -62,10 +62,6 @@ class BackgroundJobCleanup {
 			ORDER BY option_id ASC
 			LIMIT 10"
 		);
-
-		if ( $deleted_rows ) {
-			facebook_for_woocommerce()->log( "Deleted $deleted_rows completed wc_facebook_background_product_sync_job_* rows from wp_options table." );
-		}
 	}
 
 }
