@@ -22,9 +22,13 @@ class FeedDataExporter {
 
 	/**
 	 * Cached attributes variants.
+	 * Collecting parent information may be costly. There is a big change that a batch of products
+	 * will consist of a group of variations items sharing the same parent. In that case we can cache
+	 * variants attributes and re-used them for each child.
 	 *
 	 * @since 2.6.0
 	 * @var array $attribute_variants Array of variants attributes.
+	 * @see FeedProductFormatter::prepare_product_for_feed()
 	 */
 	protected $attribute_variants = array();
 
