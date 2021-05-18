@@ -74,7 +74,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	/**
 	 * Handle processing a chain batch.
 	 *
-	 * @hooked {plugin_name}/jobs/{job_name}/chain_batch
+	 * @hooked facebook_for_woocommerce/jobs/generate_feed/chain_batch
 	 *
 	 * @param int   $batch_number The batch number for the new batch.
 	 * @param array $args         The args for the job.
@@ -82,6 +82,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
 	public function handle_batch_action( int $batch_number, array $args ) {
+		// Clear the processed_items in case we are processing more than one batch in a single Action Scheduler tick.
 		$this->processed_items = array();
 		parent::handle_batch_action( $batch_number, $args );
 		$this->write_processed_items_to_feed();
