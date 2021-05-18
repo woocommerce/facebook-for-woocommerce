@@ -17,8 +17,10 @@ class FeedProductFormatter {
 	/**
 	 * Assembles product payload in feed upload for initial sync.
 	 *
+	 * @see FeedDataExporter::attribute_variants for explanation why $attribute_variants are passed as reference.
+	 * @since 2.6.0
 	 * @param \WC_Facebook_Product $woo_product WooCommerce product object normalized by Facebook.
-	 * @param array                $attribute_variants Passed by reference.
+	 * @param array                $attribute_variants Array of variants attributes.
 	 * @return string product feed line data
 	 */
 	public function prepare_product_for_feed( $woo_product, &$attribute_variants ) {
