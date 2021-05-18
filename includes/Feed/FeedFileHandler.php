@@ -21,14 +21,14 @@ class FeedFileHandler {
 	 *
 	 * @var string
 	 */
-	public $filename = 'product_catalog.csv';
+	public $filename = 'product_catalog_%s.csv';
 
 	/**
 	 * Temporary export file.
 	 *
 	 * @var string
 	 */
-	public $temp_filename = 'temp_product_catalog.csv';
+	public $temp_filename = 'temp_product_catalog_%s.csv';
 
 	/**
 	 * Location of feed CSV files.
@@ -47,7 +47,12 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_filename() {
-		return sanitize_file_name( $this->filename );
+		return sanitize_file_name(
+			sprintf(
+				$this->filename,
+				self::get_feed_secret()
+			)
+		);
 	}
 
 	/**
@@ -57,7 +62,12 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_temp_filename() {
-		return sanitize_file_name( $this->temp_filename );
+		return sanitize_file_name(
+			sprintf(
+				$this->temp_filename,
+				self::get_feed_secret()
+			)
+		);
 	}
 
 	/**
