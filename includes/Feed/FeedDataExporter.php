@@ -28,8 +28,6 @@ class FeedDataExporter {
 	 */
 	protected $attribute_variants = array();
 
-	const CURRENTLY_PROCESSING_COUNT = 'facebook_for_woocommerce_feed_processing_count';
-
 
 	/**
 	 * Return an array of columns to export.
