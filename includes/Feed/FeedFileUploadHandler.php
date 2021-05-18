@@ -7,7 +7,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 defined( 'ABSPATH' ) || exit;
 /**
- * Class FeedFileUploadHandler
+ *  A class responsible for responding to Facebook feed file requests.
  *
  * @since 2.6.0
  */

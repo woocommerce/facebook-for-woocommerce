@@ -7,14 +7,14 @@ defined( 'ABSPATH' ) || exit;
 use SkyVerge\WooCommerce\Facebook\Feed\FeedProductFormatter;
 
 /**
- * Class FeedDataExporter
+ * A class responsible for manipulating output from FeedProductFormatter to technical requirements of the Facebook Feed CSV format.
  *
  * @since 2.6.0
  */
 class FeedDataExporter {
 
 	/**
-	 * Various feed utilities.
+	 * Various feed utilities for extracting product information from WC_Product to feed format.
 	 *
 	 * @var FeedProductFormatter Various feed utilities.
 	 */

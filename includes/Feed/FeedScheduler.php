@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FeedScheduler Class.
+ * A class responsible for setting up feed generation schedule.
  */
 class FeedScheduler {
 

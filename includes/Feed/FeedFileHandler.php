@@ -7,7 +7,8 @@ use Error;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class FeedFileHandler
+ * A class responsible for managing and interacting with the actual feed file.
+ * Creating, writing, deleting, renaming temporary to destination, setting up folder protection.
  *
  * @since 2.6.0
  */
