@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FeedScheduler {
 
-	const FEED_SCHEDULE_ACTION = 'wc_facebook_for_woocommerce_feed_schedule_action';
+	const FEED_SCHEDULE_ACTION = 'facebook_for_woocommerce_start_feed_generation';
 
 	/**
 	 * Should meta be exported?
