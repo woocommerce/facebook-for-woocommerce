@@ -36,7 +36,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	protected $feed_file_handler;
 
 	/**
-	 * Feed file creation and manipulation utility.
+	 * Exports data from WC_Product to format recognized by the feed.
 	 *
 	 * @var FeedDataExporter $feed_data_exporter.
 	 */
