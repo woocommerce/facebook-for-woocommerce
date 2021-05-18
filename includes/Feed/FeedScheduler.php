@@ -14,13 +14,6 @@ class FeedScheduler {
 	const FEED_SCHEDULE_ACTION = 'facebook_for_woocommerce_start_feed_generation';
 
 	/**
-	 * Should meta be exported?
-	 *
-	 * @var boolean
-	 */
-	protected $enable_meta_export = false;
-
-	/**
 	 * Products belonging to what category should be exported.
 	 *
 	 * @var string
