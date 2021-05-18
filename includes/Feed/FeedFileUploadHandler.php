@@ -117,7 +117,7 @@ class FeedFileUploadHandler {
 	 * Helper method, do not open to public.
 	 *
 	 * @since 1.11.0
-	 * @since 2.6.0 moved.
+	 * @since 2.6.0 moved from Feed class( now deleted ).
 	 * @return bool
 	 */
 	private function is_fpassthru_disabled() {
