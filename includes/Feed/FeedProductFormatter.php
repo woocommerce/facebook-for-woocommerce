@@ -12,7 +12,7 @@ use SkyVerge\WooCommerce\Facebook\Products;
  */
 class FeedProductFormatter {
 
-	const FB_ADDITIONAL_IMAGES_FOR_FEED = 5;
+	const MAX_IMAGES_PER_PRODUCT = 5;
 
 	/**
 	 * Assembles product payload in feed upload for initial sync.
@@ -155,7 +155,7 @@ class FeedProductFormatter {
 		$product_image_urls = array_slice(
 			$product_image_urls,
 			0,
-			self::FB_ADDITIONAL_IMAGES_FOR_FEED
+			self::MAX_IMAGES_PER_PRODUCT
 		);
 		if ( $product_image_urls ) {
 			return '"' . implode( ',', $product_image_urls ) . '"';
