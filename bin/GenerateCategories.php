@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The main product feed handler.
+ * Categories file generation script.
  *
  * @since 1.11.0
  */
