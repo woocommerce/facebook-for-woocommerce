@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
+
 /**
  * A class responsible for setting up feed generation schedule.
  */
@@ -24,7 +26,7 @@ class FeedScheduler {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'maybe_schedule_feed_generation' ) );
+		add_action( Heartbeat::HOURLY , array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 	}
 
