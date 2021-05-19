@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  * Responsible for scheduling cron heartbeat hooks. Currently there is a single hourly heartbeat:
  * - `facebook_for_woocommerce_heartbeat_hourly`
  *
- * @since x.x.x
+ * @since 2.6.0
  */
 class Heartbeat {
 
