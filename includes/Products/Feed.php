@@ -12,6 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
@@ -54,7 +55,7 @@ class Feed {
 	private function add_hooks() {
 
 		// schedule the recurring feed generation
-		add_action( 'admin_init', array( $this, 'schedule_feed_generation' ) );
+		add_action( Heartbeat::HOURLY, array( $this, 'schedule_feed_generation' ) );
 
 		// regenerate the product feed
 		add_action( self::GENERATE_FEED_ACTION, array( $this, 'regenerate_feed' ) );
