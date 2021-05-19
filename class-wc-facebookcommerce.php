@@ -12,7 +12,6 @@ use SkyVerge\WooCommerce\Facebook\API;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
-use SkyVerge\WooCommerce\Facebook\Utilities\BackgroundJobCleanup;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
@@ -99,9 +98,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var Heartbeat */
 		public $heartbeat;
 
-		/** @var BackgroundJobCleanup */
-		public $background_job_cleanup;
-
 		/**
 		 * Constructs the plugin.
 		 *
@@ -160,7 +156,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
-				$this->background_job_cleanup    = new BackgroundJobCleanup();
 
 				if ( is_ajax() ) {
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();

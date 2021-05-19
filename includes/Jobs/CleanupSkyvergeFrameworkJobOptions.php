@@ -1,13 +1,13 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
+namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class BackgroundJobCleanup
+ * Class CleanupSkyvergeFrameworkJobOptions
  *
  * Responsible for cleaning up old completed background sync jobs from SkyVerge background job system.
  * Each job is represented by a row in wp_options table, and these can accumulate over time.
@@ -18,21 +18,15 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since x.x.x
  */
-class BackgroundJobCleanup {
-
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		$this->add_hooks();
-	}
+class CleanupSkyvergeFrameworkJobOptions {
 
 	/**
 	 * Add hooks.
 	 */
-	public function add_hooks() {
-		// Register our cleanup routine to run on the hourly heartbeat.
-		add_action( Heartbeat::DAILY, array( $this, 'clean_up_old_completed_options' ) );
+	public function init() {
+		// Register our cleanup routine to run regularly.
+		// add_action( Heartbeat::DAILY, array( $this, 'clean_up_old_completed_options' ) );
+		add_action( Heartbeat::HOURLY, array( $this, 'clean_up_old_completed_options' ) );
 	}
 
 	/**
