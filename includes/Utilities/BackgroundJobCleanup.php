@@ -32,7 +32,7 @@ class BackgroundJobCleanup {
 	 */
 	public function add_hooks() {
 		// Register our cleanup routine to run on the hourly heartbeat.
-		add_action( Heartbeat::HOURLY, array( $this, 'clean_up_old_completed_options' ) );
+		add_action( Heartbeat::DAILY, array( $this, 'clean_up_old_completed_options' ) );
 	}
 
 	/**
@@ -60,7 +60,7 @@ class BackgroundJobCleanup {
 			WHERE option_name LIKE 'wc_facebook_background_product_sync_job_%'
 			AND option_value LIKE '%\"status\":\"completed\"%'
 			ORDER BY option_id ASC
-			LIMIT 10"
+			LIMIT 250"
 		);
 	}
 
