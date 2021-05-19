@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version 2.5.0
+2021-05-19 - version 2.5.0
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job #1932
  * New - Log connection errors to allow easier troubleshooting #1857
  * Fix - Reduce default feed generation (product sync) interval to once per day to reduce overhead #1942
