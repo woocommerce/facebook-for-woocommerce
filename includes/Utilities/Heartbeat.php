@@ -1,6 +1,6 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace SkyVerge\WooCommerce\Facebook\Utilities;
 
 use WC_Queue_Interface;
 
