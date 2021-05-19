@@ -172,7 +172,6 @@ class GenerateProductFeed extends AbstractChainedJob {
 				throw new Exception( 'Product not found.' );
 			}
 			$this->processed_items[] = $this->feed_data_exporter->generate_row_data( $product );
-			$this->log( $product->get_id() );
 
 		} catch ( Exception $e ) {
 			$this->log(
