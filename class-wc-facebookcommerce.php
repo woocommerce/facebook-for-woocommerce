@@ -14,7 +14,7 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_V
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\Facebook\Utilities\BackgroundJobCleanup;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
-use SkyVerge\WooCommerce\Facebook\Heartbeat;
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -24,7 +24,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.4.1';
+		const VERSION = WC_Facebook_Loader::PLUGIN_VERSION;
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;

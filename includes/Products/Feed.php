@@ -12,7 +12,7 @@ namespace SkyVerge\WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Heartbeat;
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
