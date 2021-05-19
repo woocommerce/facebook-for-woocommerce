@@ -2,7 +2,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Utilities;
 
-use SkyVerge\WooCommerce\Facebook\Heartbeat;
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) || exit;
 
