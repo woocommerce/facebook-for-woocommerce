@@ -21,6 +21,9 @@
 		<!-- We use the PSR-4 naming convention rather than the WP one -->
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+
+		<!--All PHP files contain a single class with a comment so a file comment is redundant -->
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
 	</rule>
 
 	<!-- Language domain -->

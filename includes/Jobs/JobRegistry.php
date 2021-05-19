@@ -23,6 +23,11 @@ class JobRegistry {
 	public $generate_product_feed_job;
 
 	/**
+	 * @var CleanupSkyvergeFrameworkJobOptions
+	 */
+	public $cleanup_skyverge_job_options;
+
+	/**
 	 * Instantiate and init all jobs for the plugin.
 	 */
 	public function init() {
@@ -32,6 +37,9 @@ class JobRegistry {
 		$this->generate_product_feed_job = new GenerateProductFeed( $action_scheduler_proxy, $feed_file_handler, $feed_data_exporter );
 		$this->generate_product_feed_job->init();
 		FeedFileUploadHandler::init( $feed_file_handler );
+
+		$this->cleanup_skyverge_job_options = new CleanupSkyvergeFrameworkJobOptions();
+		$this->cleanup_skyverge_job_options->init();
 	}
 
 }
