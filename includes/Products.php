@@ -230,6 +230,11 @@ class Products {
 			$terms_product = null;
 		}
 
+		// Check parent status.
+		if ( null !== $terms_product && 'publish' !== $terms_product->get_status() ) {
+			return false;
+		}
+
 		// allow simple or variable products (and their variations) with zero or empty price - exclude other product types with zero or empty price
 		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), array( 'simple', 'variable' ) ) ) ) ) {
 			$should_sync = false;
