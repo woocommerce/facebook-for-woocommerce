@@ -119,16 +119,16 @@ class FeedProductFormatter {
 		$feed_row['link']                      = $this->get_value_from_product_data( $product_data, 'url' );
 		$feed_row['product_type']              = $this->get_value_from_product_data( $product_data, 'category' );
 		$feed_row['brand']                     = $this->get_value_from_product_data( $product_data, 'brand' );
-		$feed_row['price']                     = static::format_price_for_feed(
+		$feed_row['price']                     = $this->format_price_for_feed(
 			$this->get_value_from_product_data( $product_data, 'price', 0 ),
 			$this->get_value_from_product_data( $product_data, 'currency' )
 		);
 		$feed_row['availability']              = $this->get_value_from_product_data( $product_data, 'availability' );
 		$feed_row['item_group_id']             = $item_group_id;
 		$feed_row['checkout_url']              = $this->get_value_from_product_data( $product_data, 'checkout_url' );
-		$feed_row['additional_image_link']     = static::format_additional_image_url( $this->get_value_from_product_data( $product_data, 'additional_image_urls' ) );
+		$feed_row['additional_image_link']     = $this->format_additional_image_url( $this->get_value_from_product_data( $product_data, 'additional_image_urls' ) );
 		$feed_row['sale_price_effective_date'] = $this->get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . $this->get_value_from_product_data( $product_data, 'sale_price_end_date' );
-		$feed_row['sale_price']                = static::format_price_for_feed(
+		$feed_row['sale_price']                = $this->format_price_for_feed(
 			$this->get_value_from_product_data( $product_data, 'sale_price', 0 ),
 			$this->get_value_from_product_data( $product_data, 'currency' )
 		);
@@ -152,7 +152,7 @@ class FeedProductFormatter {
 	 * @param array $product_image_urls Array of urls to images.
 	 * @return string Stringified list of urls.
 	 */
-	private static function format_additional_image_url( $product_image_urls ) {
+	private function format_additional_image_url( $product_image_urls ) {
 		// Returns the top 5 additional image urls separated by a comma according to feed api rules.
 		$product_image_urls = array_slice(
 			$product_image_urls,
@@ -174,7 +174,7 @@ class FeedProductFormatter {
 	 * @param string $currency Currency of value.
 	 * @return string Formatted price value.
 	 */
-	private static function format_price_for_feed( $value, $currency ) {
+	private function format_price_for_feed( $value, $currency ) {
 		return (string) ( round( $value / (float) 100, 2 ) ) . $currency;
 	}
 
