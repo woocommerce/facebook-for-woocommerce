@@ -114,33 +114,33 @@ class FeedProductFormatter {
 		$feed_row                              = array();
 		$feed_row['id']                        = $product_data['retailer_id'];
 		$feed_row['title']                     = $woo_product->woo_product->get_title();
-		$feed_row['description']               = static::get_value_from_product_data( $product_data, 'description' );
-		$feed_row['image_link']                = static::get_value_from_product_data( $product_data, 'image_url' );
-		$feed_row['link']                      = static::get_value_from_product_data( $product_data, 'url' );
-		$feed_row['product_type']              = static::get_value_from_product_data( $product_data, 'category' );
-		$feed_row['brand']                     = static::get_value_from_product_data( $product_data, 'brand' );
+		$feed_row['description']               = $this->get_value_from_product_data( $product_data, 'description' );
+		$feed_row['image_link']                = $this->get_value_from_product_data( $product_data, 'image_url' );
+		$feed_row['link']                      = $this->get_value_from_product_data( $product_data, 'url' );
+		$feed_row['product_type']              = $this->get_value_from_product_data( $product_data, 'category' );
+		$feed_row['brand']                     = $this->get_value_from_product_data( $product_data, 'brand' );
 		$feed_row['price']                     = static::format_price_for_feed(
-			static::get_value_from_product_data( $product_data, 'price', 0 ),
-			static::get_value_from_product_data( $product_data, 'currency' )
+			$this->get_value_from_product_data( $product_data, 'price', 0 ),
+			$this->get_value_from_product_data( $product_data, 'currency' )
 		);
-		$feed_row['availability']              = static::get_value_from_product_data( $product_data, 'availability' );
+		$feed_row['availability']              = $this->get_value_from_product_data( $product_data, 'availability' );
 		$feed_row['item_group_id']             = $item_group_id;
-		$feed_row['checkout_url']              = static::get_value_from_product_data( $product_data, 'checkout_url' );
-		$feed_row['additional_image_link']     = static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) );
-		$feed_row['sale_price_effective_date'] = static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . static::get_value_from_product_data( $product_data, 'sale_price_end_date' );
+		$feed_row['checkout_url']              = $this->get_value_from_product_data( $product_data, 'checkout_url' );
+		$feed_row['additional_image_link']     = static::format_additional_image_url( $this->get_value_from_product_data( $product_data, 'additional_image_urls' ) );
+		$feed_row['sale_price_effective_date'] = $this->get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . $this->get_value_from_product_data( $product_data, 'sale_price_end_date' );
 		$feed_row['sale_price']                = static::format_price_for_feed(
-			static::get_value_from_product_data( $product_data, 'sale_price', 0 ),
-			static::get_value_from_product_data( $product_data, 'currency' )
+			$this->get_value_from_product_data( $product_data, 'sale_price', 0 ),
+			$this->get_value_from_product_data( $product_data, 'currency' )
 		);
 		$feed_row['condition']                 = 'new';
-		$feed_row['visibility']                = static::get_value_from_product_data( $product_data, 'visibility' );
-		$feed_row['gender']                    = static::get_value_from_product_data( $product_data, 'gender' );
-		$feed_row['color']                     = static::get_value_from_product_data( $product_data, 'color' );
-		$feed_row['size']                      = static::get_value_from_product_data( $product_data, 'size' );
-		$feed_row['pattern']                   = static::get_value_from_product_data( $product_data, 'pattern' );
-		$feed_row['google_product_category']   = static::get_value_from_product_data( $product_data, 'google_product_category' );
-		$feed_row['default_product']           = static::get_value_from_product_data( $product_data, 'default_product' );
-		$feed_row['variant']                   = static::get_value_from_product_data( $product_data, 'variant' );
+		$feed_row['visibility']                = $this->get_value_from_product_data( $product_data, 'visibility' );
+		$feed_row['gender']                    = $this->get_value_from_product_data( $product_data, 'gender' );
+		$feed_row['color']                     = $this->get_value_from_product_data( $product_data, 'color' );
+		$feed_row['size']                      = $this->get_value_from_product_data( $product_data, 'size' );
+		$feed_row['pattern']                   = $this->get_value_from_product_data( $product_data, 'pattern' );
+		$feed_row['google_product_category']   = $this->get_value_from_product_data( $product_data, 'google_product_category' );
+		$feed_row['default_product']           = $this->get_value_from_product_data( $product_data, 'default_product' );
+		$feed_row['variant']                   = $this->get_value_from_product_data( $product_data, 'variant' );
 
 		return $feed_row;
 	}
@@ -211,7 +211,7 @@ class FeedProductFormatter {
 	 * @param mixed  $return_if_not_set The value to be returned if product data has no index (default to '').
 	 * @return mixed|string the data value or an empty string
 	 */
-	private static function get_value_from_product_data( $product_data, $index, $return_if_not_set = '' ) {
+	private function get_value_from_product_data( $product_data, $index, $return_if_not_set = '' ) {
 		return isset( $product_data[ $index ] ) ? $product_data[ $index ] : $return_if_not_set;
 	}
 }
