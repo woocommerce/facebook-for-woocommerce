@@ -40,7 +40,18 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2.5.0 - 2021-05-19 =
- * Ensure variable product attribute values containing , sync correctly to Facebook additional_variant_attribute field.
+ * New - Option to allow larger sites to opt-out of feed generation (product sync) job
+ * New - Log connection errors to allow easier troubleshooting
+ * Fix - Reduce default feed generation (product sync) interval to once per day to reduce overhead
+ * Fix - Trigger feed (product sync) job from to `admin_init` to reduce impact on front-end requests
+ * Fix - Ensure variable product attribute values containing comma (`,`) sync correctly
+ * Fix - Use existing / current tab for connection `Get Started` button
+ * Dev - Require PHP version 7.0 or newer
+ * Dev - Adopt Composer autoloader to avoid manually `require`ing PHP class files
+ * Dev - Adopt WooRelease release tool for deploying releases
+ * Dev - Use wp-scripts to build assets
+ * Dev - Add `phpcs` tooling to help standardise PHP code style
+ * Dev - Add JobRegistry engine for managing periodic background batch jobs
 
 = 2021.04.29 - version 2.4.1 =
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
