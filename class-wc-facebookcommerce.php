@@ -95,6 +95,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var Heartbeat */
 		public $heartbeat;
 
+		/** @var FeedUploadHandler; */
+		public $feed_upload_handler;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -146,6 +149,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->heartbeat->init();
 
 				$this->feed_scheduler            = new \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler();
+				$this->feed_upload_handler       = new \SkyVerge\WooCommerce\Facebook\Feed\FeedFileUploadHandler();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();

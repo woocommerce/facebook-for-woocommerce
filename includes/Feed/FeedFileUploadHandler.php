@@ -3,7 +3,7 @@
 namespace SkyVerge\WooCommerce\Facebook\Feed;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
-
+use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
 
 defined( 'ABSPATH' ) || exit;
 /**
@@ -20,35 +20,12 @@ class FeedFileUploadHandler {
 	 */
 	protected $feed_file_handler;
 
-
-	/**
-	 * Singleton instance.
-	 *
-	 * @var FeedFileUploadHandler
-	 */
-	protected static $instance;
-
 	/**
 	 * Constructor.
-	 *
-	 * @param FeedFileHandler $feed_file_handler Feed file handling.
 	 */
-	public function __construct( $feed_file_handler ) {
-		$this->feed_file_handler = $feed_file_handler;
-		add_action( 'woocommerce_api_' . $feed_file_handler::REQUEST_FEED_ACTION, array( $this, 'handle_feed_request' ) );
-	}
-
-	/**
-	 * Initialize the class.
-	 *
-	 * @since 2.6.0
-	 * @param FeedFileHandler $feed_file_handler Feed file handling.
-	 * @return void
-	 */
-	public static function init( $feed_file_handler ) {
-		if ( null === self::$instance ) {
-			self::$instance = new self( $feed_file_handler );
-		}
+	public function __construct() {
+		$this->feed_file_handler = new FeedFileHandler();
+		add_action( 'woocommerce_api_' . $this->feed_file_handler::REQUEST_FEED_ACTION, array( $this, 'handle_feed_request' ) );
 	}
 
 	/**
