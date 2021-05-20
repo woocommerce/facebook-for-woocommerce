@@ -21,7 +21,7 @@ class FeedProductFormatter {
 	 * @since 2.6.0
 	 * @param \WC_Facebook_Product $woo_product WooCommerce product object normalized by Facebook.
 	 * @param array                $attribute_variants Array of variants attributes.
-	 * @return string product feed line data
+	 * @return array[string] product feed line data
 	 */
 	public function prepare_product_for_feed( $woo_product, &$attribute_variants ) {
 
