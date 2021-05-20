@@ -32,79 +32,16 @@ class FeedProductFormatter {
 		$product_data['variant'] = '';
 
 		if ( $woo_product->is_type( 'variation' ) ) {
-
-			$parent_id = $woo_product->get_parent_id();
-
-			if ( ! isset( $attribute_variants[ $parent_id ] ) ) {
-
-				$parent_product          = new \WC_Facebook_Product( $parent_id );
-				$gallery_urls            = array_filter( $parent_product->get_gallery_urls() );
-				$variation_id            = $parent_product->find_matching_product_variation();
-				$variants_for_group      = $parent_product->prepare_variants_for_group( true );
-				$parent_attribute_values = array(
-					'gallery_urls'       => $gallery_urls,
-					'default_variant_id' => $variation_id,
-					'item_group_id'      => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product ),
-				);
-
-				foreach ( $variants_for_group as $variant ) {
-					if ( isset( $variant['product_field'], $variant['options'] ) ) {
-						$parent_attribute_values[ $variant['product_field'] ] = $variant['options'];
-					}
-				}
-
-				// Cache product group variants.
-				$attribute_variants[ $parent_id ] = $parent_attribute_values;
-
-			} else {
-
-				$parent_attribute_values = $attribute_variants[ $parent_id ];
-			}
-
-			$variants_for_item   = $woo_product->prepare_variants_for_item( $product_data );
-			$variant_feed_column = array();
-
-			foreach ( $variants_for_item as $variant_array ) {
-
-				static::format_variant_for_feed(
-					$variant_array['product_field'],
-					$variant_array['options'][0],
-					$parent_attribute_values,
-					$variant_feed_column
-				);
-			}
-
-			if ( isset( $product_data['custom_data'] ) && is_array( $product_data['custom_data'] ) ) {
-
-				foreach ( $product_data['custom_data'] as $product_field => $value ) {
-
-					static::format_variant_for_feed(
-						$product_field,
-						$value,
-						$parent_attribute_values,
-						$variant_feed_column
-					);
-				}
-			}
-
-			if ( ! empty( $variant_feed_column ) ) {
-				$product_data['variant'] = '"' . implode( ',', $variant_feed_column ) . '"';
-			}
-
-			if ( isset( $parent_attribute_values['gallery_urls'] ) ) {
-				$product_data['additional_image_urls'] = array_merge( $product_data['additional_image_urls'], $parent_attribute_values['gallery_urls'] );
-			}
-
-			if ( isset( $parent_attribute_values['item_group_id'] ) ) {
-				$item_group_id = $parent_attribute_values['item_group_id'];
-			}
-
-			$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $woo_product->id ? 'default' : '';
+			$product_data = $this->prepare_variation_for_feed( $product_data, $woo_product, $attribute_variants );
 		}
 
 		// Log simple product.
 		if ( ! isset( $product_data['default_product'] ) ) {
 			$product_data['default_product'] = '';
+		}
+
+		if ( isset( $product_data['item_group_id'] ) ) {
+			$item_group_id = $product_data['item_group_id'];
 		}
 
 		// When dealing with the feed file, only set out-of-stock products as hidden.
@@ -144,6 +81,88 @@ class FeedProductFormatter {
 
 		return $feed_row;
 	}
+
+	/**
+	 * Prepare variation information
+	 *
+	 * @since 2.6.0
+	 * @param array                $product_data Product information for the feed.
+	 * @param \WC_Facebook_Product $woo_product WooCommerce product object normalized by Facebook.
+	 * @param array                $attribute_variants Array of variants attributes.
+	 * @return array[string] product feed data
+	 */
+	private function prepare_variation_for_feed( $product_data, $woo_product, &$attribute_variants ) {
+		$parent_id = $woo_product->get_parent_id();
+
+		if ( ! isset( $attribute_variants[ $parent_id ] ) ) {
+
+			$parent_product          = new \WC_Facebook_Product( $parent_id );
+			$gallery_urls            = array_filter( $parent_product->get_gallery_urls() );
+			$variation_id            = $parent_product->find_matching_product_variation();
+			$variants_for_group      = $parent_product->prepare_variants_for_group( true );
+			$parent_attribute_values = array(
+				'gallery_urls'       => $gallery_urls,
+				'default_variant_id' => $variation_id,
+				'item_group_id'      => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product ),
+			);
+
+			foreach ( $variants_for_group as $variant ) {
+				if ( isset( $variant['product_field'], $variant['options'] ) ) {
+					$parent_attribute_values[ $variant['product_field'] ] = $variant['options'];
+				}
+			}
+
+			// Cache product group variants.
+			$attribute_variants[ $parent_id ] = $parent_attribute_values;
+
+		} else {
+
+			$parent_attribute_values = $attribute_variants[ $parent_id ];
+		}
+
+		$variants_for_item   = $woo_product->prepare_variants_for_item( $product_data );
+		$variant_feed_column = array();
+
+		foreach ( $variants_for_item as $variant_array ) {
+
+			static::format_variant_for_feed(
+				$variant_array['product_field'],
+				$variant_array['options'][0],
+				$parent_attribute_values,
+				$variant_feed_column
+			);
+		}
+
+		if ( isset( $product_data['custom_data'] ) && is_array( $product_data['custom_data'] ) ) {
+
+			foreach ( $product_data['custom_data'] as $product_field => $value ) {
+
+				static::format_variant_for_feed(
+					$product_field,
+					$value,
+					$parent_attribute_values,
+					$variant_feed_column
+				);
+			}
+		}
+
+		if ( ! empty( $variant_feed_column ) ) {
+			$product_data['variant'] = '"' . implode( ',', $variant_feed_column ) . '"';
+		}
+
+		if ( isset( $parent_attribute_values['gallery_urls'] ) ) {
+			$product_data['additional_image_urls'] = array_merge( $product_data['additional_image_urls'], $parent_attribute_values['gallery_urls'] );
+		}
+
+		if ( isset( $parent_attribute_values['item_group_id'] ) ) {
+			$product_data['item_group_id'] = $parent_attribute_values['item_group_id'];
+		}
+
+		$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $woo_product->id ? 'default' : '';
+
+		return $product_data;
+	}
+
 
 	/**
 	 * Format additional urls into the feed requirements.
