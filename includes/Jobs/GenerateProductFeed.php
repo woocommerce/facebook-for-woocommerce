@@ -5,6 +5,8 @@ namespace SkyVerge\WooCommerce\Facebook\Jobs;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionSchedulerInterface;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Utilities\BatchQueryOffset;
 use Exception;
+use SkyVerge\WooCommerce\Facebook\Feed\FeedDataExporter;
+use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
 use WC_Facebookcommerce;
 use WC_Product;
 
@@ -31,7 +33,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	/**
 	 * Feed file creation and manipulation utility.
 	 *
-	 * @var FacebookFeedFileHandler $feed_file_handler.
+	 * @var FeedFileHandler $feed_file_handler.
 	 */
 	protected $feed_file_handler;
 
@@ -46,7 +48,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Constructor.
 	 *
 	 * @param ActionSchedulerInterface $action_scheduler   Action Scheduler facade.
-	 * @param FacebookFeedFileHandler  $feed_file_handler  Feed file creation and manipulation handler.
+	 * @param FeedFileHandler          $feed_file_handler  Feed file creation and manipulation handler.
 	 * @param FeedDataExporter         $feed_data_exporter Handling of file data.
 	 */
 	public function __construct( ActionSchedulerInterface $action_scheduler, $feed_file_handler, $feed_data_exporter ) {
