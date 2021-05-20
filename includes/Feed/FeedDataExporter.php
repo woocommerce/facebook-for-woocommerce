@@ -41,29 +41,29 @@ class FeedDataExporter {
 	 */
 	public function get_column_names() {
 		return array(
-			'id'                        => 'id',
-			'title'                     => 'title',
-			'description'               => 'description',
-			'image_link'                => 'image_link',
-			'link'                      => 'link',
-			'product_type'              => 'product_type',
-			'brand'                     => 'brand',
-			'price'                     => 'price',
-			'availability'              => 'availability',
-			'item_group_id'             => 'item_group_id',
-			'checkout_url'              => 'checkout_url',
-			'additional_image_link'     => 'additional_image_link',
-			'sale_price_effective_date' => 'sale_price_effective_date',
-			'sale_price'                => 'sale_price',
-			'condition'                 => 'condition',
-			'visibility'                => 'visibility',
-			'gender'                    => 'gender',
-			'color'                     => 'color',
-			'size'                      => 'size',
-			'pattern'                   => 'pattern',
-			'google_product_category'   => 'google_product_category',
-			'default_product'           => 'default_product',
-			'variant'                   => 'variant',
+			'id',
+			'title',
+			'description',
+			'image_link',
+			'link',
+			'product_type',
+			'brand',
+			'price',
+			'availability',
+			'item_group_id',
+			'checkout_url',
+			'additional_image_link',
+			'sale_price_effective_date',
+			'sale_price',
+			'condition',
+			'visibility',
+			'gender',
+			'color',
+			'size',
+			'pattern',
+			'google_product_category',
+			'default_product',
+			'variant',
 		);
 	}
 
@@ -86,7 +86,7 @@ class FeedDataExporter {
 		$buffer     = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
 		ob_start();
 
-		foreach ( $columns as $column_id => $column_name ) {
+		foreach ( $columns as $column_name ) {
 			$export_row[] = $this->format_data( $column_name );
 		}
 
@@ -142,9 +142,9 @@ class FeedDataExporter {
 		$columns    = $this->get_column_names();
 		$export_row = array();
 
-		foreach ( $columns as $column_id => $column_name ) {
-			if ( isset( $row_data[ $column_id ] ) ) {
-				$export_row[] = $this->format_data( $row_data[ $column_id ] );
+		foreach ( $columns as $column_name ) {
+			if ( isset( $row_data[ $column_name ] ) ) {
+				$export_row[] = $this->format_data( $row_data[ $column_name ] );
 			} else {
 				$export_row[] = '';
 			}
