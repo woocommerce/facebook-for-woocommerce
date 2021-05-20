@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 2.6.0
  */
-class FeedFileUploadHandler {
+class FeedApiEndpoint {
 
 	/**
 	 * Feed file handling and manipulation class.
