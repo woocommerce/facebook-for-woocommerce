@@ -76,31 +76,45 @@ class GenerateProductFeed extends AbstractChainedJob {
 	}
 
 	/**
-	 * Handle processing a chain batch.
+	 * Processes a batch of items.
 	 *
-	 * @hooked facebook_for_woocommerce/jobs/generate_feed/chain_batch
+	 * @since 1.1.0
 	 *
-	 * @param int   $batch_number The batch number for the new batch.
-	 * @param array $args         The args for the job.
+	 * @param array $items The items of the current batch.
+	 * @param array $args  The args for the job.
 	 *
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
-	public function handle_batch_action( int $batch_number, array $args ) {
-		// Clear the processed_items in case we are processing more than one batch in a single Action Scheduler tick.
-		$this->processed_items = array();
-		parent::handle_batch_action( $batch_number, $args );
-		$this->write_processed_items_to_feed();
+	protected function process_items( array $items, array $args ) {
+		/*
+		 * Pre-fetch full product objects.
+		 * Variable products will be filtered out here since we don't need them for the feed. It's important to not
+		 * filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
+		 * the job will end prematurely thinking it has nothing more to process.
+		 */
+		$products = wc_get_products(
+			array(
+				'type'    => array( 'simple', 'variation' ),
+				'include' => $items,
+				'orderby' => 'none',
+			)
+		);
+
+		$processed_items = array();
+
+		foreach ( $products as $product ) {
+			$processed_items[] = $this->process_item( $product, $args );
+		}
+
+		$this->write_processed_items_to_feed( $processed_items );
 	}
 
 	/**
 	 * After processing send items to the feed file.
 	 */
-	public function write_processed_items_to_feed() {
-		if ( empty( $this->processed_items ) ) {
-			return;
-		}
+	public function write_processed_items_to_feed( $processed_items ) {
 		$this->feed_file_handler->write_to_feed_temporary_file(
-			$this->feed_data_exporter->format_items_for_feed( $this->processed_items )
+			$this->feed_data_exporter->format_items_for_feed( $processed_items )
 		);
 	}
 
@@ -138,29 +152,6 @@ class GenerateProductFeed extends AbstractChainedJob {
 	}
 
 	/**
-	 * Filter-like function that runs before items in a batch are processed.
-	 *
-	 * For example, this could be useful for pre-fetching full objects.
-	 *
-	 * @param array $items
-	 *
-	 * @return array
-	 */
-	protected function filter_items_before_processing( array $items ): array {
-		// Pre-fetch full product objects.
-		// Variable products will be filtered out here since we don't need them for the feed. It's important to not
-		// filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
-		// the job will end prematurely thinking it has nothing more to process.
-		return wc_get_products(
-			array(
-				'type'    => array( 'simple', 'variation' ),
-				'include' => $items,
-				'orderby' => 'none',
-			)
-		);
-	}
-
-	/**
 	 * Process a single item.
 	 *
 	 * @param WC_Product $product A single item from the get_items_for_batch() method.
@@ -173,7 +164,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 			if ( ! $product ) {
 				throw new Exception( 'Product not found.' );
 			}
-			$this->processed_items[] = $this->feed_data_exporter->generate_row_data( $product );
+			return $this->feed_data_exporter->generate_row_data( $product );
 
 		} catch ( Exception $e ) {
 			$this->log(
