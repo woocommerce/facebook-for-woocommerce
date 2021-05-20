@@ -330,12 +330,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				array( $this, 'ajax_display_test_result' )
 			);
 
-			add_action(
-				'wp_ajax_ajax_schedule_force_resync',
-				array( $this, 'ajax_schedule_force_resync' ),
-				self::FB_PRIORITY_MID
-			);
-
 			// Don't duplicate product FBID meta.
 			add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'fb_duplicate_product_reset_meta' ) );
 
