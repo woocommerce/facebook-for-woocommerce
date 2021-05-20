@@ -15,7 +15,7 @@ class FeedProductFormatter {
 	const MAX_IMAGES_PER_PRODUCT = 5;
 
 	/**
-	 * Assembles product payload in feed upload for initial sync.
+	 * Formats a product to be synced to Facebook.
 	 *
 	 * @see FeedDataExporter::attribute_variants for explanation why $attribute_variants are passed as reference.
 	 * @since 2.6.0
