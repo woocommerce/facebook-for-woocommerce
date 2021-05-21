@@ -59,25 +59,8 @@ class FeedApiEndpoint {
 			header( 'Pragma: public' );
 			header( 'Content-Length:' . filesize( $file_path ) );
 
-			$file = @fopen( $file_path, 'rb' );
+			readfile( $file_path );
 
-			if ( ! $file ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Could not open feed file.', 500 );
-			}
-
-			// fpassthru might be disabled in some hosts (like Flywheel).
-			if ( $this->is_fpassthru_disabled() || ! @fpassthru( $file ) ) {
-
-				\WC_Facebookcommerce_Utils::log( 'fpassthru is disabled: getting file contents' );
-
-				$contents = @stream_get_contents( $file );
-
-				if ( ! $contents ) {
-					throw new Framework\SV_WC_Plugin_Exception( 'Could not get feed file contents.', 500 );
-				}
-
-				echo $contents; // phpcs::ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
 		} catch ( \Exception $exception ) {
 
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
@@ -86,29 +69,6 @@ class FeedApiEndpoint {
 		}
 
 		exit;
-	}
-
-	/**
-	 * Checks whether fpassthru has been disabled in PHP.
-	 *
-	 * Helper method, do not open to public.
-	 *
-	 * @since 1.11.0
-	 * @since 2.6.0 moved from Feed class( now deleted ).
-	 * @return bool
-	 */
-	private function is_fpassthru_disabled() {
-
-		$disabled = false;
-
-		if ( function_exists( 'ini_get' ) ) {
-
-			$disabled_functions = @ini_get( 'disable_functions' );
-
-			$disabled = is_string( $disabled_functions ) && in_array( 'fpassthru', explode( ',', $disabled_functions ), false );
-		}
-
-		return $disabled;
 	}
 
 }
