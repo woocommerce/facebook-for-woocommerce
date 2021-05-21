@@ -135,8 +135,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$product_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post.ID
-				FROM wp_posts as post
-				LEFT JOIN wp_posts as parent ON post.post_parent = parent.ID
+				FROM {$wpdb->posts} as post
+				LEFT JOIN {$wpdb->posts} as parent ON post.post_parent = parent.ID
 				WHERE
 					( post.post_type = 'product_variation' AND parent.post_status = 'publish' )
 				OR
