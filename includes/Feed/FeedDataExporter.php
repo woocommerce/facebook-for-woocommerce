@@ -81,20 +81,9 @@ class FeedDataExporter {
 	 * @return string
 	 */
 	public function generate_header() {
-		$columns    = $this->get_column_names();
-		$export_row = array();
-		$buffer     = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
-		ob_start();
-
-		foreach ( $columns as $column_name ) {
-			$export_row[] = $this->format_data( $column_name );
-		}
-
-		fputcsv( $buffer, $export_row, ',', '"', "\0" ); // @codingStandardsIgnoreLine
-
-		$header = ob_get_clean();
-		fclose( $buffer );
-		return $header;
+		$columns = $this->get_column_names();
+		$header  = array_combine( $columns, $columns );
+		return $this->format_items_for_feed( array( $header ) );
 	}
 
 	/**
@@ -150,7 +139,7 @@ class FeedDataExporter {
 			}
 		}
 
-		fputcsv( $buffer, $export_row, ',', '"', "\0" ); // @codingStandardsIgnoreLine
+		fputcsv( $buffer, $export_row, ',', '"', "\0" );
 	}
 
 	/**
