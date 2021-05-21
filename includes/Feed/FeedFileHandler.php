@@ -155,7 +155,7 @@ class FeedFileHandler {
 	 * @since 2.6.0
 	 * @param string $data Data to write to the file.
 	 */
-	public function write_to_feed_temporary_file( $data ) {
+	public function write_to_temp_file( $data ) {
 		file_put_contents( $this->get_temporary_file_path(), $data, FILE_APPEND );
 	}
 

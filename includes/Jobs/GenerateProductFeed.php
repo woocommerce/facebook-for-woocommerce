@@ -53,7 +53,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	protected function handle_start() {
 		$this->feed_file_handler->prepare_new_temp_file();
-		$this->feed_file_handler->write_to_feed_temporary_file(
+		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->generate_header()
 		);
 	}
@@ -105,7 +105,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @param array $processed_items Array of product fields to write to the feed file.
 	 */
 	protected function write_processed_items_to_feed( $processed_items ) {
-		$this->feed_file_handler->write_to_feed_temporary_file(
+		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->format_items_for_feed( $processed_items )
 		);
 	}
