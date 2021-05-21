@@ -48,12 +48,7 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_filename() {
-		return sanitize_file_name(
-			sprintf(
-				$this->filename,
-				self::get_feed_secret()
-			)
-		);
+		return sanitize_file_name( sprintf( $this->filename, self::get_feed_secret() ) );
 	}
 
 	/**
