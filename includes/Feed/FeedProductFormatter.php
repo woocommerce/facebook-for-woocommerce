@@ -19,20 +19,20 @@ class FeedProductFormatter {
 	 *
 	 * @see FeedDataExporter::attribute_variants for explanation why $attribute_variants are passed as reference.
 	 * @since 2.6.0
-	 * @param \WC_Facebook_Product $woo_product WooCommerce product object normalized by Facebook.
+	 * @param \WC_Facebook_Product $fb_product WooCommerce product object normalized by Facebook.
 	 * @param array                $attribute_variants Array of variants attributes.
 	 * @return array[string] product feed line data
 	 */
-	public function prepare_product_for_feed( $woo_product, &$attribute_variants ) {
+	public function prepare_product_for_feed( $fb_product, &$attribute_variants ) {
 
-		$product_data  = $woo_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_FEED );
+		$product_data  = $fb_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_FEED );
 		$item_group_id = $product_data['retailer_id'];
 
 		// Prepare variant column for variable products.
 		$product_data['variant'] = '';
 
-		if ( $woo_product->is_type( 'variation' ) ) {
-			$product_data = $this->prepare_variation_for_feed( $product_data, $woo_product, $attribute_variants );
+		if ( $fb_product->is_type( 'variation' ) ) {
+			$product_data = $this->prepare_variation_for_feed( $product_data, $fb_product, $attribute_variants );
 		}
 
 		// Log simple product.
@@ -45,12 +45,12 @@ class FeedProductFormatter {
 		}
 
 		// When dealing with the feed file, only set out-of-stock products as hidden.
-		if ( Products::product_should_be_deleted( $woo_product->woo_product ) ) {
+		if ( Products::product_should_be_deleted( $fb_product->woo_product ) ) {
 			$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 		}
 		$feed_row                              = array();
 		$feed_row['id']                        = $product_data['retailer_id'];
-		$feed_row['title']                     = $woo_product->woo_product->get_title();
+		$feed_row['title']                     = $fb_product->woo_product->get_title();
 		$feed_row['description']               = $this->get_value_from_product_data( $product_data, 'description' );
 		$feed_row['image_link']                = $this->get_value_from_product_data( $product_data, 'image_url' );
 		$feed_row['link']                      = $this->get_value_from_product_data( $product_data, 'url' );
@@ -87,12 +87,12 @@ class FeedProductFormatter {
 	 *
 	 * @since 2.6.0
 	 * @param array                $product_data Product information for the feed.
-	 * @param \WC_Facebook_Product $woo_product WooCommerce product object normalized by Facebook.
+	 * @param \WC_Facebook_Product $fb_product WooCommerce product object normalized by Facebook.
 	 * @param array                $attribute_variants Array of variants attributes.
 	 * @return array[string] product feed data
 	 */
-	private function prepare_variation_for_feed( $product_data, $woo_product, &$attribute_variants ) {
-		$parent_id = $woo_product->get_parent_id();
+	private function prepare_variation_for_feed( $product_data, $fb_product, &$attribute_variants ) {
+		$parent_id = $fb_product->get_parent_id();
 
 		if ( ! isset( $attribute_variants[ $parent_id ] ) ) {
 
@@ -120,7 +120,7 @@ class FeedProductFormatter {
 			$parent_attribute_values = $attribute_variants[ $parent_id ];
 		}
 
-		$variants_for_item   = $woo_product->prepare_variants_for_item( $product_data );
+		$variants_for_item   = $fb_product->prepare_variants_for_item( $product_data );
 		$variant_feed_column = array();
 
 		foreach ( $variants_for_item as $variant_array ) {
@@ -158,7 +158,7 @@ class FeedProductFormatter {
 			$product_data['item_group_id'] = $parent_attribute_values['item_group_id'];
 		}
 
-		$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $woo_product->id ? 'default' : '';
+		$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $fb_product->id ? 'default' : '';
 
 		return $product_data;
 	}
