@@ -10,7 +10,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class for adding diagnostic info to WooCommerce Tracker snapshot.
@@ -20,6 +20,13 @@ defined( 'ABSPATH' ) or exit;
  * @since 2.3.4
  */
 class Tracker {
+
+	/**
+	 * Transient key name; true if feed has been requested by Facebook.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FEED_REQUESTED = 'wc_facebook_wctracker_feed_requested';
 
 	/**
 	 * Constructor.
@@ -45,8 +52,11 @@ class Tracker {
 			$data['extensions'] = array();
 		}
 
-		// Is the site connected?
-		// @since 2.3.4
+		/**
+		 * Is the site connected?
+		 *
+		 * @since 2.3.4
+		 */
 		$connection_is_happy = false;
 		$connection_handler  = facebook_for_woocommerce()->get_connection_handler();
 		if ( $connection_handler ) {
@@ -54,13 +64,35 @@ class Tracker {
 		}
 		$data['extensions']['facebook-for-woocommerce']['is-connected'] = wc_bool_to_string( $connection_is_happy );
 
-		// What features are enabled on this site?
-		// @since 2.4.0
+		/**
+		 * What features are enabled on this site?
+		 *
+		 * @since 2.3.4
+		 */
 		$product_sync_enabled = facebook_for_woocommerce()->get_integration()->is_product_sync_enabled();
 		$data['extensions']['facebook-for-woocommerce']['product-sync-enabled'] = wc_bool_to_string( $product_sync_enabled );
 		$messenger_enabled = facebook_for_woocommerce()->get_integration()->is_messenger_enabled();
 		$data['extensions']['facebook-for-woocommerce']['messenger-enabled'] = wc_bool_to_string( $messenger_enabled );
 
+		/**
+		 * Has the feed file been requested recently?
+		 *
+		 * @since x.x.x
+		 */
+		$feed_file_requested = get_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED );
+		$data['extensions']['facebook-for-woocommerce']['feed-file-requested'] = wc_bool_to_string( $feed_file_requested );
+		delete_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED );
+
 		return $data;
+	}
+
+	/**
+	 * Store the fact that the feed has been requested by Facebook in a transient.
+	 * This will later be added to next tracker snapshot.
+	 *
+	 * @since x.x.x
+	 */
+	public function track_feed_file_requested() {
+		set_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED, true, 2 * WEEK_IN_SECONDS );
 	}
 }
