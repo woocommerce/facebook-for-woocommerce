@@ -25,6 +25,12 @@ class FeedApiEndpoint {
 	 */
 	public function __construct() {
 		$this->feed_file_handler = new FeedFileHandler();
+
+		/**
+		 * Add action to handle frontend request endpoint.
+		 *
+		 * @see \WC_API::handle_api_requests
+		 */
 		add_action( 'woocommerce_api_' . $this->feed_file_handler::REQUEST_FEED_ACTION, array( $this, 'handle_feed_request' ) );
 	}
 
