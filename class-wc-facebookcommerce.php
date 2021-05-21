@@ -98,6 +98,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Feed\FeedApiEndpoint */
 		public $feed_api_endpoint;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler */
+		public $feed_scheduler;
+
 		/**
 		 * Constructs the plugin.
 		 *
