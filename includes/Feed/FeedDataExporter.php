@@ -39,7 +39,7 @@ class FeedDataExporter {
 	 * @since  2.6.0
 	 * @return array
 	 */
-	public function get_column_names() {
+	private function get_column_names() {
 		return array(
 			'id',
 			'title',
@@ -127,7 +127,7 @@ class FeedDataExporter {
 	 * @param array    $row_data Data to export.
 	 * @param resource $buffer Output buffer.
 	 */
-	public function export_row( $row_data, $buffer ) {
+	private function export_row( $row_data, $buffer ) {
 		$columns    = $this->get_column_names();
 		$export_row = array();
 
@@ -149,7 +149,7 @@ class FeedDataExporter {
 	 * @param  string $data Data to format.
 	 * @return string
 	 */
-	public function format_data( $data ) {
+	private function format_data( $data ) {
 		$use_mb = function_exists( 'mb_convert_encoding' );
 
 		if ( $use_mb ) {
