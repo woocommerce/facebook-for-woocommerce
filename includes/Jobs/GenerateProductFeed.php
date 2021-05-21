@@ -52,8 +52,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		$this->feed_file_handler->prepare_feed_folder();
-		$this->feed_file_handler->create_fresh_feed_temporary_file();
+		$this->feed_file_handler->prepare_new_temp_file();
 		$this->feed_file_handler->write_to_feed_temporary_file(
 			$this->feed_data_exporter->generate_header()
 		);

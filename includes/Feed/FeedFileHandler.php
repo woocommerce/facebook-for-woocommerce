@@ -92,13 +92,24 @@ class FeedFileHandler {
 	}
 
 	/**
+	 * Setup feed location folder and a fresh empty temporary feed file.
+	 *
+	 * @since 2.6.0
+	 * @throws Error Folder creation not possible.
+	 */
+	public function prepare_new_temp_file() {
+		$this->prepare_feed_folder();
+		$this->create_fresh_feed_temporary_file();
+	}
+
+	/**
 	 * Setup feed location folder.
 	 * Prevent unauthorized access.
 	 *
 	 * @since 2.6.0
 	 * @throws Error Folder creation not possible.
 	 */
-	public function prepare_feed_folder() {
+	protected function prepare_feed_folder() {
 		$catalog_feed_directory = trailingslashit( $this->get_feed_directory() );
 
 		if ( ! wp_mkdir_p( $catalog_feed_directory ) ) {
@@ -135,7 +146,7 @@ class FeedFileHandler {
 	 *
 	 * @since 2.6.0
 	 */
-	public function create_fresh_feed_temporary_file() {
+	protected function create_fresh_feed_temporary_file() {
 		if ( file_exists( ( $this->get_temporary_file_path() ) ) ) {
 			unlink( $this->get_temporary_file_path() );
 		}
