@@ -79,9 +79,9 @@ class Tracker {
 		 *
 		 * @since x.x.x
 		 */
-		$feed_file_requested = get_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED );
+		$feed_file_requested = get_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED );
 		$data['extensions']['facebook-for-woocommerce']['feed-file-requested'] = wc_bool_to_string( $feed_file_requested );
-		delete_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED );
+		delete_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED );
 
 		return $data;
 	}
@@ -93,6 +93,6 @@ class Tracker {
 	 * @since x.x.x
 	 */
 	public function track_feed_file_requested() {
-		set_transient( TRANSIENT_WCTRACKER_FEED_REQUESTED, true, 2 * WEEK_IN_SECONDS );
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED, true, 2 * WEEK_IN_SECONDS );
 	}
 }

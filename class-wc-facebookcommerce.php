@@ -917,6 +917,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
+		 * Gets tracker instance.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Tracker
+		 */
+		public function get_tracker() {
+
+			return $this->tracker;
+		}
+
+		/**
 		 * Gets the debug profiling logger instance.
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger
