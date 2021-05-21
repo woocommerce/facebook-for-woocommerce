@@ -101,8 +101,10 @@ class GenerateProductFeed extends AbstractChainedJob {
 
 	/**
 	 * After processing send items to the feed file.
+	 *
+	 * @param array $processed_items Array of product fields to write to the feed file.
 	 */
-	public function write_processed_items_to_feed( $processed_items ) {
+	protected function write_processed_items_to_feed( $processed_items ) {
 		$this->feed_file_handler->write_to_feed_temporary_file(
 			$this->feed_data_exporter->format_items_for_feed( $processed_items )
 		);
