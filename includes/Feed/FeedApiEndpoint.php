@@ -2,8 +2,8 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Feed;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
+use Error;
 
 defined( 'ABSPATH' ) || exit;
 /**
@@ -38,22 +38,21 @@ class FeedApiEndpoint {
 	 * Handles the feed data request.
 	 *
 	 * @since 2.6.0
-	 * @throws Framework\SV_WC_Plugin_Exception Feed request not possible.
+	 * @throws Error Feed request not possible.
 	 */
 	public function handle_feed_request() {
 
 		$file_path = $this->feed_file_handler->get_file_path();
 
 		try {
-
 			// Bail early if the feed secret is not included or is not valid.
-			if ( $this->feed_file_handler->get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			if ( ! isset( $_GET['secret'] ) || $_GET['secret'] !== $this->feed_file_handler->get_feed_secret() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				throw new Error( 'Invalid feed secret provided.', 401 );
 			}
 
 			// Bail early if the file can't be read.
 			if ( ! is_readable( $file_path ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'File is not readable.', 404 );
+				throw new Error( 'File is not readable.', 404 );
 			}
 
 			// Set the download headers.
