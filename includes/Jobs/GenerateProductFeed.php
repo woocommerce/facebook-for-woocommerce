@@ -22,15 +22,6 @@ class GenerateProductFeed extends AbstractChainedJob {
 	use BatchQueryOffset, LoggingTrait;
 
 	/**
-	 * Array of processing results, used as a temporary storage for batch processing.
-	 * Each entry is an array of feed fields.
-	 * This is used when the batch processing is completed to export data to CSV file.
-	 *
-	 * @var array $processed_items.
-	 */
-	protected $processed_items = array();
-
-	/**
 	 * Feed file creation and manipulation utility.
 	 *
 	 * @var FeedFileHandler $feed_file_handler.
