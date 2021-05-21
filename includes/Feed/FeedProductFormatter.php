@@ -103,7 +103,7 @@ class FeedProductFormatter {
 			$parent_attribute_values = array(
 				'gallery_urls'       => $gallery_urls,
 				'default_variant_id' => $variation_id,
-				'item_group_id'      => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product ),
+				'item_group_id'      => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product->woo_product ),
 			);
 
 			foreach ( $variants_for_group as $variant ) {
