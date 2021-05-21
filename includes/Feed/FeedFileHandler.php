@@ -126,10 +126,10 @@ class FeedFileHandler {
 
 		foreach ( $files as $file ) {
 			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
-				$file_handle = fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, Generic.PHP.NoSilencedErrors.Discouraged
+				$file_handle = fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' );
 				if ( $file_handle ) {
-					fwrite( $file_handle, $file['content'] ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, Generic.PHP.NoSilencedErrors.Discouraged
-					fclose( $file_handle ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, Generic.PHP.NoSilencedErrors.Discouraged
+					fwrite( $file_handle, $file['content'] );
+					fclose( $file_handle );
 				}
 			}
 		}
@@ -145,7 +145,7 @@ class FeedFileHandler {
 		if ( file_exists( ( $this->get_temporary_file_path() ) ) ) {
 			unlink( $this->get_temporary_file_path() );
 		}
-		file_put_contents( $this->get_temporary_file_path(), '' ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged
+		file_put_contents( $this->get_temporary_file_path(), '' );
 		chmod( $this->get_temporary_file_path(), 0664 );
 	}
 
@@ -156,7 +156,7 @@ class FeedFileHandler {
 	 * @param string $data Data to write to the file.
 	 */
 	public function write_to_feed_temporary_file( $data ) {
-		file_put_contents( $this->get_temporary_file_path(), $data, FILE_APPEND ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged
+		file_put_contents( $this->get_temporary_file_path(), $data, FILE_APPEND );
 	}
 
 	/**
@@ -168,7 +168,7 @@ class FeedFileHandler {
 	 * @since 2.6.0
 	 */
 	public function replace_feed_file_with_temp_file() {
-		rename( // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_rename, Generic.PHP.NoSilencedErrors.Discouraged,
+		rename(
 			$this->get_temporary_file_path(),
 			$this->get_file_path()
 		);
