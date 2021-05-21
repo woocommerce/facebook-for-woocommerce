@@ -101,7 +101,7 @@ class FeedDataExporter {
 	 * Take a product and generate row data from it for export.
 	 *
 	 * @since 2.6.0
-	 * @param WC_Product $product WC_Product object.
+	 * @param \WC_Product $product WC_Product object.
 	 * @return array
 	 */
 	public function generate_row_data( $product ) {
