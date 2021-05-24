@@ -194,7 +194,7 @@ class FeedProductFormatter {
 	 * @return string Formatted price value.
 	 */
 	private function format_price_for_feed( $value, $currency ) {
-		return (string) ( round( $value / (float) 100, 2 ) ) . $currency;
+		return (string) ( round( $value / (float) 100, 2 ) ) . ' ' . $currency;
 	}
 
 	/**
