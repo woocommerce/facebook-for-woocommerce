@@ -22,15 +22,6 @@ class GenerateProductFeed extends AbstractChainedJob {
 	use BatchQueryOffset, LoggingTrait;
 
 	/**
-	 * Array of processing results, used as a temporary storage for batch processing.
-	 * Each entry is an array of feed fields.
-	 * This is used when the batch processing is completed to export data to CSV file.
-	 *
-	 * @var array $processed_items.
-	 */
-	protected $processed_items = array();
-
-	/**
 	 * Feed file creation and manipulation utility.
 	 *
 	 * @var FeedFileHandler $feed_file_handler.
@@ -61,9 +52,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		$this->feed_file_handler->prepare_feed_folder();
-		$this->feed_file_handler->create_fresh_feed_temporary_file();
-		$this->feed_file_handler->write_to_feed_temporary_file(
+		$this->feed_file_handler->prepare_new_temp_file();
+		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->generate_header()
 		);
 	}
@@ -111,9 +101,11 @@ class GenerateProductFeed extends AbstractChainedJob {
 
 	/**
 	 * After processing send items to the feed file.
+	 *
+	 * @param array $processed_items Array of product fields to write to the feed file.
 	 */
-	public function write_processed_items_to_feed( $processed_items ) {
-		$this->feed_file_handler->write_to_feed_temporary_file(
+	protected function write_processed_items_to_feed( $processed_items ) {
+		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->format_items_for_feed( $processed_items )
 		);
 	}

@@ -39,7 +39,7 @@ class FeedDataExporter {
 	 * @since  2.6.0
 	 * @return array
 	 */
-	public function get_column_names() {
+	private function get_column_names() {
 		return array(
 			'id',
 			'title',
@@ -81,27 +81,16 @@ class FeedDataExporter {
 	 * @return string
 	 */
 	public function generate_header() {
-		$columns    = $this->get_column_names();
-		$export_row = array();
-		$buffer     = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
-		ob_start();
-
-		foreach ( $columns as $column_name ) {
-			$export_row[] = $this->format_data( $column_name );
-		}
-
-		fputcsv( $buffer, $export_row, ',', '"', "\0" ); // @codingStandardsIgnoreLine
-
-		$header = ob_get_clean();
-		fclose( $buffer );
-		return $header;
+		$columns = $this->get_column_names();
+		$header  = array_combine( $columns, $columns );
+		return $this->format_items_for_feed( array( $header ) );
 	}
 
 	/**
 	 * Take a product and generate row data from it for export.
 	 *
 	 * @since 2.6.0
-	 * @param WC_Product $product WC_Product object.
+	 * @param \WC_Product $product WC_Product object.
 	 * @return array
 	 */
 	public function generate_row_data( $product ) {
@@ -138,7 +127,7 @@ class FeedDataExporter {
 	 * @param array    $row_data Data to export.
 	 * @param resource $buffer Output buffer.
 	 */
-	public function export_row( $row_data, $buffer ) {
+	private function export_row( $row_data, $buffer ) {
 		$columns    = $this->get_column_names();
 		$export_row = array();
 
@@ -150,7 +139,7 @@ class FeedDataExporter {
 			}
 		}
 
-		fputcsv( $buffer, $export_row, ',', '"', "\0" ); // @codingStandardsIgnoreLine
+		fputcsv( $buffer, $export_row, ',', '"', "\0" );
 	}
 
 	/**
@@ -160,7 +149,7 @@ class FeedDataExporter {
 	 * @param  string $data Data to format.
 	 * @return string
 	 */
-	public function format_data( $data ) {
+	private function format_data( $data ) {
 		$use_mb = function_exists( 'mb_convert_encoding' );
 
 		if ( $use_mb ) {

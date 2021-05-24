@@ -16,17 +16,10 @@ class FeedScheduler {
 	const FEED_SCHEDULE_ACTION = 'facebook_for_woocommerce_start_feed_generation';
 
 	/**
-	 * Products belonging to what category should be exported.
-	 *
-	 * @var string
-	 */
-	protected $product_category_to_export = array();
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( Heartbeat::HOURLY , array( $this, 'maybe_schedule_feed_generation' ) );
+		add_action( Heartbeat::HOURLY, array( $this, 'maybe_schedule_feed_generation' ) );
 		add_action( self::FEED_SCHEDULE_ACTION, array( $this, 'prepare_feed_generation' ) );
 	}
 

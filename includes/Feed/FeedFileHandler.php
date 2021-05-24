@@ -48,12 +48,7 @@ class FeedFileHandler {
 	 * @return string
 	 */
 	public function get_filename() {
-		return sanitize_file_name(
-			sprintf(
-				$this->filename,
-				self::get_feed_secret()
-			)
-		);
+		return sanitize_file_name( sprintf( $this->filename, self::get_feed_secret() ) );
 	}
 
 	/**
@@ -92,13 +87,24 @@ class FeedFileHandler {
 	}
 
 	/**
+	 * Setup feed location folder and a fresh empty temporary feed file.
+	 *
+	 * @since 2.6.0
+	 * @throws Error Folder creation not possible.
+	 */
+	public function prepare_new_temp_file() {
+		$this->prepare_feed_folder();
+		$this->create_fresh_feed_temporary_file();
+	}
+
+	/**
 	 * Setup feed location folder.
 	 * Prevent unauthorized access.
 	 *
 	 * @since 2.6.0
 	 * @throws Error Folder creation not possible.
 	 */
-	public function prepare_feed_folder() {
+	protected function prepare_feed_folder() {
 		$catalog_feed_directory = trailingslashit( $this->get_feed_directory() );
 
 		if ( ! wp_mkdir_p( $catalog_feed_directory ) ) {
@@ -120,10 +126,10 @@ class FeedFileHandler {
 
 		foreach ( $files as $file ) {
 			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
-				$file_handle = fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen, Generic.PHP.NoSilencedErrors.Discouraged
+				$file_handle = fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' );
 				if ( $file_handle ) {
-					fwrite( $file_handle, $file['content'] ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite, Generic.PHP.NoSilencedErrors.Discouraged
-					fclose( $file_handle ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose, Generic.PHP.NoSilencedErrors.Discouraged
+					fwrite( $file_handle, $file['content'] );
+					fclose( $file_handle );
 				}
 			}
 		}
@@ -135,11 +141,11 @@ class FeedFileHandler {
 	 *
 	 * @since 2.6.0
 	 */
-	public function create_fresh_feed_temporary_file() {
+	protected function create_fresh_feed_temporary_file() {
 		if ( file_exists( ( $this->get_temporary_file_path() ) ) ) {
 			unlink( $this->get_temporary_file_path() );
 		}
-		file_put_contents( $this->get_temporary_file_path(), '' ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged
+		file_put_contents( $this->get_temporary_file_path(), '' );
 		chmod( $this->get_temporary_file_path(), 0664 );
 	}
 
@@ -149,8 +155,8 @@ class FeedFileHandler {
 	 * @since 2.6.0
 	 * @param string $data Data to write to the file.
 	 */
-	public function write_to_feed_temporary_file( $data ) {
-		file_put_contents( $this->get_temporary_file_path(), $data, FILE_APPEND ); // phpcs::ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents, Generic.PHP.NoSilencedErrors.Discouraged
+	public function write_to_temp_file( $data ) {
+		file_put_contents( $this->get_temporary_file_path(), $data, FILE_APPEND );
 	}
 
 	/**
@@ -162,7 +168,7 @@ class FeedFileHandler {
 	 * @since 2.6.0
 	 */
 	public function replace_feed_file_with_temp_file() {
-		rename( // phpcs:ignore WordPress.VIP.FileSystemWritesDisallow.file_ops_rename, Generic.PHP.NoSilencedErrors.Discouraged,
+		rename(
 			$this->get_temporary_file_path(),
 			$this->get_file_path()
 		);
