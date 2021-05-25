@@ -38,6 +38,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 */
 		public function __construct( $api_key ) {
 			$this->api_key = $api_key;
+
+			//$this->api_key = 'EAAGvQJc4NAQBAKOohrLzoA1rKwNIYyBMw9SwqM2RSPOMTV1Wodd73JjG5Q2amYROdn5WUgwj6xJma9JFlc0Op9n0hOhVpmRMyP5ACPT8OdiX0mPfz9UZBvHThVi6zg7fR1UJDKHQXdalivIxCK1lLhudtHtoNwGq3HzZCl4lEop5qdz7cfVNdNTAsZABnSh85Ehg2JHZAHSnS0NHtt0osiUd7L67QP8ZD';//$api_key;
 		}
 
 
@@ -472,10 +474,24 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 		public function create_feed( $facebook_catalog_id, $data ) {
-			$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );
+			$url = $this->feed_endpoint_url( $facebook_catalog_id );
 			// success API call will return {id: <product feed id>}
 			// failure API will return {error: <error message>}
 			return self::_post( $url, $data );
+		}
+
+		public function read_feeds( $facebook_catalog_id ) {
+			$url = $this->feed_endpoint_url( $facebook_catalog_id );
+			return $this->_get( $url );
+		}
+
+		public function read_feed_information( $feed_id ) {
+			$url = $this->build_url( $feed_id, '/?fields=id,name,schedule,update_schedule,uploads' );
+			return $this->_get( $url );
+		}
+
+		public function feed_endpoint_url( $facebook_catalog_id ) {
+			return $this->build_url( $facebook_catalog_id, '/product_feeds' );
 		}
 
 		public function get_upload_status( $facebook_upload_id ) {

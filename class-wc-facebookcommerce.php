@@ -152,6 +152,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->heartbeat->init();
 
 				$this->feed_scheduler            = new \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler();
+				$this->configuration_detection   = new \SkyVerge\WooCommerce\Facebook\Feed\FeedConfigurationDetection();
 				$this->feed_api_endpoint         = new \SkyVerge\WooCommerce\Facebook\Feed\FeedApiEndpoint();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
