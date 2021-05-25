@@ -19,7 +19,7 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		//add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
+		add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
 		//add_action( Heartbeat::HOURLY, array( $this, 'check_feed_config' ) );
 	}
 
@@ -94,12 +94,12 @@ class FeedConfigurationDetection {
 	}
 
 	private function check_if_feed_has_recent_uploads( $feed_information ) {
-		if ( empty( $feed_information['uploads'] ) ) {
+		if ( empty( $feed_information['uploads']['data'] ) ) {
 			return false;
 		}
 
 		$current_time = time();
-		foreach ( $feed_information['uploads'] as $upload ) {
+		foreach ( $feed_information['uploads']['data'] as $upload ) {
 			$end_time = strtotime( $upload['end_time'] );
 
 			/*
