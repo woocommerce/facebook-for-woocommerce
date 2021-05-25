@@ -33,14 +33,14 @@ class Tracker {
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_REQUESTED = 'wc_facebook_wctracker_feed_requested';
+	const TRANSIENT_WCTRACKER_FEED_REQUESTED = 'facebook_for_woocommerce_wctracker_feed_requested';
 
 	/**
 	 * Transient key name; stores various FBE business settings.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG = 'wc_facebook_wctracker_fbe_business_config';
+	const TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG = 'facebook_for_woocommerce_wctracker_fbe_business_config';
 
 	/**
 	 * Constructor.
