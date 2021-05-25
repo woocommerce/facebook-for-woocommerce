@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 class FeedFileHandler {
 
 	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
-	const REQUEST_FEED_ACTION    = 'facebook_for_woocommerce_get_feed';
+	const REQUEST_FEED_ACTION    = 'wc_facebook_get_feed_data';
 
 	/**
 	 * Filename to export to.
