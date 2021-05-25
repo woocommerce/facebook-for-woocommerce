@@ -27,7 +27,20 @@ class FeedConfigurationDetection {
 	 * Check if we have a valid feed configuration.
 	 *
 	 * Steps:
-	 * 1. Check if we have valid feed id.
+	 * 1. Check if we have valid catalog id.
+	 * 	- No catalog id ( probably not connected ): false
+	 * 2. Check if we have feed configured.
+	 * 	- No feeds configured ( we can configure automatically ): false
+	 * 3. Loop over feed configurations.
+	 *   4. Check if feed has recent uploads
+	 *    - No recent uploads ( feed is not working correctly ): false
+	 *   5. Check if feed uses correct url.
+	 *    - Wrong url ( maybe different integration ): false
+	 *   6. Check if feed id matches the one used by the site.
+	 * 		a) If site has no id stored maybe use this one.
+	 * 	    b) If site has an id stored compare.
+	 *       - Wrong id ( active feed from different integration ): false
+	 * 7. Everything matches we have found a valid feed.
 	 *
 	 * @since 2.6.0
 	 */
@@ -63,7 +76,7 @@ class FeedConfigurationDetection {
 				throw $th;
 			}
 
-			$feed_is_used     = $this->check_if_feed_recent_uploads( $feed_information );
+			$feed_is_used = $this->check_if_feed_has_recent_uploads( $feed_information );
 			if ( ! $feed_is_used ) {
 				// Check the next feed.
 				continue;
@@ -73,18 +86,14 @@ class FeedConfigurationDetection {
 			 * Feed is used. Check if it is using a correct url.
 			 */
 			$url_is_correct = $this->is_feed_is_using_correct_url( $feed_information );
-			if ( false === $url_is_correct ) {
-				// URL is different, check next feed.
-				continue;
+			if ( true === $url_is_correct ) {
+				return true;
 			}
-
-			// TODO check interval.
 		}
-
 		return false;
 	}
 
-	private function check_if_feed_recent_uploads( $feed_information ) {
+	private function check_if_feed_has_recent_uploads( $feed_information ) {
 		if ( empty( $feed_information['uploads'] ) ) {
 			return false;
 		}
