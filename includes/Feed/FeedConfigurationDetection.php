@@ -57,7 +57,7 @@ class FeedConfigurationDetection {
 
 		// Get all feeds configured for the catalog.
 		try {
-			$feed_node = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
+			$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
 		} catch ( \Throwable $th ) {
 			throw $th;
 		}
