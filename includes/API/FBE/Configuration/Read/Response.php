@@ -65,7 +65,7 @@ class Response extends API\Response {
 	 *
 	 * @return boolean
 	 */
-	public function get_ig_shopping_enabled() {
+	public function is_ig_shopping_enabled() {
 
 		$ig_shopping_enabled = false;
 
@@ -83,7 +83,7 @@ class Response extends API\Response {
 	 *
 	 * @return boolean
 	 */
-	public function get_ig_cta_enabled() {
+	public function is_ig_cta_enabled() {
 
 		$ig_cta_enabled = false;
 

@@ -137,7 +137,7 @@ class Tracker {
 		$transient = array(
 			'feed_schedule_enabled' => $feed_schedule_enabled,
 			'ig_shopping_enabled'   => $ig_shopping_enabled,
-			'ig_cta_enabled'   => $ig_cta_enabled
+			'ig_cta_enabled'        => $ig_cta_enabled
 		);
 		set_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG, $transient, self::TRANSIENT_WCTRACKER_LIFE_TIME );
 	}

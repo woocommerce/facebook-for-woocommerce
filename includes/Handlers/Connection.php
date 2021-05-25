@@ -146,8 +146,8 @@ class Connection {
 			$feed_schedule = $response->get_catalog_feed_configuration();
 			facebook_for_woocommerce()->get_tracker()->track_facebook_config(
 				$feed_schedule && $feed_schedule->is_enabled(),
-				$response->get_ig_shopping_enabled(),
-				$response->get_ig_cta_enabled()
+				$response->is_ig_shopping_enabled(),
+				$response->is_ig_cta_enabled()
 			);
 
 			// update the messenger settings
