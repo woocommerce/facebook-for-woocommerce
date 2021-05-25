@@ -48,7 +48,6 @@ class FeedConfigurationDetection {
 		$integration         = facebook_for_woocommerce()->get_integration();
 		$graph_api           = $integration->get_graph_api();
 		$integration_feed_id = $integration->get_feed_id();
-		$catalog_id          = '206610441222887';
 		$catalog_id          = $integration->get_product_catalog_id();
 
 		// No catalog id. Most probably means that we don't have a valid connection.
