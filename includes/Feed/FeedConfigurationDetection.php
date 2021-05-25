@@ -19,7 +19,7 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
+		//add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
 		//add_action( Heartbeat::HOURLY, array( $this, 'check_feed_config' ) );
 	}
 
