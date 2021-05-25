@@ -40,5 +40,58 @@ class Response extends API\Response {
 		return $configuration;
 	}
 
+	/**
+	 * Gets feed configuration settings.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return null|API\FBE\Configuration\CatalogFeedSchedule
+	 */
+	public function get_catalog_feed_configuration() {
+
+		$configuration = null;
+
+		if ( ! empty( $this->response_data->catalog_feed_scheduled ) && is_object( $this->response_data->catalog_feed_scheduled ) ) {
+			$configuration = new API\FBE\Configuration\CatalogFeedSchedule( (array) $this->response_data->catalog_feed_scheduled );
+		}
+
+		return $configuration;
+	}
+
+	/**
+	 * Is Instagram Shopping enabled?
+	 *
+	 * @since x.x.x
+	 *
+	 * @return boolean
+	 */
+	public function get_ig_shopping_enabled() {
+
+		$ig_shopping_enabled = false;
+
+		if ( ! empty( $this->response_data->ig_shopping ) && is_object( $this->response_data->ig_shopping ) ) {
+			$ig_shopping_enabled = ! ! $this->response_data->ig_shopping->enabled;
+		}
+
+		return $ig_shopping_enabled;
+	}
+
+	/**
+	 * Is Instagram CTA enabled?
+	 *
+	 * @since x.x.x
+	 *
+	 * @return boolean
+	 */
+	public function get_ig_cta_enabled() {
+
+		$ig_cta_enabled = false;
+
+		if ( ! empty( $this->response_data->ig_cta ) && is_object( $this->response_data->ig_cta ) ) {
+			$ig_cta_enabled = ! ! $this->response_data->ig_cta->enabled;
+		}
+
+		return $ig_cta_enabled;
+	}
 
 }

@@ -143,6 +143,12 @@ class Connection {
 		try {
 
 			$response = $this->get_plugin()->get_api()->get_business_configuration( $this->get_external_business_id() );
+			$feed_schedule = $response->get_catalog_feed_configuration();
+			facebook_for_woocommerce()->get_tracker()->track_facebook_config(
+				$feed_schedule && $feed_schedule->is_enabled(),
+				$response->get_ig_shopping_enabled(),
+				$response->get_ig_cta_enabled()
+			);
 
 			// update the messenger settings
 			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
