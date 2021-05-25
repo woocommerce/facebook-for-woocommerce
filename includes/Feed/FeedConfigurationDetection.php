@@ -28,20 +28,21 @@ class FeedConfigurationDetection {
 	 *
 	 * Steps:
 	 * 1. Check if we have valid catalog id.
-	 * 	- No catalog id ( probably not connected ): false
+	 *  - No catalog id ( probably not connected ): false
 	 * 2. Check if we have feed configured.
-	 * 	- No feeds configured ( we can configure automatically ): false
+	 *  - No feeds configured ( we can configure automatically ): false
 	 * 3. Loop over feed configurations.
 	 *   4. Check if feed has recent uploads
 	 *    - No recent uploads ( feed is not working correctly ): false
 	 *   5. Check if feed uses correct url.
 	 *    - Wrong url ( maybe different integration ): false
 	 *   6. Check if feed id matches the one used by the site.
-	 * 		a) If site has no id stored maybe use this one.
-	 * 	    b) If site has an id stored compare.
+	 *    a) If site has no id stored maybe use this one.
+	 *    b) If site has an id stored compare.
 	 *       - Wrong id ( active feed from different integration ): false
 	 * 7. Everything matches we have found a valid feed.
 	 *
+	 * @throws Error Partial feed configuration.
 	 * @since 2.6.0
 	 */
 	public function has_valid_feed_config() {
