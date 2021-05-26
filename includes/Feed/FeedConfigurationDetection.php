@@ -133,27 +133,6 @@ class FeedConfigurationDetection {
 		return $info;
 	}
 
-	private function check_if_feed_has_recent_uploads( $feed_information ) {
-		if ( empty( $feed_information['uploads']['data'] ) ) {
-			return false;
-		}
-
-		$current_time = time();
-		foreach ( $feed_information['uploads']['data'] as $upload ) {
-			$end_time = strtotime( $upload['end_time'] );
-
-			/*
-			 * Maximum interval is a weak.
-			 * We check for two weeks to take into account a possible failure of the last upload.
-			 * Highly unlikely but possible.
-			 */
-			if ( ( ( $end_time + 2 * WEEK_IN_SECONDS ) > $current_time ) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private function get_feed_nodes_for_catalog( $catalog_id, $graph_api ) {
 		// Read all the feed configurations specified for the catalog.
 		$response = $graph_api->read_feeds( $catalog_id );
@@ -190,17 +169,5 @@ class FeedConfigurationDetection {
 		facebook_for_woocommerce()->log( 'get_feed_upload_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
-
-	private function get_feed_information( $feed_id, $graph_api ) {
-		$response = $graph_api->read_feed_information( $feed_id );
-		$code     = (int) wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $code ) {
-			throw new Error( 'Reading feed information error', $code );
-		}
-		$response_body = wp_remote_retrieve_body( $response );
-		facebook_for_woocommerce()->log( 'get_feed_information() response: ' . print_r( $response_body, true ) );
-		return json_decode( $response_body, true );
-	}
-
 
 }
