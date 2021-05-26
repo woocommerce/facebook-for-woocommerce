@@ -484,13 +484,36 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $this->_get( $url );
 		}
 
+		/**
+		 * Get general info about a feed (data source) configured in Facebook Business.
+		 *
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/v9.0
+		 * @since x.x.x
+		 */
 		public function read_feed_information( $feed_id ) {
 			$url = $this->build_url( $feed_id, '/?fields=id,name,schedule,update_schedule,uploads' );
 			return $this->_get( $url );
 		}
 
+		/**
+		 * Get metadata about a feed (data source) configured in Facebook Business.
+		 *
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/v9.0
+		 * @since x.x.x
+		 */
 		public function read_feed_metadata( $feed_id ) {
 			$url = $this->build_url( $feed_id, '/?fields=created_time,latest_upload,product_count,schedule,update_schedule' );
+			return $this->_get( $url );
+		}
+
+		/**
+		 * Get metadata about a recent feed upload.
+		 *
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed-upload/
+		 * @since x.x.x
+		 */
+		public function read_upload_metadata( $upload_id ) {
+			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_persisted_items' );
 			return $this->_get( $url );
 		}
 

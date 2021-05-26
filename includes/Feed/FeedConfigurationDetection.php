@@ -111,6 +111,16 @@ class FeedConfigurationDetection {
 		$latest_upload      = $active_feed_metadata['latest_upload'];
 		$upload['end_time'] = $latest_upload['end_time'];
 
+		// Get more detailed metadata about the most recent feed upload.
+		try {
+			$upload_metadata = $this->get_feed_upload_metadata( $active_feed_metadata['latest_upload']['id'], $graph_api );
+		} catch ( \Throwable $th ) {
+			throw $th;
+		}
+		$upload['error_count']         = $upload_metadata['error_count'];
+		$upload['warning_count']       = $upload_metadata['warning_count'];
+		$upload['num_persisted_items'] = $upload_metadata['num_persisted_items'];
+
 		$info['product_feed_config']['active_feed']['latest_upload'] = $upload;
 
 		facebook_for_woocommerce()->log( 'Most active feed info: ' . print_r( $info, true ) );
@@ -144,11 +154,6 @@ class FeedConfigurationDetection {
 		return false;
 	}
 
-	// private function is_feed_is_using_correct_url( $feed_information ) {
-	// 	$feed_api_url = FeedFileHandler::get_feed_data_url();
-	// 	return $feed_information['url'] === $feed_api_url;
-	// }
-
 	private function get_feed_nodes_for_catalog( $catalog_id, $graph_api ) {
 		// Read all the feed configurations specified for the catalog.
 		$response = $graph_api->read_feeds( $catalog_id );
@@ -172,6 +177,17 @@ class FeedConfigurationDetection {
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		facebook_for_woocommerce()->log( 'get_feed_metadata() response: ' . print_r( $response_body, true ) );
+		return json_decode( $response_body, true );
+	}
+
+	private function get_feed_upload_metadata( $upload_id, $graph_api ) {
+		$response = $graph_api->read_upload_metadata( $upload_id );
+		$code     = (int) wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $code ) {
+			throw new Error( 'Error reading feed upload metadata', $code );
+		}
+		$response_body = wp_remote_retrieve_body( $response );
+		facebook_for_woocommerce()->log( 'get_feed_upload_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
 
