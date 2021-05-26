@@ -53,11 +53,6 @@ class FeedConfigurationDetection {
 
 		$info = array();
 
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
-		facebook_for_woocommerce()->log( 'Checking feed config…' );
-
 		// No catalog id. Most probably means that we don't have a valid connection.
 		if ( '' === $catalog_id ) {
 			facebook_for_woocommerce()->log( 'No catalog ID!' );
@@ -123,12 +118,7 @@ class FeedConfigurationDetection {
 
 		$info['product_feed_config']['active_feed']['latest_upload'] = $upload;
 
-		facebook_for_woocommerce()->log( 'Most active feed info: ' . print_r( $info, true ) );
-
-		facebook_for_woocommerce()->log( 'Done!!' );
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
-		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+		facebook_for_woocommerce()->log( print_r( $info, true ) );
 
 		return $info;
 	}
@@ -142,7 +132,7 @@ class FeedConfigurationDetection {
 		}
 
 		$response_body = wp_remote_retrieve_body( $response );
-		facebook_for_woocommerce()->log( 'get_feed_nodes_for_catalog() response: ' . print_r( $response_body, true ) );
+		// facebook_for_woocommerce()->log( 'get_feed_nodes_for_catalog() response: ' . print_r( $response_body, true ) );
 
 		$body = json_decode( $response_body, true );
 		return $body['data'];
@@ -155,7 +145,7 @@ class FeedConfigurationDetection {
 			throw new Error( 'Error reading feed metadata', $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
-		facebook_for_woocommerce()->log( 'get_feed_metadata() response: ' . print_r( $response_body, true ) );
+		// facebook_for_woocommerce()->log( 'get_feed_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
 
@@ -166,7 +156,7 @@ class FeedConfigurationDetection {
 			throw new Error( 'Error reading feed upload metadata', $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
-		facebook_for_woocommerce()->log( 'get_feed_upload_metadata() response: ' . print_r( $response_body, true ) );
+		// facebook_for_woocommerce()->log( 'get_feed_upload_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
 
