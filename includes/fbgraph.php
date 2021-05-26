@@ -489,6 +489,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $this->_get( $url );
 		}
 
+		public function read_feed_metadata( $feed_id ) {
+			$url = $this->build_url( $feed_id, '/?fields=created_time,latest_upload,product_count,schedule,update_schedule' );
+			return $this->_get( $url );
+		}
+
 		public function feed_endpoint_url( $facebook_catalog_id ) {
 			return $this->build_url( $facebook_catalog_id, '/product_feeds' );
 		}

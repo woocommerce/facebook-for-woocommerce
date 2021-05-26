@@ -19,7 +19,7 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
+		add_action( 'admin_init', array( $this, 'get_data_source_feed_tracker_info' ) );
 		//add_action( Heartbeat::HOURLY, array( $this, 'check_feed_config' ) );
 	}
 
@@ -45,12 +45,17 @@ class FeedConfigurationDetection {
 	 * @throws Error Partial feed configuration.
 	 * @since 2.6.0
 	 */
-	public function has_valid_feed_config() {
+	public function get_data_source_feed_tracker_info() {
 		$integration         = facebook_for_woocommerce()->get_integration();
 		$graph_api           = $integration->get_graph_api();
 		$integration_feed_id = $integration->get_feed_id();
 		$catalog_id          = $integration->get_product_catalog_id();
 
+		$info = array();
+
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
 		facebook_for_woocommerce()->log( 'Checking feed config…' );
 
 		// No catalog id. Most probably means that we don't have a valid connection.
@@ -66,35 +71,56 @@ class FeedConfigurationDetection {
 			throw $th;
 		}
 
+		$info['product_feed_config']['feed_count'] = count( $feed_nodes );
+
 		// Check if the catalog has any feed configured.
 		if ( empty( $feed_nodes ) ) {
 			facebook_for_woocommerce()->log( 'No feed nodes!' );
 			return false;
 		}
 
-		// Check if any of the feeds is currently active.
+		// Determine which is the most active feed (recently updated).
+		// Or "the" feed, if there is only one!
+		$active_feed_metadata = null;
 		foreach ( $feed_nodes as $feed ) {
 			try {
-				$feed_information = $this->get_feed_information( $feed['id'], $graph_api );
+				$metadata                       = $this->get_feed_metadata( $feed['id'], $graph_api );
+				$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload'] );
+				if ( ! $active_feed_metadata ||
+					( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
+					$active_feed_metadata = $metadata;
+				}
 			} catch ( \Throwable $th) {
 				throw $th;
 			}
-
-			$feed_is_used = $this->check_if_feed_has_recent_uploads( $feed_information );
-			if ( ! $feed_is_used ) {
-				// Check the next feed.
-				continue;
-			}
-
-			/*
-			 * Feed is used. Check if it is using a correct url.
-			 */
-			// $url_is_correct = $this->is_feed_is_using_correct_url( $feed_information );
-			// if ( true === $url_is_correct ) {
-			// 	return true;
-			// }
 		}
-		return false;
+
+		$active_feed['created_time']  = $active_feed_metadata['created_time'];
+		$active_feed['product_count'] = $active_feed_metadata['product_count'];
+		if ( $active_feed_metadata['schedule'] ) {
+			$active_feed['schedule']['interval']       = $active_feed_metadata['schedule']['interval'];
+			$active_feed['schedule']['interval_count'] = $active_feed_metadata['schedule']['interval_count'];
+		}
+		if ( $active_feed_metadata['update_schedule'] ) {
+			$active_feed['update_schedule']['interval']       = $active_feed_metadata['update_schedule']['interval'];
+			$active_feed['update_schedule']['interval_count'] = $active_feed_metadata['update_schedule']['interval_count'];
+		}
+
+		$info['product_feed_config']['active_feed'] = $active_feed;
+
+		$latest_upload      = $active_feed_metadata['latest_upload'];
+		$upload['end_time'] = $latest_upload['end_time'];
+
+		$info['product_feed_config']['active_feed']['latest_upload'] = $upload;
+
+		facebook_for_woocommerce()->log( 'Most active feed info: ' . print_r( $info, true ) );
+
+		facebook_for_woocommerce()->log( 'Done!!' );
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+		facebook_for_woocommerce()->log( '----------------------------------------------------------------------' );
+
+		return $info;
 	}
 
 	private function check_if_feed_has_recent_uploads( $feed_information ) {
@@ -138,6 +164,17 @@ class FeedConfigurationDetection {
 		return $body['data'];
 	}
 
+	private function get_feed_metadata( $feed_id, $graph_api ) {
+		$response = $graph_api->read_feed_metadata( $feed_id );
+		$code     = (int) wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $code ) {
+			throw new Error( 'Error reading feed metadata', $code );
+		}
+		$response_body = wp_remote_retrieve_body( $response );
+		facebook_for_woocommerce()->log( 'get_feed_metadata() response: ' . print_r( $response_body, true ) );
+		return json_decode( $response_body, true );
+	}
+
 	private function get_feed_information( $feed_id, $graph_api ) {
 		$response = $graph_api->read_feed_information( $feed_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
@@ -148,5 +185,6 @@ class FeedConfigurationDetection {
 		facebook_for_woocommerce()->log( 'get_feed_information() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
+
 
 }
