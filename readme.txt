@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+ * Fix - Test entry.
+
+= 2.5.1 - 2021-xx-xx =
 
 = 2.5.0 - 2021-05-19 =
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job
