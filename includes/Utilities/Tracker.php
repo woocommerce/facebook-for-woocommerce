@@ -43,6 +43,13 @@ class Tracker {
 	const TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG = 'facebook_for_woocommerce_wctracker_fbe_business_config';
 
 	/**
+	 * Transient key name; stores feed (data source) settings for catalog sync.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FB_FEED_CONFIG = 'facebook_for_woocommerce_wctracker_fb_feed_config';
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 2.3.4
@@ -108,6 +115,14 @@ class Tracker {
 		$data['extensions']['facebook-for-woocommerce']['ig-cta-enabled']        = wc_bool_to_string( $config->ig_cta_enabled );
 		delete_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
 
+		/**
+		 * Feed pull / upload settings configured in Facebook UI.
+		 *
+		 * @since x.x.x
+		 */
+		$data['extensions']['facebook-for-woocommerce']['product_feed_config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
+		delete_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
+
 		return $data;
 	}
 
@@ -140,5 +155,17 @@ class Tracker {
 			'ig_cta_enabled'        => $ig_cta_enabled,
 		);
 		set_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG, $transient, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	}
+
+	/**
+	 * Store Facebook feed config for tracking.
+	 *
+	 * @param array $feed_settings Key-value array of settings to add to tracker snapshot.
+	 * @since x.x.x
+	 */
+	public function track_facebook_feed_config(
+		array $feed_settings
+	) {
+		set_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG, $feed_settings, self::TRANSIENT_WCTRACKER_LIFE_TIME );
 	}
 }

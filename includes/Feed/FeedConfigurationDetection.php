@@ -119,6 +119,7 @@ class FeedConfigurationDetection {
 		$info['product_feed_config']['active_feed']['latest_upload'] = $upload;
 
 		facebook_for_woocommerce()->log( print_r( $info, true ) );
+		facebook_for_woocommerce()->get_tracker()->track_facebook_feed_config( $info );
 
 		return $info;
 	}
