@@ -31,5 +31,10 @@ module.exports = {
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/assets/build',
+		// The legacy JS code is invoked from various templates as hard-coded calls to functions in global namespace.
+		// So we are using `umd` output mode to ensure exported functions are available.
+		// See also: https://webpack.js.org/configuration/output/#module-definition-systems
+		// Unfortunately this applies to all JS as there can only be one output definition.
+		libraryTarget: 'umd',
 	},
 };

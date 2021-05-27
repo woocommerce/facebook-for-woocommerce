@@ -35,7 +35,7 @@ function ajax(action, payload = null, cb = null, failcb = null) {
 	);
 }
 
-function fb_reset_product(wp_id) {
+export function fb_reset_product(wp_id) {
 	if (confirm(
 		'Resetting Facebook metadata will not remove this product from your shop. ' +
 		'If you have duplicated another product and are trying to publish a new Facebook product, ' +
@@ -57,7 +57,7 @@ function fb_reset_product(wp_id) {
 	}
 }
 
-function fb_delete_product(wp_id) {
+export function fb_delete_product(wp_id) {
 	if (confirm(
 		'Are you sure you want to delete this product on Facebook? If you only want to "hide" the product, ' +
 		'change the "Facebook sync" setting to "Sync and hide" and hit "Update". If you delete a product on Facebook and hit "Update" after, ' +
@@ -78,3 +78,4 @@ function fb_delete_product(wp_id) {
 		);
 	}
 }
+
