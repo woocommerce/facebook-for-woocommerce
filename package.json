@@ -27,8 +27,8 @@
     "build": "./bin/build-zip.sh"
   },
   "woorelease": {
-		"version_replace_paths": [
-			"includes",
+    "version_replace_paths": [
+      "includes",
       "class-wc-facebookcommerce.php",
       "facebook-commerce-events-tracker.php",
       "facebook-commerce-messenger-chat.php",
