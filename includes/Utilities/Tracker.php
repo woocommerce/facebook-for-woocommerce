@@ -110,7 +110,6 @@ class Tracker {
 		 * @since x.x.x
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
-		$data['extensions']['facebook-for-woocommerce']['feed-schedule-enabled'] = wc_bool_to_string( $config->feed_schedule_enabled );
 		$data['extensions']['facebook-for-woocommerce']['ig-shopping-enabled']   = wc_bool_to_string( $config->ig_shopping_enabled );
 		$data['extensions']['facebook-for-woocommerce']['ig-cta-enabled']        = wc_bool_to_string( $config->ig_cta_enabled );
 		delete_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
@@ -139,18 +138,15 @@ class Tracker {
 	/**
 	 * Store some Facebook config settings for tracking.
 	 *
-	 * @param bool $feed_schedule_enabled True if feed schedule is configured.
 	 * @param bool $ig_shopping_enabled True if Instagram Shopping is configured.
 	 * @param bool $ig_cta_enabled True if `ig_cta` config option is enabled.
 	 * @since x.x.x
 	 */
-	public function track_facebook_config(
-		bool $feed_schedule_enabled,
+	public function track_facebook_business_config(
 		bool $ig_shopping_enabled,
 		bool $ig_cta_enabled
 	) {
 		$transient = array(
-			'feed_schedule_enabled' => $feed_schedule_enabled,
 			'ig_shopping_enabled'   => $ig_shopping_enabled,
 			'ig_cta_enabled'        => $ig_cta_enabled,
 		);
