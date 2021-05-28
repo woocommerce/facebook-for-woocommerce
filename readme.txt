@@ -40,6 +40,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2.5.1 - 2021-xx-xx =
+ * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen
 
 = 2.5.0 - 2021-05-19 =
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job
