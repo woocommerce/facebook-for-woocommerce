@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version 2.5.1
+2021-05-28 - version 2.5.1
  * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen #1980
 
 2021-05-19 - version 2.5.0

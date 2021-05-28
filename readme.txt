@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.5.1 - 2021-xx-xx =
+= 2.5.1 - 2021-05-28 =
  * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen
 
 = 2.5.0 - 2021-05-19 =
