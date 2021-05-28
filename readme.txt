@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= x.x.x - 2021-xx-xx =
+= 2.5.1 - 2021-xx-xx =
 
 = 2.5.0 - 2021-05-19 =
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job
