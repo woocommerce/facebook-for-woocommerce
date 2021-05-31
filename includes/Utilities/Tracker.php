@@ -119,7 +119,7 @@ class Tracker {
 		 *
 		 * @since x.x.x
 		 */
-		$data['extensions']['facebook-for-woocommerce']['product_feed_config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
+		$data['extensions']['facebook-for-woocommerce']['product-feed-config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 		delete_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 
 		return $data;
