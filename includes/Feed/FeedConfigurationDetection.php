@@ -19,7 +19,7 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
+		//add_action( 'admin_init', array( $this, 'has_valid_feed_config' ) );
 		//add_action( Heartbeat::HOURLY, array( $this, 'check_feed_config' ) );
 	}
 
@@ -51,6 +51,17 @@ class FeedConfigurationDetection {
 		$integration_feed_id = $integration->get_feed_id();
 		$catalog_id          = $integration->get_product_catalog_id();
 
+		try {
+			$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
+		} catch ( \Throwable $th ) {
+			throw $th;
+		}
+
+		if ( $is_integration_feed_config_valid ) {
+			// Our stored feed id represents a has a valid feed configuration.
+			return true;
+		}
+
 		// No catalog id. Most probably means that we don't have a valid connection.
 		if ( '' === $catalog_id ) {
 			return false;
@@ -70,27 +81,37 @@ class FeedConfigurationDetection {
 
 		// Check if any of the feeds is currently active.
 		foreach ( $feed_nodes as $feed ) {
+
 			try {
-				$feed_information = $this->get_feed_information( $feed['id'], $graph_api );
-			} catch ( \Throwable $th) {
+				$is_integration_feed_config_valid = $this->is_feed_config_valid( $feed['id'] );
+			} catch ( \Throwable $th ) {
 				throw $th;
-			}
-
-			$feed_is_used = $this->check_if_feed_has_recent_uploads( $feed_information );
-			if ( ! $feed_is_used ) {
-				// Check the next feed.
-				continue;
-			}
-
-			/*
-			 * Feed is used. Check if it is using a correct url.
-			 */
-			$url_is_correct = $this->is_feed_is_using_correct_url( $feed_information );
-			if ( true === $url_is_correct ) {
-				return true;
 			}
 		}
 		return false;
+	}
+
+	private function is_feed_config_valid( $feed_id, $graph_api ) {
+		if ( '' === $feed_id ) {
+			return false;
+		}
+
+		try {
+			$feed_information = $this->get_feed_information( $feed_id, $graph_api );
+		} catch ( \Throwable $th) {
+			throw $th;
+		}
+
+		$feed_has_recent_uploads   = $this->check_if_feed_has_recent_uploads( $feed_information );
+		$feed_is_using_correct_url = $this->check_if_feed_is_using_correct_url( $feed_information );
+		$feed_has_correct_schedule = $this->check_if_feed_has_correct_schedule( $feed_information );
+
+		return $feed_has_recent_uploads && $feed_is_using_correct_url && $feed_has_correct_schedule;
+	}
+
+	private function check_if_feed_has_correct_schedule( $feed_information ) {
+		$schedule        = $feed_information['schedule'] ?? null;
+		$update_schedule = $feed_information['update_information'] ?? null;
 	}
 
 	private function check_if_feed_has_recent_uploads( $feed_information ) {
