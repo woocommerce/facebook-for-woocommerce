@@ -66,7 +66,7 @@ class FeedConfigurationDetection {
 			throw $th;
 		}
 
-		$info['product_feed_config']['feed_count'] = count( $feed_nodes );
+		$info['feed_count'] = count( $feed_nodes );
 
 		// Check if the catalog has any feed configured.
 		if ( empty( $feed_nodes ) ) {
@@ -101,7 +101,7 @@ class FeedConfigurationDetection {
 			$active_feed['update_schedule']['interval_count'] = $active_feed_metadata['update_schedule']['interval_count'];
 		}
 
-		$info['product_feed_config']['active_feed'] = $active_feed;
+		$info['active_feed'] = $active_feed;
 
 		$latest_upload      = $active_feed_metadata['latest_upload'];
 		$upload['end_time'] = $latest_upload['end_time'];
@@ -116,7 +116,7 @@ class FeedConfigurationDetection {
 		$upload['warning_count']       = $upload_metadata['warning_count'];
 		$upload['num_persisted_items'] = $upload_metadata['num_persisted_items'];
 
-		$info['product_feed_config']['active_feed']['latest_upload'] = $upload;
+		$info['active_feed']['latest_upload'] = $upload;
 
 		facebook_for_woocommerce()->log( print_r( $info, true ) );
 		facebook_for_woocommerce()->get_tracker()->track_facebook_feed_config( $info );
