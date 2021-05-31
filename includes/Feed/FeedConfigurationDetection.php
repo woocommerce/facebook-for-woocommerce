@@ -19,31 +19,18 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'get_data_source_feed_tracker_info' ) );
-		//add_action( Heartbeat::HOURLY, array( $this, 'check_feed_config' ) );
+		add_action( Heartbeat::DAILY, array( $this, 'get_data_source_feed_tracker_info' ) );
 	}
 
 	/**
-	 * Check if we have a valid feed configuration.
+	 * Get config settings for feed-based sync for WooCommerce Tracker.
 	 *
-	 * Steps:
-	 * 1. Check if we have valid catalog id.
-	 *  - No catalog id ( probably not connected ): false
-	 * 2. Check if we have feed configured.
-	 *  - No feeds configured ( we can configure automatically ): false
-	 * 3. Loop over feed configurations.
-	 *   4. Check if feed has recent uploads
-	 *    - No recent uploads ( feed is not working correctly ): false
-	 *   5. Check if feed uses correct url.
-	 *    - Wrong url ( maybe different integration ): false
-	 *   6. Check if feed id matches the one used by the site.
-	 *    a) If site has no id stored maybe use this one.
-	 *    b) If site has an id stored compare.
-	 *       - Wrong id ( active feed from different integration ): false
-	 * 7. Everything matches we have found a valid feed.
+	 * Gets various settings related to the feed, and data about recent uploads.
+	 * This is formatted into an array of keys/values, and saved to a transient for inclusion in tracker snapshot.
 	 *
-	 * @throws Error Partial feed configuration.
-	 * @since 2.6.0
+	 * @throws Error
+	 * @since x.x.x
+	 * @return Array Key-value array of various configuration settings.
 	 */
 	public function get_data_source_feed_tracker_info() {
 		$integration         = facebook_for_woocommerce()->get_integration();
@@ -62,7 +49,7 @@ class FeedConfigurationDetection {
 		// Get all feeds configured for the catalog.
 		try {
 			$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
-		} catch ( \Throwable $th ) {
+		} catch ( \Error $th ) {
 			throw $th;
 		}
 
@@ -85,7 +72,7 @@ class FeedConfigurationDetection {
 					( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
 					$active_feed_metadata = $metadata;
 				}
-			} catch ( \Throwable $th) {
+			} catch ( \Error $th) {
 				throw $th;
 			}
 		}
@@ -109,7 +96,7 @@ class FeedConfigurationDetection {
 		// Get more detailed metadata about the most recent feed upload.
 		try {
 			$upload_metadata = $this->get_feed_upload_metadata( $active_feed_metadata['latest_upload']['id'], $graph_api );
-		} catch ( \Throwable $th ) {
+		} catch ( \Error $th ) {
 			throw $th;
 		}
 		$upload['error_count']         = $upload_metadata['error_count'];
@@ -118,7 +105,6 @@ class FeedConfigurationDetection {
 
 		$info['active_feed']['latest_upload'] = $upload;
 
-		facebook_for_woocommerce()->log( print_r( $info, true ) );
 		facebook_for_woocommerce()->get_tracker()->track_facebook_feed_config( $info );
 
 		return $info;
@@ -133,7 +119,6 @@ class FeedConfigurationDetection {
 		}
 
 		$response_body = wp_remote_retrieve_body( $response );
-		// facebook_for_woocommerce()->log( 'get_feed_nodes_for_catalog() response: ' . print_r( $response_body, true ) );
 
 		$body = json_decode( $response_body, true );
 		return $body['data'];
@@ -146,7 +131,6 @@ class FeedConfigurationDetection {
 			throw new Error( 'Error reading feed metadata', $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
-		// facebook_for_woocommerce()->log( 'get_feed_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
 
@@ -157,7 +141,6 @@ class FeedConfigurationDetection {
 			throw new Error( 'Error reading feed upload metadata', $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
-		// facebook_for_woocommerce()->log( 'get_feed_upload_metadata() response: ' . print_r( $response_body, true ) );
 		return json_decode( $response_body, true );
 	}
 
