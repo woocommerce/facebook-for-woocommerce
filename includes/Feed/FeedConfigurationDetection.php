@@ -19,7 +19,8 @@ class FeedConfigurationDetection {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( Heartbeat::DAILY, array( $this, 'get_data_source_feed_tracker_info' ) );
+		// add_action( Heartbeat::DAILY, array( $this, 'track_data_source_feed_tracker_info' ) );
+		add_action( 'admin_init', array( $this, 'track_data_source_feed_tracker_info' ) );
 	}
 
 	/**
