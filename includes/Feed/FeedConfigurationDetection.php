@@ -78,15 +78,19 @@ class FeedConfigurationDetection {
 		// Otherwise we pick the one that was most recently updated.
 		$active_feed_metadata = null;
 		foreach ( $feed_nodes as $feed ) {
-			$metadata                       = $this->get_feed_metadata( $feed['id'], $graph_api );
-			$metadata['latest_upload_end_time'] = strtotime( $metadata['latest_upload']['end_time'] );
+			$metadata = $this->get_feed_metadata( $feed['id'], $graph_api );
 
 			if ( $feed['id'] === $integration_feed_id ) {
 				$active_feed_metadata = $metadata;
 				break;
 			}
+
+			if ( ! array_key_exists( 'latest_upload', $metadata ) || ! array_key_exists( 'start_time', $metadata['latest_upload'] ) ) {
+				continue;
+			}
+			$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload']['start_time'] );
 			if ( ! $active_feed_metadata ||
-				( $metadata['latest_upload_end_time'] > $active_feed_metadata['latest_upload_end_time'] ) ) {
+				( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
 				$active_feed_metadata = $metadata;
 			}
 		}
