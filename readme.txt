@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.17.0 - 2021-xx-xx =
+ * New - new 17 release
+
 = 2.5.0 - 2021-05-19 =
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job
  * New - Log connection errors to allow easier troubleshooting
