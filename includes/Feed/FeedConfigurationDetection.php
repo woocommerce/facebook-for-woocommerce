@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Error;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
+use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 /**
  * A class responsible detecting feed configuration.
@@ -53,6 +54,7 @@ class FeedConfigurationDetection {
 		$catalog_id          = $integration->get_product_catalog_id();
 
 		$info = array();
+		$info['site_feed_id']  = $integration_feed_id;
 
 		// No catalog id. Most probably means that we don't have a valid connection.
 		if ( '' === $catalog_id ) {
@@ -117,8 +119,10 @@ class FeedConfigurationDetection {
 		$upload['error_count']         = $upload_metadata['error_count'];
 		$upload['warning_count']       = $upload_metadata['warning_count'];
 		$upload['num_persisted_items'] = $upload_metadata['num_persisted_items'];
-		$upload['url']                 = $upload_metadata['url'];
-		// (Could also add a prop for if the url matches the expected site feed url.)
+
+		// True if the feed upload url (Facebook side) matches the feed endpoint URL and secret.
+		// If it doesn't match, it's likely it's unused.
+		$upload['url_matches_site_endpoint'] = Feed::get_feed_data_url() === $upload_metadata['url'];
 
 		$info['active_feed']['latest_upload'] = $upload;
 
