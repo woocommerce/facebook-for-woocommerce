@@ -69,12 +69,20 @@ class FeedConfigurationDetection {
 			throw new Error( 'No feed nodes for catalog' );
 		}
 
-		// Determine which is the most active feed (recently updated).
-		// Or "the" feed, if there is only one!
+		// We will only track settings for one feed config (for now at least).
+		// So we need to determine which is the most relevant feed.
+		// If there is only one, we use that.
+		// If one has the same ID as $integration_feed_id, we use that.
+		// Otherwise we pick the one that was most recently updated.
 		$active_feed_metadata = null;
 		foreach ( $feed_nodes as $feed ) {
 			$metadata                       = $this->get_feed_metadata( $feed['id'], $graph_api );
 			$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload'] );
+
+			if ( $feed['id'] === $integration_feed_id ) {
+				$active_feed_metadata = $metadata;
+				break;
+			}
 			if ( ! $active_feed_metadata ||
 				( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
 				$active_feed_metadata = $metadata;
@@ -83,6 +91,12 @@ class FeedConfigurationDetection {
 
 		$active_feed['created_time']  = $active_feed_metadata['created_time'];
 		$active_feed['product_count'] = $active_feed_metadata['product_count'];
+
+		// Upload schedule settings can be in two keys:
+		// `schedule` => full replace of catalog with items in feed (including delete).
+		// `update_schedule` => append any new or updated products to catalog.
+		// These may both be configured; we will track settings for each individually (i.e. both).
+		// https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		if ( $active_feed_metadata['schedule'] ) {
 			$active_feed['schedule']['interval']       = $active_feed_metadata['schedule']['interval'];
 			$active_feed['schedule']['interval_count'] = $active_feed_metadata['schedule']['interval_count'];
@@ -103,6 +117,8 @@ class FeedConfigurationDetection {
 		$upload['error_count']         = $upload_metadata['error_count'];
 		$upload['warning_count']       = $upload_metadata['warning_count'];
 		$upload['num_persisted_items'] = $upload_metadata['num_persisted_items'];
+		$upload['url']                 = $upload_metadata['url'];
+		// (Could also add a prop for if the url matches the expected site feed url.)
 
 		$info['active_feed']['latest_upload'] = $upload;
 

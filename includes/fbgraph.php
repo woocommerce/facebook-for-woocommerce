@@ -487,7 +487,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Get general info about a feed (data source) configured in Facebook Business.
 		 *
-		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/v9.0
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		 * @since x.x.x
 		 */
 		public function read_feed_information( $feed_id ) {
@@ -498,7 +498,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Get metadata about a feed (data source) configured in Facebook Business.
 		 *
-		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/v9.0
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		 * @since x.x.x
 		 */
 		public function read_feed_metadata( $feed_id ) {
@@ -513,7 +513,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @since x.x.x
 		 */
 		public function read_upload_metadata( $upload_id ) {
-			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_persisted_items' );
+			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_persisted_items,url' );
 			return $this->_get( $url );
 		}
 
