@@ -28,7 +28,8 @@
   },
   "woorelease": {
     "version_replace_paths": [
-      "includes"
+      "includes",
+      "./"
     ]
   }
 }
