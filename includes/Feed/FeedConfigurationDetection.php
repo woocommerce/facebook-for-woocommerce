@@ -91,7 +91,7 @@ class FeedConfigurationDetection {
 			}
 		}
 
-		$active_feed['created_time']  = $active_feed_metadata['created_time'];
+		$active_feed['created_time']  = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
 		$active_feed['product_count'] = $active_feed_metadata['product_count'];
 
 		// Upload schedule settings can be in two keys:
@@ -111,7 +111,7 @@ class FeedConfigurationDetection {
 		$info['active_feed'] = $active_feed;
 
 		$latest_upload      = $active_feed_metadata['latest_upload'];
-		$upload['end_time'] = $latest_upload['end_time'];
+		$upload['end_time'] = gmdate( 'Y-m-d H:i:s', strtotime( $latest_upload['end_time'] ) );
 
 		// Get more detailed metadata about the most recent feed upload.
 		$upload_metadata = $this->get_feed_upload_metadata( $active_feed_metadata['latest_upload']['id'], $graph_api );
