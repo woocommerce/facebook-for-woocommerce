@@ -54,7 +54,7 @@ class FeedConfigurationDetection {
 		$catalog_id          = $integration->get_product_catalog_id();
 
 		$info = array();
-		$info['site_feed_id']  = $integration_feed_id;
+		$info['site-feed-id']  = $integration_feed_id;
 
 		// No catalog id. Most probably means that we don't have a valid connection.
 		if ( '' === $catalog_id ) {
@@ -64,7 +64,7 @@ class FeedConfigurationDetection {
 		// Get all feeds configured for the catalog.
 		$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
 
-		$info['feed_count'] = count( $feed_nodes );
+		$info['feed-count'] = count( $feed_nodes );
 
 		// Check if the catalog has any feed configured.
 		if ( empty( $feed_nodes ) ) {
@@ -79,52 +79,52 @@ class FeedConfigurationDetection {
 		$active_feed_metadata = null;
 		foreach ( $feed_nodes as $feed ) {
 			$metadata                       = $this->get_feed_metadata( $feed['id'], $graph_api );
-			$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload'] );
+			$metadata['latest_upload_end_time'] = strtotime( $metadata['latest_upload']['end_time'] );
 
 			if ( $feed['id'] === $integration_feed_id ) {
 				$active_feed_metadata = $metadata;
 				break;
 			}
 			if ( ! $active_feed_metadata ||
-				( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
+				( $metadata['latest_upload_end_time'] > $active_feed_metadata['latest_upload_end_time'] ) ) {
 				$active_feed_metadata = $metadata;
 			}
 		}
 
-		$active_feed['created_time']  = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
-		$active_feed['product_count'] = $active_feed_metadata['product_count'];
+		$active_feed['created-time']  = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
+		$active_feed['product-count'] = $active_feed_metadata['product_count'];
 
 		// Upload schedule settings can be in two keys:
 		// `schedule` => full replace of catalog with items in feed (including delete).
 		// `update_schedule` => append any new or updated products to catalog.
 		// These may both be configured; we will track settings for each individually (i.e. both).
 		// https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-		if ( $active_feed_metadata['schedule'] ) {
+		if ( array_key_exists( 'schedule', $active_feed_metadata ) ) {
 			$active_feed['schedule']['interval']       = $active_feed_metadata['schedule']['interval'];
-			$active_feed['schedule']['interval_count'] = $active_feed_metadata['schedule']['interval_count'];
+			$active_feed['schedule']['interval-count'] = $active_feed_metadata['schedule']['interval_count'];
 		}
-		if ( $active_feed_metadata['update_schedule'] ) {
-			$active_feed['update_schedule']['interval']       = $active_feed_metadata['update_schedule']['interval'];
-			$active_feed['update_schedule']['interval_count'] = $active_feed_metadata['update_schedule']['interval_count'];
+		if ( array_key_exists( 'update_schedule', $active_feed_metadata ) ) {
+			$active_feed['update-schedule']['interval']       = $active_feed_metadata['update_schedule']['interval'];
+			$active_feed['update-schedule']['interval-count'] = $active_feed_metadata['update_schedule']['interval_count'];
 		}
 
-		$info['active_feed'] = $active_feed;
+		$info['active-feed'] = $active_feed;
 
 		$latest_upload      = $active_feed_metadata['latest_upload'];
-		$upload['end_time'] = gmdate( 'Y-m-d H:i:s', strtotime( $latest_upload['end_time'] ) );
+		$upload['end-time'] = gmdate( 'Y-m-d H:i:s', strtotime( $latest_upload['end_time'] ) );
 
 		// Get more detailed metadata about the most recent feed upload.
 		$upload_metadata = $this->get_feed_upload_metadata( $active_feed_metadata['latest_upload']['id'], $graph_api );
 
-		$upload['error_count']         = $upload_metadata['error_count'];
-		$upload['warning_count']       = $upload_metadata['warning_count'];
-		$upload['num_persisted_items'] = $upload_metadata['num_persisted_items'];
+		$upload['error-count']         = $upload_metadata['error_count'];
+		$upload['warning-count']       = $upload_metadata['warning_count'];
+		$upload['num-persisted-items'] = $upload_metadata['num_persisted_items'];
 
 		// True if the feed upload url (Facebook side) matches the feed endpoint URL and secret.
 		// If it doesn't match, it's likely it's unused.
-		$upload['url_matches_site_endpoint'] = Feed::get_feed_data_url() === $upload_metadata['url'];
+		$upload['url-matches-site-endpoint'] = Feed::get_feed_data_url() === $upload_metadata['url'];
 
-		$info['active_feed']['latest_upload'] = $upload;
+		$info['active-feed']['latest-upload'] = $upload;
 
 		return $info;
 	}
