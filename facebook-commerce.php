@@ -477,6 +477,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $aam_settings;
 	}
 
+	/**
+	 * @since x.x.x
+	 */
 	public function load_background_sync_process() {
 		// Attempt to load background processing (Woo 3.x.x only).
 		include_once 'includes/fbbackground.php';
@@ -492,6 +495,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 	}
 
+	/**
+	 * @since x.x.x
+	 */
 	public function ajax_fb_background_check_queue() {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'background check queue', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
@@ -589,7 +595,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
 	}
 
-
+	/**
+	 * @since x.x.x
+	 */
 	public function fb_product_metabox() {
 		$ajax_data = array(
 			'nonce' => wp_create_nonce( 'wc_facebook_metabox_jsx' ),

@@ -134,4 +134,10 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	}
 
 
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 }

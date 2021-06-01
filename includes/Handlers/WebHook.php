@@ -94,4 +94,11 @@ class WebHook {
 
 		return new \WP_REST_Response( null, 200 );
 	}
+
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 }

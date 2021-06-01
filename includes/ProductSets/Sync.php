@@ -440,5 +440,11 @@ class Sync {
 		return array_merge( $removed, $added );
 	}
 
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 
 }

@@ -44,6 +44,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 		 * Outputs the Facebook Messenger chat script.
 		 *
 		 * @internal
+		 * @since x.x.x
 		 */
 		public function inject_messenger_chat_plugin() {
 

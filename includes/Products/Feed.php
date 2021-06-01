@@ -251,5 +251,10 @@ class Feed {
 		return $secret;
 	}
 
-
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 }

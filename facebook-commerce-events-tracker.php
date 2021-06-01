@@ -175,6 +175,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 		/**
 		 * Triggers ViewCategory for product category listings
+		 * @since x.x.x
 		 */
 		public function inject_view_category_event() {
 			global $wp_query;
@@ -394,6 +395,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @internal
 		 *
 		 * @since 2.0.0
+		 * @since x.x.x
 		 */
 		public function send_search_event() {
 
@@ -487,6 +489,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers ViewContent event on product pages
 		 *
 		 * @internal
+		 * @since x.x.x
 		 */
 		public function inject_view_content_event() {
 			global $post;

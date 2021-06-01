@@ -394,6 +394,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 
+		/**
+		 * @since x.x.x
+		 */
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
 		}

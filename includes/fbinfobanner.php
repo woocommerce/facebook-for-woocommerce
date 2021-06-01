@@ -264,7 +264,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) :
 				wp_safe_redirect( admin_url( 'admin.php?page=wc-settings&tab=integration' ) );
 			}
 		}
-
+		
+		/**
+		 * @since x.x.x
+		 */
+		private function foo() {
+			// dummy.
+		}
 
 	}
 

@@ -905,4 +905,10 @@ class Orders {
 	}
 
 
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 }

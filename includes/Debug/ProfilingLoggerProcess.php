@@ -46,6 +46,7 @@ class ProfilingLoggerProcess {
 
 	/**
 	 * @return float
+	 * @since x.x.x
 	 */
 	public function get_time_used() {
 		return $this->stop_time - $this->start_time;

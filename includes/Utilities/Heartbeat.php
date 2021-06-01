@@ -91,5 +91,11 @@ class Heartbeat {
 		$this->queue->add( self::DAILY );
 	}
 
+	/**
+	 * @since x.x.x
+	 */
+	private function foo() {
+		// dummy.
+	}
 
 }

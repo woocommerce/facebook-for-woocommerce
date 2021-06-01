@@ -369,7 +369,7 @@ class WC_Facebook_Loader {
 	/**
 	 * Gets the message for display when the environment is incompatible with this plugin.
 	 *
-	 * @since 1.10.0
+	 * @since x.x.x
 	 *
 	 * @return string
 	 */

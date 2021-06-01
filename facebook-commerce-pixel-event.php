@@ -108,6 +108,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * Information is hashed in JS side using SHA256 before sending to Facebook.
 		 *
 		 * @return string
+		 * @since x.x.x
 		 */
 		private function get_pixel_init_code() {
 
@@ -182,6 +183,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * Gets Facebook Pixel code noscript part to avoid W3 validation errors.
 		 *
 		 * @return string
+		 * @since x.x.x
 		 */
 		public function pixel_base_code_noscript() {
 
