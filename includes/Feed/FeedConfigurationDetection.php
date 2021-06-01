@@ -35,7 +35,7 @@ class FeedConfigurationDetection {
 	 */
 	public function track_data_source_feed_tracker_info() {
 		try {
-			$info = $this->get_data_source_feed_tracker_info;
+			$info = $this->get_data_source_feed_tracker_info();
 			facebook_for_woocommerce()->get_tracker()->track_facebook_feed_config( $info );
 		} catch ( \Error $error ) {
 			facebook_for_woocommerce()->log( 'Unable to detect valid feed configuration: ' . $error->getMessage() );
