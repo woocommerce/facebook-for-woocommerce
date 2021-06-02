@@ -517,7 +517,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $this->_get( $url );
 		}
 
-		public function feed_endpoint_url( $facebook_catalog_id ) {
+		public function get_feed_endpoint_url( $facebook_catalog_id ) {
 			return $this->build_url( $facebook_catalog_id, '/product_feeds' );
 		}
 
