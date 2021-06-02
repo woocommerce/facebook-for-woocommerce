@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Error;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
-use SkyVerge\WooCommerce\Facebook\Feed\FeedFileHandler;
 use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 /**
