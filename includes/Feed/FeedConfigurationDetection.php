@@ -126,7 +126,9 @@ class FeedConfigurationDetection {
 
 		// True if the feed upload url (Facebook side) matches the feed endpoint URL and secret.
 		// If it doesn't match, it's likely it's unused.
-		$upload['url-matches-site-endpoint'] = Feed::get_feed_data_url() === $upload_metadata['url'];
+		$upload['url-matches-site-endpoint'] = wc_bool_to_string(
+			Feed::get_feed_data_url() === $upload_metadata['url']
+		);
 
 		$info['active-feed']['latest-upload'] = $upload;
 
