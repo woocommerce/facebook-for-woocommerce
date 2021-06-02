@@ -110,8 +110,8 @@ class Tracker {
 		 * @since x.x.x
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
-		$data['extensions']['facebook-for-woocommerce']['ig-shopping-enabled']   = wc_bool_to_string( $config->ig_shopping_enabled );
-		$data['extensions']['facebook-for-woocommerce']['ig-cta-enabled']        = wc_bool_to_string( $config->ig_cta_enabled );
+		$data['extensions']['facebook-for-woocommerce']['ig-shopping-enabled']   = wc_bool_to_string( $config ?: $config->ig_shopping_enabled );
+		$data['extensions']['facebook-for-woocommerce']['ig-cta-enabled']        = wc_bool_to_string( $config ?: $config->ig_cta_enabled );
 		delete_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
 
 		/**
