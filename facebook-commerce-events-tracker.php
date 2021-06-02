@@ -1036,10 +1036,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 				$success = false;
-
-				if ( facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
-					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
-				}
+				
+				facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
 			}
 
 			return $success;
