@@ -1,7 +1,7 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version x.x.x
-
+2021-05-28 - version 2.5.1
+ * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen #1980
 
 2021-05-19 - version 2.5.0
  * New - Option to allow larger sites to opt-out of feed generation (product sync) job #1932

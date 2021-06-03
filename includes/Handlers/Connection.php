@@ -163,10 +163,8 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-
-			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-				$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
-			}
+			
+			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
 		set_transient( 'wc_facebook_business_configuration_refresh', time(), HOUR_IN_SECONDS );
@@ -196,9 +194,7 @@ class Connection {
 
 		} catch ( SV_WC_API_Exception $exception ) {
 
-			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-				$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
-			}
+			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
 		}
 
 		set_transient( 'wc_facebook_connection_refresh', time(), DAY_IN_SECONDS );
@@ -1185,19 +1181,17 @@ class Connection {
 		// Reject other objects other than subscribed object
 		if ( empty( $data ) || ! isset( $data->object ) || self::WEBHOOK_SUBSCRIBED_OBJECT !== $data->object ) {
 
-			if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-				$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
-				$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			}
-
+			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
+			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			
 			return;
 		}
 
 		$log_data = array();
-		if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-			$this->get_plugin()->log( 'WebHook User Event received' );
-			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		}
+		
+		$this->get_plugin()->log( 'WebHook User Event received' );
+		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
@@ -1309,16 +1303,12 @@ class Connection {
 
 			} catch ( \Exception $e ) {
 
-				if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-					$this->get_plugin()->log( 'Could not request Page Token: ' . $e->getMessage() );
-				}
+				$this->get_plugin()->log( 'Could not request Page Token: ' . $e->getMessage() );
 			}
 		}//end if
 
-		if ( $this->get_plugin()->get_integration()->is_debug_mode_enabled() ) {
-			$this->get_plugin()->log( 'WebHook User event saved data' );
-			$this->get_plugin()->log( print_r( $log_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		}
+		$this->get_plugin()->log( 'WebHook User event saved data' );
+		$this->get_plugin()->log( print_r( $log_data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 	}
 
 
