@@ -25,5 +25,17 @@
     "start": "wp-scripts start",
     "deploy:sake": "npm run build:assets && npx sake deploy --deployAssets=0",
     "build": "./bin/build-zip.sh"
-  }
+  },
+  "woorelease": {
+    "version_replace_paths": [
+      "includes",
+      "class-wc-facebookcommerce.php",
+      "facebook-commerce-events-tracker.php",
+      "facebook-commerce-messenger-chat.php",
+      "facebook-commerce-pixel-event.php",
+      "facebook-commerce.php",
+      "facebook-config-warmer.php",
+      "facebook-for-woocommerce.php"
+		]
+	}
 }
