@@ -351,6 +351,12 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $description;
 		}
 
+		/**
+		 * @param array $product_data
+		 * @param bool $for_items_batch
+		 *
+		 * @return array
+		 */
 		public function add_sale_price( $product_data, $for_items_batch = false ) {
 
 			// initialise sale price
