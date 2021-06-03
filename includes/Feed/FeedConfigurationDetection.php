@@ -131,6 +131,7 @@ class FeedConfigurationDetection {
 
 			$upload['error-count']         = $upload_metadata['error_count'];
 			$upload['warning-count']       = $upload_metadata['warning_count'];
+			$upload['num-detected-items']  = $upload_metadata['num_detected_items'];
 			$upload['num-persisted-items'] = $upload_metadata['num_persisted_items'];
 
 			// True if the feed upload url (Facebook side) matches the feed endpoint URL and secret.
