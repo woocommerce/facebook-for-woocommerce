@@ -64,10 +64,6 @@ class Products {
 	/** @var string the meta key used to store the name of the pattern attribute for a product */
 	const PATTERN_ATTRIBUTE_META_KEY = '_wc_facebook_pattern_attribute';
 
-
-	/** @var array memoized array of sync enabled status for products */
-	private static $products_sync_enabled = array();
-
 	/** @var array memoized array of visibility status for products */
 	private static $products_visibility = array();
 
@@ -81,9 +77,6 @@ class Products {
 	 * @param bool          $enabled whether sync should be enabled for $products
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
-
-		self::$products_sync_enabled = array();
-
 		$enabled = wc_bool_to_string( $enabled );
 
 		foreach ( $products as $product ) {
@@ -193,7 +186,7 @@ class Products {
 	/**
 	 * Determines whether the given product should be synced.
 	 *
-	 * @see Products::published_product_should_be_synced()
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
 	 *
 	 * @since 1.10.0
 	 *
@@ -201,8 +194,12 @@ class Products {
 	 * @return bool
 	 */
 	public static function product_should_be_synced( \WC_Product $product ) {
-
-		return 'publish' === $product->get_status() && self::published_product_should_be_synced( $product );
+		try {
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
+			return true;
+		} catch ( \Exception $e ) {
+			return false;
+		}
 	}
 
 
@@ -211,8 +208,7 @@ class Products {
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
 	 *
-	 * @see Products::is_sync_enabled_for_product()
-	 * @see Products::is_sync_excluded_for_product_terms()
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -220,32 +216,12 @@ class Products {
 	 * @return bool
 	 */
 	public static function published_product_should_be_synced( \WC_Product $product ) {
-
-		$should_sync = self::is_sync_enabled_for_product( $product );
-
-		// define the product to check terms on
-		if ( $should_sync ) {
-			$terms_product = $product->is_type( 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
-		} else {
-			$terms_product = null;
+		try {
+			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_but_skip_status_check();
+			return true;
+		} catch ( \Exception $e ) {
+			return false;
 		}
-
-		// allow simple or variable products (and their variations) with zero or empty price - exclude other product types with zero or empty price
-		if ( $should_sync && ( ! $terms_product || ( ! self::get_product_price( $product ) && ! in_array( $terms_product->get_type(), array( 'simple', 'variable' ) ) ) ) ) {
-			$should_sync = false;
-		}
-
-		// exclude products that are excluded from the store catalog or from search results
-		if ( $should_sync && ( ! $terms_product || has_term( array( 'exclude-from-catalog', 'exclude-from-search' ), 'product_visibility', $terms_product->get_id() ) ) ) {
-			$should_sync = false;
-		}
-
-		// exclude products that belong to one of the excluded terms
-		if ( $should_sync && ( ! $terms_product || self::is_sync_excluded_for_product_terms( $terms_product ) ) ) {
-			$should_sync = false;
-		}
-
-		return $should_sync;
 	}
 
 
@@ -271,39 +247,15 @@ class Products {
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
 	 *
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::is_excluded_by_product_sync_field() instead
+	 *
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
 	 * @return bool
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
-
-		if ( ! isset( self::$products_sync_enabled[ $product->get_id() ] ) ) {
-
-			if ( $product->is_type( 'variable' ) ) {
-
-				// assume variable products are not synced until a synced child is found
-				$enabled = false;
-
-				foreach ( $product->get_children() as $child_id ) {
-
-					$child_product = wc_get_product( $child_id );
-
-					if ( $child_product && self::is_sync_enabled_for_product( $child_product ) ) {
-
-						$enabled = true;
-						break;
-					}
-				}
-			} else {
-
-				$enabled = 'no' !== $product->get_meta( self::SYNC_ENABLED_META_KEY );
-			}
-
-			self::$products_sync_enabled[ $product->get_id() ] = $enabled;
-		}//end if
-
-		return self::$products_sync_enabled[ $product->get_id() ];
+		return facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_sync_field_check();
 	}
 
 
@@ -312,26 +264,13 @@ class Products {
 	 *
 	 * @since 1.10.0
 	 *
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::is_excluded_by_category_or_tag() instead
+	 *
 	 * @param \WC_Product $product product object
 	 * @return bool if true, product should be excluded from sync, if false, product can be included in sync (unless manually excluded by individual product meta)
 	 */
 	public static function is_sync_excluded_for_product_terms( \WC_Product $product ) {
-
-		if ( $integration = facebook_for_woocommerce()->get_integration() ) {
-			$excluded_categories = $integration->get_excluded_product_category_ids();
-			$excluded_tags       = $integration->get_excluded_product_tag_ids();
-		} else {
-			$excluded_categories = $excluded_tags = array();
-		}
-
-		$categories = $product->get_category_ids();
-		$tags       = $product->get_tag_ids();
-
-		// returns true if no terms on the product, or no terms excluded, or if the product does not contain any of the excluded terms
-		$matches = ( ! $categories || ! $excluded_categories || ! array_intersect( $categories, $excluded_categories ) )
-				   && ( ! $tags || ! $excluded_tags || ! array_intersect( $tags, $excluded_tags ) );
-
-		return ! $matches;
+		return ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_terms_check();
 	}
 
 
