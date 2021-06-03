@@ -153,6 +153,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->configuration_detection   = new \SkyVerge\WooCommerce\Facebook\Feed\FeedConfigurationDetection();
 				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
@@ -914,6 +915,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_commerce_handler() {
 
 			return $this->commerce_handler;
+		}
+
+		/**
+		 * Gets tracker instance.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Tracker
+		 */
+		public function get_tracker() {
+
+			return $this->tracker;
 		}
 
 		/**

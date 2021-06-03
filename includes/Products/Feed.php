@@ -75,6 +75,7 @@ class Feed {
 	public function handle_feed_data_request() {
 
 		\WC_Facebookcommerce_Utils::log( 'Facebook is requesting the product feed.' );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_requested();
 
 		$feed_handler = new \WC_Facebook_Product_Feed();
 		$file_path    = $feed_handler->get_file_path();

@@ -137,6 +137,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var array the page name and url */
 	private $page;
 
+	/** @var WC_Facebookcommerce_Graph_API API handling class. */
+	private $fbgraph;
 
 	/** Legacy properties *********************************************************************************************/
 
@@ -685,6 +687,16 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		<?php
 	}
 
+	/**
+	 * Returns graph API client object.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return WC_Facebookcommerce_Graph_API
+	 */
+	public function get_graph_api() {
+		return $this->fbgraph;
+	}
 
 	/**
 	 * Gets a list of Product Item IDs indexed by the ID of the variation.
