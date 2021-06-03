@@ -473,14 +473,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		public function create_feed( $facebook_catalog_id, $data ) {
 			$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );
-			$url = $this->feed_endpoint_url( $facebook_catalog_id );
+			$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
 			// success API call will return {id: <product feed id>}
 			// failure API will return {error: <error message>}
 			return self::_post( $url, $data );
 		}
 
+		/**
+		 * Get all feed configurations for a given catalog id.
+		 *
+		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
+		 * @since x.x.x
+		 *
+		 * @param String $facebook_catalog_id Facebook Catalog Id.
+		 * @return Array Facebook feeds configurations.
+		 */
 		public function read_feeds( $facebook_catalog_id ) {
-			$url = $this->feed_endpoint_url( $facebook_catalog_id );
+			$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
 			return $this->_get( $url );
 		}
 
@@ -489,6 +498,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		 * @since x.x.x
+		 *
+		 * @param String $feed_id Feed Id.
+		 * @return Array Facebook feeds configurations.
 		 */
 		public function read_feed_information( $feed_id ) {
 			$url = $this->build_url( $feed_id, '/?fields=id,name,schedule,update_schedule,uploads' );
@@ -500,6 +512,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		 * @since x.x.x
+		 *
+		 * @param String $feed_id Facebook Catalog Id.
+		 * @return Array Facebook feed metadata.
 		 */
 		public function read_feed_metadata( $feed_id ) {
 			$url = $this->build_url( $feed_id, '/?fields=created_time,latest_upload,product_count,schedule,update_schedule' );
@@ -511,12 +526,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed-upload/
 		 * @since x.x.x
+		 *
+		 * @param String $upload_id Feed Upload Id.
+		 * @return Array Feed upload metadata.
 		 */
 		public function read_upload_metadata( $upload_id ) {
 			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_persisted_items,url' );
 			return $this->_get( $url );
 		}
 
+		/**
+		 * Create product_feeds graph edge url.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param String $facebook_catalog_id Facebook Catalog Id.
+		 * @return String Graph edge url.
+		 */
 		public function get_feed_endpoint_url( $facebook_catalog_id ) {
 			return $this->build_url( $facebook_catalog_id, '/product_feeds' );
 		}
