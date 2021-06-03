@@ -62,12 +62,8 @@ class ProductValidator {
 		$this->integration = $integration;
 	}
 
-	public function can_sync() {
-
-	}
-
 	/**
-	 * Validate whether a given product should be synced to Facebook.
+	 * Validate whether the product should be synced to Facebook.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
@@ -82,7 +78,7 @@ class ProductValidator {
 	}
 
 	/**
-	 * Validate whether a given product should be synced to Facebook but skip the status check for backwards compatibility.
+	 * Validate whether the product should be synced to Facebook but skip the status check for backwards compatibility.
 	 *
 	 * @internal Do not use this as it will likely be removed.
 	 *
@@ -98,11 +94,26 @@ class ProductValidator {
 	}
 
 	/**
-	 * Check if a product's terms (categories and tags) allow it to sync.
+	 * Validate whether the product should be synced to Facebook.
 	 *
 	 * @return bool
 	 */
-	public function product_terms_allow_sync(): bool {
+	public function passes_all_checks(): bool {
+		try {
+			$this->validate();
+		} catch ( ProductExcludedException $e ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the product's terms (categories and tags) allow it to sync.
+	 *
+	 * @return bool
+	 */
+	public function passes_product_terms_check(): bool {
 		try {
 			$this->validate_product_terms();
 		} catch ( ProductExcludedException $e ) {
@@ -117,7 +128,7 @@ class ProductValidator {
 	 *
 	 * @return bool
 	 */
-	public function product_sync_field_allows_sync(): bool {
+	public function passes_product_sync_field_check(): bool {
 		try {
 			$this->validate_product_sync_field();
 		} catch ( ProductExcludedException $e ) {
