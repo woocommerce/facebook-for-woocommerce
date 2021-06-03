@@ -34,22 +34,22 @@ function ajax(action, payload = null, callback = null, failcallback = null) {
 	);
 }
 
-function fb_woo_infobanner_post_click(){
+window.fb_woo_infobanner_post_click = function (){
 	console.log( "Woo infobanner post tip click!" );
 	return ajax(
-		 'ajax_woo_infobanner_post_click',
-		 {
-			 "_ajax_nonce": wc_facebook_infobanner_jsx.nonce
-		 },
+		'ajax_woo_infobanner_post_click',
+		{
+			"_ajax_nonce": wc_facebook_infobanner_jsx.nonce
+		},
 	);
-}
+};
 
-function fb_woo_infobanner_post_xout() {
+window.fb_woo_infobanner_post_xout = function() {
 	console.log( "Woo infobanner post tip xout!" );
 	return ajax(
-			'ajax_woo_infobanner_post_xout',
-			{
-				"_ajax_nonce": wc_facebook_infobanner_jsx.nonce
-			},
+		'ajax_woo_infobanner_post_xout',
+		{
+			"_ajax_nonce": wc_facebook_infobanner_jsx.nonce
+		},
 	);
-}
+};

@@ -41,6 +41,7 @@ class FeedApiEndpoint {
 	 * @throws Error Feed request not possible.
 	 */
 	public function handle_feed_request() {
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_requested();
 
 		$file_path = $this->feed_file_handler->get_file_path();
 

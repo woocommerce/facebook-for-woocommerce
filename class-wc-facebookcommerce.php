@@ -13,6 +13,7 @@ use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
@@ -156,6 +157,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->configuration_detection   = new \SkyVerge\WooCommerce\Facebook\Feed\FeedConfigurationDetection();
 				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
@@ -907,6 +909,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
+		 * Gets tracker instance.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Tracker
+		 */
+		public function get_tracker() {
+
+			return $this->tracker;
+		}
+
+		/**
 		 * Gets the debug profiling logger instance.
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger
@@ -919,6 +933,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			return $instance;
+		}
+
+		/**
+		 * Get the product sync validator class.
+		 *
+		 * @param WC_Product $product A product object to be validated.
+		 *
+		 * @return ProductSyncValidator
+		 */
+		public function get_product_sync_validator( WC_Product $product ) {
+			return new ProductSyncValidator( $this->get_integration(), $product );
 		}
 
 		/**
