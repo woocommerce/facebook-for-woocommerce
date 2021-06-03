@@ -27,7 +27,7 @@ abstract class AbstractChainedJob extends FrameworkAbstractChainedJob {
 	public function handle_batch_action( int $batch_number, array $args ) {
 		// Use the profile logger to log the usage of each job batch
 		$logger       = facebook_for_woocommerce()->get_profiling_logger();
-		$process_name = $this->get_name() . '_job';
+		$process_name = $this->get_name() . '_job_batch';
 
 		$logger->start( $process_name );
 

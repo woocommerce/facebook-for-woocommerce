@@ -68,8 +68,7 @@ class Sync {
 	 *
 	 * TODO: consolidate the logic to decide whether a product should be synced in one or a couple of helper methods - right now we have slightly different versions of the same code in different places {WV 2020-05-25}
 	 *
-	 * @see \WC_Facebook_Product_Feed::get_product_ids()
-	 * @see \WC_Facebook_Product_Feed::write_product_feed_file()
+	 * @see \WC_Facebookcommerce_Utils::get_all_product_ids_for_sync()
 	 *
 	 * @since 2.0.0
 	 */

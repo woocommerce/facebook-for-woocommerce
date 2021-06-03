@@ -57,9 +57,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\AJAX Ajax handler instance */
 		private $ajax;
 
-		/** @var \SkyVerge\WooCommerce\Facebook\Products\Feed product feed handler */
-		private $product_feed;
-
 		/** @var Background_Handle_Virtual_Products_Variations instance */
 		protected $background_handle_virtual_products_variations;
 
@@ -99,6 +96,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var Heartbeat */
 		public $heartbeat;
 
+		/** @var \SkyVerge\WooCommerce\Facebook\Feed\FeedApiEndpoint */
+		public $feed_api_endpoint;
+
+		/** @var \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler */
+		public $feed_scheduler;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -131,7 +134,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
-			// Product Set breadcrumb filters
+			// Product Set breadcrumb filters.
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
 			add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
 
@@ -143,14 +146,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
 				require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
-				require_once __DIR__ . '/includes/fbproductfeed.php';
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
 				$this->heartbeat = new Heartbeat( WC()->queue() );
 				$this->heartbeat->init();
 
-				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
+				$this->feed_scheduler            = new \SkyVerge\WooCommerce\Facebook\Feed\FeedScheduler();
+				$this->feed_api_endpoint         = new \SkyVerge\WooCommerce\Facebook\Feed\FeedApiEndpoint();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
@@ -187,7 +190,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// Init jobs
 				$this->job_registry = new \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry();
-				add_action( 'init', [ $this->job_registry, 'init' ] );
+				add_action( 'init', array( $this->job_registry, 'init' ) );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
@@ -785,19 +788,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_ajax_handler() {
 
 			return $this->ajax;
-		}
-
-
-		/**
-		 * Gets the product feed handler.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return \SkyVerge\WooCommerce\Facebook\Products\Feed
-		 */
-		public function get_product_feed_handler() {
-
-			return $this->product_feed;
 		}
 
 		/**
