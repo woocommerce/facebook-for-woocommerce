@@ -531,7 +531,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return Array Feed upload metadata.
 		 */
 		public function read_upload_metadata( $upload_id ) {
-			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_persisted_items,url' );
+			$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_detected_items,num_persisted_items,url' );
 			return $this->_get( $url );
 		}
 
