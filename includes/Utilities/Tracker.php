@@ -29,6 +29,13 @@ class Tracker {
 	const TRANSIENT_WCTRACKER_LIFE_TIME = 2 * WEEK_IN_SECONDS;
 
 	/**
+	 * Transient key name; how long it took to generate the most recent feed file, or zero if it failed.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FEED_GENERATION_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_time';
+
+	/**
 	 * Transient key name; true if feed has been requested by Facebook.
 	 *
 	 * @var string
@@ -96,6 +103,15 @@ class Tracker {
 		$data['extensions']['facebook-for-woocommerce']['messenger-enabled'] = wc_bool_to_string( $messenger_enabled );
 
 		/**
+		 * How long did the last feed generation take (or did it fail - 0)?
+		 *
+		 * @since x.x.x
+		 */
+		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-time'] = floatval( $feed_generation_time );
+		delete_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
+
+		/**
 		 * Has the feed file been requested recently?
 		 *
 		 * @since x.x.x
@@ -123,6 +139,17 @@ class Tracker {
 		delete_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 
 		return $data;
+	}
+
+	/**
+	 * Update transient with feed file generation time (in seconds).
+	 *
+	 * Note this is used to clear the transient (set to -1) to track feed generation failure.
+	 *
+	 * @since x.x.x
+	 */
+	public function track_feed_file_generation_time( $time_in_seconds ) {
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME, $time_in_seconds, self::TRANSIENT_WCTRACKER_LIFE_TIME );
 	}
 
 	/**

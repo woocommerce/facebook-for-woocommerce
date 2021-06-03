@@ -101,6 +101,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$this->generate_productfeed_file();
 
 				$generation_time = microtime( true ) - $start_time;
+				facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( $generation_time );
 
 				$this->set_feed_generation_time_with_decay( $generation_time );
 
@@ -109,6 +110,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			} catch ( \Exception $exception ) {
 
 				\WC_Facebookcommerce_Utils::log( $exception->getMessage() );
+				// Feed generation failed - clear the generation time to track that there's an issue.
+				facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( -1 );
+
 			}
 
 			$profiling_logger->stop( 'generate_feed' );
