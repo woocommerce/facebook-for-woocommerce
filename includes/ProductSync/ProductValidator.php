@@ -62,6 +62,10 @@ class ProductValidator {
 		$this->integration = $integration;
 	}
 
+	public function can_sync() {
+
+	}
+
 	/**
 	 * Validate whether a given product should be synced to Facebook.
 	 *
@@ -74,7 +78,7 @@ class ProductValidator {
 		$this->validate_product_sync_field();
 		$this->validate_product_price();
 		$this->validate_product_visibility();
-		$this->validate_product_categories_and_tags();
+		$this->validate_product_terms();
 	}
 
 	/**
@@ -90,39 +94,37 @@ class ProductValidator {
 		$this->validate_product_sync_field();
 		$this->validate_product_price();
 		$this->validate_product_visibility();
-		$this->validate_product_categories_and_tags();
+		$this->validate_product_terms();
 	}
 
 	/**
-	 * Check if a product has excluded categories or tags.
+	 * Check if a product's terms (categories and tags) allow it to sync.
 	 *
-	 * @return bool True if it should be excluded.
+	 * @return bool
 	 */
-	public function is_excluded_by_category_or_tag(): bool {
+	public function product_terms_allow_sync(): bool {
 		try {
-			$this->validate_product_categories_and_tags();
+			$this->validate_product_terms();
 		} catch ( ProductExcludedException $e ) {
-			// Product failed category and tag validation so it's excluded.
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
-	 * Check if the product is excluded by the product sync field value.
+	 * Check if the product's product sync meta field allows it to sync.
 	 *
-	 * @return bool True if it should be excluded.
+	 * @return bool
 	 */
-	public function is_excluded_by_product_sync_field(): bool {
+	public function product_sync_field_allows_sync(): bool {
 		try {
 			$this->validate_product_sync_field();
 		} catch ( ProductExcludedException $e ) {
-			// Product failed validation so it's excluded.
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -176,11 +178,11 @@ class ProductValidator {
 	}
 
 	/**
-	 * Check whether the product's categories or tags exclude it from sync.
+	 * Check whether the product's categories or tags (terms) exclude it from sync.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
-	protected function validate_product_categories_and_tags() {
+	protected function validate_product_terms() {
 		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		$excluded_categories = $this->integration->get_excluded_product_category_ids();

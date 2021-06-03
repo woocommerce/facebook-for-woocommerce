@@ -386,7 +386,7 @@ class AJAX {
 			foreach ( $product_ids as $product_id ) {
 				$product = wc_get_product( $product_id );
 
-				if ( $product instanceof \WC_Product && facebook_for_woocommerce()->get_product_sync_validator( $product )->is_excluded_by_category_or_tag() ) {
+				if ( $product instanceof \WC_Product && ! facebook_for_woocommerce()->get_product_sync_validator( $product )->product_terms_allow_sync() ) {
 					$has_excluded_term = true;
 					break;
 				}

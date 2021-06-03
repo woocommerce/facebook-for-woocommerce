@@ -255,7 +255,7 @@ class Products {
 	 * @return bool
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
-		return ! facebook_for_woocommerce()->get_product_sync_validator( $product )->is_excluded_by_product_sync_field();
+		return facebook_for_woocommerce()->get_product_sync_validator( $product )->product_sync_field_allows_sync();
 	}
 
 
@@ -270,7 +270,7 @@ class Products {
 	 * @return bool if true, product should be excluded from sync, if false, product can be included in sync (unless manually excluded by individual product meta)
 	 */
 	public static function is_sync_excluded_for_product_terms( \WC_Product $product ) {
-		return facebook_for_woocommerce()->get_product_sync_validator( $product )->is_excluded_by_category_or_tag();
+		return ! facebook_for_woocommerce()->get_product_sync_validator( $product )->product_terms_allow_sync();
 	}
 
 
