@@ -27,3 +27,7 @@ assignees: ''
 
 ## 🗃 Logs
 <!-- Please include logs, details about your WordPress environment (from **WooCommerce > System Status**), and any other relevant information about your site. -->
+
+<details>
+	<!-- paste WooCommerce Status Report or logs here -->
+</details>
