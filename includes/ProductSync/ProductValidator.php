@@ -145,7 +145,7 @@ class ProductValidator {
 	 */
 	protected function validate_sync_enabled_globally() {
 		if ( ! $this->integration->is_product_sync_enabled() ) {
-			throw new ProductExcludedException( 'Product sync is globally disabled.' );
+			throw new ProductExcludedException( __( 'Product sync is globally disabled.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
@@ -158,7 +158,7 @@ class ProductValidator {
 		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'publish' !== $product->get_status() ) {
-			throw new ProductExcludedException( 'Product is not published.' );
+			throw new ProductExcludedException( __( 'Product is not published.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
@@ -169,7 +169,7 @@ class ProductValidator {
 	 */
 	protected function validate_product_stock_status() {
 		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $this->product->is_in_stock() ) {
-			throw new ProductExcludedException( 'Product must be in stock.' );
+			throw new ProductExcludedException( __( 'Product must be in stock.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
@@ -184,7 +184,7 @@ class ProductValidator {
 		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'visible' !== $product->get_catalog_visibility() ) {
-			throw new ProductExcludedException( 'Product is hidden from catalog and search.' );
+			throw new ProductExcludedException( __( 'Product is hidden from catalog and search.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
@@ -199,14 +199,14 @@ class ProductValidator {
 		$excluded_categories = $this->integration->get_excluded_product_category_ids();
 		if ( $excluded_categories ) {
 			if ( ! empty( array_intersect( $product->get_category_ids(), $excluded_categories ) ) ) {
-				throw new ProductExcludedException( 'Product excluded because of categories.' );
+				throw new ProductExcludedException( __( 'Product excluded because of categories.', 'facebook-for-woocommerce' ) );
 			}
 		}
 
 		$excluded_tags = $this->integration->get_excluded_product_tag_ids();
 		if ( $excluded_tags ) {
 			if ( ! empty( array_intersect( $product->get_tag_ids(), $excluded_tags ) ) ) {
-				throw new ProductExcludedException( 'Product excluded because of tags.' );
+				throw new ProductExcludedException( __( 'Product excluded because of tags.', 'facebook-for-woocommerce' ) );
 			}
 		}
 	}
@@ -217,7 +217,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_sync_field() {
-		$invalid_exception = new ProductExcludedException( 'Sync disabled in product field.' );
+		$invalid_exception = new ProductExcludedException( __( 'Sync disabled in product field.', 'facebook-for-woocommerce' ) );
 
 		if ( $this->product->is_type( 'variable' ) ) {
 			foreach ( $this->product->get_children() as $child_id ) {
@@ -252,7 +252,7 @@ class ProductValidator {
 		}
 
 		if ( ! Products::get_product_price( $this->product ) ) {
-			throw new ProductExcludedException( 'If product is not simple, variable or variation it must have a price.' );
+			throw new ProductExcludedException( __( 'If product is not simple, variable or variation it must have a price.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
