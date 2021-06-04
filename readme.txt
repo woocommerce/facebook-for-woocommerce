@@ -40,12 +40,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2.6.0 - 2021-xx-xx =
- * New - Add cron heartbeat and use to offload feed generation from init / admin_init #1953
- * Fix - Clean up background sync options #1962
- * Dev - Remove unnecessary use of is_debug_mode_enabled() #1976
- * Dev - Add placeholder replace paths. #1982
- * Feature - Add tracker props to understand usage of feed-based sync and other FB business config options #1972
- * Feature - Create a single class responsible for validating whether a product should be synced to FB #1933
+ * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
+ * Fix – Clean up background sync options (performance) #1962
+ * Dev – Add tracker props to understand usage of feed-based sync and other FB business config options #1972
+ * Dev – Configure release tooling to auto-update version numbers in code #1982
+ * Dev – Refactor code responsible for validating whether a product should be synced to FB into one place #19333
 
 = 2.5.1 - 2021-05-28 =
  * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen
