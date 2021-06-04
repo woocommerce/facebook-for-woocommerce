@@ -93,6 +93,10 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$processed_items = array();
 
 		foreach ( $products as $product ) {
+			// Check if product is enabled for synchronization.
+			if ( ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks() ) {
+				continue;
+			}
 			$processed_items[] = $this->process_item( $product, $args );
 		}
 
@@ -105,6 +109,10 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @param array $processed_items Array of product fields to write to the feed file.
 	 */
 	protected function write_processed_items_to_feed( $processed_items ) {
+		// Check if we have any items to write.
+		if ( empty( $processed_items ) ) {
+			return;
+		}
 		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->format_items_for_feed( $processed_items )
 		);
