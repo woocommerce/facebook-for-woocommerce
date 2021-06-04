@@ -26,4 +26,8 @@ assignees: ''
 <!-- Describe what should happen instead of what is currently happening. -->
 
 ## 🗃 Logs
-<!-- Please include logs, details about your WordPress environment (from **WooCommerce > System Status**), and any other relevant information about your site. -->
+<!-- Please include logs, details about your WordPress environment (from [**WooCommerce Status Report**](https://docs.woocommerce.com/document/understanding-the-woocommerce-system-status-report/)), and any other relevant information about your site. -->
+
+<details>
+	<!-- paste WooCommerce Status Report or logs here -->
+</details>

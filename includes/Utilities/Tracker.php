@@ -109,15 +109,15 @@ class Tracker {
 		 */
 		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
 		$data['extensions']['facebook-for-woocommerce']['feed-generation-time'] = floatval( $feed_generation_time );
-		delete_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
 
 		/**
-		 * Has the feed file been requested recently?
+		 * Has the feed file been requested since the last snapshot?
 		 *
 		 * @since x.x.x
 		 */
 		$feed_file_requested = get_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED );
 		$data['extensions']['facebook-for-woocommerce']['feed-file-requested'] = wc_bool_to_string( $feed_file_requested );
+		// Manually delete the transient. This prop tracks if feed has been requested _since last snapshot_.
 		delete_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED );
 
 		/**
@@ -126,9 +126,8 @@ class Tracker {
 		 * @since x.x.x
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
-		$data['extensions']['facebook-for-woocommerce']['ig-shopping-enabled'] = wc_bool_to_string( $config ?: $config->ig_shopping_enabled );
-		$data['extensions']['facebook-for-woocommerce']['ig-cta-enabled']      = wc_bool_to_string( $config ?: $config->ig_cta_enabled );
-		delete_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
+		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ?: $config->ig_shopping_enabled );
+		$data['extensions']['facebook-for-woocommerce']['instagram-cta-enabled']      = wc_bool_to_string( $config ?: $config->ig_cta_enabled );
 
 		/**
 		 * Feed pull / upload settings configured in Facebook UI.
@@ -136,7 +135,6 @@ class Tracker {
 		 * @since x.x.x
 		 */
 		$data['extensions']['facebook-for-woocommerce']['product-feed-config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
-		delete_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 
 		return $data;
 	}
