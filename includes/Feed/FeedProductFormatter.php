@@ -48,6 +48,18 @@ class FeedProductFormatter {
 		if ( Products::product_should_be_deleted( $fb_product->woo_product ) ) {
 			$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 		}
+
+		// Sale price, only format if we have a sale price set for the product, else leave as empty ('').
+		$sale_price                = $this->get_value_from_product_data( $product_data, 'sale_price', '' );
+		$sale_price_effective_date = '';
+		if ( is_numeric( $sale_price ) && $sale_price > 0 ) {
+			$sale_price_effective_date = $this->get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . $this->get_value_from_product_data( $product_data, 'sale_price_end_date' );
+			$sale_price                = $this->format_price_for_feed(
+				$sale_price,
+				$this->get_value_from_product_data( $product_data, 'currency' )
+			);
+		}
+
 		$feed_row                              = array();
 		$feed_row['id']                        = $product_data['retailer_id'];
 		$feed_row['title']                     = $fb_product->woo_product->get_title();
@@ -64,11 +76,8 @@ class FeedProductFormatter {
 		$feed_row['item_group_id']             = $item_group_id;
 		$feed_row['checkout_url']              = $this->get_value_from_product_data( $product_data, 'checkout_url' );
 		$feed_row['additional_image_link']     = $this->format_additional_image_url( $this->get_value_from_product_data( $product_data, 'additional_image_urls' ) );
-		$feed_row['sale_price_effective_date'] = $this->get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . $this->get_value_from_product_data( $product_data, 'sale_price_end_date' );
-		$feed_row['sale_price']                = $this->format_price_for_feed(
-			$this->get_value_from_product_data( $product_data, 'sale_price', 0 ),
-			$this->get_value_from_product_data( $product_data, 'currency' )
-		);
+		$feed_row['sale_price_effective_date'] = $sale_price_effective_date;
+		$feed_row['sale_price']                = $sale_price;
 		$feed_row['condition']                 = 'new';
 		$feed_row['visibility']                = $this->get_value_from_product_data( $product_data, 'visibility' );
 		$feed_row['gender']                    = $this->get_value_from_product_data( $product_data, 'gender' );
