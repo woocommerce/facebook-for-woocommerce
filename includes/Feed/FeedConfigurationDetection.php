@@ -14,12 +14,16 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
  */
 class FeedConfigurationDetection {
 
+	const FEED_CONFIG_CHECK_TRANSIENT        = 'wc_facebook_for_woocommerce_feed_config_check';
+	const FEED_CONFIG_MESSAGE_OPTION         = 'wc_facebook_for_woocommerce_feed_config_message_option';
+	const FEED_CONFIG_VALID_CHECK_INTERVAL   = DAY_IN_SECONDS;
+	const FEED_CONFIG_INVALID_CHECK_INTERVAL = 15 * MINUTE_IN_SECONDS;
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		add_action( Heartbeat::DAILY, array( $this, 'track_data_source_feed_tracker_info' ) );
-		add_action( 'init', array( $this, 'has_valid_feed_config' ) );
+		add_action( 'admin_init', array( $this, 'evaluate_feed_config' ) );
 	}
 
 	/**
@@ -146,6 +150,38 @@ class FeedConfigurationDetection {
 		return $info;
 	}
 
+	public function evaluate_feed_config() {
+		$feed_check_transient = get_transient( self::FEED_CONFIG_CHECK_TRANSIENT );
+		if ( $feed_check_transient ) {
+			$message_method = get_option( self::FEED_CONFIG_MESSAGE_OPTION, false );
+			if ( $message_method ) {
+				add_action( 'admin_notices', array( $this, $message_method ) );
+			}
+			return true;
+		}
+
+		try {
+			$config_is_valid = $this->has_valid_feed_config();
+			delete_option( self::FEED_CONFIG_MESSAGE_OPTION );
+			if ( $config_is_valid ) {
+				set_transient( self::FEED_CONFIG_CHECK_TRANSIENT, true, self::FEED_CONFIG_VALID_CHECK_INTERVAL );
+				return;
+			} else {
+				// TODO trigger automattic feed configuration creation.
+				set_transient( self::FEED_CONFIG_CHECK_TRANSIENT, true, self::FEED_CONFIG_INVALID_CHECK_INTERVAL );
+				return;
+			}
+		} catch ( FeedInactiveException $exception ) {
+			// Inform user that the feed is blocked.
+			add_action( 'admin_notices', array( $this, 'check_documentation_for_stale_feed_notice' ) );
+			update_option( self::FEED_CONFIG_MESSAGE_OPTION, 'check_documentation_for_stale_feed_notice' );
+		} catch ( FeedBadConfigException $exception ) {
+			// Inform user that the feed configuration is broken.
+			add_action( 'admin_notices', array( $this, 'check_documentation_for_invalid_config' ) );
+			update_option( self::FEED_CONFIG_MESSAGE_OPTION, 'check_documentation_for_invalid_config' );
+		}
+	}
+
 	/**
 	 * Check if we have a valid feed configuration.
 	 *
@@ -184,16 +220,10 @@ class FeedConfigurationDetection {
 		}
 
 		// Check if our stored feed ( if we have one ) represents a valid feed configuration.
-		if ( $integration_feed_id ) {
-			try {
-				$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
-			} catch ( Error $th ) {
-				throw $th;
-			}
-		}
+		$is_integration_feed_config_valid = $this->evaluate_integration_feed( $integration_feed_id, $graph_api );
 
 		if ( $is_integration_feed_config_valid ) {
-			// Our stored feed id represents a valid feed configuration.
+			// Our stored feed id represents a valid feed configuration. Next check if it is active.
 			return true;
 		}
 
@@ -206,25 +236,93 @@ class FeedConfigurationDetection {
 
 		// Check if the catalog has any feed configured.
 		if ( empty( $feed_nodes ) ) {
+			// This is the only situation where we will automatically create facebook catalog configuration.
 			return false;
 		}
 
 		// Check if any of the feeds is currently active.
 		foreach ( $feed_nodes as $feed ) {
-
-			try {
-				$is_integration_feed_config_valid = $this->is_feed_config_valid( $feed['id'], $graph_api );
-			} catch ( Error $er ) {
-				throw $er;
+			$feed_config_valid = $this->evaluate_facebook_feed_config( $feed['id'], $graph_api );
+			if ( $feed_config_valid ) {
+				return true;
 			}
 		}
+
+		/*
+		 * If we are here it means that integration does not have a valid feed configured.
+		 * It also means that there are feed configurations defined in Facebook Catalog that we can't match to something useful.
+		 * The best course of action is for merchant to manually adjust ( or delete ) the configurations that he has in teh Facebook Catalog settings.
+		 */
 		return false;
+	}
+
+	/**
+	 * Admin notice displayed when the configuration seems to be valid but feed is stale.
+	 */
+	public function check_documentation_for_stale_feed_notice() {
+		$class   = 'notice notice-warning is-dismissible';
+		$message = __( 'Feed upload is blocked. Check you feed configuration in Facebook Dataset config.', 'facebook-for-woocommerce' );
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+	}
+
+	/**
+	 * Admin notice displayed when the configuration is not valid.
+	 */
+	public function check_documentation_for_invalid_config() {
+		$class   = 'notice notice-warning is-dismissible';
+		$message = __( 'Your Facebook Feed configuration is not valid. Please check plugin documentation for more information on how to proceed.', 'facebook-for-woocommerce' );
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+	}
+
+	private function evaluate_facebook_feed_config( $feed_id, $graph_api ) {
+		try {
+			$is_integration_feed_config_valid = $this->is_feed_config_valid( $feed_id, $graph_api );
+			if ( $is_integration_feed_config_valid ) {
+				// We have a valid feed configuration that is not our stored integration feed. We can assume that this should be our feed.
+				$integration->update_feed_id( $feed['id'] );
+				return true;
+			}
+		} catch ( FeedInactiveException $exception ) {
+			// We have a valid feed configuration that is not our stored integration feed. We can assume that this should be our feed.
+			$integration->update_feed_id( $feed['id'] );
+			// Inform user that the feed is blocked.
+			add_action( 'admin_notices', array( $this, 'check_documentation_for_stale_feed_notice' ) );
+			// We return true because we assume that the feed configuration is valid and there is something else blocking the feed.
+			return true;
+		} catch ( Error $er ) {
+			throw $er;
+		}
+		return false;
+	}
+
+	private function evaluate_integration_feed( $integration_feed_id, $graph_api ) {
+		if ( $integration_feed_id ) {
+			try {
+				$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
+				// Inform user that the feed configuration is broken.
+				if ( ! $is_integration_feed_config_valid ) {
+					throw new FeedBadConfigException();
+				}
+				// All is good. Integration feed is configured successfully.
+				return true;
+			} catch ( FeedInactiveException $exception ) {
+				throw $exception;
+			} catch ( Error $th ) {
+				// General error that should not happened.
+				throw $th;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	/**
 	 * This function validates the Facebook feed for any configurations issues.
 	 *
-	 * @throws Error Feed not configured correctly.
+	 * @throws FeedInactiveException Feed not configured correctly.
+	 * @throws Error Failed to fetch the feed information.
 	 * @param String                        $feed_id Facebook Feed ID.
 	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
 	 * @since x.x.x
@@ -241,9 +339,19 @@ class FeedConfigurationDetection {
 
 		$feed_has_correct_schedule = $this->feed_has_correct_schedule( $feed_information );
 		$feed_is_using_correct_url = $this->feed_is_using_correct_url( $feed_information );
-		$feed_has_recent_uploads   = $this->feed_has_recent_uploads( $feed_information );
+		$feed_has_correct_config   = $feed_is_using_correct_url && $feed_has_correct_schedule;
 
-		return $feed_has_recent_uploads && $feed_is_using_correct_url && $feed_has_correct_schedule;
+		if ( ! $feed_has_correct_config ) {
+			// Config incorrect.
+			return false;
+		}
+
+		if ( ! $this->feed_has_recent_uploads( $feed_information ) ) {
+			// Configuration is correct but for some reason the feed is not active. This will require manual check by the merchant in settings.
+			throw new FeedInactiveException();
+		}
+
+		return true;
 	}
 
 	/**
@@ -283,6 +391,7 @@ class FeedConfigurationDetection {
 
 	/**
 	 * Does feed contains any recent uploads.
+	 * This only checks upload attempts and not if the upload has managed to succeed.
 	 *
 	 * @param Array $feed_information Feed configuration information.
 	 * @since x.x.x
