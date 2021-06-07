@@ -19,6 +19,7 @@ class FeedConfigurationDetection {
 	 */
 	public function __construct() {
 		add_action( Heartbeat::DAILY, array( $this, 'track_data_source_feed_tracker_info' ) );
+		add_action( 'init', array( $this, 'has_valid_feed_config' ) );
 	}
 
 	/**
@@ -164,6 +165,8 @@ class FeedConfigurationDetection {
 	 *       - Wrong id ( active feed from different integration ): false
 	 * 7. Everything matches we have found a valid feed.
 	 *
+	 * For schedule checks we are only interested in `schedule` and not in `update_schedule`.
+	 *
 	 * @throws Error Partial feed configuration.
 	 * @return bool True value means that we have a valid configuration.
 	 *                         False means that we have no configuration at all.
@@ -236,8 +239,8 @@ class FeedConfigurationDetection {
 			throw $th;
 		}
 
-		$feed_is_using_correct_url = $this->feed_is_using_correct_url( $feed_information );
 		$feed_has_correct_schedule = $this->feed_has_correct_schedule( $feed_information );
+		$feed_is_using_correct_url = $this->feed_is_using_correct_url( $feed_information );
 		$feed_has_recent_uploads   = $this->feed_has_recent_uploads( $feed_information );
 
 		return $feed_has_recent_uploads && $feed_is_using_correct_url && $feed_has_correct_schedule;
