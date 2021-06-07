@@ -29,11 +29,33 @@ class Tracker {
 	const TRANSIENT_WCTRACKER_LIFE_TIME = 2 * WEEK_IN_SECONDS;
 
 	/**
-	 * Transient key name; how long it took to generate the most recent feed file, or zero if it failed.
+	 * Transient key to store how long it took to generate one feed file products batch.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_GENERATION_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_time';
+	const TRANSIENT_WCTRACKER_FEED_BATCH_GENERATION_AVERAGE_TIME = 'facebook_for_woocommerce_wctracker_feed_batch_generation_average_time';
+
+	/**
+	 * Transient key to store feed generation start timestamp.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FEED_GENERATION_START_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_start_time';
+
+
+	/**
+	 * Transient key to store feed generation end timestamp.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FEED_GENERATION_END_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_end_time';
+
+	/**
+	 * Transient key to store feed generation batch count.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_COUNT = 'facebook_for_woocommerce_wctracker_feed_generation_batch_count';
 
 	/**
 	 * Transient key name; true if feed has been requested by Facebook.
@@ -103,12 +125,21 @@ class Tracker {
 		$data['extensions']['facebook-for-woocommerce']['messenger-enabled'] = wc_bool_to_string( $messenger_enabled );
 
 		/**
-		 * How long did the last feed generation take (or did it fail - 0)?
+		 * Feed generation performance statistics.
 		 *
 		 * @since x.x.x
 		 */
-		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
-		$data['extensions']['facebook-for-woocommerce']['feed-generation-time'] = floatval( $feed_generation_time );
+		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_BATCH_GENERATION_AVERAGE_TIME );
+		$data['extensions']['facebook-for-woocommerce']['feed-batch-generation-time'] = floatval( $feed_generation_time );
+		$feed_generation_start_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_START_TIME );
+		$feed_generation_end_time   = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_END_TIME );
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-start-time'] = (int) $feed_generation_start_time;
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-end-time']   = (int) $feed_generation_end_time;
+		$feed_generation_batch_size  = facebook_for_woocommerce()->job_registry->generate_product_feed_job->get_batch_size();
+		$feed_generation_batch_count = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_COUNT );
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-batch-size']  = (int) $feed_generation_batch_size;
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-batch-count'] = (int) $feed_generation_batch_count;
+
 
 		/**
 		 * Has the feed file been requested since the last snapshot?
@@ -140,14 +171,53 @@ class Tracker {
 	}
 
 	/**
-	 * Update transient with feed file generation time (in seconds).
-	 *
-	 * Note this is used to clear the transient (set to -1) to track feed generation failure.
+	 * Update transient with feed file generation average time (in seconds).
 	 *
 	 * @since x.x.x
+	 * @param Float $time_in_seconds Time it takes to generate one batch.
 	 */
-	public function track_feed_file_generation_time( $time_in_seconds ) {
-		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME, $time_in_seconds, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	public function track_feed_file_batch_generation_average_time( $time_in_seconds ) {
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_BATCH_GENERATION_AVERAGE_TIME, $time_in_seconds, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	}
+
+	/**
+	 * Update transient with feed file generation start time.
+	 *
+	 * @since x.x.x
+	 * @param Float $timestamp Time when the generation has been started.
+	 */
+	public function track_feed_file_generation_start( $timestamp ) {
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_START_TIME, $timestamp, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	}
+
+	/**
+	 * Update transient with feed batch count.
+	 *
+	 * @since x.x.x
+	 * @param Int $batch_count Number of processed batches.
+	 */
+	public function track_feed_file_batch_count( $batch_count ) {
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_COUNT, $batch_count, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	}
+
+	/**
+	 * Update transient with feed file generation time (in seconds).
+	 *
+	 * @since x.x.x
+	 * @param Float $timestamp Time when the generation has been ended.
+	 */
+	public function track_feed_file_generation_end( $timestamp ) {
+		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_END_TIME, $timestamp, self::TRANSIENT_WCTRACKER_LIFE_TIME );
+	}
+
+	/**
+	 * Get transient generation time (in seconds).
+	 *
+	 * @since x.x.x
+	 * @return Float Batch generation time averaged continuously during feed generation.
+	 */
+	public function get_feed_batch_generation_average_time() {
+		return (float) get_transient( self::TRANSIENT_WCTRACKER_FEED_BATCH_GENERATION_AVERAGE_TIME );
 	}
 
 	/**

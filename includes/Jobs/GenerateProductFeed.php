@@ -56,6 +56,38 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$this->feed_file_handler->write_to_temp_file(
 			$this->feed_data_exporter->generate_header()
 		);
+		// Reset the statistics counters.
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_generation_average_time( 0 );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_count( 0 );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_start( time() );
+	}
+
+	/**
+	 * Handle processing a chain batch.
+	 *
+	 * @hooked {plugin_name}/jobs/{job_name}/chain_batch
+	 *
+	 * @param int   $batch_number The batch number for the new batch.
+	 * @param array $args         The args for the job.
+	 *
+	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
+	 */
+	public function handle_batch_action( int $batch_number, array $args ) {
+		$start_time = microtime( true );
+		parent::handle_batch_action( $batch_number, $args );
+		$generation_time       = microtime( true ) - $start_time;
+		$previous_average_time = facebook_for_woocommerce()->get_tracker()->get_feed_batch_generation_average_time();
+
+		/*
+		 * This algorithm continuously updates the average time for a batch generation.
+		 * Takes the previous average with the weight equal to the number of batches for which it was calculated
+		 * combines it with the current value and calculates new average.
+		 * This is mathematically equal to summing all batch execution time and dividing by batch count.
+		 *
+		 */
+		$average_time = ( ( $batch_number - 1 ) * $previous_average_time + $generation_time ) / $batch_number;
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_generation_average_time( $average_time );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_count( $batch_number );
 	}
 
 	/**
@@ -63,6 +95,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	protected function handle_end() {
 		$this->feed_file_handler->replace_feed_file_with_temp_file();
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_end( time() );
 	}
 
 	/**
@@ -192,7 +225,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 *
 	 * @return int
 	 */
-	protected function get_batch_size(): int {
+	public function get_batch_size(): int {
 		return 15;
 	}
 
