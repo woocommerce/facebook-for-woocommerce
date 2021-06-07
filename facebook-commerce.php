@@ -665,7 +665,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 						<?php
 						foreach ( $product_item_ids_by_variation_id as $variation_id => $product_item_id ) :
-							$info      = $product_item_id;
 							$variation = wc_get_product( $variation_id );
 							$show_link = true;
 
@@ -678,7 +677,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 							?>
 							<?php echo esc_html( $variation_id ); ?>:
 							<?php if ( $show_link ) : ?>
-								<a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>" target="_blank"><?php echo esc_html( $info ); ?></a>
+								<a href="https://facebook.com/<?php echo esc_attr( $product_item_id ); ?>" target="_blank"><?php echo esc_html( $product_item_id ); ?></a>
 							<?php else : ?>
 								<?php echo esc_html( $info ); ?>
 							<?php endif; ?>
