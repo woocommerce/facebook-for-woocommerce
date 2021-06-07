@@ -57,7 +57,7 @@ class FeedConfigurationDetection {
 
 		// No catalog id. Most probably means that we don't have a valid connection.
 		if ( '' === $catalog_id ) {
-			throw new Error( 'No catalog ID' );
+			throw new Error( __( 'No catalog ID.', 'facebook-for-woocommerce' ) );
 		}
 
 		// Get all feeds configured for the catalog.
@@ -67,7 +67,7 @@ class FeedConfigurationDetection {
 
 		// Check if the catalog has any feed configured.
 		if ( empty( $feed_nodes ) ) {
-			throw new Error( 'No feed nodes for catalog' );
+			throw new Error( __( 'No feed nodes for catalog.', 'facebook-for-woocommerce' ) );
 		}
 
 		/*
@@ -164,7 +164,9 @@ class FeedConfigurationDetection {
 	 *       - Wrong id ( active feed from different integration ): false
 	 * 7. Everything matches we have found a valid feed.
 	 *
-	 * @throws Error Partial feed configuration.
+	 * @throws Error Partial feed configuration error.
+	 * @return bool true|false True value means that we have a valid configuration.
+	 *                         False means that we have no configuration at all.
 	 * @since 2.6.0
 	 */
 	public function has_valid_feed_config() {
@@ -173,27 +175,28 @@ class FeedConfigurationDetection {
 		$integration_feed_id = $integration->get_feed_id();
 		$catalog_id          = $integration->get_product_catalog_id();
 
+		// No catalog id. Most probably means that we don't have a valid connection.
+		if ( '' === $catalog_id ) {
+			throw new Error( __( 'No catalog ID.', 'facebook-for-woocommerce' ) );
+		}
+
+		// Check if our stored feed represents a valid feed configuration.
 		try {
 			$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
-		} catch ( \Throwable $th ) {
+		} catch ( Error $th ) {
 			throw $th;
 		}
 
 		if ( $is_integration_feed_config_valid ) {
-			// Our stored feed id represents a has a valid feed configuration.
+			// Our stored feed id represents a valid feed configuration.
 			return true;
-		}
-
-		// No catalog id. Most probably means that we don't have a valid connection.
-		if ( '' === $catalog_id ) {
-			return false;
 		}
 
 		// Get all feeds configured for the catalog.
 		try {
 			$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
-		} catch ( \Throwable $th ) {
-			throw $th;
+		} catch ( Error $er ) {
+			throw $er;
 		}
 
 		// Check if the catalog has any feed configured.
@@ -206,8 +209,8 @@ class FeedConfigurationDetection {
 
 			try {
 				$is_integration_feed_config_valid = $this->is_feed_config_valid( $feed['id'], $graph_api );
-			} catch ( \Throwable $th ) {
-				throw $th;
+			} catch ( Error $er ) {
+				throw $er;
 			}
 		}
 		return false;
@@ -220,7 +223,7 @@ class FeedConfigurationDetection {
 
 		try {
 			$feed_information = $this->get_feed_information( $feed_id, $graph_api );
-		} catch ( \Throwable $th) {
+		} catch ( Error $th) {
 			throw $th;
 		}
 
@@ -266,7 +269,7 @@ class FeedConfigurationDetection {
 		$response = $graph_api->read_feed_information( $feed_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			throw new Error( 'Reading feed information error', $code );
+			throw new Error( __( 'Reading feed information error.', 'facebook-for-woocommerce' ), $code );
 		}
 		return json_decode( wp_remote_retrieve_body( $response ), true );
 	}
@@ -285,7 +288,7 @@ class FeedConfigurationDetection {
 		$response = $graph_api->read_feeds( $catalog_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			throw new Error( 'Reading catalog feeds error', $code );
+			throw new Error( __( 'Reading catalog feeds error.', 'facebook-for-woocommerce' ), $code );
 		}
 
 		$response_body = wp_remote_retrieve_body( $response );
@@ -307,7 +310,7 @@ class FeedConfigurationDetection {
 		$response = $graph_api->read_feed_metadata( $feed_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			throw new Error( 'Error reading feed metadata', $code );
+			throw new Error( __( 'Error reading feed metadata.', 'facebook-for-woocommerce' ), $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		return json_decode( $response_body, true );
@@ -326,7 +329,7 @@ class FeedConfigurationDetection {
 		$response = $graph_api->read_upload_metadata( $upload_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			throw new Error( 'Error reading feed upload metadata', $code );
+			throw new Error( __( 'Error reading feed upload metadata.', 'facebook-for-woocommerce' ), $code );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		return json_decode( $response_body, true );
