@@ -296,8 +296,12 @@ class FeedConfigurationDetection {
 	 * @return bool True if this site URL matches feed configured URL. False otherwise.
 	 */
 	private function feed_is_using_correct_url( $feed_information ) {
+		$schedule = $feed_information['schedule'] ?? null;
+		if ( null === $schedule ) {
+			return false;
+		}
 		$feed_api_url = FeedFileHandler::get_feed_data_url();
-		return $feed_information['url'] === $feed_api_url;
+		return $schedule['url'] === $feed_api_url;
 	}
 
 	/**
