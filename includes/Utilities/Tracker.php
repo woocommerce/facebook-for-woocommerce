@@ -130,7 +130,7 @@ class Tracker {
 		 * @since x.x.x
 		 */
 		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_BATCH_GENERATION_AVERAGE_TIME );
-		$data['extensions']['facebook-for-woocommerce']['feed-batch-generation-time'] = floatval( $feed_generation_time );
+		$data['extensions']['facebook-for-woocommerce']['feed-batch-generation-average-time'] = floatval( $feed_generation_time );
 		$feed_generation_start_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_START_TIME );
 		$feed_generation_end_time   = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_END_TIME );
 		$data['extensions']['facebook-for-woocommerce']['feed-generation-start-time'] = (int) $feed_generation_start_time;
