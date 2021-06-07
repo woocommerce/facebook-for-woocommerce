@@ -164,10 +164,10 @@ class FeedConfigurationDetection {
 	 *       - Wrong id ( active feed from different integration ): false
 	 * 7. Everything matches we have found a valid feed.
 	 *
-	 * @throws Error Partial feed configuration error.
-	 * @return bool true|false True value means that we have a valid configuration.
+	 * @throws Error Partial feed configuration.
+	 * @return bool True value means that we have a valid configuration.
 	 *                         False means that we have no configuration at all.
-	 * @since 2.6.0
+	 * @since x.x.x
 	 */
 	public function has_valid_feed_config() {
 		$integration         = facebook_for_woocommerce()->get_integration();
@@ -180,11 +180,13 @@ class FeedConfigurationDetection {
 			throw new Error( __( 'No catalog ID.', 'facebook-for-woocommerce' ) );
 		}
 
-		// Check if our stored feed represents a valid feed configuration.
-		try {
-			$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
-		} catch ( Error $th ) {
-			throw $th;
+		// Check if our stored feed ( if we have one ) represents a valid feed configuration.
+		if ( $integration_feed_id ) {
+			try {
+				$is_integration_feed_config_valid = $this->is_feed_config_valid( $integration_feed_id, $graph_api );
+			} catch ( Error $th ) {
+				throw $th;
+			}
 		}
 
 		if ( $is_integration_feed_config_valid ) {
@@ -216,29 +218,54 @@ class FeedConfigurationDetection {
 		return false;
 	}
 
+	/**
+	 * This function validates the Facebook feed for any configurations issues.
+	 *
+	 * @throws Error Feed not configured correctly.
+	 * @param String                        $feed_id Facebook Feed ID.
+	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
+	 * @since x.x.x
+	 *
+	 * @return bool True means that this feed is configured correctly
+	 *              False means that we have no configuration at all.
+	 */
 	private function is_feed_config_valid( $feed_id, $graph_api ) {
-		if ( '' === $feed_id ) {
-			return false;
-		}
-
 		try {
 			$feed_information = $this->get_feed_information( $feed_id, $graph_api );
-		} catch ( Error $th) {
+		} catch ( Error $th ) {
 			throw $th;
 		}
 
-		$feed_has_recent_uploads   = $this->feed_has_recent_uploads( $feed_information );
 		$feed_is_using_correct_url = $this->feed_is_using_correct_url( $feed_information );
 		$feed_has_correct_schedule = $this->feed_has_correct_schedule( $feed_information );
+		$feed_has_recent_uploads   = $this->feed_has_recent_uploads( $feed_information );
 
 		return $feed_has_recent_uploads && $feed_is_using_correct_url && $feed_has_correct_schedule;
 	}
 
+	/**
+	 * Check if feed schedule configuration matches our recommendation.
+	 *
+	 * @param Array $feed_information Feed configuration information.
+	 * @since x.x.x
+	 *
+	 * @return bool Is the feed schedule configured correctly.
+	 */
 	private function feed_has_correct_schedule( $feed_information ) {
 		$schedule        = $feed_information['schedule'] ?? null;
 		$update_schedule = $feed_information['update_information'] ?? null;
+
+		return null;
 	}
 
+	/**
+	 * Does feed contains any recent uploads.
+	 *
+	 * @param Array $feed_information Feed configuration information.
+	 * @since x.x.x
+	 *
+	 * @return bool Feed has valid uploads in the 2 weeks time span.
+	 */
 	private function feed_has_recent_uploads( $feed_information ) {
 		if ( empty( $feed_information['uploads']['data'] ) ) {
 			return false;
@@ -260,11 +287,29 @@ class FeedConfigurationDetection {
 		return false;
 	}
 
+	/**
+	 * Determine if the feed uses correct upload URL.
+	 *
+	 * @param Array $feed_information Feed configuration information.
+	 * @since x.x.x
+	 *
+	 * @return bool True if this site URL matches feed configured URL. False otherwise.
+	 */
 	private function feed_is_using_correct_url( $feed_information ) {
 		$feed_api_url = FeedFileHandler::get_feed_data_url();
 		return $feed_information['url'] === $feed_api_url;
 	}
 
+	/**
+	 * Given a Feed ID fetches feed configuration information from Facebook.
+	 *
+	 * @throws Error Could not fetch feed information.
+	 * @param String                        $feed_id Facebook Feed ID.
+	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
+	 * @since x.x.x
+	 *
+	 * @return array Feed configuration.
+	 */
 	private function get_feed_information( $feed_id, $graph_api ) {
 		$response = $graph_api->read_feed_information( $feed_id );
 		$code     = (int) wp_remote_retrieve_response_code( $response );
