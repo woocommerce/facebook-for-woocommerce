@@ -16,30 +16,38 @@ use WC_Facebookcommerce_Integration;
 class ProductValidator {
 
 	/**
-	 * @var string the meta key used to flag whether a product should be synced in Facebook
+	 * The meta key used to flag whether a product should be synced in Facebook
+	 *
+	 * @var string
 	 */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 	/**
+	 * The FB integration instance.
+	 *
 	 * @var WC_Facebookcommerce_Integration
 	 */
 	protected $integration;
 
 	/**
-	 * @var WC_Product The product object to validate.
+	 * The product object to validate.
+	 *
+	 * @var WC_Product
 	 */
 	protected $product;
 
 	/**
-	 * @var WC_Product The product parent object if the product has a parent.
+	 * The product parent object if the product has a parent.
+	 *
+	 * @var WC_Product
 	 */
 	protected $product_parent;
 
 	/**
 	 * ProductValidator constructor.
 	 *
-	 * @param WC_Facebookcommerce_Integration $integration
-	 * @param WC_Product                      $product The product to validate. Accepts both variations and variable products.
+	 * @param WC_Facebookcommerce_Integration $integration The FB integration instance.
+	 * @param WC_Product                      $product     The product to validate. Accepts both variations and variable products.
 	 */
 	public function __construct( WC_Facebookcommerce_Integration $integration, WC_Product $product ) {
 		$this->product = $product;
@@ -55,7 +63,7 @@ class ProductValidator {
 	}
 
 	/**
-	 * Validate whether a given product should be synced to Facebook.
+	 * Validate whether the product should be synced to Facebook.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
@@ -66,11 +74,11 @@ class ProductValidator {
 		$this->validate_product_sync_field();
 		$this->validate_product_price();
 		$this->validate_product_visibility();
-		$this->validate_product_categories_and_tags();
+		$this->validate_product_terms();
 	}
 
 	/**
-	 * Validate whether a given product should be synced to Facebook but skip the status check for backwards compatibility.
+	 * Validate whether the product should be synced to Facebook but skip the status check for backwards compatibility.
 	 *
 	 * @internal Do not use this as it will likely be removed.
 	 *
@@ -82,7 +90,52 @@ class ProductValidator {
 		$this->validate_product_sync_field();
 		$this->validate_product_price();
 		$this->validate_product_visibility();
-		$this->validate_product_categories_and_tags();
+		$this->validate_product_terms();
+	}
+
+	/**
+	 * Validate whether the product should be synced to Facebook.
+	 *
+	 * @return bool
+	 */
+	public function passes_all_checks(): bool {
+		try {
+			$this->validate();
+		} catch ( ProductExcludedException $e ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the product's terms (categories and tags) allow it to sync.
+	 *
+	 * @return bool
+	 */
+	public function passes_product_terms_check(): bool {
+		try {
+			$this->validate_product_terms();
+		} catch ( ProductExcludedException $e ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the product's product sync meta field allows it to sync.
+	 *
+	 * @return bool
+	 */
+	public function passes_product_sync_field_check(): bool {
+		try {
+			$this->validate_product_sync_field();
+		} catch ( ProductExcludedException $e ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -102,7 +155,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_status() {
-		$product = $this->product_parent ?: $this->product;
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'publish' !== $product->get_status() ) {
 			throw new ProductExcludedException( __( 'Product is not published.', 'facebook-for-woocommerce' ) );
@@ -128,7 +181,7 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_visibility() {
-		$product = $this->product_parent ?: $this->product;
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( 'visible' !== $product->get_catalog_visibility() ) {
 			throw new ProductExcludedException( __( 'Product is hidden from catalog and search.', 'facebook-for-woocommerce' ) );
@@ -136,12 +189,12 @@ class ProductValidator {
 	}
 
 	/**
-	 * Check whether the product's categories or tags exclude it from sync.
+	 * Check whether the product's categories or tags (terms) exclude it from sync.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
-	public function validate_product_categories_and_tags() {
-		$product = $this->product_parent ?: $this->product;
+	protected function validate_product_terms() {
+		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		$excluded_categories = $this->integration->get_excluded_product_category_ids();
 		if ( $excluded_categories ) {
@@ -163,13 +216,14 @@ class ProductValidator {
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
-	public function validate_product_sync_field() {
+	protected function validate_product_sync_field() {
 		$invalid_exception = new ProductExcludedException( __( 'Sync disabled in product field.', 'facebook-for-woocommerce' ) );
 
 		if ( $this->product->is_type( 'variable' ) ) {
 			foreach ( $this->product->get_children() as $child_id ) {
 				$child_product = wc_get_product( $child_id );
 				if ( $child_product && 'no' !== $child_product->get_meta( self::SYNC_ENABLED_META_KEY ) ) {
+					// At least one product is "sync-enabled" so bail before exception.
 					return;
 				}
 			}
@@ -190,9 +244,10 @@ class ProductValidator {
 	 * @throws ProductExcludedException If product should not be synced.
 	 */
 	protected function validate_product_price() {
-		// Permit simple and variable products to have an empty price.
-		$product = $this->product->is_type( 'variation' ) ? wc_get_product( $this->product->get_parent_id() ) : $this->product;
-		if ( in_array( $product->get_type(), array( 'simple', 'variable' ), true ) ) {
+		$primary_product = $this->product_parent ? $this->product_parent : $this->product;
+
+		// Variable and simple products are allowed to have no price.
+		if ( in_array( $primary_product->get_type(), array( 'simple', 'variable' ), true ) ) {
 			return;
 		}
 

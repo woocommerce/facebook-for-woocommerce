@@ -7,8 +7,9 @@
 # npm packages
 /node_modules
 
-# sake
+# build
 /build
+facebook-for-woocommerce.zip
 
 # composer packages
 /vendor
@@ -22,3 +23,6 @@ codeception.yml
 /tests/_data/dump.sql
 
 .DS_Store
+
+#webpack
+/assets/build

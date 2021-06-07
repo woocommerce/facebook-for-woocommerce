@@ -14,6 +14,7 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_V
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -23,7 +24,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/** @var string the plugin version */
-		const VERSION = '2.4.1';
+		const VERSION = WC_Facebook_Loader::PLUGIN_VERSION;
 
 		/** @var string for backwards compatibility TODO: remove this in v2.0.0 {CW 2020-02-06} */
 		const PLUGIN_VERSION = self::VERSION;
@@ -95,6 +96,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry */
 		public $job_registry;
 
+		/** @var Heartbeat */
+		public $heartbeat;
+
 		/**
 		 * Constructs the plugin.
 		 *
@@ -143,10 +147,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
 				require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
+				$this->heartbeat = new Heartbeat( WC()->queue() );
+				$this->heartbeat->init();
+
 				$this->product_feed              = new \SkyVerge\WooCommerce\Facebook\Products\Feed();
 				$this->products_stock_handler    = new \SkyVerge\WooCommerce\Facebook\Products\Stock();
 				$this->products_sync_handler     = new \SkyVerge\WooCommerce\Facebook\Products\Sync();
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
+				$this->configuration_detection   = new \SkyVerge\WooCommerce\Facebook\Feed\FeedConfigurationDetection();
 				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
@@ -911,6 +919,18 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
+		 * Gets tracker instance.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @return \SkyVerge\WooCommerce\Facebook\Utilities\Tracker
+		 */
+		public function get_tracker() {
+
+			return $this->tracker;
+		}
+
+		/**
 		 * Gets the debug profiling logger instance.
 		 *
 		 * @return \SkyVerge\WooCommerce\Facebook\Debug\ProfilingLogger
@@ -933,12 +953,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * @return ProductSyncValidator
 		 */
 		public function get_product_sync_validator( WC_Product $product ) {
-			static $instance = null;
-			if ( null === $instance ) {
-				$instance = new ProductSyncValidator( $this->get_integration(), $product );
-			}
-
-			return $instance;
+			return new ProductSyncValidator( $this->get_integration(), $product );
 		}
 
 		/**
@@ -1017,6 +1032,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_plugin_name() {
 
 			return __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
+		}
+
+		/**
+		 * Gets the url for the assets build directory.
+		 *
+		 * @since 2.3.4
+		 *
+		 * @return string
+		 */
+		public function get_asset_build_dir_url() {
+			return $this->get_plugin_url() . '/assets/build';
 		}
 
 

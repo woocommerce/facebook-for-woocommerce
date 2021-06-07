@@ -6,6 +6,8 @@ module.exports = {
 		type: 'wp',
 	},
 	paths: {
+		// Prevent Sake from processing JS files (use WP scripts instead)
+		js: false,
 		exclude: [
 			'bin',
 		],

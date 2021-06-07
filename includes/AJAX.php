@@ -384,12 +384,9 @@ class AJAX {
 			$has_excluded_term = false;
 
 			foreach ( $product_ids as $product_id ) {
-
 				$product = wc_get_product( $product_id );
 
-				// product belongs to at least one excluded term: break the loop
-				if ( $product instanceof \WC_Product && Products::is_sync_excluded_for_product_terms( $product ) ) {
-
+				if ( $product instanceof \WC_Product && ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_terms_check() ) {
 					$has_excluded_term = true;
 					break;
 				}

@@ -247,7 +247,7 @@ class Products {
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate_product_sync_field instead
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::passes_product_sync_field_check() instead
 	 *
 	 * @since 1.10.0
 	 *
@@ -255,12 +255,7 @@ class Products {
 	 * @return bool
 	 */
 	public static function is_sync_enabled_for_product( \WC_Product $product ) {
-		try {
-			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_product_sync_field();
-			return true;
-		} catch ( \Exception $e ) {
-			return false;
-		}
+		return facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_sync_field_check();
 	}
 
 
@@ -269,18 +264,13 @@ class Products {
 	 *
 	 * @since 1.10.0
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate_product_categories_and_tags instead
+	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::passes_product_terms_check() instead
 	 *
 	 * @param \WC_Product $product product object
 	 * @return bool if true, product should be excluded from sync, if false, product can be included in sync (unless manually excluded by individual product meta)
 	 */
 	public static function is_sync_excluded_for_product_terms( \WC_Product $product ) {
-		try {
-			facebook_for_woocommerce()->get_product_sync_validator( $product )->validate_product_categories_and_tags();
-			return true;
-		} catch ( \Exception $e ) {
-			return false;
-		}
+		return ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_terms_check();
 	}
 
 

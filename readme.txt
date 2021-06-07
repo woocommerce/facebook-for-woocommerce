@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.6
-Stable tag: 2.4.1
+Stable tag: 2.5.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,24 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2021.04.29 - version 2.4.1
+= 2.5.1 - 2021-05-28 =
+ * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen
+
+= 2.5.0 - 2021-05-19 =
+ * New - Option to allow larger sites to opt-out of feed generation (product sync) job
+ * New - Log connection errors to allow easier troubleshooting
+ * Fix - Reduce default feed generation (product sync) interval to once per day to reduce overhead
+ * Fix - Trigger feed (product sync) job from to `admin_init` to reduce impact on front-end requests
+ * Fix - Ensure variable product attribute values containing comma (`,`) sync correctly
+ * Fix - Use existing / current tab for connection `Get Started` button
+ * Dev - Require PHP version 7.0 or newer
+ * Dev - Adopt Composer autoloader to avoid manually `require`ing PHP class files
+ * Dev - Adopt WooRelease release tool for deploying releases
+ * Dev - Use wp-scripts to build assets
+ * Dev - Add `phpcs` tooling to help standardise PHP code style
+ * Dev - Add JobRegistry engine for managing periodic background batch jobs
+
+= 2021.04.29 - version 2.4.1 =
  * Fix - PHP<7.1 incompatible code for Google Taxonomy Setting in products.
 
 = 2021.04.23 - version 2.4.0 =
