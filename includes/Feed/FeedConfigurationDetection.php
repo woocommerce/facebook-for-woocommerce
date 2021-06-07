@@ -255,10 +255,30 @@ class FeedConfigurationDetection {
 	 * @return bool Is the feed schedule configured correctly.
 	 */
 	private function feed_has_correct_schedule( $feed_information ) {
-		$schedule        = $feed_information['schedule'] ?? null;
-		$update_schedule = $feed_information['update_information'] ?? null;
+		$schedule = $feed_information['schedule'] ?? null;
+		if ( null === $schedule ) {
+			return false;
+		}
 
-		return null;
+		/**
+		 * Filters what interval should be used for the scheduled evaluation.
+		 * Allows for fine tuning the upload schedule.
+		 *
+		 * @param string $interval Interval used for schedule.
+		 * @since x.x.x
+		 */
+		$feed_has_correct_interval = apply_filters( 'facebook_for_woocommerce_feed_interval', 'DAILY' ) === $schedule['interval'];
+
+		/**
+		 * Filters what interval count should be used for the scheduled evaluation.
+		 * Allows for fine tuning the upload schedule.
+		 *
+		 * @param int $interval_count Interval count used for schedule.
+		 * @since x.x.x
+		 */
+		$feed_has_correct_interval_count = apply_filters( 'facebook_for_woocommerce_feed_interval', 1 ) === $schedule['interval_count'];
+
+		return $feed_has_correct_interval && $feed_has_correct_interval_count;
 	}
 
 	/**
