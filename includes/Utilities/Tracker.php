@@ -103,7 +103,8 @@ class Tracker {
 		$data['extensions']['facebook-for-woocommerce']['messenger-enabled'] = wc_bool_to_string( $messenger_enabled );
 
 		/**
-		 * Feed generation performance statistics.
+		 * Feed generation performance statistics and batch size.
+		 * 0 in feed-generation-time means tha the process has failed.
 		 *
 		 * @since x.x.x
 		 */
