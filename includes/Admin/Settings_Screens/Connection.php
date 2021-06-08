@@ -139,6 +139,9 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'value' => facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
 				'url'   => 'https://facebook.com/products',
 			),
+			'feed'                          => array(
+				'label' => __( 'Feed', 'facebook-for-woocommerce' ),
+			),
 			'business-manager'              => array(
 				'label' => __( 'Business Manager account', 'facebook-for-woocommerce' ),
 				'value' => facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id(),
@@ -157,8 +160,9 @@ class Connection extends Admin\Abstract_Settings_Screen {
 			),
 		);
 
-		// if the catalog ID is set, update the URL and try to get its name for display
-		if ( $catalog_id = $static_items['catalog']['value'] ) {
+		// If the catalog ID is set, update the URL and try to get its name for display.
+		$catalog_id = $static_items['catalog']['value'];
+		if ( '' !== $catalog_id ) {
 
 			$static_items['catalog']['url'] = "https://facebook.com/products/catalogs/{$catalog_id}";
 
@@ -171,6 +175,15 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				}
 			} catch ( Framework\SV_WC_API_Exception $exception ) {
 			}
+		}
+
+		$feed_id = facebook_for_woocommerce()->get_integration()->get_feed_id();
+		if ( '' !== $catalog_id && '' !== $feed_id ) {
+			$static_items['feed']['url']   = "https://www.facebook.com/commerce/catalogs/{$catalog_id}/feeds/{$feed_id}/overview";
+			// translators: Placeholders %s - numerical feed id.
+			$static_items['feed']['value'] = sprintf( __( '%s - Overview', 'facebook-for-woocommerce' ), $feed_id );
+		} else {
+			$static_items['feed']['value'] = __( 'Feed not connected.', 'facebook-for-woocommerce' );
 		}
 
 		?>
