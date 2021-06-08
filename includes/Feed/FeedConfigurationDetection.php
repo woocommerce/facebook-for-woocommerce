@@ -151,6 +151,9 @@ class FeedConfigurationDetection {
 	}
 
 	public function evaluate_feed_config() {
+		if( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+			return;
+		}
 		$feed_check_transient = get_transient( self::FEED_CONFIG_CHECK_TRANSIENT );
 		if ( $feed_check_transient ) {
 			$message_method = get_option( self::FEED_CONFIG_MESSAGE_OPTION, false );
