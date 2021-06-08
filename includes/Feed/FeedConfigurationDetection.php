@@ -171,16 +171,13 @@ class FeedConfigurationDetection {
 			return true;
 		}
 
+		$config_is_valid = false;
+
 		try {
 			$config_is_valid = $this->has_valid_feed_config();
 			delete_option( self::FEED_CONFIG_MESSAGE_OPTION );
-			if ( $config_is_valid ) {
-				set_transient( self::FEED_CONFIG_CHECK_TRANSIENT, true, self::FEED_CONFIG_VALID_CHECK_INTERVAL );
-				return;
-			} else {
+			if ( ! $config_is_valid ) {
 				// TODO trigger automattic feed configuration creation.
-				set_transient( self::FEED_CONFIG_CHECK_TRANSIENT, true, self::FEED_CONFIG_INVALID_CHECK_INTERVAL );
-				return;
 			}
 		} catch ( FeedInactiveException $exception ) {
 			// Inform user that the feed is blocked.
@@ -193,6 +190,13 @@ class FeedConfigurationDetection {
 		} catch ( Error $error ) {
 			facebook_for_woocommerce()->log( 'Error evaluating feed configuration' . $error->getMessage() );
 		}
+
+		// Block next check for some time.
+		set_transient(
+			self::FEED_CONFIG_CHECK_TRANSIENT,
+			true,
+			$config_is_valid ? self::FEED_CONFIG_VALID_CHECK_INTERVAL : self::FEED_CONFIG_INVALID_CHECK_INTERVAL
+		);
 	}
 
 	/**
