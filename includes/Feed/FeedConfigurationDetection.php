@@ -236,19 +236,39 @@ class FeedConfigurationDetection {
 			throw new Error( __( 'No catalog ID.', 'facebook-for-woocommerce' ) );
 		}
 
-		// Check if our stored feed ( if we have one ) represents a valid feed configuration.
-		$is_integration_feed_config_valid = $this->evaluate_integration_feed( $integration_feed_id, $graph_api );
-
-		if ( $is_integration_feed_config_valid ) {
-			// Our stored feed id represents a valid feed configuration. Next check if it is active.
-			return true;
-		}
-
 		// Get all feeds configured for the catalog.
 		try {
 			$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
 		} catch ( Error $er ) {
 			throw $er;
+		}
+
+		/**
+		 * Check if our stored feed id is on the list of available feed ids.
+		*/
+		if ( $integration_feed_id ) {
+			$exists = false;
+			// Check if any of the feeds is currently active.
+			foreach ( $feed_nodes as $feed ) {
+				if ( $integration_feed_id === $feed['id'] ) {
+					$exists = true;
+					break;
+				}
+			}
+
+			if ( ! $exists ) {
+				// Unset the integration feed id because it does not exist in the available feeds configuration.
+				$integration_feed_id = false;
+				$integration->update_feed_id( '' );
+			}
+		}
+
+		// Check if our stored feed id represents a valid configuration.
+		$is_integration_feed_config_valid = $this->evaluate_integration_feed( $integration_feed_id, $graph_api );
+
+		if ( $is_integration_feed_config_valid ) {
+			// Our stored feed id represents a valid feed configuration. Next check if it is active.
+			return true;
 		}
 
 		// Check if the catalog has any feed configured.
@@ -270,7 +290,7 @@ class FeedConfigurationDetection {
 		 * It also means that there are feed configurations defined in Facebook Catalog that we can't match to something useful.
 		 * The best course of action is for merchant to manually adjust ( or delete ) the configurations that he has in teh Facebook Catalog settings.
 		 */
-		return false;
+		throw new FeedBadConfigException();
 	}
 
 	/**
