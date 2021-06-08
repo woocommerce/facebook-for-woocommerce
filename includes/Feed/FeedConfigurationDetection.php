@@ -150,6 +150,14 @@ class FeedConfigurationDetection {
 		return $info;
 	}
 
+	/**
+	 * Feed detection procedure entry point.
+	 *
+	 * Check the feed configuration. Memoize the check outcome.
+	 * Prevent too frequent checks.
+	 * @since x.x.x
+	 * @return void
+	 */
 	public function evaluate_feed_config() {
 		if( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
 			return;
@@ -280,16 +288,17 @@ class FeedConfigurationDetection {
 	}
 
 	private function evaluate_facebook_feed_config( $feed_id, $graph_api ) {
+		$integration = facebook_for_woocommerce()->get_integration();
 		try {
 			$is_integration_feed_config_valid = $this->is_feed_config_valid( $feed_id, $graph_api );
 			if ( $is_integration_feed_config_valid ) {
 				// We have a valid feed configuration that is not our stored integration feed. We can assume that this should be our feed.
-				$integration->update_feed_id( $feed['id'] );
+				$integration->update_feed_id( $feed_id );
 				return true;
 			}
 		} catch ( FeedInactiveException $exception ) {
 			// We have a valid feed configuration that is not our stored integration feed. We can assume that this should be our feed.
-			$integration->update_feed_id( $feed['id'] );
+			$integration->update_feed_id( $feed_id );
 			// Inform user that the feed is blocked.
 			add_action( 'admin_notices', array( $this, 'check_documentation_for_stale_feed_notice' ) );
 			// We return true because we assume that the feed configuration is valid and there is something else blocking the feed.
