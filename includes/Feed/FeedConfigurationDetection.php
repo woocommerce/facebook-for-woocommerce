@@ -14,14 +14,21 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
  */
 class FeedConfigurationDetection {
 
+	// Feed name used when setting up feed.
+	const FEED_NAME = 'Initial product sync from WooCommerce. DO NOT DELETE.';
+
 	// Transient used for blocking too frequent configuration fetches.
 	const FEED_CONFIG_CHECK_TRANSIENT = 'wc_facebook_for_woocommerce_feed_config_check';
+
 	// Option for storing user facing cached information about the configuration problems.
 	const FEED_CONFIG_MESSAGE_OPTION = 'wc_facebook_for_woocommerce_feed_config_message_option';
+
 	// How long is transient valid in case we have a correct configuration.
 	const FEED_CONFIG_VALID_CHECK_INTERVAL = DAY_IN_SECONDS;
+
 	// How long is transient valid in case we have an incorrect configuration.
 	const FEED_CONFIG_INVALID_CHECK_INTERVAL = 15 * MINUTE_IN_SECONDS;
+
 	/**
 	 * Constructor.
 	 */
@@ -182,7 +189,10 @@ class FeedConfigurationDetection {
 			$config_is_valid = $this->has_valid_feed_config();
 			delete_option( self::FEED_CONFIG_MESSAGE_OPTION );
 			if ( ! $config_is_valid ) {
-				// TODO trigger automattic feed configuration creation.
+				$feed_id = $this->create_feed();
+				if ( null !== $feed_id ) {
+					return true;
+				}
 			}
 		} catch ( FeedInactiveException $exception ) {
 			// Inform user that the feed is blocked.
@@ -591,6 +601,60 @@ class FeedConfigurationDetection {
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		return json_decode( $response_body, true );
+	}
+
+	/**
+	 * Function used for automatic feed configuration creation.
+	 *
+	 * @since x.x.x
+	 * @returns string|null Sting with the feed id on success and null on failure.
+	 */
+	private function create_feed() {
+		$graph_api = facebook_for_woocommerce()->get_integration()->get_graph_api();
+		$result    = $graph_api->create_feed(
+			facebook_for_woocommerce()->get_integration()->get_product_catalog_id(),
+			array(
+				'name'     => self::FEED_NAME,
+				'schedule' => $this->get_feed_upload_schedule(),
+			)
+		);
+
+		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+			facebook_for_woocommerce()->log( json_encode( $result ) );
+			return null;
+		}
+		$decoded_result = \WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+		$feed_id        = $decoded_result->id;
+		if ( ! $feed_id ) {
+			facebook_for_woocommerce()->log(
+				'Response from creating feed not return feed id!'
+			);
+			return null;
+		}
+		facebook_for_woocommerce()->get_integration()->update_feed_id( $feed_id );
+		return $feed_id;
+	}
+
+	/**
+	 * Function will return the default parameters for the feed's upload schedule.
+	 *
+	 * @since x.x.x
+	 * @link https://developers.facebook.com/docs/marketing-api/reference/product-feed-schedule/
+	 */
+	public function get_feed_upload_schedule() {
+		$schedule = new \stdClass();
+
+		$schedule->interval = 'DAILY';
+		$schedule->url      = esc_url_raw( FeedFileHandler::get_feed_data_url() );
+		$schedule->hour     = ( new \WC_DateTime( '+1 hour', new \DateTimeZone( 'UTC' ) ) )->date( 'H' );
+		$schedule->timezone = 'UTC';
+
+		/**
+		 * Filters the value of the default feed schedule settings.
+		 *
+		 * @param  \stdClass  $schedule  Object contains the settings to be passed to fbgraph to configure upload schedule.
+		 */
+		return apply_filters( 'facebook_for_woocommerce_feed_upload_schedule_settings', $schedule );
 	}
 
 }
