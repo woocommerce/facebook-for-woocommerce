@@ -155,11 +155,12 @@ class FeedConfigurationDetection {
 	 *
 	 * Check the feed configuration. Memoize the check outcome.
 	 * Prevent too frequent checks.
+	 *
 	 * @since x.x.x
 	 * @return void
 	 */
 	public function evaluate_feed_config() {
-		if( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected() ) {
 			return;
 		}
 		$feed_check_transient = get_transient( self::FEED_CONFIG_CHECK_TRANSIENT );
@@ -313,6 +314,18 @@ class FeedConfigurationDetection {
 		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 	}
 
+	/**
+	 * This function validates the Facebook feed for any configurations issues.
+	 *
+	 * @throws FeedInactiveException Feed not configured correctly.
+	 * @throws Error Failed to fetch the feed information.
+	 * @param String                        $feed_id Facebook Feed ID.
+	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
+	 * @since x.x.x
+	 *
+	 * @return bool True means that this feed is configured correctly
+	 *              False means that we have no configuration at all.
+	 */
 	private function evaluate_facebook_feed_config( $feed_id, $graph_api ) {
 		$integration = facebook_for_woocommerce()->get_integration();
 		try {
@@ -334,6 +347,7 @@ class FeedConfigurationDetection {
 		}
 		return false;
 	}
+
 
 	private function evaluate_integration_feed( $integration_feed_id, $graph_api ) {
 		if ( $integration_feed_id ) {
