@@ -205,19 +205,30 @@ class FeedConfigurationDetection {
 	 *
 	 * Steps:
 	 * 1. Check if we have valid catalog id.
-	 *  - No catalog id ( probably not connected ): false
-	 * 2. Check if we have feed configured.
-	 *  - No feeds configured ( we can configure automatically ): false
-	 * 3. Loop over feed configurations.
-	 *   4. Check if feed has recent uploads
-	 *    - No recent uploads ( feed is not working correctly ): false
-	 *   5. Check if feed uses correct url.
-	 *    - Wrong url ( maybe different integration ): false
-	 *   6. Check if feed id matches the one used by the site.
-	 *    a) If site has no id stored maybe use this one.
-	 *    b) If site has an id stored compare.
-	 *       - Wrong id ( active feed from different integration ): false
-	 * 7. Everything matches we have found a valid feed.
+	 *  - No catalog id ( probably not connected ): throw Error
+	 * 2. Fetch all feed configuration for catalog.
+	 * 3. Check if we have feed id stored.
+	 *  - No feeds configured: continue to 6.
+	 *  - Feed configured: continue to 4.
+	 * 4. Check if stored feed id is one the feed configurations defined.
+	 *  - feed id found in one of the configurations: continue to 5
+	 *  - feed id not found in one of the configurations: remove feed id from the integration and continue to 6.
+	 * 5. Check if stored feed id has valid configuration:
+	 *  - yes: return true.
+	 *  - no: continue to 6.
+	 * 6. Check if we have any stored configs
+	 *  - yes: continue.
+	 *  - no: return false.
+	 * 7. Loop over feed configurations.
+	 *    - check if feed has a valid config:
+	 *      - yes: store that feed id as integration feed id: return true
+	 *      - no: loop to the next stored feed
+	 * 8. All configs checked and no one was valid: throw Exception
+	 *
+	 * Validation of a feed configuration ( used in the algorithm above ):
+	 * 1. Check if schedule is correct
+	 * 2. Check if url is correct
+	 * 3. Check if there are recent uploads.
 	 *
 	 * For schedule checks we are only interested in `schedule` and not in `update_schedule`.
 	 *
