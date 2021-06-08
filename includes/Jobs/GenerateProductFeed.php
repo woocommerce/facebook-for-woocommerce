@@ -201,7 +201,22 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @return int
 	 */
 	protected function get_batch_size(): int {
-		return 15;
+		/**
+		 * Feed batch size filter.
+		 *
+		 * This filter allows modification of how many items will be processed in one batch during the feed file generation.
+		 * Increasing the number of items per batch can potentially speed up processing on some of the sites.
+		 * Bigger number means reducing the number of required batches, but at the same time increase the memory requirements for the process.
+		 * Smaller number of items per batch means that the memory requirements are smaller for the process and the stability of the system is better.
+		 * The number of required batches increases and the the total time for processing may be longer.
+		 * Some, especially big sites with big products catalog, may want to increase this value in order to process the catalog faster.
+		 * This requires careful approach, bumping the value too high may lead to out of memory issues.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param int  $batch_size Size of the feed processing batch.
+		 */
+		return apply_filters( 'facebook_for_woocommerce_feed_generation_num_products_per_batch', 15 );
 	}
 
 }
