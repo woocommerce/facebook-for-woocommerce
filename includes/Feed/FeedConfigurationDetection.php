@@ -190,6 +190,8 @@ class FeedConfigurationDetection {
 			// Inform user that the feed configuration is broken.
 			add_action( 'admin_notices', array( $this, 'check_documentation_for_invalid_config' ) );
 			update_option( self::FEED_CONFIG_MESSAGE_OPTION, 'check_documentation_for_invalid_config' );
+		} catch ( Error $error ) {
+			facebook_for_woocommerce()->log( 'Error evaluating feed configuration' . $error->getMessage() );
 		}
 	}
 
