@@ -14,9 +14,13 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
  */
 class FeedConfigurationDetection {
 
-	const FEED_CONFIG_CHECK_TRANSIENT        = 'wc_facebook_for_woocommerce_feed_config_check';
-	const FEED_CONFIG_MESSAGE_OPTION         = 'wc_facebook_for_woocommerce_feed_config_message_option';
-	const FEED_CONFIG_VALID_CHECK_INTERVAL   = DAY_IN_SECONDS;
+	// Transient used for blocking too frequent configuration fetches.
+	const FEED_CONFIG_CHECK_TRANSIENT = 'wc_facebook_for_woocommerce_feed_config_check';
+	// Option for storing user facing cached information about the configuration problems.
+	const FEED_CONFIG_MESSAGE_OPTION = 'wc_facebook_for_woocommerce_feed_config_message_option';
+	// How long is transient valid in case we have a correct configuration.
+	const FEED_CONFIG_VALID_CHECK_INTERVAL = DAY_IN_SECONDS;
+	// How long is transient valid in case we have an incorrect configuration.
 	const FEED_CONFIG_INVALID_CHECK_INTERVAL = 15 * MINUTE_IN_SECONDS;
 	/**
 	 * Constructor.
@@ -232,7 +236,8 @@ class FeedConfigurationDetection {
 	 *
 	 * For schedule checks we are only interested in `schedule` and not in `update_schedule`.
 	 *
-	 * @throws Error Partial feed configuration.
+	 * @throws Error No catalog error or API problems.
+	 * @throws FeedBadConfigException Partial feed configuration.
 	 * @return bool True value means that we have a valid configuration.
 	 *                         False means that we have no configuration at all.
 	 * @since x.x.x
@@ -328,7 +333,6 @@ class FeedConfigurationDetection {
 	/**
 	 * This function validates the Facebook feed for any configurations issues.
 	 *
-	 * @throws FeedInactiveException Feed not configured correctly.
 	 * @throws Error Failed to fetch the feed information.
 	 * @param String                        $feed_id Facebook Feed ID.
 	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
@@ -359,7 +363,17 @@ class FeedConfigurationDetection {
 		return false;
 	}
 
-
+	/**
+	 * This function validates the integration ( stored feed id ) configuration.
+	 *
+	 * @throws Error Failed to fetch the feed information.
+	 * @param String                        $integration_feed_id Facebook Feed ID.
+	 * @param WC_Facebookcommerce_Graph_API $graph_api Facebook Graph handler instance.
+	 * @since x.x.x
+	 *
+	 * @return bool True means that this feed is configured correctly
+	 *              False means that we have no configuration at all.
+	 */
 	private function evaluate_integration_feed( $integration_feed_id, $graph_api ) {
 		if ( $integration_feed_id ) {
 			try {
