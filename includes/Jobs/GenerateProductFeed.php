@@ -22,6 +22,27 @@ class GenerateProductFeed extends AbstractChainedJob {
 	use BatchQueryOffset, LoggingTrait;
 
 	/**
+	 * Option used to accumulate feed execution time.
+	 *
+	 * @var string
+	 */
+	const OPTION_FEED_GENERATION_TIME = 'facebook_for_woocommerce_feed_generation_time';
+
+	/**
+	 * Transient key to store feed generation start timestamp.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_FEED_GENERATION_START_TIME = 'facebook_for_woocommerce_feed_generation_start_time';
+
+	/**
+	 * Transient key to store feed generation end timestamp.
+	 *
+	 * @var string
+	 */
+	const TRANSIENT_FEED_GENERATION_END_TIME = 'facebook_for_woocommerce_feed_generation_end_time';
+
+	/**
 	 * Feed file creation and manipulation utility.
 	 *
 	 * @var FeedFileHandler $feed_file_handler.
@@ -57,9 +78,9 @@ class GenerateProductFeed extends AbstractChainedJob {
 			$this->feed_data_exporter->generate_header()
 		);
 		// Reset the statistics counters.
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_generation_average_time( 0 );
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_count( 0 );
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_start( time() );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( 0 );
+		$this->track_feed_file_generation_start( time() );
+		update_option( self::OPTION_FEED_GENERATION_TIME, 0 );
 	}
 
 	/**
@@ -75,19 +96,12 @@ class GenerateProductFeed extends AbstractChainedJob {
 	public function handle_batch_action( int $batch_number, array $args ) {
 		$start_time = microtime( true );
 		parent::handle_batch_action( $batch_number, $args );
-		$generation_time       = microtime( true ) - $start_time;
-		$previous_average_time = facebook_for_woocommerce()->get_tracker()->get_feed_batch_generation_average_time();
+		$generation_time = microtime( true ) - $start_time;
 
-		/*
-		 * This algorithm continuously updates the average time for a batch generation.
-		 * Takes the previous average with the weight equal to the number of batches for which it was calculated
-		 * combines it with the current value and calculates new average.
-		 * This is mathematically equal to summing all batch execution time and dividing by batch count.
-		 *
-		 */
-		$average_time = ( ( $batch_number - 1 ) * $previous_average_time + $generation_time ) / $batch_number;
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_generation_average_time( $average_time );
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_batch_count( $batch_number );
+		// Add processing time to previously accumulated execution times.
+		$accumulated_time  = get_option( self::OPTION_FEED_GENERATION_TIME, 0 );
+		$accumulated_time += $generation_time;
+		update_option( self::OPTION_FEED_GENERATION_TIME, $accumulated_time );
 	}
 
 	/**
@@ -95,7 +109,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	protected function handle_end() {
 		$this->feed_file_handler->replace_feed_file_with_temp_file();
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_end( time() );
+		$this->track_feed_file_generation_end( time() );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( get_option( self::OPTION_FEED_GENERATION_TIME, 0 ) );
 	}
 
 	/**
@@ -227,6 +242,26 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	public function get_batch_size(): int {
 		return 15;
+	}
+
+	/**
+	 * Update transient with feed file generation start time.
+	 *
+	 * @since x.x.x
+	 * @param Float $timestamp Time when the generation has been started.
+	 */
+	public function track_feed_file_generation_start( $timestamp ) {
+		set_transient( self::TRANSIENT_FEED_GENERATION_START_TIME, $timestamp, DAY_IN_SECONDS );
+	}
+
+	/**
+	 * Update transient with feed file generation end (in seconds).
+	 *
+	 * @since x.x.x
+	 * @param Float $timestamp Time when the generation has been ended.
+	 */
+	public function track_feed_file_generation_end( $timestamp ) {
+		set_transient( self::TRANSIENT_FEED_GENERATION_END_TIME, $timestamp, DAY_IN_SECONDS );
 	}
 
 }
