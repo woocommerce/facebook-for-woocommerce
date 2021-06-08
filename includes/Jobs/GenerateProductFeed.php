@@ -80,7 +80,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 		// Reset the statistics counters.
 		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( 0 );
 		$this->track_feed_file_generation_start( time() );
-		update_option( self::OPTION_FEED_GENERATION_TIME, 0 );
+		$this->track_feed_file_generation_time( 0 );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 		// Add processing time to previously accumulated execution times.
 		$accumulated_time  = get_option( self::OPTION_FEED_GENERATION_TIME, 0 );
 		$accumulated_time += $generation_time;
-		update_option( self::OPTION_FEED_GENERATION_TIME, $accumulated_time );
+		$this->track_feed_file_generation_time( $accumulated_time );
 	}
 
 	/**
@@ -110,7 +110,9 @@ class GenerateProductFeed extends AbstractChainedJob {
 	protected function handle_end() {
 		$this->feed_file_handler->replace_feed_file_with_temp_file();
 		$this->track_feed_file_generation_end( time() );
-		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( get_option( self::OPTION_FEED_GENERATION_TIME, 0 ) );
+		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time(
+			$this->get_feed_file_generation_time()
+		);
 	}
 
 	/**
@@ -245,10 +247,29 @@ class GenerateProductFeed extends AbstractChainedJob {
 	}
 
 	/**
+	 * Track feed file generation time.
+	 *
+	 * @since x.x.x
+	 * @param Int $time Feed generation execution length.
+	 */
+	public function track_feed_file_generation_time( $time ) {
+		update_option( self::OPTION_FEED_GENERATION_TIME, $time );
+	}
+
+	/**
+	 * Get feed generation execution length.
+	 *
+	 * @since x.x.x
+	 */
+	public function get_feed_file_generation_time() {
+		get_option( self::OPTION_FEED_GENERATION_TIME, 0 );
+	}
+
+	/**
 	 * Update transient with feed file generation start time.
 	 *
 	 * @since x.x.x
-	 * @param Float $timestamp Time when the generation has been started.
+	 * @param Int $timestamp Time when the generation has been started.
 	 */
 	public function track_feed_file_generation_start( $timestamp ) {
 		set_transient( self::TRANSIENT_FEED_GENERATION_START_TIME, $timestamp, DAY_IN_SECONDS );
@@ -258,7 +279,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Update transient with feed file generation end (in seconds).
 	 *
 	 * @since x.x.x
-	 * @param Float $timestamp Time when the generation has been ended.
+	 * @param Int $timestamp Time when the generation has been ended.
 	 */
 	public function track_feed_file_generation_end( $timestamp ) {
 		set_transient( self::TRANSIENT_FEED_GENERATION_END_TIME, $timestamp, DAY_IN_SECONDS );
