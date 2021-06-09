@@ -140,7 +140,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'url'   => 'https://facebook.com/products',
 			),
 			'feed'                          => array(
-				'label' => __( 'Feed', 'facebook-for-woocommerce' ),
+				'label' => __( 'Product Feed', 'facebook-for-woocommerce' ),
 			),
 			'business-manager'              => array(
 				'label' => __( 'Business Manager account', 'facebook-for-woocommerce' ),
