@@ -110,8 +110,8 @@ class Tracker {
 		 */
 		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
 		$data['extensions']['facebook-for-woocommerce']['feed-generation-time'] = floatval( $feed_generation_time );
-		$feed_generation_batch_size = facebook_for_woocommerce()->job_registry->generate_product_feed_job->get_batch_size();
-		$data['extensions']['facebook-for-woocommerce']['feed-generation-batch-size'] = (int) $feed_generation_batch_size;
+		$feed_generation_num_products_per_batch = facebook_for_woocommerce()->job_registry->generate_product_feed_job->get_batch_size();
+		$data['extensions']['facebook-for-woocommerce']['feed-generation-num-products-per-batch'] = (int) $feed_generation_num_products_per_batch;
 
 		/**
 		 * Has the feed file been requested since the last snapshot?
@@ -146,7 +146,7 @@ class Tracker {
 	 * Update transient with feed file generation average time (in seconds).
 	 *
 	 * @since x.x.x
-	 * @param Float $time_in_seconds Time it takes to generate one batch.
+	 * @param Float $time_in_seconds Time it takes to generate the feed file. 0 means that the generation has failed.
 	 */
 	public function track_feed_file_generation_time( $time_in_seconds ) {
 		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME, $time_in_seconds, self::TRANSIENT_WCTRACKER_LIFE_TIME );
