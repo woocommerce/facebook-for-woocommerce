@@ -660,7 +660,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				if ( $product_item_ids_by_variation_id ) :
 					?>
 
-					<>
+					<p>
 						<?php echo esc_html__( 'Variant IDs:', 'facebook-for-woocommerce' ); ?><br/>
 
 						<?php
