@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.7
-Stable tag: 2.5.1
+Stable tag: 2.6.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.0 - 2021-xx-xx =
+= 2.6.0 - 2021-06-10 =
  * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
  * Fix – Clean up background sync options (performance) #1962
  * Dev – Add tracker props to understand usage of feed-based sync and other FB business config options #1972
