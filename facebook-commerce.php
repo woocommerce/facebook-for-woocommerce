@@ -690,7 +690,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Returns graph API client object.
 	 *
-	 * @since 2.6.0
+	 * @since x.x.x
 	 *
 	 * @return WC_Facebookcommerce_Graph_API
 	 */
