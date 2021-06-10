@@ -43,7 +43,7 @@ class Response extends API\Response {
 	/**
 	 * Is Instagram Shopping enabled?
 	 *
-	 * @since x.x.x
+	 * @since 2.6.0
 	 *
 	 * @return boolean
 	 */
@@ -61,7 +61,7 @@ class Response extends API\Response {
 	/**
 	 * Is Instagram CTA enabled?
 	 *
-	 * @since x.x.x
+	 * @since 2.6.0
 	 *
 	 * @return boolean
 	 */

@@ -483,7 +483,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Get all feed configurations for a given catalog id.
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-		 * @since x.x.x
+		 * @since 2.6.0
 		 *
 		 * @param String $facebook_catalog_id Facebook Catalog Id.
 		 * @return Array Facebook feeds configurations.
@@ -497,7 +497,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Get general info about a feed (data source) configured in Facebook Business.
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-		 * @since x.x.x
+		 * @since 2.6.0
 		 *
 		 * @param String $feed_id Feed Id.
 		 * @return Array Facebook feeds configurations.
@@ -511,7 +511,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Get metadata about a feed (data source) configured in Facebook Business.
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-		 * @since x.x.x
+		 * @since 2.6.0
 		 *
 		 * @param String $feed_id Facebook Catalog Id.
 		 * @return Array Facebook feed metadata.
@@ -525,7 +525,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Get metadata about a recent feed upload.
 		 *
 		 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed-upload/
-		 * @since x.x.x
+		 * @since 2.6.0
 		 *
 		 * @param String $upload_id Feed Upload Id.
 		 * @return Array Feed upload metadata.
@@ -538,7 +538,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Create product_feeds graph edge url.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.0
 		 *
 		 * @param String $facebook_catalog_id Facebook Catalog Id.
 		 * @return String Graph edge url.
