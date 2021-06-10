@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @see SV_WP_Background_Job_Handler
  *
- * @since 2.6.0
+ * @since x.x.x
  */
 class CleanupSkyvergeFrameworkJobOptions {
 
