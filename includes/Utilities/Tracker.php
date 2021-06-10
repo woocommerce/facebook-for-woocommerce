@@ -105,7 +105,7 @@ class Tracker {
 		/**
 		 * How long did the last feed generation take (or did it fail - 0)?
 		 *
-		 * @since x.x.x
+		 * @since 2.6.0
 		 */
 		$feed_generation_time = get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME );
 		$data['extensions']['facebook-for-woocommerce']['feed-generation-time'] = floatval( $feed_generation_time );
@@ -113,7 +113,7 @@ class Tracker {
 		/**
 		 * Has the feed file been requested since the last snapshot?
 		 *
-		 * @since x.x.x
+		 * @since 2.6.0
 		 */
 		$feed_file_requested = get_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED );
 		$data['extensions']['facebook-for-woocommerce']['feed-file-requested'] = wc_bool_to_string( $feed_file_requested );
@@ -123,7 +123,7 @@ class Tracker {
 		/**
 		 * Miscellaneous Facebook config settings.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.0
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
 		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ?: $config->ig_shopping_enabled );
@@ -132,7 +132,7 @@ class Tracker {
 		/**
 		 * Feed pull / upload settings configured in Facebook UI.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.0
 		 */
 		$data['extensions']['facebook-for-woocommerce']['product-feed-config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 
@@ -144,7 +144,7 @@ class Tracker {
 	 *
 	 * Note this is used to clear the transient (set to -1) to track feed generation failure.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.0
 	 */
 	public function track_feed_file_generation_time( $time_in_seconds ) {
 		set_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_TIME, $time_in_seconds, self::TRANSIENT_WCTRACKER_LIFE_TIME );
@@ -154,7 +154,7 @@ class Tracker {
 	 * Store the fact that the feed has been requested by Facebook in a transient.
 	 * This will later be added to next tracker snapshot.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.0
 	 */
 	public function track_feed_file_requested() {
 		set_transient( self::TRANSIENT_WCTRACKER_FEED_REQUESTED, true, self::TRANSIENT_WCTRACKER_LIFE_TIME );
@@ -165,7 +165,7 @@ class Tracker {
 	 *
 	 * @param bool $ig_shopping_enabled True if Instagram Shopping is configured.
 	 * @param bool $ig_cta_enabled True if `ig_cta` config option is enabled.
-	 * @since x.x.x
+	 * @since 2.6.0
 	 */
 	public function track_facebook_business_config(
 		bool $ig_shopping_enabled,
@@ -182,7 +182,7 @@ class Tracker {
 	 * Store Facebook feed config for tracking.
 	 *
 	 * @param array $feed_settings Key-value array of settings to add to tracker snapshot.
-	 * @since x.x.x
+	 * @since 2.6.0
 	 */
 	public function track_facebook_feed_config(
 		array $feed_settings
