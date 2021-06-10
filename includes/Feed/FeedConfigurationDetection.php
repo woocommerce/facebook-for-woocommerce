@@ -29,7 +29,7 @@ class FeedConfigurationDetection {
 	 * This is formatted into an array of keys/values, and saved to a transient for inclusion in tracker snapshot.
 	 * Note this does not send the data to tracker - this happens later (see Tracker class).
 	 *
-	 * @since 2.6.0
+	 * @since x.x.x
 	 * @return void
 	 */
 	public function track_data_source_feed_tracker_info() {
