@@ -43,7 +43,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 			'2.0.3',
 			'2.0.4',
 			'2.4.0',
-			'2.6.0',
+			'2.7.0',
 		);
 	}
 
