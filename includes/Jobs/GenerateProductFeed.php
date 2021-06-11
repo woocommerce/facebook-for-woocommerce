@@ -94,9 +94,19 @@ class GenerateProductFeed extends AbstractChainedJob {
 
 		foreach ( $products as $product ) {
 			// Check if product is enabled for synchronization.
-			if ( ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks() ) {
+			$product_is_valid_for_feed_sync = facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks();
+
+			/**
+			 * Should product bee included in sync filter.
+			 *
+			 * @since x.x.x
+			 * @param bool $product_is_valid_for_feed_sync Is product valid for sync based on the default set of rules.
+			 * @param WC_Product @product Product being filtered.
+			 */
+			if ( ! apply_filters( 'wc_facebook_product_is_valid_for_feed_sync', $product_is_valid_for_feed_sync, $product ) ) {
 				continue;
 			}
+
 			$processed_items[] = $this->process_item( $product, $args );
 		}
 
