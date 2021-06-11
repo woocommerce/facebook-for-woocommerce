@@ -1,6 +1,6 @@
 {
   "name": "facebook-for-woocommerce",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "author": "Facebook",
   "homepage": "https://woocommerce.com/products/facebook/",
   "license": "GPL-2.0",
@@ -10,9 +10,6 @@
   },
   "bugs": {
     "url": "https://wordpress.org/support/plugin/facebook-for-woocommerce"
-  },
-  "config": {
-    "wp_org_slug": "facebook-for-woocommerce"
   },
   "devDependencies": {
     "@wordpress/scripts": "^14.0.0",
@@ -27,15 +24,9 @@
     "build": "./bin/build-zip.sh"
   },
   "woorelease": {
+    "wp_org_slug": "facebook-for-woocommerce",
     "version_replace_paths": [
-      "includes",
-      "class-wc-facebookcommerce.php",
-      "facebook-commerce-events-tracker.php",
-      "facebook-commerce-messenger-chat.php",
-      "facebook-commerce-pixel-event.php",
-      "facebook-commerce.php",
-      "facebook-config-warmer.php",
-      "facebook-for-woocommerce.php"
+      "./"
 		]
 	}
 }

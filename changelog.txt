@@ -1,5 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021-06-10 - version 2.6.0
+ * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
+ * Fix – Clean up background sync options (performance) #1962
+ * Dev – Add tracker props to understand usage of feed-based sync and other FB business config options #1972
+ * Dev – Configure release tooling to auto-update version numbers in code #1982
+ * Dev – Refactor code responsible for validating whether a product should be synced to FB into one place #19333
+
 2021-05-28 - version 2.5.1
  * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen #1980
 

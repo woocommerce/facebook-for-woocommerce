@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.6
-Stable tag: 2.5.1
+Tested up to: 5.7
+Stable tag: 2.6.0
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,13 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.0 - 2021-06-10 =
+ * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
+ * Fix – Clean up background sync options (performance) #1962
+ * Dev – Add tracker props to understand usage of feed-based sync and other FB business config options #1972
+ * Dev – Configure release tooling to auto-update version numbers in code #1982
+ * Dev – Refactor code responsible for validating whether a product should be synced to FB into one place #19333
 
 = 2.5.1 - 2021-05-28 =
  * Fix - Reinstate reset and delete functions in Facebook metabox on Edit product admin screen
