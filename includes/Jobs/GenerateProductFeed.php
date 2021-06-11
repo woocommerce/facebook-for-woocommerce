@@ -36,11 +36,11 @@ class GenerateProductFeed extends AbstractChainedJob {
 	const TRANSIENT_FEED_GENERATION_START_TIME = 'facebook_for_woocommerce_feed_generation_start_time';
 
 	/**
-	 * Transient key to store feed generation end timestamp.
+	 * Transient key to store feed generation wall time.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_FEED_GENERATION_END_TIME = 'facebook_for_woocommerce_feed_generation_end_time';
+	const TRANSIENT_FEED_GENERATION_WALL_TIME = 'facebook_for_woocommerce_feed_generation_wall_time';
 
 	/**
 	 * Feed file creation and manipulation utility.
@@ -79,6 +79,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 		);
 		// Reset the statistics counters.
 		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( 0 );
+		$this->reset_feed_file_generation_wall_time();
 		$this->track_feed_file_generation_start( time() );
 		$this->clear_feed_generation_time_spent();
 	}
@@ -105,7 +106,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 */
 	protected function handle_end() {
 		$this->feed_file_handler->replace_feed_file_with_temp_file();
-		$this->track_feed_file_generation_end( time() );
+		$this->track_feed_file_generation_wall_time( time() );
 		facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time(
 			$this->get_feed_file_generation_time_spent()
 		);
@@ -316,10 +317,32 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Update transient with feed file generation end (in seconds).
 	 *
 	 * @since x.x.x
-	 * @param Int $timestamp Time when the generation has been ended.
+	 * @param int $end_time Time when the generation has been ended.
 	 */
-	private function track_feed_file_generation_end( $timestamp ) {
-		set_transient( self::TRANSIENT_FEED_GENERATION_END_TIME, $timestamp, DAY_IN_SECONDS );
+	private function track_feed_file_generation_wall_time( $end_time ) {
+		set_transient(
+			self::TRANSIENT_FEED_GENERATION_WALL_TIME,
+			$end_time - (int) get_transient( self::TRANSIENT_FEED_GENERATION_START_TIME ),
+			DAY_IN_SECONDS
+		);
 	}
 
+	/**
+	 * Using feed generation start calculate the feed generation wall time.
+	 *
+	 * @since x.x.x
+	 */
+	public static function feed_file_generation_wall_time() {
+		$wall_time = (int) get_transient( self::TRANSIENT_FEED_GENERATION_WALL_TIME );
+		return $wall_time ? $wall_time : 0;
+	}
+
+	/**
+	 * Clear feed generation wall time transient.
+	 *
+	 * @since x.x.x
+	 */
+	private function reset_feed_file_generation_wall_time() {
+		delete_transient( self::TRANSIENT_FEED_GENERATION_WALL_TIME );
+	}
 }

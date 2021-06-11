@@ -8,12 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Error;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
-use SkyVerge\WooCommerce\Facebook\Products\Feed;
 
 /**
  * A class responsible detecting feed configuration.
  */
 class FeedConfigurationDetection {
+
+	const TRANSIENT_ACTIVE_FEED_METADATA = 'wc_facebook_for_woocommerce_active_feed_metadata';
 
 	/**
 	 * Constructor.
@@ -97,6 +98,8 @@ class FeedConfigurationDetection {
 			}
 		}
 
+		// Store the active feed meta data to be used by feed generation scheduling algorithm in FeedScheduler.
+		set_transient( self::TRANSIENT_ACTIVE_FEED_METADATA, $active_feed_metadata, DAY_IN_SECONDS );
 		$active_feed['created-time']  = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
 		$active_feed['product-count'] = $active_feed_metadata['product_count'];
 
@@ -137,7 +140,7 @@ class FeedConfigurationDetection {
 			// True if the feed upload url (Facebook side) matches the feed endpoint URL and secret.
 			// If it doesn't match, it's likely it's unused.
 			$upload['url-matches-site-endpoint'] = wc_bool_to_string(
-				Feed::get_feed_data_url() === $upload_metadata['url']
+				FeedFileHandler::get_feed_data_url() === $upload_metadata['url']
 			);
 
 			$info['active-feed']['latest-upload'] = $upload;
