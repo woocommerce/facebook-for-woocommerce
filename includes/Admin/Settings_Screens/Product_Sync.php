@@ -219,8 +219,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		$link_url         = array_key_exists('link_url', $field ) ? $field['link_url'] : '';
 		$link_is_external = array_key_exists('link_is_external', $field ) ? $field['link_is_external'] : false;
 
-		$clipboard_label = array_key_exists('clipboard_label', $field ) ? $field['clipboard_label'] : '';
-		$clipboard_text  = array_key_exists('clipboard_text', $field ) ? $field['clipboard_text'] : '';
+		$clipboard_label   = array_key_exists('clipboard_label', $field ) ? $field['clipboard_label'] : '';
+		$clipboard_content = array_key_exists('clipboard_content', $field ) ? $field['clipboard_content'] : '';
 
 		$status_color = '';
 		$status_icon = '';
@@ -260,9 +260,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 					<?php if ( ! empty( $info_text ) ) : ?>
 				 		<span class="facebook-for-woocommerce-feed-info-text" style="font-size: smaller;"> • <?php esc_html_e( $info_text ) ?></span>
 					<?php endif; ?>
-					<?php if ( ! empty( $clipboard_label ) && ! empty( $clipboard_text ) ) : ?>
+					<?php if ( ! empty( $clipboard_label ) && ! empty( $clipboard_content ) ) : ?>
 				 		 • <a class="facebook-for-woocommerce-copy-to-clipboard"
-				 			data-clipboard-text="<?php esc_attr_e( $clipboard_text ) ?>" style="font-size: smaller;"><?php esc_html_e( $clipboard_label ) ?></a>
+				 			data-clipboard-text="<?php esc_attr_e( $clipboard_content ) ?>" style="font-size: smaller;"><?php esc_html_e( $clipboard_label ) ?></a>
 					<?php endif; ?>
 				</td>
 			</tr>
@@ -359,6 +359,18 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'help_tip'  => __( 'docs / help', 'facebook-for-woocommerce' ),
 				'text'      => __( 'Sync successful', 'facebook-for-woocommerce' ),
 				'info_text' => __( 'Last sync 9 June 2021 4:41 am, 125 products persisted', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'              => 'facebook_for_woocommerce_status_item',
+				'label'             => __( 'label', 'facebook-for-woocommerce' ),
+				'help_tip'          => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'status'            => 'success',
+				'link_label'        => __( 'link', 'facebook-for-woocommerce' ),
+				'link_url'          => __( 'http://business.facebook.com/myshop?feed=987458740587', 'facebook-for-woocommerce' ),
+				'text'              => __( 'text', 'facebook-for-woocommerce' ),
+				'info_text'         => __( 'info_text', 'facebook-for-woocommerce' ),
+				'clipboard_label'   => __( 'clipboard_label', 'facebook-for-woocommerce' ),
+				'clipboard_content' => __( 'http://arealfeedurl.com/feed?secret=1235', 'facebook-for-woocommerce' ),
 			),
 			array( 'type' => 'sectionend' ),
 		);
