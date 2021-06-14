@@ -45,6 +45,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		add_action( 'woocommerce_admin_field_product_sync_title', array( $this, 'render_title' ) );
+		add_action( 'woocommerce_admin_field_facebook_for_woocommerce_status_item', array( $this, 'render_status_item' ) );
+
 
 		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', array( $this, 'render_google_product_category_field' ) );
 	}
@@ -197,6 +199,41 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		<?php
 	}
 
+	/**
+	 * Renders a custom status / info text item.
+	 *
+	 * @internal
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $field field data
+	 */
+	public function render_status_item( $field ) {
+		$label     = array_key_exists('label', $field ) ? $field['label'] : '';
+		$text      = array_key_exists('text', $field ) ? $field['text'] : '';
+		$help_tip  = array_key_exists('help_tip', $field ) ? $field['help_tip'] : '';
+		// $icon      = array_key_exists('icon', $field ) ? $field['icon'] : '';
+		$info_text = array_key_exists('info_text', $field ) ? $field['info_text'] : '';
+
+		?>
+			<tr>
+				<th scope="row" class="titledesc">
+					<label for=""><?php esc_html_e( $label ) ?>
+						<?php if ( ! empty( $help_tip ) ) : ?>
+					 		<span class="woocommerce-help-tip" data-tip="<?php esc_attr_e( $help_tip ) ?>"></span>
+						<?php endif; ?>
+					 </label>
+				</th>
+				<td class="">
+					<?php echo esc_html( $text ) ?>
+					<?php if ( ! empty( $info_text ) ) : ?>
+				 		<span class="facebook-for-woocommerce-feed-info-text" style="font-size: smaller;"> • <?php esc_html_e( $info_text ) ?></span>
+					<?php endif; ?>
+				</td>
+			</tr>
+		<?php
+	}
+
 
 	/**
 	 * Saves the Product Sync settings.
@@ -247,6 +284,43 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		);
 	}
 
+	/**
+	 * Define settings UI for product feed (data source) sync.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array
+	 */
+	public function get_product_feed_settings() {
+		return array(
+			array(
+				'type'  => 'title',
+				'title' => __( 'Product feed', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'      => 'facebook_for_woocommerce_status_item',
+				'label'     => __( 'Data source', 'facebook-for-woocommerce' ),
+				'help_tip'  => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'text'      => __( 'Data source configured', 'facebook-for-woocommerce' ),
+				'info_text' => __( 'Is totally set up and legit AF', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'      => 'facebook_for_woocommerce_status_item',
+				'label'     => __( 'Feed file', 'facebook-for-woocommerce' ),
+				'help_tip'  => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'text'      => __( 'CSV file generated', 'facebook-for-woocommerce' ),
+				'info_text' => __( 'Last updated 8 June 2021 1:12 am, containing 125 products', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'      => 'facebook_for_woocommerce_status_item',
+				'label'     => __( 'Sync with Facebook', 'facebook-for-woocommerce' ),
+				'help_tip'  => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'text'      => __( 'Sync successful', 'facebook-for-woocommerce' ),
+				'info_text' => __( 'Last sync 9 June 2021 4:41 am, containing 125 products', 'facebook-for-woocommerce' ),
+			),
+			array( 'type' => 'sectionend' ),
+		);
+	}
 
 	/**
 	 * Gets the screen settings.
@@ -278,7 +352,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		$product_tags = $term_query->get_terms();
 
-		return array(
+		$sync_settings = array(
 
 			array(
 				'type'  => 'product_sync_title',
@@ -341,6 +415,12 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			),
 			array( 'type' => 'sectionend' ),
 
+
+		);
+
+		return array_merge(
+			$sync_settings,
+			$this->get_product_feed_settings(),
 		);
 	}
 
