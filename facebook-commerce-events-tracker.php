@@ -889,8 +889,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			foreach ( $order->get_items() as $item ) {
 
-				if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : null ) {
-
+				$product = null;
+				if ( isset( $item['variation_id'] ) ) {
+					$product = wc_get_product( $item['variation_id'] );
+				} else if ( isset( $item['product_id'] ) ) {
+					$product = wc_get_product( $item['product_id'] );
+				}
+				if ( $product ) {
 					$product_ids[]   = \WC_Facebookcommerce_Utils::get_fb_content_ids( $product );
 					$product_names[] = $product->get_name();
 
