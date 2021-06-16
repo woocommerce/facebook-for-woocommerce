@@ -167,7 +167,7 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-			
+
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
@@ -233,7 +233,7 @@ class Connection {
 		}
 
 		if ( $response->get_catalog_id() ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $response->get_catalog_id() ) );
+			$this->get_plugin()->get_integration()->update_product_catalog_id( sanitize_text_field( $response->get_catalog_id() ) );
 		}
 
 		if ( $response->get_business_manager_id() ) {
@@ -1187,15 +1187,15 @@ class Connection {
 
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			
+
 			return;
 		}
 
 		$log_data = array();
-		
+
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		
+
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
@@ -1263,7 +1263,7 @@ class Connection {
 		}
 
 		if ( ! empty( $values->catalog_id ) ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $values->catalog_id ) );
+			$this->get_plugin()->get_integration()->update_product_catalog_id( sanitize_text_field( $values->catalog_id ) );
 			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ] = sanitize_text_field( $values->catalog_id );
 		}
 
