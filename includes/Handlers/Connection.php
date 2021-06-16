@@ -167,7 +167,7 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-			
+
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
@@ -688,7 +688,7 @@ class Connection {
 		 * @param string $external_business_id stored external business ID
 		 * @param Connection $connection connection handler instance
 		 */
-		return (string) apply_filters( 'wc_facebook_external_business_id', $this->external_business_id, $this );
+		return (string) apply_filters( self::OPTION_EXTERNAL_BUSINESS_ID, $this->external_business_id, $this );
 	}
 
 
@@ -1187,15 +1187,15 @@ class Connection {
 
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			
+
 			return;
 		}
 
 		$log_data = array();
-		
+
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		
+
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
