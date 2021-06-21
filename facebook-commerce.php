@@ -414,7 +414,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		// Must be outside of admin for cron to schedule correctly.
-		add_action( 'sync_all_fb_products_using_feed', array( $this, 'handle_scheduled_resync_action' ), self::FB_PRIORITY_MID );
+		add_action( self::ACTION_HOOK_SCHEDULED_RESYNC, array( $this, 'handle_scheduled_resync_action' ), self::FB_PRIORITY_MID );
 
 		// Handle the special background feed generation action.
 		add_action( 'wc_facebook_generate_product_catalog_feed', array( $this, 'handle_generate_product_catalog_feed' ) );
