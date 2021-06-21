@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -168,7 +167,7 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-			
+
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
@@ -1188,15 +1187,15 @@ class Connection {
 
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			
+
 			return;
 		}
 
 		$log_data = array();
-		
+
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		
+
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
