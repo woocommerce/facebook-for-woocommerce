@@ -215,6 +215,11 @@ class AJAX {
 	 */
 	public function sync_products() {
 
+		if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
+			wp_send_json_error( __( 'Full product sync disabled because store has a large number of products.', 'facebook-for-woocommerce' ) );
+			return;
+		}
+
 		check_admin_referer( Product_Sync::ACTION_SYNC_PRODUCTS, 'nonce' );
 
 		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
