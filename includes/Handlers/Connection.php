@@ -167,7 +167,7 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-			
+
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
@@ -301,7 +301,9 @@ class Connection {
 			$this->update_system_user_id( $system_user_id );
 			$this->update_installation_data();
 
-			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+			// We want to schedule the feed generation and feed sync.
+			facebook_for_woocommerce()->get_product_feed_handler()->schedule_feed_generation();
+			facebook_for_woocommerce()->get_product_feed_handler()->shedule_feed_sync();
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
@@ -1187,15 +1189,15 @@ class Connection {
 
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			
+
 			return;
 		}
 
 		$log_data = array();
-		
+
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		
+
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {

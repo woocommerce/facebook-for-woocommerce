@@ -64,6 +64,12 @@ class Feed {
 
 		// handle the feed data request
 		add_action( 'woocommerce_api_' . self::REQUEST_FEED_ACTION, array( $this, 'handle_feed_data_request' ) );
+
+		// schedule the recurring feed sync
+		add_action( Heartbeat::HOURLY, array( $this, 'schedule_feed_sync' ), 20 );
+
+		// sync the feed
+		add_action( self::SYNC_FEED_ACTION, array( $this, 'sync_feed' ) );
 	}
 
 
@@ -161,28 +167,13 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	public function schedule_feed_generation() {
-		$integration   = facebook_for_woocommerce()->get_integration();
-		$configured_ok = $integration && $integration->is_configured();
-
-		// Only schedule feed job if store has not opted out of product sync.
-		$store_allows_sync = $configured_ok && $integration->is_product_sync_enabled();
-		// Only schedule if has not opted out of feed generation (e.g. large stores).
-		$store_allows_feed = $configured_ok && $integration->is_legacy_feed_file_generation_enabled();
-		if ( ! $store_allows_sync || ! $store_allows_feed ) {
+		if ( ! $this->can_schedule_feed_jobs() ) {
 			as_unschedule_all_actions( self::GENERATE_FEED_ACTION );
+
 			return;
 		}
 
-		/**
-		 * Filters the frequency with which the product feed data is generated.
-		 *
-		 * @since 1.11.0
-		 * @since 2.5.0 Feed generation interval increased to 24h.
-		 *
-		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
-		 */
-		$interval = apply_filters( 'wc_facebook_feed_generation_interval', DAY_IN_SECONDS );
-
+		$interval = $this->get_feed_generation_interval();
 		if ( ! as_next_scheduled_action( self::GENERATE_FEED_ACTION ) ) {
 			as_schedule_recurring_action( time(), max( 2, $interval ), self::GENERATE_FEED_ACTION, array(), facebook_for_woocommerce()->get_id_dasherized() );
 		}
