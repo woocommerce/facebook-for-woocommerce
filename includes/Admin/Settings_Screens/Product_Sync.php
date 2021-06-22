@@ -80,8 +80,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		/* translators: Placeholders: {count} number of remaining items */
 		$sync_remaining_items_string = _n_noop( '{count} item remaining.', '{count} items remaining.', 'facebook-for-woocommerce' );
 
-		$fb_integration = facebook_for_woocommerce()->get_integration();
-
 		wp_localize_script(
 			'facebook-for-woocommerce-settings-sync',
 			'facebook_for_woocommerce_settings_sync',
@@ -90,10 +88,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'set_excluded_terms_prompt_nonce' => wp_create_nonce( 'set-excluded-terms-prompt' ),
 				'sync_products_nonce'             => wp_create_nonce( self::ACTION_SYNC_PRODUCTS ),
 				'sync_status_nonce'               => wp_create_nonce( self::ACTION_GET_SYNC_STATUS ),
-				'total_product_count'             => $fb_integration->get_product_count(),
 				'sync_in_progress'                => Sync::is_sync_in_progress(),
-				'excluded_category_ids'           => $fb_integration->get_excluded_product_category_ids(),
-				'excluded_tag_ids'                => $fb_integration->get_excluded_product_tag_ids(),
+				'excluded_category_ids'           => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
+				'excluded_tag_ids'                => facebook_for_woocommerce()->get_integration()->get_excluded_product_tag_ids(),
 				'i18n'                            => array(
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
