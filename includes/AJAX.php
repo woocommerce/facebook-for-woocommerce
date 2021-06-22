@@ -214,7 +214,7 @@ class AJAX {
 	 * @since 2.0.0
 	 */
 	public function sync_products() {
-
+		// Inhibit on-demand full batch-api sync if the store has large product count.
 		if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
 			wp_send_json_error( __( 'Full product sync disabled because store has a large number of products.', 'facebook-for-woocommerce' ) );
 			return;
