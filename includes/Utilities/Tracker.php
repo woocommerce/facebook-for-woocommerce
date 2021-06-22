@@ -126,8 +126,8 @@ class Tracker {
 		 * @since 2.6.0
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
-		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ?: $config->ig_shopping_enabled );
-		$data['extensions']['facebook-for-woocommerce']['instagram-cta-enabled']      = wc_bool_to_string( $config ?: $config->ig_cta_enabled );
+		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ? $config->ig_shopping_enabled : false );
+		$data['extensions']['facebook-for-woocommerce']['instagram-cta-enabled']      = wc_bool_to_string( $config ? $config->ig_cta_enabled : false );
 
 		/**
 		 * Feed pull / upload settings configured in Facebook UI.
@@ -140,10 +140,11 @@ class Tracker {
 	}
 
 	/**
-	 * Update transient with feed file generation time (in seconds).
+	 * Update transient with feed file generation time.
 	 *
 	 * Note this is used to clear the transient (set to -1) to track feed generation failure.
 	 *
+	 * @param float $time_in_seconds Time taken to generate feed file (in seconds).
 	 * @since 2.6.0
 	 */
 	public function track_feed_file_generation_time( $time_in_seconds ) {
@@ -172,8 +173,8 @@ class Tracker {
 		bool $ig_cta_enabled
 	) {
 		$transient = array(
-			'ig_shopping_enabled'   => $ig_shopping_enabled,
-			'ig_cta_enabled'        => $ig_cta_enabled,
+			'ig_shopping_enabled' => $ig_shopping_enabled,
+			'ig_cta_enabled'      => $ig_cta_enabled,
 		);
 		set_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG, $transient, self::TRANSIENT_WCTRACKER_LIFE_TIME );
 	}
