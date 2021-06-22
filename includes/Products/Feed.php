@@ -255,4 +255,41 @@ class Feed {
 	}
 
 
+
+	/**
+	 * If connection is configured, product sync enabled and legacy file generated,
+	 * we can allow the jobs in this class to be scheduled.
+	 *
+	 * @return bool
+	 * @since 2.6.1
+	 */
+	private function can_schedule_feed_jobs() {
+		$integration   = facebook_for_woocommerce()->get_integration();
+		$configured_ok = $integration && $integration->is_configured();
+
+		// Only schedule feed job if store has not opted out of product sync.
+		$store_allows_sync = $configured_ok && $integration->is_product_sync_enabled();
+		// Only schedule if has not opted out of feed generation (e.g. large stores).
+		$store_allows_feed = $configured_ok && $integration->is_legacy_feed_file_generation_enabled();
+
+		return ( $store_allows_sync && $store_allows_feed );
+	}
+
+	/**
+	 * Gets the feed generation interval.
+	 *
+	 * @return integer
+	 */
+	public function get_feed_generation_interval() {
+		/**
+		 * Filters the frequency with which the product feed data is generated.
+		 *
+		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
+		 *
+		 * @since 2.5.0 Feed generation interval increased to 24h.
+		 *
+		 * @since 1.11.0
+		 */
+		return apply_filters( 'wc_facebook_feed_generation_interval', DAY_IN_SECONDS );
+	}
 }
