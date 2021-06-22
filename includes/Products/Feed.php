@@ -188,6 +188,33 @@ class Feed {
 		}
 	}
 
+	/**
+	 * Schedules the feed sync, once the feed us synced. this task will be unschedule.
+	 *
+	 * @internal
+	 * @since 2.6.1
+	 */
+	public function shedule_feed_sync() {
+		if ( ! $this->can_schedule_feed_jobs() ) {
+			$this->unschedule_feed_sync();
+
+			return;
+		}
+
+		$interval = $this->get_feed_generation_interval();
+		if ( ! as_next_scheduled_action( self::SYNC_FEED_ACTION ) ) {
+			// We'll give an hour for the feed to generate
+			as_schedule_single_action( strtotime( '+1 hour' ), self::SYNC_FEED_ACTION, array(), facebook_for_woocommerce()->get_id_dasherized() );
+		}
+	}
+
+	/**
+	 * Unschedule the feed sync.
+	 * @since 2.6.1
+	 */
+	private function unschedule_feed_sync() {
+		as_unschedule_all_actions( self::SYNC_FEED_ACTION );
+	}
 
 	/**
 	 * Checks whether fpassthru has been disabled in PHP.
