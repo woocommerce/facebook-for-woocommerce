@@ -273,6 +273,73 @@ class Feed {
 	}
 
 
+	/**
+	 * Uses the feed file (if exists!) and sync to FB, once the sync completes the recurrent task will be unscheduled.
+	 *
+	 * @since 2.6.1
+	 * @see \WC_Facebookcommerce_Integration::sync_facebook_products_using_feed
+	 */
+	public function sync_feed() {
+		if ( ! facebook_for_woocommerce()->get_integration()->is_product_sync_enabled() ) {
+			\WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
+
+			return;
+		}
+
+		$product_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
+		if ( ! facebook_for_woocommerce()->get_integration()->is_configured() || ! $product_catalog_id ) {
+			\WC_Facebookcommerce_Utils::log( 'Not syncing, the plugin is not configured or the Catalog ID is missing' );
+
+			return;
+		}
+
+		facebook_for_woocommerce()->get_integration()->remove_resync_message();
+
+		if ( ! facebook_for_woocommerce()->get_integration()->get_graph_api()->is_product_catalog_valid( $product_catalog_id ) ) {
+			\WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
+
+			return;
+		}
+
+		$feed_id = facebook_for_woocommerce()->get_integration()->get_feed_id();
+		if ( $feed_id ) {
+			\WC_Facebookcommerce_Utils::log( 'Sync all products using feed, facebook feed already exists' );
+
+			return;
+		}
+
+		$fb_product_feed = new \WC_Facebook_Product_Feed(
+			$product_catalog_id,
+			facebook_for_woocommerce()->get_integration()->get_graph_api()
+		);
+
+		$file_path = $fb_product_feed->get_file_path();
+		if ( ! file_exists( $file_path ) ) {
+			\WC_Facebookcommerce_Utils::log( 'Sync all products using feed, feed files doesn\'t exists' );
+
+			return;
+		}
+
+		$feed_id = $fb_product_feed->create_feed();
+		if ( ! $feed_id ) {
+			\WC_Facebookcommerce_Utils::log( 'Sync all products using feed, facebook feed not created' );
+
+			return;
+		}
+
+		$upload_id = $fb_product_feed->create_upload( $feed_id );
+		if ( ! $upload_id ) {
+			\WC_Facebookcommerce_Utils::log( 'Sync all products using feed, facebook upload not created' );
+
+			return;
+		}
+
+		facebook_for_woocommerce()->get_integration()->update_feed_id( $feed_id );
+		facebook_for_woocommerce()->get_integration()->update_upload_id( $upload_id );
+
+		// We can unschedule the next try.
+		$this->unschedule_feed_sync();
+	}
 
 	/**
 	 * If connection is configured, product sync enabled and legacy file generated,
