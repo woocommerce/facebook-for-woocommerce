@@ -785,26 +785,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $product_item_ids;
 	}
 
-
 	/**
-	 * Gets the total of published products.
+	 * Gets the total number of published products.
 	 *
 	 * @return int
 	 */
 	public function get_product_count() {
-
-		$args = array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-		);
-
-		$products = new WP_Query( $args );
-
-		wp_reset_postdata();
-
-		return $products->found_posts;
+		$product_counts = wp_count_posts( 'product' );
+		return $product_counts->publish;
 	}
 
 
