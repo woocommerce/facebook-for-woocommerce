@@ -34,6 +34,8 @@ class Feed {
 	/** @var string the WordPress option name where the secret included in the feed URL is stored */
 	const OPTION_FEED_URL_SECRET = 'wc_facebook_feed_url_secret';
 
+	/** @var string The action name for that triggers the feed sync */
+	const SYNC_FEED_ACTION = 'facebook_for_woocommerce_sync_feed';
 
 	/**
 	 * Feed constructor.
