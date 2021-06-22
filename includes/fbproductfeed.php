@@ -756,7 +756,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		}
 
 
-		private function create_feed() {
+		public function create_feed() {
 			$result = $this->fbgraph->create_feed(
 				$this->facebook_catalog_id,
 				array( 'name' => self::FEED_NAME )
@@ -776,7 +776,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			return $feed_id;
 		}
 
-		private function create_upload( $facebook_feed_id ) {
+		public function create_upload( $facebook_feed_id ) {
 			$result = $this->fbgraph->create_upload(
 				$facebook_feed_id,
 				$this->get_file_path()
