@@ -43,6 +43,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string Option name for disabling feed. */
  	const OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED = 'wc_facebook_legacy_feed_file_generation_enabled';
 
+	/** @var string Option to allow/disallow full batch api sync */
+	const OPTION_ALLOW_FULL_BATCH_API_SYNC = 'facebook_for_woocommerce_allow_full_batch_api_sync';
+
 	/** @var string the WordPress option name where the feed ID is stored */
 	const OPTION_FEED_ID = 'wc_facebook_feed_id';
 
