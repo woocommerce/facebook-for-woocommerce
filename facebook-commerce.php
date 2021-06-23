@@ -813,9 +813,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
-		return ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC );
-	}
+		$default = ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC ) ? 'yes' : 'no';
 
+		return wc_string_to_bool(
+			/**
+			 * Filters `facebook_for_woocommerce_allow_full_batch_api_sync`
+			 * which can force to enable or disable the full batch api sync.
+			 *
+			 * If stores has less than 500 products, this will be 'true' as default. else 'false'.
+			 *
+			 * @since 2.6.1
+			 */
+			apply_filters(
+				self::OPTION_ALLOW_FULL_BATCH_API_SYNC,
+				get_option( self::OPTION_ALLOW_FULL_BATCH_API_SYNC, $default )
+			)
+		);
+	}
 
 	/**
 	 * Load DIA specific JS Data
