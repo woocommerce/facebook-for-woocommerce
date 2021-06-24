@@ -800,13 +800,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $product_counts->publish;
 	}
 
-
 	/**
 	 * Should full batch-API sync be allowed?
 	 *
 	 * Used to disable various full sync UI/APIs to avoid performance impact.
 	 *
 	 * @return boolean True if full sync is safe.
+	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
 		return ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC );
