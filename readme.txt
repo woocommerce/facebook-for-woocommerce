@@ -40,6 +40,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2.6.1 - 2021-xx-xx =
+ * Fix: Prevent full catalog sync (using Batch API) for larger stores to avoid performance issues
+ * Dev: Add facebook_for_woocommerce_allow_full_batch_api_sync filter to allow external developers to disable or enable full batch API sync
 
 = 2.6.0 - 2021-06-10 =
  * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
