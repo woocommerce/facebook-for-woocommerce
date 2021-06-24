@@ -806,23 +806,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * Used to disable various full sync UI/APIs to avoid performance impact.
 	 *
-	 * @return boolean True if full sync is safe.
+	 * @return boolean True if full batch sync is safe.
 	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
-		$default = $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC;
+		// By default, disable batch API sync if store has a large number of products.
+		$default_allow_sync = ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC );
 
 		/**
 		 * Allow full batch api sync to be enabled or disabled.
 		 *
-		 * @param bool $allow Is full batch allowed?
-		 * @param int $product_count Number of products in store
+		 * @param bool $allow Default value - is full batch sync allowed?
+		 * @param int $product_count Number of products in store.
 		 *
+		 * @return boolean True if full batch sync is safe.
 		 * @since 2.6.1
 		 */
 		return apply_filters(
 			'facebook_for_woocommerce_allow_full_batch_api_sync',
-			$default,
+			$default_allow_sync,
 			$this->get_product_count()
 		);
 	}
