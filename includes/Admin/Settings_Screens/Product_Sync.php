@@ -175,16 +175,13 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 */
 	public function render_title( $field ) {
 		$integration = facebook_for_woocommerce()->get_integration();
-
-		$show_sync_button = $integration->allow_full_batch_api_sync() &&
-			facebook_for_woocommerce()->get_connection_handler()->is_connected();
 		?>
 
 		<h2>
 
 			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
 
-			<?php if ( $show_sync_button ) : ?>
+			<?php if ( facebook_for_woocommerce()->get_connection_handler()->is_connected() ) : ?>
 				<a
 					id="woocommerce-facebook-settings-sync-products"
 					class="button product-sync-field"
