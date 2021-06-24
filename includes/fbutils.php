@@ -595,6 +595,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			);
 			return $cached_best_tip;
 		}
+
+		/**
+		 * Detects if current env is WP Atomic
+		 *
+		 * @return bool
+		 * @since 2.6.1
+		 */
+		public static function is_Atomic_env() {
+			return ( defined( 'IS_ATOMIC' ) && IS_ATOMIC );
+		}
 	}
 
 endif;
