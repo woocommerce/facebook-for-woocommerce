@@ -302,7 +302,7 @@ class Connection {
 			$this->update_installation_data();
 
 			// Only trigger initial full batch-api sync if the store doesn't have large product count.
-			if ( $facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
+			if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
 			}
 
