@@ -113,12 +113,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string custom taxonomy FB product set ID */
 	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
-	/**
-	 * @var int Maximum number of products for full sync.
-	 * Used to disable full batch-API sync flows which may cause performance issues.
-	 **/
-	const MAX_PRODUCTS_FOR_FULL_SYNC = 5000;
-
 	/** @var string|null the configured product catalog ID */
 	public $product_catalog_id;
 
@@ -804,14 +798,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Should full batch-API sync be allowed?
 	 *
-	 * Used to disable various full sync UI/APIs to avoid performance impact.
+	 * May be used to disable various full sync UI/APIs to avoid performance impact.
 	 *
 	 * @return boolean True if full batch sync is safe.
 	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
-		// By default, disable batch API sync if store has a large number of products.
-		$default_allow_sync = ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC );
+		$default_allow_sync = true;
 
 		/**
 		 * Allow full batch api sync to be enabled or disabled.
