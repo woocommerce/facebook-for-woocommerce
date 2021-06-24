@@ -116,7 +116,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @var int Maximum number of products for full sync.
 	 * Used to disable full batch-API sync flows which may cause performance issues.
 	 **/
-	const MAX_PRODUCTS_FOR_FULL_SYNC = 500;
+	const MAX_PRODUCTS_FOR_FULL_SYNC = 5000;
 
 	/** @var string|null the configured product catalog ID */
 	public $product_catalog_id;
