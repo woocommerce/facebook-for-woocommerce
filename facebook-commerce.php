@@ -809,7 +809,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return boolean True if full sync is safe.
 	 */
 	public function allow_full_batch_api_sync() {
-		return ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC );
+		return ( ( $this->get_product_count() < self::MAX_PRODUCTS_FOR_FULL_SYNC ) && ! \WC_Facebookcommerce_Utils::is_Atomic_env() );
 	}
 
 
