@@ -112,7 +112,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string custom taxonomy FB product set ID */
 	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
-
 	/** @var string|null the configured product catalog ID */
 	public $product_catalog_id;
 
@@ -785,26 +784,41 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return $product_item_ids;
 	}
 
-
 	/**
-	 * Gets the total of published products.
+	 * Gets the total number of published products.
 	 *
 	 * @return int
 	 */
 	public function get_product_count() {
+		$product_counts = wp_count_posts( 'product' );
+		return $product_counts->publish;
+	}
 
-		$args = array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
+	/**
+	 * Should full batch-API sync be allowed?
+	 *
+	 * May be used to disable various full sync UI/APIs to avoid performance impact.
+	 *
+	 * @return boolean True if full batch sync is safe.
+	 * @since 2.6.1
+	 */
+	public function allow_full_batch_api_sync() {
+		$default_allow_sync = true;
+
+		/**
+		 * Allow full batch api sync to be enabled or disabled.
+		 *
+		 * @param bool $allow Default value - is full batch sync allowed?
+		 * @param int $product_count Number of products in store.
+		 *
+		 * @return boolean True if full batch sync is safe.
+		 * @since 2.6.1
+		 */
+		return apply_filters(
+			'facebook_for_woocommerce_allow_full_batch_api_sync',
+			$default_allow_sync,
+			$this->get_product_count()
 		);
-
-		$products = new WP_Query( $args );
-
-		wp_reset_postdata();
-
-		return $products->found_posts;
 	}
 
 

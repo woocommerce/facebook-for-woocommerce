@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.1 - 2021-xx-xx =
+ * Dev: Add `facebook_for_woocommerce_allow_full_batch_api_sync` filter to allow opt-out full batch API sync, to avoid possible performance issues on large sites
+
 = 2.6.0 - 2021-06-10 =
  * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
  * Fix – Clean up background sync options (performance) #1962

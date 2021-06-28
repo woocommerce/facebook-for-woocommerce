@@ -301,7 +301,14 @@ class Connection {
 			$this->update_system_user_id( $system_user_id );
 			$this->update_installation_data();
 
-			facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+			// Allow opt-out of full batch-API sync, for example if store has a large number of products.
+			if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
+				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
+			}
+			else {
+				facebook_for_woocommerce()->log( 'Initial full product sync disabled by filter hook `facebook_for_woocommerce_allow_full_batch_api_sync`', 'facebook_for_woocommerce_connect' );
+			}
+
 
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
