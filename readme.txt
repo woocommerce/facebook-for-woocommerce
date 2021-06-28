@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.7
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.1 - 2021-06-28 =
+ * Dev: Add `facebook_for_woocommerce_allow_full_batch_api_sync` filter to allow opt-out full batch API sync, to avoid possible performance issues on large sites
 
 = 2.6.0 - 2021-06-10 =
  * Fix – Add cron heartbeat and use to offload feed generation from init / admin_init (performance) #1953
