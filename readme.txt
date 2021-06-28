@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.1 - 2021-xx-xx =
+= 2.6.1 - 2021-06-28 =
  * Dev: Add `facebook_for_woocommerce_allow_full_batch_api_sync` filter to allow opt-out full batch API sync, to avoid possible performance issues on large sites
 
 = 2.6.0 - 2021-06-10 =
