@@ -17,7 +17,9 @@
   },
   "scripts": {
     "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
-    "lint:php": "vendor/bin/phpcs . -p -s --colors ",
+    "lint:php": "vendor/bin/phpcs . --extensions=php -p -s --colors ",
+    "lint:php:pr": "vendor/bin/phpcs . --extensions=php --warning-severity=0 --report=checkstyle ",
+    "lint:php:summary": "vendor/bin/phpcs . --extensions=php --colors --report=summary",
     "build:assets": "NODE_ENV=production wp-scripts build",
     "start": "wp-scripts start",
     "deploy:sake": "npm run build:assets && npx sake deploy --deployAssets=0",
