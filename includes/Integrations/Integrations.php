@@ -53,13 +53,13 @@ class Integrations {
 	private function load_integrations() {
 
 		$registered_integrations = array(
-			'WC_Facebook_WPML_Injector' => '/includes/fbwpml.php',
-			Bookings::class             => '/includes/Integrations/Bookings.php',
+			'WC_Facebook_WPML_Injector' => __DIR__ . '/../fbwpml.php',
+			Bookings::class             => __DIR__ . '/Bookings.php',
 		);
 
 		foreach ( $registered_integrations as $class_name => $path ) {
 
-			if ( ! class_exists( $class_name ) && ! is_readable( $path ) ) {
+			if ( ! class_exists( $class_name ) && is_readable( $path ) ) {
 
 				$this->integrations[ $class_name ] = $this->plugin->load_class( $path, $class_name );
 			}
