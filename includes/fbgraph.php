@@ -394,7 +394,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 		public function delete_product_group( $product_group_id ) {
-			$product_group_url = $this->build_url( $product_group_id );
+			$product_group_url = $this->build_url( $product_group_id, '?deletion_method=delete_items' );
 			return self::_delete( $product_group_url );
 		}
 
