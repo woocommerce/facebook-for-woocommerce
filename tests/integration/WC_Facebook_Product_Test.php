@@ -33,7 +33,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 
 	/** @see \WC_Facebook_Product::prepare_product() */
-	public function test_prepare_product_not_ready_for_commerce_inventory() {
+	public function test_prepare_product_not_ready_for_commerce_stock_quantity() {
 
 		$product = $this->tester->get_product();
 
@@ -41,7 +41,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
-		$this->assertArrayNotHasKey( 'inventory', $data );
+		$this->assertArrayNotHasKey( 'quantity_to_sell_on_facebook', $data );
 	}
 
 
@@ -89,12 +89,12 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @see \WC_Facebook_Product::prepare_product()
 	 *
-	 * @dataProvider provider_prepare_product_ready_for_commerce_inventory
+	 * @dataProvider provider_prepare_product_ready_for_commerce_stock_quantity
 	 *
 	 * @param int|string $woo_quantity WooCommerce stock quantity
-	 * @param int $facebook_expected expected Facebook inventory value
+	 * @param int $facebook_expected expected Facebook quantity_to_sell_on_facebook value
 	 */
-	public function test_prepare_product_ready_for_commerce_inventory( $woo_quantity, $facebook_expected ) {
+	public function test_prepare_product_ready_for_commerce_stock_quantity( $woo_quantity, $facebook_expected ) {
 
 		$product = $this->tester->get_product( [
 			'status'         => 'publish',
@@ -108,12 +108,12 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 
 		$data = ( new \WC_Facebook_Product( $product ) )->prepare_product();
 
-		$this->assertSame( $facebook_expected, $data['inventory'] );
+		$this->assertSame( $facebook_expected, $data['quantity_to_sell_on_facebook'] );
 	}
 
 
-	/** @see test_prepare_product_ready_for_commerce_inventory */
-	public function provider_prepare_product_ready_for_commerce_inventory() {
+	/** @see test_prepare_product_ready_for_commerce_stock_quantity */
+	public function provider_prepare_product_ready_for_commerce_stock_quantity() {
 
 		return [
 			'valid stock quantity'    => [ 4, 4 ],

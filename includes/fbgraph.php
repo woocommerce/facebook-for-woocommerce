@@ -26,7 +26,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 	 */
 	class WC_Facebookcommerce_Graph_API {
 		const GRAPH_API_URL = 'https://graph.facebook.com/';
-		const API_VERSION   = 'v9.0';
+		const API_VERSION   = 'v11.0';
 		const CURL_TIMEOUT  = 500;
 
 		/**
@@ -394,7 +394,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 		public function delete_product_group( $product_group_id ) {
-			$product_group_url = $this->build_url( $product_group_id );
+			$product_group_url = $this->build_url( $product_group_id, '?deletion_method=delete_items' );
 			return self::_delete( $product_group_url );
 		}
 
