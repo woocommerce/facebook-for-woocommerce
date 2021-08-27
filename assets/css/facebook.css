@@ -306,3 +306,8 @@
 	vertical-align: middle !important;
 	line-height: 28px !important;
 }
+
+.facebook-for-woocommerce-status-item .dashicons {
+	position: relative;
+	top:  -1px;
+}
