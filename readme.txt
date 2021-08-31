@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.4 - 2021-xx-xx =
+* Fix - Correct the version string in the plugin file to remove -dev
+
 = 2.6.3 - 2021-08-31 =
 * Fix – Include missing assets from previous build.
 
