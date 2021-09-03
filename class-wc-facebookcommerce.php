@@ -164,6 +164,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				// Load integrations
 				require_once __DIR__ . '/includes/fbwpml.php';
+				new WC_Facebook_WPML_Injector();
 				new BookingsIntegration();
 
 				if ( 'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
