@@ -179,8 +179,10 @@ class Orders {
 				$product = Products::get_product_by_fb_retailer_id( $item['retailer_id'] );
 			}
 
-			if ( ! $product instanceof \WC_Product ) {
+			//if ( ! $product instanceof \WC_Product ) {
+			if (! is_a($product,'WC_Product')){
 				// One extra catch to support sites using custom feed sync to Facebook, but using retailer_id as the main key
+				$product = wc_get_product($item['retailer_id']);
 				if (! is_a($product,'WC_Product')){
 					// add a note and skip this item
 					$local_order->add_order_note( "Product with retailer ID {$item['retailer_id']} not found" );
