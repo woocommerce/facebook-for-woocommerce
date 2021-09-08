@@ -1236,7 +1236,23 @@ class Products {
 				$product = current( $products );
 			}
 		}
+		
+		// Adding some code to work with a site that uses it's own custom feed sync to facebook, but uses the product ID (post_id) as the main id, 
+		//  allowing the facebook order sync solution to still work - shouldn't affect any other site, as the above would occur in most scenarios
+		if ( empty( $product ) ) {
+			$products = wc_get_products(
+				array(
+					'limit'      => 1,
+					'include' => array($fb_product_id),
+				)
+			);
 
+			if ( ! empty( $products ) ) {
+				$product = current( $products );
+			}
+		}
+		// End ability to sync products outside of this plugin, and still use the plugin
+		
 		return ! empty( $product ) ? $product : null;
 	}
 
