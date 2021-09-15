@@ -10,6 +10,7 @@
  */
 
 use SkyVerge\WooCommerce\Facebook\API;
+use SkyVerge\WooCommerce\Facebook\Integrations\Bookings as BookingsIntegration;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
@@ -84,9 +85,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Handlers\WebHook webhook handler */
 		private $webhook_handler;
-
-		/** @var \SkyVerge\WooCommerce\Facebook\Integrations\Integrations integrations handler */
-		private $integrations;
 
 		/** @var \SkyVerge\WooCommerce\Facebook\Commerce commerce handler */
 		private $commerce_handler;
@@ -164,7 +162,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
-				$this->integrations = new \SkyVerge\WooCommerce\Facebook\Integrations\Integrations( $this );
+				// Load integrations.
+				require_once __DIR__ . '/includes/fbwpml.php';
+				new WC_Facebook_WPML_Injector();
+				new BookingsIntegration();
 
 				if ( 'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
 
