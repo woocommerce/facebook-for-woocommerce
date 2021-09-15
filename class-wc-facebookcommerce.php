@@ -162,7 +162,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 
-				// Load integrations
+				// Load integrations.
 				require_once __DIR__ . '/includes/fbwpml.php';
 				new WC_Facebook_WPML_Injector();
 				new BookingsIntegration();
