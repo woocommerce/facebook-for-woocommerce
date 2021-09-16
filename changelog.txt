@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version 2.6.5
+2021-09-16 - version 2.6.5
 * Fix - Incorrect `is_readable()` usage when loading Integration classes.
 * Tweak - WC 5.7 compatibility.
 * Tweak - WP 5.8 compatibility.
