@@ -37,6 +37,9 @@ class Connection {
 	/** @var string WooCommerce connection for APP Store login URL */
 	const APP_STORE_LOGIN_URL = 'https://connect.woocommerce.com/app-store-login/facebook/';
 
+	/** @var string WooCommerce connection authentication URL */
+	const CONNECTION_AUTHENTICATION_URL = 'https://connect.woocommerce.com/auth/facebookcommerce/';
+
 	/** @var string the Standard Auth type */
 	const AUTH_TYPE_STANDARD = 'standard';
 
@@ -545,7 +548,7 @@ class Connection {
 	 * include the final site URL, which is where the merchant will redirect to with the data that needs to be stored.
 	 * So the final URL looks like this without encoding:
 	 *
-	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.com/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
+	 * https://www.facebook.com/commerce_manager/onboarding/?app_id={id}&redirect_url=https://connect.woocommerce.local/auth/facebook/?site_url=https://example.com/?wc-api=wc_facebook_connect_commerce&nonce=1234
 	 *
 	 * If testing only, &is_test_mode=true can be appended to the URL using the wc_facebook_commerce_connect_url filter
 	 * to trigger the test account flow, where fake US-based business details can be used.
@@ -566,7 +569,7 @@ class Connection {
 		);
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_connection_authentication_url() );
 
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg(
@@ -848,6 +851,24 @@ class Connection {
 		return (string) apply_filters( 'wc_facebook_connection_app_store_login_url', self::APP_STORE_LOGIN_URL );
 	}
 
+	/**
+	 * Gets connect server authentication url.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string URL
+	 */
+	public function get_connection_authentication_url() {
+
+		/**
+		 * Filters App Store login URL.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param string $connection_authentication_url the connection App Store login URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_authentication_url', self::CONNECTION_AUTHENTICATION_URL );
+	}
 
 	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
