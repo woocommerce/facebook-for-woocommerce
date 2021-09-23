@@ -334,7 +334,7 @@ class Connection {
 		} catch ( Connect_WC_API_Exception $exception ) {
 			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
 
-			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message), 'facebook_for_woocommerce_connect' );
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
