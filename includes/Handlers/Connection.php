@@ -279,8 +279,8 @@ class Connection {
 			}
 
 			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
-			$error_code               = ! empty( $_GET['err_code'] ) ? sanitize_text_field( $_GET['err_code'] ) : '';
-			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( $_GET['err_code'] ) ) : '';
+			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ?  sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
@@ -332,14 +332,37 @@ class Connection {
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		} catch ( Connect_WC_API_Exception $exception ) {
+			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
 
-			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Facebook API returned error code: %s', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
 		exit;
+	}
+
+	/**
+	 * Prepares the error message from the connect server for the logs.
+	 *
+	 * @since x.x.x
+	 * @param string $message Message string that needs formatting.
+	 * @return string Formatted message string ready for logging.
+	 */
+	public function prepare_connect_server_message_for_user_display( $message ) {
+			/*
+			 * In some scenarios the connect server message is a JSON encoded object.
+			 * This happens when we have detailed information from Facebook API endpoint about the error.
+			 * We want to print it pretty for the customers.
+			 */
+			$decoded_message = json_decode( $message );
+			if ( json_last_error() === JSON_ERROR_NONE ) {
+				// If error is the fist key we want to use just the body to simplify the message.
+				$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
+				$message         = json_encode( $decoded_message, JSON_PRETTY_PRINT );
+			}
+			return $message;
 	}
 
 
