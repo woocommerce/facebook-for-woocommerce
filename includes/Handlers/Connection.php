@@ -280,7 +280,7 @@ class Connection {
 
 			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
 			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( $_GET['err_code'] ) ) : '';
-			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ?  sanitize_text_field( $_GET['merchant_access_token'] ) : '';
+			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
 
