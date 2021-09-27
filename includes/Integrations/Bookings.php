@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -26,7 +27,6 @@ class Bookings {
 	 * @since 2.0.0-dev.3
 	 */
 	public function __construct() {
-
 		add_action( 'init', array( $this, 'add_hooks' ) );
 	}
 

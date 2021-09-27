@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -174,9 +175,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @param array $field field data
 	 */
 	public function render_title( $field ) {
-
 		?>
-
 		<h2>
 
 			<?php esc_html_e( 'Product sync', 'facebook-for-woocommerce' ); ?>
