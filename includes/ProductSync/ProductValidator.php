@@ -3,8 +3,13 @@
 namespace SkyVerge\WooCommerce\Facebook\ProductSync;
 
 use SkyVerge\WooCommerce\Facebook\Products;
+use WC_Facebook_Product;
 use WC_Product;
 use WC_Facebookcommerce_Integration;
+
+if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
+	include_once '../fbutils.php';
+}
 
 /**
  * Class ProductValidator
@@ -50,7 +55,8 @@ class ProductValidator {
 	 * @param WC_Product                      $product     The product to validate. Accepts both variations and variable products.
 	 */
 	public function __construct( WC_Facebookcommerce_Integration $integration, WC_Product $product ) {
-		$this->product = $product;
+		$this->product          = $product;
+		$this->facebook_product = new WC_Facebook_Product( $product->get_id() );
 
 		if ( $product->get_parent_id() ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
@@ -75,6 +81,7 @@ class ProductValidator {
 		$this->validate_product_price();
 		$this->validate_product_visibility();
 		$this->validate_product_terms();
+		$this->validate_product_description();
 	}
 
 	/**
@@ -254,6 +261,26 @@ class ProductValidator {
 		if ( ! Products::get_product_price( $this->product ) ) {
 			throw new ProductExcludedException( __( 'If product is not simple, variable or variation it must have a price.', 'facebook-for-woocommerce' ) );
 		}
+	}
+
+	/**
+	 * Check if the description field has correct format according to:
+	 * Product Description Specifications for Catalogs : https://www.facebook.com/business/help/2302017289821154?id=725943027795860
+	 *
+	 * @throws ProductExcludedException If products description does not meet the requirements.
+	 */
+	protected function validate_product_description() {
+		/*
+		 * First step is to select the description that we want to evaluate.
+		 * Main description is the one provided for the product in the Facebook.
+		 * If it is blank, product description will be used.
+		 * If product description is blank, shortname will be used.
+		 */
+		$description = $this->facebook_product->get_fb_description();
+		if ( \WC_Facebookcommerce_Utils::is_all_caps( $description ) ) {
+			throw new ProductExcludedException( __( 'Product description is all capital letters. Please change the description to sentence case in order to allow synchronization of your product.', 'facebook-for-woocommerce' ) );
+		}
+
 	}
 
 }
