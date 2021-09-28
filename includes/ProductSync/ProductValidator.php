@@ -28,6 +28,19 @@ class ProductValidator {
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 	/**
+	 * Maximum length of product description.
+	 *
+	 * @var int
+	 */
+	const MAX_DESCRIPTION_LENGTH = 5000;
+
+	/**
+	 * Maximum length of product title.
+	 *
+	 * @var int
+	 */
+	const MAX_TITLE_LENGTH = 30
+	/**
 	 * The FB integration instance.
 	 *
 	 * @var WC_Facebookcommerce_Integration
@@ -82,6 +95,7 @@ class ProductValidator {
 		$this->validate_product_visibility();
 		$this->validate_product_terms();
 		$this->validate_product_description();
+		$this->validate_product_title();
 	}
 
 	/**
@@ -98,6 +112,8 @@ class ProductValidator {
 		$this->validate_product_price();
 		$this->validate_product_visibility();
 		$this->validate_product_terms();
+		$this->validate_product_description();
+		$this->validate_product_title();
 	}
 
 	/**
@@ -265,7 +281,7 @@ class ProductValidator {
 
 	/**
 	 * Check if the description field has correct format according to:
-	 * Product Description Specifications for Catalogs : https://www.facebook.com/business/help/2302017289821154?id=725943027795860
+	 * Product Description Specifications for Catalogs : https://www.facebook.com/business/help/2302017289821154
 	 *
 	 * @throws ProductExcludedException If products description does not meet the requirements.
 	 */
@@ -277,10 +293,41 @@ class ProductValidator {
 		 * If product description is blank, shortname will be used.
 		 */
 		$description = $this->facebook_product->get_fb_description();
+
+		/*
+		 * Requirements:
+		 * - No all caps descriptions.
+		 * - Max length 5000.
+		 * - Min length 30 ( tested and not required, will not enforce until this will become a hard requirement )
+		 */
 		if ( \WC_Facebookcommerce_Utils::is_all_caps( $description ) ) {
 			throw new ProductExcludedException( __( 'Product description is all capital letters. Please change the description to sentence case in order to allow synchronization of your product.', 'facebook-for-woocommerce' ) );
 		}
+		if ( strlen( $description ) > self::MAX_DESCRIPTION_LENGTH ) {
+			throw new ProductExcludedException( __( 'Product description is too long. Maximum allowed length is 5000 characters.', 'facebook-for-woocommerce' ) );
+		}
+	}
 
+	/**
+	 * Check if the title field has correct format according to:
+	 * Product Title Specifications for Catalogs : https://www.facebook.com/business/help/2104231189874655
+	 *
+	 * @throws ProductExcludedException If products description does not meet the requirements.
+	 */
+	protected function validate_product_title() {
+		$title = $this->product->get_title();
+
+		/*
+		 * Requirements:
+		 * - No all caps descriptions.
+		 * - Max length 150.
+		 */
+		if ( \WC_Facebookcommerce_Utils::is_all_caps( $title ) ) {
+			throw new ProductExcludedException( __( 'Product title is all capital letters. Please change the title to sentence case in order to allow synchronization of your product.', 'facebook-for-woocommerce' ) );
+		}
+		if ( strlen( $title ) > self::MAX_TITLE_LENGTH ) {
+			throw new ProductExcludedException( __( 'Product title is too long. Maximum allowed length is 150 characters.', 'facebook-for-woocommerce' ) );
+		}
 	}
 
 }
