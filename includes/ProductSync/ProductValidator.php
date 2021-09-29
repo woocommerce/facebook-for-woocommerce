@@ -39,7 +39,7 @@ class ProductValidator {
 	 *
 	 * @var int
 	 */
-	const MAX_TITLE_LENGTH = 30
+	const MAX_TITLE_LENGTH = 30;
 	/**
 	 * The FB integration instance.
 	 *
