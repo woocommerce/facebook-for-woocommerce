@@ -283,7 +283,7 @@ class ProductValidator {
 	 * Check if the description field has correct format according to:
 	 * Product Description Specifications for Catalogs : https://www.facebook.com/business/help/2302017289821154
 	 *
-	 * @throws ProductExcludedException If products description does not meet the requirements.
+	 * @throws ProductExcludedException If product description does not meet the requirements.
 	 */
 	protected function validate_product_description() {
 		/*
@@ -312,14 +312,14 @@ class ProductValidator {
 	 * Check if the title field has correct format according to:
 	 * Product Title Specifications for Catalogs : https://www.facebook.com/business/help/2104231189874655
 	 *
-	 * @throws ProductExcludedException If products description does not meet the requirements.
+	 * @throws ProductExcludedException If product title does not meet the requirements.
 	 */
 	protected function validate_product_title() {
 		$title = $this->product->get_title();
 
 		/*
 		 * Requirements:
-		 * - No all caps descriptions.
+		 * - No all caps title.
 		 * - Max length 150.
 		 */
 		if ( \WC_Facebookcommerce_Utils::is_all_caps( $title ) ) {
