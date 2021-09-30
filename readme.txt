@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.6 - 2021-xx-xx =
+* Dev - Change the entry headings of changelog.txt to WPORG format to fix the issue of missing SVN version tag after releasing.
+
 = 2.6.5 - 2021-09-16 =
 * Fix - Incorrect `is_readable()` usage when loading Integration classes.
 * Tweak - WC 5.7 compatibility.
