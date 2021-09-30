@@ -39,7 +39,15 @@ class ProductValidator {
 	 *
 	 * @var int
 	 */
-	const MAX_TITLE_LENGTH = 30;
+	const MAX_TITLE_LENGTH = 150;
+
+	/**
+	 * Maximum allowed attributes in a variation;
+	 *
+	 * @var int
+	 */
+	const MAX_NUMBER_OF_ATTRIBUTES_IN_VARIATION = 4;
+
 	/**
 	 * The FB integration instance.
 	 *
@@ -96,6 +104,7 @@ class ProductValidator {
 		$this->validate_product_terms();
 		$this->validate_product_description();
 		$this->validate_product_title();
+		$this->validate_variation_structure();
 	}
 
 	/**
@@ -114,6 +123,7 @@ class ProductValidator {
 		$this->validate_product_terms();
 		$this->validate_product_description();
 		$this->validate_product_title();
+		$this->validate_variation_structure();
 	}
 
 	/**
@@ -327,6 +337,30 @@ class ProductValidator {
 		}
 		if ( strlen( $title ) > self::MAX_TITLE_LENGTH ) {
 			throw new ProductExcludedException( __( 'Product title is too long. Maximum allowed length is 150 characters.', 'facebook-for-woocommerce' ) );
+		}
+	}
+
+	/**
+	 * Check if variation product has proper settings.
+	 *
+	 * @throws ProductExcludedException If product variation violates some requirements.
+	 */
+	protected function validate_variation_structure() {
+		// Check if we are dealing with a variation.
+		if ( ! $this->product->is_type('variation') ) {
+			return;
+		}
+		$attributes = $this->product->get_attributes();
+
+		$used_attributes_count = count(
+			array_filter(
+				$attributes
+			)
+		);
+
+		// No more than MAX_NUMBER_OF_ATTRIBUTES_IN_VARIATION ar allowed to be used.
+		if ( $used_attributes_count > self::MAX_NUMBER_OF_ATTRIBUTES_IN_VARIATION ) {
+			throw new ProductExcludedException( __( 'Too many attributes selected for product. Use 4 or less.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
