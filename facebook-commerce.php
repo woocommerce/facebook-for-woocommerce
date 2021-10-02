@@ -1515,20 +1515,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// figure out the matching default variation
-		$default_product_fbid  = null;
-		$woo_default_variation = $this->get_product_group_default_variation( $woo_product );
-
-		if ( $woo_default_variation ) {
-			$default_product_fbid = $this->get_product_fbid(
-				self::FB_PRODUCT_ITEM_ID,
-				$woo_default_variation['variation_id']
-			);
-		}
 
 		$product_group_data = array(
 			'variants' => $variants,
 		);
+
+		// Figure out the matching default variation.
+		$default_product_fbid = $this->get_product_group_default_variation( $woo_product, $fb_product_group_id );
 
 		if ( $default_product_fbid ) {
 			$product_group_data['default_product_id'] = $default_product_fbid;
@@ -1556,12 +1549,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines if there is a matching variation for the default attributes.
 	 *
+	 * @since x.x.x
+	 * The algorithm only considers the variations that already have been synchronized to the catalog successfully.
+	 *
 	 * @since 2.1.2
 	 *
 	 * @param \WC_Facebook_Product $woo_product
-	 * @return array|null
+	 * @return integer/null Facebook Catalog variation id.
 	 */
-	private function get_product_group_default_variation( $woo_product ) {
+	private function get_product_group_default_variation( $woo_product, $fb_product_group_id ) {
 
 		$default_attributes = $woo_product->woo_product->get_default_attributes( 'edit' );
 
@@ -1569,17 +1565,31 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return null;
 		}
 
-		$default_variation  = null;
-		$product_variations = $woo_product->woo_product->get_available_variations();
+		$default_variation = null;
+		// Fetch variations that exist in the catalog.
+		$existing_catalog_variations              = $this->find_variation_product_item_ids( $fb_product_group_id );
+		$existing_catalog_variations_retailer_ids = array_keys( $existing_catalog_variations );
+		// All woocommerce variations for the product.
+		$product_variations                       = $woo_product->woo_product->get_available_variations();
 
 		foreach ( $product_variations as $variation ) {
 
-			$variation_attributes = $this->get_product_variation_attributes( $variation );
+			$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
+				wc_get_product(
+					$variation['variation_id']
+				)
+			);
 
-			$matching_attributes = array_intersect_assoc( $default_attributes, $variation_attributes );
+			// Check if currently processed variation exist in the catalog.
+			if ( ! in_array( $fb_retailer_id, $existing_catalog_variations_retailer_ids ) ) {
+				continue;
+			}
+
+			$variation_attributes = $this->get_product_variation_attributes( $variation );
+			$matching_attributes  = array_intersect_assoc( $default_attributes, $variation_attributes );
 
 			if ( count( $matching_attributes ) === count( $variation_attributes ) ) {
-				$default_variation = $variation;
+				$default_variation = $existing_catalog_variations[$fb_retailer_id];
 				break;
 			}
 		}
