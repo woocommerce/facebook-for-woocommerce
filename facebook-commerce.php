@@ -1548,6 +1548,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Determines if there is a matching variation for the default attributes.
+	 * Select closest matching if best can't be found.
 	 *
 	 * @since x.x.x
 	 * The algorithm only considers the variations that already have been synchronized to the catalog successfully.
@@ -1572,6 +1573,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// All woocommerce variations for the product.
 		$product_variations                       = $woo_product->woo_product->get_available_variations();
 
+		$best_match_count = 0;
 		foreach ( $product_variations as $variation ) {
 
 			$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
@@ -1585,13 +1587,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				continue;
 			}
 
-			$variation_attributes = $this->get_product_variation_attributes( $variation );
-			$matching_attributes  = array_intersect_assoc( $default_attributes, $variation_attributes );
+			$variation_attributes       = $this->get_product_variation_attributes( $variation );
+			$variation_attributes_count = count( $variation_attributes );
+			$matching_attributes_count  = count( array_intersect_assoc( $default_attributes, $variation_attributes ) );
 
-			if ( count( $matching_attributes ) === count( $variation_attributes ) ) {
-				$default_variation = $existing_catalog_variations[$fb_retailer_id];
+			// Check how much current variation matches the selected default attributes.
+			if ( $matching_attributes_count === $variation_attributes_count ) {
+				// We found a perfect match;
+				$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
 				break;
+			} else if ( $matching_attributes_count > $best_match_count ) {
+				// We found a better match.
+				$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
 			}
+
 		}
 
 		return $default_variation;
