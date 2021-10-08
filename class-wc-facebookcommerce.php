@@ -435,7 +435,17 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				return;
 			}
 
-			parent::log_api_request( $request, $response, $log_id );
+			// Maybe remove headers from the debug log.
+			if( ! $this->get_integration()->are_headers_requested_for_debug() ) {
+				unset( $request['headers'] );
+				unset( $response['headers'] );
+			}
+
+			$this->log( $this->get_api_log_message( $request ), $log_id );
+
+			if ( ! empty( $response ) ) {
+				$this->log( $this->get_api_log_message( $response ), $log_id );
+			}
 		}
 
 		/**

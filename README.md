@@ -11,6 +11,9 @@ The best place to get support is the [WordPress.org Facebook for WooCommerce for
 
 If you have a WooCommerce.com account, you can [start a chat or open a ticket on WooCommerce.com](https://woocommerce.com/my-account/create-a-ticket/).
 
+### Logging
+The plugin offers logging that can help debug various problems. You can enable debug mode in the main plugin settings panel under the `Enable debug mode` section.
+By default plugin omits headers in the requests to make the logs more readable. If debugging with headers is necessary you can enable the headers in the logs by setting `wc_facebook_request_headers_in_debug_log` option to true.
 ## Development 
 ### Developing
 - Clone this repository into the `wp-content/plugins/` folder your WooCommerce development environment.

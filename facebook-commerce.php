@@ -101,6 +101,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the "debug mode" setting ID */
 	const SETTING_ENABLE_DEBUG_MODE = 'wc_facebook_enable_debug_mode';
 
+	/** @var string request headers in the debug log */
+	const SETTING_REQUEST_HEADERS_IN_DEBUG_MODE = 'wc_facebook_request_headers_in_debug_log';
+
 	/** @var string the standard product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_STANDARD = 'standard';
 
@@ -3265,6 +3268,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+	}
+
+	/**
+	 * Check if logging headers is requested.
+	 * For a typical troubleshooting session the request headers bring zero value except making the log unreadable.
+	 * They will be disabled by default. Enabling them will require setting an option in the options table.
+	 *
+	 * @since x.x.x
+	 *
+	 */
+	public function are_headers_requested_for_debug() {
+		return (bool) get_option( self::SETTING_REQUEST_HEADERS_IN_DEBUG_MODE, false );
 	}
 
 
