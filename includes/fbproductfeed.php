@@ -25,9 +25,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	class WC_Facebook_Product_Feed {
 
 
-		/** @var string transient name for storing the average feed generation time */
-		const TRANSIENT_AVERAGE_FEED_GENERATION_TIME = 'wc_facebook_average_feed_generation_time';
-
 		/** @var string product catalog feed file directory inside the uploads folder */
 		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
 
