@@ -326,32 +326,11 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @since 1.11.0
 		 *
 		 * @param int[] $wp_ids product IDs
-		 * @param bool  $is_dry_run whether this is a dry run or the file should be written
 		 * @return bool
 		 */
-		public function write_product_feed_file( $wp_ids, $is_dry_run = false ) {
+		public function write_product_feed_file( $wp_ids ) {
 
 			try {
-
-				if ( ! $is_dry_run ) {
-
-					$temp_file_path = $this->get_temp_file_path();
-					$temp_feed_file = @fopen( $temp_file_path, 'w' );
-
-					// check if we can open the temporary feed file
-					if ( false === $temp_feed_file || ! is_writable( $temp_file_path ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog temporary feed file for writing', 'facebook-for-woocommerce' ), 500 );
-					}
-
-					$file_path = $this->get_file_path();
-
-					// check if we will be able to write to the final feed file
-					if ( file_exists( $file_path ) && ! is_writable( $file_path ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
-					}
-
-					fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
-				}
 
 				$product_group_attribute_variants = array();
 
