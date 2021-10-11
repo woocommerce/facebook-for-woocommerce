@@ -26,12 +26,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/** @var string product catalog feed file directory inside the uploads folder */
-		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
-
-		/** @var string product catalog feed file name - %s will be replaced with a hash */
-		const FILE_NAME = 'product_catalog_%s.csv';
-
-
+		const UPLOADS_DIRECTORY              = 'facebook_for_woocommerce';
+		const FILE_NAME                      = 'product_catalog_%s.csv';
 		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
