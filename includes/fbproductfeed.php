@@ -338,44 +338,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				// Step 2: Write products feed into the temporary feed file.
 				$this->write_products_feed_to_temp_file( $wp_ids, $temp_feed_file );
 
-				foreach ( $wp_ids as $wp_id ) {
-
-					$woo_product = new WC_Facebook_Product( $wp_id );
-
-					// Skip if we don't have a valid product object.
-					if ( ! $woo_product->woo_product instanceof \WC_Product ) {
-						continue;
-					}
-
-					// Skip if not enabled for sync.
-					if ( ! facebook_for_woocommerce()->get_product_sync_validator( $woo_product->woo_product )->passes_all_checks() ) {
-						continue;
-					}
-
-					$product_data_as_feed_row = $this->prepare_product_for_feed(
-						$woo_product,
-						$product_group_attribute_variants
-					);
-
-					if ( ! empty( $temp_feed_file ) ) {
-						fwrite( $temp_feed_file, $product_data_as_feed_row );
-					}
-				}
-
-				wp_reset_postdata();
-
-				if ( ! empty( $temp_feed_file ) ) {
-					fclose( $temp_feed_file );
-				}
-
-				if ( ! empty( $temp_file_path ) && ! empty( $file_path ) && ! empty( $temp_feed_file ) ) {
-
-					$renamed = rename( $temp_file_path, $file_path );
-
-					if ( empty( $renamed ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
-					}
-				}
+				// Step 3: Rename temporary feed file to final feed file.
+				$this->rename_temporary_feed_file_to_final_feed_file();
 
 				$written = true;
 
@@ -467,6 +431,27 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			if ( ! empty( $temp_feed_file ) ) {
 				fclose( $temp_feed_file );
+			}
+		}
+
+		/**
+		 * Rename temporary feed file into the final feed file.
+		 * This is the last step fo the feed generation procedure.
+		 *
+		 * @since x.x.x
+		 *
+		 * @return void
+		 */
+		public function rename_temporary_feed_file_to_final_feed_file() {
+			$file_path      = $this->get_file_path();
+			$temp_file_path = $this->get_temp_file_path();
+			if ( ! empty( $temp_file_path ) && ! empty( $file_path ) ) {
+
+				$renamed = rename( $temp_file_path, $file_path );
+
+				if ( empty( $renamed ) ) {
+					throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
+				}
 			}
 		}
 
