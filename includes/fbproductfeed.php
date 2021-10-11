@@ -166,29 +166,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 
 		/**
-		 * Gets the number of products to use when estimating the feed file generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return int
-		 */
-		private function get_feed_generation_estimate_sample_size() {
-
-			/**
-			 * Filters the number of products to use when estimating the feed file generation time.
-			 *
-			 * @since 1.11.0
-			 *
-			 * @param int $sample_size number of products to use when estimating the feed file generation time
-			 */
-			$sample_size = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_estimate_sample_size', 200 );
-
-			return max( $sample_size, 100 );
-		}
-
-
-
-		/**
 		 * Gets the product catalog feed file path.
 		 *
 		 * @since 1.11.0
