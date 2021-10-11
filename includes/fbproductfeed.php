@@ -408,7 +408,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @throws Framework\SV_WC_Plugin_Exception We can't open the file or the file is not writable.
 		 * @return resource A file pointer resource.
 		 */
-		private function prepare_temporary_feed_file() {
+		public function prepare_temporary_feed_file() {
 			$temp_file_path = $this->get_temp_file_path();
 			$temp_feed_file = @fopen( $temp_file_path, 'w' );
 
