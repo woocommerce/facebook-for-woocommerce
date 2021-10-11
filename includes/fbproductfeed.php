@@ -104,8 +104,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$generation_time = microtime( true ) - $start_time;
 				facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( $generation_time );
 
-				$this->set_feed_generation_time_with_decay( $generation_time );
-
 				\WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
 
 			} catch ( \Exception $exception ) {
@@ -118,52 +116,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			$profiling_logger->stop( 'generate_feed' );
 		}
-
-
-		/**
-		 * Sets the average feed generation time with a 25% decay.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @param float $generation_time last generation time
-		 */
-		private function set_feed_generation_time_with_decay( $generation_time ) {
-
-			// update feed generation time estimate w/ 25% decay.
-			$existing_generation_time = $this->get_average_feed_generation_time();
-
-			if ( $generation_time < $existing_generation_time ) {
-				$generation_time = $generation_time * 0.25 + $existing_generation_time * 0.75;
-			}
-
-			$this->set_average_feed_generation_time( $generation_time );
-		}
-
-
-		/**
-		 * Sets the average feed generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @param float $time generation time
-		 */
-		private function set_average_feed_generation_time( $time ) {
-
-			set_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME, $time );
-		}
-
-		/**
-		 * Gets the average feed generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return float
-		 */
-		private function get_average_feed_generation_time() {
-
-			return get_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME );
-		}
-
 
 		/**
 		 * Gets the product catalog feed file path.
