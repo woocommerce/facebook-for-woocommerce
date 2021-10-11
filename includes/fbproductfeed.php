@@ -187,27 +187,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		}
 
 
-		/**
-		 * Gets the number of seconds to add as a buffer when estimating the feed file generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return int
-		 */
-		private function get_feed_generation_buffer_time() {
-
-			/**
-			 * Filters the number of seconds to add as a buffer when estimating the feed file generation time.
-			 *
-			 * @since 1.11.0
-			 *
-			 * @param int $time number of seconds to add as a buffer when estimating the feed file generation time
-			 */
-			$buffer_time = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_buffer_time', 30 );
-
-			return max( $buffer_time, 5 );
-		}
-
 
 		/**
 		 * Gets the product catalog feed file path.
