@@ -338,13 +338,13 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 					$woo_product = new WC_Facebook_Product( $wp_id );
 
-					// skip if we don't have a valid product object
+					// Skip if we don't have a valid product object.
 					if ( ! $woo_product->woo_product instanceof \WC_Product ) {
 						continue;
 					}
 
-					// skip if not enabled for sync
-					if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
+					// Skip if not enabled for sync.
+					if ( ! facebook_for_woocommerce()->get_product_sync_validator( $woo_product->woo_product )->passes_all_checks() ) {
 						continue;
 					}
 
