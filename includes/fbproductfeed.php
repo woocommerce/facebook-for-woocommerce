@@ -335,7 +335,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				// Step 1: Prepare the temporary empty feed file with header row.
 				$temp_feed_file = $this->prepare_temporary_feed_file();
 
-				$product_group_attribute_variants = array();
+				// Step 2: Write products feed into the temporary feed file.
+				$this->write_products_feed_to_temp_file( $wp_ids, $temp_feed_file );
 
 				foreach ( $wp_ids as $wp_id ) {
 
@@ -426,6 +427,47 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
 			return $temp_feed_file;
+		}
+
+		/**
+		 * Write products feed into a file.
+		 *
+		 * @since x.x.x
+		 *
+		 * @return void
+		 */
+		public function write_products_feed_to_temp_file( $wp_ids, $temp_feed_file ) {
+			$product_group_attribute_variants = array();
+
+			foreach ( $wp_ids as $wp_id ) {
+
+				$woo_product = new WC_Facebook_Product( $wp_id );
+
+				// Skip if we don't have a valid product object.
+				if ( ! $woo_product->woo_product instanceof \WC_Product ) {
+					continue;
+				}
+
+				// Skip if not enabled for sync.
+				if ( ! facebook_for_woocommerce()->get_product_sync_validator( $woo_product->woo_product )->passes_all_checks() ) {
+					continue;
+				}
+
+				$product_data_as_feed_row = $this->prepare_product_for_feed(
+					$woo_product,
+					$product_group_attribute_variants
+				);
+
+				if ( ! empty( $temp_feed_file ) ) {
+					fwrite( $temp_feed_file, $product_data_as_feed_row );
+				}
+			}
+
+			wp_reset_postdata();
+
+			if ( ! empty( $temp_feed_file ) ) {
+				fclose( $temp_feed_file );
+			}
 		}
 
 		public function get_product_feed_header_row() {
