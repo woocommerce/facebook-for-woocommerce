@@ -91,6 +91,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 				'type'    => array( 'simple', 'variation' ),
 				'include' => $items,
 				'orderby' => 'none',
+				'limit'   => $this->get_batch_size(),
 			)
 		);
 
