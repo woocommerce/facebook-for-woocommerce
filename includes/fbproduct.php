@@ -57,7 +57,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		public function __construct( $wpid, $parent_product = null ) {
 
 			if ( $wpid instanceof WC_Product ) {
-				$this->id   = $wpid->id;
+				$this->id          = $wpid->get_id();
 				$this->woo_product = $wpid;
 			} else {
 				$this->id                     = $wpid;
