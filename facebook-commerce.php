@@ -3278,7 +3278,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return bool
 	 */
 	public function is_new_style_feed_generation_enabled() {
-		return (bool) get_option( self::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR );
+		return (bool) ( 'yes' === get_option( self::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR ) );
 	}
 
 	/**
