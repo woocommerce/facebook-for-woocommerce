@@ -334,10 +334,10 @@ class Connection extends Admin\Abstract_Settings_Screen {
 
 			array(
 				'id'       => \WC_Facebookcommerce_Integration::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR,
-				'title'    => __( 'Enable new style feed generation', 'facebook-for-woocommerce' ),
+				'title'    => __( 'Experimental! Enable new style feed generation', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
 				'desc'     => __( 'Use new, memory improved, feed generation process.', 'facebook-for-woocommerce' ),
-				'desc_tip' => __( 'Experimental feature. Only enable this if you are experiencing problems with feed generation.', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Experimental feature. Only enable this if you are experiencing problems with feed generation. This is an experimental feature in testing phase.', 'facebook-for-woocommerce' ),
 				'default'  => 'no',
 			),
 
