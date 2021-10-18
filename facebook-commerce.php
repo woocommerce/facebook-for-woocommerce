@@ -1556,7 +1556,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 2.1.2
 	 *
 	 * @param \WC_Facebook_Product $woo_product
-	 * @return integer/null Facebook Catalog variation id.
+	 * @return integer|null Facebook Catalog variation id.
 	 */
 	private function get_product_group_default_variation( $woo_product, $fb_product_group_id ) {
 
