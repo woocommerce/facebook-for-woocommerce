@@ -184,15 +184,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
 
-		// schedule the next product resync action
-		if ( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] && 'yes' === $new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] ) {
-
-			$integration = $this->get_plugin()->get_integration();
-
-			if ( ! $integration->is_resync_scheduled() ) {
-				$integration->schedule_resync( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] );
-			}
-		}
 	}
 
 
