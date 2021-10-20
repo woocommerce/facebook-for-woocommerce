@@ -56,15 +56,21 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 		public function __construct( $wpid, $parent_product = null ) {
 
-			$this->id                     = $wpid;
+			if ( $wpid instanceof WC_Product ) {
+				$this->id          = $wpid->get_id();
+				$this->woo_product = $wpid;
+			} else {
+				$this->id                     = $wpid;
+				$this->woo_product            = wc_get_product( $wpid );
+			}
+
 			$this->fb_description         = '';
-			$this->woo_product            = wc_get_product( $wpid );
 			$this->gallery_urls           = null;
 			$this->fb_use_parent_image    = null;
 			$this->main_description       = '';
 			$this->sync_short_description = \WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT === facebook_for_woocommerce()->get_integration()->get_product_description_mode();
 
-			if ( $meta = get_post_meta( $wpid, self::FB_VISIBILITY, true ) ) {
+			if ( $meta = get_post_meta( $this->id, self::FB_VISIBILITY, true ) ) {
 				$this->fb_visibility = wc_string_to_bool( $meta );
 			} else {
 				$this->fb_visibility = '';

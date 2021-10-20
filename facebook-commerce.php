@@ -101,6 +101,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the "debug mode" setting ID */
 	const SETTING_ENABLE_DEBUG_MODE = 'wc_facebook_enable_debug_mode';
 
+	/** @var string the "debug mode" setting ID */
+	const SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR = 'wc_facebook_enable_new_style_feed_generator';
+
 	/** @var string request headers in the debug log */
 	const SETTING_REQUEST_HEADERS_IN_DEBUG_MODE = 'wc_facebook_request_headers_in_debug_log';
 
@@ -3284,6 +3287,17 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
 		return (bool) apply_filters( 'wc_facebook_is_debug_mode_enabled', 'yes' === get_option( self::SETTING_ENABLE_DEBUG_MODE ), $this );
+	}
+
+	/**
+	 * Determines whether debug mode is enabled.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
+	public function is_new_style_feed_generation_enabled() {
+		return (bool) ( 'yes' === get_option( self::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR ) );
 	}
 
 	/**

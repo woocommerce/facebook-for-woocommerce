@@ -23,14 +23,17 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		// Optionally override this method in child class.
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$feed_handler->create_files_to_protect_product_feed_directory();
+		$feed_handler->prepare_temporary_feed_file();
 	}
 
 	/**
 	 * Called after the finishing the job.
 	 */
 	protected function handle_end() {
-		// Optionally override this method in child class.
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$feed_handler->rename_temporary_feed_file_to_final_feed_file();
 	}
 
 	/**
@@ -50,8 +53,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$product_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post.ID
-				FROM wp_posts as post
-				LEFT JOIN wp_posts as parent ON post.post_parent = parent.ID
+				FROM {$wpdb->posts} as post
+				LEFT JOIN {$wpdb->posts} as parent ON post.post_parent = parent.ID
 				WHERE
 					( post.post_type = 'product_variation' AND parent.post_status = 'publish' )
 				OR
@@ -88,17 +91,15 @@ class GenerateProductFeed extends AbstractChainedJob {
 				'type'    => array( 'simple', 'variation' ),
 				'include' => $items,
 				'orderby' => 'none',
+				'limit'   => $this->get_batch_size(),
 			)
 		);
 
-		$processed_items = array();
-
-		foreach ( $products as $product ) {
-			// Check if product is enabled for synchronization.
-			if ( ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks() ) {
-				continue;
-			}
-			$processed_items[] = $this->process_item( $product, $args );
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$temp_feed_file = fopen( $feed_handler->get_temp_file_path(), 'a' );
+		$feed_handler->write_products_feed_to_temp_file( $products, $temp_feed_file );
+		if ( is_resource( $temp_feed_file ) ) {
+			fclose( $temp_feed_file );
 		}
 	}
 

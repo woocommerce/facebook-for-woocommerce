@@ -289,7 +289,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * @since 1.11.0
 		 */
-		private function create_files_to_protect_product_feed_directory() {
+		public function create_files_to_protect_product_feed_directory() {
 
 			$catalog_feed_directory = trailingslashit( $this->get_file_directory() );
 
