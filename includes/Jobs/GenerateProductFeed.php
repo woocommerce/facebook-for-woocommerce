@@ -66,55 +66,47 @@ class GenerateProductFeed extends AbstractChainedJob {
 		return array_map( 'intval', $product_ids );
 	}
 
-	/**
-	 * Filter-like function that runs before items in a batch are processed.
+/**
+	 * Processes a batch of items.
 	 *
-	 * For example, this could be useful for pre-fetching full objects.
+	 * @since 1.1.0
 	 *
-	 * @param array $items
-	 *
-	 * @return array
-	 */
-	protected function filter_items_before_processing( array $items ): array {
-		// Pre-fetch full product objects.
-		// Variable products will be filtered out here since we don't need them for the feed. It's important to not
-		// filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
-		// the job will end prematurely thinking it has nothing more to process.
-		return wc_get_products(
-			[
-				'type'    => [ 'simple', 'variation' ],
-				'include' => $items,
-				'orderby' => 'none',
-			]
-		);
-	}
-
-	/**
-	 * Process a single item.
-	 *
-	 * @param WC_Product $product A single item from the get_items_for_batch() method.
-	 * @param array      $args The args for the job.
+	 * @param array $items The items of the current batch.
+	 * @param array $args  The args for the job.
 	 *
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
-	protected function process_item( $product, array $args ) {
-		try {
-			if ( ! $product ) {
-				throw new Exception( 'Product not found.' );
+	protected function process_items( array $items, array $args ) {
+		/*
+		 * Pre-fetch full product objects.
+		 * Variable products will be filtered out here since we don't need them for the feed. It's important to not
+		 * filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
+		 * the job will end prematurely thinking it has nothing more to process.
+		 */
+		$products = wc_get_products(
+			array(
+				'type'    => array( 'simple', 'variation' ),
+				'include' => $items,
+				'orderby' => 'none',
+			)
+		);
+
+		$processed_items = array();
+
+		foreach ( $products as $product ) {
+			// Check if product is enabled for synchronization.
+			if ( ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks() ) {
+				continue;
 			}
-
-			$this->log( $product->get_id() );
-
-		} catch ( Exception $e ) {
-			$this->log(
-				sprintf(
-					'Error processing item #%d - %s',
-					$product instanceof WC_Product ? $product->get_id() : 0,
-					$e->getMessage()
-				)
-			);
+			$processed_items[] = $this->process_item( $product, $args );
 		}
 	}
+
+	/**
+	 * Empty function to satisfy parent class requirements.
+	 * We don't use it because we are processing the whole batch at once in process_items.
+	 */
+	protected function process_item( $product, $args ) {}
 
 	/**
 	 * Get the name/slug of the job.

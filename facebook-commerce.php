@@ -419,9 +419,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Must be outside of admin for cron to schedule correctly.
 		add_action( 'sync_all_fb_products_using_feed', array( $this, 'handle_scheduled_resync_action' ), self::FB_PRIORITY_MID );
 
-		// Handle the special background feed generation action.
-		add_action( 'wc_facebook_generate_product_catalog_feed', array( $this, 'handle_generate_product_catalog_feed' ) );
-
 		if ( $this->get_facebook_pixel_id() ) {
 			$aam_settings         = $this->load_aam_settings_of_pixel();
 			$user_info            = WC_Facebookcommerce_Utils::get_user_info( $aam_settings );
@@ -3903,26 +3900,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->schedule_resync( $resync_offset );
 		}
 	}
-
-	/**
-	 * Handles the schedule feed generation action, triggered by the REST API.
-	 *
-	 * @since 1.11.0
-	 */
-	public function handle_generate_product_catalog_feed() {
-
-		$feed_handler = new WC_Facebook_Product_Feed();
-
-		try {
-
-			$feed_handler->generate_feed();
-
-		} catch ( \Exception $exception ) {
-
-			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
-		}
-	}
-
 
 	/** Deprecated methods ********************************************************************************************/
 
