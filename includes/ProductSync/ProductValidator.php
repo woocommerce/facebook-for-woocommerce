@@ -353,7 +353,7 @@ class ProductValidator {
 	 */
 	protected function validate_variation_structure() {
 		// Check if we are dealing with a variation.
-		if ( ! $this->product->is_type('variation') ) {
+		if ( ! $this->product->is_type( 'variation' ) ) {
 			return;
 		}
 		$attributes = $this->product->get_attributes();
