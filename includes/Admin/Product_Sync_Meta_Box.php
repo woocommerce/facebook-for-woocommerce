@@ -2,15 +2,14 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) ||	 exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class responsible for display and operations of product sync status metabox.
  *
  * @since x.x.x
- *
  */
-class Product_Sync_Meta_Box{
+class Product_Sync_Meta_Box {
 
 	/**
 	 * Register metabox assets and add the metabox.
@@ -35,7 +34,7 @@ class Product_Sync_Meta_Box{
 
 		add_meta_box(
 			'facebook_metabox',
-			__( 'Facebook Product Sync', 'facebook-for-woocommerce'),
+			__( 'Facebook Product Sync', 'facebook-for-woocommerce' ),
 			__CLASS__ . '::output',
 			'product',
 			'side'
@@ -144,5 +143,4 @@ class Product_Sync_Meta_Box{
 			</span>
 		<?php
 	}
-
 }
