@@ -136,6 +136,13 @@ class Tracker {
 		 */
 		$data['extensions']['facebook-for-woocommerce']['product-feed-config'] = get_transient( self::TRANSIENT_WCTRACKER_FB_FEED_CONFIG );
 
+		/**
+		 * Detect if the user has enabled the new experimental feed generator feature.
+		 *
+		 * @since x.x.x
+		 */
+		$data['extensions']['facebook-for-woocommerce']['new-feed-generator-enabled'] = wc_bool_to_string( facebook_for_woocommerce()->get_integration()->is_new_style_feed_generation_enabled() );
+
 		return $data;
 	}
 
