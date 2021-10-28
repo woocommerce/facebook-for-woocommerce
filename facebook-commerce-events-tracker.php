@@ -130,6 +130,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
+			// Checkout update order meta from the Checkout Block.
+			add_action( '__experimental_woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ) );
+
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
 		}
@@ -935,6 +938,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// mark the order as tracked
 			$order->update_meta_data( $purchase_tracked_meta, 'yes' );
+			$order->save_meta_data();
+		}
+
+		/**
+		 * Inject order meta gor WooCommerce Blocks flow.
+		 *
+		 * @internal
+		 *
+		 *  @param WC_Order $order Order object.
+		 */
+		public function inject_order_meta_event_for_checkout_block_flow( $order ) {
+
+			$event_name = 'Purchase';
+
+			if ( ! $this->is_pixel_enabled() || $this->pixel->is_last_event( $event_name ) ) {
+				return;
+			}
+
+			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+			$order->update_meta_data( $order_placed_meta, 'yes' );
 			$order->save_meta_data();
 		}
 
