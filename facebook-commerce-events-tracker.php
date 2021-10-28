@@ -981,26 +981,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 
-		/**
-		 * Triggers a Purchase event.
-		 *
-		 * Duplicate of {@see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()}
-		 *
-		 * TODO remove this deprecated method by version 2.0.0 or by March 2020 {FN 2020-03-20}
-		 *
-		 * @internal
-		 * @deprecated since 1.11.0
-		 *
-		 * @param int $order_id order identifier
-		 */
-		public function inject_gateway_purchase_event( $order_id ) {
-
-			wc_deprecated_function( __METHOD__, '1.11.0', __CLASS__ . '::inject_purchase_event()' );
-
-			$this->inject_purchase_event( $order_id );
-		}
-
-
 		/** Contact Form 7 Support **/
 		public function inject_lead_event_hook() {
 			add_action( 'wp_footer', array( $this, 'inject_lead_event' ), 11 );
