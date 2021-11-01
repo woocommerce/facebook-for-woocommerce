@@ -104,7 +104,6 @@ class ProductValidator {
 		$this->validate_product_terms();
 		$this->validate_product_description();
 		$this->validate_product_title();
-		$this->validate_variation_structure();
 	}
 
 	/**
@@ -123,7 +122,6 @@ class ProductValidator {
 		$this->validate_product_terms();
 		$this->validate_product_description();
 		$this->validate_product_title();
-		$this->validate_variation_structure();
 	}
 
 	/**
