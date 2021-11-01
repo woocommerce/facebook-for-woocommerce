@@ -942,9 +942,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		}
 
 		/**
-		 * Inject order meta gor WooCommerce Blocks flow.
+		 * Inject order meta gor WooCommerce Checkout Blocks flow.
+		 * The blocks flow does not trigger the woocommerce_checkout_update_order_meta so we can't rely on it.
+		 * The Checkout Block has its own ( so far ) experimental hook that allows us to inject the meta at
+		 * the appropriate moment: __experimental_woocommerce_blocks_checkout_update_order_meta.
 		 *
-		 * @internal
+		 *  @since x.x.x
 		 *
 		 *  @param WC_Order $order Order object.
 		 */
