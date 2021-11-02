@@ -26,6 +26,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$feed_handler = new \WC_Facebook_Product_Feed();
 		$feed_handler->create_files_to_protect_product_feed_directory();
 		$feed_handler->prepare_temporary_feed_file();
+		facebook_for_woocommerce()->get_tracker()->reset_batch_generation_time();
 	}
 
 	/**
@@ -34,6 +35,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	protected function handle_end() {
 		$feed_handler = new \WC_Facebook_Product_Feed();
 		$feed_handler->rename_temporary_feed_file_to_final_feed_file();
+		facebook_for_woocommerce()->get_tracker()->save_batch_generation_time();
 	}
 
 	/**
@@ -80,6 +82,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
 	protected function process_items( array $items, array $args ) {
+		// Grab start time.
+		$start_time = microtime( true );
 		/*
 		 * Pre-fetch full product objects.
 		 * Variable products will be filtered out here since we don't need them for the feed. It's important to not
@@ -94,13 +98,13 @@ class GenerateProductFeed extends AbstractChainedJob {
 				'limit'   => $this->get_batch_size(),
 			)
 		);
-
 		$feed_handler = new \WC_Facebook_Product_Feed();
 		$temp_feed_file = fopen( $feed_handler->get_temp_file_path(), 'a' );
 		$feed_handler->write_products_feed_to_temp_file( $products, $temp_feed_file );
 		if ( is_resource( $temp_feed_file ) ) {
 			fclose( $temp_feed_file );
 		}
+		facebook_for_woocommerce()->get_tracker()->increment_batch_generation_time( microtime( true ) - $start_time );
 	}
 
 	/**
