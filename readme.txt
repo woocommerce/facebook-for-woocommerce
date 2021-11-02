@@ -39,6 +39,16 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.6 - 2021-xx-xx =
+* New - Memory improved feed generation process. #2099
+* New - Add compatibility with the WooCommerce checkout block. #2095
+* New - Track batched feed generation time in the tracker snapshots. #2104
+* New - Track usage of the new style feed generator in the tracker snapshots. #2103
+* New - Hide headers in logs for better visibility. #2093
+* Dev - Update composer dependencies. #2090
+* New - Add no synchronization reason to the product edit screen in the Facebook meta box. #1937
+* Fix - Use published variations only for the default variation. #2091
+
 = 2.6.5 - 2021-09-16 =
 * Fix - Incorrect `is_readable()` usage when loading Integration classes.
 * Tweak - WC 5.7 compatibility.
