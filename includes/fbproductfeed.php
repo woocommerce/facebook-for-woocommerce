@@ -368,7 +368,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Prepare a fresh empty temporary feed file with the header row.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.6
 		 *
 		 * @throws Framework\SV_WC_Plugin_Exception We can't open the file or the file is not writable.
 		 * @return resource A file pointer resource.
@@ -396,7 +396,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		/**
 		 * Write products feed into a file.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.6
 		 *
 		 * @return void
 		 */
@@ -438,7 +438,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * Rename temporary feed file into the final feed file.
 		 * This is the last step fo the feed generation procedure.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.6
 		 *
 		 * @return void
 		 */

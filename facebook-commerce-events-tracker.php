@@ -947,7 +947,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * The Checkout Block has its own ( so far ) experimental hook that allows us to inject the meta at
 		 * the appropriate moment: __experimental_woocommerce_blocks_checkout_update_order_meta.
 		 *
-		 *  @since x.x.x
+		 *  @since 2.6.6
 		 *
 		 *  @param WC_Order $order Order object.
 		 */
