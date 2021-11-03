@@ -135,7 +135,7 @@ class Tracker {
 		/**
 		 * How long did the last feed generation take in wall time. This is the whole duration. Batches plus time in between.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.6
 		 */
 		if ( facebook_for_woocommerce()->get_integration()->is_new_style_feed_generation_enabled() ) {
 			$feed_generation_batch_wall_time = intval( get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_WALL_TIME ) );
@@ -174,7 +174,7 @@ class Tracker {
 		/**
 		 * Detect if the user has enabled the new experimental feed generator feature.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.6
 		 */
 		$data['extensions']['facebook-for-woocommerce']['new-feed-generator-enabled'] = wc_bool_to_string( facebook_for_woocommerce()->get_integration()->is_new_style_feed_generation_enabled() );
 
@@ -196,7 +196,7 @@ class Tracker {
 	/**
 	 * Reset  the feed generation in batch time counter.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 */
 	public function reset_batch_generation_time() {
 		// Reset the main counter.
@@ -211,7 +211,7 @@ class Tracker {
 	 * This accumulates time over all of the calculated feed batches.
 	 *
 	 * @param float $time_in_seconds Time to add to the generation time(in seconds).
-	 * @since x.x.x
+	 * @since 2.6.6
 	 */
 	public function increment_batch_generation_time( $time_in_seconds ) {
 		$tracked_generation_time = floatval( get_transient( self::TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_TIME ) );
@@ -229,7 +229,7 @@ class Tracker {
 	 * The accumulated time value is copied to the main transient
 	 * that is later used by the tracking code to track feed generation time.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 */
 	public function save_batch_generation_time() {
 		$this->track_feed_file_generation_time(

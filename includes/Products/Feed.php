@@ -143,7 +143,7 @@ class Feed {
 	 * @internal
 	 *
 	 * @since 1.11.0
-	 * @since x.x.x Enable new feed generation code if requested.
+	 * @since 2.6.6 Enable new feed generation code if requested.
 	 */
 	public function regenerate_feed() {
 		// Maybe use new ( experimental ), feed generation framework.

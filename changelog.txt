@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2021-xx-xx - version 2.6.6
+2021-11-03 - version 2.6.6
 * New - Memory improved feed generation process. #2099
 * New - Add compatibility with the WooCommerce checkout block. #2095
 * New - Track batched feed generation time in the tracker snapshots. #2104

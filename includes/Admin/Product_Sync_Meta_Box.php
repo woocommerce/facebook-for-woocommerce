@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class responsible for display and operations of product sync status metabox.
  *
- * @since x.x.x
+ * @since 2.6.6
  */
 class Product_Sync_Meta_Box {
 
@@ -44,7 +44,7 @@ class Product_Sync_Meta_Box {
 	/**
 	 * Renders the content of the product meta box.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 */
 	public static function output() {
 		global $post;

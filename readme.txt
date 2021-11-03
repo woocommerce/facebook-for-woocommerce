@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.8
-Stable tag: 2.6.5
+Stable tag: 2.6.6
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.6 - 2021-xx-xx =
+= 2.6.6 - 2021-11-03 =
 * New - Memory improved feed generation process. #2099
 * New - Add compatibility with the WooCommerce checkout block. #2095
 * New - Track batched feed generation time in the tracker snapshots. #2104

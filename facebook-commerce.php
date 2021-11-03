@@ -1457,7 +1457,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Determines if there is a matching variation for the default attributes.
 	 * Select closest matching if best can't be found.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 * The algorithm only considers the variations that already have been synchronized to the catalog successfully.
 	 *
 	 * @since 2.1.2
@@ -3196,7 +3196,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether debug mode is enabled.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 *
 	 * @return bool
 	 */
@@ -3209,7 +3209,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * For a typical troubleshooting session the request headers bring zero value except making the log unreadable.
 	 * They will be disabled by default. Enabling them will require setting an option in the options table.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.6
 	 *
 	 */
 	public function are_headers_requested_for_debug() {
