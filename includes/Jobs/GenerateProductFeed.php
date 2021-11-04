@@ -111,7 +111,7 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Empty function to satisfy parent class requirements.
 	 * We don't use it because we are processing the whole batch at once in process_items.
 	 */
-	protected function process_item( $product, $args ) {}
+	protected function process_item( $item, array $args ) {}
 
 	/**
 	 * Get the name/slug of the job.
