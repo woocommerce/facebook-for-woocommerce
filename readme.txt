@@ -37,7 +37,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Your website URL
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
-== Changelog ==
+== Changelog =
+
+= 2.6.7 - 2021-xx-xx = 
+* Fix - Parameter overloading error for PHP70 #2112
 
 = 2.6.6 - 2021-11-03 =
 * New - Memory improved feed generation process. #2099
