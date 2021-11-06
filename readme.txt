@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.8
-Stable tag: 2.6.6
+Stable tag: 2.6.7
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -37,7 +37,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Your website URL
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
-== Changelog ==
+== Changelog =
+
+= 2.6.7 - 2021-11-04 =
+* Fix - Parameter overloading error for PHP70 #2112
 
 = 2.6.6 - 2021-11-03 =
 * New - Memory improved feed generation process. #2099
