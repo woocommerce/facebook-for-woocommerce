@@ -350,6 +350,10 @@ class Sync {
 		// Removes the Product Set if it doesn't have products.
 		if ( empty( $product_ids ) ) {
 			$fb_product_set_id = get_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
+			if ( empty( $fb_product_set_id ) ) {
+				// Without FB Product Set Id there is nothing to delete.
+				return;
+			}
 			update_term_meta( $product_set_id, \WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
 			do_action( 'fb_wc_product_set_delete', $fb_product_set_id );
 			return;
