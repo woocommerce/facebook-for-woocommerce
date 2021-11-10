@@ -128,6 +128,8 @@ class Sync {
 		// product cat and product set delete hooks, remove or check if must remove any product set
 		add_action( 'pre_delete_term', array( $this, 'sync_remove_product_set' ), 1, 2 );
 		add_action( 'delete_product_cat', array( $this, 'maybe_sync_product_set_on_product_cat_remove' ), 99 );
+
+		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
 	}
 
 
@@ -443,6 +445,69 @@ class Sync {
 		$added   = array_diff( $new, $prev );
 
 		return array_merge( $removed, $added );
+	}
+
+		/**
+	 * Create or update product set
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param array $product_set_data Product Set data.
+	 * @param int   $product_set_id   Product Set Term Id.
+	 **/
+	public function create_or_update_product_set_item( $product_set_data, $product_set_id ) {
+		$fb_integration = facebook_for_woocommerce()->get_integration();
+		// check if exists in FB
+		$fb_product_set_id = get_term_meta( $product_set_id, $fb_integration::FB_PRODUCT_SET_ID, true );
+
+		// set data and execute API call
+		$method = empty( $fb_product_set_id ) ? 'create' : 'update';
+		$id     = empty( $fb_product_set_id ) ? $fb_integration->get_product_catalog_id() : $fb_product_set_id;
+
+		$result = call_user_func_array(
+			array(
+				$fb_integration->get_graph_api(),
+				$method . '_product_set_item',
+			),
+			array(
+				$id,
+				$product_set_data,
+			)
+		);
+
+		// If we have 400 check if this is not internal code 10803 which means that we already have a set with the same filter.
+		if ( wp_doing_ajax() && $result['response']['code'] === 400 ) {
+			$error = json_decode( $result['body'] )->error;
+			$code = $error->code;
+			if ( $code == 10803 ) {
+				remove_action( 'pre_delete_term', array( $this, 'sync_remove_product_set' ), 1, 2 );
+				wp_delete_term( $product_set_id, 'fb_product_set' );
+				$message = $error->message;
+				$x = new \WP_Ajax_Response();
+					$x->add(
+						array(
+							'what' => 'taxonomy',
+							'data' => new \WP_Error( 'error', $message ),
+						)
+					);
+					$x->send();
+			}
+		}
+		$result = $fb_integration->check_api_result( $result );
+
+		// update product set to set FB Product Set ID
+		if ( $result && empty( $fb_product_set_id ) ) {
+
+			// decode and get ID from result body
+			$decode_result     = \WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+			$fb_product_set_id = $decode_result->id;
+
+			update_term_meta(
+				$product_set_id,
+				$fb_integration::FB_PRODUCT_SET_ID,
+				$fb_product_set_id
+			);
+		}
 	}
 
 
