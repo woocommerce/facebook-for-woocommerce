@@ -128,7 +128,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
 			add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
-			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
@@ -155,6 +154,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->sync_background_handler   = new \SkyVerge\WooCommerce\Facebook\Products\Sync\Background();
 				$this->configuration_detection   = new \SkyVerge\WooCommerce\Facebook\Feed\FeedConfigurationDetection();
 				$this->product_sets_sync_handler = new \SkyVerge\WooCommerce\Facebook\ProductSets\Sync();
+				$this->product_sets_admin_edit   = new SkyVerge\WooCommerce\Facebook\ProductSets\SetsEdit();
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
 
@@ -510,22 +510,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			unset( $actions['view'] );
 			return $actions;
 		}
-
-
-		/**
-		 * Remove posts count column from FB Product Set custom taxonomy
-		 *
-		 * @since 2.3.0
-		 *
-		 * @param array $columns Taxonomy columns.
-		 *
-		 * @return array
-		 */
-		public function manage_fb_product_set_columns( $columns ) {
-			unset( $columns['posts'] );
-			return $columns;
-		}
-
 
 		/**
 		 * Filter WC Breadcrumbs when the page is FB Product Sets
