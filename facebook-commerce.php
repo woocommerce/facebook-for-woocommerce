@@ -1804,7 +1804,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	function display_error_message_from_result( $result ) {
 		$error = json_decode( $result['body'] )->error;
-		$msg   = ( 'Fatal' === $error->message && ! empty( $error->error_user_title ) ) ? $error->error_user_title : $error_message;
+		$msg   = ( 'Fatal' === $error->message && ! empty( $error->error_user_title ) ) ? $error->error_user_title : $error->message;
 		$this->display_error_message( $msg );
 	}
 
