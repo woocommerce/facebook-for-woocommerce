@@ -130,6 +130,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
+			// Checkout update order meta from the Checkout Block.
+			add_action( '__experimental_woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ) );
+
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
 		}
@@ -508,6 +511,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			} else {
 				$content_type = 'product';
 			}
+			
+			if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
+                            $product_price = $product->get_variation_price( 'min' );
+                        } else {
+                            $product_price = $product->get_price();
+                        }
 
 			$categories = \WC_Facebookcommerce_Utils::get_product_categories( $product->get_id() );
 
@@ -526,7 +535,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						)
 					),
 					'content_category' => $categories['name'],
-					'value'            => $product->get_price(),
+					'value'            => $product_price,
 					'currency'         => get_woocommerce_currency(),
 				),
 				'user_data'   => $this->pixel->get_user_info(),
@@ -938,6 +947,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$order->save_meta_data();
 		}
 
+		/**
+		 * Inject order meta gor WooCommerce Checkout Blocks flow.
+		 * The blocks flow does not trigger the woocommerce_checkout_update_order_meta so we can't rely on it.
+		 * The Checkout Block has its own ( so far ) experimental hook that allows us to inject the meta at
+		 * the appropriate moment: __experimental_woocommerce_blocks_checkout_update_order_meta.
+		 *
+		 *  @since 2.6.6
+		 *
+		 *  @param WC_Order $order Order object.
+		 */
+		public function inject_order_meta_event_for_checkout_block_flow( $order ) {
+
+			$event_name = 'Purchase';
+
+			if ( ! $this->is_pixel_enabled() || $this->pixel->is_last_event( $event_name ) ) {
+				return;
+			}
+
+			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+			$order->update_meta_data( $order_placed_meta, 'yes' );
+			$order->save_meta_data();
+		}
+
 
 		/**
 		 * Triggers a Subscribe event when a given order contains subscription products.
@@ -978,26 +1010,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$this->pixel->inject_event( $event_name, $event_data );
 			}
-		}
-
-
-		/**
-		 * Triggers a Purchase event.
-		 *
-		 * Duplicate of {@see \WC_Facebookcommerce_EventsTracker::inject_purchase_event()}
-		 *
-		 * TODO remove this deprecated method by version 2.0.0 or by March 2020 {FN 2020-03-20}
-		 *
-		 * @internal
-		 * @deprecated since 1.11.0
-		 *
-		 * @param int $order_id order identifier
-		 */
-		public function inject_gateway_purchase_event( $order_id ) {
-
-			wc_deprecated_function( __METHOD__, '1.11.0', __CLASS__ . '::inject_purchase_event()' );
-
-			$this->inject_purchase_event( $order_id );
 		}
 
 

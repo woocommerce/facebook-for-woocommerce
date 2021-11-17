@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.8
-Stable tag: 2.6.5
+Stable tag: 2.6.7
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -37,7 +37,20 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Your website URL
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
-== Changelog ==
+== Changelog =
+
+= 2.6.7 - 2021-11-04 =
+* Fix - Parameter overloading error for PHP70 #2112
+
+= 2.6.6 - 2021-11-03 =
+* New - Memory improved feed generation process. #2099
+* New - Add compatibility with the WooCommerce checkout block. #2095
+* New - Track batched feed generation time in the tracker snapshots. #2104
+* New - Track usage of the new style feed generator in the tracker snapshots. #2103
+* New - Hide headers in logs for better visibility. #2093
+* Dev - Update composer dependencies. #2090
+* New - Add no synchronization reason to the product edit screen in the Facebook meta box. #1937
+* Fix - Use published variations only for the default variation. #2091
 
 = 2.6.5 - 2021-09-16 =
 * Fix - Incorrect `is_readable()` usage when loading Integration classes.

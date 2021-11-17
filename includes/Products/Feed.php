@@ -143,14 +143,18 @@ class Feed {
 	 * @internal
 	 *
 	 * @since 1.11.0
+	 * @since 2.6.6 Enable new feed generation code if requested.
 	 */
 	public function regenerate_feed() {
-
-		$feed_handler = new \WC_Facebook_Product_Feed();
-
-		$feed_handler->generate_feed();
+		// Maybe use new ( experimental ), feed generation framework.
+		if ( facebook_for_woocommerce()->get_integration()->is_new_style_feed_generation_enabled() ) {
+			$generate_feed_job = facebook_for_woocommerce()->job_registry->generate_product_feed_job;
+			$generate_feed_job->queue_start();
+		} else {
+			$feed_handler = new \WC_Facebook_Product_Feed();
+			$feed_handler->generate_feed();
+		}
 	}
-
 
 	/**
 	 * Schedules the recurring feed generation.

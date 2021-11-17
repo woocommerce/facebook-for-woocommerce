@@ -23,14 +23,19 @@ class GenerateProductFeed extends AbstractChainedJob {
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		// Optionally override this method in child class.
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$feed_handler->create_files_to_protect_product_feed_directory();
+		$feed_handler->prepare_temporary_feed_file();
+		facebook_for_woocommerce()->get_tracker()->reset_batch_generation_time();
 	}
 
 	/**
 	 * Called after the finishing the job.
 	 */
 	protected function handle_end() {
-		// Optionally override this method in child class.
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$feed_handler->rename_temporary_feed_file_to_final_feed_file();
+		facebook_for_woocommerce()->get_tracker()->save_batch_generation_time();
 	}
 
 	/**
@@ -50,8 +55,8 @@ class GenerateProductFeed extends AbstractChainedJob {
 		$product_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post.ID
-				FROM wp_posts as post
-				LEFT JOIN wp_posts as parent ON post.post_parent = parent.ID
+				FROM {$wpdb->posts} as post
+				LEFT JOIN {$wpdb->posts} as parent ON post.post_parent = parent.ID
 				WHERE
 					( post.post_type = 'product_variation' AND parent.post_status = 'publish' )
 				OR
@@ -66,55 +71,47 @@ class GenerateProductFeed extends AbstractChainedJob {
 		return array_map( 'intval', $product_ids );
 	}
 
-	/**
-	 * Filter-like function that runs before items in a batch are processed.
+/**
+	 * Processes a batch of items.
 	 *
-	 * For example, this could be useful for pre-fetching full objects.
+	 * @since 1.1.0
 	 *
-	 * @param array $items
-	 *
-	 * @return array
-	 */
-	protected function filter_items_before_processing( array $items ): array {
-		// Pre-fetch full product objects.
-		// Variable products will be filtered out here since we don't need them for the feed. It's important to not
-		// filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
-		// the job will end prematurely thinking it has nothing more to process.
-		return wc_get_products(
-			[
-				'type'    => [ 'simple', 'variation' ],
-				'include' => $items,
-				'orderby' => 'none',
-			]
-		);
-	}
-
-	/**
-	 * Process a single item.
-	 *
-	 * @param WC_Product $product A single item from the get_items_for_batch() method.
-	 * @param array      $args The args for the job.
+	 * @param array $items The items of the current batch.
+	 * @param array $args  The args for the job.
 	 *
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
-	protected function process_item( $product, array $args ) {
-		try {
-			if ( ! $product ) {
-				throw new Exception( 'Product not found.' );
-			}
-
-			$this->log( $product->get_id() );
-
-		} catch ( Exception $e ) {
-			$this->log(
-				sprintf(
-					'Error processing item #%d - %s',
-					$product instanceof WC_Product ? $product->get_id() : 0,
-					$e->getMessage()
-				)
-			);
+	protected function process_items( array $items, array $args ) {
+		// Grab start time.
+		$start_time = microtime( true );
+		/*
+		 * Pre-fetch full product objects.
+		 * Variable products will be filtered out here since we don't need them for the feed. It's important to not
+		 * filter out variable products in ::get_items_for_batch() because if a batch only contains variable products
+		 * the job will end prematurely thinking it has nothing more to process.
+		 */
+		$products = wc_get_products(
+			array(
+				'type'    => array( 'simple', 'variation' ),
+				'include' => $items,
+				'orderby' => 'none',
+				'limit'   => $this->get_batch_size(),
+			)
+		);
+		$feed_handler = new \WC_Facebook_Product_Feed();
+		$temp_feed_file = fopen( $feed_handler->get_temp_file_path(), 'a' );
+		$feed_handler->write_products_feed_to_temp_file( $products, $temp_feed_file );
+		if ( is_resource( $temp_feed_file ) ) {
+			fclose( $temp_feed_file );
 		}
+		facebook_for_woocommerce()->get_tracker()->increment_batch_generation_time( microtime( true ) - $start_time );
 	}
+
+	/**
+	 * Empty function to satisfy parent class requirements.
+	 * We don't use it because we are processing the whole batch at once in process_items.
+	 */
+	protected function process_item( $item, array $args ) {}
 
 	/**
 	 * Get the name/slug of the job.

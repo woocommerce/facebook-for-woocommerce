@@ -78,7 +78,7 @@ class FeedConfigurationDetection {
 		 * If one has the same ID as $integration_feed_id, we use that.
 		 * Otherwise we pick the one that was most recently updated.
 		 */
-		$active_feed_metadata = null;
+		$active_feed_metadata = array();
 		foreach ( $feed_nodes as $feed ) {
 			$metadata = $this->get_feed_metadata( $feed['id'], $graph_api );
 
@@ -97,8 +97,20 @@ class FeedConfigurationDetection {
 			}
 		}
 
-		$active_feed['created-time']  = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
-		$active_feed['product-count'] = $active_feed_metadata['product_count'];
+		if ( empty( $active_feed_metadata ) ) {
+			// No active feed available, we don't have data to collect.
+			$info['active-feed'] = null;
+			return $info;
+		}
+
+		$active_feed = array();
+		if ( array_key_exists( 'created_time', $active_feed_metadata ) ) {
+			$active_feed['created-time'] = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
+		}
+
+		if ( array_key_exists( 'product_count', $active_feed_metadata ) ) {
+			$active_feed['product-count'] = $active_feed_metadata['product_count'];
+		}
 
 		/*
 		 * Upload schedule settings can be in two keys:
@@ -118,9 +130,9 @@ class FeedConfigurationDetection {
 
 		$info['active-feed'] = $active_feed;
 
-		$latest_upload = $active_feed_metadata['latest_upload'];
 		if ( array_key_exists( 'latest_upload', $active_feed_metadata ) ) {
-			$upload = array();
+			$latest_upload = $active_feed_metadata['latest_upload'];
+			$upload        = array();
 
 			if ( array_key_exists( 'end_time', $latest_upload ) ) {
 				$upload['end-time'] = gmdate( 'Y-m-d H:i:s', strtotime( $latest_upload['end_time'] ) );

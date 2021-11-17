@@ -25,16 +25,9 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 	class WC_Facebook_Product_Feed {
 
 
-		/** @var string transient name for storing the average feed generation time */
-		const TRANSIENT_AVERAGE_FEED_GENERATION_TIME = 'wc_facebook_average_feed_generation_time';
-
 		/** @var string product catalog feed file directory inside the uploads folder */
-		const UPLOADS_DIRECTORY = 'facebook_for_woocommerce';
-
-		/** @var string product catalog feed file name - %s will be replaced with a hash */
-		const FILE_NAME = 'product_catalog_%s.csv';
-
-
+		const UPLOADS_DIRECTORY              = 'facebook_for_woocommerce';
+		const FILE_NAME                      = 'product_catalog_%s.csv';
 		const FACEBOOK_CATALOG_FEED_FILENAME = 'fae_product_catalog.csv';
 		const FB_ADDITIONAL_IMAGES_FOR_FEED  = 5;
 		const FEED_NAME                      = 'Initial product sync from WooCommerce. DO NOT DELETE.';
@@ -58,30 +51,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$this->feed_id             = $feed_id;
 		}
 
-
-		/**
-		 * Schedules a new feed generation.
-		 *
-		 * @since 1.11.0
-		 */
-		public function schedule_feed_generation() {
-
-			// don't schedule another if one's already scheduled or in progress
-			if ( false !== as_next_scheduled_action( 'wc_facebook_generate_product_catalog_feed', array(), 'facebook-for-woocommerce' ) ) {
-				return;
-			}
-
-			\WC_Facebookcommerce_Utils::log( 'Scheduling product catalog feed file generation' );
-
-			// if async priority actions are supported (AS 3.0+)
-			if ( function_exists( 'as_enqueue_async_action' ) ) {
-				as_enqueue_async_action( 'wc_facebook_generate_product_catalog_feed', array(), 'facebook-for-woocommerce' );
-			} else {
-				as_schedule_single_action( time(), 'wc_facebook_generate_product_catalog_feed', array(), 'facebook-for-woocommerce' );
-			}
-		}
-
-
 		/**
 		 * Generates the product catalog feed.
 		 *
@@ -104,8 +73,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$generation_time = microtime( true ) - $start_time;
 				facebook_for_woocommerce()->get_tracker()->track_feed_file_generation_time( $generation_time );
 
-				$this->set_feed_generation_time_with_decay( $generation_time );
-
 				\WC_Facebookcommerce_Utils::log( 'Product feed file generated' );
 
 			} catch ( \Exception $exception ) {
@@ -118,165 +85,6 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 
 			$profiling_logger->stop( 'generate_feed' );
 		}
-
-
-		/**
-		 * Sets the average feed generation time with a 25% decay.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @param float $generation_time last generation time
-		 */
-		private function set_feed_generation_time_with_decay( $generation_time ) {
-
-			// update feed generation time estimate w/ 25% decay.
-			$existing_generation_time = $this->get_average_feed_generation_time();
-
-			if ( $generation_time < $existing_generation_time ) {
-				$generation_time = $generation_time * 0.25 + $existing_generation_time * 0.75;
-			}
-
-			$this->set_average_feed_generation_time( $generation_time );
-		}
-
-
-		/**
-		 * Sets the average feed generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @param float $time generation time
-		 */
-		private function set_average_feed_generation_time( $time ) {
-
-			set_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME, $time );
-		}
-
-
-		/**
-		 * Gets the estimated feed generation time.
-		 *
-		 * Performs a dry run and returns either the dry run time or last average estimated time, whichever is higher.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return int
-		 */
-		public function get_estimated_feed_generation_time() {
-
-			$estimate = $this->estimate_generation_time();
-			$average  = $this->get_average_feed_generation_time();
-
-			return (int) max( $estimate, $average );
-		}
-
-
-		/**
-		 * Estimates the feed generation time.
-		 *
-		 * Runs a dry-run generation of a subset of products, then extrapolates that out to the full catalog size. Also
-		 * adds a bit of buffer time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return float
-		 */
-		private function estimate_generation_time() {
-
-			$product_ids    = $this->get_product_ids();
-			$total_products = count( $product_ids );
-			$sample_size    = $this->get_feed_generation_estimate_sample_size();
-			$buffer_time    = $this->get_feed_generation_buffer_time();
-
-			if ( $total_products > 0 ) {
-
-				if ( $total_products < $sample_size ) {
-
-					$sample_size = $total_products;
-
-				} else {
-
-					$product_ids = array_slice( $product_ids, 0, $sample_size );
-				}
-
-				$start_time = microtime( true );
-
-				$this->write_product_feed_file( $product_ids, true );
-
-				$end_time = microtime( true );
-
-				$time_spent = $end_time - $start_time;
-
-				// estimated Time = 150% of Linear extrapolation of the time to generate n products +  buffer time.
-				$time_estimate = $time_spent * $total_products / $sample_size * 1.5 + $buffer_time;
-
-			} else {
-
-				$time_estimate = $buffer_time;
-			}
-
-			WC_Facebookcommerce_Utils::log( 'Feed Generation Time Estimate: ' . $time_estimate );
-
-			return $time_estimate;
-		}
-
-
-		/**
-		 * Gets the average feed generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return float
-		 */
-		private function get_average_feed_generation_time() {
-
-			return get_transient( self::TRANSIENT_AVERAGE_FEED_GENERATION_TIME );
-		}
-
-
-		/**
-		 * Gets the number of products to use when estimating the feed file generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return int
-		 */
-		private function get_feed_generation_estimate_sample_size() {
-
-			/**
-			 * Filters the number of products to use when estimating the feed file generation time.
-			 *
-			 * @since 1.11.0
-			 *
-			 * @param int $sample_size number of products to use when estimating the feed file generation time
-			 */
-			$sample_size = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_estimate_sample_size', 200 );
-
-			return max( $sample_size, 100 );
-		}
-
-
-		/**
-		 * Gets the number of seconds to add as a buffer when estimating the feed file generation time.
-		 *
-		 * @since 1.11.0
-		 *
-		 * @return int
-		 */
-		private function get_feed_generation_buffer_time() {
-
-			/**
-			 * Filters the number of seconds to add as a buffer when estimating the feed file generation time.
-			 *
-			 * @since 1.11.0
-			 *
-			 * @param int $time number of seconds to add as a buffer when estimating the feed file generation time
-			 */
-			$buffer_time = (int) apply_filters( 'wc_facebook_product_catalog_feed_generation_buffer_time', 30 );
-
-			return max( $buffer_time, 5 );
-		}
-
 
 		/**
 		 * Gets the product catalog feed file path.
@@ -481,7 +289,7 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 *
 		 * @since 1.11.0
 		 */
-		private function create_files_to_protect_product_feed_directory() {
+		public function create_files_to_protect_product_feed_directory() {
 
 			$catalog_feed_directory = trailingslashit( $this->get_file_directory() );
 
@@ -518,73 +326,20 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 		 * @since 1.11.0
 		 *
 		 * @param int[] $wp_ids product IDs
-		 * @param bool  $is_dry_run whether this is a dry run or the file should be written
 		 * @return bool
 		 */
-		public function write_product_feed_file( $wp_ids, $is_dry_run = false ) {
+		public function write_product_feed_file( $wp_ids ) {
 
 			try {
 
-				if ( ! $is_dry_run ) {
+				// Step 1: Prepare the temporary empty feed file with header row.
+				$temp_feed_file = $this->prepare_temporary_feed_file();
 
-					$temp_file_path = $this->get_temp_file_path();
-					$temp_feed_file = @fopen( $temp_file_path, 'w' );
+				// Step 2: Write products feed into the temporary feed file.
+				$this->write_products_feed_to_temp_file( $wp_ids, $temp_feed_file );
 
-					// check if we can open the temporary feed file
-					if ( false === $temp_feed_file || ! is_writable( $temp_file_path ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog temporary feed file for writing', 'facebook-for-woocommerce' ), 500 );
-					}
-
-					$file_path = $this->get_file_path();
-
-					// check if we will be able to write to the final feed file
-					if ( file_exists( $file_path ) && ! is_writable( $file_path ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
-					}
-
-					fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
-				}
-
-				$product_group_attribute_variants = array();
-
-				foreach ( $wp_ids as $wp_id ) {
-
-					$woo_product = new WC_Facebook_Product( $wp_id );
-
-					// skip if we don't have a valid product object
-					if ( ! $woo_product->woo_product instanceof \WC_Product ) {
-						continue;
-					}
-
-					// skip if not enabled for sync
-					if ( ! Products::product_should_be_synced( $woo_product->woo_product ) ) {
-						continue;
-					}
-
-					$product_data_as_feed_row = $this->prepare_product_for_feed(
-						$woo_product,
-						$product_group_attribute_variants
-					);
-
-					if ( ! empty( $temp_feed_file ) ) {
-						fwrite( $temp_feed_file, $product_data_as_feed_row );
-					}
-				}
-
-				wp_reset_postdata();
-
-				if ( ! empty( $temp_feed_file ) ) {
-					fclose( $temp_feed_file );
-				}
-
-				if ( ! empty( $temp_file_path ) && ! empty( $file_path ) && ! empty( $temp_feed_file ) ) {
-
-					$renamed = rename( $temp_file_path, $file_path );
-
-					if ( empty( $renamed ) ) {
-						throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
-					}
-				}
+				// Step 3: Rename temporary feed file to final feed file.
+				$this->rename_temporary_feed_file_to_final_feed_file();
 
 				$written = true;
 
@@ -608,6 +363,96 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			}
 
 			return $written;
+		}
+
+		/**
+		 * Prepare a fresh empty temporary feed file with the header row.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @throws Framework\SV_WC_Plugin_Exception We can't open the file or the file is not writable.
+		 * @return resource A file pointer resource.
+		 */
+		public function prepare_temporary_feed_file() {
+			$temp_file_path = $this->get_temp_file_path();
+			$temp_feed_file = @fopen( $temp_file_path, 'w' );
+
+			// check if we can open the temporary feed file
+			if ( false === $temp_feed_file || ! is_writable( $temp_file_path ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog temporary feed file for writing', 'facebook-for-woocommerce' ), 500 );
+			}
+
+			$file_path = $this->get_file_path();
+
+			// check if we will be able to write to the final feed file
+			if ( file_exists( $file_path ) && ! is_writable( $file_path ) ) {
+				throw new Framework\SV_WC_Plugin_Exception( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
+			}
+
+			fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
+			return $temp_feed_file;
+		}
+
+		/**
+		 * Write products feed into a file.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @return void
+		 */
+		public function write_products_feed_to_temp_file( $wp_ids, $temp_feed_file ) {
+			$product_group_attribute_variants = array();
+
+			foreach ( $wp_ids as $wp_id ) {
+
+				$woo_product = new WC_Facebook_Product( $wp_id );
+
+				// Skip if we don't have a valid product object.
+				if ( ! $woo_product->woo_product instanceof \WC_Product ) {
+					continue;
+				}
+
+				// Skip if not enabled for sync.
+				if ( ! facebook_for_woocommerce()->get_product_sync_validator( $woo_product->woo_product )->passes_all_checks() ) {
+					continue;
+				}
+
+				$product_data_as_feed_row = $this->prepare_product_for_feed(
+					$woo_product,
+					$product_group_attribute_variants
+				);
+
+				if ( ! empty( $temp_feed_file ) ) {
+					fwrite( $temp_feed_file, $product_data_as_feed_row );
+				}
+			}
+
+			wp_reset_postdata();
+
+			if ( ! empty( $temp_feed_file ) ) {
+				fclose( $temp_feed_file );
+			}
+		}
+
+		/**
+		 * Rename temporary feed file into the final feed file.
+		 * This is the last step fo the feed generation procedure.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @return void
+		 */
+		public function rename_temporary_feed_file_to_final_feed_file() {
+			$file_path      = $this->get_file_path();
+			$temp_file_path = $this->get_temp_file_path();
+			if ( ! empty( $temp_file_path ) && ! empty( $file_path ) ) {
+
+				$renamed = rename( $temp_file_path, $file_path );
+
+				if ( empty( $renamed ) ) {
+					throw new Framework\SV_WC_Plugin_Exception( __( 'Could not rename the product catalog feed file', 'facebook-for-woocommerce' ), 500 );
+				}
+			}
 		}
 
 		public function get_product_feed_header_row() {

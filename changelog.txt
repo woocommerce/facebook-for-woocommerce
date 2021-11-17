@@ -1,5 +1,18 @@
 *** Facebook for WooCommerce Changelog ***
 
+2021-11-04 - version 2.6.7
+* Fix - Parameter overloading error for PHP70 #2112
+
+2021-11-03 - version 2.6.6
+* New - Memory improved feed generation process. #2099
+* New - Add compatibility with the WooCommerce checkout block. #2095
+* New - Track batched feed generation time in the tracker snapshots. #2104
+* New - Track usage of the new style feed generator in the tracker snapshots. #2103
+* New - Hide headers in logs for better visibility. #2093
+* Dev - Update composer dependencies. #2090
+* New - Add no synchronization reason to the product edit screen in the Facebook meta box. #1937
+* Fix - Use published variations only for the default variation. #2091
+
 2021-09-16 - version 2.6.5
 * Fix - Incorrect `is_readable()` usage when loading Integration classes.
 * Tweak - WC 5.7 compatibility.

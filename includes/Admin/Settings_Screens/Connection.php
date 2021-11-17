@@ -327,8 +327,17 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				'id'       => \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
 				'title'    => __( 'Enable debug mode', 'facebook-for-woocommerce' ),
 				'type'     => 'checkbox',
-				'desc'     => __( 'Log plugin events for debugging', 'facebook-for-woocommerce' ),
+				'desc'     => __( 'Log plugin events for debugging.', 'facebook-for-woocommerce' ),
 				'desc_tip' => __( 'Only enable this if you are experiencing problems with the plugin.', 'facebook-for-woocommerce' ),
+				'default'  => 'no',
+			),
+
+			array(
+				'id'       => \WC_Facebookcommerce_Integration::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR,
+				'title'    => __( 'Experimental! Enable new style feed generation', 'facebook-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'desc'     => __( 'Use new, memory improved, feed generation process.', 'facebook-for-woocommerce' ),
+				'desc_tip' => __( 'Experimental feature. Only enable this if you are experiencing problems with feed generation. This is an experimental feature in testing phase.', 'facebook-for-woocommerce' ),
 				'default'  => 'no',
 			),
 
