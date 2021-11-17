@@ -69,10 +69,6 @@ if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) :
 
 			self::$commerce = $commerce;
 
-			add_action(
-				'wp_ajax_ajax_test_sync_products_using_feed',
-				array( $this, 'ajax_test_sync_products_using_feed' )
-			);
 		}
 
 		function check_product_create() {
