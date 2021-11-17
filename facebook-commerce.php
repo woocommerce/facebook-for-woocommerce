@@ -113,9 +113,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
-	/** @var string the hook for the recurreing action that syncs products */
-	const ACTION_HOOK_SCHEDULED_RESYNC = 'sync_all_fb_products_using_feed';
-
 	/** @var string custom taxonomy FB product set ID */
 	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
@@ -327,12 +324,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 
 			add_action(
-				'wp_ajax_ajax_sync_all_fb_products_using_feed',
-				array( $this, 'ajax_sync_all_fb_products_using_feed' ),
-				self::FB_PRIORITY_MID
-			);
-
-			add_action(
 				'wp_ajax_ajax_check_feed_upload_status',
 				array( $this, 'ajax_check_feed_upload_status' ),
 				self::FB_PRIORITY_MID
@@ -346,12 +337,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			add_action(
 				'wp_ajax_ajax_display_test_result',
 				array( $this, 'ajax_display_test_result' )
-			);
-
-			add_action(
-				'wp_ajax_ajax_schedule_force_resync',
-				array( $this, 'ajax_schedule_force_resync' ),
-				self::FB_PRIORITY_MID
 			);
 
 			// Don't duplicate product FBID meta.
@@ -419,8 +404,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->load_background_sync_process();
 		}
 
-		// Must be outside of admin for cron to schedule correctly.
-		add_action( 'sync_all_fb_products_using_feed', array( $this, 'handle_scheduled_resync_action' ), self::FB_PRIORITY_MID );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$aam_settings         = $this->load_aam_settings_of_pixel();
@@ -2127,7 +2110,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'syncall products', true );
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 
-		$this->sync_facebook_products( 'background' );
+		$this->sync_facebook_products();
 	}
 
 
@@ -2139,22 +2122,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since 1.10.2
 	 *
-	 * @param string $method either 'feed' or 'background'
 	 */
-	private function sync_facebook_products( $method ) {
+	private function sync_facebook_products() {
 
 		try {
-
-			if ( 'feed' === $method ) {
-
-				$this->sync_facebook_products_using_feed();
-
-			} elseif ( 'background' === $method ) {
-
-				// if syncs starts, the background processor will continue executing until the request ends and no response will be sent back to the browser
-				$this->sync_facebook_products_using_background_processor();
-			}
-
+			$this->sync_facebook_products_using_background_processor();
 			wp_send_json_success();
 
 		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
@@ -2331,121 +2303,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		return true;
 	}
-
-
-	/**
-	 * Special function to run all visible products by uploading feed.
-	 *
-	 * @internal
-	 */
-	public function ajax_sync_all_fb_products_using_feed() {
-		WC_Facebookcommerce_Utils::check_woo_ajax_permissions(
-			'syncall products using feed',
-			! $this->test_mode
-		);
-		check_ajax_referer( 'wc_facebook_settings_jsx' );
-
-		$this->sync_facebook_products( 'feed' );
-	}
-
-
-	/**
-	 * Syncs Facebook products using a Feed.
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
-	 *
-	 * @since 1.10.2
-	 *
-	 * @throws Framework\SV_WC_Plugin_Exception
-	 * @return bool
-	 */
-	public function sync_facebook_products_using_feed() {
-
-		if ( ! $this->is_product_sync_enabled() ) {
-			WC_Facebookcommerce_Utils::log( 'Sync to Facebook is disabled' );
-
-			throw new Framework\SV_WC_Plugin_Exception( __( 'Product sync is disabled.', 'facebook-for-woocommerce' ) );
-		}
-
-		if ( ! $this->is_configured() || ! $this->get_product_catalog_id() ) {
-
-			WC_Facebookcommerce_Utils::log( sprintf( 'Not syncing, the plugin is not configured or the Catalog ID is missing' ) );
-
-			throw new Framework\SV_WC_Plugin_Exception( __( 'The plugin is not configured or the Catalog ID is missing.', 'facebook-for-woocommerce' ) );
-		}
-
-		$this->remove_resync_message();
-
-		if ( ! $this->fbgraph->is_product_catalog_valid( $this->get_product_catalog_id() ) ) {
-
-			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
-			WC_Facebookcommerce_Utils::fblog(
-				'Tried to sync with an invalid product catalog!',
-				array(),
-				true
-			);
-
-			throw new Framework\SV_WC_Plugin_Exception( __( "We've detected that your Facebook Product Catalog is no longer valid. This may happen if it was deleted, but could also be a temporary error. If the error persists, please click Manage connection > Advanced Options > Remove and setup the plugin again.", 'facebook-for-woocommerce' ) );
-		}
-
-		if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) {
-			include_once 'includes/fbproductfeed.php';
-		}
-		if ( $this->test_mode ) {
-			$this->fbproductfeed = new WC_Facebook_Product_Feed_Test_Mock(
-				$this->get_product_catalog_id(),
-				$this->fbgraph,
-				$this->get_feed_id()
-			);
-		} else {
-			$this->fbproductfeed = new WC_Facebook_Product_Feed(
-				$this->get_product_catalog_id(),
-				$this->fbgraph,
-				$this->get_feed_id()
-			);
-		}
-
-		if ( ! $this->fbproductfeed->sync_all_products_using_feed() ) {
-
-			WC_Facebookcommerce_Utils::fblog( 'Sync all products using feed, curl failed', array(), true );
-
-			throw new Framework\SV_WC_Plugin_Exception( __( "We couldn't create the feed or upload the product information.", 'facebook-for-woocommerce' ) );
-		}
-
-		$this->update_feed_id( $this->fbproductfeed->feed_id );
-		$this->update_upload_id( $this->fbproductfeed->upload_id );
-
-		update_option(
-			$this->get_option_key(),
-			apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings )
-		);
-
-		wp_reset_postdata();
-
-		return true;
-	}
-
-
-	/**
-	 * Syncs Facebook products using a Feed.
-	 *
-	 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/fbe/fbe1/guides/feed-approach
-	 *
-	 * @return bool
-	 */
-	public function sync_all_fb_products_using_feed() {
-
-		try {
-			$sync_started = $this->sync_facebook_products_using_feed();
-		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
-			$sync_started = false;
-		}
-
-		return $sync_started;
-	}
-
 
 	/**
 	 * Toggles product visibility via AJAX.
@@ -3717,106 +3574,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		delete_option( 'fb_test_pass' );
 		printf( json_encode( $response ) );
 		wp_die();
-	}
-
-
-	/**
-	 * Schedules a recurring event to sync products.
-	 *
-	 * @deprecated 1.10.0
-	 */
-	function ajax_schedule_force_resync() {
-
-		wc_deprecated_function( __METHOD__, '1.10.0' );
-		die;
-	}
-
-
-	/**
-	 * Adds an recurring action to sync products.
-	 *
-	 * The action is scheduled using a cron schedule instead of a recurring interval (see https://en.wikipedia.org/wiki/Cron#Overview).
-	 * A cron schedule should allow for the action to run roughly at the same time every day regardless of the duration of the task.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param int $offset number of seconds since the beginning of the daay
-	 */
-	public function schedule_resync( $offset ) {
-
-		try {
-
-			$current_time         = new DateTime( 'now', new DateTimeZone( wc_timezone_string() ) );
-			$first_scheduled_time = new DateTime( "today +{$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
-			$next_scheduled_time  = new DateTime( "today +1 day {$offset} seconds", new DateTimeZone( wc_timezone_string() ) );
-
-		} catch ( \Exception $e ) {
-			// TODO: log an error indicating that it was not possible to schedule a recurring action to sync products {WV 2020-01-28}
-			return;
-		}
-
-		// unschedule previously scheduled resync actions
-		$this->unschedule_resync();
-
-		$timestamp = $first_scheduled_time >= $current_time ? $first_scheduled_time->getTimestamp() : $next_scheduled_time->getTimestamp();
-
-		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
-		as_schedule_single_action( $timestamp, self::ACTION_HOOK_SCHEDULED_RESYNC, array(), 'facebook-for-woocommerce' );
-	}
-
-
-	/**
-	 * Removes the recurring action that syncs products.
-	 *
-	 * @since 1.10.0
-	 */
-	private function unschedule_resync() {
-
-		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
-		as_unschedule_all_actions( self::ACTION_HOOK_SCHEDULED_RESYNC, array(), 'facebook-for-woocommerce' );
-	}
-
-
-	/**
-	 * Determines whether a recurring action to sync products is scheduled and not running.
-	 *
-	 * @see \as_next_scheduled_action()
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return bool
-	 */
-	public function is_resync_scheduled() {
-
-		// TODO: replace 'facebook-for-woocommerce' with the plugin ID once we stat using the Framework {WV 2020-01-30}
-		return is_int( as_next_scheduled_action( self::ACTION_HOOK_SCHEDULED_RESYNC, array(), 'facebook-for-woocommerce' ) );
-	}
-
-
-	/**
-	 * Handles the scheduled action used to sync products daily.
-	 *
-	 * It will schedule a new action if product sync is enabled and the plugin is configured to resnyc procucts daily.
-	 *
-	 * @internal
-	 *
-	 * @see \WC_Facebookcommerce_Integration::schedule_resync()
-	 *
-	 * @since 1.10.0
-	 */
-	public function handle_scheduled_resync_action() {
-
-		try {
-			$this->sync_facebook_products_using_feed();
-		} catch ( Framework\SV_WC_Plugin_Exception $e ) {
-		}
-
-		$resync_offset = $this->get_scheduled_resync_offset();
-
-		// manually schedule the next product resync action if possible
-		if ( null !== $resync_offset && $this->is_product_sync_enabled() && ! $this->is_resync_scheduled() ) {
-			$this->schedule_resync( $resync_offset );
-		}
 	}
 
 	/** Deprecated methods ********************************************************************************************/
