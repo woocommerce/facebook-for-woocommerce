@@ -404,8 +404,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->load_background_sync_process();
 		}
 
-		// Handle the special background feed generation action.
-		add_action( 'wc_facebook_generate_product_catalog_feed', array( $this, 'handle_generate_product_catalog_feed' ) );
 
 		if ( $this->get_facebook_pixel_id() ) {
 			$aam_settings         = $this->load_aam_settings_of_pixel();
@@ -3577,26 +3575,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		printf( json_encode( $response ) );
 		wp_die();
 	}
-
-	/**
-	 * Handles the schedule feed generation action, triggered by the REST API.
-	 *
-	 * @since 1.11.0
-	 */
-	public function handle_generate_product_catalog_feed() {
-
-		$feed_handler = new WC_Facebook_Product_Feed();
-
-		try {
-
-			$feed_handler->generate_feed();
-
-		} catch ( \Exception $exception ) {
-
-			WC_Facebookcommerce_Utils::log( 'Error generating product catalog feed. ' . $exception->getMessage() );
-		}
-	}
-
 
 	/** Deprecated methods ********************************************************************************************/
 
