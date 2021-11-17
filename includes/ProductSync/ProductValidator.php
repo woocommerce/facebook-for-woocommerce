@@ -70,23 +70,33 @@ class ProductValidator {
 	protected $product_parent;
 
 	/**
+	 * The product parent object if the product has a parent.
+	 *
+	 * @var WC_Facebook_Product
+	 */
+	protected $fb_product_parent;
+
+	/**
 	 * ProductValidator constructor.
 	 *
 	 * @param WC_Facebookcommerce_Integration $integration The FB integration instance.
 	 * @param WC_Product                      $product     The product to validate. Accepts both variations and variable products.
 	 */
 	public function __construct( WC_Facebookcommerce_Integration $integration, WC_Product $product ) {
-		$this->product          = $product;
-		$this->facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$this->product           = $product;
+		$this->product_parent    = null;
+		$this->fb_product_parent = null;
 
 		if ( $product->get_parent_id() ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
 			if ( $parent_product instanceof WC_Product ) {
-				$this->product_parent = $parent_product;
+				$this->product_parent    = $parent_product;
+				$this->fb_product_parent = new WC_Facebook_Product( $parent_product );
 			}
 		}
 
-		$this->integration = $integration;
+		$this->facebook_product = new WC_Facebook_Product( $this->product, $this->fb_product_parent );
+		$this->integration      = $integration;
 	}
 
 	/**
