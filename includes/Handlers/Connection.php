@@ -882,7 +882,6 @@ class Connection {
 	 * @return string URL
 	 */
 	public function get_connection_authentication_url() {
-
 		/**
 		 * Filters App Store login URL.
 		 *
