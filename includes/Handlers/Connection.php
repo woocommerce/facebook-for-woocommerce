@@ -358,7 +358,7 @@ class Connection {
 			 */
 			$decoded_message = json_decode( $message );
 			if ( json_last_error() === JSON_ERROR_NONE ) {
-				// If error is the fist key we want to use just the body to simplify the message.
+				// If error is the first key we want to use just the body to simplify the message.
 				$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
 				$message         = json_encode( $decoded_message, JSON_PRETTY_PRINT );
 			}
