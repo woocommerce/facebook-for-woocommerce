@@ -37,6 +37,9 @@ class Connection {
 	/** @var string WooCommerce connection for APP Store login URL */
 	const APP_STORE_LOGIN_URL = 'https://connect.woocommerce.com/app-store-login/facebook/';
 
+	/** @var string WooCommerce connection authentication URL */
+	const CONNECTION_AUTHENTICATION_URL = 'https://connect.woocommerce.com/auth/facebookcommerce/';
+
 	/** @var string the Standard Auth type */
 	const AUTH_TYPE_STANDARD = 'standard';
 
@@ -168,7 +171,7 @@ class Connection {
 				}
 			}
 		} catch ( SV_WC_API_Exception $exception ) {
-			
+
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
@@ -276,7 +279,7 @@ class Connection {
 			}
 
 			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
-			$error_code               = ! empty( $_GET['err_code'] ) ? sanitize_text_field( $_GET['err_code'] ) : '';
+			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( $_GET['err_code'] ) ) : '';
 			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
@@ -329,14 +332,37 @@ class Connection {
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		} catch ( Connect_WC_API_Exception $exception ) {
+			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
 
-			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Facebook API returned error code: %s', $exception->getMessage() ), 'facebook_for_woocommerce_connect' );
+			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
 		exit;
+	}
+
+	/**
+	 * Prepares the error message from the connect server for the logs.
+	 *
+	 * @since x.x.x
+	 * @param string $message Message string that needs formatting.
+	 * @return string Formatted message string ready for logging.
+	 */
+	public function prepare_connect_server_message_for_user_display( $message ) {
+			/*
+			 * In some scenarios the connect server message is a JSON encoded object.
+			 * This happens when we have detailed information from Facebook API endpoint about the error.
+			 * We want to print it pretty for the customers.
+			 */
+			$decoded_message = json_decode( $message );
+			if ( json_last_error() === JSON_ERROR_NONE ) {
+				// If error is the first key we want to use just the body to simplify the message.
+				$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
+				$message         = json_encode( $decoded_message, JSON_PRETTY_PRINT );
+			}
+			return $message;
 	}
 
 
@@ -566,7 +592,7 @@ class Connection {
 		);
 
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), 'https://connect.woocommerce.com/auth/facebookcommerce/' );
+		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_connection_authentication_url() );
 
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg(
@@ -848,6 +874,23 @@ class Connection {
 		return (string) apply_filters( 'wc_facebook_connection_app_store_login_url', self::APP_STORE_LOGIN_URL );
 	}
 
+	/**
+	 * Gets connect server authentication url.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string URL
+	 */
+	public function get_connection_authentication_url() {
+		/**
+		 * Filters App Store login URL.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param string $connection_authentication_url the connection App Store login URL
+		 */
+		return (string) apply_filters( 'wc_facebook_connection_authentication_url', self::CONNECTION_AUTHENTICATION_URL );
+	}
 
 	/**
 	 * Gets the full redirect URL where the user will return to after OAuth.
@@ -1195,15 +1238,15 @@ class Connection {
 
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			
+
 			return;
 		}
 
 		$log_data = array();
-		
+
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		
+
 
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
