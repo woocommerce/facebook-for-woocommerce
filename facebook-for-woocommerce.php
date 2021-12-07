@@ -13,9 +13,9 @@
  * Author URI: https://www.facebook.com/
  * Version: 2.6.7
  * Text Domain: facebook-for-woocommerce
- * Tested up to: 5.8
+ * Tested up to: 5.9
  * WC requires at least: 3.5.0
- * WC tested up to: 5.7
+ * WC tested up to: 6.0
  * Requires PHP: 7.0
  *
  * @package FacebookCommerce
