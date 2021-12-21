@@ -2,7 +2,7 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.8
+Tested up to: 5.9
 Stable tag: 2.6.7
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
@@ -37,10 +37,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Your website URL
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
-== Changelog =
+== Changelog ==
 
-= 2.6.8 - 2021-xx-xx =
-* Fix - Bump tmpl from 1.0.4 to 1.0.5. #2115
+= 2.6.8 - 2021-12-21 =
+* Fix - Bump template from 1.0.4 to 1.0.5. #2115
 * Fix - Fix empty "value" for variable products. #1784
 * Tweak - WC 6.0 compatibility.
 * Tweak - WP 5.9 compatibility.
