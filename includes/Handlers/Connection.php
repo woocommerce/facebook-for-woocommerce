@@ -346,7 +346,7 @@ class Connection {
 	/**
 	 * Prepares the error message from the connect server for the logs.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.8
 	 * @param string $message Message string that needs formatting.
 	 * @return string Formatted message string ready for logging.
 	 */
@@ -877,7 +877,7 @@ class Connection {
 	/**
 	 * Gets connect server authentication url.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.8
 	 *
 	 * @return string URL
 	 */
@@ -885,7 +885,7 @@ class Connection {
 		/**
 		 * Filters App Store login URL.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.8
 		 *
 		 * @param string $connection_authentication_url the connection App Store login URL
 		 */
