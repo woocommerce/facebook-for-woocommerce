@@ -158,7 +158,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->commerce_handler          = new \SkyVerge\WooCommerce\Facebook\Commerce();
 				$this->fb_categories             = new \SkyVerge\WooCommerce\Facebook\Products\FBCategories();
 
-				if ( is_ajax() ) {
+				if ( wp_doing_ajax() ) {
 					$this->ajax = new \SkyVerge\WooCommerce\Facebook\AJAX();
 				}
 

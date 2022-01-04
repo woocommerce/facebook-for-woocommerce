@@ -130,7 +130,7 @@ class Sync {
 		}
 
 		// bail if admin and not AJAX
-		if ( is_admin() && ! is_ajax() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			return;
 		}
 

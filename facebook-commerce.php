@@ -976,7 +976,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 *
 		 * @see ajax_delete_fb_product()
 		 */
-		if ( ( ! is_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
+		if ( ( ! wp_doing_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
 			 && ! Products::published_product_should_be_synced( $product ) ) {
 
 			return;
