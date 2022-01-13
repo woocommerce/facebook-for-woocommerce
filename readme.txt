@@ -39,6 +39,8 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.9 –2022-01-13 =
+
 = 2.6.8 - 2021-12-21 =
 * Fix - Bump template from 1.0.4 to 1.0.5. #2115
 * Fix - Fix empty "value" for variable products. #1784

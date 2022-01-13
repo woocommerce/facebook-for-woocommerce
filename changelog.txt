@@ -1,6 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
-= 2.6.8 - 2021-12-21 =
+2022-01-13 – version 2.6.9
+
+2021-12-21 - version 2.6.8
 * Fix - Bump template from 1.0.4 to 1.0.5. #2115
 * Fix - Fix empty "value" for variable products. #1784
 * Tweak - WC 6.0 compatibility.
