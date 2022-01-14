@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.8
+Stable tag: 2.6.9
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.9 - 2022-xx-xx =
+= 2.6.9 - 2022-01-14 =
 * Fix - Replace is_ajax with wp_doing_ajax
 * Tweak - Update contributor guidelines
 * Tweak - WC 6.1 compatibility
