@@ -39,7 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.9 –2022-01-13 =
+= 2.6.9 –2022-01-14 =
+* Fix - Replace is_ajax with wp_doing_ajax
+* Tweak - Update contributor guidelines
+* Tweak - WC 6.1 compatibility
 
 = 2.6.8 - 2021-12-21 =
 * Fix - Bump template from 1.0.4 to 1.0.5. #2115
