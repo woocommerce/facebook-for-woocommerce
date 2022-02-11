@@ -724,8 +724,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 */
 		return apply_filters_deprecated(
 			'facebook_for_woocommerce_allow_full_batch_api_sync',
-			$default_allow_sync,
-			$this->get_product_count(),
+			array(
+				$default_allow_sync,
+				$this->get_product_count(),
+			),
 			'x.x.x'
 		);
 	}
