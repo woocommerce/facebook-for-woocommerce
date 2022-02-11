@@ -697,6 +697,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$default_allow_sync = true;
 
 		/**
+		 * Block the full batch API sync.
+		 *
+		 * @param bool $allow Default value - is full batch sync allowed?
+		 *
+		 * @return boolean True if full batch sync is safe.
+		 * @since x.x.x
+		 */
+		$block_sync = apply_filters(
+			'facebook_for_woocommerce_block_full_batch_api_sync',
+			false,
+		);
+
+		if ( $block_sync ) {
+			return false;
+		}
+
+		/**
 		 * Allow full batch api sync to be enabled or disabled.
 		 *
 		 * @param bool $allow Default value - is full batch sync allowed?
@@ -705,10 +722,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @return boolean True if full batch sync is safe.
 		 * @since 2.6.1
 		 */
-		return apply_filters(
+		return apply_filters_deprecated(
 			'facebook_for_woocommerce_allow_full_batch_api_sync',
 			$default_allow_sync,
-			$this->get_product_count()
+			$this->get_product_count(),
+			'x.x.x'
 		);
 	}
 
