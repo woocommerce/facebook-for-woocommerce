@@ -699,9 +699,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		/**
 		 * Block the full batch API sync.
 		 *
-		 * @param bool $allow Default value - is full batch sync allowed?
+		 * @param bool $block_sync Should the full batch API sync be blocked?
 		 *
-		 * @return boolean True if full batch sync is safe.
+		 * @return boolean True if full batch sync should be blocked.
 		 * @since x.x.x
 		 */
 		$block_sync = apply_filters(
