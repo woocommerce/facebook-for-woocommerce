@@ -713,6 +713,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$default_allow_sync = true;
+		// If 'facebook_for_woocommerce_allow_full_batch_api_sync' is not used, prevent get_product_count from firing.
+		if ( ! has_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync' ) ) {
+			return $default_allow_sync;
+		}
+
 		/**
 		 * Allow full batch api sync to be enabled or disabled.
 		 *
