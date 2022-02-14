@@ -694,7 +694,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
-		$default_allow_sync = true;
 
 		/**
 		 * Block the full batch API sync.
@@ -713,6 +712,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return false;
 		}
 
+		$default_allow_sync = true;
 		/**
 		 * Allow full batch api sync to be enabled or disabled.
 		 *
@@ -728,7 +728,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$default_allow_sync,
 				$this->get_product_count(),
 			),
-			'x.x.x'
+			'2.6.10'
 		);
 	}
 
