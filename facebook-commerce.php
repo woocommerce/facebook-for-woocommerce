@@ -725,7 +725,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int $product_count Number of products in store.
 		 *
 		 * @return boolean True if full batch sync is safe.
+		 *
 		 * @since 2.6.1
+		 * @deprecated deprecated since version 2.6.10
 		 */
 		return apply_filters_deprecated(
 			'facebook_for_woocommerce_allow_full_batch_api_sync',
