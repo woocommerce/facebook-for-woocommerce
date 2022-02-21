@@ -694,7 +694,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @since 2.6.1
 	 */
 	public function allow_full_batch_api_sync() {
+
+		/**
+		 * Block the full batch API sync.
+		 *
+		 * @param bool $block_sync Should the full batch API sync be blocked?
+		 *
+		 * @return boolean True if full batch sync should be blocked.
+		 * @since x.x.x
+		 */
+		$block_sync = apply_filters(
+			'facebook_for_woocommerce_block_full_batch_api_sync',
+			false,
+		);
+
+		if ( $block_sync ) {
+			return false;
+		}
+
 		$default_allow_sync = true;
+		// If 'facebook_for_woocommerce_allow_full_batch_api_sync' is not used, prevent get_product_count from firing.
+		if ( ! has_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync' ) ) {
+			return $default_allow_sync;
+		}
 
 		/**
 		 * Allow full batch api sync to be enabled or disabled.
@@ -703,12 +725,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int $product_count Number of products in store.
 		 *
 		 * @return boolean True if full batch sync is safe.
+		 *
 		 * @since 2.6.1
+		 * @deprecated deprecated since version 2.6.10
 		 */
-		return apply_filters(
+		return apply_filters_deprecated(
 			'facebook_for_woocommerce_allow_full_batch_api_sync',
-			$default_allow_sync,
-			$this->get_product_count()
+			array(
+				$default_allow_sync,
+				$this->get_product_count(),
+			),
+			'2.6.10',
+			'facebook_for_woocommerce_block_full_batch_api_sync'
 		);
 	}
 
