@@ -735,7 +735,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$default_allow_sync,
 				$this->get_product_count(),
 			),
-			'2.6.10'
+			'2.6.10',
+			'facebook_for_woocommerce_block_full_batch_api_sync'
 		);
 	}
 
