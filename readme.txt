@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 == Changelog ==
 
 = 2.6.10 - 2022-xx-xx =
+* Add - Filter to block full catalog batch API sync 'facebook_for_woocommerce_block_full_batch_api_sync'.
+* Update - Deprecate 'facebook_for_woocommerce_allow_full_batch_api_sync' filter.
+* Update - Facebook Marketing API from v11.0 to v12.0.
 
 = 2.6.9 - 2022-01-14 =
 * Fix - Replace is_ajax with wp_doing_ajax
