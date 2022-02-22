@@ -701,7 +701,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param bool $block_sync Should the full batch API sync be blocked?
 		 *
 		 * @return boolean True if full batch sync should be blocked.
-		 * @since 2.6.10
+		 * @since x.x.x
 		 */
 		$block_sync = apply_filters(
 			'facebook_for_woocommerce_block_full_batch_api_sync',

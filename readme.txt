@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.10
+Stable tag: 2.6.8
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.10 - 2022-02-22 =
+= 2.6.10 - 2022-xx-xx =
 * Add - Filter to block full catalog batch API sync 'facebook_for_woocommerce_block_full_batch_api_sync'.
 * Update - Deprecate 'facebook_for_woocommerce_allow_full_batch_api_sync' filter.
 * Update - Facebook Marketing API from v11.0 to v12.0.
