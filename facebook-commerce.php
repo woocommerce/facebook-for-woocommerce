@@ -705,7 +705,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 */
 		$block_sync = apply_filters(
 			'facebook_for_woocommerce_block_full_batch_api_sync',
-			false,
+			false
 		);
 
 		if ( $block_sync ) {
