@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+2022-xx-xx - version 2.6.11
+* Fix - The syntax parsing error "unexpected ')'" in facebook-for-woocommerce.php.
+
 2022-02-22 - version 2.6.10
 * Add - Filter to block full catalog batch API sync 'facebook_for_woocommerce_block_full_batch_api_sync'.
 * Update - Deprecate 'facebook_for_woocommerce_allow_full_batch_api_sync' filter.

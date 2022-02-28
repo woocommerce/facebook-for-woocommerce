@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.11 - 2022-xx-xx =
+* Fix - The syntax parsing error "unexpected ')'" in facebook-for-woocommerce.php.
+
 = 2.6.10 - 2022-02-22 =
 * Add - Filter to block full catalog batch API sync 'facebook_for_woocommerce_block_full_batch_api_sync'.
 * Update - Deprecate 'facebook_for_woocommerce_allow_full_batch_api_sync' filter.
