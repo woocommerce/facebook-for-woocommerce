@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.10
+Stable tag: 2.6.11
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.11 - 2022-xx-xx =
+= 2.6.11 - 2022-02-28 =
 * Fix - The syntax parsing error "unexpected ')'" in facebook-for-woocommerce.php.
 
 = 2.6.10 - 2022-02-22 =

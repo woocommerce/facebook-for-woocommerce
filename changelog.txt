@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2022-xx-xx - version 2.6.11
+2022-02-28 - version 2.6.11
 * Fix - The syntax parsing error "unexpected ')'" in facebook-for-woocommerce.php.
 
 2022-02-22 - version 2.6.10
