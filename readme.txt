@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2022-xx-xx - version 2.6.12 = 
+* Add - Filter to change Facebook Retailer ID, wc_facebook_fb_retailer_id.
+
 = 2.6.11 - 2022-02-28 =
 * Fix - The syntax parsing error "unexpected ')'" in facebook-for-woocommerce.php.
 
