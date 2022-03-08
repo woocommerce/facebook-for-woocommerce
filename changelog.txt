@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2022-xx-xx - version 2.6.12
+2022-03-08 - version 2.6.12
 * Add - Filter to change Facebook Retailer ID, wc_facebook_fb_retailer_id.
 
 2022-02-28 - version 2.6.11
