@@ -17,6 +17,7 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibili
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
+use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -374,8 +375,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 
-				$is_marketing_enabled = is_callable( 'Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-										&& Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+				if (  class_exists( WooAdminFeatures::class ) ) {
+					$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
+				} else {
+					$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+						&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+				}
 
 				if ( $is_marketing_enabled ) {
 
