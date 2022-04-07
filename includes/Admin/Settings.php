@@ -76,8 +76,12 @@ class Settings {
 
 		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 
-			$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-									&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+			if (  class_exists( WooAdminFeatures::class ) ) {
+				$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
+			} else {
+				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+			}
 
 			if ( $is_marketing_enabled ) {
 
