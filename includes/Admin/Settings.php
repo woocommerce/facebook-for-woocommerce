@@ -60,7 +60,7 @@ class Settings {
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 
-		$this->use_woo_nav = class_exists( WooAdminFeatures::class ) && class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
+		$this->use_woo_nav = false;
 	}
 
 
@@ -73,6 +73,7 @@ class Settings {
 
 		$root_menu_item       = 'woocommerce';
 		$is_marketing_enabled = false;
+		$this->use_woo_nav = class_exists( WooAdminFeatures::class ) && class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
 
 		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
 
