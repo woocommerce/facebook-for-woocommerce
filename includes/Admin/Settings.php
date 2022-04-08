@@ -60,7 +60,6 @@ class Settings {
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 
-		$this->use_woo_nav = false;
 	}
 
 
