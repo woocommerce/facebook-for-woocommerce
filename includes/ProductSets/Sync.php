@@ -357,13 +357,7 @@ class Sync {
 
 		// gets products variations
 		global $wpdb;
-
-		$sql = sprintf(
-			"SELECT ID FROM $wpdb->posts WHERE post_type = 'product_variation' AND post_parent IN (%s) ",
-			implode( ', ', array_map( 'intval', $product_ids ) )
-		);
-
-		$variation_ids = $wpdb->get_results( $sql );
+		$variation_ids = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = 'product_variation' AND post_parent IN (%s) ", implode( ',', $product_ids ) ) );
 		if ( ! empty( $variation_ids ) ) {
 
 			// product_variations: add retailer id to the products filter
