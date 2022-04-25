@@ -41,6 +41,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var string the product set categories meta name */
 		const PRODUCT_SET_META = '_wc_facebook_product_cats';
 
+		/** @var string the plugin user agent name to use for HTTP calls within User-Agent header */
+		const PLUGIN_USER_AGENT_NAME = 'Facebook-for-WooCommerce';
 
 		/** @var \WC_Facebookcommerce singleton instance */
 		protected static $instance;
@@ -134,6 +136,11 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
 			add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
+
+			add_filter(
+				'wc_' . WC_Facebookcommerce::PLUGIN_ID . '_http_request_args',
+				array( $this, 'force_user_agent_in_latin' )
+			);
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
 				require_once __DIR__ . '/vendor/autoload.php';
@@ -580,6 +587,30 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			}
 
 			return $is_conected;
+		}
+
+		/**
+		 * Filter is responsible to always set latin user agent header value, because translated plugin names
+		 * may contain characters which Facebook does not accept and return 400 response for requests with such
+		 * header values.
+		 * Applying either sanitize_title() nor remove_accents() on header value will not work for all the languages
+		 * we support translations to e.g. Hebrew is going to convert into something %d7%90%d7%a8%d7%99%d7%92 which is
+		 * not acceptable neither.
+		 *
+		 * @param array $http_request_headers - http request headers
+		 * @return array
+		 */
+		public function force_user_agent_in_latin( array $http_request_headers ) {
+			if ( isset( $http_request_headers['user-agent'] ) ) {
+				$http_request_headers['user-agent'] = sprintf(
+					'%s/%s (WooCommerce/%s; WordPress/%s)',
+					WC_Facebookcommerce::PLUGIN_USER_AGENT_NAME,
+					WC_Facebookcommerce::PLUGIN_VERSION,
+					defined( 'WC_VERSION' ) ? WC_VERSION : WC_Facebook_Loader::MINIMUM_WC_VERSION,
+					$GLOBALS['wp_version']
+				);
+			}
+			return $http_request_headers;
 		}
 
 
