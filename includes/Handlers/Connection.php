@@ -417,12 +417,15 @@ class Connection {
 		$this->update_ad_account_id( '' );
 		$this->update_instagram_business_id( '' );
 		$this->update_commerce_merchant_settings_id( '' );
+		$this->update_external_business_id('');
 
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
+
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
 
 		delete_transient( 'wc_facebook_business_configuration_refresh' );
+
 	}
 
 
@@ -688,7 +691,7 @@ class Connection {
 
 			$external_id = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
 
-			if ( ! is_string( $external_id ) ) {
+			if ( ! is_string( $external_id ) || empty( $external_id ) ) {
 
 				/**
 				 * Filters the shop's business external ID.
@@ -708,7 +711,8 @@ class Connection {
 
 				$external_id = uniqid( sprintf( '%s-', $external_id ), false );
 
-				update_option( self::OPTION_EXTERNAL_BUSINESS_ID, $external_id );
+				$this->update_external_business_id( $external_id );
+
 			}
 
 			$this->external_business_id = $external_id;
@@ -1146,6 +1150,18 @@ class Connection {
 		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
 	}
 
+	/**
+	 * Stores the given external business id.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $value external business id
+	 */
+	public function update_external_business_id( $value ) {
+
+		update_option( self::OPTION_EXTERNAL_BUSINESS_ID, is_string( $value ) ? $value : '' );
+	}
+
 
 	/**
 	 * Determines whether the site is connected.
@@ -1304,7 +1320,7 @@ class Connection {
 		}
 
 		if ( ! empty( $values->business_id ) ) {
-			update_option( self::OPTION_EXTERNAL_BUSINESS_ID, sanitize_text_field( $values->business_id ) );
+			$this->update_external_business_id( sanitize_text_field( $values->business_id ) );
 			$log_data[ self::OPTION_EXTERNAL_BUSINESS_ID ] = sanitize_text_field( $values->business_id );
 		}
 
