@@ -312,9 +312,30 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 				 * @param string $value Attribute value.
 				 * @return string Return the desired replacement string.
 				 */
-				$attribute_value = str_replace(
+				$val = str_replace(
 					',',
 					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ', $val ),
+					$val
+				);
+				/**
+				 * Filter: facebook_for_woocommerce_variant_attribute_semicolon_replacement
+				 *
+				 * The Facebook API expects a comma-separated list of attributes in `additional_variant_attribute` field.
+				 * When encoded into JSON, attribute value with semicolons will break the format.
+				 * URL encoded semicolon version will remain so (%3A) at Facebook side after the sync.
+				 * This means that WooCommerce product attributes values should avoid the comma (`:`) character.
+				 * Facebook for WooCommerce replaces any `:` with a space by default.
+				 * This filter allows a site to provide a different replacement string.
+				 *
+				 * @since x.x.x
+				 *
+				 * @param string $replacement The default replacement string (`:`).
+				 * @param string $value Attribute value.
+				 * @return string Return the desired replacement string.
+				 */
+				$attribute_value = str_replace(
+					':',
+					apply_filters( 'facebook_for_woocommerce_variant_attribute_semicolon_replacement', ' ', $val ),
 					$val
 				);
 				$attributes[]    = $key . ':' . $attribute_value;
