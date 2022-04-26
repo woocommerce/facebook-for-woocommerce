@@ -814,9 +814,8 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 							if ( ! isset( $product_data['custom_data'] ) ) {
 								$product_data['custom_data'] = array();
 							}
-
+							$new_name                                 = wc_attribute_label( $new_name, $product );
 							$product_data['custom_data'][ $new_name ] = urldecode( $option_values[0] );
-
 							break;
 					}//end switch
 				} else {
