@@ -1153,7 +1153,7 @@ class Connection {
 	/**
 	 * Stores the given external business id.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.13
 	 *
 	 * @param string $value external business id
 	 */

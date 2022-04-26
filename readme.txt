@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.12
+Stable tag: 2.6.13
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,15 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.13 - 2022-04-26 =
+* Fix - Issue with Facebook not displayed in the new WC navigation.
+* Fix - Issue with variable products syncing to FB product sets.
+* Fix - Scheduled job logs written to options table are never removed if job does not complete.
+* Fix - User-Agent to contain English extension name.
+* Fix - clear out wc_facebook_external_business_id option on disconnect.
+* Fix - fix product title length check to account for encoding.
+* Tweak - Use `Automattic\WooCommerce\Admin\Features\Features::is_enabled` instead of the deprecated `WooCommerce\Admin\Loader::is_feature_enabled`.
 
 = 2.6.12 - 2022-03-08 =
 * Add - Filter to change Facebook Retailer ID, wc_facebook_fb_retailer_id.
