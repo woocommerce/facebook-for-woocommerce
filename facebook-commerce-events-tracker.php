@@ -126,6 +126,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// InitiateCheckout events
 			add_action( 'woocommerce_after_checkout_form', array( $this, 'inject_initiate_checkout_event' ) );
+			// InitiateCheckout events for checkout block.
+			add_action( 'woocommerce_blocks_checkout_enqueue_data', array( $this, 'inject_initiate_checkout_event' ) );
 			// Purchase and Subscribe events
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
@@ -511,7 +513,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			} else {
 				$content_type = 'product';
 			}
-			
+
 			if ( WC_Facebookcommerce_Utils::is_variable_type( $product->get_type() ) ) {
                             $product_price = $product->get_variation_price( 'min' );
                         } else {
@@ -900,7 +902,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			foreach ( $order->get_items() as $item ) {
 
 				$product = $item->get_product();
-				
+
 				if ( $product ) {
 					$product_ids[]   = \WC_Facebookcommerce_Utils::get_fb_content_ids( $product );
 					$product_names[] = $product->get_name();
@@ -1050,7 +1052,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			} catch ( Framework\SV_WC_API_Exception $exception ) {
 
 				$success = false;
-				
+
 				facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
 			}
 
