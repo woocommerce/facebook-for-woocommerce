@@ -133,7 +133,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
 
 			// Checkout update order meta from the Checkout Block.
-			add_action( '__experimental_woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ) );
+			if ( version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '7.2.0', '>=' ) ) {
+				add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ), 10, 1 );
+			} elseif ( version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '6.3.0', '>=' ) ) {
+				add_action( 'woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ), 10, 1 );
+			} else {
+				add_action( '__experimental_woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ), 10, 1 );
+			}
+
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
@@ -952,18 +959,27 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/**
 		 * Inject order meta gor WooCommerce Checkout Blocks flow.
 		 * The blocks flow does not trigger the woocommerce_checkout_update_order_meta so we can't rely on it.
-		 * The Checkout Block has its own ( so far ) experimental hook that allows us to inject the meta at
-		 * the appropriate moment: __experimental_woocommerce_blocks_checkout_update_order_meta.
+		 * The Checkout Block has its own hook that allows us to inject the meta at
+		 * the appropriate moment: woocommerce_store_api_checkout_update_order_meta.
+		 *
+		 * Note: __experimental_woocommerce_blocks_checkout_update_order_meta has been deprecated
+		 * as of WooCommerce Blocks 6.3.0
 		 *
 		 *  @since 2.6.6
 		 *
-		 *  @param WC_Order $order Order object.
+		 *  @param WC_Order|int $the_order Order object or id.
 		 */
-		public function inject_order_meta_event_for_checkout_block_flow( $order ) {
+		public function inject_order_meta_event_for_checkout_block_flow( $the_order ) {
 
 			$event_name = 'Purchase';
 
 			if ( ! $this->is_pixel_enabled() || $this->pixel->is_last_event( $event_name ) ) {
+				return;
+			}
+
+			$order = wc_get_order($the_order);
+
+			if ( ! $order ) {
 				return;
 			}
 
