@@ -126,6 +126,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// InitiateCheckout events
 			add_action( 'woocommerce_after_checkout_form', array( $this, 'inject_initiate_checkout_event' ) );
+			// InitiateCheckout events for checkout block.
+			add_action( 'woocommerce_blocks_checkout_enqueue_data', array( $this, 'inject_initiate_checkout_event' ) );
 			// Purchase and Subscribe events
 			add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'inject_purchase_event' ) );
 			add_action( 'woocommerce_thankyou', array( $this, 'inject_purchase_event' ), 40 );
