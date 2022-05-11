@@ -309,6 +309,22 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return 200 === (int) wp_remote_retrieve_response_code( $response );
 		}
 
+		/**
+		 * Gets a Catalog name from Facebook.
+		 *
+		 * @param $catalog_id
+		 * @return array
+		 * @throws Exception
+		 */
+		public function get_catalog( $catalog_id ) {
+			try {
+				$url      = $this->build_url( $catalog_id, '?fields=name' );
+				$response = $this->_get( $url );
+				return self::process_response( $response );
+			} catch ( JsonException $e ) {
+				return array();
+			}
+		}
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {
@@ -378,14 +394,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 					"?fields=id,retailer_id&limit={$limit}"
 				);
 				$response = $this->_get( $request );
-				$body     = wp_remote_retrieve_body( $response );
-				if ( is_wp_error( $body ) ) {
-					throw new Exception( $body->get_error_message(), $body->get_error_code() );
-				}
-				return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+				return self::process_response( $response );
 			} catch ( JsonException $e ) {
 				return array();
 			}
+		}
+
+		/**
+		 * Retrieves response body and parses it to return array of results.
+		 *
+		 * @param array $response
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		private static function process_response( array $response ): array {
+			/** @var string|WP_Error $body */
+			$body = wp_remote_retrieve_body( $response );
+			if ( is_wp_error( $body ) ) {
+				throw new Exception( $body->get_error_message(), $body->get_error_code() );
+			}
+			return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
 		}
 
 		public function log( $ems_id, $message, $error ) {
@@ -632,13 +660,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Used to parse and decorate/transform response data if needed
 		 *
 		 * @param array $response
-		 * @param callable $transformer
+		 * @param callable|null $decorator
 		 * @return array
 		 */
-		public static function get_data( array $response, callable $transformer ): array {
-			$data = $response['data'] ?? [];
-			if ( $transformer ) {
-				$data = call_user_func( $transformer, $data );
+		public static function get_data( array $response, callable $decorator = null ): array {
+			/* for the requests with paging, response is packed into `data` key, for others - straight in the root */
+			$data = $response['data'] ?? $response;
+			if ( is_callable( $decorator ) ) {
+				$data = call_user_func( $decorator, $data );
 			}
 			return $data;
 		}

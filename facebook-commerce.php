@@ -668,6 +668,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Gets Facebook catalog name.
+	 *
+	 * @param string $catalog_id Facebook catalog id.
+	 * @return string Facebook catalog name.
+	 */
+	public function get_catalog_name( string $catalog_id ): string {
+		try {
+			$response = $this->fbgraph->get_catalog( $catalog_id );
+			$data     = WC_Facebookcommerce_Graph_API::get_data( $response );
+			return $data['name'] ?? '';
+		} catch ( Exception $e ) {
+			$message = sprintf( 'There was an error trying to find a catalog by %s: %s', $catalog_id, $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+		}
+		return '';
+	}
+
+	/**
 	 * Gets the total number of published products.
 	 *
 	 * @return int
