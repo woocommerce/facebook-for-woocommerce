@@ -639,7 +639,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return array a map of ( `retailer id` -> `id` ) pairs.
 	 */
 	private function find_variation_product_item_ids( string $product_group_id ): array {
-		$product_item_ids = [];
+		$product_item_ids = array();
 		try {
 			$response  = $this->fbgraph->get_product_group_product_ids( $product_group_id );
 			/* local response data decorator function */
@@ -650,7 +650,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						$acc[ $item['retailer_id'] ] = $item['id'];
 						return $acc;
 					},
-					[]
+					array()
 				);
 			};
 			/* call paging up to two times */
