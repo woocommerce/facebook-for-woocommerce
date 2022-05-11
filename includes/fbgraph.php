@@ -314,16 +314,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * @param $catalog_id
 		 * @return array
-		 * @throws Exception
+		 * @throws Exception|JsonException
 		 */
-		public function get_catalog( $catalog_id ) {
-			try {
-				$url      = $this->build_url( $catalog_id, '?fields=name' );
-				$response = $this->_get( $url );
-				return self::process_response( $response );
-			} catch ( JsonException $e ) {
-				return array();
-			}
+		public function get_catalog( $catalog_id ): array {
+			$url      = $this->build_url( $catalog_id, '?fields=name' );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
 		}
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups

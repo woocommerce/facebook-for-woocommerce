@@ -661,8 +661,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$next             = WC_Facebookcommerce_Graph_API::get_paging_next( $response, $pages-- );
 			} while ( $next && $response = $this->fbgraph->next( $next ) );
 		} catch ( Exception $e ) {
-			$message = sprintf( 'There was an error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() )
+			);
 		}
 		return $product_item_ids;
 	}
@@ -679,8 +680,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$data     = WC_Facebookcommerce_Graph_API::get_data( $response );
 			return $data['name'] ?? '';
 		} catch ( Exception $e ) {
-			$message = sprintf( 'There was an error trying to find a catalog by %s: %s', $catalog_id, $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			facebook_for_woocommerce()->log(
+				sprintf( 'There was an error trying to find a catalog by %s: %s', $catalog_id, $e->getMessage() )
+			);
 		}
 		return '';
 	}
