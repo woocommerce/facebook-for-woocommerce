@@ -688,6 +688,52 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Returns Facebook User id.
+	 *
+	 * @return string
+	 */
+	public function get_user_id(): string {
+		try {
+			$response = $this->fbgraph->get_user();
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $user ) {
+					return $user['id'] ?? '';
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to fetch Facebook user: %s', $e->getMessage() )
+			);
+		}
+		return '';
+	}
+
+	/**
+	 * Used to revoke Facebook user permission.
+	 *
+	 * @param string $user_id Facebook user bigint id.
+	 * @param string $permission Facebook user permission.
+	 * @return bool
+	 */
+	public function revoke_user_permission( string $user_id, string $permission ): bool {
+		try {
+			$response = $this->fbgraph->revoke_user_permission( $user_id, $permission );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					return $data['success'] ?? false;
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to revoke Facebook user permission: %s', $e->getMessage() )
+			);
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the total number of published products.
 	 *
 	 * @return int

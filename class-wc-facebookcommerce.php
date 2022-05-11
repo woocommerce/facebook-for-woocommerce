@@ -691,18 +691,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
 				}
 
-				if ( ! class_exists( API\User\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Request.php';
-				}
-
-				if ( ! class_exists( API\User\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Response.php';
-				}
-
-				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
-				}
-
 				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/FBE/Installation/Request.php';
 				}

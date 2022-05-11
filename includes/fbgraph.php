@@ -322,6 +322,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::process_response( $response );
 		}
 
+		/**
+		 * Gets Facebook user information.
+		 *
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_user(): array {
+			$url      = $this->build_url( '', 'me' );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+		/**
+		 * Used to revoke Facebook user permission.
+		 *
+		 * @param string $user_id Facebook bigint user id
+		 * @param string $permission Facebook permissions
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function revoke_user_permission( string $user_id, string $permission ): array {
+			$url      = $this->build_url( "{$user_id}/permissions/{$permission}" );
+			$response =  $this->_delete( $url );
+			return self::process_response( $response );
+		}
+
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {
 			$url = $this->build_url( $product_catalog_id, '/product_groups' );
@@ -381,19 +407,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @param string $product_group_id product group ID
 		 * @param int    $limit max number of results returned per page of data
 		 * @return array
-		 * @throws Exception
+		 * @throws Exception|JsonException
 		 */
 		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ) {
-			try {
-				$request  = $this->build_url(
-					"{$product_group_id}/products",
-					"?fields=id,retailer_id&limit={$limit}"
-				);
-				$response = $this->_get( $request );
-				return self::process_response( $response );
-			} catch ( JsonException $e ) {
-				return array();
-			}
+			$request  = $this->build_url(
+				"{$product_group_id}/products",
+				"?fields=id,retailer_id&limit={$limit}"
+			);
+			$response = $this->_get( $request );
+			return self::process_response( $response );
 		}
 
 		/**
@@ -657,9 +679,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 *
 		 * @param array $response
 		 * @param callable|null $decorator
-		 * @return array
+		 * @return mixed
 		 */
-		public static function get_data( array $response, callable $decorator = null ): array {
+		public static function get_data( array $response, callable $decorator = null ) {
 			/* for the requests with paging, response is packed into `data` key, for others - straight in the root */
 			$data = $response['data'] ?? $response;
 			if ( is_callable( $decorator ) ) {
