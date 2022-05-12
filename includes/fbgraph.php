@@ -348,6 +348,24 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::process_response( $response );
 		}
 
+		/**
+		 * Uses the Catalog Batch API to update or remove items from catalog.
+		 *
+		 * @param string $catalog_id Facebook, possibly bigint, catalog id
+		 * @param array  $requests array of requests to be made to Facebook Catalog batch api
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function send_item_updates( $catalog_id, array $requests ): array {
+			$url    = $this->build_url( "{$catalog_id}/items_batch" );
+			$data   = array(
+				'allow_upsert' => true,
+				'requests'     => json_encode( $requests ),
+				'item_type'    => 'PRODUCT_ITEM',
+			);
+			return self::process_response( $this->_post( $url, $data ) );
+		}
+
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {
 			$url = $this->build_url( $product_catalog_id, '/product_groups' );
@@ -421,11 +439,16 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		/**
 		 * Retrieves response body and parses it to return array of results.
 		 *
-		 * @param array $response
+		 * @param array|WP_Error $response
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		private static function process_response( array $response ): array {
+		private static function process_response( $response ): array {
+
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_message(), $response->get_error_code() );
+			}
+
 			/** @var string|WP_Error $body */
 			$body = wp_remote_retrieve_body( $response );
 			if ( is_wp_error( $body ) ) {

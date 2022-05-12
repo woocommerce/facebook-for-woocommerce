@@ -376,20 +376,16 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 
 	/**
-	 * Sends item updates to Facebook.
+	 * Sends upsert item updates to Facebook.
 	 *
 	 * @since 2.0.0
 	 *
 	 * @param array $requests sync requests
 	 * @return array
-	 * @throws Framework\SV_WC_API_Exception
 	 */
 	private function send_item_updates( array $requests ) {
-
 		$catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
-		$response   = facebook_for_woocommerce()->get_api()->send_item_updates( $catalog_id, $requests, true );
-
-		return $response->get_handles();
+		return facebook_for_woocommerce()->get_integration()->send_item_updates( $catalog_id, $requests );
 	}
 
 

@@ -734,6 +734,35 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Uses the Catalog Batch API to update or remove items from catalog.
+	 *
+	 * @param $catalog_id
+	 * @param array $requests
+	 * @return array
+	 */
+	public function send_item_updates( $catalog_id, array $requests ): array {
+		try {
+			$response = $this->fbgraph->send_item_updates( $catalog_id, $requests );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					return $data['handles'] ?? array();
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to send item batch updates %s to Facebook catalog %s: %s',
+					json_encode( $requests ),
+					$catalog_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return array();
+	}
+
+	/**
 	 * Gets the total number of published products.
 	 *
 	 * @return int
