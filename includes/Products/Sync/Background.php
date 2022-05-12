@@ -144,21 +144,9 @@ class Background extends Framework\SV_WP_Background_Job_Handler {
 
 		// send item updates to Facebook and update the job with the returned array of batch handles
 		if ( ! empty( $requests ) ) {
-
-			try {
-
-				$handles = $this->send_item_updates( $requests );
-
-				$job->handles = ! isset( $job->handles ) || ! is_array( $job->handles ) ? $handles : array_merge( $job->handles, $handles );
-
-				$job = $this->update_job( $job );
-
-			} catch ( Framework\SV_WC_API_Exception $e ) {
-
-				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %1$s: %2$s' ), $job->id, $e->getMessage() );
-
-				facebook_for_woocommerce()->log( $message );
-			}
+			$handles      = $this->send_item_updates( $requests );
+			$job->handles = ! isset( $job->handles ) || ! is_array( $job->handles ) ? $handles : array_merge( $job->handles, $handles );
+			$this->update_job( $job );
 		}
 	}
 
