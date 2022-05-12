@@ -376,13 +376,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			intval( round( $this->get_price_plus_tax( $sale_price ) * 100 ) );
 
 			$sale_start =
-			( $date     = get_post_meta( $this->id, '_sale_price_dates_from', true ) )
-			? date_i18n( 'Y-m-d', $date ) . self::MIN_TIME
+			( $date     = $this->woo_product->get_date_on_sale_from() )
+			? date_i18n( 'Y-m-d', $date->getOffsetTimestamp() ) . self::MIN_TIME
 			: self::MIN_DATE_1 . self::MIN_TIME;
 
 			$sale_end =
-			( $date   = get_post_meta( $this->id, '_sale_price_dates_to', true ) )
-			? date_i18n( 'Y-m-d', $date ) . self::MAX_TIME
+			( $date   = $this->woo_product->get_date_on_sale_to() )
+			? date_i18n( 'Y-m-d', $date->getOffsetTimestamp() ) . self::MAX_TIME
 			: self::MAX_DATE . self::MAX_TIME;
 
 			// check if sale is expired and sale time range is valid
