@@ -564,8 +564,17 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$categories =
 			WC_Facebookcommerce_Utils::get_product_categories( $id );
 
-			$brand = get_the_term_list( $id, 'product_brand', '', ', ' );
-			$brand = is_wp_error( $brand ) || ! $brand ? wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() ) : WC_Facebookcommerce_Utils::clean_string( $brand );
+			// Get brand attribute.
+			$brand = get_post_meta( $id,Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . "brand", true );
+			$brand_taxonomy = get_the_term_list( $id, 'product_brand', '', ', ' );
+
+			if ( $brand ) {
+				$brand = WC_Facebookcommerce_Utils::clean_string( $brand );
+			} elseif ( !is_wp_error( $brand_taxonomy ) && $brand_taxonomy ) {
+				$brand = WC_Facebookcommerce_Utils::clean_string( $brand_taxonomy );
+			} else {
+				$brand = wp_strip_all_tags( WC_Facebookcommerce_Utils::get_store_name() );
+			}
 
 			if ( self::PRODUCT_PREP_TYPE_ITEMS_BATCH === $type_to_prepare_for ) {
 				$product_data = array(
