@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use SkyVerge\WooCommerce\Facebook\Events\Event;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
@@ -363,6 +364,50 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				'requests'     => json_encode( $requests ),
 				'item_type'    => 'PRODUCT_ITEM',
 			);
+			return self::process_response( $this->_post( $url, $data ) );
+		}
+
+		/**
+		 * Sends pixel events to Facebook.
+		 *
+		 * @param string $pixel_id
+		 * @param array $events
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function send_pixel_events( string $pixel_id, array $events ): array {
+
+			$url  = $this->build_url( "{$pixel_id}/events" );
+			$data = array(
+				'data'          => array(),
+				'partner_agent' => Event::get_platform_identifier(),
+			);
+			foreach ( $events as $event ) {
+				if ( ! $event instanceof Event ) {
+					continue;
+				}
+				$event_data = $event->get_data();
+				if ( isset( $event_data['user_data']['click_id'] ) ) {
+					$event_data['user_data']['fbc'] = $event_data['user_data']['click_id'];
+					unset( $event_data['user_data']['click_id'] );
+				}
+				if ( isset( $event_data['user_data']['browser_id'] ) ) {
+					$event_data['user_data']['fbp'] = $event_data['user_data']['browser_id'];
+					unset( $event_data['user_data']['browser_id'] );
+				}
+				$data['data'][] = array_filter( $event_data );
+			}
+
+			/**
+			 * Filters the Pixel event API request data.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param array $data request data
+			 * @param Request $request request object
+			 */
+			$data = apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
+
 			return self::process_response( $this->_post( $url, $data ) );
 		}
 

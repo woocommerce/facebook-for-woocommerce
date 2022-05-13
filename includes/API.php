@@ -16,7 +16,6 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
-use SkyVerge\WooCommerce\Facebook\Events\Event;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
@@ -474,26 +473,6 @@ class API extends Framework\SV_WC_API_Base {
 				'method' => 'DELETE',
 			)
 		);
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Sends Pixel events.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string  $pixel_id pixel ID
-	 * @param Event[] $events events to send
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function send_pixel_events( $pixel_id, array $events ) {
-
-		$request = new API\Pixel\Events\Request( $pixel_id, $events );
 
 		$this->set_response_handler( Response::class );
 

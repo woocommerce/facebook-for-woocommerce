@@ -763,6 +763,34 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Sends pixel events to Facebook.
+	 *
+	 * @param string $pixel_id
+	 * @param array $events
+	 * @return bool
+	 */
+	public function send_pixel_events( string $pixel_id, array $events ): bool {
+		try {
+			$response = $this->fbgraph->send_pixel_events( $pixel_id, $events );
+			return WC_Facebookcommerce_Graph_API::get_data( $response,
+				function ( $data ) {
+					return 0 < $data['events_received'];
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to send pixel events %s to Facebook pixel id %s: %s',
+					json_encode( $events ),
+					$pixel_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the total number of published products.
 	 *
 	 * @return int

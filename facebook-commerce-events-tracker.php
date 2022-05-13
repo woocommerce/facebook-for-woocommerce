@@ -597,7 +597,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'user_data'   => $this->pixel->get_user_info(),
 			);
 
-			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new Event( $event_data );
 
 			$this->send_api_event( $event );
 
@@ -1056,23 +1056,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @param Event $event event object
 		 * @return bool
 		 */
-		protected function send_api_event( Event $event ) {
+		protected function send_api_event( Event $event ): bool {
 			$this->tracked_events[] = $event;
-
-			try {
-
-				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
-
-				$success = true;
-
-			} catch ( Framework\SV_WC_API_Exception $exception ) {
-
-				$success = false;
-
-				facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
-			}
-
-			return $success;
+			return facebook_for_woocommerce()->get_integration()->send_pixel_events(
+				facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(),
+				array( $event )
+			);
 		}
 
 
