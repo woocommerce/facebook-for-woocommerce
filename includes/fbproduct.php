@@ -377,12 +377,12 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			$sale_start =
 			( $date     = $this->woo_product->get_date_on_sale_from() )
-			? date_i18n( 'Y-m-d', $date->getOffsetTimestamp() ) . self::MIN_TIME
+			? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
 			: self::MIN_DATE_1 . self::MIN_TIME;
 
 			$sale_end =
 			( $date   = $this->woo_product->get_date_on_sale_to() )
-			? date_i18n( 'Y-m-d', $date->getOffsetTimestamp() ) . self::MAX_TIME
+			? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
 			: self::MAX_DATE . self::MAX_TIME;
 
 			// check if sale is expired and sale time range is valid
