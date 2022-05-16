@@ -565,7 +565,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			WC_Facebookcommerce_Utils::get_product_categories( $id );
 
 			// Get brand attribute.
-			$brand = get_post_meta( $id,Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . 'brand', true );
+			$brand = get_post_meta( $id, Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . 'brand', true );
 			$brand_taxonomy = get_the_term_list( $id, 'product_brand', '', ', ' );
 
 			if ( $brand ) {
