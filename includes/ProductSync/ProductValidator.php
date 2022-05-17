@@ -231,7 +231,7 @@ class ProductValidator {
 		$product = $this->product_parent ? $this->product_parent : $this->product;
 
 		if ( ! $product->is_visible() ) {
-			throw new ProductExcludedException( __( 'This product cannot be synced to Facebook because it is hidden from your store catalog..', 'facebook-for-woocommerce' ) );
+			throw new ProductExcludedException( __( 'This product cannot be synced to Facebook because it is hidden from your store catalog.', 'facebook-for-woocommerce' ) );
 		}
 	}
 
