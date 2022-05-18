@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.13
+Stable tag: 2.6.14
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,17 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.14 - 2022-05-18 =
+* Fix - Non-latin custom product attribute names sync.
+* Fix - Syncing brand FB attribute instead of the website name.
+* Fix - Trigger InitiateCheckout event when site uses checkout block.
+* Fix - Wrong sale price start date getting synced to FB Catalog.
+* Fix - Allow products with "shop only" WooCommerce catalog visibility to sync to FB.
+* Fix - Remove semicolon from custom attribute value.
+* Tweak - Update the __experimental_woocommerce_blocks_checkout_update_order_meta action.
+* Tweak - WooCommerce 6.5 compatibility.
+* Tweak - WordPress 6.0 compatibility.
 
 = 2.6.13 - 2022-04-26 =
 * Fix - Issue with Facebook not displayed in the new WC navigation.
