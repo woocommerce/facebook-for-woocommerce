@@ -200,6 +200,7 @@ class Admin {
 						'enhanced_attribute_page_type_edit_category' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
 						'enhanced_attribute_page_type_add_category' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
 						'enhanced_attribute_page_type_edit_product' => \SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+						'is_product_published' 			  => $this->is_current_product_published(),
 						'is_sync_enabled_for_product'     => $this->is_sync_enabled_for_current_product(),
 						'set_product_visibility_nonce'    => wp_create_nonce( 'set-products-visibility' ),
 						'set_product_sync_prompt_nonce'   => wp_create_nonce( 'set-product-sync-prompt' ),
@@ -264,6 +265,24 @@ class Admin {
 		return Products::is_sync_enabled_for_product( $product );
 	}
 
+	/**
+	 * Determines whether the current product is published.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
+	private function is_current_product_published() {
+		global $post;
+
+		$product = wc_get_product( $post );
+
+		if ( ! $product instanceof \WC_Product ) {
+			return false;
+		}
+
+		return 'publish' === $product->get_status();
+	}
 
 	/**
 	 * Gets the markup for the message used in the product not ready modal.
