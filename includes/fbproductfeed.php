@@ -569,6 +569,17 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 
+			// Sale price, only format if we have a sale price set for the product, else leave as empty ('').
+			$sale_price                = static::get_value_from_product_data( $product_data, 'sale_price', '' );
+			$sale_price_effective_date = '';
+			if ( is_numeric( $sale_price ) && $sale_price > 0 ) {
+				$sale_price_effective_date = static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' . $this->get_value_from_product_data( $product_data, 'sale_price_end_date' );
+				$sale_price                = static::format_price_for_feed(
+					$sale_price,
+					static::get_value_from_product_data( $product_data, 'currency' )
+				);
+			}
+
 			return $product_data['retailer_id'] . ',' .
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'name' ) ) . ',' .
 			static::format_string_for_feed( static::get_value_from_product_data( $product_data, 'description' ) ) . ',' .
@@ -584,12 +595,8 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed' ) ) :
 			$item_group_id . ',' .
 			static::get_value_from_product_data( $product_data, 'checkout_url' ) . ',' .
 			static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) ) . ',' .
-			static::get_value_from_product_data( $product_data, 'sale_price_start_date' ) . '/' .
-			static::get_value_from_product_data( $product_data, 'sale_price_end_date' ) . ',' .
-			static::format_price_for_feed(
-				static::get_value_from_product_data( $product_data, 'sale_price', 0 ),
-				static::get_value_from_product_data( $product_data, 'currency' )
-			) . ',' .
+			$sale_price_effective_date . ',' .
+			$sale_price . ',' .
 			'new' . ',' .
 			static::get_value_from_product_data( $product_data, 'visibility' ) . ',' .
 			static::get_value_from_product_data( $product_data, 'gender' ) . ',' .
