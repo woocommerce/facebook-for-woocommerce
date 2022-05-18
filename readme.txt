@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.13
+Stable tag: 2.6.14
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.14 - 2022-xx-xx =
+= 2.6.14 - 2022-05-18 =
 * Fix - Non-latin custom product attribute names sync.
 * Fix - Syncing brand FB attribute instead of the website name.
 * Fix - Trigger InitiateCheckout event when site uses checkout block.

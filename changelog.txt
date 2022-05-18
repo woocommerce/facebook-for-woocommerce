@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2022-xx-xx - version 2.6.14
+2022-05-18 - version 2.6.14
 * Fix - Non-latin custom product attribute names sync.
 * Fix - Syncing brand FB attribute instead of the website name.
 * Fix - Trigger InitiateCheckout event when site uses checkout block.
