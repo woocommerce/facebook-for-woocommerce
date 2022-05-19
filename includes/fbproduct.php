@@ -354,16 +354,13 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			return $description;
 		}
 
+		/**
+		 * @param array $product_data
+		 * @param bool $for_items_batch
+		 *
+		 * @return array
+		 */
 		public function add_sale_price( $product_data, $for_items_batch = false ) {
-
-			// initialise sale price
-			if ( $for_items_batch ) {
-				$product_data['sale_price_effective_date'] = self::MIN_DATE_1 . self::MIN_TIME . '/' . self::MIN_DATE_2 . self::MAX_TIME;
-			} else {
-				$product_data['sale_price_start_date'] = self::MIN_DATE_1 . self::MIN_TIME;
-				$product_data['sale_price_end_date']   = self::MIN_DATE_2 . self::MAX_TIME;
-			}
-			$product_data['sale_price'] = $product_data['price'];
 
 			$sale_price = $this->woo_product->get_sale_price();
 
