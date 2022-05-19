@@ -281,7 +281,7 @@ class Products {
 	 * @since 1.10.0
 	 *
 	 * @param \WC_Product $product product object
-	 * @param bool        $visibility true for 'published' or false for 'staging'
+	 * @param bool        $visibility true for 'published' or false for 'hidden'
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {

@@ -165,7 +165,7 @@ class WC_Facebook_Product_Test extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @param mixed $price the regular price for the product
 	 * @param bool $is_visible whether the product should visible in the Facebook Shop
-	 * @param string $visibility 'staging' or 'published'
+	 * @param string $visibility 'hidden' or 'published'
 	 * @dataProvider provider_prepare_product_sets_product_visibility
 	 */
 	public function test_prepare_product_sets_product_visibility( $price, $is_visible, $visibility ) {
