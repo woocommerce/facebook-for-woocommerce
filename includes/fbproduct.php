@@ -627,7 +627,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$product_data['checkout_url'] = $checkout_url;
 			}
 
-			// IF using WPML, set the product to staging unless it is in the
+			// IF using WPML, set the product to hidden unless it is in the
 			// default language. WPML >= 3.2 Supported.
 			if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 				if ( class_exists( 'WC_Facebook_WPML_Injector' ) && WC_Facebook_WPML_Injector::should_hide( $id ) ) {
