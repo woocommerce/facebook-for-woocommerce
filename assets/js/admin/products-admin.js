@@ -407,10 +407,11 @@ jQuery( document ).ready( function( $ ) {
 
 			let syncValuesStatus = $syncModeSelect.map( function ( index, selectElement ) {
 
-				let $syncMode     = $( selectElement );
-				let syncModeValue = $syncMode.val();
+				let $syncMode     	   = $( selectElement );
+				let syncModeValue 	   = $syncMode.val();
+				let isProductPublished = !! facebook_for_woocommerce_products_admin.is_product_published;
 
-				return 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
+				return isProductPublished && 'sync_disabled' === syncModeValue && syncModeValue !== $syncMode.attr( 'data-original-value' );
 			} ).toArray();
 
 			return syncValuesStatus.indexOf( true ) > -1;
