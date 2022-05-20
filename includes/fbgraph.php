@@ -330,7 +330,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @throws Exception|JsonException
 		 */
 		public function get_user(): array {
-			$url      = $this->build_url( '', 'me' );
+			$url      = $this->build_url( 'me' );
 			$response = $this->_get( $url );
 			return self::process_response( $response );
 		}
@@ -410,6 +410,66 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 			return self::process_response( $this->_post( $url, $data ) );
 		}
+
+
+		/**
+		 * Gets the business configuration.
+		 *
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_business_configuration( $external_business_id ) {
+			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * Updates the messenger configuration.
+		 *
+		 * @param $external_business_id
+		 * @param $configuration
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function update_messenger_configuration( $external_business_id, $configuration ): array {
+			$url  = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$data = array(
+				'fbe_external_business_id' => $external_business_id,
+				'messenger_chat'           => array(
+					'enabled' => $configuration['enabled'] ?? false,
+					'domains' => $configuration['domains'] ?? array(),
+				),
+			);
+			$response = $this->_post( $url, $data );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_installation_ids( $external_business_id ): array {
+			$url      = $this->build_url( 'fbe_business/fbe_installs', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function retrieve_page_access_token(): array {
+			$url      = $this->build_url( 'me/accounts' );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
 
 		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 		public function create_product_group( $product_catalog_id, $data ) {

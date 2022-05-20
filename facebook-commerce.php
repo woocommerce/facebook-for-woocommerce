@@ -772,7 +772,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function send_pixel_events( string $pixel_id, array $events ): bool {
 		try {
 			$response = $this->fbgraph->send_pixel_events( $pixel_id, $events );
-			return WC_Facebookcommerce_Graph_API::get_data( $response,
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
 				function ( $data ) {
 					return 0 < $data['events_received'];
 				}
@@ -789,6 +790,151 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 		return false;
 	}
+
+
+	/**
+	 * Returns Facebook business configuration messenger settings.
+	 *
+	 * @param $external_business_id
+	 * @return array
+	 */
+	public function get_messenger_configuration( $external_business_id ): array {
+		try {
+			$response = $this->fbgraph->get_business_configuration( $external_business_id );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					if ( empty( $data['messenger_chat'] ) ) {
+						return array();
+					}
+					return array_merge(
+						array(
+							'enabled'        => false,
+							'default_locale' => '',
+							'domains'        => array(),
+						),
+						$data['messenger_chat']
+					);
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to fetch Facebook messenger business configuration by %s: %s',
+					$external_business_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return array();
+	}
+
+
+	/**
+	 * Updates the messenger configuration.
+	 *
+	 * @param $external_business_id
+	 * @param $configuration
+	 * @return array|mixed
+	 */
+	public function update_messenger_configuration( $external_business_id, $configuration ) {
+		try {
+			$response = $this->fbgraph->update_messenger_configuration( $external_business_id, $configuration );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					return $data['success'] ?? false;
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to update Facebook messenger business configuration %s with %s: %s',
+					$external_business_id,
+					json_encode( $configuration ),
+					$e->getMessage()
+				)
+			);
+		}
+		return false;
+	}
+
+
+	/**
+	 * @param $external_business_id
+	 * @return array|mixed
+	 */
+	public function get_business_configuration( $external_business_id ) {
+		try {
+			$response = $this->fbgraph->get_business_configuration( $external_business_id );
+			return WC_Facebookcommerce_Graph_API::get_data( $response );
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to fetch Facebook business configuration by %s: %s',
+					$external_business_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return array();
+	}
+
+
+	/**
+	 * @param $external_business_id
+	 * @return array
+	 */
+	public function get_installation_ids( $external_business_id ): array {
+		try {
+			$response = $this->fbgraph->get_installation_ids( $external_business_id );
+			return WC_Facebookcommerce_Graph_API::get_data( $response );
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to fetch Facebook business configuration by %s: %s',
+					$external_business_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return array();
+	}
+
+
+	/**
+	 * @param string $page_id
+	 * @return string
+	 */
+	public function retrieve_page_access_token( string $page_id ): string {
+		try {
+			$response = $this->fbgraph->retrieve_page_access_token();
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) use ( $page_id ) {
+					$pages = array_reduce(
+						$data,
+						function ($acc, $page) {
+							$acc[$page['id']] = $page['access_token'];
+							return $acc;
+						},
+						array()
+					);
+					return $pages[ $page_id ] ?? '';
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to fetch Facebook access token by page id %s: %s',
+					$page_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return '';
+	}
+
 
 	/**
 	 * Gets the total number of published products.
@@ -2932,24 +3078,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/** Setter methods ************************************************************************************************/
-
-
-	/**
-	 * Updates the Facebook page access token.
-	 *
-	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.1.0
-	 *
-	 * @param string $value page access token value
-	 */
-	public function update_page_access_token( $value ) {
-
-		wc_deprecated_function( __METHOD__, '2.1.0', Connection::class . '::update_page_access_token()' );
-
-		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $value );
-	}
 
 
 	/**
