@@ -155,7 +155,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const FB_SHOP_PRODUCT_VISIBLE = 'published';
 
 	/** @var string the API flag to set a product as not visible in the Facebook shop */
-	const FB_SHOP_PRODUCT_HIDDEN = 'staging';
+	const FB_SHOP_PRODUCT_HIDDEN = 'hidden';
 
 	/** @var string @deprecated  */
 	const FB_CART_URL = 'fb_cart_url';

@@ -210,7 +210,7 @@ class BackgroundTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertIsString( $data['item_group_id'] );
 		$this->assertIsString( $data['sale_price'] );
 		$this->assertIsString( $data['link'] );
-		$this->assertTrue( in_array( $data['visibility'], [ 'published', 'staging' ], true ) );
+		$this->assertTrue( in_array( $data['visibility'], [ 'published', 'hidden' ], true ) );
 
 		// compare results with specific values from the test case
 		if ( isset( $request['retailer_id'] ) ) {
