@@ -591,7 +591,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'content_name' => $this->get_cart_content_names(),
 					'content_type' => 'product',
 					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'value'        => (float) $product->get_price() * $quantity,
 					'currency'     => get_woocommerce_currency(),
 				),
 				'user_data'   => $this->pixel->get_user_info(),
