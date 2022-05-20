@@ -32,7 +32,7 @@ class Messenger extends Admin\Abstract_Settings_Screen {
 	 * Facebook messenger data.
 	 * e.g.
 	 * 		array(
-				'enabled'        => true,
+	 * 		'enabled'        => true,
 	 * 			'default_locale' => 'en_US',
 	 * 			'domains'        => array( 'https://internet.com' ),
 	 * 		)
