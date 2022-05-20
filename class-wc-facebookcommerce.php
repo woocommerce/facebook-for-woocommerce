@@ -671,52 +671,12 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/API/Response.php';
 				}
 
-				if ( ! class_exists( API\Pixel\Events\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Pixel/Events/Request.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Request.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Response.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Send_Item_Updates\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Request.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Send_Item_Updates\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Send_Item_Updates/Response.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Request.php';
-				}
-
-				if ( ! class_exists( API\Catalog\Product_Group\Products\Read\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Catalog/Product_Group/Products/Read/Response.php';
-				}
-
 				if ( ! class_exists( API\Catalog\Product_Item\Response::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Response.php';
 				}
 
 				if ( ! class_exists( API\Catalog\Product_Item\Find\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/Catalog/Product_Item/Find/Request.php';
-				}
-
-				if ( ! class_exists( API\User\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Request.php';
-				}
-
-				if ( ! class_exists( API\User\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Response.php';
-				}
-
-				if ( ! class_exists( API\User\Permissions\Delete\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/User/Permissions/Delete/Request.php';
 				}
 
 				if ( ! class_exists( API\FBE\Installation\Request::class ) ) {
@@ -745,14 +705,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 				if ( ! class_exists( API\FBE\Configuration\Update\Request::class ) ) {
 					require_once __DIR__ . '/includes/API/FBE/Configuration/Update/Request.php';
-				}
-
-				if ( ! class_exists( API\Pages\Read\Request::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Request.php';
-				}
-
-				if ( ! class_exists( API\Pages\Read\Response::class ) ) {
-					require_once __DIR__ . '/includes/API/Pages/Read/Response.php';
 				}
 
 				if ( ! class_exists( API\Exceptions\Request_Limit_Reached::class ) ) {

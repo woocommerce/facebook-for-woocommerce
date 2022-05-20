@@ -381,19 +381,15 @@ class Connection {
 			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
 		}
 
-		try {
+		$id     = facebook_for_woocommerce()->get_integration()->get_user_id();
+		$result = facebook_for_woocommerce()->get_integration()->revoke_user_permission( $id, 'manage_business_extension' );
 
-			$response = facebook_for_woocommerce()->get_api()->get_user();
-			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
+		$this->disconnect();
 
-			$this->disconnect();
-
+		if ( $result ) {
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
-
-		} catch ( SV_WC_API_Exception $exception ) {
-
-			facebook_for_woocommerce()->log( sprintf( 'An error occurred during disconnection: %s. Your Facebook connection settings have been reset.', $exception->getMessage() ) );
-			$this->disconnect();
+		} else {
+			facebook_for_woocommerce()->log( 'Disconnection failed.' );
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );

@@ -16,7 +16,6 @@ defined( 'ABSPATH' ) or exit;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
 use SkyVerge\WooCommerce\Facebook\API\Request;
 use SkyVerge\WooCommerce\Facebook\API\Response;
-use SkyVerge\WooCommerce\Facebook\Events\Event;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
@@ -263,66 +262,6 @@ class API extends Framework\SV_WC_API_Base {
 
 
 	/**
-	 * Gets a Catalog object from Facebook.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @return API\Catalog\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function get_catalog( $catalog_id ) {
-
-		$request = new API\Catalog\Request( $catalog_id );
-
-		$this->set_response_handler( API\Catalog\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Gets a user object from Facebook.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $user_id user ID. Defaults to the currently authenticated user
-	 * @return API\User\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function get_user( $user_id = '' ) {
-
-		$request = new API\User\Request( $user_id );
-
-		$this->set_response_handler( API\User\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Delete's a user's API permission.
-	 *
-	 * This is their form of "revoke".
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $user_id user ID. Defaults to the currently authenticated user
-	 * @param string $permission permission to delete
-	 * @return API\User\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function delete_user_permission( $user_id, $permission ) {
-
-		$request = new API\User\Permissions\Delete\Request( $user_id, $permission );
-
-		$this->set_response_handler( API\User\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
 	 * Gets the business configuration.
 	 *
 	 * @since 2.0.0
@@ -358,32 +297,6 @@ class API extends Framework\SV_WC_API_Base {
 		$request->set_messenger_configuration( $configuration );
 
 		$this->set_response_handler( API\Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Uses the Catalog Batch API to update or remove items from catalog.
-	 *
-	 * @see Sync::create_or_update_products()
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @param array  $requests array of prefixed product IDs to create, update or remove
-	 * @param bool   $allow_upsert whether to allow updates to insert new items
-	 * @return \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
-
-		$request = new \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Request( $catalog_id );
-
-		$request->set_requests( $requests );
-		$request->set_allow_upsert( $allow_upsert );
-
-		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response::class );
 
 		return $this->perform_request( $request );
 	}
@@ -467,24 +380,6 @@ class API extends Framework\SV_WC_API_Base {
 	}
 
 
-	/**
-	 * Gets a list of Product Items in the given Product Group.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id product group ID
-	 * @param int    $limit max number of results returned per page of data
-	 * @return API\Catalog\Product_Group\Products\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
-
-		$request = new API\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
-
-		$this->set_response_handler( API\Catalog\Product_Group\Products\Read\Response::class );
-
-		return $this->perform_request( $request );
-	}
 
 
 	/**
@@ -578,26 +473,6 @@ class API extends Framework\SV_WC_API_Base {
 				'method' => 'DELETE',
 			)
 		);
-
-		$this->set_response_handler( Response::class );
-
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Sends Pixel events.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string  $pixel_id pixel ID
-	 * @param Event[] $events events to send
-	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
-	 */
-	public function send_pixel_events( $pixel_id, array $events ) {
-
-		$request = new API\Pixel\Events\Request( $pixel_id, $events );
 
 		$this->set_response_handler( Response::class );
 

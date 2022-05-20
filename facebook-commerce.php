@@ -597,82 +597,197 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return array
 	 */
 	public function get_variation_product_item_ids( $product, $product_group_id ) {
-
-		$product_item_ids_by_variation_id = array();
-		$missing_product_item_ids         = array();
-
+		$ids_by_variation_id = array();
+		$missing_ids         = array();
 		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored
 		foreach ( $product->get_children() as $variation_id ) {
-
 			if ( $variation = wc_get_product( $variation_id ) ) {
-
 				if ( $product_item_id = $variation->get_meta( self::FB_PRODUCT_ITEM_ID ) ) {
-
-					$product_item_ids_by_variation_id[ $variation_id ] = $product_item_id;
-
+					$ids_by_variation_id[ $variation_id ] = $product_item_id;
 				} else {
-
-					$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
-
-					$missing_product_item_ids[ $retailer_id ] = $variation;
-
-					$product_item_ids_by_variation_id[ $variation_id ] = null;
+					$retailer_id                          = WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
+					$missing_ids[ $retailer_id ]          = $variation;
+					$ids_by_variation_id[ $variation_id ] = null;
 				}
 			}
 		}
-
 		// use the Graph API to try to find and store the product item IDs for variations that don't have a value yet
-		if ( $missing_product_item_ids ) {
-
-			$product_item_ids = $this->find_variation_product_item_ids( $product_group_id );
-
-			foreach ( $missing_product_item_ids as $retailer_id => $variation ) {
-
-				if ( isset( $product_item_ids[ $retailer_id ] ) ) {
-
-					$variation->update_meta_data( self::FB_PRODUCT_ITEM_ID, $product_item_ids[ $retailer_id ] );
+		if ( $missing_ids ) {
+			$ids = $this->find_variation_product_item_ids( $product_group_id );
+			foreach ( $missing_ids as $retailer_id => $variation ) {
+				if ( isset( $ids[ $retailer_id ] ) ) {
+					$variation->update_meta_data( self::FB_PRODUCT_ITEM_ID, $ids[ $retailer_id ] );
 					$variation->save_meta_data();
-
-					$product_item_ids_by_variation_id[ $variation->get_id() ] = $product_item_ids[ $retailer_id ];
+					$ids_by_variation_id[ $variation->get_id() ] = $ids[ $retailer_id ];
 				}
 			}
 		}
-
-		return $product_item_ids_by_variation_id;
+		return $ids_by_variation_id;
 	}
 
 
 	/**
 	 * Uses the Graph API to return a list of Product Item IDs indexed by the variation's retailer ID.
-	 *
-	 * @since 2.0.0
+	 * 	Returns a map of pairs
+	 * 	e.g.
+	 * 	(
+	 * 		`woo-vneck-tee-blue_28` -> `7344216055651160`,
+	 * 		`woo-vneck-tee-red_26`  -> `5102436146508829`
+	 * 	)
 	 *
 	 * @param string $product_group_id product group ID
+	 * @return array a map of ( `retailer id` -> `id` ) pairs.
+	 */
+	private function find_variation_product_item_ids( string $product_group_id ): array {
+		$product_item_ids = array();
+		try {
+			$response  = $this->fbgraph->get_product_group_product_ids( $product_group_id );
+			/* local response data decorator function */
+			$decorator = function ( $data ) {
+				return array_reduce(
+					$data,
+					function ( $acc, $item ) {
+						$acc[ $item['retailer_id'] ] = $item['id'];
+						return $acc;
+					},
+					array()
+				);
+			};
+			/* call paging up to two times */
+			$pages = 2;
+			do {
+				$data             = WC_Facebookcommerce_Graph_API::get_data( $response, $decorator );
+				$product_item_ids = array_merge( $product_item_ids, $data );
+				$next             = WC_Facebookcommerce_Graph_API::get_paging_next( $response, $pages-- );
+			} while ( $next && $response = $this->fbgraph->next( $next ) );
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() )
+			);
+		}
+		return $product_item_ids;
+	}
+
+	/**
+	 * Gets Facebook catalog name.
+	 *
+	 * @param string $catalog_id Facebook catalog id.
+	 * @return string Facebook catalog name.
+	 */
+	public function get_catalog_name( string $catalog_id ): string {
+		try {
+			$response = $this->fbgraph->get_catalog( $catalog_id );
+			$data     = WC_Facebookcommerce_Graph_API::get_data( $response );
+			return $data['name'] ?? '';
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'There was an error trying to find a catalog by %s: %s', $catalog_id, $e->getMessage() )
+			);
+		}
+		return '';
+	}
+
+	/**
+	 * Returns Facebook User id.
+	 *
+	 * @return string
+	 */
+	public function get_user_id(): string {
+		try {
+			$response = $this->fbgraph->get_user();
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $user ) {
+					return $user['id'] ?? '';
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to fetch Facebook user: %s', $e->getMessage() )
+			);
+		}
+		return '';
+	}
+
+	/**
+	 * Used to revoke Facebook user permission.
+	 *
+	 * @param string $user_id Facebook user bigint id.
+	 * @param string $permission Facebook user permission.
+	 * @return bool
+	 */
+	public function revoke_user_permission( string $user_id, string $permission ): bool {
+		try {
+			$response = $this->fbgraph->revoke_user_permission( $user_id, $permission );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					return $data['success'] ?? false;
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf( 'Error trying to revoke Facebook user permission: %s', $e->getMessage() )
+			);
+		}
+		return false;
+	}
+
+	/**
+	 * Uses the Catalog Batch API to update or remove items from catalog.
+	 *
+	 * @param $catalog_id
+	 * @param array $requests
 	 * @return array
 	 */
-	private function find_variation_product_item_ids( $product_group_id ) {
-
-		$product_item_ids = array();
-
+	public function send_item_updates( $catalog_id, array $requests ): array {
 		try {
-
-			$response = facebook_for_woocommerce()->get_api()->get_product_group_products( $product_group_id );
-
-			do {
-
-				$product_item_ids = array_merge( $product_item_ids, $response->get_ids() );
-
-				// get up to two additional pages of results
-			} while ( $response = facebook_for_woocommerce()->get_api()->next( $response, 2 ) );
-
-		} catch ( Framework\SV_WC_API_Exception $e ) {
-
-			$message = sprintf( 'There was an error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() );
-
-			facebook_for_woocommerce()->log( $message );
+			$response = $this->fbgraph->send_item_updates( $catalog_id, $requests );
+			return WC_Facebookcommerce_Graph_API::get_data(
+				$response,
+				function ( $data ) {
+					return $data['handles'] ?? array();
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to send item batch updates %s to Facebook catalog %s: %s',
+					json_encode( $requests ),
+					$catalog_id,
+					$e->getMessage()
+				)
+			);
 		}
+		return array();
+	}
 
-		return $product_item_ids;
+	/**
+	 * Sends pixel events to Facebook.
+	 *
+	 * @param string $pixel_id
+	 * @param array $events
+	 * @return bool
+	 */
+	public function send_pixel_events( string $pixel_id, array $events ): bool {
+		try {
+			$response = $this->fbgraph->send_pixel_events( $pixel_id, $events );
+			return WC_Facebookcommerce_Graph_API::get_data( $response,
+				function ( $data ) {
+					return 0 < $data['events_received'];
+				}
+			);
+		} catch ( Exception $e ) {
+			facebook_for_woocommerce()->log(
+				sprintf(
+					'Error trying to send pixel events %s to Facebook pixel id %s: %s',
+					json_encode( $events ),
+					$pixel_id,
+					$e->getMessage()
+				)
+			);
+		}
+		return false;
 	}
 
 	/**
@@ -3206,71 +3321,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// transient must be deleted elsewhere, or wait for timeout
 		}
 	}
-
-
-	/**
-	 * Gets the array that holds the name and url of the configured Facebook page.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return array
-	 */
-	private function get_page() {
-
-		if ( ! is_array( $this->page ) && $this->is_configured() ) {
-
-			try {
-
-				$response = facebook_for_woocommerce()->get_api()->get_page( $this->get_facebook_page_id() );
-
-				$this->page = array(
-					'name' => $response->get_name(),
-					'url'  => $response->get_url(),
-				);
-
-			} catch ( Framework\SV_WC_API_Exception $e ) {
-
-				// we intentionally set $this->page to an empty array if an error occurs to avoid additional API requests
-				// it's unlikely that we will get a different result if the exception was caused by an expired token, incorrect page ID, or rate limiting error
-				$this->page = array();
-
-				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
-
-				facebook_for_woocommerce()->log( $message );
-			}
-		}
-
-		return is_array( $this->page ) ? $this->page : array();
-	}
-
-
-	/**
-	 * Gets the name of the configured Facebook page.
-	 *
-	 * @return string
-	 */
-	public function get_page_name() {
-
-		$page = $this->get_page();
-
-		return isset( $page['name'] ) ? $page['name'] : '';
-	}
-
-
-	/**
-	 * Gets the Facebook page URL.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return string
-	 */
-	public function get_page_url() {
-
-		$page = $this->get_page();
-
-		return isset( $page['url'] ) ? $page['url'] : '';
-	}
-
 
 	/**
 	 * Gets Messenger or Instagram tooltip message.
