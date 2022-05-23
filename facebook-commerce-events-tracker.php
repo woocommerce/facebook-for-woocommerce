@@ -587,11 +587,18 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$event_data = array(
 				'event_name'  => 'AddToCart',
 				'custom_data' => array(
-					'content_ids'  => $this->get_cart_content_ids(),
-					'content_name' => $this->get_cart_content_names(),
+					'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+					'content_name' => $product->get_name(),
 					'content_type' => 'product',
-					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'contents'     => wp_json_encode(
+						array(
+							array(
+								"id"	   => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								"quantity" =>  $quantity,
+							),
+						)
+					),
+					'value'        => (float) $product->get_price() * $quantity,
 					'currency'     => get_woocommerce_currency(),
 				),
 				'user_data'   => $this->pixel->get_user_info(),
@@ -640,20 +647,35 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function add_add_to_cart_event_fragment( $fragments ) {
 
+			$product_id = isset( $_POST['product_id'] ) ? (int) $_POST['product_id'] : '';
+			$quantity   = isset( $_POST['quantity']) ? (int) $_POST['quantity'] : '';
+			$product 	= wc_get_product($product_id);
+
+			if ( ! $product instanceof \WC_Product || empty( $quantity ) ) {
+				return $fragments;
+			}
+
+
 			if ( $this->is_pixel_enabled() ) {
 
 				$params = array(
-					'content_ids'  => $this->get_cart_content_ids(),
-					'content_name' => $this->get_cart_content_names(),
+					'content_ids'  => wp_json_encode( \WC_Facebookcommerce_Utils::get_fb_content_ids( $product ) ),
+					'content_name' => $product->get_name(),
 					'content_type' => 'product',
-					'contents'     => $this->get_cart_contents(),
-					'value'        => $this->get_cart_total(),
+					'contents'     => wp_json_encode(
+						array(
+							array(
+								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								'quantity' => $quantity,
+							),
+						)
+					),
+					'value'        => (float) $product->get_price() * $quantity,
 					'currency'     => get_woocommerce_currency(),
 				);
 
 				// send the event ID to prevent duplication
 				if ( ! empty( $event_id = WC()->session->get( 'facebook_for_woocommerce_add_to_cart_event_id' ) ) ) {
-
 					$params['event_id'] = $event_id;
 				}
 
