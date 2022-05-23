@@ -593,8 +593,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 					'contents'     => wp_json_encode(
 						array(
 							array(
-							"id"	   => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-							"quantity" =>  $quantity,
+								"id"	   => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
+								"quantity" =>  $quantity,
 							),
 						)
 					),
@@ -666,7 +666,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						array(
 							array(
 								'id'       => \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ),
-								'quantity' => 1,
+								'quantity' => $quantity,
 							),
 						)
 					),
