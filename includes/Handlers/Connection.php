@@ -808,7 +808,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_commerce_manager_id() {
-
+		wc_deprecated_function( __METHOD__, '2.6.14' );
 		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
 	}
 
@@ -1081,7 +1081,7 @@ class Connection {
 	 * @param string $id the ID
 	 */
 	public function update_commerce_manager_id( $id ) {
-
+		wc_deprecated_function( __METHOD__, '2.6.14' );
 		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
 	}
 

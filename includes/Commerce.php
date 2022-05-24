@@ -111,11 +111,9 @@ class Commerce {
 	 *
 	 * @return bool whether the site is connected
 	 */
-	public function is_connected() {
+	public function is_connected(): bool {
 
-		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
-
-		$connected = (bool) strlen( $connection_handler->get_page_access_token() ) && ! empty( $connection_handler->get_commerce_manager_id() );
+		$connected = ! empty( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() );
 
 		/**
 		 * Filters whether the site is connected.
