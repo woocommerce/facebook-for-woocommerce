@@ -450,7 +450,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Fetches Facebook Business Extension object ids.
-		 * 	e.g. business manager id, merchant settings id and others
+		 * 	e.g. business manager id, merchant settings id and others.
 		 *
 		 * @param $external_business_id
 		 * @return array
@@ -476,13 +476,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		}
 
 
-		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
+		/**
+		 * Create Variable Product.
+		 *
+		 * @param string $product_catalog_id - Facebook Catalog ID.
+		 * @param array $data - Variable Product data.
+		 * @return array|WP_Error
+		 */
 		public function create_product_group( $product_catalog_id, $data ) {
 			$url = $this->build_url( $product_catalog_id, '/product_groups' );
 			return self::_post( $url, $data );
 		}
 
-		// POST https://graph.facebook.com/vX.X/{product-group-id}/products
+
+		/**
+		 * Add Variable Product Item.
+		 *
+		 * @param string $product_group_id - Variable Product ID.
+		 * @param array $data - Variable product item.
+		 * @return array|WP_Error
+		 */
 		public function create_product_item( $product_group_id, $data ) {
 			$url = $this->build_url( $product_group_id, '/products' );
 			return self::_post( $url, $data );
