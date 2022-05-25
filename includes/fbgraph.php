@@ -449,6 +449,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 
 		/**
+		 * Fetches Facebook Business Extension object ids.
+		 * 	e.g. business manager id, merchant settings id and others
+		 *
 		 * @param $external_business_id
 		 * @return array
 		 * @throws Exception|JsonException
@@ -461,6 +464,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 
 		/**
+		 * Fetches Facebook Page Access Token.
+		 *
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
