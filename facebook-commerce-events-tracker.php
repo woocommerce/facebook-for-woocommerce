@@ -118,7 +118,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// AddToCart while AJAX is enabled
 			add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'add_filter_for_add_to_cart_fragments' ) );
 			// AddToCart while using redirect to cart page
-			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add', 'no' ) ) {
 				add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'set_last_product_added_to_cart_upon_redirect' ), 10, 2 );
 				add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'set_last_product_added_to_cart_upon_ajax_redirect' ) );
 				add_action( 'woocommerce_after_cart', array( $this, 'inject_add_to_cart_redirect_event' ), 10, 2 );
@@ -629,7 +629,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function add_filter_for_add_to_cart_fragments() {
 
-			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add', 'no' ) ) {
 				add_filter( 'woocommerce_add_to_cart_fragments', array( $this, 'add_add_to_cart_event_fragment' ) );
 			}
 		}
@@ -701,7 +701,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function add_filter_for_conditional_add_to_cart_fragment() {
 
-			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add' ) ) {
+			if ( 'no' === get_option( 'woocommerce_cart_redirect_after_add', 'no' ) ) {
 				add_filter( 'woocommerce_add_to_cart_fragments', array( $this, 'add_conditional_add_to_cart_event_fragment' ) );
 			}
 		}
