@@ -330,7 +330,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @throws Exception|JsonException
 		 */
 		public function get_user(): array {
-			$url      = $this->build_url( '', 'me' );
+			$url      = $this->build_url( 'me' );
 			$response = $this->_get( $url );
 			return self::process_response( $response );
 		}
@@ -411,13 +411,91 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::process_response( $this->_post( $url, $data ) );
 		}
 
-		// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
+
+		/**
+		 * Gets the business configuration.
+		 *
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_business_configuration( $external_business_id ) {
+			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * Updates the messenger configuration.
+		 *
+		 * @param $external_business_id
+		 * @param $configuration
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function update_messenger_configuration( $external_business_id, $configuration ): array {
+			$url  = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$data = array(
+				'fbe_external_business_id' => $external_business_id,
+				'messenger_chat'           => array(
+					'enabled' => $configuration['enabled'] ?? false,
+					'domains' => $configuration['domains'] ?? array(),
+				),
+			);
+			$response = $this->_post( $url, $data );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * Fetches Facebook Business Extension object ids.
+		 * 	e.g. business manager id, merchant settings id and others.
+		 *
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_installation_ids( $external_business_id ): array {
+			$url      = $this->build_url( 'fbe_business/fbe_installs', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * Fetches Facebook Page Access Token.
+		 *
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function retrieve_page_access_token(): array {
+			$url      = $this->build_url( 'me/accounts' );
+			$response = $this->_get( $url );
+			return self::process_response( $response );
+		}
+
+
+		/**
+		 * Create Variable Product.
+		 *
+		 * @param string $product_catalog_id - Facebook Catalog ID.
+		 * @param array $data - Variable Product data.
+		 * @return array|WP_Error
+		 */
 		public function create_product_group( $product_catalog_id, $data ) {
 			$url = $this->build_url( $product_catalog_id, '/product_groups' );
 			return self::_post( $url, $data );
 		}
 
-		// POST https://graph.facebook.com/vX.X/{product-group-id}/products
+
+		/**
+		 * Add Variable Product Item.
+		 *
+		 * @param string $product_group_id - Variable Product ID.
+		 * @param array $data - Variable product item.
+		 * @return array|WP_Error
+		 */
 		public function create_product_item( $product_group_id, $data ) {
 			$url = $this->build_url( $product_group_id, '/products' );
 			return self::_post( $url, $data );
