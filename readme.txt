@@ -39,6 +39,13 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.15 - 2022-xx-xx =
+* Fix - Do not set `sale_price` when the product is not on sale.
+* Fix - FB Pixel is missing some ajax Add to cart events.
+* Fix - Feed visibility field value for hidden items.
+* Fix - Wrong Value Field in AddToCart Events.
+* Tweak - Not show the removed from sync confirm modal for unpublished products.
+
 = 2.6.14 - 2022-05-18 =
 * Fix - Non-latin custom product attribute names sync.
 * Fix - Syncing brand FB attribute instead of the website name.

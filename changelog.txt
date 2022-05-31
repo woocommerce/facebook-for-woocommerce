@@ -1,5 +1,12 @@
 *** Facebook for WooCommerce Changelog ***
 
+2022-xx-xx - version 2.6.15
+* Fix - Do not set `sale_price` when the product is not on sale.
+* Fix - FB Pixel is missing some ajax Add to cart events.
+* Fix - Feed visibility field value for hidden items.
+* Fix - Wrong Value Field in AddToCart Events.
+* Tweak - Not show the removed from sync confirm modal for unpublished products.
+
 2022-05-18 - version 2.6.14
 * Fix - Non-latin custom product attribute names sync.
 * Fix - Syncing brand FB attribute instead of the website name.
