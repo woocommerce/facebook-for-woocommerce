@@ -5,7 +5,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 
 class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
-	private WC_Facebookcommerce_Graph_API $api;
+	/** @var WC_Facebookcommerce_Graph_API */
+	private $api;
 
 	/**
 	 * Runs before each test is executed.
