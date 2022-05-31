@@ -45,6 +45,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues a GET request to the Graph API.
+		 * @TODO: could be made private since it not used outside of the class.
 		 *
 		 * @param string $url request URL
 		 * @param string $api_key Graph API key
@@ -66,6 +67,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Performs a Graph API request to the given URL.
+		 * @TODO: can be replaced with _get, _post methods, is not used outside the class.
 		 *
 		 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
 		 *
@@ -106,7 +108,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $response;
 		}
 
-
+		/**
+		 * @TODO: can be made private, is not used outside the class.
+		 *
+		 * @param $url
+		 * @param $data
+		 * @param $api_key
+		 * @return array|WP_Error
+		 */
 		public function _post( $url, $data, $api_key = '' ) {
 			if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
 				return self::_post_async( $url, $data );
@@ -115,6 +124,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			}
 		}
 
+		/**
+		 * @TODO: can be removed, not used at all.
+		 *
+		 * @param $url
+		 * @param $data
+		 * @param $api_key
+		 * @return array|WP_Error
+		 */
 		public function _post_sync( $url, $data, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
 
@@ -136,6 +153,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues an asynchronous POST request to the Graph API.
+		 * @TODO: can be removed, not used at all.
 		 *
 		 * @param string $url request URL
 		 * @param array  $data request data
@@ -173,6 +191,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues a DELETE request to the Graph API.
+		 * @TODO: can be made private, not used outside the class.
 		 *
 		 * @param string $url request URL
 		 * @param string $api_key Graph API key
@@ -272,10 +291,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Determines whether the product catalog ID is valid.
+		 * @TODO: remove it, method is not used anywhere at all.
 		 *
 		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
 		 *
-		 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+		 * TODO: deprecate this method in 1.11.0 or newer {WV 2020-03-12}
 		 *
 		 * @param int $product_catalog_id the ID of the product catalog
 		 * @return bool

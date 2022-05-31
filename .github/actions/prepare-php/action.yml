@@ -1,0 +1,60 @@
+name: Prepare PHP
+description: Set up PHP, load Composer cache, install Composer dependencies
+
+inputs:
+  php-version:
+    description: Specify PHP version. "7.4" by default.
+    required: false
+    default: "7.4"
+
+  tools:
+    description: Specify the tools parameter of shivammathur/setup-php@v2. null by default.
+    required: false
+    default: null
+
+  install-deps:
+    description: Whether to run `composer install`. Set "maybe" to install deps if cache is missing. "yes" by default.
+    required: false
+    default: "yes"
+
+runs:
+  using: composite
+  steps:
+    # Set up PHP
+    - name: 
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        coverage: none
+        tools: ${{ inputs.tools }}
+
+    # Log debug information
+    - shell: sh -e {0}
+      run: |
+        php --version
+        composer --version
+
+    # Get Composer cache directory
+    - shell: sh -e {0}
+      id: composer-cache-config
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    # Set up Composer caching
+    - uses: actions/cache@v2
+      id: composer-cache
+      with:
+        path: ${{ steps.composer-cache-config.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    # Install Composer dependencies
+    - shell: sh -e {0}
+      # Update Composer cache directory if composer.lock has changed
+      run: |
+        if [ "${{ inputs.install-deps }}" = "yes" ] || [ "${{ steps.composer-cache.outputs.cache-hit }}" != "true" ]; then
+          composer install --prefer-dist --no-suggest --no-progress --no-ansi --no-interaction
+          echo "${PWD}/vendor/bin" >> $GITHUB_PATH
+        else
+          echo "Skip composer install"
+        fi
