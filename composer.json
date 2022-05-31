@@ -6,23 +6,15 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/skyverge/wc-plugin-framework"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/woocommerce/action-scheduler-job-framework"
     }
   ],
   "require": {
-    "skyverge/wc-plugin-framework": "5.10.0",
-    "composer/installers": "~1.0",
     "php": ">=7.3",
+    "skyverge/wc-plugin-framework": "5.10.0",
     "woocommerce/action-scheduler-job-framework": "2.0.0"
   },
   "require-dev": {
-    "woocommerce/woocommerce-sniffs": "0.1.0",
-    "phpcompatibility/php-compatibility": "~9.3.5",
-    "lucatume/wp-browser": ">= 2.3.4 <2.4.0",
     "phpunit/phpunit": "^7.5",
     "yoast/phpunit-polyfills": "^1.0"
   },
@@ -34,10 +26,6 @@
   "config": {
     "platform": {
       "php": "7.3.27"
-    },
-    "allow-plugins": {
-      "composer/installers": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "scripts": {
