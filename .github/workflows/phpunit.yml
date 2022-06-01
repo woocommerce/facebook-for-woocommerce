@@ -6,14 +6,14 @@ on:
       - "**.php"
       - composer.json
       - composer.lock
-      - .github/workflows/php-unit-tests.yml
+      - .github/workflows/phpunit.yml
       - .github/actions/prepare-php/action.yml
   pull_request:
     paths:
       - "**.php"
       - composer.json
       - composer.lock
-      - .github/workflows/php-unit-tests.yml
+      - .github/workflows/phpunit.yml
       - .github/actions/prepare-php/action.yml
 
 concurrency:

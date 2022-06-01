@@ -21,8 +21,7 @@ runs:
   using: composite
   steps:
     # Set up PHP
-    - name: 
-      uses: shivammathur/setup-php@v2
+    - uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php-version }}
         coverage: none
