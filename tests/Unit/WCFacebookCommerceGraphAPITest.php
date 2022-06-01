@@ -46,6 +46,21 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	}
 
 	public function test_is_product_catalog_valid_returns_false() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/product-catalog-id-654129', $url );
+			return [
+				'response' => [
+					'code' => 400,
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3);
+		$is_valid = $this->api->is_product_catalog_valid( 'product-catalog-id-654129' );
+		$this->assertFalse( $is_valid );
+	}
+
+	public function test_is_product_catalog_valid_throws_an_error() {
 		$this->expectException( SV_WC_API_Exception::class );
 		$this->expectExceptionCode( 007 );
 		$this->expectExceptionMessage( 'message' );
