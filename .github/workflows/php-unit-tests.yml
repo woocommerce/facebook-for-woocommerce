@@ -6,17 +6,17 @@ on:
       - master
     paths:
       - "**.php"
-      - ./composer.json
-      - ./composer.lock
-      - ./.github/workflows/php-unit-tests.yml
-      - ./.github/actions/prepare-php/action.yml
+      - composer.json
+      - composer.lock
+      - .github/workflows/php-unit-tests.yml
+      - .github/actions/prepare-php/action.yml
   pull_request:
     paths:
       - "**.php"
-      - ./composer.json
-      - ./composer.lock
-      - ./.github/workflows/php-unit-tests.yml
-      - ./.github/actions/prepare-php/action.yml
+      - composer.json
+      - composer.lock
+      - .github/workflows/php-unit-tests.yml
+      - .github/actions/prepare-php/action.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,9 +29,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Prepare PHP
-        uses: ./.github/actions/prepare-php
+        uses: .github/actions/prepare-php
         with:
           install-deps: "maybe"
 
@@ -55,7 +57,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Prepare PHP
-        uses: ./.github/actions/prepare-php
+        uses: .github/actions/prepare-php
         with:
           php-version: "${{ matrix.php }}"
 
@@ -69,7 +71,7 @@ jobs:
 
       - name: Install WP tests
         shell: bash
-        run: ./bin/install-wp-tests.sh wordpress_test root root localhost ${{ matrix.wp-version }}
+        run: bin/install-wp-tests.sh wordpress_test root root localhost ${{ matrix.wp-version }}
 
       - name: PHP8, PHPUnit9 with WordPress v5.9+
         if: matrix.php >= 8
