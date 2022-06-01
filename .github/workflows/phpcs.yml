@@ -1,4 +1,4 @@
-name: PHP Coding Standards v2
+name: PHP Coding Standards
 
 on:
   workflow_dispatch:

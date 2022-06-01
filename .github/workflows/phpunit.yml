@@ -1,4 +1,4 @@
-name: PHP Unit Tests v2
+name: PHP Unit Tests
 
 on:
   workflow_dispatch:
