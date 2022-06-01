@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2022-xx-xx - version 2.6.15
+2022-06-01 - version 2.6.15
 * Fix - Do not set `sale_price` when the product is not on sale.
 * Fix - FB Pixel is missing some ajax Add to cart events.
 * Fix - Feed visibility field value for hidden items.

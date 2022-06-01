@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.14
+Stable tag: 2.6.15
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.15 - 2022-xx-xx =
+= 2.6.15 - 2022-06-01 =
 * Fix - Do not set `sale_price` when the product is not on sale.
 * Fix - FB Pixel is missing some ajax Add to cart events.
 * Fix - Feed visibility field value for hidden items.
