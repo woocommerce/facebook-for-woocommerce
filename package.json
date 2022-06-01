@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@wordpress/scripts": "^14.0.0",
-    "sake": "github:skyverge/sake"
+    "sake": "git+https://github.com/skyverge/sake"
   },
   "scripts": {
     "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
