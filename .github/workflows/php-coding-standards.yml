@@ -6,15 +6,13 @@ on:
       - master
     paths:
       - "**.php"
-      - .github/workflows/php-coding-standards.yml
-      - .github/workflows/php-unit-tests.yml
-      - .github/actions/prepare-php/action.yml
+      - ./.github/workflows/php-coding-standards.yml
+      - ./.github/actions/prepare-php/action.yml
   pull_request:
     paths:
       - "**.php"
-      - .github/workflows/php-coding-standards.yml
-      - .github/workflows/php-unit-tests.yml
-      - .github/actions/prepare-php/action.yml
+      - ./.github/workflows/php-coding-standards.yml
+      - ./.github/actions/prepare-php/action.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
