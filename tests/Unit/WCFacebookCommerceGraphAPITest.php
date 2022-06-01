@@ -14,7 +14,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->api = new WC_Facebookcommerce_Graph_API( 'test-api-key-09869asfdasf56' );
+		$this->api = new WC_Facebookcommerce_Graph_API( 'test-api-key-9678djyad552' );
 	}
 
 	public function test_api_has_authorisation_header_with_proper_api_key() {
