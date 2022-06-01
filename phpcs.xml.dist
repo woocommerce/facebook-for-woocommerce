@@ -104,7 +104,7 @@
 		</properties>
 	</rule>
 
-	<!-- Check the main PHP file and everything in src/ -->
+	<!-- Check the main PHP file and everything in /includes -->
 	<arg name="extensions" value="php"/>
 	<file>./includes</file>
 	<file>./class-wc-facebookcommerce.php</file>
