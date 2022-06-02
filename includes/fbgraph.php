@@ -340,7 +340,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_catalog( $catalog_id ): array {
 			$url      = $this->build_url( $catalog_id, '?fields=name' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -352,7 +352,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_user(): array {
 			$url      = $this->build_url( 'me' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -365,8 +365,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 */
 		public function revoke_user_permission( string $user_id, string $permission ): array {
 			$url      = $this->build_url( "{$user_id}/permissions/{$permission}" );
-			$response =  $this->_delete( $url );
-			return self::process_response( $response );
+			$response = $this->_delete( $url );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -384,7 +384,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				'requests'     => json_encode( $requests ),
 				'item_type'    => 'PRODUCT_ITEM',
 			);
-			return self::process_response( $this->_post( $url, $data ) );
+			return self::process_response_body( $this->_post( $url, $data ) );
 		}
 
 		/**
@@ -428,7 +428,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			 */
 			$data = apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
 
-			return self::process_response( $this->_post( $url, $data ) );
+			return self::process_response_body( $this->_post( $url, $data ) );
 		}
 
 
@@ -442,7 +442,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_business_configuration( $external_business_id ) {
 			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -464,7 +464,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				),
 			);
 			$response = $this->_post( $url, $data );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -479,7 +479,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_installation_ids( $external_business_id ): array {
 			$url      = $this->build_url( 'fbe_business/fbe_installs', '?fbe_external_business_id=' . $external_business_id );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -492,7 +492,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function retrieve_page_access_token(): array {
 			$url      = $this->build_url( 'me/accounts' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -576,7 +576,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				"?fields=id,retailer_id&limit={$limit}"
 			);
 			$response = $this->_get( $request );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -586,17 +586,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		private static function process_response( $response ): array {
-
+		private static function process_response_body($response ): array {
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( $response->get_error_message(), $response->get_error_code() );
 			}
-
-			/** @var string|WP_Error $body */
 			$body = wp_remote_retrieve_body( $response );
-			if ( is_wp_error( $body ) ) {
-				throw new Exception( $body->get_error_message(), $body->get_error_code() );
-			}
 			return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
 		}
 
