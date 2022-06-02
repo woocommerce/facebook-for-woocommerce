@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:ignoreFile
 namespace SkyVerge\WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) || exit;
