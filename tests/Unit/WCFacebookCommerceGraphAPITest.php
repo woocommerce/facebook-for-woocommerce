@@ -3,6 +3,9 @@ declare( strict_types=1 );
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 
+/**
+ * Unit tests for Facebook Graph API calls.
+ */
 class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 	/** @var WC_Facebookcommerce_Graph_API */
@@ -17,8 +20,14 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->api = new WC_Facebookcommerce_Graph_API( 'test-api-key-9678djyad552' );
 	}
 
+	/**
+	 * Test Authorisation header added with a proper key set into.
+	 *
+	 * @return void
+	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 */
 	public function test_api_has_authorisation_header_with_proper_api_key() {
-		$api = new WC_Facebookcommerce_Graph_API( 'test-api-key-09869asfdasf56' );
+		$api      = new WC_Facebookcommerce_Graph_API( 'test-api-key-09869asfdasf56' );
 		$response = function( $result, $parsed_args ) {
 			$this->assertArrayHasKey( 'headers', $parsed_args );
 			$this->assertArrayHasKey( 'Authorization', $parsed_args['headers'] );
@@ -35,7 +44,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Implementing current test using get_catalog() method.
 	 *
 	 * @return void
-	 * @throws JsonException
+	 * @throws JsonException Throws exception in case JSON parsing failure.
 	 */
 	public function test_process_response_body_parses_response_body() {
 		$expected = [
@@ -45,9 +54,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		];
 
 		$response = function() {
-			return [
-				'body' => '{"name":"Facebook for WooCommerce 2 - Catalog","custom":"John Doe","id":"2536275516506259"}'
-			];
+			return [ 'body' => '{"name":"Facebook for WooCommerce 2 - Catalog","custom":"John Doe","id":"2536275516506259"}' ];
 		};
 		add_filter( 'pre_http_request', $response );
 
@@ -60,7 +67,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Implementing current test using get_catalog() method.
 	 *
 	 * @return void
-	 * @throws JsonException
+	 * @throws JsonException Throws exception in case JSON parsing failure.
 	 */
 	public function test_process_response_body_throws_an_exception_when_gets_connection_wp_error() {
 		$this->expectException( Exception::class );
@@ -79,7 +86,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Implementing current test using get_catalog() method.
 	 *
 	 * @return void
-	 * @throws JsonException
+	 * @throws JsonException Throws exception in case JSON parsing failure.
 	 */
 	public function test_process_response_body_throws_an_exception_when_there_is_no_response_body() {
 		$this->expectException( JsonException::class );
@@ -93,6 +100,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->api->get_catalog( '2536275516506259' );
 	}
 
+	/**
+	 * Tests if product catalog valid api return true in case it gets a successful response from Facebook.
+	 *
+	 * @return void
+	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 */
 	public function test_is_product_catalog_valid_returns_true() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
@@ -110,6 +123,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertTrue( $is_valid );
 	}
 
+	/**
+	 * Tests if product catalog valid api return false in case it gets a failed response from Facebook.
+	 *
+	 * @return void
+	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 */
 	public function test_is_product_catalog_valid_returns_false() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
@@ -127,6 +146,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertFalse( $is_valid );
 	}
 
+	/**
+	 * Test if the method throws an exception in case of connection error.
+	 *
+	 * @return void
+	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 */
 	public function test_is_product_catalog_valid_throws_an_error() {
 		$this->expectException( SV_WC_API_Exception::class );
 		$this->expectExceptionCode( 007 );
@@ -142,15 +167,21 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->api->is_product_catalog_valid( 'product-catalog-id-2174129410' );
 	}
 
+	/**
+	 * Tests a call for catalog name and id.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_get_catalog_returns_catalog_id_and_name() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
 			$this->assertEquals( 'https://graph.facebook.com/v12.0/2536275516506259?fields=name', $url );
 			return [
-				'body' => '{"name":"Facebook for WooCommerce 2 - Catalog","id":"2536275516506259"}',
+				'body'     => '{"name":"Facebook for WooCommerce 2 - Catalog","id":"2536275516506259"}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
@@ -165,15 +196,21 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertEquals( '2536275516506259', $data['id'] );
 	}
 
+	/**
+	 * Tests a call for Facebook user id.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_get_user_must_return_facebook_user_id() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
 			$this->assertEquals( 'https://graph.facebook.com/v12.0/me', $url );
 			return [
-				'body' => '{"id":"2525362755165069"}',
+				'body'     => '{"id":"2525362755165069"}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
@@ -185,15 +222,21 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertEquals( '2525362755165069', $data['id'] );
 	}
 
+	/**
+	 * Tests a call to delete permissions.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_revoke_user_permission_must_result_success() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'DELETE', $parsed_args['method'] );
 			$this->assertEquals( 'https://graph.facebook.com/v12.0/2525362755165069/permissions/manage_business_extension', $url );
 			return [
-				'body' => '{"success":true}',
+				'body'     => '{"success":true}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
@@ -205,6 +248,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertTrue( $result['success'] );
 	}
 
+	/**
+	 * Tests update item commands to Facebook.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_send_item_updates_returns_handles() {
 		$items = [
 			'allow_upsert' => true,
@@ -268,7 +317,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 				'body'     => '{"handles":["AcyF-IFFFMif2xx6oUlkHF7qbutTBr0Q2jjWRNfDNXD_VjontQqZp79tt0GL03L3nqoYRrv5RpqDaC8WCoB0jLtG"]}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
@@ -277,9 +326,15 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$result = $this->api->send_item_updates( '2536275516506259', $items );
 
 		$this->assertArrayHasKey( 'handles', $result );
-		$this->assertEquals( ['AcyF-IFFFMif2xx6oUlkHF7qbutTBr0Q2jjWRNfDNXD_VjontQqZp79tt0GL03L3nqoYRrv5RpqDaC8WCoB0jLtG'], $result['handles'] );
+		$this->assertEquals( [ 'AcyF-IFFFMif2xx6oUlkHF7qbutTBr0Q2jjWRNfDNXD_VjontQqZp79tt0GL03L3nqoYRrv5RpqDaC8WCoB0jLtG' ], $result['handles'] );
 	}
 
+	/**
+	 * Tests sending Facebook pixel events to Facebook.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_send_pixel_events_sends_pixel_events() {
 		$data = [
 			'action_source'    => 'website',
@@ -292,12 +347,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 				'content_ids'      => [ 'woo-belt_17' ],
 				'content_name'     => [ 'Belt' ],
 				'content_type'     => 'product',
-				'contents'         => ['{"id":"woo-belt_17","quantity":1}'],
+				'contents'         => [ '{"id":"woo-belt_17","quantity":1}' ],
 				'value'            => '55.00',
 				'currency'         => 'TRY',
 				'content_category' => 'Accessories',
 			],
-			'user_data' => [
+			'user_data'        => [
 				'client_ip_address' => '172.20.0.1',
 				'client_user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
 				'em'                => 'a95869aaee45119b0a46d9b3d5f2d788cc25995af4291fc0841afa71097004e3',
@@ -312,16 +367,14 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 			],
 		];
 
-		$events = [
-			new \SkyVerge\WooCommerce\Facebook\Events\Event( $data )
-		];
+		$events = [ new \SkyVerge\WooCommerce\Facebook\Events\Event( $data ) ];
 
 		$response = function( $result, $parsed_args, $url ) use ( $events ) {
 			$this->assertEquals( 'POST', $parsed_args['method'] );
 			$this->assertEquals( 'https://graph.facebook.com/v12.0/1964583793745557/events', $url );
 
 			$body = [
-				'data' => array_map(
+				'data'          => array_map(
 					function ( $item ) {
 						$event_data = $item->get_data();
 						if ( isset( $event_data['user_data']['click_id'] ) ) {
@@ -343,7 +396,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 				'body'     => '{"events_received":1,"messages":[],"fbtrace_id":"ACkWGi-ptHPA897dD0liZEg"}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
@@ -356,17 +409,21 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertEquals( 1, $result['events_received'] );
 	}
 
+	/**
+	 * Tests filter on Facebook pixel even data applied.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
 	public function test_send_pixel_events_applies_filter_to_pixel_events_data() {
 		$data = [
 			'action_source' => 'website',
 			'custom_data'   => [
 				'value' => '55.00',
-			]
+			],
 		];
 
-		$events = [
-			new \SkyVerge\WooCommerce\Facebook\Events\Event( $data )
-		];
+		$events = [ new \SkyVerge\WooCommerce\Facebook\Events\Event( $data ) ];
 
 		$filter = function( $data ) {
 			$data['data'][0]['action_source']        = 'universe';
@@ -382,7 +439,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 				'body'     => '{"events_received":1,"messages":[],"fbtrace_id":"ACkWGi-ptHPA897dD0liZEg"}',
 				'response' => [
 					'code'    => 200,
-					'message' => 'OK'
+					'message' => 'OK',
 				],
 			];
 		};
