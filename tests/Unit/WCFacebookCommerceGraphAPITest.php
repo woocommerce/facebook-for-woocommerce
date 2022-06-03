@@ -451,6 +451,244 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'events_received', $result );
 		$this->assertEquals( 1, $result['events_received'] );
 	}
+
+	/**
+	 * Test fetch Facebook business configuration settings.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_get_business_configuration_returns_data() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business?fbe_external_business_id=wordpress-facebook-627c01b68bc60', $url );
+			return [
+				'body'     => '{"business":{"name":"WordPress-Facebook"},"catalogs":[{"feature_instance_id":"392979412771234","enabled":true}],"catalog_feed_scheduled":{"enabled":false},"fb_shops":[{"feature_instance_id":"342416671202958","enabled":true}],"ig_cta":{"enabled":false},"ig_shopping":{"enabled":false},"messenger_chat":{"enabled":false},"messenger_menu":{"enabled":false},"page_card":{"enabled":false},"page_cta":{"enabled":false},"page_post":{"enabled":false},"page_shop":{"enabled":false},"pixels":[{"feature_instance_id":"528503782251953","enabled":true}],"thread_intent":{"enabled":false}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->get_business_configuration( 'wordpress-facebook-627c01b68bc60' );
+
+		$this->assertArrayHasKey( 'ig_shopping', $result );
+		$this->assertArrayHasKey( 'ig_cta', $result );
+		$this->assertArrayHasKey( 'messenger_chat', $result );
+
+		$this->assertArrayHasKey( 'enabled', $result['ig_shopping'] );
+		$this->assertArrayHasKey( 'enabled', $result['ig_cta'] );
+		$this->assertArrayHasKey( 'enabled', $result['messenger_chat'] );
+	}
+
+	/**
+	 * Test update Facebook messenger configuration api call.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_update_messenger_configuration_sends_configuration_updates() {
+		$configuration = [
+			'enabled'        => false,
+			'default_locale' => '',
+			'domains'        => [],
+		];
+
+		$response = function( $result, $parsed_args, $url ) use ( $configuration ) {
+			$this->assertEquals( 'POST', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
+
+			$body = [
+				'fbe_external_business_id' => 'wordpress-facebook-6283669706474',
+				'messenger_chat'           => [
+					'enabled' => false,
+					'domains' => [],
+				],
+			];
+			$this->assertEquals( $body, $parsed_args['body'] );
+
+			return [
+				'body'     => '{"success":true}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->update_messenger_configuration( 'wordpress-facebook-6283669706474', $configuration );
+
+		$this->assertArrayHasKey( 'success', $result );
+		$this->assertTrue( $result['success'] );
+	}
+
+	/**
+	 * Test Facebook business ids fetching.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_get_installation_ids_returns_data() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business/fbe_installs?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
+
+			return [
+				'body'     => '{"data":[{"business_manager_id":"973766133343161","commerce_merchant_settings_id":"400812858215678","onsite_eligible":false,"pixel_id":"1964583793745557","profiles":["100564162645958"],"ad_account_id":"0","catalog_id":"2536275516506259","pages":["100564162645958"],"token_type":"User","installed_features":[{"feature_instance_id":"2581241938677946","feature_type":"messenger_chat","connected_assets":{"page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"342416671202958","feature_type":"fb_shop","connected_assets":{"catalog_id":"2536275516506259","commerce_merchant_settings_id":"400812858215678","page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1468417443607539","feature_type":"pixel","connected_assets":{"page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1150084395846296","feature_type":"catalog","connected_assets":{"catalog_id":"2536275516506259","page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}}]}]}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->get_installation_ids( 'wordpress-facebook-6283669706474' );
+
+		$this->assertArrayHasKey( 'data', $result );
+		$this->assertIsArray( $result['data'] );
+
+		$data = current( $result['data'] );
+
+		$this->assertArrayHasKey( 'pages', $data );
+		$this->assertArrayHasKey( 'pixel_id', $data );
+		$this->assertArrayHasKey( 'catalog_id', $data );
+		$this->assertArrayHasKey( 'business_manager_id', $data );
+		$this->assertArrayHasKey( 'ad_account_id', $data );
+		$this->assertArrayHasKey( 'commerce_merchant_settings_id', $data );
+
+		$this->assertIsArray( $data['pages'] );
+
+		$this->assertEquals( '100564162645958', $data['pages'][0] );
+		$this->assertEquals( '1964583793745557', $data['pixel_id'] );
+		$this->assertEquals( '2536275516506259', $data['catalog_id'] );
+		$this->assertEquals( '973766133343161', $data['business_manager_id'] );
+		$this->assertEquals( '0', $data['ad_account_id'] );
+		$this->assertEquals( '400812858215678', $data['commerce_merchant_settings_id'] );
+	}
+
+	/**
+	 * Test fetching Facebook pages and corresponding access tokens.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_retrieve_page_access_token_retrieves_a_token() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/me/accounts', $url );
+
+			return [
+				'body'     => '{"data":[{"access_token":"EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD","category":"E-commerce website","category_list":[{"id":"1756049968005436","name":"E-commerce website"}],"name":"Dima for WooCommerce Second Page","id":"100564162645958","tasks":["ANALYZE","ADVERTISE","MESSAGING","MODERATE","CREATE_CONTENT","MANAGE"]},{"access_token":"EAAGvQJc4NAQBAGpwt4W1JYnG6OvLZCXWOpv713bWRDdWtEjy8c8bHonrZCKW0Q7sYf4a1AR0rW2C0p8XqOWwroQnZBP1peH986oB9fjxy8WCZBOb9bM3j50532TBWTT9ehDthXbJyheaTugj1qhmttfehS3nmGmG8gN3dGSwfqUcIDBgCG5CZC0vR22cajhUfaV2CfJ2qUgZDZD","category":"E-commerce website","category_list":[{"id":"1756049968005436","name":"E-commerce website"}],"name":"My Local Woo Commerce Store Page","id":"109649988385192","tasks":["ANALYZE","ADVERTISE","MESSAGING","MODERATE","CREATE_CONTENT","MANAGE"]}],"paging":{"cursors":{"before":"MTAwNTY0MTYyNjQ1OTU4","after":"MTA5NjQ5OTg4Mzg1MTky"}}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->retrieve_page_access_token();
+
+		$this->assertArrayHasKey( 'data', $result );
+		$this->assertIsArray( $result['data'] );
+		$this->assertCount( 2, $result['data'] );
+
+		$this->assertEquals( '100564162645958', $result['data'][0]['id'] );
+		$this->assertEquals( '109649988385192', $result['data'][1]['id'] );
+
+		$this->assertEquals( 'EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD', $result['data'][0]['access_token'] );
+		$this->assertEquals( 'EAAGvQJc4NAQBAGpwt4W1JYnG6OvLZCXWOpv713bWRDdWtEjy8c8bHonrZCKW0Q7sYf4a1AR0rW2C0p8XqOWwroQnZBP1peH986oB9fjxy8WCZBOb9bM3j50532TBWTT9ehDthXbJyheaTugj1qhmttfehS3nmGmG8gN3dGSwfqUcIDBgCG5CZC0vR22cajhUfaV2CfJ2qUgZDZD', $result['data'][1]['access_token'] );
+	}
+
+	/**
+	 * Test fetching group products.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_get_product_group_product_ids() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
+
+			return [
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->get_product_group_product_ids( '5904678649559740' );
+
+		$this->assertArrayHasKey( 'data', $result );
+		$this->assertArrayHasKey( 'paging', $result );
+	}
+
+	/**
+	 * Test fetching next page of results address from a paginated Facebook result set.
+	 *
+	 * @return void
+	 * @throws JsonException Throws exception in case JSON parsing failure.
+	 */
+	public function test_get_paging_next() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
+
+			return [
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$result = $this->api->get_product_group_product_ids( '5904678649559740' );
+
+		$next = WC_Facebookcommerce_Graph_API::get_paging_next( $result );
+
+		$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id%2Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $next );
+
+		$next = WC_Facebookcommerce_Graph_API::get_paging_next( $result, 0 );
+
+		$this->assertEquals( '', $next );
+	}
+
+	/**
+	 * Test fetching data from Facebook using paging next url from the previous paginated response.
+	 *
+	 * @return void
+	 * @throws Exception|JsonException Connection or response parsing exceptions.
+	 */
+	public function test_next() {
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $url );
+
+			return [
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->next( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3' );
+
+		$this->assertArrayHasKey( 'data', $response );
+		$this->assertArrayHasKey( 'paging', $response );
+	}
 }
 
 /**

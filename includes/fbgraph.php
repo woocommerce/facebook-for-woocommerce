@@ -439,7 +439,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		public function get_business_configuration( $external_business_id ) {
+		public function get_business_configuration( $external_business_id ): array {
 			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
 			$response = $this->_get( $url );
 			return self::process_response_body( $response );
@@ -570,7 +570,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ) {
+		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ): array {
 			$request  = $this->build_url(
 				"{$product_group_id}/products",
 				"?fields=id,retailer_id&limit={$limit}"
@@ -586,7 +586,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		private static function process_response_body($response ): array {
+		private static function process_response_body( $response ): array {
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( $response->get_error_message(), $response->get_error_code() );
 			}
@@ -874,17 +874,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Gets the next page of results for a paginated response.
 		 *
 		 * @param string $url paging data from previous response.
-		 * @return array|WP_Error
+		 * @return array
 		 * @throws Exception
 		 */
-		public function next( string $url ) {
+		public function next( string $url ): array {
 			try {
 				$response = $this->_get( $url );
-				$body     = wp_remote_retrieve_body( $response );
-				if ( is_wp_error( $body ) ) {
-					throw new Exception( $body->get_error_message(), $body->get_error_code() );
-				}
-				return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+				return self::process_response_body( $response );
 			} catch ( JsonException $e ) {
 				return array();
 			}
