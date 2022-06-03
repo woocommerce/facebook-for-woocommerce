@@ -690,16 +690,3 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'paging', $response );
 	}
 }
-
-/**
- * $response = [
-		'headers'       => $args['response_headers'],
-		'body'          => json_encode( $args['response_body'] ),
-		'response'      => [
-			'code'    => $args['response_code'],
-			'message' => $args['response_message'],
-		],
-		'cookies'       => [],
-		'http_response' => null,
-	];
- */
