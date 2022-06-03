@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - trunk
+      - develop
     paths:
       - "**.php"
       - .github/workflows/phpcs.yml
