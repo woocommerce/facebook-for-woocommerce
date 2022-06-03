@@ -107,6 +107,7 @@
 	<!-- Check the main PHP file and everything in /includes -->
 	<arg name="extensions" value="php"/>
 	<file>./includes</file>
+	<file>./tests/Unit</file>
 	<file>./class-wc-facebookcommerce.php</file>
 	<file>./facebook-commerce.php</file>
 	<file>./facebook-commerce-events-tracker.php</file>
@@ -120,6 +121,8 @@
 
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
-	<exclude-pattern>./tests/*</exclude-pattern>
+	<exclude-pattern>./tests/_*</exclude-pattern>
+	<exclude-pattern>./tests/acceptance</exclude-pattern>
+	<exclude-pattern>./tests/integration</exclude-pattern>
 	<exclude-pattern>./js/*</exclude-pattern>
 </ruleset>
