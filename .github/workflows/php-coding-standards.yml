@@ -3,7 +3,8 @@ name: PHP Coding Standards
 on:
   push:
     branches:
-      - master
+      - trunk
+      - develop
   pull_request:
 
 jobs:
