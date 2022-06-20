@@ -363,13 +363,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				add_action( 'add_meta_boxes', 'SkyVerge\WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
 
 				add_action(
-					'transition_post_status',
-					array( $this, 'fb_change_product_published_status' ),
-					10,
-					3
-				);
-
-				add_action(
 					'wp_ajax_ajax_fb_toggle_visibility',
 					array( $this, 'ajax_fb_toggle_visibility' )
 				);
@@ -417,6 +410,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'fb_page_id'             => $this->get_facebook_page_id(),
 				'facebook_jssdk_version' => $this->get_js_sdk_version(),
 			)
+		);
+
+		// Update products on change of status.
+		add_action(
+			'transition_post_status',
+			array( $this, 'fb_change_product_published_status' ),
+			10,
+			3
 		);
 
 		// Product Set hooks.
@@ -1097,7 +1098,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$this->update_fb_visibility( $product, $visibility );
+		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
+			// - new status is 'publish' regardless of old status, sync to Facebook
+			$this->on_product_publish( $product->get_id() );
+		} else {
+			$this->update_fb_visibility( $product, $visibility );
+		}
+
 	}
 
 
@@ -1116,7 +1123,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function should_update_visibility_for_product_status_change( $new_status, $old_status ) {
 
-		return ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' );
+		return ( $old_status === 'publish' && $new_status !== 'publish' ) || ( $old_status === 'trash' && $new_status === 'publish' ) || ( $old_status === 'future' && $new_status === 'publish' );
 	}
 
 
