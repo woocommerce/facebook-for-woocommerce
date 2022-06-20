@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:ignoreFile
 namespace SkyVerge\WooCommerce\Facebook\Jobs;
 
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;

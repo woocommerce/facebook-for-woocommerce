@@ -45,6 +45,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues a GET request to the Graph API.
+		 * @TODO: could be made private since it not used outside of the class.
 		 *
 		 * @param string $url request URL
 		 * @param string $api_key Graph API key
@@ -66,6 +67,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Performs a Graph API request to the given URL.
+		 * @TODO: can be replaced with _get, _post methods, is not used outside the class.
 		 *
 		 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
 		 *
@@ -106,7 +108,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $response;
 		}
 
-
+		/**
+		 * @TODO: can be made private, is not used outside the class.
+		 *
+		 * @param $url
+		 * @param $data
+		 * @param $api_key
+		 * @return array|WP_Error
+		 */
 		public function _post( $url, $data, $api_key = '' ) {
 			if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
 				return self::_post_async( $url, $data );
@@ -115,6 +124,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			}
 		}
 
+		/**
+		 * @TODO: can be removed, not used at all.
+		 *
+		 * @param $url
+		 * @param $data
+		 * @param $api_key
+		 * @return array|WP_Error
+		 */
 		public function _post_sync( $url, $data, $api_key = '' ) {
 			$api_key = $api_key ?: $this->api_key;
 
@@ -136,6 +153,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues an asynchronous POST request to the Graph API.
+		 * @TODO: can be removed, not used at all.
 		 *
 		 * @param string $url request URL
 		 * @param array  $data request data
@@ -173,6 +191,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Issues a DELETE request to the Graph API.
+		 * @TODO: can be made private, not used outside the class.
 		 *
 		 * @param string $url request URL
 		 * @param string $api_key Graph API key
@@ -272,10 +291,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 
 		/**
 		 * Determines whether the product catalog ID is valid.
+		 * @TODO: remove it, method is not used anywhere at all.
 		 *
 		 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
 		 *
-		 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+		 * TODO: deprecate this method in 1.11.0 or newer {WV 2020-03-12}
 		 *
 		 * @param int $product_catalog_id the ID of the product catalog
 		 * @return bool
@@ -320,7 +340,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_catalog( $catalog_id ): array {
 			$url      = $this->build_url( $catalog_id, '?fields=name' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -332,7 +352,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_user(): array {
 			$url      = $this->build_url( 'me' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -345,8 +365,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 */
 		public function revoke_user_permission( string $user_id, string $permission ): array {
 			$url      = $this->build_url( "{$user_id}/permissions/{$permission}" );
-			$response =  $this->_delete( $url );
-			return self::process_response( $response );
+			$response = $this->_delete( $url );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -364,7 +384,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				'requests'     => json_encode( $requests ),
 				'item_type'    => 'PRODUCT_ITEM',
 			);
-			return self::process_response( $this->_post( $url, $data ) );
+			return self::process_response_body( $this->_post( $url, $data ) );
 		}
 
 		/**
@@ -408,7 +428,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			 */
 			$data = apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
 
-			return self::process_response( $this->_post( $url, $data ) );
+			return self::process_response_body( $this->_post( $url, $data ) );
 		}
 
 
@@ -419,10 +439,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		public function get_business_configuration( $external_business_id ) {
+		public function get_business_configuration( $external_business_id ): array {
 			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -444,7 +464,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 				),
 			);
 			$response = $this->_post( $url, $data );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -459,7 +479,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function get_installation_ids( $external_business_id ): array {
 			$url      = $this->build_url( 'fbe_business/fbe_installs', '?fbe_external_business_id=' . $external_business_id );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -472,7 +492,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		public function retrieve_page_access_token(): array {
 			$url      = $this->build_url( 'me/accounts' );
 			$response = $this->_get( $url );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 
@@ -550,13 +570,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ) {
+		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ): array {
 			$request  = $this->build_url(
 				"{$product_group_id}/products",
 				"?fields=id,retailer_id&limit={$limit}"
 			);
 			$response = $this->_get( $request );
-			return self::process_response( $response );
+			return self::process_response_body( $response );
 		}
 
 		/**
@@ -566,17 +586,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * @return array
 		 * @throws Exception|JsonException
 		 */
-		private static function process_response( $response ): array {
-
+		private static function process_response_body( $response ): array {
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( $response->get_error_message(), $response->get_error_code() );
 			}
-
-			/** @var string|WP_Error $body */
 			$body = wp_remote_retrieve_body( $response );
-			if ( is_wp_error( $body ) ) {
-				throw new Exception( $body->get_error_message(), $body->get_error_code() );
-			}
 			return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
 		}
 
@@ -860,17 +874,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 		 * Gets the next page of results for a paginated response.
 		 *
 		 * @param string $url paging data from previous response.
-		 * @return array|WP_Error
+		 * @return array
 		 * @throws Exception
 		 */
-		public function next( string $url ) {
+		public function next( string $url ): array {
 			try {
 				$response = $this->_get( $url );
-				$body     = wp_remote_retrieve_body( $response );
-				if ( is_wp_error( $body ) ) {
-					throw new Exception( $body->get_error_message(), $body->get_error_code() );
-				}
-				return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+				return self::process_response_body( $response );
 			} catch ( JsonException $e ) {
 				return array();
 			}
