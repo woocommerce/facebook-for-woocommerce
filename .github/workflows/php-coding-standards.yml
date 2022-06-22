@@ -13,6 +13,10 @@ on:
       - "**.php"
       - .github/workflows/php-coding-standards.yml
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   phpcs:
     name: PHP coding standards
