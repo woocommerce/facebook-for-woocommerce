@@ -5,7 +5,13 @@ on:
     branches:
       - trunk
       - develop
+    paths:
+      - "**.php"
+      - .github/workflows/php-coding-standards.yml
   pull_request:
+    paths:
+      - "**.php"
+      - .github/workflows/php-coding-standards.yml
 
 jobs:
   phpcs:
