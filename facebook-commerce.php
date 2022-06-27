@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -141,7 +140,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private $page;
 
 	/** @var WC_Facebookcommerce_Graph_API API handling class. */
-	private $fbgraph;
+	public $fbgraph;
+
+	/**
+	 * @var WC_Facebookcommerce_Background_Process
+	 */
+	public $background_processor;
 
 	/** Legacy properties *********************************************************************************************/
 
@@ -176,44 +180,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	const FB_PRIORITY_MID     = 9;
 
 	private $test_mode = false;
-
-
-	public function init_pixel() {
-		WC_Facebookcommerce_Pixel::initialize();
-
-		/**
-		 * Migrate WC customer pixel_id from WC settings to WP options.
-		 * This is part of a larger effort to consolidate all the FB-specific
-		 * settings for all plugin integrations.
-		 */
-		if ( is_admin() ) {
-
-			$pixel_id          = WC_Facebookcommerce_Pixel::get_pixel_id();
-			$settings_pixel_id = $this->get_facebook_pixel_id();
-
-			if (
-			WC_Facebookcommerce_Utils::is_valid_id( $settings_pixel_id ) &&
-			( ! WC_Facebookcommerce_Utils::is_valid_id( $pixel_id ) ||
-			$pixel_id != $settings_pixel_id
-			)
-			) {
-				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
-			}
-
-			/**
-			 * Migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
-			 * so that it works the same way the pixel ID does
-			 */
-			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
-			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
-
-			$settings_use_s2s = $this->is_use_s2s_enabled();
-			WC_Facebookcommerce_Pixel::set_use_s2s( $settings_use_s2s );
-
-			$settings_access_token = $this->get_access_token();
-			WC_Facebookcommerce_Pixel::set_access_token( $settings_access_token );
-		}
-	}
 
 	/**
 	 * Init and hook in the integration.
@@ -266,9 +232,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		WC_Facebookcommerce_Utils::$ems = $this->get_external_merchant_settings_id();
 
 		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
-			include_once 'includes/fbgraph.php';
-			$this->fbgraph = new WC_Facebookcommerce_Graph_API( facebook_for_woocommerce()->get_connection_handler()->get_access_token() );
+			require_once 'includes/fbgraph.php';
 		}
+		$this->fbgraph = new WC_Facebookcommerce_Graph_API( facebook_for_woocommerce()->get_connection_handler()->get_access_token() );
 
 		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
 
@@ -420,8 +386,49 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		// Product Set hooks.
-		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
-		add_action( 'fb_wc_product_set_delete', array( $this, 'delete_product_set_item' ), 99 );
+		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
+		add_action( 'fb_wc_product_set_delete', [ $this, 'delete_product_set_item' ], 99 );
+	}
+
+	public function init_pixel() {
+		/* Not sure this one is needed. Config warmer is never written. */
+		WC_Facebookcommerce_Pixel::initialize();
+
+		/**
+		 * Migrate WC customer pixel_id from WC settings to WP options.
+		 * This is part of a larger effort to consolidate all the FB-specific
+		 * settings for all plugin integrations.
+		 */
+		if ( is_admin() ) {
+
+			$pixel_id          = WC_Facebookcommerce_Pixel::get_pixel_id();
+			$settings_pixel_id = $this->get_facebook_pixel_id();
+
+			if (
+				WC_Facebookcommerce_Utils::is_valid_id( $settings_pixel_id )
+				&&
+				( ! WC_Facebookcommerce_Utils::is_valid_id( $pixel_id ) || $pixel_id !== $settings_pixel_id )
+			) {
+				WC_Facebookcommerce_Pixel::set_pixel_id( $settings_pixel_id );
+			}
+
+			/**
+			 * Migrate Advanced Matching enabled (use_pii) from the integration setting to the pixel option,
+			 * so that it works the same way the pixel ID does
+			 */
+			$settings_advanced_matching_enabled = $this->is_advanced_matching_enabled();
+			WC_Facebookcommerce_Pixel::set_use_pii_key( $settings_advanced_matching_enabled );
+
+			$settings_use_s2s = WC_Facebookcommerce_Pixel::get_use_s2s();
+			WC_Facebookcommerce_Pixel::set_use_s2s( $settings_use_s2s );
+
+			$settings_access_token = WC_Facebookcommerce_Pixel::get_access_token();
+			WC_Facebookcommerce_Pixel::set_access_token( $settings_access_token );
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -470,13 +477,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		include_once 'includes/fbbackground.php';
 		if ( class_exists( 'WC_Facebookcommerce_Background_Process' ) ) {
 			if ( ! isset( $this->background_processor ) ) {
-				$this->background_processor =
-				new WC_Facebookcommerce_Background_Process( $this );
+				$this->background_processor = new WC_Facebookcommerce_Background_Process( $this );
 			}
 		}
 		add_action(
 			'wp_ajax_ajax_fb_background_check_queue',
-			array( $this, 'ajax_fb_background_check_queue' )
+			[ $this, 'ajax_fb_background_check_queue' ]
 		);
 	}
 
@@ -2878,7 +2884,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Gets the configured use s2s flag.
-	 *
+	 * @deprecated
 	 * @return bool
 	 */
 	public function is_use_s2s_enabled() {
@@ -2887,7 +2893,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 	/**
 	 * Gets the configured access token
-	 *
+	 * @deprecated
 	 * @return string
 	 */
 	public function get_access_token() {
