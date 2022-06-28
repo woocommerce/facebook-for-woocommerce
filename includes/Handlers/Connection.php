@@ -215,9 +215,9 @@ class Connection {
 		$catalog_id
 		&& update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, $catalog_id );
 
-		$business_manager_id && $this->update_business_manager_id( $business_manager_id );
-		$ad_account_id && $this->update_ad_account_id( $ad_account_id );
-		$instagram_business_id && $this->update_instagram_business_id( $instagram_business_id );
+		$business_manager_id           && $this->update_business_manager_id( $business_manager_id );
+		$ad_account_id                 && $this->update_ad_account_id( $ad_account_id );
+		$instagram_business_id         && $this->update_instagram_business_id( $instagram_business_id );
 		$commerce_merchant_settings_id && $this->update_commerce_merchant_settings_id( $commerce_merchant_settings_id );
 	}
 

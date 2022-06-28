@@ -192,7 +192,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	}
 
 	public function test_get_variation_product_item_ids_from_facebook_with_no_fb_retailer_id_filters() {
-
 		/** @var WC_Product_Variable $parent */
 		$product = WC_Helper_Product::create_variation_product();
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'some-facebook-product-group-id' );
@@ -224,7 +223,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	}
 
 	public function test_get_variation_product_item_ids_from_facebook_with_fb_retailer_id_filters() {
-
 		/** @var WC_Product_Variable $parent */
 		$product = WC_Helper_Product::create_variation_product();
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'some-facebook-product-group-id' );
@@ -263,16 +261,54 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	}
 
 	public function test_get_catalog_name_returns_catalog_name() {
+		$catalog_id                 = 'some-facebook_catalog-id';
+		$facebook_output            = [ 'name' => 'Facebook for WooCommerce Catalog', 'id' => '2536275516506259' ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_catalog' )
+			->with( $catalog_id )
+			->willReturn( [ 'data' => $facebook_output ] );
 
-		$catalog_id = 'some-facebook_catalog-id';
+		$name = $this->integration->get_catalog_name( $catalog_id );
 
-		$this->integration->get_catalog_name( $catalog_id );
+		$this->assertEquals( 'Facebook for WooCommerce Catalog', $name );
 	}
 
-	public function test_get_catalog_name_handles_exception() {
+	public function test_get_catalog_name_handles_json_exception() {
+		$catalog_id                 = 'some-facebook_catalog-id';
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_catalog' )
+			->with( $catalog_id )
+			->will( $this->throwException( new JsonException()) );
 
-		$catalog_id = 'some-facebook_catalog-id';
+		$name = $this->integration->get_catalog_name( $catalog_id );
 
-		$this->integration->get_catalog_name( $catalog_id );
+		$this->assertEquals( '', $name );
+	}
+
+	public function test_get_catalog_name_handles_any_exception() {
+		$catalog_id                 = 'some-facebook_catalog-id';
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_catalog' )
+			->with( $catalog_id )
+			->will( $this->throwException( new Exception() ) );
+
+		$name = $this->integration->get_catalog_name( $catalog_id );
+
+		$this->assertEquals( '', $name );
+	}
+
+	public function test_get_user_id_returns_user_id() {
+		$facebook_output            = [ 'name' => 'WooCommerce Integration System User', 'id' => '111189594891749' ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_user' )
+			->willReturn( [ 'data' => $facebook_output ] );
+
+		$id = $this->integration->get_user_id();
+
+		$this->assertEquals( '111189594891749', $id );
 	}
 }

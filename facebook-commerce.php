@@ -883,7 +883,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 		}
-		return array();
+		return [];
 	}
 
 
