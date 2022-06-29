@@ -34,7 +34,7 @@ jobs:
         run: vendor/bin/phpcs -i
 
       - name: Run PHPCS on all files
-        run: npm run lint:php:pr --silent | cs2pr
+        run: vendor/bin/phpcs -q -n --report=checkstyle | cs2pr
 
       - name: Run PHPCS with PHP 5.2 on plugin loader file
         run: vendor/bin/phpcs facebook-for-woocommerce.php --runtime-set testVersion 5.2 -q -n --report=checkstyle

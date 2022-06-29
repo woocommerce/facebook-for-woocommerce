@@ -2,6 +2,10 @@
 <ruleset name="WordPress Coding Standards">
 	<description>WooCommerce dev PHP_CodeSniffer ruleset.</description>
 
+	<!-- Check PHP files -->
+	<arg name="extensions" value="php"/>
+	<file>.</file>
+
 	<!-- Exclude paths -->
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/vendor/*</exclude-pattern>
