@@ -127,7 +127,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 */
 		public function init() {
 
-			add_action( 'init', array( $this, 'get_integration' ) );
 			add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
 			add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
