@@ -752,7 +752,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return WC_Facebookcommerce_Graph_API::get_data(
 				$response,
 				function ( $data ) {
-					return $data['handles'] ?? array();
+					return $data['handles'] ?? [];
 				}
 			);
 		} catch ( Exception $e ) {
@@ -765,7 +765,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 		}
-		return array();
+		return [];
 	}
 
 	/**
@@ -811,14 +811,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$response,
 				function ( $data ) {
 					if ( empty( $data['messenger_chat'] ) ) {
-						return array();
+						return [];
 					}
 					return array_merge(
-						array(
+						[
 							'enabled'        => false,
 							'default_locale' => '',
-							'domains'        => array(),
-						),
+							'domains'        => [],
+						],
 						$data['messenger_chat']
 					);
 				}
@@ -832,7 +832,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				)
 			);
 		}
-		return array();
+		return [];
 	}
 
 

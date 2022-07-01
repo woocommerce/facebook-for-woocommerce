@@ -147,7 +147,7 @@ class Connection {
 			$response['ig_cta']['enabled'] ?? false
 		);
 		// update the messenger settings
-		$messenger_configuration = $response['messenger_chat'] ?? array();
+		$messenger_configuration = $response['messenger_chat'] ?? [];
 		if ( $messenger_configuration ) {
 			$enabled = $messenger_configuration['enabled'] ?? false;
 			// store the local "enabled" setting
@@ -157,7 +157,7 @@ class Connection {
 				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
 			}
 			// if the site's domain is somehow missing from the allowed domains, re-add it
-			$domains = $messenger_configuration['domains'] ?? array();
+			$domains = $messenger_configuration['domains'] ?? [];
 			if ( $enabled && ! in_array( home_url( '/' ), $domains, true ) ) {
 				$domains[]                          = home_url( '/' );
 				$messenger_configuration['domains'] = $domains;

@@ -274,25 +274,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( 'Facebook for WooCommerce Catalog', $name );
 	}
 
-	public function test_get_catalog_name_handles_json_exception() {
-		$catalog_id                 = 'some-facebook_catalog-id';
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
-			->method( 'get_catalog' )
-			->with( $catalog_id )
-			->will( $this->throwException( new JsonException()) );
-
-		$name = $this->integration->get_catalog_name( $catalog_id );
-
-		$this->assertEquals( '', $name );
-	}
-
 	public function test_get_catalog_name_handles_any_exception() {
 		$catalog_id                 = 'some-facebook_catalog-id';
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
-			->method( 'get_catalog' )
-			->with( $catalog_id )
+		$this->integration->fbgraph->method( 'get_catalog' )
 			->will( $this->throwException( new Exception() ) );
 
 		$name = $this->integration->get_catalog_name( $catalog_id );
@@ -310,5 +295,245 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$id = $this->integration->get_user_id();
 
 		$this->assertEquals( '111189594891749', $id );
+	}
+
+	public function test_get_user_id_handles_any_exception() {
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'get_user' )
+			->will( $this->throwException( new Exception() ) );
+
+		$id = $this->integration->get_user_id();
+
+		$this->assertEquals( '', $id );
+	}
+
+	public function test_revoke_user_permission_revokes_given_permission() {
+		$user_id                    = '111189594891749';
+		$permission                 = 'manage_business_extension';
+		$facebook_output            = [ 'success' => true ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'revoke_user_permission' )
+			->with( $user_id, $permission )
+			->willReturn( [ 'data' => $facebook_output ] );
+
+		$response = $this->integration->revoke_user_permission( $user_id, $permission );
+
+		$this->assertTrue( $response );
+	}
+
+	public function test_revoke_user_permission_handles_any_exception() {
+		$user_id                    = '111189594891749';
+		$permission                 = 'manage_business_extension';
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'revoke_user_permission' )
+			->will( $this->throwException( new Exception() ) );
+
+		$response = $this->integration->revoke_user_permission( $user_id, $permission );
+
+		$this->assertFalse( $response );
+	}
+
+	public function test_send_item_updates_sends_updates() {
+		$catalog_id                 = 'some-facebook_catalog-id';
+		$requests                   = [];
+		$facebook_output            = [ 'handles' => [ 'AcwiLiSrWtRI_uCzelJ4qe5Ji4AOIjb2vBlrUlXTq6PH9unpjNzWpU_Xhl8JA1ygVFsSzhi8DedPF8TSLAU8YNsb' ] ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'send_item_updates' )
+			->with( $catalog_id, $requests )
+			->willReturn( [ 'data' => $facebook_output ] );
+
+		$handles = $this->integration->send_item_updates( $catalog_id, $requests );
+
+		$this->assertEquals(
+			[ 'AcwiLiSrWtRI_uCzelJ4qe5Ji4AOIjb2vBlrUlXTq6PH9unpjNzWpU_Xhl8JA1ygVFsSzhi8DedPF8TSLAU8YNsb' ],
+			$handles
+		);
+	}
+
+	public function test_send_item_updates_handles_any_exception() {
+		$catalog_id                 = 'some-facebook_catalog-id';
+		$requests                   = [];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'send_item_updates' )
+			->will( $this->throwException( new Exception() ) );
+
+		$handles = $this->integration->send_item_updates( $catalog_id, $requests );
+
+		$this->assertEquals( [], $handles );
+	}
+
+	public function test_send_pixel_events_sends_pixel_events() {
+		$pixel_id                   = '1964583793745557';
+		$events                     = [];
+		$facebook_output            = [ 'events_received' => 1, 'messages' => [], 'fbtrace_id' => 'ACkWGi-ptHPA897dD0liZEg' ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'send_pixel_events' )
+			->with( $pixel_id, $events )
+			->willReturn( $facebook_output );
+
+		$result = $this->integration->send_pixel_events( $pixel_id, $events );
+
+		$this->assertTrue( $result );
+	}
+
+	public function test_send_pixel_events_handles_any_exception() {
+		$pixel_id                   = '1964583793745557';
+		$events                     = [];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'send_pixel_events' )
+			->will( $this->throwException( new Exception() ) );
+
+		$result = $this->integration->send_pixel_events( $pixel_id, $events );
+
+		$this->assertFalse( $result );
+	}
+
+	public function test_get_messenger_configuration_returns_messenger_configuration() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [
+			'messenger_chat' => [
+				'enabled'        => true,
+				'domains'        => [ 'https://somesite.com/' ],
+				'default_locale' => 'en_US'
+			],
+		];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_messenger_configuration' )
+			->with( $external_business_id )
+			->willReturn( $facebook_output );
+
+		$configuration = $this->integration->get_messenger_configuration( $external_business_id );
+
+		$this->assertEquals(
+			[
+				'enabled'        => true,
+				'domains'        => [ 'https://somesite.com/' ],
+				'default_locale' => 'en_US'
+			],
+			$configuration
+		);
+	}
+
+	public function test_get_messenger_configuration_returns_default_messenger_configuration() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_messenger_configuration' )
+			->with( $external_business_id )
+			->willReturn( $facebook_output );
+
+		$configuration = $this->integration->get_messenger_configuration( $external_business_id );
+
+		$this->assertEquals( [], $configuration );
+	}
+
+	public function test_get_messenger_configuration_handles_any_exception() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'send_pixel_events' )
+			->will( $this->throwException( new Exception() ) );
+
+		$configuration = $this->integration->get_messenger_configuration( $external_business_id );
+
+		$this->assertEquals( [], $configuration );
+	}
+
+	public function test_update_messenger_configuration_updates_messenger_configuration() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$configuration        = [
+			'enabled'        => false,
+			'default_locale' => '',
+			'domains'        => [],
+		];
+		$facebook_output      = [ 'success' => true ];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'update_messenger_configuration' )
+			->with( $external_business_id, $configuration )
+			->willReturn( $facebook_output );
+
+		$result = $this->integration->update_messenger_configuration( $external_business_id, $configuration );
+
+		$this->assertTrue( $result );
+	}
+
+	public function test_update_messenger_configuration_handles_any_exception() {
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'update_messenger_configuration' )
+			->will( $this->throwException( new Exception() ) );
+
+		$result = $this->integration->update_messenger_configuration( 'wordpress-facebook-627c01b68bc60', [] );
+
+		$this->assertFalse( $result );
+	}
+
+	public function test_get_business_configuration_gets_business_configuration() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+
+		$facebook_output      = [
+			'ig_shopping'    => [ 'enabled' => false ],
+			'ig_cta'         => [ 'enabled' => false ],
+			'messenger_chat' => [ 'enabled' => false ],
+		];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_business_configuration' )
+			->with( $external_business_id )
+			->willReturn( $facebook_output );
+
+		$configuration = $this->integration->get_business_configuration( $external_business_id );
+
+		$this->assertContains(
+			[
+				'ig_shopping'    => [ 'enabled' => false ],
+				'ig_cta'         => [ 'enabled' => false ],
+				'messenger_chat' => [ 'enabled' => false ],
+			],
+			$configuration
+		);
+	}
+
+	public function test_get_business_configuration_handles_any_exception() {
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'get_business_configuration' )
+			->will( $this->throwException( new Exception() ) );
+
+		$result = $this->integration->get_business_configuration( 'wordpress-facebook-627c01b68bc60', [] );
+
+		$this->assertEquals( [], $result );
+	}
+
+	public function test_get_installation_ids_gets_installation_ids() {
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [
+			//{"data":[{"installed_features":[{"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"342416671202958","feature_type":"fb_shop","connected_assets":{"catalog_id":"2536275516506259","commerce_merchant_settings_id":"400812858215678","page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1468417443607539","feature_type":"pixel","connected_assets":{"page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1150084395846296","feature_type":"catalog","connected_assets":{"catalog_id":"2536275516506259","page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}}]}]}
+			'data' => [
+				[
+					'business_manager_id'           => '973766133343161',
+					'commerce_merchant_settings_id' => '400812858215678',
+					'onsite_eligible'               => false,
+					'pixel_id'                      => '1964583793745557',
+					'profiles'                      => [ '100564162645958' ],
+					'ad_account_id'                 => '0',
+					'catalog_id'                    => '2536275516506259',
+					'pages'                         => [ '100564162645958' ],
+					'token_type'                    => 'User',
+				]
+			],
+		];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'get_installation_ids' )
+			->with( $external_business_id )
+			->willReturn( $facebook_output );
+
+		$results = $this->integration->get_installation_ids( $external_business_id );
+
+
 	}
 }
