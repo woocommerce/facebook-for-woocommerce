@@ -6,12 +6,16 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 /**
  * Unit tests for Facebook Graph API calls.
  */
-class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
-{
+class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 	/** @var WC_Facebookcommerce_Integration */
 	private $integration;
 
+	/**
+	 * Default plugin options.
+	 *
+	 * @var array
+	 */
 	private static $default_options = [
 		WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
 		WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
@@ -22,8 +26,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	/**
 	 * Runs before each test is executed.
 	 */
-	public function setUp(): void
-	{
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->integration = new WC_Facebookcommerce_Integration();
@@ -33,11 +36,21 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		delete_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID );
 	}
 
+	/**
+	 * Tests init pixel method does nothing for non admin users.
+	 *
+	 * @return void
+	 */
 	public function test_init_pixel_for_non_admin_user_must_do_nothing() {
 		$this->assertFalse( is_admin(), 'Current user must not be an admin user.' );
 		$this->assertFalse( $this->integration->init_pixel() );
 	}
 
+	/**
+	 * Tests init pixel inits with default options.
+	 *
+	 * @return void
+	 */
 	public function test_init_pixel_for_admin_user_must_init_pixel_default_options() {
 		/* Setting up Admin user. */
 		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
@@ -52,6 +65,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		);
 	}
 
+	/**
+	 * Tests migrating some setting from wc settings to wp options when init.
+	 *
+	 * @return void
+	 */
 	public function test_init_pixel_for_admin_user_must_init_pixel_migrating_wc_pixel_settings_to_wp_options() {
 		/* Setting up Admin User. */
 		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
@@ -72,15 +90,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $this->integration->init_pixel() );
 		$this->assertEquals(
 			[
-				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '112233445566778899',
-				WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
-				WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
+				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY => '112233445566778899',
+				WC_Facebookcommerce_Pixel::USE_PII_KEY  => true,
+				WC_Facebookcommerce_Pixel::USE_S2S_KEY  => false,
 				WC_Facebookcommerce_Pixel::ACCESS_TOKEN_KEY => '',
 			],
 			get_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY )
 		);
 	}
 
+	/**
+	 * Tests init pixel with filter set.
+	 *
+	 * @return void
+	 */
 	public function test_init_pixel_for_admin_user_must_init_pixel_overwrites_pixel_id_with_filter() {
 		/* Setting up Admin User. */
 		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
@@ -105,15 +128,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $this->integration->init_pixel() );
 		$this->assertEquals(
 			[
-				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '998877665544332211',
-				WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
-				WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
+				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY => '998877665544332211',
+				WC_Facebookcommerce_Pixel::USE_PII_KEY  => true,
+				WC_Facebookcommerce_Pixel::USE_S2S_KEY  => false,
 				WC_Facebookcommerce_Pixel::ACCESS_TOKEN_KEY => '',
 			],
 			get_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY )
 		);
 	}
 
+	/**
+	 * Tests init pixel for admin user uses filter to overwrite use pii settings.
+	 *
+	 * @return void
+	 */
 	public function test_init_pixel_for_admin_user_must_init_pixel_overwrites_use_pii_with_filter() {
 		/* Setting up Admin User. */
 		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
@@ -138,17 +166,21 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $this->integration->init_pixel() );
 		$this->assertEquals(
 			[
-				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
-				WC_Facebookcommerce_Pixel::USE_PII_KEY      => false,
-				WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
+				WC_Facebookcommerce_Pixel::PIXEL_ID_KEY => '0',
+				WC_Facebookcommerce_Pixel::USE_PII_KEY  => false,
+				WC_Facebookcommerce_Pixel::USE_S2S_KEY  => false,
 				WC_Facebookcommerce_Pixel::ACCESS_TOKEN_KEY => '',
 			],
 			get_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY )
 		);
 	}
 
+	/**
+	 * Tests loading of background processor.
+	 *
+	 * @return void
+	 */
 	public function test_load_background_sync_process() {
-
 		$this->integration->load_background_sync_process();
 
 		$this->assertInstanceOf( WC_Facebookcommerce_Background_Process::class, $this->integration->background_processor );
@@ -161,12 +193,21 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		);
 	}
 
+	/**
+	 * Tests get graph api init and return function.
+	 *
+	 * @return void
+	 */
 	public function test_get_graph_api() {
 		$this->assertInstanceOf( WC_Facebookcommerce_Graph_API::class, $this->integration->get_graph_api() );
 	}
 
+	/**
+	 * Tests fetching variable product item ids from product meta.
+	 *
+	 * @return void
+	 */
 	public function test_get_variation_product_item_ids_from_meta() {
-
 		/** @var WC_Product_Variable $parent */
 		$product = WC_Helper_Product::create_variation_product();
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'some-facebook-product-group-id' );
@@ -191,6 +232,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( $expected_output, $output );
 	}
 
+	/**
+	 * Tests fetching product item ids from facebook with any filters.
+	 *
+	 * @return void
+	 */
 	public function test_get_variation_product_item_ids_from_facebook_with_no_fb_retailer_id_filters() {
 		/** @var WC_Product_Variable $parent */
 		$product = WC_Helper_Product::create_variation_product();
@@ -222,6 +268,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( $expected_output, $output );
 	}
 
+	/**
+	 * Tests fetching variable product item ids from facebook with filters.
+	 *
+	 * @return void
+	 */
 	public function test_get_variation_product_item_ids_from_facebook_with_fb_retailer_id_filters() {
 		/** @var WC_Product_Variable $parent */
 		$product = WC_Helper_Product::create_variation_product();
@@ -260,9 +311,17 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( $expected_output, $output );
 	}
 
+	/**
+	 * Tests fetching facebook catalog name.
+	 *
+	 * @return void
+	 */
 	public function test_get_catalog_name_returns_catalog_name() {
 		$catalog_id                 = 'some-facebook_catalog-id';
-		$facebook_output            = [ 'name' => 'Facebook for WooCommerce Catalog', 'id' => '2536275516506259' ];
+		$facebook_output            = [
+			'name' => 'Facebook for WooCommerce Catalog',
+			'id'   => '2536275516506259',
+		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
 			->method( 'get_catalog' )
@@ -274,6 +333,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( 'Facebook for WooCommerce Catalog', $name );
 	}
 
+	/**
+	 * Tests exception handling when fetching facebook catalog name.
+	 *
+	 * @return void
+	 */
 	public function test_get_catalog_name_handles_any_exception() {
 		$catalog_id                 = 'some-facebook_catalog-id';
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
@@ -285,8 +349,16 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( '', $name );
 	}
 
+	/**
+	 * Tests user id fetching from facebook.
+	 *
+	 * @return void
+	 */
 	public function test_get_user_id_returns_user_id() {
-		$facebook_output            = [ 'name' => 'WooCommerce Integration System User', 'id' => '111189594891749' ];
+		$facebook_output            = [
+			'name' => 'WooCommerce Integration System User',
+			'id'   => '111189594891749',
+		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
 			->method( 'get_user' )
@@ -297,6 +369,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( '111189594891749', $id );
 	}
 
+	/**
+	 * Tests exception handling when fetching user id from facebook.
+	 *
+	 * @return void
+	 */
 	public function test_get_user_id_handles_any_exception() {
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'get_user' )
@@ -307,6 +384,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( '', $id );
 	}
 
+	/**
+	 * Tests revoking user permissions.
+	 *
+	 * @return void
+	 */
 	public function test_revoke_user_permission_revokes_given_permission() {
 		$user_id                    = '111189594891749';
 		$permission                 = 'manage_business_extension';
@@ -322,6 +404,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $response );
 	}
 
+	/**
+	 * Tests exception handling when revoking user permissions.
+	 *
+	 * @return void
+	 */
 	public function test_revoke_user_permission_handles_any_exception() {
 		$user_id                    = '111189594891749';
 		$permission                 = 'manage_business_extension';
@@ -334,6 +421,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertFalse( $response );
 	}
 
+	/**
+	 * Tests sending item updates to facebook.
+	 *
+	 * @return void
+	 */
 	public function test_send_item_updates_sends_updates() {
 		$catalog_id                 = 'some-facebook_catalog-id';
 		$requests                   = [];
@@ -352,6 +444,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		);
 	}
 
+	/**
+	 * Tests exception handling when sending item updates to facebook.
+	 *
+	 * @return void
+	 */
 	public function test_send_item_updates_handles_any_exception() {
 		$catalog_id                 = 'some-facebook_catalog-id';
 		$requests                   = [];
@@ -364,10 +461,19 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( [], $handles );
 	}
 
+	/**
+	 * Tests sensing pixel events into facebook.
+	 *
+	 * @return void
+	 */
 	public function test_send_pixel_events_sends_pixel_events() {
 		$pixel_id                   = '1964583793745557';
 		$events                     = [];
-		$facebook_output            = [ 'events_received' => 1, 'messages' => [], 'fbtrace_id' => 'ACkWGi-ptHPA897dD0liZEg' ];
+		$facebook_output            = [
+			'events_received' => 1,
+			'messages'        => [],
+			'fbtrace_id'      => 'ACkWGi-ptHPA897dD0liZEg',
+		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
 			->method( 'send_pixel_events' )
@@ -379,6 +485,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $result );
 	}
 
+	/**
+	 * Tests exception handling when sending pixel events into facebook.
+	 *
+	 * @return void
+	 */
 	public function test_send_pixel_events_handles_any_exception() {
 		$pixel_id                   = '1964583793745557';
 		$events                     = [];
@@ -391,13 +502,18 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertFalse( $result );
 	}
 
+	/**
+	 * Tests messenger configuration fetching.
+	 *
+	 * @return void
+	 */
 	public function test_get_messenger_configuration_returns_messenger_configuration() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output      = [
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output            = [
 			'messenger_chat' => [
 				'enabled'        => true,
 				'domains'        => [ 'https://somesite.com/' ],
-				'default_locale' => 'en_US'
+				'default_locale' => 'en_US',
 			],
 		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
@@ -412,15 +528,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 			[
 				'enabled'        => true,
 				'domains'        => [ 'https://somesite.com/' ],
-				'default_locale' => 'en_US'
+				'default_locale' => 'en_US',
 			],
 			$configuration
 		);
 	}
 
+	/**
+	 * Tests default messenger configuration fetching.
+	 *
+	 * @return void
+	 */
 	public function test_get_messenger_configuration_returns_default_messenger_configuration() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output      = [];
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output            = [];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
 			->method( 'get_business_configuration' )
@@ -432,8 +553,13 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( [], $configuration );
 	}
 
+	/**
+	 * Tests exceptions handling when fetching messenger configuration.
+	 *
+	 * @return void
+	 */
 	public function test_get_messenger_configuration_handles_any_exception() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'get_business_configuration' )
 			->will( $this->throwException( new Exception() ) );
@@ -443,14 +569,19 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( [], $configuration );
 	}
 
+	/**
+	 * Tests messenger configuration update call.
+	 *
+	 * @return void
+	 */
 	public function test_update_messenger_configuration_updates_messenger_configuration() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
-		$configuration        = [
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
+		$configuration              = [
 			'enabled'        => false,
 			'default_locale' => '',
 			'domains'        => [],
 		];
-		$facebook_output      = [ 'success' => true ];
+		$facebook_output            = [ 'success' => true ];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
 			->method( 'update_messenger_configuration' )
@@ -462,6 +593,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertTrue( $result );
 	}
 
+	/**
+	 * Tests exception handling when calling for messenger configuration update.
+	 *
+	 * @return void
+	 */
 	public function test_update_messenger_configuration_handles_any_exception() {
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'update_messenger_configuration' )
@@ -472,10 +608,14 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertFalse( $result );
 	}
 
+	/**
+	 * Tests business configuration fetching.
+	 *
+	 * @return void
+	 */
 	public function test_get_business_configuration_gets_business_configuration() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
-
-		$facebook_output      = [
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output            = [
 			'ig_shopping'    => [ 'enabled' => false ],
 			'ig_cta'         => [ 'enabled' => false ],
 			'messenger_chat' => [ 'enabled' => false ],
@@ -491,16 +631,17 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertArrayHasKey( 'ig_shopping', $configuration );
 		$this->assertArrayHasKey( 'ig_cta', $configuration );
 		$this->assertArrayHasKey( 'messenger_chat', $configuration );
-		/*$this->assertContains(
-			[
-				'ig_shopping'    => [ 'enabled' => false ],
-				'ig_cta'         => [ 'enabled' => false ],
-				'messenger_chat' => [ 'enabled' => false ],
-			],
-			$configuration
-		);*/
+
+		$this->assertEquals( [ 'enabled' => false ], $configuration['ig_shopping'] );
+		$this->assertEquals( [ 'enabled' => false ], $configuration['ig_cta'] );
+		$this->assertEquals( [ 'enabled' => false ], $configuration['messenger_chat'] );
 	}
 
+	/**
+	 * Tests exception handling when calling to fetch business configuration.
+	 *
+	 * @return void
+	 */
 	public function test_get_business_configuration_handles_any_exception() {
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'get_business_configuration' )
@@ -511,9 +652,14 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( [], $result );
 	}
 
+	/**
+	 * Tests fetching installation ids from facebook.
+	 *
+	 * @return void
+	 */
 	public function test_get_installation_ids_gets_installation_ids() {
-		$external_business_id = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output      = [
+		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output            = [
 			'data' => [
 				[
 					'business_manager_id'           => '973766133343161',
@@ -537,9 +683,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 							'feature_type'        => 'fb_shop',
 							'connected_assets'    =>
 							[
-								'catalog_id'                    => '2536275516506259',
+								'catalog_id' => '2536275516506259',
 								'commerce_merchant_settings_id' => '400812858215678',
-								'page_id'                       => '100564162645958',
+								'page_id'    => '100564162645958',
 							],
 							'additional_info'     => [ 'onsite_eligible' => false ],
 						],
@@ -582,8 +728,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertArrayHasKey( 'business_manager_id', $results );
 		$this->assertArrayHasKey( 'ad_account_id', $results );
 		$this->assertArrayHasKey( 'commerce_merchant_settings_id', $results );
+
+		$this->assertEquals( [ '100564162645958' ], $results['pages'] );
+		$this->assertEquals( '1964583793745557', $results['pixel_id'] );
+		$this->assertEquals( '2536275516506259', $results['catalog_id'] );
+		$this->assertEquals( '973766133343161', $results['business_manager_id'] );
+		$this->assertEquals( '0', $results['ad_account_id'] );
+		$this->assertEquals( '400812858215678', $results['commerce_merchant_settings_id'] );
 	}
 
+	/**
+	 * Tests exception handling when calling for installation ids from facebook.
+	 *
+	 * @return void
+	 */
 	public function test_get_installation_ids_handles_any_exception() {
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'get_installation_ids' )
@@ -594,6 +752,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( [], $result );
 	}
 
+	/**
+	 * Tests fetching page access token for a given page id returns a corresponding token.
+	 *
+	 * @return void
+	 */
 	public function test_retrieve_page_access_token_retrieves_a_token() {
 		$page_id                    = '100564162645958';
 		$facebook_output            = [
@@ -625,6 +788,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		);
 	}
 
+	/**
+	 * Tests fetching access token for a missing page id returns empty string.
+	 *
+	 * @return void
+	 */
 	public function test_retrieve_page_access_token_retrieves_a_token_for_a_missing_page_id() {
 		$page_id                    = '999999999999999';
 		$facebook_output            = [
@@ -653,6 +821,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( '', $token );
 	}
 
+	/**
+	 * Tests exception handling when fetching page access token.
+	 *
+	 * @return void
+	 */
 	public function test_retrieve_page_access_token_handles_any_exception() {
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->method( 'retrieve_page_access_token' )
@@ -663,6 +836,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( '', $token );
 	}
 
+	/**
+	 * Tests fetching product count without filters.
+	 *
+	 * @return void
+	 */
 	public function test_get_product_count_returns_product_count_with_no_filters() {
 		$count = $this->integration->get_product_count();
 
@@ -678,6 +856,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$this->assertEquals( 2, $count );
 	}
 
+	/**
+	 * Tests filters overwrite product counts.
+	 *
+	 * @return void
+	 */
 	public function test_get_product_count_returns_product_count_with_filters() {
 		add_filter(
 			'wp_count_posts',
