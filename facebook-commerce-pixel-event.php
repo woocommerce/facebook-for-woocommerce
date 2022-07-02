@@ -9,6 +9,8 @@
  * @package FacebookCommerce
  */
 
+require_once __DIR__ . '/facebook-config-warmer.php';
+
 use SkyVerge\WooCommerce\Facebook\Events\Event;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :

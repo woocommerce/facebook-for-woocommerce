@@ -19,15 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-require_once 'facebook-config-warmer.php';
 require_once 'includes/fbproduct.php';
 require_once 'facebook-commerce-pixel-event.php';
 
+// phpcs:disable Squiz.Classes.ClassFileName.NoMatch
+// phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
 /**
  * Class object used as a gateway to Facebook graph API to process its responses.
  */
 class WC_Facebookcommerce_Integration extends WC_Integration {
-
+// phpcs:enable
 	/**
 	 * The WordPress option name where the page access token is stored.
 	 *
@@ -1235,7 +1236,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ( ! wp_doing_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
 			 && ! Products::published_product_should_be_synced( $product ) ) {
-
 			return;
 		}
 
