@@ -402,7 +402,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
-			->method( 'get_messenger_configuration' )
+			->method( 'get_business_configuration' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
 
@@ -423,7 +423,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 		$facebook_output      = [];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$this->integration->fbgraph->expects( $this->once() )
-			->method( 'get_messenger_configuration' )
+			->method( 'get_business_configuration' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
 
@@ -435,7 +435,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	public function test_get_messenger_configuration_handles_any_exception() {
 		$external_business_id = 'wordpress-facebook-627c01b68bc60';
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'send_pixel_events' )
+		$this->integration->fbgraph->method( 'get_business_configuration' )
 			->will( $this->throwException( new Exception() ) );
 
 		$configuration = $this->integration->get_messenger_configuration( $external_business_id );
@@ -488,14 +488,17 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 
 		$configuration = $this->integration->get_business_configuration( $external_business_id );
 
-		$this->assertContains(
+		$this->assertArrayHasKey( 'ig_shopping', $configuration );
+		$this->assertArrayHasKey( 'ig_cta', $configuration );
+		$this->assertArrayHasKey( 'messenger_chat', $configuration );
+		/*$this->assertContains(
 			[
 				'ig_shopping'    => [ 'enabled' => false ],
 				'ig_cta'         => [ 'enabled' => false ],
 				'messenger_chat' => [ 'enabled' => false ],
 			],
 			$configuration
-		);
+		);*/
 	}
 
 	public function test_get_business_configuration_handles_any_exception() {
@@ -511,7 +514,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 	public function test_get_installation_ids_gets_installation_ids() {
 		$external_business_id = 'wordpress-facebook-627c01b68bc60';
 		$facebook_output      = [
-			//{"data":[{"installed_features":[{"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"342416671202958","feature_type":"fb_shop","connected_assets":{"catalog_id":"2536275516506259","commerce_merchant_settings_id":"400812858215678","page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1468417443607539","feature_type":"pixel","connected_assets":{"page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1150084395846296","feature_type":"catalog","connected_assets":{"catalog_id":"2536275516506259","page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}}]}]}
 			'data' => [
 				[
 					'business_manager_id'           => '973766133343161',
@@ -523,7 +525,45 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 					'catalog_id'                    => '2536275516506259',
 					'pages'                         => [ '100564162645958' ],
 					'token_type'                    => 'User',
-				]
+					'installed_features'            => [
+						[
+							'feature_instance_id' => '2581241938677946',
+							'feature_type'        => 'messenger_chat',
+							'connected_assets'    => [ 'page_id' => '100564162645958' ],
+							'additional_info'     => [ 'onsite_eligible' => false ],
+						],
+						[
+							'feature_instance_id' => '342416671202958',
+							'feature_type'        => 'fb_shop',
+							'connected_assets'    =>
+							[
+								'catalog_id'                    => '2536275516506259',
+								'commerce_merchant_settings_id' => '400812858215678',
+								'page_id'                       => '100564162645958',
+							],
+							'additional_info'     => [ 'onsite_eligible' => false ],
+						],
+						[
+							'feature_instance_id' => '1468417443607539',
+							'feature_type'        => 'pixel',
+							'connected_assets'    => [
+								'page_id'  => '100564162645958',
+								'pixel_id' => '1964583793745557',
+							],
+							'additional_info'     => [ 'onsite_eligible' => false ],
+						],
+						[
+							'feature_instance_id' => '1150084395846296',
+							'feature_type'        => 'catalog',
+							'connected_assets'    => [
+								'catalog_id' => '2536275516506259',
+								'page_id'    => '100564162645958',
+								'pixel_id'   => '1964583793745557',
+							],
+							'additional_info'     => [ 'onsite_eligible' => false ],
+						],
+					],
+				],
 			],
 		];
 		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
@@ -534,6 +574,122 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase
 
 		$results = $this->integration->get_installation_ids( $external_business_id );
 
+		$results = current( $results );
 
+		$this->assertArrayHasKey( 'pages', $results );
+		$this->assertArrayHasKey( 'pixel_id', $results );
+		$this->assertArrayHasKey( 'catalog_id', $results );
+		$this->assertArrayHasKey( 'business_manager_id', $results );
+		$this->assertArrayHasKey( 'ad_account_id', $results );
+		$this->assertArrayHasKey( 'commerce_merchant_settings_id', $results );
+	}
+
+	public function test_get_installation_ids_handles_any_exception() {
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'get_installation_ids' )
+			->will( $this->throwException( new Exception() ) );
+
+		$result = $this->integration->get_installation_ids( 'wordpress-facebook-627c01b68bc60', [] );
+
+		$this->assertEquals( [], $result );
+	}
+
+	public function test_retrieve_page_access_token_retrieves_a_token() {
+		$page_id                    = '100564162645958';
+		$facebook_output            = [
+			'data' => [
+				[
+					'id'           => '100564162645958',
+					'name'         => 'Dima for WooCommerce Second Page',
+					'category'     => 'E-commerce website',
+					'access_token' => 'EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD',
+				],
+				[
+					'id'           => '109649988385192',
+					'name'         => 'My Local Woo Commerce Store Page',
+					'category'     => 'E-commerce website',
+					'access_token' => 'EAAGvQJc4NAQBAGpwt4W1JYnG6OvLZCXWOpv713bWRDdWtEjy8c8bHonrZCKW0Q7sYf4a1AR0rW2C0p8XqOWwroQnZBP1peH986oB9fjxy8WCZBOb9bM3j50532TBWTT9ehDthXbJyheaTugj1qhmttfehS3nmGmG8gN3dGSwfqUcIDBgCG5CZC0vR22cajhUfaV2CfJ2qUgZDZD',
+				],
+			],
+		];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'retrieve_page_access_token' )
+			->willReturn( $facebook_output );
+
+		$token = $this->integration->retrieve_page_access_token( $page_id );
+
+		$this->assertEquals(
+			'EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD',
+			$token
+		);
+	}
+
+	public function test_retrieve_page_access_token_retrieves_a_token_for_a_missing_page_id() {
+		$page_id                    = '999999999999999';
+		$facebook_output            = [
+			'data' => [
+				[
+					'id'           => '100564162645958',
+					'name'         => 'Dima for WooCommerce Second Page',
+					'category'     => 'E-commerce website',
+					'access_token' => 'EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD',
+				],
+				[
+					'id'           => '109649988385192',
+					'name'         => 'My Local Woo Commerce Store Page',
+					'category'     => 'E-commerce website',
+					'access_token' => 'EAAGvQJc4NAQBAGpwt4W1JYnG6OvLZCXWOpv713bWRDdWtEjy8c8bHonrZCKW0Q7sYf4a1AR0rW2C0p8XqOWwroQnZBP1peH986oB9fjxy8WCZBOb9bM3j50532TBWTT9ehDthXbJyheaTugj1qhmttfehS3nmGmG8gN3dGSwfqUcIDBgCG5CZC0vR22cajhUfaV2CfJ2qUgZDZD',
+				],
+			],
+		];
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->expects( $this->once() )
+			->method( 'retrieve_page_access_token' )
+			->willReturn( $facebook_output );
+
+		$token = $this->integration->retrieve_page_access_token( $page_id );
+
+		$this->assertEquals( '', $token );
+	}
+
+	public function test_retrieve_page_access_token_handles_any_exception() {
+		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$this->integration->fbgraph->method( 'retrieve_page_access_token' )
+			->will( $this->throwException( new Exception() ) );
+
+		$token = $this->integration->retrieve_page_access_token( '100564162645958' );
+
+		$this->assertEquals( '', $token );
+	}
+
+	public function test_get_product_count_returns_product_count_with_no_filters() {
+		$count = $this->integration->get_product_count();
+
+		$this->assertFalse( has_filter( 'wp_count_posts' ) );
+		$this->assertEquals( 0, $count );
+
+		WC_Helper_Product::create_simple_product();
+		WC_Helper_Product::create_simple_product();
+
+		$count = $this->integration->get_product_count();
+
+		$this->assertFalse( has_filter( 'wp_count_posts' ) );
+		$this->assertEquals( 2, $count );
+	}
+
+	public function test_get_product_count_returns_product_count_with_filters() {
+		add_filter(
+			'wp_count_posts',
+			function( $counts ) {
+				$counts->publish = 21;
+				return $counts;
+			}
+		);
+
+		$count = $this->integration->get_product_count();
+
+		$this->assertEquals( 10, has_filter( 'wp_count_posts' ) );
+		$this->assertEquals( 21, $count );
 	}
 }
