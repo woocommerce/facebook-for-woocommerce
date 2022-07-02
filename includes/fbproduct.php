@@ -23,7 +23,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 	/**
-	 * Custom FB Product proxy class
+	 * Custom FB Product proxy class.
+	 *
+	 * @method int get_id()
 	 */
 	class WC_Facebook_Product {
 		// Used for the background sync

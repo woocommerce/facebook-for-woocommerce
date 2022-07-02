@@ -1,6 +1,8 @@
 <?php
 declare( strict_types=1 );
 
+require_once __DIR__ . '/../../facebook-commerce.php';
+
 use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 
 /**

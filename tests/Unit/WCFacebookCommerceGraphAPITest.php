@@ -1,6 +1,8 @@
 <?php
 declare( strict_types=1 );
 
+require_once __DIR__ . '/../../includes/fbgraph.php';
+
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 
 /**
