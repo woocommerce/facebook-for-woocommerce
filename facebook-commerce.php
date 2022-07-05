@@ -1011,11 +1011,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			\WC_Facebookcommerce::PLUGIN_VERSION,
 			false
 		);
-		wp_localize_script(
-			'wc_facebook_infobanner_jsx',
-			'wc_facebook_infobanner_jsx',
-			$ajax_data
-		);
+		wp_localize_script( 'wc_facebook_infobanner_jsx', 'wc_facebook_infobanner_jsx', $ajax_data );
 
 		wp_enqueue_style(
 			'wc_facebook_infobanner_css',
@@ -1032,9 +1028,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		?>
-	<script>
-
-	window.facebookAdsToolboxConfig = {
+		<script>
+			window.facebookAdsToolboxConfig = {
 		hasGzipSupport: '<?php echo extension_loaded( 'zlib' ) ? 'true' : 'false'; ?>',
 		enabledPlugins: ['MESSENGER_CHAT','INSTAGRAM_SHOP', 'PAGE_SHOP'],
 		enableSubscription: '<?php echo class_exists( 'WC_Subscriptions' ) ? 'true' : 'false'; ?>',
@@ -1068,9 +1063,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			samples: <?php echo $this->get_sample_product_feed(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		},
 	};
-
-	</script>
-
+		</script>
 		<?php
 		$ajax_data = [
 			'nonce' => wp_create_nonce( 'wc_facebook_settings_jsx' ),

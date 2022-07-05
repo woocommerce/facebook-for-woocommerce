@@ -877,4 +877,124 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( 10, has_filter( 'wp_count_posts' ) );
 		$this->assertEquals( 21, $count );
 	}
+
+	/**
+	 * Tests default allow full batch api sync status.
+	 *
+	 * @return void
+	 */
+	public function test_allow_full_batch_api_sync_returns_default_allow_status_with_no_filters() {
+
+		$status = $this->integration->allow_full_batch_api_sync();
+
+		$this->assertTrue( $status );
+		$this->assertFalse( has_filter( 'facebook_for_woocommerce_block_full_batch_api_sync' ) );
+		$this->assertFalse( has_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync' ) );
+	}
+
+	/**
+	 * Tests default allow full batch api sync uses facebook_for_woocommerce_block_full_batch_api_sync filter
+	 * to overwrite allowance status.
+	 *
+	 * @return void
+	 */
+	public function test_allow_full_batch_api_sync_uses_block_full_batch_api_sync_filter() {
+		add_filter(
+			'facebook_for_woocommerce_block_full_batch_api_sync',
+			function ( bool $status ) {
+				return true;
+			}
+		);
+
+		$status = $this->integration->allow_full_batch_api_sync();
+
+		$this->assertFalse( $status );
+		$this->assertTrue( has_filter( 'facebook_for_woocommerce_block_full_batch_api_sync' ) );
+		$this->assertFalse( has_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync' ) );
+	}
+
+	/**
+	 * Tests default allow full batch api sync uses facebook_for_woocommerce_allow_full_batch_api_sync filter
+	 * to overwrite allowance status.
+	 *
+	 * @return void
+	 */
+	public function test_allow_full_batch_api_sync_uses_allow_full_batch_api_sync_filter() {
+		add_filter(
+			'facebook_for_woocommerce_allow_full_batch_api_sync',
+			function ( bool $status ) {
+				return false;
+			}
+		);
+
+		$status = $this->integration->allow_full_batch_api_sync();
+
+		$this->assertFalse( $status );
+		$this->assertFalse( has_filter( 'facebook_for_woocommerce_block_full_batch_api_sync' ) );
+		$this->assertTrue( has_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync' ) );
+	}
+
+	/**
+	 * Tests plugin enqueues scripts and styles for non admin user for non plugin settings screens.
+	 *
+	 * @return void
+	 */
+	public function test_load_assets_loads_only_info_banner_assets_for_non_plugin_settings_page() {
+		set_current_screen( 'front' );
+
+		$this->integration->load_assets();
+
+		do_action( 'wp_enqueue_scripts' );
+		do_action( 'wp_enqueue_styles' );
+
+		$this->assertFalse( is_admin() );
+		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx',  ) );
+		$this->assertTrue( wp_style_is( 'wp_enqueue_style' ) );
+		$this->assertFalse( wp_style_is( 'wc_facebook_css' ) );
+	}
+
+	/**
+	 * Tests plugin enqueues scripts and styles for admin user for non plugin settings screens.
+	 *
+	 * @return void
+	 */
+	public function test_load_assets_loads_only_info_banner_assets_for_admin_user_at_non_plugin_settings_page() {
+		/* Setting up Admin user. */
+		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		set_current_screen( 'front' );
+
+		$this->integration->load_assets();
+
+		do_action( 'wp_enqueue_scripts' );
+		do_action( 'wp_enqueue_styles' );
+
+		$this->assertTrue( is_admin() );
+		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx',  ) );
+		$this->assertTrue( wp_style_is( 'wp_enqueue_style' ) );
+		$this->assertFalse( wp_style_is( 'wc_facebook_css' ) );
+	}
+
+	/**
+	 * Tests plugin enqueues scripts and styles for admin user for plugin settings screens.
+	 *
+	 * @return void
+	 */
+	public function test_load_assets_loads_only_info_banner_assets_for_admin_user_at_plugin_settings_page() {
+		/* Setting up Admin user. */
+		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+		set_current_screen( 'wc-facebook' );
+
+		$this->integration->load_assets();
+
+		do_action( 'wp_enqueue_scripts' );
+		do_action( 'wp_enqueue_styles' );
+
+		$this->assertTrue( is_admin() );
+		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx',  ) );
+		$this->assertTrue( wp_style_is( 'wp_enqueue_style' ) );
+		$this->assertTrue( wp_style_is( 'wc_facebook_css' ) );
+	}
 }
