@@ -26,7 +26,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 	 */
 	class WC_Facebookcommerce_Graph_API {
 		const GRAPH_API_URL = 'https://graph.facebook.com/';
-		const API_VERSION   = 'v12.0';
+		const API_VERSION   = 'v13.0';
 		const CURL_TIMEOUT  = 500;
 
 		/**

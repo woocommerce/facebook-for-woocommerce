@@ -32,5 +32,11 @@
     "psr-4": {
       "SkyVerge\\WooCommerce\\Facebook\\": "includes"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
