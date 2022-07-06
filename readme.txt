@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.17 - 2022-07-06 =
+* Fix - Add allow-plugins directive and adjust phpcs GitHub workflow.
+* Fix - Scheduled product not synced when status becomes "publish".
+* Tweak - WooCommerce 6.7 compatibility.
+* Update - Facebook Marketing API from v12.0 to v13.0.
+
 = 2.6.16 - 2022-06-07 =
 * Fix - Updating reference from old master branch.
 * Tweak - WC 6.6 compatibility.
