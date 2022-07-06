@@ -12,3 +12,14 @@
 	float: none;
 	width: 100% !important;
 }
+
+tr[class*="term-wc_facebook_enhanced_catalog_attribute"]:not(.term-wc_facebook_enhanced_catalog_attributes_id-title-wrap) > th > label {
+	position: relative;
+	display: block;
+}
+
+tr[class*="term-wc_facebook_enhanced_catalog_attribute"]:not(.term-wc_facebook_enhanced_catalog_attributes_id-title-wrap) > th > label > span.woocommerce-help-tip {
+	position: absolute;
+	right: 15px;
+}
+
