@@ -870,7 +870,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		public function get_integration() {
 
 			if ( null === $this->integration ) {
-				$this->integration = new WC_Facebookcommerce_Integration();
+				$this->integration = new WC_Facebookcommerce_Integration( $this );
 			}
 
 			return $this->integration;
