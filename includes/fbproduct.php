@@ -211,7 +211,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 			$image_urls = array_values( $image_urls );
 
 			if ( empty( $image_urls ) ) {
-				$image_urls[] = facebook_for_woocommerce()->get_plugin_url() . '/assets/images/woocommerce-placeholder.png';
+				$image_urls[] = wc_placeholder_img_src();
 			}
 
 			return $image_urls;
