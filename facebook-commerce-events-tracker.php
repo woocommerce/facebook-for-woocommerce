@@ -381,10 +381,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * Triggers Search for result pages (deduped)
 		 *
 		 * @internal
+		 *
+		 * @param WP_Query $query the query object
 		 */
-		public function inject_search_event() {
+		public function inject_search_event( $query ) {
 
-			if ( ! $this->is_pixel_enabled() ) {
+			if ( ! $this->is_pixel_enabled() || ! $query->is_main_query()  ) {
 				return;
 			}
 
