@@ -386,7 +386,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_search_event( $query ) {
 
-			if ( ! $this->is_pixel_enabled() || ! $query->is_main_query()  ) {
+			if ( ! $this->is_pixel_enabled() || ! $query->is_main_query() ) {
 				return;
 			}
 
