@@ -482,7 +482,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::process_response_body( $response );
 		}
 
-
 		/**
 		 * Fetches Facebook Page Access Token.
 		 *
@@ -495,19 +494,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return self::process_response_body( $response );
 		}
 
-
 		/**
 		 * Create Variable Product.
 		 *
-		 * @param string $product_catalog_id - Facebook Catalog ID.
-		 * @param array $data - Variable Product data.
+		 * @param string $facebook_catalog_id - Facebook Catalog ID.
+		 * @param array  $data - Variable Product data.
 		 * @return array|WP_Error
 		 */
-		public function create_product_group( $product_catalog_id, $data ) {
-			$url = $this->build_url( $product_catalog_id, '/product_groups' );
+		public function create_product_group( string $facebook_catalog_id, array $data ) {
+			$url = $this->build_url( $facebook_catalog_id, '/product_groups' );
 			return self::_post( $url, $data );
 		}
-
 
 		/**
 		 * Add Variable Product Item.
@@ -744,8 +741,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			}
 
 			$response_body = wp_remote_retrieve_body( $response );
-			$connect_woo   =
-			WC_Facebookcommerce_Utils::decode_json( $response_body )->connect_woo;
+			$connect_woo   = WC_Facebookcommerce_Utils::decode_json( $response_body )->connect_woo;
 			if ( ! isset( $connect_woo ) ) {
 				$data['error_type'] = 'Response body not set';
 				WC_Facebookcommerce_Utils::fblog(
@@ -757,7 +753,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $connect_woo;
 		}
 
-		public function get_facebook_id( $facebook_catalog_id, $product_id ) {
+		/*public function get_facebook_id( $facebook_catalog_id, $product_id ) {
 			$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
 			base64_encode( $product_id ) . '/?fields=id,product_group{id}';
 			$url   = $this->build_url( '', $param );
@@ -765,6 +761,21 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			// {id: <fb product id>, product_group{id} <fb product group id>}
 			// failure API will return {error: <error message>}
 			return self::_get( $url );
+		}*/
+
+		/**
+		 * Returns product Facebook id.
+		 *
+		 * @param string $facebook_catalog_id
+		 * @param string $facebook_retailer_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_facebook_id( string $facebook_catalog_id, string $facebook_retailer_id ): array {
+			$param    = 'catalog:' . $facebook_catalog_id . ':' . base64_encode( $facebook_retailer_id ) . '/?fields=id,product_group{id}';
+			$url      = $this->build_url( '', $param );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
 		}
 
 		public function check_product_info( $facebook_catalog_id, $product_id, $pr_v ) {

@@ -688,6 +688,32 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Gets Facebook product id.
+	 *
+	 * @param string $facebook_catalog_id Facebook catalog id.
+	 * @param string $facebook_retailer_id Facebook retailer product id.
+	 * @return array
+	 */
+	public function get_facebook_id( string $facebook_catalog_id, string $facebook_retailer_id ): array {
+		try {
+			$response = $this->fbgraph->get_facebook_id( $facebook_catalog_id, $facebook_retailer_id );
+			return WC_Facebookcommerce_Graph_API::get_data( $response );
+		} catch ( Exception $e ) {
+			$this->facebook_for_woocommerce->log(
+				sprintf( 'There was an error trying to find facebook product ids for %s inside catalog %s: %s', $facebook_retailer_id, $facebook_catalog_id, $e->getMessage() )
+			);
+			$this->display_error_message(
+				sprintf(
+					/* translators: Placeholders %1$s - original error message from Facebook API */
+					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
+					$product_fbid_result->get_error_message()
+				)
+			);
+		}
+		return [];
+	}
+
+	/**
 	 * Returns Facebook User id.
 	 *
 	 * @return string
@@ -1495,11 +1521,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Create product group and product, store fb-specific info.
 	 *
-	 * @param WC_Product  $woo_product
-	 * @param string|null $fb_product_group_id
-	 * @return string
+	 * @param WC_Facebook_Product  $woo_product
+	 * @param string|null          $fb_product_group_id
+	 * @return string facebook product item id
 	 */
-	public function create_product_simple( WC_Product $woo_product, string $fb_product_group_id = null ): string {
+	public function create_product_simple( WC_Facebook_Product $woo_product, string $fb_product_group_id = null ): string {
 		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
 		if ( ! $fb_product_group_id ) {
@@ -1514,12 +1540,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * @param WC_Product $woo_product
-	 * @param string     $retailer_id
-	 * @param bool       $variants
+	 * @param WC_Facebook_Product $woo_product
+	 * @param string              $retailer_id
+	 * @param bool                $variants
 	 * @return string
 	 */
-	public function create_product_group( WC_Product $woo_product, string $retailer_id, bool $variants = false ): string {
+	public function create_product_group( WC_Facebook_Product $woo_product, string $retailer_id, bool $variants = false ): string {
 		$product_group_data = [
 			'retailer_id' => $retailer_id,
 		];
@@ -2023,6 +2049,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->display_error_message( $message );
 			return;
 		}
+
+		//var_export($result);exit;
 
 		if ( $result['response']['code'] !== '200' ) {
 			// Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
@@ -3448,13 +3476,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param string                   $fbid_type ID type (group or item)
 	 * @param int                      $wp_id post ID
 	 * @param WC_Facebook_Product|null $woo_product product
-	 * @return mixed|void|null
+	 * @return string facebook product id or an empty string
 	 */
 	public function get_product_fbid( $fbid_type, $wp_id, $woo_product = null ) {
-		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta(
-			$wp_id,
-			$fbid_type
-		);
+		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta( $wp_id, $fbid_type );
 		if ( $fb_id ) {
 			return $fb_id;
 		}
@@ -3465,35 +3490,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// if the product with ID equal to $wp_id is variable, $woo_product will be the first child
 		$woo_product         = new WC_Facebook_Product( current( $products ) );
 		$fb_retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
-		$product_fbid_result = $this->fbgraph->get_facebook_id(
-			$this->get_product_catalog_id(),
-			$fb_retailer_id
-		);
+		$product_fbid_result = $this->get_facebook_id( $this->get_product_catalog_id(), $fb_retailer_id );
 
-		if ( is_wp_error( $product_fbid_result ) ) {
-			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
-			$this->display_error_message(
-				sprintf(
-					/* translators: Placeholders %1$s - original error message from Facebook API */
-					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
-					$product_fbid_result->get_error_message()
-				)
-			);
-			return;
+		if ( $fbid_type === self::FB_PRODUCT_GROUP_ID ) {
+			$fb_id = $product_fbid_result['product_group']['id'] ?? '';
+		} else {
+			$fb_id = $product_fbid_result['id'] ?? '';
 		}
 
-		if ( $product_fbid_result && isset( $product_fbid_result['body'] ) ) {
-			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
-			if ( ! empty( $body->id ) ) {
-				if ( $fbid_type === self::FB_PRODUCT_GROUP_ID ) {
-					$fb_id = $body->product_group->id;
-				} else {
-					$fb_id = $body->id;
-				}
-				update_post_meta( $wp_id, $fbid_type, $fb_id );
-				return $fb_id;
-			}
+		if ( ! empty( $fb_id ) ) {
+			update_post_meta( $wp_id, $fbid_type, $fb_id );
 		}
+
+		return $fb_id;
 	}
 
 	/**
