@@ -983,7 +983,7 @@ class Connection {
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 				'domain'               => home_url(),
-				'channel'              => 'COMMERCE_OFFSITE',
+				'channel'              => 'DEFAULT',
 			),
 			'business_config' => array(
 				'business' => array(
