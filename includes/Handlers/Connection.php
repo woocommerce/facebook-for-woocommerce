@@ -11,6 +11,7 @@
 
 namespace SkyVerge\WooCommerce\Facebook\Handlers;
 
+use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 use SkyVerge\WooCommerce\Facebook\API\Exceptions\Connect_WC_API_Exception;
@@ -109,9 +110,9 @@ class Connection {
 
 		$this->plugin = $plugin;
 
-		add_action( 'init', array( $this, 'refresh_business_configuration' ) );
+		add_action( Heartbeat::HOURLY, array( $this, 'refresh_business_configuration' ) );
 
-		add_action( 'admin_init', array( $this, 'refresh_installation_data' ) );
+		add_action( Heartbeat::DAILY, array( $this, 'refresh_installation_data' ) );
 
 		add_action( 'woocommerce_api_' . self::ACTION_CONNECT, array( $this, 'handle_connect' ) );
 
