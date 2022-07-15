@@ -186,11 +186,6 @@ class Connection {
 			return;
 		}
 
-		// only refresh once a day
-		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
-			return;
-		}
-
 		try {
 
 			$this->update_installation_data();
@@ -200,7 +195,6 @@ class Connection {
 			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
 		}
 
-		set_transient( 'wc_facebook_connection_refresh', time(), DAY_IN_SECONDS );
 	}
 
 
