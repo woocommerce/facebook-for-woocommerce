@@ -135,11 +135,6 @@ class Connection {
 	 */
 	public function refresh_business_configuration() {
 
-		// only refresh once an hour
-		if ( get_transient( 'wc_facebook_business_configuration_refresh' ) ) {
-			return;
-		}
-
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
 			return;
@@ -176,7 +171,6 @@ class Connection {
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
 
-		set_transient( 'wc_facebook_business_configuration_refresh', time(), HOUR_IN_SECONDS );
 	}
 
 
@@ -424,8 +418,6 @@ class Connection {
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
-
-		delete_transient( 'wc_facebook_business_configuration_refresh' );
 
 	}
 
