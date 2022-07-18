@@ -5,6 +5,9 @@ require_once __DIR__ . '/../../facebook-commerce.php';
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use SkyVerge\WooCommerce\Facebook\Admin;
+use SkyVerge\WooCommerce\Facebook\Admin\Products as AdminProducts;
+use SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
+use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator;
 
 /**
@@ -989,35 +992,41 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests on_product_save handler with simple product and disabled sync to Facebook.
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
 	 *
 	 * @return void
 	 */
-	public function test_on_product_save_with_simple_product_and_disabled_sync() {
-		$product = WC_Helper_Product::create_simple_product();
+	public function test_on_product_save_existing_simple_product_sync_enabled_updates_product() {
+		$product_to_update = WC_Helper_Product::create_simple_product();
+		$product_to_delete = WC_Helper_Product::create_simple_product();
 
-		$this->integration->on_product_save( $product->get_id() );
+		$_POST['wc_facebook_sync_mode'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
 
-		$sync_meta = $product->get_meta_data( SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY );
-		$this->assertEquals( 'no', current( $sync_meta )->value );
+		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $product_to_delete->get_id();
 
-		$transient = get_transient( 'wc_' . facebook_for_woocommerce()->get_id() . '_show_product_disabled_sync_notice_' . get_current_user_id() );
-		$this->assertEquals( 1, $transient );
-	}
+		$_POST[ WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ] = 'Facebook product description.';
+		$_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ]           = '199';
+		$_POST[ 'fb_product_image_source' ]                       = 'Image source meta key value.';
+		$_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ]           = 'Facebook product image.';
+		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]           = 1;
+		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = 1718;
 
-	/**
-	 * Tests on_product_save handler with simple product and enabled sync to Facebook will update the existing product.
-	 *
-	 * @return void
-	 */
-	public function test_on_product_save_existing_facebook_product_with_simple_product_and_enabled_sync_will_update_product() {
-		$product = WC_Helper_Product::create_simple_product();
-		$facebook_output_get_facebook_id = [
-			'id'            => 'facebook-product-id',
-			'product_group' => [
-				'id' => 'facebook-product-group-id',
-			],
-		];
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr1' ] = 'Enhanced catalog attribute one.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr2' ] = 'Enhanced catalog attribute two.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr3' ] = 'Enhanced catalog attribute three.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr4' ] = 'Enhanced catalog attribute four.';
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $product_to_update )
+			->willReturn( $this->createMock( ProductValidator::class ) );
+
+		$product_to_update->set_stock_status( 'instock' );
+
+		add_post_meta( $product_to_update->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id' );
+
+		$product_to_update->set_meta_data( Products::VISIBILITY_META_KEY, true );
+
 		$facebook_output_update_product_item = [
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
@@ -1026,165 +1035,39 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-
-		/* Product successfully validates */
-		$validator = $this->createMock( ProductValidator::class );
-		$validator->expects( $this->once() )
-			->method( 'validate' )
-			->willReturn( true );
-
-		$this->facebook_for_woocommerce->expects( $this->once() )
-			->method( 'get_product_sync_validator' )
-			->with( $product )
-			->willReturn( $validator );
+		$facebook_product                               = new WC_Facebook_Product( $product_to_update->get_id() );
+		$facebook_product_data                          = $facebook_product->prepare_product();
+		$facebook_product_data['additional_image_urls'] = '';
+		/* Data coming from _POST data. */
+		$facebook_product_data['description'] = 'Facebook product description.';
+		$facebook_product_data['price']       = 19900;
 
 		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$graph_api->expects( $this->once() )
-			->method( 'get_facebook_id' )
-			->willReturn( $facebook_output_get_facebook_id );
-
-		$facebook_product = new WC_Facebook_Product( $product->get_id() );
-		$facebook_product_data = $facebook_product->prepare_product();
-		$facebook_product_data['additional_image_urls'] = '';
-		$graph_api->expects( $this->once() )
 			->method( 'update_product_item' )
-			->with( 'facebook-product-id', $facebook_product_data )
+			->with( 'facebook-product-item-id', $facebook_product_data )
 			->willReturn( $facebook_output_update_product_item );
 		$this->integration->fbgraph = $graph_api;
 
-		/* Enabling sync */
-		$_POST['wc_facebook_sync_mode'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
+		$this->integration->on_product_save( $product_to_update->get_id() );
 
-		$this->integration->on_product_save( $product->get_id() );
+		$this->assertEquals( 'yes', get_post_meta( $product_to_update->get_id(), Products::SYNC_ENABLED_META_KEY, true ) );
+		$this->assertEquals( 'yes', get_post_meta( $product_to_update->get_id(), Products::VISIBILITY_META_KEY, true ) );
+		$this->assertEquals( 'imagesourcemetakeyvalue', get_post_meta( $product_to_update->get_id(), Products::PRODUCT_IMAGE_SOURCE_META_KEY, true ) );
 
-		$sync_meta = $product->get_meta_data( SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY );
-		$this->assertEquals( 'yes', current( $sync_meta )->value );
+		$this->assertEquals( 'Enhanced catalog attribute one.', get_post_meta( $product_to_update->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr1', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute two.', get_post_meta( $product_to_update->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr2', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute three.', get_post_meta( $product_to_update->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr3', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute four.', get_post_meta( $product_to_update->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr4', true ) );
 
-		$visibility_meta = $product->get_meta_data( SkyVerge\WooCommerce\Facebook\Products::VISIBILITY_META_KEY );
-		$this->assertEquals( 'yes', current( $visibility_meta )->value );
+		$this->assertEquals( null, get_post_meta( $product_to_update->get_id(), Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, true ) );
+		$this->assertEquals( 'yes', get_post_meta( $product_to_update->get_id(), Products::COMMERCE_ENABLED_META_KEY, true ) );
+		$this->assertEquals( 1718, get_post_meta( $product_to_update->get_id(), Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
+
+		$facebook_product_to_update = new WC_Facebook_Product( $product_to_update->get_id() );
+
+		$this->assertEquals( 'Facebook product description.', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_DESCRIPTION, true ) );
+		$this->assertEquals( '199', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_PRICE, true ) );
+		$this->assertEquals( 'http://example.orgFacebook product image.', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_IMAGE, true ) );
 	}
-
-	/**
-	 * Tests on_product_save handler with simple product and enabled sync to Facebook.
-	 *
-	 * @return void
-	 */
-	public function test_on_product_save_non_existing_facebook_product_with_simple_product_and_enabled_sync_will_create_product() {
-		$product = WC_Helper_Product::create_simple_product();
-		$facebook_output_create_product_group = [
-			'headers'  => [],
-			'body'     => '{"id":"5191350430934001"}',
-			'response' => [
-				'code'    => '200',
-				'message' => 'OK',
-			],
-		];
-		$facebook_output_create_product_item = [
-			'headers'  => [],
-			'body'     => '{"id":"5191364664265911"}',
-			'response' => [
-				'code'    => '200',
-				'message' => 'OK',
-			],
-		];
-
-		/* Product successfully validates */
-		$validator = $this->createMock( ProductValidator::class );
-		$validator->expects( $this->once() )
-			->method( 'validate' )
-			->willReturn( true );
-
-		$this->facebook_for_woocommerce->expects( $this->once() )
-			->method( 'get_product_sync_validator' )
-			->with( $product )
-			->willReturn( $validator );
-
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
-			->method( 'get_facebook_id' )
-			->willReturn( [] );
-
-		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $product );
-		$graph_api->expects( $this->once() )
-			->method( 'create_product_group' )
-			->with( '', [ 'retailer_id' => $retailer_id ] )
-			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
-
-		$facebook_product = new WC_Facebook_Product( $product->get_id() );
-		$graph_api->expects( $this->once() )
-			->method( 'create_product_item' )
-			->with( '5191350430934001', $facebook_product->prepare_product() )
-			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
-
-		/* Enabling sync */
-		$_POST['wc_facebook_sync_mode'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
-
-		$this->integration->on_product_save( $product->get_id() );
-
-		$sync_meta = $product->get_meta_data( SkyVerge\WooCommerce\Facebook\Products::SYNC_ENABLED_META_KEY );
-		$this->assertEquals( 'yes', current( $sync_meta )->value );
-
-		$visibility_meta = $product->get_meta_data( SkyVerge\WooCommerce\Facebook\Products::VISIBILITY_META_KEY );
-		$this->assertEquals( 'yes', current( $visibility_meta )->value );
-	}
-
-	/**
-	 * Tests on_product_save handler with variation product and disabled sync to Facebook.
-	 *
-	 * @return void
-	 */
-	public function test_on_product_save_with_variation_product_and_disabled_sync() {
-		$this->markTestSkipped();
-
-		$parent = WC_Helper_Product::create_variation_product();
-
-		$this->integration->on_product_save( $parent->get_id() );
-	}
-
-	/**
-	 * Test on product save handler for existing facebook variation product with sync enabled.
-	 *
-	 * @return void
-	 */
-	public function test_on_product_save_existing_facebook_product_with_variation_product_and_enabled_sync_will_update_product() {
-		$parent = WC_Helper_Product::create_variation_product();
-		$facebook_output_get_facebook_id = [
-			'id'            => 'facebook-product-id',
-			'product_group' => [
-				'id' => 'facebook-product-group-id',
-			],
-		];
-		$facebook_output_update_product_group = [
-			'headers'  => [],
-			'body'     => '{"id":"112233445566778899"}',
-			'response' => [
-				'code'    => '200',
-				'message' => 'OK',
-			],
-		];
-
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
-			->method( 'get_facebook_id' )
-			->willReturn( $facebook_output_get_facebook_id );
-
-		$facebook_product = new WC_Facebook_Product( $parent->get_id() );
-		$data = [ 'variants' => $facebook_product->prepare_variants_for_group() ];
-		$graph_api->expects( $this->once() )
-			->method( 'update_product_group' )
-			->with( 'facebook-product-group-id', $data )
-			->willReturn( $facebook_output_update_product_group );
-		$this->integration->fbgraph = $graph_api;
-
-		$_POST['wc_facebook_sync_mode'] = Admin::SYNC_MODE_SYNC_AND_SHOW;
-
-		$this->integration->on_product_save( $parent->get_id() );
-
-		$facebook_product_group_id = get_post_meta( $parent->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true );
-		$this->assertEquals( 'facebook-product-group-id', $facebook_product_group_id );
-	}
-
-	public function test_on_product_save_existing_facebook_product_with_variation_product_and_enabled_sync_will_create_product() {}
 }

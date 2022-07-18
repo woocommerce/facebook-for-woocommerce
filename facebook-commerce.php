@@ -1149,7 +1149,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
 		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
-			// force to Sync and hide
+			// force sync and hide
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
 		$products_to_delete_from_facebook = $this->get_removed_from_sync_products_to_delete();
