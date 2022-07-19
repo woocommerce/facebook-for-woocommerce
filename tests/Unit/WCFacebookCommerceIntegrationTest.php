@@ -1157,7 +1157,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_on_product_delete() {
+	public function test_on_product_delete_simple_product() {
 		$product_to_delete = WC_Helper_Product::create_simple_product();
 
 		add_post_meta( $product_to_delete->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
@@ -1177,5 +1177,31 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
 		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_on_product_delete_variable_product() {
+		$parent_to_delete = WC_Helper_Product::create_variation_product();
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'delete_products' )
+			->with(
+				array_map(
+					function ( $id ) {
+						return WC_Facebookcommerce_Utils::get_fb_retailer_id( wc_get_product( $id ) );
+					},
+					$parent_to_delete->get_children()
+				)
+			);
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->on_product_delete( $parent_to_delete->get_id() );
 	}
 }
