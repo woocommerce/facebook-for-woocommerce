@@ -996,7 +996,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_on_product_save_existing_simple_product_sync_enabled_updates_product() {
+	public function test_on_product_save_existing_simple_product_sync_enabled_updates_the_product() {
 		$product_to_update = WC_Helper_Product::create_simple_product();
 		$product_to_delete = WC_Helper_Product::create_simple_product();
 
@@ -1016,10 +1016,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr3' ] = 'Enhanced catalog attribute three.';
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr4' ] = 'Enhanced catalog attribute four.';
 
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )->method( 'validate' );
 		$this->facebook_for_woocommerce->expects( $this->once() )
 			->method( 'get_product_sync_validator' )
 			->with( $product_to_update )
-			->willReturn( $this->createMock( ProductValidator::class ) );
+			->willReturn( $validator );
 
 		$product_to_update->set_stock_status( 'instock' );
 
@@ -1069,5 +1071,86 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( 'Facebook product description.', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_DESCRIPTION, true ) );
 		$this->assertEquals( '199', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_PRICE, true ) );
 		$this->assertEquals( 'http://example.orgFacebook product image.', get_post_meta( $facebook_product_to_update->get_id(), WC_Facebook_Product::FB_PRODUCT_IMAGE, true ) );
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_on_product_save_existing_variable_product_sync_enabled_updates_the_product() {
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+
+		$parent           = WC_Helper_Product::create_variation_product();
+		$fb_product       = new WC_Facebook_Product( $parent->get_id() );
+		$parent_to_delete = WC_Helper_Product::create_variation_product();
+
+		$facebook_output_update_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+
+		$_POST['wc_facebook_sync_mode']                    = Admin::SYNC_MODE_SYNC_AND_SHOW;
+		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $parent_to_delete->get_id();
+
+		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]           = 1;
+		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = 1920;
+
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr1' ] = 'Enhanced catalog attribute one.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr2' ] = 'Enhanced catalog attribute two.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr3' ] = 'Enhanced catalog attribute three.';
+		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr4' ] = 'Enhanced catalog attribute four.';
+
+		add_post_meta( $parent_to_delete->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'no' );
+		foreach ( $parent_to_delete->get_children() as $id ) {
+			add_post_meta( $id, ProductValidator::SYNC_ENABLED_META_KEY, 'no' );
+		}
+
+		$sync = $this->createMock( Products\Sync::class );
+		$sync->expects( $this->once() )
+			->method( 'delete_products' )
+			->with( [ 'wc_post_id_43', 'wc_post_id_44', 'wc_post_id_45', 'wc_post_id_46', 'wc_post_id_47', 'wc_post_id_48' ] );
+		$sync->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( [ 36, 37, 38, 39, 40, 41 ] );
+		$this->facebook_for_woocommerce->expects( $this->exactly( 2 ) )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync );
+
+		add_post_meta( $parent->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-variable-product-group-item-id' );
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->exactly( 7 ) )->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->exactly( 7 ) )
+			->method( 'get_product_sync_validator' )
+			->willReturn( $validator );
+
+		$parent->set_meta_data( Products::VISIBILITY_META_KEY, true );
+
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_group' )
+			->with(
+				'facebook-variable-product-group-item-id',
+				[
+					'variants' => $fb_product->prepare_variants_for_group(),
+				]
+			)
+			->willReturn( $facebook_output_update_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->on_product_save( $parent->get_id() );
+
+		$this->assertEquals( 'Enhanced catalog attribute one.', get_post_meta( $parent->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr1', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute two.', get_post_meta( $parent->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr2', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute three.', get_post_meta( $parent->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr3', true ) );
+		$this->assertEquals( 'Enhanced catalog attribute four.', get_post_meta( $parent->get_id(), Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . '_attr4', true ) );
+
+		$this->assertEquals( null, get_post_meta( $parent->get_id(), Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, true ) );
+		$this->assertEquals( 'yes', get_post_meta( $parent->get_id(), Products::COMMERCE_ENABLED_META_KEY, true ) );
+		$this->assertEquals( 1920, get_post_meta( $parent->get_id(), Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
 	}
 }
