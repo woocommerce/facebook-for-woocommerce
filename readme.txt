@@ -39,6 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.18 - 2022-xx-xx =
+* Fix - Misaligned help icons on Product Categories > Google Product Categories form.
+* Fix - Syncing WC custom placeholder to Facebook shop.
+* Fix - is_search() causing fatal error when custom queries are used.
+
 = 2.6.17 - 2022-07-06 =
 * Fix - Add allow-plugins directive and adjust phpcs GitHub workflow.
 * Fix - Scheduled product not synced when status becomes "publish".
