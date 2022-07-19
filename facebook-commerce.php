@@ -3326,8 +3326,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$wp_id
 		);
 		if ( $fb_product_item_id ) {
-			$pi_result =
-			$this->fbgraph->delete_product_item( $fb_product_item_id );
+			$pi_result = $this->fbgraph->delete_product_item( $fb_product_item_id );
 			WC_Facebookcommerce_Utils::log( $pi_result );
 		}
 	}

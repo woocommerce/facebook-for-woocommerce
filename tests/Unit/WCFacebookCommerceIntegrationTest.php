@@ -1093,9 +1093,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$_POST['wc_facebook_sync_mode']                    = Admin::SYNC_MODE_SYNC_AND_SHOW;
-		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $parent_to_delete->get_id();
-		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]    = 1;
+		$_POST['wc_facebook_sync_mode']                           = Admin::SYNC_MODE_SYNC_AND_SHOW;
+		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ]        = $parent_to_delete->get_id();
+		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]           = 1;
+		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = 1920;
 
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr1' ] = 'Enhanced catalog attribute one.';
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr2' ] = 'Enhanced catalog attribute two.';
@@ -1157,6 +1158,24 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_on_product_delete() {
+		$product_to_delete = WC_Helper_Product::create_simple_product();
 
+		add_post_meta( $product_to_delete->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
+		add_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-id' );
+		add_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'delete_product_item' )
+			->with( 'facebook-product-id' );
+		$graph_api->expects( $this->once() )
+			->method( 'delete_product_group' )
+			->with( 'facebook-product-group-id' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->on_product_delete( $product_to_delete->get_id() );
+
+		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 	}
 }
