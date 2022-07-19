@@ -988,7 +988,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx',  ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_infobanner_css' ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_css' ) );
-		$this->assertContains( 'window.facebookAdsToolboxConfig = {', $output );
+		$this->assertRegExp( '/window.facebookAdsToolboxConfig = {/', $output );
 	}
 
 	/**
@@ -1096,9 +1096,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$_POST['wc_facebook_sync_mode']                    = Admin::SYNC_MODE_SYNC_AND_SHOW;
 		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $parent_to_delete->get_id();
-
-		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]           = 1;
-		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = 1920;
+		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]    = 1;
 
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr1' ] = 'Enhanced catalog attribute one.';
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr2' ] = 'Enhanced catalog attribute two.';
@@ -1153,4 +1151,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( 'yes', get_post_meta( $parent->get_id(), Products::COMMERCE_ENABLED_META_KEY, true ) );
 		$this->assertEquals( 1920, get_post_meta( $parent->get_id(), Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
 	}
+
+
 }
