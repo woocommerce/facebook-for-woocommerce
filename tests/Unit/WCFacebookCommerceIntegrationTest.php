@@ -896,7 +896,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_allow_full_batch_api_sync_returns_default_allow_status_with_no_filters() {
-
 		$status = $this->integration->allow_full_batch_api_sync();
 
 		$this->assertTrue( $status );
@@ -985,7 +984,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		do_action( 'wp_enqueue_scripts' );
 		do_action( 'wp_enqueue_styles' );
 
-		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx',  ) );
+		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx' ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_infobanner_css' ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_css' ) );
 		$this->assertRegExp( '/window.facebookAdsToolboxConfig = {/', $output );
@@ -1005,11 +1004,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $product_to_delete->get_id();
 
 		$_POST[ WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION ] = 'Facebook product description.';
-		$_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ]           = '199';
-		$_POST[ 'fb_product_image_source' ]                       = 'Image source meta key value.';
-		$_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ]           = 'Facebook product image.';
-		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]           = 1;
-		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ] = 1718;
+		$_POST[ WC_Facebook_Product::FB_PRODUCT_PRICE ]                   = '199';
+		$_POST['fb_product_image_source']                                 = 'Image source meta key value.';
+		$_POST[ WC_Facebook_Product::FB_PRODUCT_IMAGE ]                   = 'Facebook product image.';
+		$_POST[ AdminProducts::FIELD_COMMERCE_ENABLED ]                   = 1;
+		$_POST[ AdminProducts::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ]         = 1718;
 
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr1' ] = 'Enhanced catalog attribute one.';
 		$_POST[ Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . '_attr2' ] = 'Enhanced catalog attribute two.';
@@ -1029,7 +1028,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$product_to_update->set_meta_data( Products::VISIBILITY_META_KEY, true );
 
-		$facebook_output_update_product_item = [
+		$facebook_output_update_product_item            = [
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
@@ -1152,5 +1151,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( 1920, get_post_meta( $parent->get_id(), Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true ) );
 	}
 
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_on_product_delete() {
 
+	}
 }

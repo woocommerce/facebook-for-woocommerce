@@ -692,6 +692,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'paging', $response );
 	}
 
+	/**
+	 * Testing get facebook id api returns facebook product id.
+	 *
+	 * @return void
+	 * @throws JsonException Thrown in case json can not be parsed properly or is not a proper JSON.
+	 */
 	public function test_get_facebook_id_returns_facebook_product_id() {
 		$facebook_catalog_id  = '726635365295186';
 		$facebook_retailer_id = 'wc_post_id_127';

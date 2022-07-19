@@ -196,10 +196,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Init and hook in the integration.
 	 *
+	 * @param WC_Facebookcommerce $facebook_for_woocommerce
 	 * @return void
 	 */
 	public function __construct( WC_Facebookcommerce $facebook_for_woocommerce ) {
-
 		$this->facebook_for_woocommerce = $facebook_for_woocommerce;
 
 		if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) {
@@ -276,12 +276,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					);
 				}
 			}
-
-			/*if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) {
-				include_once 'includes/test/facebook-integration-test.php';
-			}
-			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
-			$integration_test::$fbgraph = $this->fbgraph;*/
 
 			if ( ! $this->get_pixel_install_time() && $this->get_facebook_pixel_id() ) {
 				$this->update_pixel_install_time( time() );
@@ -1142,10 +1136,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( ! $product ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] )
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$sync_mode = isset( $_POST['wc_facebook_sync_mode'] )
 			? sanitize_text_field( wp_unslash( $_POST['wc_facebook_sync_mode'] ) )
 			: Admin::SYNC_MODE_SYNC_DISABLED;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
 		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
@@ -1521,8 +1516,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Create product group and product, store fb-specific info.
 	 *
-	 * @param WC_Facebook_Product  $woo_product
-	 * @param string|null          $fb_product_group_id
+	 * @param WC_Facebook_Product $woo_product
+	 * @param string|null         $fb_product_group_id
 	 * @return string facebook product item id
 	 */
 	public function create_product_simple( WC_Facebook_Product $woo_product, string $fb_product_group_id = null ): string {
@@ -2050,8 +2045,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		//var_export($result);exit;
-
 		if ( $result['response']['code'] !== '200' ) {
 			// Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
 			// if possible, otherwise let user know we found dupe SKUs
@@ -2235,9 +2228,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 			return false;
 		}
-
-		/*$test_instance   = WC_Facebook_Integration_Test::get_instance( $this );
-		$this->test_mode = $test_instance::$test_mode;*/
 
 		// Include draft products (omit 'post_status' => 'publish')
 		WC_Facebookcommerce_Utils::log( 'Removing FBIDs from all products' );
