@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.17
+Stable tag: 2.6.18
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.18 - 2022-xx-xx =
+= 2.6.18 - 2022-07-19 =
 * Fix - Misaligned help icons on Product Categories > Google Product Categories form.
 * Fix - Syncing WC custom placeholder to Facebook shop.
 * Fix - is_search() causing fatal error when custom queries are used.
