@@ -1476,4 +1476,57 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertFalse( $result );
 	}
+
+	/**
+	 * Tests update of existing variable product.
+	 *
+	 * @return void
+	 */
+	public function test_on_variable_product_publish_existing_product_updates_product_group() {
+		$product          = WC_Helper_Product::create_variation_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+
+		/* Product should be synced with all its variations. So seven calls expected. */
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->exactly( 7 ) )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->exactly( 7 ) )
+			->method( 'get_product_sync_validator' )
+			->willReturn( $validator );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+		$facebook_product->woo_product->set_stock_status( 'instock' );
+
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-variable-product-group-item-id' );
+
+		$facebook_output_update_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_group' )
+			->with(
+				'facebook-variable-product-group-item-id',
+				[
+					'variants' => $facebook_product->prepare_variants_for_group(),
+				]
+			)
+			->willReturn( $facebook_output_update_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( $facebook_product->get_children() );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->on_variable_product_publish( $product->get_id(), $facebook_product );
+	}
 }
