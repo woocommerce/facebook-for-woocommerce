@@ -1333,7 +1333,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->with( $product )
 			->willReturn( $validator );
 
-		$facebook_output_update_product_item = [
+		$facebook_output_update_product_item            = [
 			'headers'  => [],
 			'body'     => '', // Does not matter much we check only response code.
 			'response' => [
@@ -1388,7 +1388,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$graph_api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with(
