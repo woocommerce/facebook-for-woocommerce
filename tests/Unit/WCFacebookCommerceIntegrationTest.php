@@ -7,6 +7,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use SkyVerge\WooCommerce\Facebook\Admin;
 use SkyVerge\WooCommerce\Facebook\Admin\Products as AdminProducts;
 use SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
+use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator;
 
@@ -17,6 +18,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 	/** @var WC_Facebookcommerce */
 	private $facebook_for_woocommerce;
+
+	/** @var Connection */
+	private $connection_handler;
 
 	/** @var WC_Facebookcommerce_Integration */
 	private $integration;
@@ -40,8 +44,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		parent::setUp();
 
 		$this->facebook_for_woocommerce = $this->createMock( WC_Facebookcommerce::class );
+		$this->connection_handler       = $this->createMock( Connection::class );
 		$this->facebook_for_woocommerce->method( 'get_connection_handler' )
-			->willReturn( new \SkyVerge\WooCommerce\Facebook\Handlers\Connection( $this->facebook_for_woocommerce ) );
+			->willReturn( $this->connection_handler );
 
 		$this->integration = new WC_Facebookcommerce_Integration( $this->facebook_for_woocommerce );
 
@@ -1111,10 +1116,17 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$sync = $this->createMock( Products\Sync::class );
 		$sync->expects( $this->once() )
 			->method( 'delete_products' )
-			->with( [ 'wc_post_id_43', 'wc_post_id_44', 'wc_post_id_45', 'wc_post_id_46', 'wc_post_id_47', 'wc_post_id_48' ] );
+			->with(
+				array_map(
+					function ( $id ) {
+						return 'wc_post_id_' . $id;
+					},
+					$parent_to_delete->get_children()
+				)
+			);
 		$sync->expects( $this->once() )
 			->method( 'create_or_update_products' )
-			->with( [ 36, 37, 38, 39, 40, 41 ] );
+			->with( $parent->get_children() );
 		$this->facebook_for_woocommerce->expects( $this->exactly( 2 ) )
 			->method( 'get_products_sync_handler' )
 			->willReturn( $sync );
@@ -1203,5 +1215,95 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->willReturn( $sync_handler );
 
 		$this->integration->on_product_delete( $parent_to_delete->get_id() );
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_fb_change_product_published_status_for_simple_product() {
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$product = WC_Helper_Product::create_simple_product();
+
+		add_post_meta( $product->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-id' );
+
+		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$facebook_output_update_product_item = [
+			'headers'  => [],
+			'body'     => '', // Does not matter much we check only response code.
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with(
+				'facebook-product-id',
+				[ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ]
+			)
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		/* Statuses involved into logic: publish, trash */
+		$new_status = 'publish';
+		$old_status = 'trash';
+
+		$data     = new stdClass();
+		$data->ID = $product->get_id();
+		$post     = new WP_Post( $data );
+
+		$this->integration->fb_change_product_published_status( $new_status, $old_status, $post );
+
+		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 *
+	 *
+	 * @return void
+	 */
+	public function test_fb_change_product_published_status_for_variable_product() {
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+
+		/** @var WC_Product_Variable $product */
+		$product = WC_Helper_Product::create_variation_product();
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( $product->get_children() );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		/* Statuses involved into logic: publish, trash */
+		$new_status = 'publish';
+		$old_status = 'trash';
+
+		$data     = new stdClass();
+		$data->ID = $product->get_id();
+		$post     = new WP_Post( $data );
+
+		$this->integration->fb_change_product_published_status( $new_status, $old_status, $post );
+
+		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+		foreach ( $product->get_children() as $id ) {
+			$this->assertEquals( 'yes', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
+		}
 	}
 }

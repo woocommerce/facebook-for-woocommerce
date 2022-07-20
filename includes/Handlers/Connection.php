@@ -107,6 +107,7 @@ class Connection {
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
+		/** @TODO: replace facebook_for_woocommerce() with $this->plugin. */
 		$this->plugin = $plugin;
 
 		add_action( 'init', array( $this, 'refresh_business_configuration' ) );
