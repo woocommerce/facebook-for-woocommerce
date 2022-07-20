@@ -1406,7 +1406,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		// Check if product group has been published to FB.  If not, it's new.
+		// Check if product group has been published to FB. If not, it's new.
 		// If yes, loop through variants and see if product items are published.
 		$fb_product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $wp_id, $woo_product );
 		if ( $fb_product_group_id ) {

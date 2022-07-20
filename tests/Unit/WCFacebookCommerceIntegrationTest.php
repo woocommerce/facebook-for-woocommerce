@@ -1267,7 +1267,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 *
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
 	 *
 	 * @return void
 	 */
@@ -1305,5 +1305,109 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		foreach ( $product->get_children() as $id ) {
 			$this->assertEquals( 'yes', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
 		}
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_on_product_publish_simple_product() {
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+
+		$product = WC_Helper_Product::create_simple_product();
+
+		add_post_meta( $product->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id' );
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $product )
+			->willReturn( $validator );
+
+		$facebook_output_update_product_item = [
+			'headers'  => [],
+			'body'     => '', // Does not matter much we check only response code.
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$facebook_product                               = new WC_Facebook_Product( $product->get_id() );
+		$facebook_product_data                          = $facebook_product->prepare_product();
+		$facebook_product_data['additional_image_urls'] = '';
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with( 'facebook-product-item-id', $facebook_product_data )
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->on_product_publish( $product->get_id() );
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
+	public function test_on_product_publish_variable_product() {
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+
+		$product          = WC_Helper_Product::create_variation_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-variable-product-group-item-id' );
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->exactly( 7 ) )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->exactly( 7 ) )
+			->method( 'get_product_sync_validator' )
+			->willReturn( $validator );
+
+		$facebook_output_update_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_group' )
+			->with(
+				'facebook-variable-product-group-item-id',
+				[
+					'variants' => $facebook_product->prepare_variants_for_group(),
+				]
+			)
+			->willReturn( $facebook_output_update_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( $facebook_product->get_children() );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->on_product_publish( $product->get_id() );
 	}
 }
