@@ -1581,4 +1581,116 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true )
 		);
 	}
+
+	/**
+	 * Tests on simple product publish update callback/hook updates existing product.
+	 *
+	 * @return void
+	 */
+	public function test_on_simple_product_publish_existing_product_updates_product() {
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+
+		/* Product should be synced with all its variations. So seven calls expected. */
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $facebook_product->woo_product )
+			->willReturn( $validator );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+		$facebook_product->woo_product->set_stock_status( 'instock' );
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-simple-product-item-id' );
+
+		$facebook_output_update_product_item            = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$facebook_product_data                          = $facebook_product->prepare_product();
+		$facebook_product_data['additional_image_urls'] = '';
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with( 'facebook-simple-product-item-id', $facebook_product_data )
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
+
+		$this->assertEquals( 'facebook-simple-product-item-id', $facebook_product_item_id );
+	}
+
+	/**
+	 * Tests on simple product publish update callback/hook creates new product.
+	 *
+	 * @return void
+	 */
+	public function test_on_simple_product_publish_existing_product_creates_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+
+		/* Product should be synced with all its variations. So seven calls expected. */
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $facebook_product->woo_product )
+			->willReturn( $validator );
+
+		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
+		$facebook_product->woo_product->set_stock_status( 'instock' );
+		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, '' );
+
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-simple-product-group-item-id"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with(
+				'1234567891011121314',
+				[
+					'retailer_id' => WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product )
+				]
+			)
+			->willReturn( $facebook_output_create_product_group );
+		$facebook_output_create_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-simple-product-group-item-id"}',
+			'response' => [
+				'code'    => '200',
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_item' )
+			->with(
+				'facebook-simple-product-group-item-id',
+				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ),
+			)
+			->willReturn( $facebook_output_create_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
+
+		$this->assertEquals( 'facebook-simple-product-group-item-id', $facebook_product_item_id );
+		$this->assertEquals(
+			'facebook-simple-product-group-item-id',
+			get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true )
+		);
+	}
 }
