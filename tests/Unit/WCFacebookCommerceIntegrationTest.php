@@ -1614,7 +1614,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		];
 		$facebook_product_data                          = $facebook_product->prepare_product();
 		$facebook_product_data['additional_image_urls'] = '';
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api                                      = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$graph_api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-simple-product-item-id', $facebook_product_data )
@@ -1663,9 +1663,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->method( 'create_product_group' )
 			->with(
 				'1234567891011121314',
-				[
-					'retailer_id' => WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product )
-				]
+				[ 'retailer_id' => WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ]
 			)
 			->willReturn( $facebook_output_create_product_group );
 		$facebook_output_create_product_item = [
