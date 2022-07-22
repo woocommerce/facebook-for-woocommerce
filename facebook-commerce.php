@@ -2045,7 +2045,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( $result['response']['code'] !== '200' ) {
+		if ( $result['response']['code'] !== 200 ) {
 			// Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
 			// if possible, otherwise let user know we found dupe SKUs
 			$body = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
