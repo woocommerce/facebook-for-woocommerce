@@ -1691,4 +1691,47 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true )
 		);
 	}
+
+	/**
+	 * Tests product should be synced calls to return success.
+	 *
+	 * @return void
+	 */
+	public function test_product_should_be_synced_calls_facebook_api() {
+		$product = WC_Helper_Product::create_simple_product();
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $product )
+			->willReturn( $validator );
+
+		$output = $this->integration->product_should_be_synced( $product );
+
+		$this->assertTrue( $output );
+	}
+
+	/**
+	 * Test product should be synced handles exception from facebook api and returns failure.
+	 *
+	 * @return void
+	 */
+	public function test_product_should_be_synced_calls_facebook_api_with_exception() {
+		$product = WC_Helper_Product::create_simple_product();
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' )
+			->will( $this->throwException( new Exception() ) );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $product )
+			->willReturn( $validator );
+
+		$output = $this->integration->product_should_be_synced( $product );
+
+		$this->assertFalse( $output );
+	}
 }
