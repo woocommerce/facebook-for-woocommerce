@@ -2029,4 +2029,105 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( '', $facebook_item_id );
 	}
+
+	/**
+	 * Tests update product group updates product group.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_group_updates_product_group() {
+		$product          = WC_Helper_Product::create_variation_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		add_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+
+		$data                                 = [
+			'variants' => $facebook_product->prepare_variants_for_group(),
+		];
+		$facebook_output_update_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_group' )
+			->with( 'facebook-product-group-id', $data )
+			->willReturn( $facebook_output_update_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_product_group( $facebook_product );
+	}
+
+	/**
+	 * Tests update product group exits when product group missing.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_group_exits_when_product_group_missing() {
+		$product          = WC_Helper_Product::create_variation_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'get_facebook_id' )
+			->will( $this->throwException( new Exception() ) );
+		$graph_api->expects( $this->never() )
+			->method( 'update_product_group' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_product_group( $facebook_product );
+	}
+
+	/**
+	 * Tests update product group exits when product has no variants.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_group_exits_when_product_variants_missing() {
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		add_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+
+		$graph_api->expects( $this->never() )
+			->method( 'update_product_group' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_product_group( $facebook_product );
+	}
+
+	/**
+	 * Tests update product item updates product item.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_item_updates_product_item() {
+		$product                  = WC_Helper_Product::create_simple_product();
+		$facebook_product         = new WC_Facebook_Product( $product->get_id() );
+		$facebook_product_item_id = 'facebook-product-item-id';
+
+		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                = $facebook_product->prepare_product();
+		$data['additional_image_urls']       = '';
+		$facebook_output_update_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with( 'facebook-product-item-id', $data )
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_product_item( $facebook_product, $facebook_product_item_id );
+	}
 }
