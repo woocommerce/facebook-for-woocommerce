@@ -1037,7 +1037,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1093,7 +1093,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1240,7 +1240,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '', // Does not matter much we check only response code.
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1337,7 +1337,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '', // Does not matter much we check only response code.
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1384,7 +1384,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1503,7 +1503,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1556,7 +1556,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"facebook-variable-product-group-item-id"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1608,7 +1608,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"5191364664265911"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1654,7 +1654,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"facebook-simple-product-group-item-id"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1670,7 +1670,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'headers'  => [],
 			'body'     => '{"id":"facebook-simple-product-group-item-id"}',
 			'response' => [
-				'code'    => '200',
+				'code'    => 200,
 				'message' => 'OK',
 			],
 		];
@@ -1733,5 +1733,300 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$output = $this->integration->product_should_be_synced( $product );
 
 		$this->assertFalse( $output );
+	}
+
+	/**
+	 * Tests create simple product creates product group and the product itself.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_simple_creates_product_group_before_creating_product_item() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
+
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                 = [
+			'retailer_id' => $retailer_id,
+		];
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-simple-product-group-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with( '123456789101112', $data )
+			->willReturn( $facebook_output_create_product_group );
+
+		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$facebook_output_create_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-simple-product-item-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_item' )
+			->with( 'facebook-simple-product-group-id', $data )
+			->willReturn( $facebook_output_create_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
+
+		$this->assertEquals( 'facebook-simple-product-group-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( 'facebook-simple-product-item-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( 'facebook-simple-product-item-id', $facebook_product_item_id );
+	}
+
+	/**
+	 * Tests create simple product with provided product group id.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_simple_creates_product_with_provided_product_group_id() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
+
+		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$facebook_output_create_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-simple-product-item-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_item' )
+			->with( 'facebook-simple-product-group-id', $data )
+			->willReturn( $facebook_output_create_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product, 'facebook-simple-product-group-id' );
+
+		$this->assertEquals( 'facebook-simple-product-item-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( 'facebook-simple-product-item-id', $facebook_product_item_id );
+	}
+
+	/**
+	 * Tests create simple product fails to create product group and returns empty product item id.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_simple_with_failed_create_product_group_returns_empty_product_item() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
+
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                 = [
+			'retailer_id' => $retailer_id,
+		];
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}',
+			'response' => [
+				'code'    => 400,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with( '123456789101112', $data )
+			->willReturn( $facebook_output_create_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
+
+		$this->assertEquals( '', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', $facebook_product_item_id );
+	}
+
+	/**
+	 * Tests create product group fpr product w/o variants.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_group_creates_group_no_variants() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = 'product-retailer-id';
+
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                 = [
+			'retailer_id' => $retailer_id,
+		];
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-product-group-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with( '123456789101112', $data )
+			->willReturn( $facebook_output_create_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
+
+		$this->assertEquals( 'facebook-product-group-id', $facebook_product_group_id );
+		$this->assertEquals( 'facebook-product-group-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
+
+	/**
+	 * Tests create product group for product with variants.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_group_creates_group_with_variants() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = 'product-retailer-id';
+
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                 = [
+			'retailer_id' => $retailer_id,
+			'variants'    => $facebook_product->prepare_variants_for_group(),
+		];
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-product-group-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with( '123456789101112', $data )
+			->willReturn( $facebook_output_create_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id, true );
+
+		$this->assertEquals( 'facebook-product-group-id', $facebook_product_group_id );
+		$this->assertEquals( 'facebook-product-group-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
+
+	/**
+	 * Tests create product group fails due to some facebook error and returns empty string.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_group_fails_to_create_group() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$retailer_id      = 'product-retailer-id';
+
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                 = [
+			'retailer_id' => $retailer_id,
+		];
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}',
+			'response' => [
+				'code'    => 400,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->with( '123456789101112', $data )
+			->willReturn( $facebook_output_create_product_group );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
+
+		$this->assertEquals( '', $facebook_product_group_id );
+	}
+
+	/**
+	 * Tests create product item creates product item and sets it into meta.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_item_creates_product_item() {
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$product_group_id = 'facebook-product-group-id';
+		$retailer_id      = 'product-retailer-id';
+
+		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$facebook_output_create_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-product-item-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_item' )
+			->with( 'facebook-product-group-id', $data )
+			->willReturn( $facebook_output_create_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
+
+		$this->assertEquals( 'facebook-product-item-id', $facebook_item_id );
+		$this->assertEquals( 'facebook-product-item-id', get_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+	}
+
+	/**
+	 * Tests create product item fails to create and returns empty string.
+	 *
+	 * @return void
+	 */
+	public function test_create_product_item_fails_to_create_product_item() {
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
+		$product_group_id = 'facebook-product-group-id';
+		$retailer_id      = 'product-retailer-id';
+
+		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$facebook_output_create_product_item = [
+			'headers'  => [],
+			'body'     => '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}',
+			'response' => [
+				'code'    => 400,
+				'message' => 'OK',
+			],
+		];
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_item' )
+			->with( 'facebook-product-group-id', $data )
+			->willReturn( $facebook_output_create_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
+
+		$this->assertEquals( '', $facebook_item_id );
 	}
 }
