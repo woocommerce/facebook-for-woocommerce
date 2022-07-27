@@ -2315,4 +2315,48 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( 'Hello, this is a test message.', get_transient( 'facebook_plugin_api_error' ) );
 	}
+
+	/**
+	 * Tests display error message from results when error message
+	 * equals to 'Fatal' and a non-empty error_user_title.
+	 *
+	 * @return void
+	 */
+	public function test_display_error_message_from_result_error_message_equals_fatal_and_non_empty_error_user_title() {
+		$data = [
+			'body' => '{"error":{"message":"Fatal","error_user_title":"Non-empty error user title."}}',
+		];
+		$this->integration->display_error_message_from_result( $data );
+
+		$this->assertEquals( 'Non-empty error user title.', get_transient( 'facebook_plugin_api_error' ) );
+	}
+
+	/**
+	 * Tests display error message from results when error message
+	 * equals to 'Fatal' and an empty error_user_title.
+	 *
+	 * @return void
+	 */
+	public function test_display_error_message_from_result_error_message_equals_fatal_and_an_empty_error_user_title() {
+		$data = [
+			'body' => '{"error":{"message":"Fatal","error_user_title":""}}',
+		];
+		$this->integration->display_error_message_from_result( $data );
+
+		$this->assertEquals( 'Fatal', get_transient( 'facebook_plugin_api_error' ) );
+	}
+
+	/**
+	 * Tests display error message from results when error message is not equal 'Fatal'.
+	 *
+	 * @return void
+	 */
+	public function test_display_error_message_from_result_error_message_not_equal_fatal() {
+		$data = [
+			'body' => '{"error":{"message":"Non-fatal","error_user_title":""}}',
+		];
+		$this->integration->display_error_message_from_result( $data );
+
+		$this->assertEquals( 'Non-fatal', get_transient( 'facebook_plugin_api_error' ) );
+	}
 }
