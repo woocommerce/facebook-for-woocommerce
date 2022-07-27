@@ -2130,4 +2130,71 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->integration->update_product_item( $facebook_product, $facebook_product_item_id );
 	}
+
+	/**
+	 * Tests product set item update.
+	 *
+	 * @return void
+	 */
+	public function test_create_or_update_product_set_item_updates_product_set_item() {
+		$product_set_id   = '987654321';
+		$product_set_data = [ 'some-product-set-data' ];
+
+		add_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, 'facebook-product-set-id' );
+
+		$facebook_output_update_product_set_item = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_set_item' )
+			->with( 'facebook-product-set-id', $product_set_data )
+			->willReturn( $facebook_output_update_product_set_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
+	}
+
+	/**
+	 * Tests product set item create.
+	 *
+	 * @return void
+	 */
+	public function test_create_or_update_product_set_item_creates_product_set_item() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '123456789101112' );
+
+		$product_set_id   = '987654321';
+		$product_set_data = [ 'some-product-set-data' ];
+
+		/* Make sure term meta is empty. */
+		add_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, '' );
+
+		$facebook_output_create_product_set_item = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_set_item' )
+			->with( '123456789101112', $product_set_data )
+			->willReturn( $facebook_output_create_product_set_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
+
+		$facebook_product_set_id = get_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true );
+
+		$this->assertEquals( '5191364664265911', $facebook_product_set_id );
+	}
 }
