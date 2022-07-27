@@ -2304,4 +2304,15 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( 'Some re-sync test message.', get_transient( 'facebook_plugin_resync_sticky' ) );
 	}
+
+	/**
+	 * Tests display error message adds transient message.
+	 *
+	 * @return void
+	 */
+	public function test_display_error_message() {
+		$this->integration->display_error_message( 'Hello, this is a test message.' );
+
+		$this->assertEquals( 'Hello, this is a test message.', get_transient( 'facebook_plugin_api_error' ) );
+	}
 }
