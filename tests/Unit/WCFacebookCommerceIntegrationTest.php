@@ -2225,4 +2225,83 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->integration->delete_product_set_item( $facebook_product_set_id );
 	}
+
+	/**
+	 * Tests transient message.
+	 *
+	 * @return void
+	 */
+	public function test_display_info_message() {
+		$this->integration->display_info_message( 'Test message.' );
+
+		$this->assertEquals( '<b>Facebook for WooCommerce</b><br/>Test message.', get_transient( 'facebook_plugin_api_info' ) );
+	}
+
+	/**
+	 * Tests transient message.
+	 *
+	 * @return void
+	 */
+	public function test_display_sticky_message() {
+		$this->integration->display_sticky_message( 'Test message.' );
+
+		$this->assertEquals( '<b>Facebook for WooCommerce</b><br/>Test message.', get_transient( 'facebook_plugin_api_sticky' ) );
+	}
+
+	/**
+	 * Tests transient message removal.
+	 * @return void
+	 */
+	public function test_remove_sticky_message() {
+		set_transient( 'facebook_plugin_api_sticky', 'Some test text.', 60 );
+
+		$this->integration->remove_sticky_message();
+
+		$this->assertFalse( get_transient( 'facebook_plugin_api_sticky' ) );
+	}
+
+	/**
+	 * Tests remove re-sync message removes the message.
+	 *
+	 * @return void
+	 */
+	public function test_remove_resync_message_removes_the_message() {
+		set_transient( 'facebook_plugin_api_sticky', 'Sync some test message.' );
+		set_transient( 'facebook_plugin_resync_sticky', 'Some re-sync test message.' );
+
+		$this->integration->remove_resync_message();
+
+		$this->assertFalse( get_transient( 'facebook_plugin_resync_sticky' ) );
+	}
+
+	/**
+	 * Tests remove re-sync message does not remove the message
+	 * if facebook_plugin_api_sticky transient message does not
+	 * start with 'Sync'.
+	 *
+	 * @return void
+	 */
+	public function test_remove_resync_message_does_not_remove_the_message_when_sticky_message_starts_with_no_sync() {
+		set_transient( 'facebook_plugin_api_sticky', 'Some test message.' );
+		set_transient( 'facebook_plugin_resync_sticky', 'Some re-sync test message.' );
+
+		$this->integration->remove_resync_message();
+
+		$this->assertEquals( 'Some re-sync test message.', get_transient( 'facebook_plugin_resync_sticky' ) );
+	}
+
+	/**
+	 * Tests remove re-sync message does not remove the message
+	 * if facebook_plugin_api_sticky transient message is empty.
+	 *
+	 * @return void
+	 */
+	public function test_remove_resync_message_does_not_remove_the_message_when_sticky_message_is_empty() {
+		set_transient( 'facebook_plugin_api_sticky', '' );
+		set_transient( 'facebook_plugin_resync_sticky', 'Some re-sync test message.' );
+
+		$this->integration->remove_resync_message();
+
+		$this->assertEquals( 'Some re-sync test message.', get_transient( 'facebook_plugin_resync_sticky' ) );
+	}
 }
