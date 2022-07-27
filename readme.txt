@@ -39,6 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.19 - 2022-07-27 =
+* Add  - `wc_facebook_string_apply_shortcodes` filter to check whether to apply shortcodes on a string before syncing.
+* Tweak - Use the Heartbeat system to refresh the local business configuration data with the latest from Facebook.
+* Tweak - WC 6.8 compatibility.
+
 = 2.6.18 - 2022-07-19 =
 * Fix - Misaligned help icons on Product Categories > Google Product Categories form.
 * Fix - Syncing WC custom placeholder to Facebook shop.
