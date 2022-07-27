@@ -169,7 +169,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			/**
 			 * Filters whether the shortcodes should be applied for a string when syncing a product or be stripped out.
 			 *
-			 * @since x.x.x
+			 * @since 2.6.19
 			 *
 			 * @param bool   $apply_shortcodes Shortcodes are applied if set to `true` and stripped out if set to `false`.
 			 * @param string $string           String to clean up.
