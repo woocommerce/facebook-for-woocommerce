@@ -2197,4 +2197,32 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( '5191364664265911', $facebook_product_set_id );
 	}
+
+	/**
+	 * Tests delete product set item performs facebook graph api request.
+	 *
+	 * @return void
+	 */
+	public function test_delete_product_set_item() {
+		$facebook_product_set_id = 'facebook-product-set-id';
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+
+		$facebook_output_delete_product_set_item = [
+			'headers'  => [],
+			'body'     => '', // Response does not matter, method does check response status code only.
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$graph_api->expects( $this->once() )
+			->method( 'delete_product_set_item' )
+			->with( $facebook_product_set_id )
+			->willReturn( $facebook_output_delete_product_set_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->delete_product_set_item( $facebook_product_set_id );
+	}
 }
