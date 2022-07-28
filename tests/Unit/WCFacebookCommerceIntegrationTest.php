@@ -2503,4 +2503,52 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			get_transient( 'facebook_plugin_api_sticky' )
 		);
 	}
+
+	/**
+	 * Tests get existing facebook id returns facebook product group id from error data.
+	 *
+	 * @return void
+	 */
+	public function test_get_existing_fbid_returns_product_group_id() {
+		$product_id = 123456789;
+		$error_data = new stdClass;
+		$error_data->product_group_id = 'facebook-product-group-id';
+		$error_data->product_item_id  = 'facebook-product-item-id';
+
+		$facebook_id = $this->integration->get_existing_fbid( $error_data, $product_id );
+
+		$this->assertEquals( 'facebook-product-group-id', $facebook_id );
+		$this->assertEquals( 'facebook-product-group-id', get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
+
+	/**
+	 * Tests get existing facebook id returns facebook product item id from error data.
+	 *
+	 * @return void
+	 */
+	public function test_get_existing_fbid_returns_product_item_id() {
+		$product_id = 123456789;
+		$error_data = new stdClass;
+		$error_data->product_item_id = 'facebook-product-item-id';
+
+		$facebook_id = $this->integration->get_existing_fbid( $error_data, $product_id );
+
+		$this->assertEquals( 'facebook-product-item-id', $facebook_id );
+		$this->assertEquals( 'facebook-product-item-id', get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+	}
+
+	/**
+	 * Tests get existing facebook id returns nothing and does nothing.
+	 *
+	 * @return void
+	 */
+	public function test_get_existing_fbid_returns_does_nothing() {
+		$product_id = 123456789;
+		$error_data = new stdClass;
+
+		$this->integration->get_existing_fbid( $error_data, $product_id );
+
+		$this->assertEmpty( get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEmpty( get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+	}
 }
