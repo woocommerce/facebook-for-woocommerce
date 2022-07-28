@@ -2359,4 +2359,88 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( 'Non-fatal', get_transient( 'facebook_plugin_api_error' ) );
 	}
+
+	/**
+	 * Tests check api result function receives WP_Error input.
+	 *
+	 * @return void
+	 */
+	public function test_check_api_result_processes_wp_error() {
+		$input = new WP_Error( 999, 'Some error text message.' );
+
+		$this->integration->check_api_result( $input );
+
+		$this->assertEquals( 'There was an issue connecting to the Facebook API:  Some error text message.', get_transient( 'facebook_plugin_api_error' ) );
+	}
+
+	/**
+	 * Tests check api result function receives input with 200 status.
+	 *
+	 * @return void
+	 */
+	public function test_check_api_result_processes_200_status_input() {
+		$input = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$output = $this->integration->check_api_result( $input );
+
+		$this->assertEquals( $input, $output );
+	}
+
+	/**
+	 * Tests check api result function receives input with non 200 status and some non 10800 error code.
+	 *
+	 * @return void
+	 */
+	public function test_check_api_result_processes_non_200_status_and_some_error_code_input() {
+		$input = [
+			'headers'  => [],
+			'body'     => '{"error":{"code":9999,"message":"Fatal","error_user_title":"Some error user title here."}}',
+			'response' => [
+				'code'    => 1111,
+				'message' => '',
+			],
+		];
+
+		$output = $this->integration->check_api_result( $input );
+
+		$this->assertNull( $output );
+		$this->assertEquals( 'Some error user title here.', get_transient( 'facebook_plugin_api_error' ) );
+	}
+
+	/**
+	 * Tests check api result function receives input with non 200 status and 10800 error code.
+	 *
+	 * @return void
+	 */
+	public function test_check_api_result_processes_non_200_status_and_10800_error_code_input() {
+		$input = [
+			'headers'  => [],
+			'body'     => '{"error":{"code":10800,"message":"Fatal","error_user_title":"Some error user title here.","error_data":{"product_group_id":"987654321","product_item_id":"123456789"}}}',
+			'response' => [
+				'code'    => 1111,
+				'message' => '',
+			],
+		];
+
+		$expected = [
+			'headers'  => [],
+			'body'     => '{"error":{"code":10800,"message":"Fatal","error_user_title":"Some error user title here.","error_data":{"product_group_id":"987654321","product_item_id":"123456789"}},"id":"987654321"}',
+			'response' => [
+				'code'    => 1111,
+				'message' => '',
+			],
+		];
+
+		$output = $this->integration->check_api_result( $input, null, '112233445566' );
+
+		$this->assertEquals( $expected, $output );
+		$this->assertEquals( '987654321', get_post_meta( '112233445566', WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
 }
