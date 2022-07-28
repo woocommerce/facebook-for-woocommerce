@@ -2483,4 +2483,24 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$_POST['type'] = 'product';
 		$this->integration->ajax_woo_adv_bulk_edit_compat( 'dummy' );
 	}
+
+	/**
+	 * Tests display out of sync message sets a message with settings url.
+	 *
+	 * @return void
+	 */
+	public function test_display_out_of_sync_message() {
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_settings_url' )
+			->willReturn( 'https://settings.site/settings.php' );
+
+		$this->integration->display_out_of_sync_message( 'some text to insert into message' );
+
+		$this->assertEquals(
+			'<b>Facebook for WooCommerce</b><br/>' .
+			'Products may be out of Sync with Facebook due to your recent some text to insert into message.' .
+			' <a href="https://settings.site/settings.php&fb_force_resync=true&remove_sticky=true">Re-Sync them with FB.</a>',
+			get_transient( 'facebook_plugin_api_sticky' )
+		);
+	}
 }
