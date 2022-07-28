@@ -2443,4 +2443,44 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( $expected, $output );
 		$this->assertEquals( '987654321', get_post_meta( '112233445566', WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 	}
+
+	/**
+	 * Tests ajax_woo_adv_bulk_edit_compat for user with appropriate permissions.
+	 *
+	 * @return void
+	 */
+	public function test_ajax_woo_adv_bulk_edit_compat_for_user_with_appropriate_permissions() {
+		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+		set_current_screen( 'edit-post' );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_settings_url' )
+			->willReturn( 'https://settings.site/settings.php' );
+
+		$_POST['type'] = 'product';
+
+		$this->integration->ajax_woo_adv_bulk_edit_compat( 'dummy' );
+
+		$this->assertTrue( is_admin(), 'Current user must be an admin user.' );
+		$this->assertEquals(
+			'<b>Facebook for WooCommerce</b><br/>' .
+			'Products may be out of Sync with Facebook due to your recent advanced bulk edit.' .
+			' <a href="https://settings.site/settings.php&fb_force_resync=true&remove_sticky=true">Re-Sync them with FB.</a>',
+			get_transient( 'facebook_plugin_api_sticky' )
+		);
+	}
+
+	/**
+	 * Tests ajax_woo_adv_bulk_edit_compat for user without appropriate permissions.
+	 *
+	 * @return void
+	 */
+	public function test_ajax_woo_adv_bulk_edit_compat_for_user_without_appropriate_permissions() {
+		$this->facebook_for_woocommerce->expects( $this->never() )
+			->method( 'get_settings_url' );
+
+		$_POST['type'] = 'product';
+		$this->integration->ajax_woo_adv_bulk_edit_compat( 'dummy' );
+	}
 }
