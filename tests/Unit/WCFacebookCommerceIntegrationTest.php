@@ -2631,4 +2631,97 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( '[[{"title":"Test product 13","availability":"in stock","description":"Test product 13","id":"wc_post_id_22","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-13","price":"1000 USD"},{"title":"Test product 12","availability":"in stock","description":"Test product 12","id":"wc_post_id_21","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-12","price":"1000 USD"},{"title":"Test product 11","availability":"in stock","description":"Test product 11","id":"wc_post_id_20","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-11","price":"1000 USD"},{"title":"Test product 10","availability":"in stock","description":"Test product 10","id":"wc_post_id_19","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-10","price":"1000 USD"},{"title":"Test product 9","availability":"in stock","description":"Test product 9","id":"wc_post_id_18","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-9","price":"1000 USD"},{"title":"Test product 8","availability":"in stock","description":"Test product 8","id":"wc_post_id_17","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-8","price":"1000 USD"},{"title":"Test product 7","availability":"in stock","description":"Test product 7","id":"wc_post_id_16","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-7","price":"1000 USD"},{"title":"Test product 6","availability":"in stock","description":"Test product 6","id":"wc_post_id_15","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-6","price":"1000 USD"},{"title":"Test product 5","availability":"in stock","description":"Test product 5","id":"wc_post_id_14","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-5","price":"1000 USD"},{"title":"Test product 4","availability":"in stock","description":"Test product 4","id":"wc_post_id_13","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-4","price":"1000 USD"},{"title":"Test product 3","availability":"in stock","description":"Test product 3","id":"wc_post_id_12","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-3","price":"1000 USD"},{"title":"Test product 2","availability":"in stock","description":"Test product 2","id":"wc_post_id_11","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-2","price":"1000 USD"}]]', $json );
 		$this->assertCount( 12, current( json_decode( $json ) ) );
 	}
+
+	/**
+	 * Tests delete post meta loop deletes meta for the given products.
+	 *
+	 * @return void
+	 */
+	public function test_delete_post_meta_loop() {
+		/* Generate 13 products. */
+		$products = array_map(
+			function ( $index ) {
+				/** @var WC_Product_Simple $product */
+				$product = WC_Helper_Product::create_simple_product();
+				$product->set_name( 'Test product ' . ( $index + 1 ) );
+				$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-' . ( $index + 1 ) );
+				$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-' . ( $index + 1 ) );
+				$product->add_meta_data( Products::VISIBILITY_META_KEY, true );
+				$product->save();
+
+				return $product->get_id();
+			},
+			array_keys( array_fill( 0, 3, true ) )
+		);
+
+		$this->integration->delete_post_meta_loop( $products );
+
+		$this->assertEquals( '', get_post_meta( $products[0], WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $products[1], WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $products[2], WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+
+		$this->assertEquals( '', get_post_meta( $products[0], WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $products[1], WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $products[2], WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+
+		$this->assertEquals( '', get_post_meta( $products[0], Products::VISIBILITY_META_KEY, true ) );
+		$this->assertEquals( '', get_post_meta( $products[1], Products::VISIBILITY_META_KEY, true ) );
+		$this->assertEquals( '', get_post_meta( $products[2], Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 * Tests reset all product facebook meta does nothing is not an admin user.
+	 *
+	 * @return void
+	 */
+	public function test_reset_all_products_as_non_admin_user() {
+		$this->assertFalse( $this->integration->reset_all_products() );
+		$this->assertFalse( is_admin() );
+	}
+
+	/**
+	 * Tests reset all product facebook meta, including variation products if any.
+	 *
+	 * @return void
+	 */
+	public function test_reset_all_products_as_admin_user() {
+		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+		set_current_screen( 'edit-post' );
+
+		/** @var WC_Product_Simple $product */
+		$product = WC_Helper_Product::create_simple_product();
+		$product->set_name( 'Test product 1' );
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-1' );
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-1' );
+		$product->add_meta_data( Products::VISIBILITY_META_KEY, true );
+		$product->save();
+
+		/** @var WC_Product_Variable $variable_product */
+		$variable_product = WC_Helper_Product::create_variation_product();
+		$variable_product->set_name( 'Test product 2' );
+		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-2' );
+		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-2' );
+		$variable_product->add_meta_data( Products::VISIBILITY_META_KEY, true );
+		$variable_product->save();
+
+		$result = $this->integration->reset_all_products();
+
+		$this->assertTrue( $result );
+		$this->assertTrue( is_admin() );
+
+		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		foreach ( $variable_product->get_children() as $id ) {
+			$this->assertEquals( '', get_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+			$this->assertEquals( '', get_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+			$this->assertEquals( '', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
+		}
+	}
 }
