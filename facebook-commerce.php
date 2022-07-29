@@ -2187,8 +2187,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product_data = $woo_product->prepare_product();
 			$feed_item    = [
 				'title'        => wp_strip_all_tags( $product_data['name'] ),
-				'availability' => $woo_product->is_in_stock() ? 'in stock' :
-				'out of stock',
+				'availability' => $woo_product->is_in_stock() ? 'in stock' : 'out of stock',
 				'description'  => wp_strip_all_tags( $product_data['description'] ),
 				'id'           => $product_data['retailer_id'],
 				'image_link'   => $product_data['image_url'],

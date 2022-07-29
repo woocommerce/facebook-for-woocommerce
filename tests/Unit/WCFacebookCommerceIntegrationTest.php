@@ -2605,4 +2605,30 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			$output
 		);
 	}
+
+	/**
+	 * Tests get_sample_product_feed to return proper JSON with 12 recent products.
+	 *
+	 * @return void
+	 */
+	public function test_get_sample_product_feed_with_twelve_recent_products() {
+
+		/* Generate 13 products. */
+		array_map(
+			function ( $index ) {
+				/** @var WC_Product_Simple $product */
+				$product = WC_Helper_Product::create_simple_product();
+				$product->set_name( 'Test product ' . ( $index + 1 ) );
+				$product->save();
+			},
+			array_keys( array_fill( 0, 13, true ) )
+		);
+
+		/* Feed of 12 recent products. */
+		$json = $this->integration->get_sample_product_feed();
+
+		/* 12 recent products with product titled "Test product 1" missing from the feed. */
+		$this->assertEquals( '[[{"title":"Test product 13","availability":"in stock","description":"Test product 13","id":"wc_post_id_22","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-13","price":"1000 USD"},{"title":"Test product 12","availability":"in stock","description":"Test product 12","id":"wc_post_id_21","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-12","price":"1000 USD"},{"title":"Test product 11","availability":"in stock","description":"Test product 11","id":"wc_post_id_20","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-11","price":"1000 USD"},{"title":"Test product 10","availability":"in stock","description":"Test product 10","id":"wc_post_id_19","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-10","price":"1000 USD"},{"title":"Test product 9","availability":"in stock","description":"Test product 9","id":"wc_post_id_18","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-9","price":"1000 USD"},{"title":"Test product 8","availability":"in stock","description":"Test product 8","id":"wc_post_id_17","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-8","price":"1000 USD"},{"title":"Test product 7","availability":"in stock","description":"Test product 7","id":"wc_post_id_16","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-7","price":"1000 USD"},{"title":"Test product 6","availability":"in stock","description":"Test product 6","id":"wc_post_id_15","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-6","price":"1000 USD"},{"title":"Test product 5","availability":"in stock","description":"Test product 5","id":"wc_post_id_14","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-5","price":"1000 USD"},{"title":"Test product 4","availability":"in stock","description":"Test product 4","id":"wc_post_id_13","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-4","price":"1000 USD"},{"title":"Test product 3","availability":"in stock","description":"Test product 3","id":"wc_post_id_12","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-3","price":"1000 USD"},{"title":"Test product 2","availability":"in stock","description":"Test product 2","id":"wc_post_id_11","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-2","price":"1000 USD"}]]', $json );
+		$this->assertCount( 12, current( json_decode( $json ) ) );
+	}
 }
