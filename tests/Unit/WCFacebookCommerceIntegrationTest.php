@@ -2691,7 +2691,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		/** @var WC_Product_Simple $product */
 		$product = WC_Helper_Product::create_simple_product();
-		$product->set_name( 'Test product 1' );
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-1' );
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-1' );
 		$product->add_meta_data( Products::VISIBILITY_META_KEY, true );
@@ -2699,7 +2698,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		/** @var WC_Product_Variable $variable_product */
 		$variable_product = WC_Helper_Product::create_variation_product();
-		$variable_product->set_name( 'Test product 2' );
 		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-2' );
 		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-2' );
 		$variable_product->add_meta_data( Products::VISIBILITY_META_KEY, true );
@@ -2713,6 +2711,52 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
 		$this->assertEquals( '', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		foreach ( $variable_product->get_children() as $id ) {
+			$this->assertEquals( '', get_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+			$this->assertEquals( '', get_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+			$this->assertEquals( '', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
+		}
+	}
+
+	/**
+	 * Tests reset of facebook group and item ids from simple product's metadata.
+	 *
+	 * @return void
+	 */
+	public function test_reset_single_product_for_simple_product() {
+		/** @var WC_Product_Simple $product */
+		$product = WC_Helper_Product::create_simple_product();
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-1' );
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-1' );
+		$product->add_meta_data( Products::VISIBILITY_META_KEY, true );
+		$product->save();
+
+		$this->integration->reset_single_product( $product->get_id() );
+
+		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( '', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 * Tests reset of facebook group and item ids from variable product's metadata.
+	 *
+	 * @return void
+	 */
+	public function test_reset_single_product_for_variable_product() {
+		/** @var WC_Product_Variable $variable_product */
+		$variable_product = WC_Helper_Product::create_variation_product();
+		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id-2' );
+		$variable_product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id-2' );
+		$variable_product->add_meta_data( Products::VISIBILITY_META_KEY, true );
+		$variable_product->save();
+
+		$this->integration->reset_single_product( $variable_product->get_id() );
 
 		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 		$this->assertEquals( '', get_post_meta( $variable_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
