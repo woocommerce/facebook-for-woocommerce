@@ -3192,18 +3192,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function get_message_html( string $message, string $type = 'error' ): string {
 		ob_start();
-
-		?>
-			<div class="notice is-dismissible notice-<?php echo esc_attr( $type ); ?>">
-				<p>
-				<?php
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo $message;
-				?>
-				</p>
-			</div>
-		<?php
-
+		$type = esc_attr( $type );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo <<<MESSAGE
+		<div class="notice is-dismissible notice-{$type}"><p>{$message}</p></div>
+		MESSAGE;
 		return ob_get_clean();
 	}
 

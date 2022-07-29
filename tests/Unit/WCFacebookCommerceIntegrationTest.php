@@ -2552,4 +2552,57 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEmpty( get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 		$this->assertEmpty( get_post_meta( $product_id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
 	}
+
+	/**
+	 * Tests display of error messages depending on GET parameter present and its value.
+	 *
+	 * @return void
+	 */
+	public function test_checks_triggers_display_errors() {
+		$_GET['page'] = 'wc-facebook';
+
+		$this->integration->errors = [
+			'Some error message one.',
+			'Some error message two.',
+		];
+
+		set_transient( 'facebook_plugin_api_error', 'Facebook plugin api error message text.' );
+		set_transient( 'facebook_plugin_api_warning', 'Facebook plugin api warning text.' );
+		set_transient( 'facebook_plugin_api_success', 'Facebook plugin api success text.' );
+		set_transient( 'facebook_plugin_api_info', 'Facebook plugin api info text.' );
+		set_transient( 'facebook_plugin_api_sticky', 'Facebook plugin api sticky text.' );
+
+		ob_start();
+		$this->integration->checks();
+		$output = ob_get_clean();
+
+		/* Check produced function output expected. */
+		$this->assertEquals(
+			'<div id="woocommerce_errors" class="error notice is-dismissible"><p>Some error message one.</p><p>Some error message two.</p></div><div class="notice is-dismissible notice-error"><p><strong>Facebook for WooCommerce error:</strong></br>Facebook plugin api error message text.</p></div><div class="notice is-dismissible notice-warning"><p>Facebook plugin api warning text.</p></div><div class="notice is-dismissible notice-success"><p>Facebook plugin api success text.</p></div><div class="notice is-dismissible notice-info"><p>Facebook plugin api info text.</p></div><div class="notice is-dismissible notice-info"><p>Facebook plugin api sticky text.</p></div>',
+			$output
+		);
+	}
+
+	/**
+	 * Tests does display facebook api messages, no errors.
+	 *
+	 * @return void
+	 */
+	public function test_checks_does_not_trigger_display_errors() {
+		set_transient( 'facebook_plugin_api_error', 'Facebook plugin api error message text.' );
+		set_transient( 'facebook_plugin_api_warning', 'Facebook plugin api warning text.' );
+		set_transient( 'facebook_plugin_api_success', 'Facebook plugin api success text.' );
+		set_transient( 'facebook_plugin_api_info', 'Facebook plugin api info text.' );
+		set_transient( 'facebook_plugin_api_sticky', 'Facebook plugin api sticky text.' );
+
+		ob_start();
+		$this->integration->checks();
+		$output = ob_get_clean();
+
+		/* Check produced function output expected. */
+		$this->assertEquals(
+			'<div class="notice is-dismissible notice-error"><p><strong>Facebook for WooCommerce error:</strong></br>Facebook plugin api error message text.</p></div><div class="notice is-dismissible notice-warning"><p>Facebook plugin api warning text.</p></div><div class="notice is-dismissible notice-success"><p>Facebook plugin api success text.</p></div><div class="notice is-dismissible notice-info"><p>Facebook plugin api info text.</p></div><div class="notice is-dismissible notice-info"><p>Facebook plugin api sticky text.</p></div>',
+			$output
+		);
+	}
 }
