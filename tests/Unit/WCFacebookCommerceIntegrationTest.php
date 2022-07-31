@@ -2835,4 +2835,51 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->assertEquals( '00998877665544332211', $access_token );
 	}
+
+	/**
+	 * Tests get_product_catalog_id returns product catalog id from object properly with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_catalog_id_returns_product_catalog_from_initialised_property_using_no_filter() {
+		$this->integration->product_catalog_id = '123123123123123123';
+		remove_all_filters( 'wc_facebook_product_catalog_id' );
+
+		$product_catalog_id = $this->integration->get_product_catalog_id();
+
+		$this->assertEquals( '123123123123123123', $product_catalog_id );
+	}
+
+	/**
+	 * Tests get_product_catalog_id returns product catalog id from options with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_catalog_id_returns_product_catalog_from_options_using_no_filter() {
+		$this->integration->product_catalog_id = null;
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '321321321321321321' );
+		remove_all_filters( 'wc_facebook_product_catalog_id' );
+
+		$product_catalog_id = $this->integration->get_product_catalog_id();
+
+		$this->assertEquals( '321321321321321321', $product_catalog_id );
+	}
+
+	/**
+	 * Tests get_product_catalog_id returns product catalog id with filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_catalog_id_returns_product_catalog_with_filter() {
+		add_filter(
+			'wc_facebook_product_catalog_id',
+			function ( $product_catalog_id ) {
+				return '3213-2132-1321-3213-2132';
+			}
+		);
+
+		$product_catalog_id = $this->integration->get_product_catalog_id();
+
+		$this->assertEquals( '3213-2132-1321-3213-2132', $product_catalog_id );
+	}
 }
