@@ -2612,7 +2612,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_sample_product_feed_with_twelve_recent_products() {
-
 		/* Generate 13 products. */
 		array_map(
 			function ( $index ) {
