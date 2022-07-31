@@ -2768,4 +2768,72 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			$this->assertEquals( '', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
 		}
 	}
+
+	/**
+	 * Tests get access token returns access token if feed is not migrated and no filters are set.
+	 *
+	 * @return void
+	 */
+	public function test_get_page_access_token_without_filter_and_no_feed_migrated() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		remove_all_filters( 'wc_facebook_page_access_token' );
+
+		add_option( 'wc_facebook_feed_migrated', 'no' );
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'get_page_access_token' )
+			->willReturn( '11223344556677889900' );
+
+		$access_token = $this->integration->get_page_access_token();
+
+		$this->assertEquals( '11223344556677889900', $access_token );
+	}
+
+	/**
+	 * Tests get access token returns empty access token if feed is migrated and no filters are set.
+	 *
+	 * @return void
+	 */
+	public function test_get_page_access_token_without_filter_and_feed_migrated() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		remove_all_filters( 'wc_facebook_page_access_token' );
+
+		add_option( 'wc_facebook_feed_migrated', 'yes' );
+
+		$this->connection_handler->expects( $this->once() )
+			->method( 'get_page_access_token' )
+			->willReturn( '11223344556677889900' );
+
+		$access_token = $this->integration->get_page_access_token();
+
+		$this->assertEquals( '', $access_token );
+	}
+
+	/**
+	 * Tests get access token returns filtered access token.
+	 *
+	 * @return void
+	 */
+	public function test_get_page_access_token_with_filter() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		add_filter(
+			'wc_facebook_page_access_token',
+			function( $access_token ) {
+				return '00998877665544332211';
+			}
+		);
+
+		$access_token = $this->integration->get_page_access_token();
+
+		$this->assertEquals( '00998877665544332211', $access_token );
+	}
 }
