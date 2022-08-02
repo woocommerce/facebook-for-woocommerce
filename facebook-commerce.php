@@ -423,6 +423,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			3
 		);
 
+		add_action( 'untrashed_post', array( $this, 'fb_restore_untrashed_variable_product' ));
+
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
 		add_action( 'fb_wc_product_set_delete', array( $this, 'delete_product_set_item' ), 99 );
@@ -1011,7 +1013,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @see ajax_delete_fb_product()
 		 */
 		if ( ( ! wp_doing_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
-			 && ! Products::published_product_should_be_synced( $product ) && ! $product->is_type( "variable" ) ) {
+			 && ! Products::published_product_should_be_synced( $product ) && ! $product->is_type( 'variable' ) ) {
 
 			return;
 		}
@@ -1090,8 +1092,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		$visibility = $new_status === 'publish' ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
-
 		$product = wc_get_product( $post->ID );
 
 		// bail if we couldn't retrieve a valid product object or the product isn't enabled for sync
@@ -1100,9 +1100,43 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// variations before it gets called with the variable product. As a result, Products::product_should_be_synced()
 		// always returns false for the variable product (since all children are in the trash at that point).
 		// This causes update_fb_visibility() to be called on simple products and product variations only.
-		if ( ! $product instanceof \WC_Product || ! Products::published_product_should_be_synced( $product ) ) {
+		if ( ! $product instanceof \WC_Product || ( ! Products::published_product_should_be_synced( $product ) ) ) {
 			return;
 		}
+
+		if ( ! $product->is_type( 'variant' ) ) {
+			return;
+		}
+
+		$visibility = $product->is_visible() ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
+
+		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
+			// - new status is 'publish' regardless of old status, sync to Facebook
+			$this->on_product_publish( $product->get_id() );
+		} else {
+			$this->update_fb_visibility( $product->get_id(), $visibility );
+		}
+	}
+
+	/**
+	 * Re-publish restored variable product.
+	 *
+	 * @internal
+	 *
+	 * @param int $post_id
+	 */
+	public function fb_restore_untrashed_variable_product ( $post_id ) {
+		$product = wc_get_product( $post_id );
+
+		if ( ! $product instanceof \WC_Product  ) {
+			return;
+		}
+
+		if ( ! $product->is_type( 'variable' ) ) {
+			return;
+		}
+
+		$visibility = $product->is_visible() ? self::FB_SHOP_PRODUCT_VISIBLE : self::FB_SHOP_PRODUCT_HIDDEN;
 
 		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
 			// - new status is 'publish' regardless of old status, sync to Facebook
@@ -1181,10 +1215,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( ! $woo_product instanceof \WC_Facebook_Product ) {
 			$woo_product = new \WC_Facebook_Product( $wp_id );
-		}
-
-		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
-			return;
 		}
 
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
