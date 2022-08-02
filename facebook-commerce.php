@@ -1104,7 +1104,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return;
 		}
 
-		if ( ! $product->is_type( 'variant' ) ) {
+		// Exclude variants. Product variables visibility is handled separately.
+		// @See fb_restore_untrashed_variable_product.
+		if ( $product->is_type( 'variant' ) ) {
 			return;
 		}
 
