@@ -1116,7 +1116,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// - new status is 'publish' regardless of old status, sync to Facebook
 			$this->on_product_publish( $product->get_id() );
 		} else {
-			$this->update_fb_visibility( $product->get_id(), $visibility );
+			$this->update_fb_visibility( $product, $visibility );
 		}
 	}
 
