@@ -423,7 +423,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			3
 		);
 
-		add_action( 'untrashed_post', array( $this, 'fb_restore_untrashed_variable_product' ));
+		add_action( 'untrashed_post', array( $this, 'fb_restore_untrashed_variable_product' ) );
 
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', array( $this, 'create_or_update_product_set_item' ), 99, 2 );
