@@ -1004,12 +1004,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		/**
-		 * bail if not enabled for sync, except if explicitly deleting from the metabox
+		 * Bail if not enabled for sync, except if explicitly deleting from the metabox or when deleting the
+		 * parent product ( Products::published_product_should_be_synced( $product ) will fail for the parent product
+		 * when deleting a variable product. This causes the fb_group_id to remain on the DB. )
 		 *
 		 * @see ajax_delete_fb_product()
 		 */
 		if ( ( ! wp_doing_ajax() || ! isset( $_POST['action'] ) || 'ajax_delete_fb_product' !== $_POST['action'] )
-			 && ! Products::published_product_should_be_synced( $product ) ) {
+			 && ! Products::published_product_should_be_synced( $product ) && ! $product->is_type( "variable" ) ) {
 
 			return;
 		}
@@ -1065,6 +1067,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// clear out both item and group IDs
 		delete_post_meta( $product_id, self::FB_PRODUCT_ITEM_ID );
 		delete_post_meta( $product_id, self::FB_PRODUCT_GROUP_ID );
+
 	}
 
 
@@ -1104,10 +1107,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $visibility === self::FB_SHOP_PRODUCT_VISIBLE ) {
 			// - new status is 'publish' regardless of old status, sync to Facebook
 			$this->on_product_publish( $product->get_id() );
-		} else {
-			$this->update_fb_visibility( $product, $visibility );
 		}
-
 	}
 
 
