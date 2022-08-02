@@ -2682,13 +2682,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests reset all product facebook meta does nothing is not an admin user.
+	 * Tests reset all product facebook meta does nothing is not admin user.
 	 *
 	 * @return void
 	 */
 	public function test_reset_all_products_as_non_admin_user() {
 		$this->assertFalse( $this->integration->reset_all_products() );
-		$this->assertFalse( is_admin() );
 	}
 
 	/**
@@ -2718,7 +2717,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$result = $this->integration->reset_all_products();
 
 		$this->assertTrue( $result );
-		$this->assertTrue( is_admin() );
 
 		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 		$this->assertEquals( '', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
