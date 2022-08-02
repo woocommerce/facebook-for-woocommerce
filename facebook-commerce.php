@@ -1217,6 +1217,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new \WC_Facebook_Product( $wp_id );
 		}
 
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
+			return;
+		}
+
 		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
