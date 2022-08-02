@@ -360,6 +360,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action( 'before_delete_post', array( $this, 'on_product_delete' ) );
 
+				// Ensure product is deleted from FB when moved to trash.
+				add_action( 'wp_trash_post', array( $this, 'on_product_delete' ) );
+
 				add_action( 'add_meta_boxes', 'SkyVerge\WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
 
 				add_action(
