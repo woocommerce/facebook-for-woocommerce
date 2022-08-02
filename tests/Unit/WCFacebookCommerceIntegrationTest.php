@@ -2613,21 +2613,34 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 */
 	public function test_get_sample_product_feed_with_twelve_recent_products() {
 		/* Generate 13 products. */
-		array_map(
-			function ( $index ) {
-				/** @var WC_Product_Simple $product */
-				$product = WC_Helper_Product::create_simple_product();
-				$product->set_name( 'Test product ' . ( $index + 1 ) );
-				$product->save();
-			},
-			array_keys( array_fill( 0, 13, true ) )
+		$product_retailer_ids = array_slice(
+			array_map(
+				function ( $index ) {
+					/** @var WC_Product_Simple $product */
+					$product = WC_Helper_Product::create_simple_product();
+					$product->set_name( 'Test product ' . ( $index + 1 ) );
+					$product->save();
+
+					return WC_Facebookcommerce_Utils::get_fb_retailer_id( new WC_Facebook_Product( $product ) );
+				},
+				array_keys( array_fill( 0, 13, true ) )
+			),
+			1
 		);
 
 		/* Feed of 12 recent products. */
 		$json = $this->integration->get_sample_product_feed();
 
 		/* 12 recent products with product titled "Test product 1" missing from the feed. */
-		$this->assertEquals( '[[{"title":"Test product 13","availability":"in stock","description":"Test product 13","id":"wc_post_id_22","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-13","price":"1000 USD"},{"title":"Test product 12","availability":"in stock","description":"Test product 12","id":"wc_post_id_21","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-12","price":"1000 USD"},{"title":"Test product 11","availability":"in stock","description":"Test product 11","id":"wc_post_id_20","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-11","price":"1000 USD"},{"title":"Test product 10","availability":"in stock","description":"Test product 10","id":"wc_post_id_19","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-10","price":"1000 USD"},{"title":"Test product 9","availability":"in stock","description":"Test product 9","id":"wc_post_id_18","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-9","price":"1000 USD"},{"title":"Test product 8","availability":"in stock","description":"Test product 8","id":"wc_post_id_17","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-8","price":"1000 USD"},{"title":"Test product 7","availability":"in stock","description":"Test product 7","id":"wc_post_id_16","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-7","price":"1000 USD"},{"title":"Test product 6","availability":"in stock","description":"Test product 6","id":"wc_post_id_15","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-6","price":"1000 USD"},{"title":"Test product 5","availability":"in stock","description":"Test product 5","id":"wc_post_id_14","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-5","price":"1000 USD"},{"title":"Test product 4","availability":"in stock","description":"Test product 4","id":"wc_post_id_13","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-4","price":"1000 USD"},{"title":"Test product 3","availability":"in stock","description":"Test product 3","id":"wc_post_id_12","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-3","price":"1000 USD"},{"title":"Test product 2","availability":"in stock","description":"Test product 2","id":"wc_post_id_11","image_link":"http:\/\/example.org\/wp-content\/plugins\/Users\/dimka\/Codebase\/automattic\/wordpress-facebook\/wp-content\/plugins\/facebook-for-woocommerce\/assets\/images\/woocommerce-placeholder.png","brand":"Test Blog","link":"http:\/\/example.org\/?product=dummy-product-2","price":"1000 USD"}]]', $json );
+		$returned_product_retailer_ids = array_reverse(
+			array_map(
+				function ( $product ) {
+					return $product['id'];
+				},
+				current( json_decode( $json, true ) )
+			)
+		);
+		$this->assertEquals( $product_retailer_ids, $returned_product_retailer_ids );
 		$this->assertCount( 12, current( json_decode( $json ) ) );
 	}
 
@@ -2885,7 +2898,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_product_catalog_id returns product catalog id from object properly with no filters on it.
+	 * Tests get_external_merchant_settings_id returns id from object properly with no filters on it.
 	 *
 	 * @return void
 	 */
@@ -2899,7 +2912,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_product_catalog_id returns product catalog id from options with no filters on it.
+	 * Tests get_external_merchant_settings_id returns id from options with no filters on it.
 	 *
 	 * @return void
 	 */
@@ -2915,7 +2928,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_product_catalog_id returns product catalog id with filters on it.
+	 * Tests get_external_merchant_settings_id returns id with filters on it.
 	 *
 	 * @return void
 	 */
@@ -2930,5 +2943,233 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$external_merchant_settings_id = $this->integration->get_external_merchant_settings_id();
 
 		$this->assertEquals( '3213-2132-1321-3213-2132', $external_merchant_settings_id );
+	}
+
+	/**
+	 * Tests get_feed_id returns id from object properly with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_feed_id_returns_id_from_initialised_property_using_no_filter() {
+		$this->integration->feed_id = '123123123123123123';
+		remove_all_filters( 'wc_facebook_feed_id' );
+
+		$feed_id = $this->integration->get_feed_id();
+
+		$this->assertEquals( '123123123123123123', $feed_id );
+	}
+
+	/**
+	 * Tests get_feed_id returns id from options with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_feed_id_returns_id_from_options_using_no_filter() {
+		$this->integration->feed_id = null;
+		add_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID, '321321321321321321' );
+		remove_all_filters( 'wc_facebook_feed_id' );
+
+		$feed_id = $this->integration->get_feed_id();
+
+		$this->assertEquals( '321321321321321321', $feed_id );
+		$this->assertEquals( '321321321321321321', $this->integration->feed_id );
+	}
+
+	/**
+	 * Tests get_feed_id returns id with filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_feed_id_returns_id_with_filter() {
+		add_filter(
+			'wc_facebook_feed_id',
+			function ( $feed_id ) {
+				return '3213-2132-1321-3213-2132';
+			}
+		);
+
+		$feed_id = $this->integration->get_feed_id();
+
+		$this->assertEquals( '3213-2132-1321-3213-2132', $feed_id );
+	}
+
+	/**
+	 * Tests get_upload_id returns id from options with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_upload_id_returns_id_from_options_using_no_filter() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID, '321321321321321321' );
+		remove_all_filters( 'wc_facebook_upload_id' );
+
+		$upload_id = $this->integration->get_upload_id();
+
+		$this->assertEquals( '321321321321321321', $upload_id );
+	}
+
+	/**
+	 * Tests get_upload_id returns id with filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_upload_id_returns_id_with_filter() {
+		add_filter(
+			'wc_facebook_upload_id',
+			function ( $upload_id ) {
+				return '3213-2132-1321-3213-2132';
+			}
+		);
+
+		$upload_id = $this->integration->get_upload_id();
+
+		$this->assertEquals( '3213-2132-1321-3213-2132', $upload_id );
+	}
+
+	/**
+	 * Tests get_pixel_install_time returns id from object properly with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_pixel_install_time_returns_id_from_initialised_property_using_no_filter() {
+		$this->integration->pixel_install_time = '123123123123123123';
+		remove_all_filters( 'wc_facebook_pixel_install_time' );
+
+		$pixel_install_time = $this->integration->get_pixel_install_time();
+
+		$this->assertEquals( '123123123123123123', $pixel_install_time );
+	}
+
+	/**
+	 * Tests get_pixel_install_time returns id from options with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_pixel_install_time_returns_id_from_options_using_no_filter() {
+		$this->integration->pixel_install_time = null;
+		add_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, '321321321321321321' );
+		remove_all_filters( 'wc_facebook_pixel_install_time' );
+
+		$pixel_install_time = $this->integration->get_pixel_install_time();
+
+		$this->assertEquals( '321321321321321321', $pixel_install_time );
+		$this->assertEquals( '321321321321321321', $this->integration->pixel_install_time );
+	}
+
+	/**
+	 * Tests get_pixel_install_time returns id with filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_pixel_install_time_returns_id_with_filter() {
+		add_filter(
+			'wc_facebook_pixel_install_time',
+			function ( $pixel_install_time ) {
+				return '321321321321';
+			}
+		);
+
+		$pixel_install_time = $this->integration->get_pixel_install_time();
+
+		$this->assertEquals( 321321321321, $pixel_install_time );
+	}
+
+	/**
+	 * Tests get_js_sdk_version returns version from options with no filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_js_sdk_version_returns_id_from_options_using_no_filter() {
+		$this->markTestSkipped( 'get_js_sdk_version method is called in constructor which makes it impossible to test it in isolation w/o refactoring the constructor.' );
+
+		add_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION, 'v1.0.0' );
+		remove_all_filters( 'wc_facebook_js_sdk_version' );
+
+		$js_sdk_version = $this->integration->get_js_sdk_version();
+
+		$this->assertEquals( 'v1.0.0', $js_sdk_version );
+	}
+
+	/**
+	 * Tests get_js_sdk_version returns version with filters on it.
+	 *
+	 * @return void
+	 */
+	public function test_get_js_sdk_version_returns_id_with_filter() {
+		$this->markTestSkipped( 'get_js_sdk_version method is called in constructor which makes it impossible to test it in isolation w/o refactoring the constructor.' );
+
+		add_filter(
+			'wc_facebook_js_sdk_version',
+			function ( $js_sdk_version ) {
+				return 'v2.0.0';
+			}
+		);
+
+		$js_sdk_version = $this->integration->get_js_sdk_version();
+
+		$this->assertEquals( 'v2.0.0', $js_sdk_version );
+	}
+
+	/**
+	 * Tests get facebook page id no filters applied.
+	 *
+	 * @return void
+	 */
+	public function test_get_facebook_page_id_no_filters() {
+		remove_all_filters( 'wc_facebook_page_id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '222333111444555666777' );
+
+		$facebook_page_id = $this->integration->get_facebook_page_id();
+
+		$this->assertEquals( '222333111444555666777', $facebook_page_id );
+	}
+
+	/**
+	 * Tests get facebook page id with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_facebook_page_id_with_filter() {
+		add_filter(
+			'wc_facebook_page_id',
+			function ( $facebook_page_id ) {
+				return '444333222111999888777666555';
+			}
+		);
+
+		$facebook_page_id = $this->integration->get_facebook_page_id();
+
+		$this->assertEquals( '444333222111999888777666555', $facebook_page_id );
+	}
+
+	/**
+	 * Tests get facebook pixel id no filters applied.
+	 *
+	 * @return void
+	 */
+	public function test_get_facebook_pixel_id_no_filters() {
+		remove_all_filters( 'wc_facebook_pixel_id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '222333111444555666777' );
+
+		$facebook_pixel_id = $this->integration->get_facebook_pixel_id();
+
+		$this->assertEquals( '222333111444555666777', $facebook_pixel_id );
+	}
+
+	/**
+	 * Tests get facebook pixel id with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_facebook_pixel_id_with_filter() {
+		add_filter(
+			'wc_facebook_pixel_id',
+			function ( $facebook_pixel_id ) {
+				return '444333222111999888777666555';
+			}
+		);
+
+		$facebook_pixel_id = $this->integration->get_facebook_pixel_id();
+
+		$this->assertEquals( '444333222111999888777666555', $facebook_pixel_id );
 	}
 }
