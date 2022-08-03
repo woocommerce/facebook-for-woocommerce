@@ -2746,6 +2746,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return bool
 	 */
 	public function is_use_s2s_enabled() {
+		wc_deprecated_function( __METHOD__, '2.6.14' );
+
 		return WC_Facebookcommerce_Pixel::get_use_s2s();
 	}
 
@@ -2756,6 +2758,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return string
 	 */
 	public function get_access_token() {
+		wc_deprecated_function( __METHOD__, '2.6.14' );
+
 		return WC_Facebookcommerce_Pixel::get_access_token();
 	}
 
@@ -3251,6 +3255,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return string
 	 */
 	public function get_nux_message_ifexist() {
+		wc_deprecated_function( __METHOD__, '2.6.14' );
+
 		$nux_type_to_elemid_map = [
 			'messenger_chat'     => 'connect_button',
 			'instagram_shopping' => 'connect_button',
@@ -3265,27 +3271,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['nux'] ) ) {
-
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$nux_type = sanitize_text_field( wp_unslash( $_GET['nux'] ) );
-
-			ob_start();
-
-			?>
-
-			<div class="nux-message" style="display: none;"
-				 data-target="<?php echo esc_attr( $nux_type_to_elemid_map[ $nux_type ] ); ?>">
-				<div class="nux-message-text">
-					<?php echo esc_attr( $nux_type_to_message_map[ $nux_type ] ); ?>
-				</div>
+			$elem_id  = esc_attr( $nux_type_to_elemid_map[ $nux_type ] );
+			$msg      = esc_attr( $nux_type_to_message_map[ $nux_type ] );
+			$message  = <<<HTML
+			<div class="nux-message" style="display: none;" data-target="{$elem_id}">
+				<div class="nux-message-text">{$msg}</div>
 				<div class="nux-message-arrow"></div>
 				<i class="nux-message-close-btn">x</i>
 			</div>
 			<script>( function () { fbe_init_nux_messages(); } )();</script>
-
-			<?php
-
-			$message = ob_get_clean();
+			HTML;
 		}
 
 		return $message;
@@ -3297,13 +3294,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function admin_options() {
 		$this->facebook_for_woocommerce->get_message_handler()->show_messages();
 
-		?>
-
-		<div id="integration-settings" <?php echo ! $this->is_configured() ? 'style="display: none"' : ''; ?>>
-			<table class="form-table"><?php $this->generate_settings_html( $this->get_form_fields() ); ?></table>
+		$display  = ! $this->is_configured() ? 'style="display: none"' : '';
+		$settings = $this->generate_settings_html( $this->get_form_fields() );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo <<<HTML
+		<div id="integration-settings" {$display}>
+			<table class="form-table">{$settings}</table>
 		</div>
-
-		<?php
+		HTML;
 	}
 
 	/**

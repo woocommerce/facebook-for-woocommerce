@@ -10,6 +10,7 @@ use SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
 use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator;
+use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WP_Admin_Message_Handler;
 
 /**
  * Unit tests for Facebook Graph API calls.
@@ -3172,5 +3173,1431 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_pixel_id = $this->integration->get_facebook_pixel_id();
 
 		$this->assertEquals( '444333222111999888777666555', $facebook_pixel_id );
+	}
+
+	/**
+	 * Tests is_use_s2s_enabled returns false if no option set.
+	 *
+	 * @return void
+	 */
+	public function test_is_use_s2s_enabled_has_no_options() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		delete_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY );
+
+		$output = $this->integration->is_use_s2s_enabled();
+
+		$this->assertFalse( $output );
+	}
+
+	/**
+	 * Tests is_use_s2s_enabled returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_is_use_s2s_enabled_returns_option_value() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		add_option(
+			WC_Facebookcommerce_Pixel::SETTINGS_KEY,
+			[
+				WC_Facebookcommerce_Pixel::USE_S2S_KEY => true,
+			]
+		);
+
+		$output = $this->integration->is_use_s2s_enabled();
+
+		$this->assertTrue( $output );
+	}
+
+	/**
+	 * Tests get_access_token returns false if no option set.
+	 *
+	 * @return void
+	 */
+	public function test_get_access_token_no_options_set() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		delete_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY );
+
+		$output = $this->integration->get_access_token();
+
+		$this->assertEmpty( $output );
+	}
+
+	/**
+	 * Tests get_access_token returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_get_access_token_returns_set_option() {
+		/* Remove deprecation notices. */
+		add_filter( 'deprecated_function_trigger_error', '__return_false' );
+		remove_all_actions( 'deprecated_function_run' );
+
+		add_option(
+			WC_Facebookcommerce_Pixel::SETTINGS_KEY,
+			[
+				WC_Facebookcommerce_Pixel::ACCESS_TOKEN_KEY => '11223344556677889900',
+			]
+		);
+
+		$output = $this->integration->get_access_token();
+
+		$this->assertEquals( '11223344556677889900', $output );
+	}
+
+	/**
+	 * Tests get excluded product category ids when no filter is set and no options present.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_category_ids_no_filter_no_option() {
+		remove_all_filters( 'wc_facebook_excluded_product_category_ids' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS );
+
+		$categories = $this->integration->get_excluded_product_category_ids();
+
+		$this->assertEquals( [], $categories );
+	}
+
+	/**
+	 * Tests get excluded product category ids returns options when no filter is set.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_category_ids_no_filter() {
+		remove_all_filters( 'wc_facebook_excluded_product_category_ids' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS,
+			[ 121, 221, 321, 421, 521, 621 ]
+		);
+
+		$categories = $this->integration->get_excluded_product_category_ids();
+
+		$this->assertEquals( [ 121, 221, 321, 421, 521, 621 ], $categories );
+	}
+
+	/**
+	 * Tests get excluded product category ids uses filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_category_ids_with_filter() {
+		add_filter(
+			'wc_facebook_excluded_product_category_ids',
+			function ( $ids ) {
+				return [ 111, 222, 333 ];
+			}
+		);
+
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS,
+			[ 121, 221, 321, 421, 521, 621 ]
+		);
+
+		$categories = $this->integration->get_excluded_product_category_ids();
+
+		$this->assertEquals( [ 111, 222, 333 ], $categories );
+	}
+
+	/**
+	 * Tests get excluded product tag ids when no filter is set and no options present.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_tag_ids_no_filter_no_option() {
+		remove_all_filters( 'wc_facebook_excluded_product_tag_ids' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS );
+
+		$tags = $this->integration->get_excluded_product_tag_ids();
+
+		$this->assertEquals( [], $tags );
+	}
+
+	/**
+	 * Tests get excluded product tag ids returns options when no filter is set.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_tag_ids_no_filter() {
+		remove_all_filters( 'wc_facebook_excluded_product_tag_ids' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS,
+			[ 121, 221, 321, 421, 521, 621 ]
+		);
+
+		$tags = $this->integration->get_excluded_product_tag_ids();
+
+		$this->assertEquals( [ 121, 221, 321, 421, 521, 621 ], $tags );
+	}
+
+	/**
+	 * Tests get excluded product tag ids uses filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_excluded_product_tag_ids_with_filter() {
+		add_filter(
+			'wc_facebook_excluded_product_tag_ids',
+			function ( $ids ) {
+				return [ 111, 222, 333 ];
+			}
+		);
+
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_EXCLUDED_PRODUCT_TAG_IDS,
+			[ 121, 221, 321, 421, 521, 621 ]
+		);
+
+		$tags = $this->integration->get_excluded_product_tag_ids();
+
+		$this->assertEquals( [ 111, 222, 333 ], $tags );
+	}
+
+	/**
+	 * Tests get product description mode with no filter no options.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_description_mode_no_filter_no_options() {
+		remove_all_filters( 'wc_facebook_product_description_mode' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE );
+
+		$mode = $this->integration->get_product_description_mode();
+
+		$this->assertEquals( WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD, $mode );
+	}
+
+	/**
+	 * Tests get product description mode with no filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_description_mode_no_filter() {
+		remove_all_filters( 'wc_facebook_product_description_mode' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE,
+			WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT
+		);
+
+		$mode = $this->integration->get_product_description_mode();
+
+		$this->assertEquals( WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT, $mode );
+	}
+
+	/**
+	 * Tests get product description mode with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_description_mode_with_filter() {
+		add_filter(
+			'wc_facebook_product_description_mode',
+			function ( $mode ) {
+				return WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD;
+			}
+		);
+
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE,
+			WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT
+		);
+
+		$mode = $this->integration->get_product_description_mode();
+
+		$this->assertEquals( WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD, $mode );
+	}
+
+	/**
+	 * Tests get product description mode falls back into default mode if mode is not recognised as valid mode.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_description_mode_falls_back_to_default_when_unknown_mode() {
+		add_filter(
+			'wc_facebook_product_description_mode',
+			function ( $mode ) {
+				return 'super-duper-description-mode-123';
+			}
+		);
+
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_PRODUCT_DESCRIPTION_MODE,
+			WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_SHORT
+		);
+
+		$mode = $this->integration->get_product_description_mode();
+
+		$this->assertEquals( WC_Facebookcommerce_Integration::PRODUCT_DESCRIPTION_MODE_STANDARD, $mode );
+	}
+
+	/**
+	 * Tests get messenger locale returns default locale.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_locale_no_filter_no_options() {
+		remove_all_filters( 'wc_facebook_messenger_locale' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE );
+
+		$locale = $this->integration->get_messenger_locale();
+
+		$this->assertEquals( 'en_US', $locale );
+	}
+
+	/**
+	 * Tests get messenger locale no filter, returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_locale_no_filter() {
+		remove_all_filters( 'wc_facebook_messenger_locale' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, 'fr-FR' );
+
+		$locale = $this->integration->get_messenger_locale();
+
+		$this->assertEquals( 'fr-FR', $locale );
+	}
+
+	/**
+	 * Tests get messenger locale with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_locale_with_filter() {
+		add_filter(
+			'wc_facebook_messenger_locale',
+			function ( $locale ) {
+				return 'es-ES';
+			}
+		);
+		add_option( WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, 'fr-FR' );
+
+		$locale = $this->integration->get_messenger_locale();
+
+		$this->assertEquals( 'es-ES', $locale );
+	}
+
+	/**
+	 * Tests get messenger greeting with no filters and no options set, returns
+	 * default greeting text which is also not truncated @see WC_Facebookcommerce_Integration::get_messenger_greeting_max_characters()
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_no_filter_no_options() {
+		remove_all_filters( 'wc_facebook_messenger_greeting' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING );
+
+		$greeting = $this->integration->get_messenger_greeting();
+
+		$this->assertEquals( 'Hi! We\'re here to answer any questions you may have.', $greeting );
+	}
+
+	/**
+	 * Tests get messenger greeting with no filters but the message exceeds characters
+	 * limit so is truncated to the default 80 characters in length @see WC_Facebookcommerce_Integration::get_messenger_greeting_max_characters()
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_truncated_no_filter() {
+		remove_all_filters( 'wc_facebook_messenger_greeting' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pulvinar sit amet sit.'
+		);
+
+		$greeting = $this->integration->get_messenger_greeting();
+
+		$this->assertEquals( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pulvinar sit', $greeting );
+	}
+
+	/**
+	 * Tests get messenger greeting with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_truncated_with_filter() {
+		add_filter(
+			'wc_facebook_messenger_greeting',
+			function ( $greeting ) {
+				return 'Updated with filter. ' . $greeting;
+			}
+		);
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_MESSENGER_GREETING,
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pulvinar sit amet sit.'
+		);
+
+		$greeting = $this->integration->get_messenger_greeting();
+
+		$this->assertEquals( 'Updated with filter. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ve', $greeting );
+	}
+
+	/**
+	 * Tests get messenger greeting max characters returns default value when no filter is set.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_max_characters_no_filter() {
+		remove_all_filters( 'wc_facebook_messenger_greeting_max_characters' );
+
+		$length = $this->integration->get_messenger_greeting_max_characters();
+
+		$this->assertEquals( 80, $length );
+	}
+
+	/**
+	 * Tests get messenger greeting max character with filter which falls back to default
+	 * if returned filter value is less than 1.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_max_characters_with_filter_falls_back_to_default() {
+		add_filter(
+			'wc_facebook_messenger_greeting_max_characters',
+			function ( $length ) {
+				return 0;
+			}
+		);
+
+		$length = $this->integration->get_messenger_greeting_max_characters();
+
+		$this->assertEquals( 80, $length );
+	}
+
+	/**
+	 * Tests get messenger greeting max character with filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_greeting_max_characters_with_filter() {
+		add_filter(
+			'wc_facebook_messenger_greeting_max_characters',
+			function ( $length ) {
+				return 120;
+			}
+		);
+
+		$length = $this->integration->get_messenger_greeting_max_characters();
+
+		$this->assertEquals( 120, $length );
+	}
+
+	/**
+	 * Tests get messenger color hex when no filters nor options are set.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_color_hex_no_filter_no_options() {
+		remove_all_filters( 'wc_facebook_messenger_color_hex' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX );
+
+		$hex = $this->integration->get_messenger_color_hex();
+
+		$this->assertEquals( '#0084ff', $hex );
+	}
+
+	/**
+	 * Tests get messenger color hex returns option value when no filter is set.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_color_hex_no_filter() {
+		remove_all_filters( 'wc_facebook_messenger_color_hex' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
+			'#red'
+		);
+
+		$hex = $this->integration->get_messenger_color_hex();
+
+		$this->assertEquals( '#red', $hex );
+	}
+
+	/**
+	 * Tests get messenger color hex uses filter.
+	 *
+	 * @return void
+	 */
+	public function test_get_messenger_color_hex_with_filter() {
+		add_filter(
+			'wc_facebook_messenger_color_hex',
+			function ( $hex ) {
+				return '#green';
+			}
+		);
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
+			'#red'
+		);
+
+		$hex = $this->integration->get_messenger_color_hex();
+
+		$this->assertEquals( '#green', $hex );
+	}
+
+	/**
+	 * Tests product catalog id option update with valid catalog id value.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_catalog_id_with_valid_id() {
+		$id = '11223344556677889900';
+
+		$this->integration->update_product_catalog_id( $id );
+
+		$this->assertEquals( '11223344556677889900', get_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ) );
+	}
+
+	/**
+	 * Tests product catalog id option update with invalid catalog id value.
+	 *
+	 * @return void
+	 */
+	public function test_update_product_catalog_id_with_invalid_id() {
+		$id = 1241231;
+
+		$this->integration->update_product_catalog_id( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ) );
+	}
+
+	/**
+	 * Tests update external merchant settings id with valid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_external_merchant_settings_id_with_valid_id() {
+		$id = '41234123512351234';
+
+		$this->integration->update_external_merchant_settings_id( $id );
+
+		$this->assertEquals( '41234123512351234', get_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID ) );
+	}
+
+	/**
+	 * Tests update external merchant settings id with invalid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_external_merchant_settings_id_with_invalid_id() {
+		$id = 43513451324;
+
+		$this->integration->update_external_merchant_settings_id( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID ) );
+	}
+
+	/**
+	 * Tests update feed id with valid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_feed_id_with_valid_id() {
+		$id = '41234123512351234';
+
+		$this->integration->update_feed_id( $id );
+
+		$this->assertEquals( '41234123512351234', get_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID ) );
+	}
+
+	/**
+	 * Tests update feed id with invalid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_feed_id_with_invalid_id() {
+		$id = 43513451324;
+
+		$this->integration->update_feed_id( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_FEED_ID ) );
+	}
+
+	/**
+	 * Tests update upload id with valid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_upload_id_with_valid_id() {
+		$id = '41234123512351234';
+
+		$this->integration->update_upload_id( $id );
+
+		$this->assertEquals( '41234123512351234', get_option( WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID ) );
+	}
+
+	/**
+	 * Tests update upload id with invalid id.
+	 *
+	 * @return void
+	 */
+	public function test_update_upload_id_with_invalid_id() {
+		$id = 43513451324;
+
+		$this->integration->update_upload_id( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_UPLOAD_ID ) );
+	}
+
+	/**
+	 * Tests update facebook pixel install time with valid value.
+	 *
+	 * @return void
+	 */
+	public function test_update_pixel_install_time_with_valid_value() {
+		$id = 1659519256;
+
+		$this->integration->update_pixel_install_time( $id );
+
+		$this->assertEquals( 1659519256, get_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ) );
+	}
+
+	/**
+	 * Tests update facebook pixel install time with invalid value.
+	 *
+	 * @return void
+	 */
+	public function test_update_pixel_install_time_with_invalid_value() {
+		$id = null;
+
+		$this->integration->update_pixel_install_time( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ) );
+	}
+
+	/**
+	 * Tests update js sdk version with valid value.
+	 *
+	 * @return void
+	 */
+	public function test_update_js_sdk_version_with_valid_value() {
+		$id = 'v1.2.1';
+
+		$this->integration->update_js_sdk_version( $id );
+
+		$this->assertEquals( 'v1.2.1', get_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION ) );
+	}
+
+	/**
+	 * Tests update js sdk version with invalid value.
+	 *
+	 * @return void
+	 */
+	public function test_update_js_sdk_version_with_invalid_value() {
+		$id = null;
+
+		$this->integration->update_js_sdk_version( $id );
+
+		$this->assertEquals( '', get_option( WC_Facebookcommerce_Integration::OPTION_JS_SDK_VERSION ) );
+	}
+
+	/**
+	 * Tests is configured returns true.
+	 *
+	 * @return void
+	 */
+	public function test_is_configured_returns_true() {
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+			'facebook-page-id'
+		);
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$result = $this->integration->is_configured();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is configured returns false when facebook page id is missing.
+	 *
+	 * @return void
+	 */
+	public function test_is_configured_returns_false_facebook_page_id_missing() {
+		delete_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID );
+		$this->connection_handler->expects( $this->never() )
+			->method( 'is_connected' )
+			->willReturn( true );
+
+		$result = $this->integration->is_configured();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is configured returns false when is not connected to facebook.
+	 *
+	 * @return void
+	 */
+	public function test_is_configured_returns_false_is_not_connected() {
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
+			'facebook-page-id'
+		);
+		$this->connection_handler->expects( $this->once() )
+			->method( 'is_connected' )
+			->willReturn( false );
+
+		$result = $this->integration->is_configured();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is advanced matching enabled with no filter return default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_advanced_matching_enabled_no_filter() {
+		remove_all_filters( 'wc_facebook_is_advanced_matching_enabled' );
+
+		$output = $this->integration->is_advanced_matching_enabled();
+
+		$this->assertTrue( $output );
+	}
+
+	/**
+	 * Tests is advanced matching enabled with filter.
+	 *
+	 * @return void
+	 */
+	public function test_is_advanced_matching_enabled_with_filter() {
+		add_filter(
+			'wc_facebook_is_advanced_matching_enabled',
+			function ( $is_enabled ) {
+				return false;
+			}
+		);
+
+		$output = $this->integration->is_advanced_matching_enabled();
+
+		$this->assertFalse( $output );
+	}
+
+	/**
+	 * Tests is product sync enabled returns default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_product_sync_enabled_no_filter_no_option() {
+		remove_all_filters( 'wc_facebook_is_product_sync_enabled' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC );
+
+		$result = $this->integration->is_product_sync_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is product sync enabled returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_is_product_sync_enabled_no_filter() {
+		remove_all_filters( 'wc_facebook_is_product_sync_enabled' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
+			'no'
+		);
+
+		$result = $this->integration->is_product_sync_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is product sync enabled with filter.
+	 *
+	 * @return void
+	 */
+	public function test_is_product_sync_enabled_with_filter() {
+		add_filter(
+			'wc_facebook_is_product_sync_enabled',
+			function ( $is_enabled ) {
+				return false;
+			}
+		);
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
+			'yes'
+		);
+
+		$result = $this->integration->is_product_sync_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is legacy feed file generation enabled with no option set.
+	 *
+	 * @return void
+	 */
+	public function test_is_legacy_feed_file_generation_enabled_no_option() {
+		delete_option( WC_Facebookcommerce_Integration::OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED );
+
+		$result = $this->integration->is_legacy_feed_file_generation_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is legacy feed file generation enabled with option set.
+	 *
+	 * @return void
+	 */
+	public function test_is_legacy_feed_file_generation_enabled_with_option() {
+		add_option(
+			WC_Facebookcommerce_Integration::OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED,
+			'no'
+		);
+
+		$result = $this->integration->is_legacy_feed_file_generation_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is messenger enabled returns default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_messenger_enabled_no_filter_no_option() {
+		remove_all_filters( 'wc_facebook_is_messenger_enabled' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER );
+
+		$result = $this->integration->is_messenger_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is messenger enabled no filter but with option set.
+	 *
+	 * @return void
+	 */
+	public function test_is_messenger_enabled_no_filter() {
+		remove_all_filters( 'wc_facebook_is_messenger_enabled' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+			'yes'
+		);
+
+		$result = $this->integration->is_messenger_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is messenger enabled no filter but with filter.
+	 *
+	 * @return void
+	 */
+	public function test_is_messenger_enabled_with_filter() {
+		add_filter(
+			'wc_facebook_is_messenger_enabled',
+			function ( $is_enabled ) {
+				return true;
+			}
+		);
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER,
+			'no'
+		);
+
+		$result = $this->integration->is_messenger_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is debug mode enabled returns default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_debug_mode_enabled_returns_default_value() {
+		remove_all_filters( 'wc_facebook_is_debug_mode_enabled' );
+		delete_option( WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE );
+
+		$result = $this->integration->is_debug_mode_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is debug mode enabled returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_is_debug_mode_enabled_returns_option_value() {
+		remove_all_filters( 'wc_facebook_is_debug_mode_enabled' );
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
+			'yes'
+		);
+
+		$result = $this->integration->is_debug_mode_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is debug mode enabled with filter.
+	 *
+	 * @return void
+	 */
+	public function test_is_debug_mode_enabled_with_filter() {
+		add_filter(
+			'wc_facebook_is_debug_mode_enabled',
+			function ( $is_enabled ) {
+				return false;
+			}
+		);
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
+			'yes'
+		);
+
+		$result = $this->integration->is_debug_mode_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is new style feed generation enabled returns default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_new_style_feed_generation_enabled_default_value() {
+		delete_option( WC_Facebookcommerce_Integration::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR );
+
+		$result = $this->integration->is_new_style_feed_generation_enabled();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is new style feed generation enabled returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_is_new_style_feed_generation_enabled_option_value() {
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_ENABLE_NEW_STYLE_FEED_GENERATOR,
+			'yes'
+		);
+
+		$result = $this->integration->is_new_style_feed_generation_enabled();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests are headers requested for debug default value.
+	 *
+	 * @return void
+	 */
+	public function test_are_headers_requested_for_debug_default_value() {
+		delete_option( WC_Facebookcommerce_Integration::SETTING_REQUEST_HEADERS_IN_DEBUG_MODE );
+
+		$result = $this->integration->are_headers_requested_for_debug();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests are headers requested for debug option value.
+	 *
+	 * @return void
+	 */
+	public function test_are_headers_requested_for_debug_option_value() {
+		add_option(
+			WC_Facebookcommerce_Integration::SETTING_REQUEST_HEADERS_IN_DEBUG_MODE,
+			true
+		);
+
+		$result = $this->integration->are_headers_requested_for_debug();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests is feed migrated returns default value.
+	 *
+	 * @return void
+	 */
+	public function test_is_feed_migrated_default_value() {
+		delete_option( 'wc_facebook_feed_migrated' );
+
+		$result = $this->integration->is_feed_migrated();
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Tests is feed migrated returns option value.
+	 *
+	 * @return void
+	 */
+	public function test_is_feed_migrated_option_value() {
+		add_option( 'wc_facebook_feed_migrated', 'yes' );
+
+		$result = $this->integration->is_feed_migrated();
+
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Tests maybe display facebook api messages displays all the possible messages.
+	 *
+	 * @return void
+	 */
+	public function test_maybe_display_facebook_api_messages() {
+		set_transient( 'facebook_plugin_api_error', 'Api error message.' );
+		set_transient( 'facebook_plugin_api_warning', 'Api warning message.' );
+		set_transient( 'facebook_plugin_api_success', 'Api success message.' );
+		set_transient( 'facebook_plugin_api_info', 'Api info message.' );
+		set_transient( 'facebook_plugin_api_sticky', 'Api sticky message.' );
+
+		ob_start();
+		$this->integration->maybe_display_facebook_api_messages();
+		$output = ob_get_clean();
+
+		$this->assertEquals( '<div class="notice is-dismissible notice-error"><p><strong>Facebook for WooCommerce error:</strong></br>Api error message.</p></div><div class="notice is-dismissible notice-warning"><p>Api warning message.</p></div><div class="notice is-dismissible notice-success"><p>Api success message.</p></div><div class="notice is-dismissible notice-info"><p>Api info message.</p></div><div class="notice is-dismissible notice-info"><p>Api sticky message.</p></div>', $output );
+
+		$this->assertEmpty( get_transient( 'facebook_plugin_api_error' ) );
+		$this->assertEmpty( get_transient( 'facebook_plugin_api_warning' ) );
+		$this->assertEmpty( get_transient( 'facebook_plugin_api_success' ) );
+		$this->assertEmpty( get_transient( 'facebook_plugin_api_info' ) );
+		$this->assertEquals( 'Api sticky message.', get_transient( 'facebook_plugin_api_sticky' ) );
+	}
+
+	/**
+	 * Skip this test since the method is not used anywhere.
+	 *
+	 * @return void
+	 */
+	public function test_get_nux_message_ifexist() {
+		$this->markTestSkipped( 'A never used method. Skip it.' );
+	}
+
+	/**
+	 * Tests admin options renders html.
+	 *
+	 * @return void
+	 */
+	public function test_admin_options() {
+		$message_handler = $this->createMock( SV_WP_Admin_Message_Handler::class );
+		$message_handler->expects( $this->once() )
+			->method( 'show_messages' );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_message_handler' )
+			->willReturn( $message_handler );
+
+		ob_start();
+		$this->integration->admin_options();
+		$output = ob_get_clean();
+
+		$this->assertEquals(
+			<<<HTML
+			<div id="integration-settings" style="display: none">
+				<table class="form-table"></table>
+			</div>
+			HTML,
+			$output
+		);
+	}
+
+	/**
+	 * Tests delete product item calls facebook graph api.
+	 *
+	 * @return void
+	 */
+	public function test_delete_product_item() {
+		$id = 1234567890;
+
+		add_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, '00998877665544332211' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'delete_product_item' )
+			->with( '00998877665544332211' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->delete_product_item( $id );
+	}
+
+	/**
+	 * Tests filter function.
+	 *
+	 * @return void
+	 */
+	public function test_fb_duplicate_product_reset_meta() {
+		$output = $this->integration->fb_duplicate_product_reset_meta( [] );
+
+		$this->assertEquals(
+			[
+				WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
+				WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
+			],
+			$output
+		);
+	}
+
+	/**
+	 * Tests update facebook visibility does nothing
+	 * when connection is not configured or there is no
+	 * facebook catalog id present.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_not_configured_no_catalog_id() {
+		/* Make is_configured() return false. */
+		delete_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID );
+		/* Make get_product_catalog_id() return false. */
+		delete_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID );
+
+		$this->facebook_for_woocommerce->expects( $this->never() )
+			->method( 'get_products_sync_handler' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->never() )
+			->method( 'update_product_item' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_fb_visibility( 123, '' );
+	}
+
+	/**
+	 * Tests update facebook visibility does nothing if no product exists.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_no_such_product() {
+		$this->facebook_for_woocommerce->expects( $this->never() )
+			->method( 'get_products_sync_handler' );
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->never() )
+			->method( 'update_product_item' );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_fb_visibility( 123, '' );
+	}
+
+	/**
+	 * Tests visibility update to hidden for variation product.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_hidden_for_variation_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product   = WC_Helper_Product::create_variation_product();
+		$variation = wc_get_product( $product->get_children()[0] );
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( [ $variation->get_id() ] );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->update_fb_visibility(
+			$variation->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN
+		);
+
+		$this->assertEquals( 'no', get_post_meta( $variation->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+	/**
+	 * Tests visibility update to published for variation product.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_published_for_variation_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product = WC_Helper_Product::create_variation_product();
+		$product->add_meta_data( Products::VISIBILITY_META_KEY, 'no' );
+		$product->save_meta_data();
+
+		$variation = wc_get_product( $product->get_children()[0] );
+		$variation->add_meta_data( Products::VISIBILITY_META_KEY, 'no' );
+		$variation->save_meta_data();
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( [ $variation->get_id() ] );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->update_fb_visibility(
+			$variation->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
+		);
+
+		$this->assertEquals( 'yes', get_post_meta( $variation->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 * Tests product visibility update to hidden for variable product and all of its variations.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_hidden_for_variable_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product = WC_Helper_Product::create_variation_product();
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( $product->get_children() );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->update_fb_visibility(
+			$product->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN
+		);
+
+		$this->assertEquals( 'no', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		foreach ( $product->get_children() as $variation ) {
+			$variation = wc_get_product( $variation );
+			$this->assertEquals( 'no', get_post_meta( $variation->get_id(), Products::VISIBILITY_META_KEY, true ) );
+		}
+	}
+
+	/**
+	 * Tests product visibility update to published for variable product and all of its variations.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_published_for_variable_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product = WC_Helper_Product::create_variation_product();
+		$product->add_meta_data( Products::VISIBILITY_META_KEY, 'no' );
+		$product->save_meta_data();
+
+		foreach ( $product->get_children() as $variation ) {
+			$variation = wc_get_product( $variation );
+			$variation->add_meta_data( Products::VISIBILITY_META_KEY, 'no' );
+			$variation->save_meta_data();
+		}
+
+		$sync_handler = $this->createMock( Products\Sync::class );
+		$sync_handler->expects( $this->once() )
+			->method( 'create_or_update_products' )
+			->with( $product->get_children() );
+
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_products_sync_handler' )
+			->willReturn( $sync_handler );
+
+		$this->integration->update_fb_visibility(
+			$product->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
+		);
+
+		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+		foreach ( $product->get_children() as $variation ) {
+			$variation = wc_get_product( $variation );
+			$this->assertEquals( 'yes', get_post_meta( $variation->get_id(), Products::VISIBILITY_META_KEY, true ) );
+		}
+	}
+
+	/**
+	 * Tests update facebook product visibility to hidden for simple product.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_hidden_for_simple_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product = WC_Helper_Product::create_simple_product();
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'some-facebook-product-group-id' );
+		$product->save_meta_data();
+
+		$facebook_output_update_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ] )
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_fb_visibility(
+			$product->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN
+		);
+
+		$this->assertEquals( 'no', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 * Tests update facebook product visibility to published for simple product.
+	 *
+	 * @return void
+	 */
+	public function test_update_fb_visibility_to_published_for_simple_product() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, 'facebook-catalog-id' );
+		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
+		$this->connection_handler->expects( $this->once() )->method( 'is_connected' )->willReturn( true );
+
+		$product = WC_Helper_Product::create_simple_product();
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'some-facebook-product-group-id' );
+		$product->add_meta_data( Products::VISIBILITY_META_KEY, 'no' );
+		$product->save_meta_data();
+
+		$facebook_output_update_product_item = [
+			'headers'  => [],
+			'body'     => '{"id":"5191364664265911"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'update_product_item' )
+			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ] )
+			->willReturn( $facebook_output_update_product_item );
+		$this->integration->fbgraph = $graph_api;
+
+		$this->integration->update_fb_visibility(
+			$product->get_id(),
+			WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE
+		);
+
+		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
+	}
+
+	/**
+	 * Tests get product facebook id returns post meta value.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_fbid_returns_post_meta_value() {
+		$product = WC_Helper_Product::create_simple_product();
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'some-facebook-product-group-id' );
+		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'some-facebook-product-item-id' );
+		$product->save_meta_data();
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->never() )
+			->method( 'get_facebook_id' );
+		$this->integration->fbgraph = $graph_api;
+
+		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $product->get_id() );
+		$item_id  = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+
+		$this->assertEquals( 'some-facebook-product-group-id', $group_id );
+		$this->assertEquals( 'some-facebook-product-item-id', $item_id );
+	}
+
+	/**
+	 * Tests get product facebook id calls facebook graph api to get id and updates post meta group id value.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_fbid_calls_facebook_and_sets_post_meta_value_for_group_id() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1122334455' );
+
+		$product = WC_Helper_Product::create_simple_product();
+
+		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( new WC_Facebook_Product( $product->get_id() ) );
+
+		$facebook_output_get_facebook_id = [
+			'id'            => 'product-id',
+			'product_group' => [
+				'id' => 'product-group-id',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'get_facebook_id' )
+			->with( '1122334455', $fb_retailer_id )
+			->willReturn( $facebook_output_get_facebook_id );
+		$this->integration->fbgraph = $graph_api;
+
+		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $product->get_id() );
+
+		$this->assertEquals( 'product-group-id', $group_id );
+
+		$this->assertEquals( 'product-group-id', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+	}
+
+	/**
+	 * Tests get product facebook id calls facebook graph api to get id and updates post meta item id value.
+	 *
+	 * @return void
+	 */
+	public function test_get_product_fbid_calls_facebook_and_sets_post_meta_value_for_item_id() {
+		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1122334455' );
+
+		$product = WC_Helper_Product::create_simple_product();
+
+		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( new WC_Facebook_Product( $product->get_id() ) );
+
+		$facebook_output_get_facebook_id = [
+			'id'            => 'product-id',
+			'product_group' => [
+				'id' => 'product-group-id',
+			],
+		];
+
+		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'get_facebook_id' )
+			->with( '1122334455', $fb_retailer_id )
+			->willReturn( $facebook_output_get_facebook_id );
+		$this->integration->fbgraph = $graph_api;
+
+		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
+
+		$this->assertEquals( 'product-id', $group_id );
+
+		$this->assertEquals( 'product-id', get_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
 	}
 }
