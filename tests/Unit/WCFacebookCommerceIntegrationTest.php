@@ -2688,6 +2688,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 */
 	public function test_reset_all_products_as_non_admin_user() {
 		wp_set_current_user( 0 );
+		unset( $GLOBALS['current_screen'] );
+
 		$this->assertFalse( $this->integration->reset_all_products() );
 	}
 
