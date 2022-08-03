@@ -1,0 +1,45 @@
+changelog:
+  exclude:
+    labels:
+      - "changelog: none"
+    authors:
+      - dependabot
+      - github-actions
+
+  categories:
+    # Major level
+    - title: "[Breaking] Breaking Changes 🚨"
+      labels:
+        - "changelog: breaking"
+
+    # Minor level
+    - title: "[Add] New Features 🎉"
+      labels:
+        - "changelog: add"
+        - "type: enhancement"
+
+    - title: "[Update] Updated ✨"
+      labels:
+        - "changelog: update"
+
+    # Patch level
+    - title: "[Fix] Fixes 🛠"
+      labels:
+        - "changelog: fix"
+        - "type: bug"
+
+    - title: "[Tweak] Tweaked 🔧"
+      labels:
+        - "changelog: tweak"
+
+    - title: "[Dev] Developer-facing changes 🧑‍💻"
+      labels:
+        - "changelog: dev"
+
+    - title: "[Doc] Documentation 📚"
+      labels:
+        - "changelog: docs"
+
+    - title: Other Changes
+      labels:
+        - "*"
