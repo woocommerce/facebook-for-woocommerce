@@ -35,7 +35,7 @@ Each line should start with change type prefix`(Fix|Add|…) - `, for example:
 > Dev - Developer-facing only change.
 > Doc - Updated customer or developer facing documentation
 
-If you remove the "Changelog entry" header, the title of Pull Request will be used as the changelog entry.
+If you remove the "Changelog entry" header, the Pull Request title will be used as the changelog entry.
 
 Add the `changelog: none` label if no changelog entry is needed.
 -->
