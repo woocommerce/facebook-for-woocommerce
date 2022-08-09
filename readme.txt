@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.19
+Stable tag: 2.6.20
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 2.6.20 - 2022-xx-xx =
+= 2.6.20 - 2022-08-09 =
 * Fix - Ensure product is deleted from FB when moved to trash.
 * Fix - Price not updating when the sale price is removed.
 
