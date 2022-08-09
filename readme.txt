@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.20 - 2022-xx-xx =
+* Fix - Ensure product is deleted from FB when moved to trash.
+* Fix - Price not updating when the sale price is removed.
+
 = 2.6.19 - 2022-07-27 =
 * Add  - `wc_facebook_string_apply_shortcodes` filter to check whether to apply shortcodes on a string before syncing.
 * Tweak - Use the Heartbeat system to refresh the local business configuration data with the latest from Facebook.
