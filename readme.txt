@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 2.6.18
+Stable tag: 2.6.20
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,15 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.20 - 2022-08-09 =
+* Fix - Ensure product is deleted from FB when moved to trash.
+* Fix - Price not updating when the sale price is removed.
+
+= 2.6.19 - 2022-07-27 =
+* Add  - `wc_facebook_string_apply_shortcodes` filter to check whether to apply shortcodes on a string before syncing.
+* Tweak - Use the Heartbeat system to refresh the local business configuration data with the latest from Facebook.
+* Tweak - WC 6.8 compatibility.
 
 = 2.6.18 - 2022-07-19 =
 * Fix - Misaligned help icons on Product Categories > Google Product Categories form.

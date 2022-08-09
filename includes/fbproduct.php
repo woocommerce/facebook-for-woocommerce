@@ -363,33 +363,33 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 		public function add_sale_price( $product_data, $for_items_batch = false ) {
 
 			$sale_price = $this->woo_product->get_sale_price();
-
-			// check if sale exist
-			if ( ! is_numeric( $sale_price ) ) {
-				return $product_data;
-			}
-
-			$sale_price =
-			intval( round( $this->get_price_plus_tax( $sale_price ) * 100 ) );
+			$sale_price_effective_date = '';
 
 			$sale_start =
-			( $date     = $this->woo_product->get_date_on_sale_from() )
-			? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
-			: self::MIN_DATE_1 . self::MIN_TIME;
+				( $date     = $this->woo_product->get_date_on_sale_from() )
+					? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
+					: self::MIN_DATE_1 . self::MIN_TIME;
 
 			$sale_end =
-			( $date   = $this->woo_product->get_date_on_sale_to() )
-			? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
-			: self::MAX_DATE . self::MAX_TIME;
+				( $date   = $this->woo_product->get_date_on_sale_to() )
+					? date_i18n( WC_DateTime::ATOM, $date->getOffsetTimestamp() )
+					: self::MAX_DATE . self::MAX_TIME;
+
+			// check if sale exist
+			if ( is_numeric( $sale_price ) && $sale_price > 0 ) {
+				$sale_price_effective_date = $sale_start . '/' . $sale_end;
+				$sale_price =
+					intval( round( $this->get_price_plus_tax( $sale_price ) * 100 ) );
+			}
 
 			// check if sale is expired and sale time range is valid
 			if ( $for_items_batch ) {
-				$product_data['sale_price_effective_date'] = $sale_start . '/' . $sale_end;
-				$product_data['sale_price']                = self::format_price_for_fb_items_batch( $sale_price );
+				$product_data['sale_price_effective_date'] = $sale_price_effective_date;
+				$product_data['sale_price']                = is_numeric( $sale_price ) ? self::format_price_for_fb_items_batch( $sale_price ) : "";
 			} else {
 				$product_data['sale_price_start_date'] = $sale_start;
 				$product_data['sale_price_end_date']   = $sale_end;
-				$product_data['sale_price']            = $sale_price;
+				$product_data['sale_price']            = is_numeric( $sale_price ) ? $sale_price : 0;
 			}
 
 			return $product_data;
