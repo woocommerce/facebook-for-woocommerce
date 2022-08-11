@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use WC_Facebook_Product;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -23,7 +23,6 @@ defined( 'ABSPATH' ) or exit;
  * @since 1.10.0
  */
 class Products {
-
 
 	/** @var string the meta key used to flag whether a product should be synced in Facebook */
 	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
@@ -79,32 +78,23 @@ class Products {
 	 */
 	private static function set_sync_for_products( array $products, $enabled ) {
 		$enabled = wc_bool_to_string( $enabled );
-
 		foreach ( $products as $product ) {
-
 			if ( $product instanceof \WC_Product ) {
-
 				if ( $product->is_type( 'variable' ) ) {
-
 					foreach ( $product->get_children() as $variation ) {
-
 						$product_variation = wc_get_product( $variation );
-
 						if ( $product_variation instanceof \WC_Product ) {
-
 							$product_variation->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 							$product_variation->save_meta_data();
 						}
 					}
 				} else {
-
 					$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 					$product->save_meta_data();
 				}
 			}//end if
 		}//end foreach
 	}
-
 
 	/**
 	 * Enables sync for given products.
@@ -114,7 +104,6 @@ class Products {
 	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function enable_sync_for_products( array $products ) {
-
 		self::set_sync_for_products( $products, true );
 	}
 
@@ -127,7 +116,6 @@ class Products {
 	 * @param \WC_Product[] $products an array of product objects
 	 */
 	public static function disable_sync_for_products( array $products ) {
-
 		self::set_sync_for_products( $products, false );
 	}
 
@@ -143,7 +131,6 @@ class Products {
 	 * }
 	 */
 	public static function disable_sync_for_products_with_terms( array $args ) {
-
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -151,12 +138,9 @@ class Products {
 				'include'  => array(),
 			)
 		);
-
 		$products = array();
-
 		// get all products belonging to the given terms
 		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
-
 			$terms = get_terms(
 				array(
 					'taxonomy' => $args['taxonomy'],
@@ -164,11 +148,8 @@ class Products {
 					'include'  => array_map( 'intval', $args['include'] ),
 				)
 			);
-
 			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-
 				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
-
 				$products = wc_get_products(
 					array(
 						$taxonomy => $terms,
@@ -177,7 +158,6 @@ class Products {
 				);
 			}
 		}//end if
-
 		if ( ! empty( $products ) ) {
 			self::disable_sync_for_products( $products );
 		}
@@ -237,7 +217,6 @@ class Products {
 	 * @return bool
 	 */
 	public static function product_should_be_deleted( \WC_Product $product ) {
-
 		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock();
 	}
 
@@ -285,18 +264,13 @@ class Products {
 	 * @return bool success
 	 */
 	public static function set_product_visibility( \WC_Product $product, $visibility ) {
-
 		unset( self::$products_visibility[ $product->get_id() ] );
-
 		if ( ! is_bool( $visibility ) ) {
 			return false;
 		}
-
 		$product->update_meta_data( self::VISIBILITY_META_KEY, wc_bool_to_string( $visibility ) );
 		$product->save_meta_data();
-
 		self::$products_visibility[ $product->get_id() ] = $visibility;
-
 		return true;
 	}
 
@@ -310,37 +284,25 @@ class Products {
 	 * @return bool
 	 */
 	public static function is_product_visible( \WC_Product $product ) {
-
 		// accounts for a legacy bool value, current should be (string) 'yes' or (string) 'no'
 		if ( ! isset( self::$products_visibility[ $product->get_id() ] ) ) {
-
 			if ( $product->is_type( 'variable' ) ) {
-
 				// assume variable products are not visible until a visible child is found
 				$is_visible = false;
-
 				foreach ( $product->get_children() as $child_id ) {
-
 					$child_product = wc_get_product( $child_id );
-
 					if ( $child_product && self::is_product_visible( $child_product ) ) {
-
 						$is_visible = true;
 						break;
 					}
 				}
 			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
-
 				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
-
 			} else {
-
 				$is_visible = true;
 			}//end if
-
 			self::$products_visibility[ $product->get_id() ] = $is_visible;
 		}//end if
-
 		return self::$products_visibility[ $product->get_id() ];
 	}
 
@@ -491,96 +453,65 @@ class Products {
 	 * @return string
 	 */
 	private static function get_google_product_category_id_from_highest_category( \WC_Product $product ) {
-
 		$google_product_category_id = '';
-
 		// get all categories for the product
 		if ( $product->is_type( 'variation' ) ) {
-
 			$parent_product = wc_get_product( $product->get_parent_id() );
 			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
-
 		} else {
-
 			$categories = get_the_terms( $product->get_id(), 'product_cat' );
 		}
-
 		if ( ! is_array( $categories ) ) {
 			return $google_product_category_id;
 		}
-
 		$categories_per_level = array();
-
 		if ( empty( $categories ) ) {
 			return $categories_per_level;
 		}
-
 		// determine the level (depth) of each category
 		foreach ( $categories as $category ) {
-
 			$level           = 0;
 			$parent_category = $category;
-
 			while ( (int) $parent_category->parent !== 0 ) {
-
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
-
 				if ( ! $parent_category instanceof \WP_Term ) {
 					break;
 				}
-
 				$level ++;
 			}
-
 			if ( empty( $categories_per_level[ $level ] ) ) {
 				$categories_per_level[ $level ] = array();
 			}
-
 			$categories_per_level[ $level ][] = $category;
 		}
-
 		// sort descending by level
 		krsort( $categories_per_level );
-
 		// remove categories without a Google product category
 		foreach ( $categories_per_level as $level => $categories ) {
-
 			foreach ( $categories as $key => $category ) {
-
 				$google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
 				if ( empty( $google_product_category_id ) ) {
 					unset( $categories_per_level[ $level ][ $key ] );
 				}
 			}
-
 			if ( empty( $categories_per_level[ $level ] ) ) {
 				unset( $categories_per_level[ $level ] );
 			}
 		}
-
 		if ( ! empty( $categories_per_level ) ) {
-
 			// get highest level categories
 			$categories = current( $categories_per_level );
-
 			$google_product_category_id = '';
-
 			foreach ( $categories as $category ) {
-
 				$category_google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
-
 				if ( empty( $google_product_category_id && ! empty( $category_google_product_category_id ) ) ) {
-
 					$google_product_category_id = $category_google_product_category_id;
-
 				} elseif ( $google_product_category_id !== $category_google_product_category_id ) {
-
 					// conflicting Google product category IDs, discard them
 					$google_product_category_id = '';
 				}
 			}
 		}//end if
-
 		return $google_product_category_id;
 	}
 
@@ -591,47 +522,33 @@ class Products {
 	 * @return string
 	 */
 	private static function get_ordered_categories_for_product( \WC_Product $product ) {
-			// get all categories for the product
+		// get all categories for the product
 		if ( $product->is_type( 'variation' ) ) {
-
 			$parent_product = wc_get_product( $product->get_parent_id() );
 			$categories     = $parent_product instanceof \WC_Product ? get_the_terms( $parent_product->get_id(), 'product_cat' ) : array();
-
 		} else {
-
 			$categories = get_the_terms( $product->get_id(), 'product_cat' );
 		}
-
 		if ( empty( $categories ) ) {
 			return array();
 		}
-
 		$categories_per_level = array();
-
 		// determine the level (depth) of each category
 		foreach ( $categories as $category ) {
-
 			$level           = 0;
 			$parent_category = $category;
-
 			while ( (int) $parent_category->parent !== 0 ) {
-
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
-
 				if ( ! $parent_category instanceof \WP_Term ) {
 					break;
 				}
-
 				$level ++;
 			}
-
 			if ( empty( $categories_per_level[ $level ] ) ) {
 				$categories_per_level[ $level ] = array();
 			}
-
 			$categories_per_level[ $level ][] = $category;
 		}
-
 		// sort descending by level
 		krsort( $categories_per_level );
 		return $categories_per_level;
@@ -792,17 +709,17 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the color
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public static function update_product_color_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
 		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
 		$product->update_meta_data( self::COLOR_ATTRIBUTE_META_KEY, $attribute_name );
@@ -888,17 +805,17 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the size
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public static function update_product_size_attribute( \WC_Product $product, $attribute_name ) {
 
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
 		if ( $attribute_name !== self::get_product_size_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
 		$product->update_meta_data( self::SIZE_ATTRIBUTE_META_KEY, $attribute_name );
@@ -984,19 +901,16 @@ class Products {
 	 *
 	 * @param \WC_Product $product the product object
 	 * @param string      $attribute_name the attribute to be used to store the pattern
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public static function update_product_pattern_attribute( \WC_Product $product, $attribute_name ) {
-
 		// check if the name matches an available attribute
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
-
 		if ( $attribute_name !== self::get_product_pattern_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
-			throw new SV_WC_Plugin_Exception( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
+			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
-
 		$product->update_meta_data( self::PATTERN_ATTRIBUTE_META_KEY, $attribute_name );
 		$product->save_meta_data();
 	}
@@ -1143,7 +1057,7 @@ class Products {
 				return array_merge(
 					$attrs,
 					array(
-						str_replace( $prefix, '', $attr_key ) => wc_clean( Framework\SV_WC_Helper::get_posted_value( $attr_key ) ),
+						str_replace( $prefix, '', $attr_key ) => wc_clean( Helper::get_posted_value( $attr_key ) ),
 					)
 				);
 			},

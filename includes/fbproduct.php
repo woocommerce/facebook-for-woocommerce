@@ -9,12 +9,10 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Products;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 	include_once 'includes/fbutils.php';
@@ -582,7 +580,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					'image_link'            => $image_urls[0],
 					'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
 					'link'                  => $product_url,
-					'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
+					'brand'                 => Helper::str_truncate( $brand, 100 ),
 					'retailer_id'           => $retailer_id,
 					'price'                 => $this->get_fb_price( true ),
 					'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
@@ -599,7 +597,7 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 					'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 					'url'                   => $product_url,
 					'category'              => $categories['categories'],
-					'brand'                 => Framework\SV_WC_Helper::str_truncate( $brand, 100 ),
+					'brand'                 => Helper::str_truncate( $brand, 100 ),
 					'retailer_id'           => $retailer_id,
 					'price'                 => $this->get_fb_price(),
 					'currency'              => get_woocommerce_currency(),

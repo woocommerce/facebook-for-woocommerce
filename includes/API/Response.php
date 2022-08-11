@@ -9,18 +9,18 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API;
+namespace WooCommerce\Facebook\Api;
+
+use WooCommerce\Facebook\Framework\Api\JSONResponse;
 
 defined( 'ABSPATH' ) or exit;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Base API response object
  *
  * @since 2.0.0
  */
-class Response extends Framework\SV_WC_API_JSON_Response {
+class Response extends JSONResponse {
 
 
 	use Traits\Rate_Limited_Response;

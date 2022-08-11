@@ -9,20 +9,21 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products\Sync;
+namespace WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) or exit;
 
 use SkyVerge\WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\Products\Sync;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
 
 /**
  * The background sync handler.
  *
  * @since 2.0.0
  */
-class Background extends Framework\SV_WP_Background_Job_Handler {
+class Background extends BackgroundJobHandler {
 
 
 	/** @var string async request prefix */

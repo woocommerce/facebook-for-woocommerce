@@ -1,14 +1,14 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\Feed;
+namespace WooCommerce\Facebook\Feed;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 use Error;
-use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
-use SkyVerge\WooCommerce\Facebook\Products\Feed;
+use WooCommerce\Facebook\Products\Feed;
+use WooCommerce\Facebook\Utilities\Heartbeat;
 
 /**
  * A class responsible detecting feed configuration.
@@ -45,7 +45,7 @@ class FeedConfigurationDetection {
 	 * Get config settings for feed-based sync for WooCommerce Tracker.
 	 *
 	 * @throws Error Catalog id missing.
-	 * @return Array Key-value array of various configuration settings.
+	 * @return array Key-value array of various configuration settings.
 	 */
 	private function get_data_source_feed_tracker_info() {
 		$integration         = facebook_for_woocommerce()->get_integration();

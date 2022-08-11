@@ -9,9 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+namespace WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -22,7 +20,7 @@ defined( 'ABSPATH' ) or exit;
  *
  * @method \WC_Facebookcommerce get_plugin()
  */
-class Lifecycle extends Framework\Plugin\Lifecycle {
+class Lifecycle extends Framework\Lifecycle {
 
 
 	/**
@@ -30,12 +28,10 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 *
 	 * @since 1.10.0
 	 *
-	 * @param Framework\SV_WC_Plugin $plugin
+	 * @param Framework\Plugin $plugin
 	 */
-	public function __construct( $plugin ) {
-
+	public function __construct( Framework\Plugin $plugin ) {
 		parent::__construct( $plugin );
-
 		$this->upgrade_versions = array(
 			'1.10.0',
 			'1.10.1',
@@ -55,13 +51,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.0
 	 */
 	protected function install() {
-
 		/**
 		 * Versions prior to 1.10.0 did not set a version option, so the upgrade method needs to be called manually.
 		 * We do this by checking first if an old option exists, but a new one doesn't.
 		 */
 		if ( get_option( 'woocommerce_facebookcommerce_settings' ) && ! get_option( 'wc_facebook_page_access_token' ) ) {
-
 			$this->upgrade( '1.9.15' );
 		}
 	}
@@ -73,7 +67,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.0
 	 */
 	protected function upgrade_to_1_10_0() {
-
 		$this->migrate_1_9_settings();
 	}
 
@@ -353,5 +346,4 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		 */
 		as_unschedule_all_actions( \SkyVerge\WooCommerce\Facebook\Products\Feed::GENERATE_FEED_ACTION );
 	}
-
 }

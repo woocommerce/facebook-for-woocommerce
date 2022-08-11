@@ -9,19 +9,18 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
+namespace WooCommerce\Facebook\Utilities;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
-
+use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
 
 /**
  * Background job handler to change all sync enabled and visible virtual products and virtual product variations to Sync and hide.
  *
  * @since 2.0.0
  */
-class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Background_Job_Handler {
+class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler {
 
 
 	/**
@@ -30,10 +29,8 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	 * @since 2.0.0
 	 */
 	public function __construct() {
-
 		$this->prefix = 'wc_facebook';
 		$this->action = 'background_handle_virtual_products_variations';
-
 		parent::__construct();
 	}
 
@@ -51,12 +48,9 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 	 * @return object
 	 */
 	public function process_job( $job, $items_per_batch = null ) {
-
 		if ( ! isset( $job->total ) ) {
 			$job->total = $this->count_remaining_products();
-
 			if ( empty( $job->total ) ) {
-
 				// no products or variations need to be set to Sync and hide, do not display admin notice
 				update_option( 'wc_facebook_background_handle_virtual_products_variations_skipped', 'yes' );
 			}
@@ -71,15 +65,11 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 
 		// set to Sync and hide until memory or time limit is exceeded
 		while ( $processed_products < $remaining_products ) {
-
 			$rows_updated = $this->sync_and_hide();
-
 			$processed_products += $rows_updated;
 			$job->progress      += $rows_updated;
-
 			// update job progress
 			$job = $this->update_job( $job );
-
 			// memory or time limit reached
 			if ( $this->time_exceeded() || $this->memory_exceeded() ) {
 				break;
@@ -88,9 +78,7 @@ class Background_Handle_Virtual_Products_Variations extends Framework\SV_WP_Back
 
 		// job complete! :)
 		if ( $this->count_remaining_products() === 0 ) {
-
 			update_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'yes' );
-
 			$this->complete_job( $job );
 		}
 

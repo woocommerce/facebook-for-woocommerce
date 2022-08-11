@@ -9,15 +9,15 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Commerce;
+namespace WooCommerce\Facebook\Commerce;
 
 use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Request;
-use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
-use SkyVerge\WooCommerce\Facebook\Products;
+use WooCommerce\Facebook\Api\Orders\Order;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
+use WooCommerce\Facebook\Products;
 use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
-use SkyVerge\WooCommerce\Facebook\Utilities;
+use WooCommerce\Facebook\Utilities;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Plugin_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -78,7 +78,6 @@ class Orders {
 	 * @since 2.1.0
 	 */
 	public function __construct() {
-
 		$this->add_hooks();
 	}
 
@@ -92,7 +91,6 @@ class Orders {
 	 * @return bool
 	 */
 	public static function is_order_pending( \WC_Order $order ) {
-
 		return self::is_commerce_order( $order ) && 'pending' === $order->get_status();
 	}
 
@@ -106,7 +104,6 @@ class Orders {
 	 * @return bool
 	 */
 	public static function is_commerce_order( \WC_Order $order ) {
-
 		return in_array( $order->get_created_via(), array( 'instagram', 'facebook' ), true );
 	}
 
@@ -141,7 +138,7 @@ class Orders {
 	 *
 	 * @param Order $remote_order Orders API order object
 	 * @return \WC_Order
-	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
+	 * @throws PluginException|\WC_Data_Exception
 	 */
 	public function create_local_order( Order $remote_order ) {
 
@@ -164,7 +161,7 @@ class Orders {
 	 * @param Order     $remote_order Orders API order object
 	 * @param \WC_Order $local_order local order object
 	 * @return \WC_Order
-	 * @throws SV_WC_Plugin_Exception|\WC_Data_Exception
+	 * @throws PluginException|\WC_Data_Exception
 	 */
 	public function update_local_order( Order $remote_order, \WC_Order $local_order ) {
 
@@ -573,7 +570,7 @@ class Orders {
 	 * @param \WC_Order $order order object
 	 * @param string    $tracking_number shipping tracking number
 	 * @param string    $carrier shipping carrier
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public function fulfill_order( \WC_Order $order, $tracking_number, $carrier ) {
 
@@ -582,14 +579,14 @@ class Orders {
 			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
 
 			if ( ! $remote_id ) {
-				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
 			}
 
 			$shipment_utilities = new Utilities\Shipment();
 
 			if ( ! $shipment_utilities->is_valid_carrier( $carrier ) ) {
 				/** translators: Placeholders: %s - shipping carrier code */
-				throw new SV_WC_Plugin_Exception( sprintf( __( '%s is not a valid shipping carrier code.', 'facebook-for-woocommerce' ), $carrier ) );
+				throw new PluginException( sprintf( __( '%s is not a valid shipping carrier code.', 'facebook-for-woocommerce' ), $carrier ) );
 			}
 
 			$items = array();
@@ -607,7 +604,7 @@ class Orders {
 			}
 
 			if ( empty( $items ) ) {
-				throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
 			}
 
 			$fulfillment_data = array(
@@ -630,7 +627,7 @@ class Orders {
 				)
 			);
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			$order->add_order_note(
 				sprintf(
@@ -653,7 +650,7 @@ class Orders {
 	 *
 	 * @param \WC_Order_Refund $refund order refund object
 	 * @param string           $reason_code refund reason code
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public function add_order_refund( \WC_Order_Refund $refund, $reason_code ) {
 
@@ -679,13 +676,13 @@ class Orders {
 			$parent_order = wc_get_order( $refund->get_parent_id() );
 
 			if ( ! $parent_order instanceof \WC_Order ) {
-				throw new SV_WC_Plugin_Exception( __( 'Parent order not found.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Parent order not found.', 'facebook-for-woocommerce' ) );
 			}
 
 			$remote_id = $parent_order->get_meta( self::REMOTE_ID_META_KEY );
 
 			if ( ! $remote_id ) {
-				throw new SV_WC_Plugin_Exception( __( 'Remote ID for parent order not found.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Remote ID for parent order not found.', 'facebook-for-woocommerce' ) );
 			}
 
 			$refund_data = array(
@@ -721,7 +718,7 @@ class Orders {
 				)
 			);
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			if ( ! empty( $parent_order ) && $parent_order instanceof \WC_Order ) {
 
@@ -752,7 +749,7 @@ class Orders {
 	 *
 	 * @param \WC_Order_Refund $refund refund object
 	 * @return array
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	private function get_refund_items( \WC_Order_Refund $refund ) {
 
@@ -784,7 +781,7 @@ class Orders {
 		}
 
 		if ( empty( $items ) ) {
-			throw new SV_WC_Plugin_Exception( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
+			throw new PluginException( __( 'No valid Facebook products were found.', 'facebook-for-woocommerce' ) );
 		}
 
 		return $items;
@@ -798,7 +795,7 @@ class Orders {
 	 *
 	 * @param \WC_Order $order order object
 	 * @param string    $reason_code cancellation reason code
-	 * @throws SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public function cancel_order( \WC_Order $order, $reason_code ) {
 
@@ -817,7 +814,7 @@ class Orders {
 			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
 
 			if ( ! $remote_id ) {
-				throw new SV_WC_Plugin_Exception( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Remote ID not found.', 'facebook-for-woocommerce' ) );
 			}
 
 			$api->cancel_order( $remote_id, $reason_code );
@@ -830,7 +827,7 @@ class Orders {
 				)
 			);
 
-		} catch ( SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			$order->add_order_note(
 				sprintf(

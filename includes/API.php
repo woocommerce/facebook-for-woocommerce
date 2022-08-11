@@ -9,27 +9,29 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API\Orders\Order;
-use SkyVerge\WooCommerce\Facebook\API\Request;
-use SkyVerge\WooCommerce\Facebook\API\Response;
-use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Api\Orders\Order;
+use WooCommerce\Facebook\Api\Request;
+use WooCommerce\Facebook\Api\Response;
+use WooCommerce\Facebook\Events\Event;
+
+use WooCommerce\Facebook\Framework\Api\Base;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
 /**
  * API handler.
  *
  * @since 2.0.0
  *
- * @method API\Request get_request()
+ * @method \WooCommerce\Facebook\Framework\Api\Request get_request()
  */
-class API extends Framework\SV_WC_API_Base {
+class Api extends Base {
 
 
-	use API\Traits\Rate_Limited_API;
+	use Api\Traits\Rate_Limited_API;
 
 
 	/** @var string URI used for the request */
@@ -47,13 +49,10 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $access_token access token to use for API requests
 	 */
 	public function __construct( $access_token ) {
-
 		$this->access_token = $access_token;
-
 		$this->request_headers = array(
 			'Authorization' => "Bearer {$access_token}",
 		);
-
 		$this->set_request_content_type_header( 'application/json' );
 		$this->set_request_accept_header( 'application/json' );
 	}
@@ -67,7 +66,6 @@ class API extends Framework\SV_WC_API_Base {
 	 * @return string
 	 */
 	public function get_access_token() {
-
 		return $this->access_token;
 	}
 
@@ -80,7 +78,6 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $access_token access token to set
 	 */
 	public function set_access_token( $access_token ) {
-
 		$this->access_token = $access_token;
 	}
 
@@ -92,23 +89,17 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param API\Request $request request object
 	 * @return API\Response
-	 * @throws API\Exceptions\Request_Limit_Reached|Framework\SV_WC_API_Exception
+	 * @throws API\Exceptions\Request_Limit_Reached|ApiException
 	 */
 	public function perform_request( $request ) {
-
 		$rate_limit_id   = $request::get_rate_limit_id();
 		$delay_timestamp = $this->get_rate_limit_delay( $rate_limit_id );
-
 		// if there is a delayed timestamp in the future, throw an exception
 		if ( $delay_timestamp >= time() ) {
-
 			$this->handle_throttled_request( $rate_limit_id, $delay_timestamp );
-
 		} else {
-
 			$this->set_rate_limit_delay( $rate_limit_id, 0 );
 		}
-
 		return parent::perform_request( $request );
 	}
 
@@ -120,7 +111,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	protected function do_post_parse_response_validation() {
 
@@ -150,20 +141,13 @@ class API extends Framework\SV_WC_API_Base {
 			 * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/batch/#validation-rules
 			 */
 			if ( in_array( $code, array( 4, 17, 32, 613, 80001, 80004 ), true ) ) {
-
 				$delay_in_seconds = $this->calculate_rate_limit_delay( $response, $this->get_response_headers() );
-
 				if ( $delay_in_seconds > 0 ) {
-
 					$rate_limit_id = $request::get_rate_limit_id();
 					$timestamp     = time() + $delay_in_seconds;
-
 					$this->set_rate_limit_delay( $rate_limit_id, $timestamp );
-
 					$this->handle_throttled_request( $rate_limit_id, $timestamp );
-
 				} else {
-
 					throw new API\Exceptions\Request_Limit_Reached( $message, $code );
 				}
 			}
@@ -182,15 +166,12 @@ class API extends Framework\SV_WC_API_Base {
 
 			// if the code indicates a retry and we've not hit the retry limit, perform the request again
 			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
-
 				$request->mark_retry();
-
 				$this->response = $this->perform_request( $request );
-
 				return;
 			}
 
-			throw new Framework\SV_WC_API_Exception( $message, $code );
+			throw new ApiException( $message, $code );
 		}
 
 		// if we get this far we're connected, so delete any invalid connection flag
@@ -208,7 +189,6 @@ class API extends Framework\SV_WC_API_Base {
 	 * @throws API\Exceptions\Request_Limit_Reached
 	 */
 	private function handle_throttled_request( $rate_limit_id, $timestamp ) {
-
 		if ( time() > $timestamp ) {
 			return;
 		}
@@ -231,14 +211,11 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $external_business_id external business ID
 	 * @return API\FBE\Installation\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_installation_ids( $external_business_id ) {
-
 		$request = new API\FBE\Installation\Read\Request( $external_business_id );
-
 		$this->set_response_handler( API\FBE\Installation\Read\Response::class );
-
 		return $this->perform_request( $request );
 	}
 
@@ -250,14 +227,11 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Pages\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_page( $page_id ) {
-
 		$request = new API\Pages\Read\Request( $page_id );
-
 		$this->set_response_handler( API\Pages\Read\Response::class );
-
 		return $this->perform_request( $request );
 	}
 
@@ -269,7 +243,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $catalog_id catalog ID
 	 * @return API\Catalog\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_catalog( $catalog_id ) {
 
@@ -288,7 +262,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
 	 * @return API\User\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_user( $user_id = '' ) {
 
@@ -310,7 +284,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
 	 * @param string $permission permission to delete
 	 * @return API\User\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function delete_user_permission( $user_id, $permission ) {
 
@@ -329,7 +303,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $external_business_id external business ID
 	 * @return API\FBE\Configuration\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_business_configuration( $external_business_id ) {
 
@@ -349,7 +323,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string                          $external_business_id external business ID
 	 * @param API\FBE\Configuration\Messenger $configuration messenger configuration
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function update_messenger_configuration( $external_business_id, API\FBE\Configuration\Messenger $configuration ) {
 
@@ -374,7 +348,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param array  $requests array of prefixed product IDs to create, update or remove
 	 * @param bool   $allow_upsert whether to allow updates to insert new items
 	 * @return \SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
 
@@ -397,7 +371,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $catalog_id catalog ID
 	 * @param array  $data product group data
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function create_product_group( $catalog_id, $data ) {
 
@@ -424,7 +398,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $product_group_id product group ID
 	 * @param array  $data product group data
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function update_product_group( $product_group_id, $data ) {
 
@@ -450,7 +424,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $product_group_id
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function delete_product_group( $product_group_id ) {
 
@@ -475,7 +449,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $product_group_id product group ID
 	 * @param int    $limit max number of results returned per page of data
 	 * @return API\Catalog\Product_Group\Products\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
 
@@ -495,7 +469,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $catalog_id catalog ID
 	 * @param string $retailer_id retailer ID of the product
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function find_product_item( $catalog_id, $retailer_id ) {
 
@@ -515,7 +489,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $product_group_id parent product ID
 	 * @param array  $data product data
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function create_product_item( $product_group_id, $data ) {
 
@@ -542,7 +516,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $product_item_id product item ID
 	 * @param array  $data product data
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function update_product_item( $product_item_id, $data ) {
 
@@ -568,7 +542,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $product_item_id product item ID
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function delete_product_item( $product_item_id ) {
 
@@ -593,7 +567,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string  $pixel_id pixel ID
 	 * @param Event[] $events events to send
 	 * @return Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function send_pixel_events( $pixel_id, array $events ) {
 
@@ -613,7 +587,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param API\Response $response previous response object
 	 * @param int          $additional_pages number of additional pages of results to retrieve
 	 * @return API\Response|null
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function next( API\Response $response, $additional_pages = null ) {
 
@@ -651,7 +625,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Orders\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_new_orders( $page_id ) {
 
@@ -677,7 +651,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $page_id page ID
 	 * @return API\Orders\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_cancelled_orders( $page_id ) {
 
@@ -704,7 +678,7 @@ class API extends Framework\SV_WC_API_Base {
 	 *
 	 * @param string $remote_id remote order ID
 	 * @return API\Orders\Read\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function get_order( $remote_id ) {
 
@@ -724,7 +698,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $remote_id remote order ID
 	 * @param string $merchant_order_reference WC order ID
 	 * @return API\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function acknowledge_order( $remote_id, $merchant_order_reference ) {
 
@@ -746,7 +720,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $remote_id remote order ID
 	 * @param array  $fulfillment_data fulfillment data to be sent on the request
 	 * @return API\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function fulfill_order( $remote_id, $fulfillment_data ) {
 
@@ -767,7 +741,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $reason cancellation reason
 	 * @param bool   $restock_items whether to restock items remotely
 	 * @return API\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function cancel_order( $remote_id, $reason, $restock_items = true ) {
 
@@ -789,7 +763,7 @@ class API extends Framework\SV_WC_API_Base {
 	 * @param string $remote_id remote order ID
 	 * @param array  $refund_data refund data to be sent on the request
 	 * @return API\Response
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	public function add_order_refund( $remote_id, $refund_data ) {
 

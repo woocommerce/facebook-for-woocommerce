@@ -9,17 +9,17 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
+namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
 /**
  * The Connection settings screen object.
  */
-class Connection extends Admin\Abstract_Settings_Screen {
+class Connection extends Abstract_Settings_Screen {
 
 
 	/** @var string screen ID */
@@ -170,7 +170,7 @@ class Connection extends Admin\Abstract_Settings_Screen {
 				if ( $name = $response->get_name() ) {
 					$static_items['catalog']['value'] = $name;
 				}
-			} catch ( Framework\SV_WC_API_Exception $exception ) {
+			} catch ( ApiException $exception ) {
 			}
 		}
 

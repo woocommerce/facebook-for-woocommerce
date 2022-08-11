@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) || exit;
 

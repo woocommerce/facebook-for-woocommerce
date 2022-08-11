@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
 

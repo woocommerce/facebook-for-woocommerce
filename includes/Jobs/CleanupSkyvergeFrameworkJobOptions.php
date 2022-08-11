@@ -1,8 +1,8 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\Jobs;
+namespace WooCommerce\Facebook\Jobs;
 
-use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
+use WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Note - this is closely coupled to the SkyVerge background job system, and is essentially a patch to improve it.
  *
- * @see SV_WP_Background_Job_Handler
+ * @see BackgroundJobHandler
  *
  * @since 2.6.0
  */
@@ -33,7 +33,7 @@ class CleanupSkyvergeFrameworkJobOptions {
 	 *
 	 * Logic and database query are adapted from SV_WP_Background_Job_Handler::get_jobs().
 	 *
-	 * @see SV_WP_Background_Job_Handler
+	 * @see BackgroundJobHandler
 	 * @see Products\Sync\Background
 	 */
 	public function clean_up_old_completed_options() {

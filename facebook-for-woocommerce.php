@@ -137,10 +137,7 @@ class WC_Facebook_Loader {
 	 * @since 1.10.0
 	 */
 	private function load_framework() {
-
-		if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginFramework\\' . $this->get_framework_version_namespace() . '\\SV_WC_Plugin' ) ) {
-			require_once plugin_dir_path( __FILE__ ) . 'vendor/skyverge/wc-plugin-framework/woocommerce/class-sv-wc-plugin.php';
-		}
+		require_once plugin_dir_path( __FILE__ ) . 'includes/Framework/Plugin.php';
 	}
 
 
@@ -152,7 +149,6 @@ class WC_Facebook_Loader {
 	 * @return string
 	 */
 	public function get_framework_version_namespace() {
-
 		return 'v' . str_replace( '.', '_', $this->get_framework_version() );
 	}
 

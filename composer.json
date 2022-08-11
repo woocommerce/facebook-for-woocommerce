@@ -30,7 +30,8 @@
   },
   "autoload": {
     "psr-4": {
-      "SkyVerge\\WooCommerce\\Facebook\\": "includes"
+      "SkyVerge\\WooCommerce\\Facebook\\": "includes",
+      "WooCommerce\\Facebook\\": "includes"
     }
   },
   "config": {

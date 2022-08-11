@@ -9,12 +9,13 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
+use WooCommerce\Facebook\Utilities\Heartbeat;
 
 /**
  * The main product feed handler.
@@ -42,7 +43,6 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	public function __construct() {
-
 		// add the necessary action and filter hooks
 		$this->add_hooks();
 	}
@@ -54,7 +54,6 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	private function add_hooks() {
-
 		// schedule the recurring feed generation
 		add_action( Heartbeat::HOURLY, array( $this, 'schedule_feed_generation' ) );
 
@@ -74,7 +73,6 @@ class Feed {
 	 * @since 1.11.0
 	 */
 	public function handle_feed_data_request() {
-
 		\WC_Facebookcommerce_Utils::log( 'Facebook is requesting the product feed.' );
 		facebook_for_woocommerce()->get_tracker()->track_feed_file_requested();
 
@@ -89,13 +87,13 @@ class Feed {
 		try {
 
 			// bail early if the feed secret is not included or is not valid
-			if ( self::get_feed_secret() !== Framework\SV_WC_Helper::get_requested_value( 'secret' ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid feed secret provided.', 401 );
+			if ( self::get_feed_secret() !== Helper::get_requested_value( 'secret' ) ) {
+				throw new PluginException( 'Invalid feed secret provided.', 401 );
 			}
 
 			// bail early if the file can't be read
 			if ( ! is_readable( $file_path ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'File is not readable.', 404 );
+				throw new PluginException( 'File is not readable.', 404 );
 			}
 
 			// set the download headers
@@ -110,29 +108,22 @@ class Feed {
 			$file = @fopen( $file_path, 'rb' );
 
 			if ( ! $file ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Could not open feed file.', 500 );
+				throw new PluginException( 'Could not open feed file.', 500 );
 			}
 
 			// fpassthru might be disabled in some hosts (like Flywheel)
 			if ( $this->is_fpassthru_disabled() || ! @fpassthru( $file ) ) {
-
 				\WC_Facebookcommerce_Utils::log( 'fpassthru is disabled: getting file contents' );
-
 				$contents = @stream_get_contents( $file );
-
 				if ( ! $contents ) {
-					throw new Framework\SV_WC_Plugin_Exception( 'Could not get feed file contents.', 500 );
+					throw new PluginException( 'Could not get feed file contents.', 500 );
 				}
-
 				echo $contents;
 			}
 		} catch ( \Exception $exception ) {
-
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
-
 			status_header( $exception->getCode() );
 		}
-
 		exit;
 	}
 

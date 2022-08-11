@@ -9,12 +9,9 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Events\Event;
 
-if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
-
-
-	class WC_Facebookcommerce_Pixel {
+class WC_Facebookcommerce_Pixel {
 
 
 		const SETTINGS_KEY     = 'facebook_config';
@@ -714,5 +711,3 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return $this->user_info;
 		}
 	}
-
-endif;

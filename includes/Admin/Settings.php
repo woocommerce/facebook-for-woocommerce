@@ -9,12 +9,15 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\Navigation\Menu as WooAdminMenu;
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
+use WooCommerce\Facebook\Admin\Settings_Screens;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Compatibility;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -47,7 +50,6 @@ class Settings {
 	 * @since 2.0.0
 	 */
 	public function __construct() {
-
 		$this->screens = array(
 			Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),
 			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
@@ -55,11 +57,8 @@ class Settings {
 			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
 			Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),
 		);
-
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
-
 		add_action( 'wp_loaded', array( $this, 'save' ) );
-
 	}
 
 
@@ -69,26 +68,22 @@ class Settings {
 	 * @since 2.0.0
 	 */
 	public function add_menu_item() {
-
 		$root_menu_item       = 'woocommerce';
 		$is_marketing_enabled = false;
-		$this->use_woo_nav	  = class_exists( WooAdminFeatures::class ) && class_exists( WooAdminMenu::class ) && WooAdminFeatures::is_enabled( 'navigation' );
-
-		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
-
+		$this->use_woo_nav    = class_exists( WooAdminFeatures::class )
+			&& class_exists( WooAdminMenu::class )
+			&& WooAdminFeatures::is_enabled( 'navigation' );
+		if ( Compatibility::is_enhanced_admin_available() ) {
 			if (  class_exists( WooAdminFeatures::class ) ) {
 				$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
 			} else {
 				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
 					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
 			}
-
 			if ( $is_marketing_enabled ) {
-
 				$root_menu_item = 'woocommerce-marketing';
 			}
 		}
-
 		add_submenu_page(
 			$root_menu_item,
 			__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
@@ -98,7 +93,6 @@ class Settings {
 			array( $this, 'render' ),
 			5
 		);
-
 		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
 		$this->register_woo_nav_menu_items();
 	}
@@ -112,13 +106,10 @@ class Settings {
 	 * @param string $screen_id the ID to connect to
 	 */
 	private function connect_to_enhanced_admin( $screen_id ) {
-
 		if ( is_callable( 'wc_admin_connect_page' ) ) {
-
 			$crumbs = array(
 				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
 			);
-
 			if ( ! empty( $_GET['tab'] ) ) {
 				switch ( $_GET['tab'] ) {
 					case Settings_Screens\Connection::ID:
@@ -135,7 +126,6 @@ class Settings {
 						break;
 				}
 			}
-
 			wc_admin_connect_page(
 				array(
 					'id'        => self::PAGE_ID,
@@ -154,16 +144,12 @@ class Settings {
 	 * @since 2.0.0
 	 */
 	public function render() {
-
 		$tabs        = $this->get_tabs();
-		$current_tab = Framework\SV_WC_Helper::get_requested_value( 'tab' );
-
+		$current_tab = Helper::get_requested_value( 'tab' );
 		if ( ! $current_tab ) {
 			$current_tab = current( array_keys( $tabs ) );
 		}
-
 		$screen = $this->get_screen( $current_tab );
-
 		?>
 
 		<div class="wrap woocommerce">
@@ -201,35 +187,24 @@ class Settings {
 	 * @since 2.0.0
 	 */
 	public function save() {
-
-		if ( ! is_admin() || Framework\SV_WC_Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
+		if ( ! is_admin() || Helper::get_requested_value( 'page' ) !== self::PAGE_ID ) {
 			return;
 		}
-
-		$screen = $this->get_screen( Framework\SV_WC_Helper::get_posted_value( 'screen_id' ) );
-
+		$screen = $this->get_screen( Helper::get_posted_value( 'screen_id' ) );
 		if ( ! $screen ) {
 			return;
 		}
-
-		if ( ! Framework\SV_WC_Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
+		if ( ! Helper::get_posted_value( 'save_' . $screen->get_id() . '_settings' ) ) {
 			return;
 		}
-
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( __( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
 		}
-
 		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
-
 		try {
-
 			$screen->save();
-
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Your settings have been saved.', 'facebook-for-woocommerce' ) );
-
-		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
-
+		} catch ( PluginException $exception ) {
 			facebook_for_woocommerce()->get_message_handler()->add_error(
 				sprintf(
 				/* translators: Placeholders: %s - user-friendly error message */
@@ -350,6 +325,4 @@ class Settings {
 			$order++;
 		}
 	}
-
-
 }
