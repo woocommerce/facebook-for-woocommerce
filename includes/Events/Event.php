@@ -215,7 +215,7 @@ class Event {
 
 		if ( wp_doing_ajax() ) {
 
-			$url = $_SERVER['HTTP_REFERER'];
+			$url = wp_get_raw_referer();
 
 		} else {
 
