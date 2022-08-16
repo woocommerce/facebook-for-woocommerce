@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.21 - 2022-08-16 =
+* Dev - Add branch-labels GH workflow.
+* Fix - `Undefined array key "HTTP_REFERER"` not longer happens when `new Event` is triggered from an AJAX call that doesn't include a referrer (likely due to browser configuration).
+* Tweak - WC 6.8 compatibility.
+* Tweak - WP 6.0 compatibility.
+
 = 2.6.20 - 2022-08-09 =
 * Fix - Ensure product is deleted from FB when moved to trash.
 * Fix - Price not updating when the sale price is removed.
