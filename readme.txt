@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.9
-Stable tag: 2.6.20
+Tested up to: 6.0
+Stable tag: 2.6.21
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.21 - 2022-08-16 =
+* Dev - Add branch-labels GH workflow.
+* Fix - `Undefined array key "HTTP_REFERER"` not longer happens when `new Event` is triggered from an AJAX call that doesn't include a referrer (likely due to browser configuration).
+* Tweak - WC 6.8 compatibility.
+* Tweak - WP 6.0 compatibility.
 
 = 2.6.20 - 2022-08-09 =
 * Fix - Ensure product is deleted from FB when moved to trash.
