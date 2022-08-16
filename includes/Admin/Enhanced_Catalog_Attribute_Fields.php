@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
+use WooCommerce\Facebook\Products as Products_Handler;
 
 /**
  * Enhanced Catalog attribute fields.

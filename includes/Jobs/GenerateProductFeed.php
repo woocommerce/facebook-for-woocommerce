@@ -6,7 +6,6 @@ namespace WooCommerce\Facebook\Jobs;
 use Automattic\WooCommerce\ActionSchedulerJobFramework\Utilities\BatchQueryOffset;
 use Exception;
 use WC_Facebookcommerce;
-use WC_Product;
 
 defined( 'ABSPATH' ) || exit;
 

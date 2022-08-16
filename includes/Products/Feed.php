@@ -14,8 +14,8 @@ namespace WooCommerce\Facebook\Products;
 defined( 'ABSPATH' ) or exit;
 
 use WooCommerce\Facebook\Framework\Helper;
-use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Utilities\Heartbeat;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
 /**
  * The main product feed handler.
@@ -85,7 +85,6 @@ class Feed {
 		}
 
 		try {
-
 			// bail early if the feed secret is not included or is not valid
 			if ( self::get_feed_secret() !== Helper::get_requested_value( 'secret' ) ) {
 				throw new PluginException( 'Invalid feed secret provided.', 401 );
@@ -106,7 +105,6 @@ class Feed {
 			header( 'Content-Length:' . filesize( $file_path ) );
 
 			$file = @fopen( $file_path, 'rb' );
-
 			if ( ! $file ) {
 				throw new PluginException( 'Could not open feed file.', 500 );
 			}
@@ -157,7 +155,6 @@ class Feed {
 	public function schedule_feed_generation() {
 		$integration   = facebook_for_woocommerce()->get_integration();
 		$configured_ok = $integration && $integration->is_configured();
-
 		// Only schedule feed job if store has not opted out of product sync.
 		$store_allows_sync = $configured_ok && $integration->is_product_sync_enabled();
 		// Only schedule if has not opted out of feed generation (e.g. large stores).
@@ -176,7 +173,6 @@ class Feed {
 		 * @param int $interval the frequency with which the product feed data is generated, in seconds. Defaults to every 15 minutes.
 		 */
 		$interval = apply_filters( 'wc_facebook_feed_generation_interval', DAY_IN_SECONDS );
-
 		if ( ! as_next_scheduled_action( self::GENERATE_FEED_ACTION ) ) {
 			as_schedule_recurring_action( time(), max( 2, $interval ), self::GENERATE_FEED_ACTION, array(), facebook_for_woocommerce()->get_id_dasherized() );
 		}
@@ -193,16 +189,11 @@ class Feed {
 	 * @return bool
 	 */
 	private function is_fpassthru_disabled() {
-
 		$disabled = false;
-
 		if ( function_exists( 'ini_get' ) ) {
-
 			$disabled_functions = @ini_get( 'disable_functions' );
-
 			$disabled = is_string( $disabled_functions ) && in_array( 'fpassthru', explode( ',', $disabled_functions ), false );
 		}
-
 		return $disabled;
 	}
 
@@ -215,12 +206,10 @@ class Feed {
 	 * @return string
 	 */
 	public static function get_feed_data_url() {
-
-		$query_args = array(
+		$query_args = [
 			'wc-api' => self::REQUEST_FEED_ACTION,
 			'secret' => self::get_feed_secret(),
-		);
-
+		];
 		return add_query_arg( $query_args, home_url( '/' ) );
 	}
 
@@ -235,18 +224,11 @@ class Feed {
 	 * @return string
 	 */
 	public static function get_feed_secret() {
-
 		$secret = get_option( self::OPTION_FEED_URL_SECRET, '' );
-
 		if ( ! $secret ) {
-
 			$secret = wp_hash( 'products-feed-' . time() );
-
 			update_option( self::OPTION_FEED_URL_SECRET, $secret );
 		}
-
 		return $secret;
 	}
-
-
 }

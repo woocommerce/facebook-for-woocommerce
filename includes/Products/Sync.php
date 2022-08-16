@@ -13,8 +13,6 @@ namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Products;
-
 /**
  * The product sync handler.
  *

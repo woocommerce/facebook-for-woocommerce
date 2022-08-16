@@ -2,10 +2,10 @@
 
 namespace WooCommerce\Facebook\ProductSync;
 
-use SkyVerge\WooCommerce\Facebook\Products;
 use WC_Facebook_Product;
-use WC_Product;
 use WC_Facebookcommerce_Integration;
+use WC_Product;
+use WooCommerce\Facebook\Products;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
 	include_once '../fbutils.php';

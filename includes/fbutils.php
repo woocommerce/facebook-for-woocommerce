@@ -11,6 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Events\Normalizer;
 
 /**
@@ -194,7 +195,7 @@ class WC_Facebookcommerce_Utils {
 	 * @return array
 	 */
 	public static function get_product_array( $woo_product ) {
-		$result = array();
+		$result = [];
 		if ( self::is_variable_type( $woo_product->get_type() ) ) {
 			foreach ( $woo_product->get_children() as $item_id ) {
 				array_push( $result, $item_id );
@@ -240,7 +241,7 @@ class WC_Facebookcommerce_Utils {
 		$current_user = wp_get_current_user();
 		if ( 0 === $current_user->ID || $aam_settings == null || ! $aam_settings->get_enable_automatic_matching() ) {
 			// User not logged in or pixel not configured with automatic advance matching
-			return array();
+			return [];
 		} else {
 			// Keys documented in
 			// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
@@ -281,7 +282,7 @@ class WC_Facebookcommerce_Utils {
 	 */
 	public static function fblog(
 	$message,
-	$object = array(),
+	$object = [],
 	$error = false,
 	$ems = '' ) {
 		if ( $error ) {
@@ -342,7 +343,7 @@ class WC_Facebookcommerce_Utils {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			self::log(
 				'Non manage_woocommerce user attempting to' . $action_text . '!',
-				array(),
+				[],
 				true
 			);
 			if ( $die ) {
@@ -378,7 +379,7 @@ class WC_Facebookcommerce_Utils {
 				array(
 					'key'     => $product_group_id,
 					'compare' => $compare_condition,
-				) : array()
+				) : []
 				  ),
 			),
 			'post_status'    => 'publish',
@@ -492,7 +493,7 @@ class WC_Facebookcommerce_Utils {
 		* Collect all parent products.
 		* Exclude variations which parents are not 'publish'.
 		*/
-		$parent_product_ids = array();
+		$parent_product_ids = [];
 		foreach ( $variation_products as $post_id => $parent_id ) {
 			/*
 			* Keep track of all parents to remove them from the list of products to sync.

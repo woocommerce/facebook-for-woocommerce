@@ -10,10 +10,10 @@
  */
 
 use WooCommerce\Facebook\Admin;
-use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
-use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Events\AAMSettings;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Handlers\Connection;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
@@ -359,7 +359,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				// Ensure product is deleted from FB when moved to trash.
 				add_action( 'wp_trash_post', array( $this, 'on_product_delete' ) );
 
-				add_action( 'add_meta_boxes', 'SkyVerge\WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
+				add_action( 'add_meta_boxes', 'WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
 
 				add_action(
 					'wp_ajax_ajax_fb_toggle_visibility',

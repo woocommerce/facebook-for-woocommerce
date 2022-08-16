@@ -35,9 +35,6 @@ class Commerce {
 	 * @since 2.1.0
 	 */
 	public function __construct() {
-
-		require_once __DIR__ . '/Commerce/Orders.php';
-
 		$this->orders = new Commerce\Orders();
 	}
 

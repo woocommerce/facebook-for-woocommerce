@@ -79,7 +79,7 @@ abstract class Base {
 		$this->request = $request;
 		$start_time = microtime( true );
 		// if this API requires TLS v1.2, force it
-		if ( $this->get_plugin()->require_tls_1_2() ) {
+		if ( $this->require_tls_1_2() ) {
 			add_action( 'http_api_curl', array( $this, 'set_tls_1_2_request' ), 10, 3 );
 		}
 		// perform the request

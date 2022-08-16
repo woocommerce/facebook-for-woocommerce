@@ -44,16 +44,16 @@ class AdminMessageHandler {
 	private $message_id;
 
 	/** @var array array of messages */
-	private $messages = array();
+	private $messages = [];
 
 	/** @var array array of error messages */
-	private $errors = array();
+	private $errors = [];
 
 	/** @var array array of warning messages */
-	private $warnings = array();
+	private $warnings = [];
 
 	/** @var array array of info messages */
-	private $infos = array();
+	private $infos = [];
 
 
 	/**
@@ -64,12 +64,9 @@ class AdminMessageHandler {
 	 *        this to a unique identifier based on the client plugin, such as __FILE__
 	 */
 	public function __construct( $message_id = null ) {
-
 		$this->message_id = $message_id;
-
 		// load any available messages
 		$this->load_messages();
-
 		add_filter( 'wp_redirect', array( $this, 'redirect' ), 1, 2 );
 	}
 
@@ -81,10 +78,8 @@ class AdminMessageHandler {
 	 * @return boolean true if any messages were set, false otherwise
 	 */
 	public function set_messages() {
-
 		// any messages to persist?
 		if ( $this->message_count() > 0 || $this->info_count() > 0 || $this->warning_count() > 0 || $this->error_count() > 0 ) {
-
 			set_transient(
 				self::MESSAGE_TRANSIENT_PREFIX . $this->get_message_id(),
 				array(
@@ -95,10 +90,8 @@ class AdminMessageHandler {
 				),
 				60 * 60
 			);
-
 			return true;
 		}
-
 		return false;
 	}
 
@@ -109,16 +102,12 @@ class AdminMessageHandler {
 	 * @since 1.0.0
 	 */
 	public function load_messages() {
-
 		if ( isset( $_GET[ self::MESSAGE_ID_GET_NAME ] ) && $this->get_message_id() == $_GET[ self::MESSAGE_ID_GET_NAME ] ) {
-
 			$memo = get_transient( self::MESSAGE_TRANSIENT_PREFIX . $_GET[ self::MESSAGE_ID_GET_NAME ] );
-
 			if ( isset( $memo['errors'] ) )   $this->errors   = $memo['errors'];
 			if ( isset( $memo['warnings'] ) ) $this->warnings = $memo['warnings'];
 			if ( isset( $memo['infos'] ) )    $this->infos    = $memo['infos'];
 			if ( isset( $memo['messages'] ) ) $this->messages = $memo['messages'];
-
 			$this->clear_messages( $_GET[ self::MESSAGE_ID_GET_NAME ] );
 		}
 	}
@@ -334,13 +323,13 @@ class AdminMessageHandler {
 	 *                               default: `manage_woocommerce`
 	 * }
 	 */
-	public function show_messages( $params = array() ) {
+	public function show_messages( $params = [] ) {
 		$params = wp_parse_args( $params, array(
 			'capabilities' => array(
 				'manage_woocommerce',
 			),
 		) );
-		$check_user_capabilities = array();
+		$check_user_capabilities = [];
 		// check if user has at least one capability that allows to see messages
 		foreach ( $params['capabilities'] as $capability ) {
 			$check_user_capabilities[] = current_user_can( $capability );

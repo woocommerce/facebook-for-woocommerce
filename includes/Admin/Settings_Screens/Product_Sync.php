@@ -13,11 +13,11 @@ namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
 defined( 'ABSPATH' ) or exit;
 
+use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 use WooCommerce\Facebook\Admin\Google_Product_Category_Field;
 use WooCommerce\Facebook\Commerce;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Sync;
-use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 
 /**
  * The Messenger settings screen object.

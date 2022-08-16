@@ -10,17 +10,16 @@
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/includes/fbutils.php';
 
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Integrations\Bookings as BookingsIntegration;
 use WooCommerce\Facebook\Lifecycle;
+use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
-use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use WooCommerce\Facebook\Utilities\Heartbeat;
-
-require_once 'includes/fbutils.php';
 
 class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var string the plugin version */
@@ -136,16 +135,10 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		);
 
 		if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-			//require_once __DIR__ . '/vendor/autoload.php';
-
 			include_once 'facebook-commerce.php';
-
-			/*require_once $this->get_framework_path() . '/Utilities/AsyncRequest.php';
-			require_once $this->get_framework_path() . '/Utilities/BackgroundJobHandler.php';*/
 
 			require_once __DIR__ . '/includes/fbproductfeed.php';
 			require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
-			require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
 			$this->heartbeat = new Heartbeat( WC()->queue() );
 			$this->heartbeat->init();
@@ -169,17 +162,10 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			new BookingsIntegration();
 
 			if ( 'yes' !== get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
-
-				require_once __DIR__ . '/includes/Utilities/Background_Handle_Virtual_Products_Variations.php';
-
 				$this->background_handle_virtual_products_variations = new Background_Handle_Virtual_Products_Variations();
-
 			}
 
 			if ( 'yes' !== get_option( 'wc_facebook_background_remove_duplicate_visibility_meta_complete', 'no' ) ) {
-
-				require_once __DIR__ . '/includes/Utilities/Background_Remove_Duplicate_Visibility_Meta.php';
-
 				$this->background_remove_duplicate_visibility_meta = new Background_Remove_Duplicate_Visibility_Meta();
 			}
 
@@ -194,17 +180,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {
-
-				require_once __DIR__ . '/includes/Admin/Settings.php';
-				require_once __DIR__ . '/includes/Admin/Abstract_Settings_Screen.php';
-				require_once __DIR__ . '/includes/Admin/Settings_Screens/Connection.php';
-				require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sync.php';
-				require_once __DIR__ . '/includes/Admin/Settings_Screens/Product_Sets.php';
-				require_once __DIR__ . '/includes/Admin/Settings_Screens/Messenger.php';
-				require_once __DIR__ . '/includes/Admin/Settings_Screens/Advertise.php';
-				require_once __DIR__ . '/includes/Admin/Google_Product_Category_Field.php';
-				require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
-
 				$this->admin_settings = new WooCommerce\Facebook\Admin\Settings();
 			}
 		}
@@ -219,7 +194,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @since 1.10.0
 	 */
 	public function init_admin() {
-		require_once __DIR__ . '/includes/Admin.php';
 		$this->admin = new WooCommerce\Facebook\Admin();
 	}
 

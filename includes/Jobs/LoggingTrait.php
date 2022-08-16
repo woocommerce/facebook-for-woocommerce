@@ -34,6 +34,4 @@ trait LoggingTrait {
 			sprintf( '%s_%s', WC_Facebookcommerce::PLUGIN_ID, $this->get_name() )
 		);
 	}
-
-
 }

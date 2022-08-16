@@ -13,10 +13,11 @@ namespace WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\Products\Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
+use WooCommerce\Facebook\Products;
+use WooCommerce\Facebook\Products\Sync;
 
 /**
  * The background sync handler.
@@ -126,7 +127,7 @@ class Background extends BackgroundJobHandler {
 				if ( $request = $this->process_item( array( $item_id, $method ), $job ) ) {
 					$requests[] = $request;
 				}
-			} catch ( Framework\SV_WC_Plugin_Exception $e ) {
+			} catch ( PluginException $e ) {
 
 				facebook_for_woocommerce()->log( "Background sync error: {$e->getMessage()}" );
 			}
@@ -154,7 +155,7 @@ class Background extends BackgroundJobHandler {
 
 				$job = $this->update_job( $job );
 
-			} catch ( Framework\SV_WC_API_Exception $e ) {
+			} catch ( ApiException $e ) {
 
 				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %1$s: %2$s' ), $job->id, $e->getMessage() );
 
@@ -172,14 +173,14 @@ class Background extends BackgroundJobHandler {
 	 * @param mixed            $item
 	 * @param object|\stdClass $job
 	 * @return array|null
-	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public function process_item( $item, $job ) {
 
 		list( $item_id, $method ) = $item;
 
 		if ( ! in_array( $method, array( Sync::ACTION_UPDATE, Sync::ACTION_DELETE ), true ) ) {
-			throw new Framework\SV_WC_Plugin_Exception( "Invalid sync request method: {$method}." );
+			throw new PluginException( "Invalid sync request method: {$method}." );
 		}
 
 		if ( Sync::ACTION_UPDATE === $method ) {
@@ -199,7 +200,7 @@ class Background extends BackgroundJobHandler {
 	 *
 	 * @param string $prefixed_product_id prefixed product ID
 	 * @return array|null
-	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	private function process_item_update( $prefixed_product_id ) {
 
@@ -207,7 +208,7 @@ class Background extends BackgroundJobHandler {
 		$product    = wc_get_product( $product_id );
 
 		if ( ! $product instanceof \WC_Product ) {
-			throw new Framework\SV_WC_Plugin_Exception( "No product found with ID equal to {$product_id}." );
+			throw new PluginException( "No product found with ID equal to {$product_id}." );
 		}
 
 		$request = null;
@@ -256,14 +257,14 @@ class Background extends BackgroundJobHandler {
 	 *
 	 * @param \WC_Product $product product object
 	 * @return array
-	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	private function prepare_product_variation_data( $product ) {
 
 		$parent_product = wc_get_product( $product->get_parent_id() );
 
 		if ( ! $parent_product instanceof \WC_Product ) {
-			throw new Framework\SV_WC_Plugin_Exception( "No parent product found with ID equal to {$product->get_parent_id()}." );
+			throw new PluginException( "No parent product found with ID equal to {$product->get_parent_id()}." );
 		}
 
 		$fb_parent_product = new \WC_Facebook_Product( $parent_product->get_id() );
@@ -383,7 +384,7 @@ class Background extends BackgroundJobHandler {
 	 *
 	 * @param array $requests sync requests
 	 * @return array
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	private function send_item_updates( array $requests ) {
 

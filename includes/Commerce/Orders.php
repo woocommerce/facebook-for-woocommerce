@@ -11,13 +11,11 @@
 
 namespace WooCommerce\Facebook\Commerce;
 
-use SkyVerge\WooCommerce\Facebook\API\Orders\Cancel\Request as Cancellation_Request;
 use WooCommerce\Facebook\Api\Orders\Order;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\API\Orders\Refund\Request as Refund_Request;
 use WooCommerce\Facebook\Utilities;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -383,7 +381,7 @@ class Orders {
 
 			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_new_orders( $page_id );
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( ApiException $exception ) {
 
 			facebook_for_woocommerce()->log( 'Error fetching Commerce orders from the Orders API: ' . $exception->getMessage() );
 
@@ -433,7 +431,7 @@ class Orders {
 						)
 					);
 
-				} catch ( SV_WC_API_Exception $exception ) {
+				} catch ( ApiException $exception ) {
 
 					$local_order->add_order_note( 'Error acknowledging the order: ' . $exception->getMessage() );
 
@@ -465,7 +463,7 @@ class Orders {
 
 			$response = facebook_for_woocommerce()->get_api( facebook_for_woocommerce()->get_connection_handler()->get_page_access_token() )->get_cancelled_orders( $page_id );
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( ApiException $exception ) {
 
 			facebook_for_woocommerce()->log( 'Error fetching Commerce orders from the Orders API: ' . $exception->getMessage() );
 

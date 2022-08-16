@@ -2,9 +2,7 @@
 
 namespace WooCommerce\Facebook\Feed;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined( 'ABSPATH' ) or exit;
 
 use Error;
 use WooCommerce\Facebook\Products\Feed;

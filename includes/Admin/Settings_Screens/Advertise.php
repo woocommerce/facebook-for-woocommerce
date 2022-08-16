@@ -30,7 +30,6 @@ class Advertise extends Abstract_Settings_Screen {
 	 * @since 2.2.0
 	 */
 	public function __construct() {
-
 		$this->id    = self::ID;
 		$this->label = __( 'Advertise', 'facebook-for-woocommerce' );
 		$this->title = __( 'Advertise', 'facebook-for-woocommerce' );
@@ -45,9 +44,7 @@ class Advertise extends Abstract_Settings_Screen {
 	 * @since 2.2.0
 	 */
 	private function add_hooks() {
-
 		add_action( 'admin_head', array( $this, 'output_scripts' ) );
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 

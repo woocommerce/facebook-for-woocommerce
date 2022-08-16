@@ -103,9 +103,6 @@ abstract class Plugin {
 		$this->min_wc_semver = is_numeric( $args['min_wc_semver'] ) ? abs( $args['min_wc_semver'] ) : null;
 		$this->text_domain   = $args['text_domain'];
 
-		// includes that are required to be available at all times
-		$this->includes();
-
 		// initialize the dependencies manager
 		$this->init_dependencies( $args['dependencies'] );
 
@@ -277,69 +274,6 @@ abstract class Plugin {
 
 		load_plugin_textdomain( $textdomain, false, untrailingslashit( $path ) . '/i18n/languages' );
 	}
-
-
-	/**
-	 * Include any critical files which must be available as early as possible,
-	 *
-	 * @since 2.0.0
-	 */
-	private function includes() {
-		$framework_path = $this->get_framework_path();
-
-		// common exception class
-		require_once(  $framework_path . '/Plugin/Exception.php' );
-
-		// addresses
-		/*require_once(  $framework_path . '/Addresses/Address.php' );
-		require_once(  $framework_path . '/Addresses/Customer_Address.php' );*/
-
-		// Settings API
-		/*require_once( $framework_path . '/Settings_API/Abstract_Settings.php' );
-		require_once( $framework_path . '/Settings_API/Setting.php' );
-		require_once( $framework_path . '/Settings_API/Control.php' );*/
-
-		// common utility methods
-		require_once( $framework_path . '/Helper.php' );
-		/*require_once( $framework_path . '/Country_Helper.php' );
-		require_once( $framework_path . '/admin/Notes_Helper.php' );*/
-
-		// backwards compatibility for older WC versions
-		require_once( $framework_path . '/Plugin/Compatibility.php' );
-		/*require_once( $framework_path . '/compatibility/abstract-sv-wc-data-compatibility.php' );
-		require_once( $framework_path . '/compatibility/class-sv-wc-order-compatibility.php' );
-		require_once( $framework_path . '/compatibility/class-sv-wc-product-compatibility.php' );*/
-
-		// TODO: Remove this when WC 3.x can be required {CW 2017-03-16}
-		//require_once( $framework_path . '/compatibility/class-sv-wc-datetime.php' );
-
-		// generic API base
-		require_once( $framework_path . '/Api/Exception.php' );
-		require_once( $framework_path . '/Api/Base.php' );
-		require_once( $framework_path . '/Api/Request.php' );
-		require_once( $framework_path . '/Api/Response.php' );
-
-		// XML API base
-		/*require_once( $framework_path . '/api/abstract-sv-wc-api-xml-request.php' );
-		require_once( $framework_path . '/api/abstract-sv-wc-api-xml-response.php' );*/
-
-		// JSON API base
-		require_once( $framework_path . '/Api/JSONRequest.php' );
-		require_once( $framework_path . '/Api/JSONResponse.php' );
-
-		// REST API Controllers
-		//require_once( $framework_path . '/rest-api/Controllers/Settings.php' );
-
-		// Handlers
-		//require_once( $framework_path . '/Handlers/Script_Handler.php' );
-		require_once( $framework_path . '/Plugin/Dependencies.php' );
-		//require_once( $framework_path . '/class-sv-wc-hook-deprecator.php' );
-		require_once( $framework_path . '/AdminMessageHandler.php' );
-		require_once( $framework_path . '/AdminNoticeHandler.php' );
-		require_once( $framework_path . '/Lifecycle.php' );
-		//require_once( $framework_path . '/rest-api/class-sv-wc-plugin-rest-api.php' );
-	}
-
 
 	/**
 	 * Returns true if on the admin plugin settings page, if any

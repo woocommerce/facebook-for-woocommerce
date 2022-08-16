@@ -12,7 +12,6 @@ defined( 'ABSPATH' ) or exit;
  */
 abstract class JSONRequest implements Request {
 
-
 	/** @var string The request method, one of HEAD, GET, PUT, PATCH, POST, DELETE */
 	protected $method;
 
@@ -25,7 +24,6 @@ abstract class JSONRequest implements Request {
 	/** @var array the request data */
 	protected $data = [];
 
-
 	/**
 	 * Get the request method.
 	 *
@@ -36,7 +34,6 @@ abstract class JSONRequest implements Request {
 	public function get_method() {
 		return $this->method;
 	}
-
 
 	/**
 	 * Get the request path.
@@ -49,7 +46,6 @@ abstract class JSONRequest implements Request {
 		return $this->path;
 	}
 
-
 	/**
 	 * Get the request parameters.
 	 *
@@ -61,7 +57,6 @@ abstract class JSONRequest implements Request {
 		return $this->params;
 	}
 
-
 	/**
 	 * Get the request data.
 	 *
@@ -71,10 +66,6 @@ abstract class JSONRequest implements Request {
 	public function get_data() {
 		return $this->data;
 	}
-
-
-	/** API Helper Methods ******************************************************/
-
 
 	/**
 	 * Get the string representation of this request.
@@ -87,7 +78,6 @@ abstract class JSONRequest implements Request {
 		$data = $this->get_data();
 		return ! empty( $data ) ? wp_json_encode( $data ) : '';
 	}
-
 
 	/**
 	 * Get the string representation of this request with any and all sensitive elements masked

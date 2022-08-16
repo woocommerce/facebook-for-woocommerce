@@ -6,6 +6,7 @@
 namespace WooCommerce\Facebook\Framework;
 
 use Automattic\WooCommerce\Admin\Loader;
+use WooCommerce\Facebook\Framework\Compatibility\OrderCompatibility;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -31,23 +32,16 @@ class Helper {
 	 * @return bool
 	 */
 	public static function str_starts_with( $haystack, $needle ) {
-
 		if ( self::multibyte_loaded() ) {
-
 			if ( '' === $needle ) {
 				return true;
 			}
-
 			return 0 === mb_strpos( $haystack, $needle, 0, self::MB_ENCODING );
-
 		} else {
-
 			$needle = self::str_to_ascii( $needle );
-
 			if ( '' === $needle ) {
 				return true;
 			}
-
 			return 0 === strpos( self::str_to_ascii( $haystack ), self::str_to_ascii( $needle ) );
 		}
 	}
@@ -64,20 +58,14 @@ class Helper {
 	 * @return bool
 	 */
 	public static function str_ends_with( $haystack, $needle ) {
-
 		if ( '' === $needle ) {
 			return true;
 		}
-
 		if ( self::multibyte_loaded() ) {
-
 			return mb_substr( $haystack, -mb_strlen( $needle, self::MB_ENCODING ), null, self::MB_ENCODING ) === $needle;
-
 		} else {
-
 			$haystack = self::str_to_ascii( $haystack );
 			$needle   = self::str_to_ascii( $needle );
-
 			return substr( $haystack, -strlen( $needle ) ) === $needle;
 		}
 	}
@@ -94,23 +82,16 @@ class Helper {
 	 * @return bool
 	 */
 	public static function str_exists( $haystack, $needle ) {
-
 		if ( self::multibyte_loaded() ) {
-
 			if ( '' === $needle ) {
 				return false;
 			}
-
 			return false !== mb_strpos( $haystack, $needle, 0, self::MB_ENCODING );
-
 		} else {
-
 			$needle = self::str_to_ascii( $needle );
-
 			if ( '' === $needle ) {
 				return false;
 			}
-
 			return false !== strpos( self::str_to_ascii( $haystack ), self::str_to_ascii( $needle ) );
 		}
 	}
@@ -128,29 +109,20 @@ class Helper {
 	 * @return string
 	 */
 	public static function str_truncate( $string, $length, $omission = '...' ) {
-
 		if ( self::multibyte_loaded() ) {
-
 			// bail if string doesn't need to be truncated
 			if ( mb_strlen( $string, self::MB_ENCODING ) <= $length ) {
 				return $string;
 			}
-
 			$length -= mb_strlen( $omission, self::MB_ENCODING );
-
 			return mb_substr( $string, 0, $length, self::MB_ENCODING ) . $omission;
-
 		} else {
-
 			$string = self::str_to_ascii( $string );
-
 			// bail if string doesn't need to be truncated
 			if ( strlen( $string ) <= $length ) {
 				return $string;
 			}
-
 			$length -= strlen( $omission );
-
 			return substr( $string, 0, $length ) . $omission;
 		}
 	}
@@ -167,10 +139,8 @@ class Helper {
 	 * @return string
 	 */
 	public static function str_to_ascii( $string ) {
-
 		// strip ASCII chars 32 and under
 		$string = filter_var( $string, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW );
-
 		// strip ASCII chars 127 and higher
 		return filter_var( $string, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH );
 	}
@@ -200,9 +170,7 @@ class Helper {
 	 * @return string
 	 */
 	public static function str_to_sane_utf8( $string ) {
-
 		$sane_string = preg_replace( '/[^\p{L}\p{Mn}\p{Mc}\p{Nd}\p{Zs}\p{P}\p{Sm}\p{Sc}]/u', '', $string );
-
 		// preg_replace with the /u modifier can return null or false on failure
 		return ( is_null( $sane_string ) || false === $sane_string ) ? $string : $sane_string;
 	}
@@ -216,7 +184,6 @@ class Helper {
 	 * @return bool
 	 */
 	protected static function multibyte_loaded() {
-
 		return extension_loaded( 'mbstring' );
 	}
 
@@ -246,21 +213,15 @@ class Helper {
 	 * @return array
 	 */
 	public static function array_insert_after( Array $array, $insert_key, Array $element ) {
-
-		$new_array = array();
-
+		$new_array = [];
 		foreach ( $array as $key => $value ) {
-
 			$new_array[ $key ] = $value;
-
 			if ( $insert_key == $key ) {
-
 				foreach ( $element as $k => $v ) {
 					$new_array[ $k ] = $v;
 				}
 			}
 		}
-
 		return $new_array;
 	}
 
@@ -292,70 +253,49 @@ class Helper {
 	 * @param string|array $element_key name for element, e.g. <per_page>
 	 * @param string|array $element_value value for element, e.g. 100
 	 */
-	public static function array_to_xml( $xml_writer, $element_key, $element_value = array() ) {
-
+	public static function array_to_xml( $xml_writer, $element_key, $element_value = [] ) {
 		if ( is_array( $element_value ) ) {
-
 			// handle attributes
 			if ( '@attributes' === $element_key ) {
-
 				foreach ( $element_value as $attribute_key => $attribute_value ) {
-
 					$xml_writer->startAttribute( $attribute_key );
 					$xml_writer->text( $attribute_value );
 					$xml_writer->endAttribute();
 				}
-
 				return;
 			}
 
 			// handle multi-elements (e.g. multiple <Order> elements)
 			if ( is_numeric( key( $element_value ) ) ) {
-
 				// recursively generate child elements
 				foreach ( $element_value as $child_element_key => $child_element_value ) {
-
 					$xml_writer->startElement( $element_key );
-
 					foreach ( $child_element_value as $sibling_element_key => $sibling_element_value ) {
 						self::array_to_xml( $xml_writer, $sibling_element_key, $sibling_element_value );
 					}
-
 					$xml_writer->endElement();
 				}
-
 			} else {
-
 				// start root element
 				$xml_writer->startElement( $element_key );
-
 				// recursively generate child elements
 				foreach ( $element_value as $child_element_key => $child_element_value ) {
 					self::array_to_xml( $xml_writer, $child_element_key, $child_element_value );
 				}
-
 				// end root element
 				$xml_writer->endElement();
 			}
-
 		} else {
-
 			// handle single elements
 			if ( '@value' === $element_key ) {
-
 				$xml_writer->text( $element_value );
-
 			} else {
-
 				// wrap element in CDATA tags if it contains illegal characters
 				if ( false !== strpos( $element_value, '<' ) || false !== strpos( $element_value, '>' ) ) {
-
 					$xml_writer->startElement( $element_key );
 					$xml_writer->writeCdata( $element_value );
 					$xml_writer->endElement();
-
 				} else {
-
 					$xml_writer->writeElement( $element_key, $element_value );
 				}
 			}
@@ -377,18 +317,13 @@ class Helper {
 	 * @return string
 	 */
 	public static function list_array_items( array $items, $conjunction = null, $separator = '' ) {
-
 		if ( ! is_string( $conjunction ) ) {
 			$conjunction = _x( 'and', 'coordinating conjunction for a list of items: a, b, and c', 'woocommerce-plugin-framework' );
 		}
-
 		// append the conjunction to the last item
 		if ( count( $items ) > 1 ) {
-
 			$last_item = array_pop( $items );
-
 			array_push( $items, trim( "{$conjunction} {$last_item}" ) );
-
 			// only use a comma if needed and no separator was passed
 			if ( count( $items ) < 3 ) {
 				$separator = ' ';
@@ -396,7 +331,6 @@ class Helper {
 				$separator = ', ';
 			}
 		}
-
 		return implode( $separator, $items );
 	}
 
@@ -415,7 +349,6 @@ class Helper {
 	 * @return string
 	 */
 	public static function number_format( $number ) {
-
 		return number_format( (float) $number, 2, '.', '' );
 	}
 
@@ -444,30 +377,23 @@ class Helper {
 	 * @return \stdClass[] array of line item objects
 	 */
 	public static function get_order_line_items( $order ) {
-
 		$line_items = [];
-
 		/** @var \WC_Order_Item_Product $item */
 		foreach ( $order->get_items() as $id => $item ) {
-
 			$line_item = new \stdClass();
 			$product   = $item->get_product();
 			$name      = $item->get_name();
 			$quantity  = $item->get_quantity();
 			$sku       = $product instanceof \WC_Product ? $product->get_sku() : '';
 			$item_desc = [];
-
 			// add SKU to description if available
 			if ( ! empty( $sku ) ) {
 				$item_desc[] = sprintf( 'SKU: %s', $sku );
 			}
-
-			$item_meta = SV_WC_Order_Compatibility::get_item_formatted_meta_data( $item, '_', true );
+			$item_meta = OrderCompatibility::get_item_formatted_meta_data( $item, '_', true );
 
 			if ( ! empty( $item_meta ) ) {
-
 				foreach ( $item_meta as $meta ) {
-
 					$item_desc[] = sprintf( '%s: %s', $meta['label'], $meta['value'] );
 				}
 			}

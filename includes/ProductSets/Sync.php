@@ -11,9 +11,7 @@
 
 namespace WooCommerce\Facebook\ProductSets;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The product set sync handler.

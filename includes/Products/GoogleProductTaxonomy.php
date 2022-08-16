@@ -1,5 +1,5 @@
 <?php
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 // This file was generated using GenerateCategories.php, do not modify it manually
 // php GenerateCategories.php taxonomy-with-ids.en-US.txt
 class GoogleProductTaxonomy {

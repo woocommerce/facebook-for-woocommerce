@@ -320,32 +320,21 @@ class Products {
 	 * @return int
 	 */
 	public static function get_product_price( \WC_Product $product ) {
-
 		$facebook_price = $product->get_meta( WC_Facebook_Product::FB_PRODUCT_PRICE );
-
 		// use the user defined Facebook price if set
 		if ( is_numeric( $facebook_price ) ) {
-
 			$price = $facebook_price;
-
 		} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
-
 			$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
-
 		} elseif ( class_exists( 'WC_Product_Bundle' )
 			 && empty( $product->get_regular_price() )
 			 && 'bundle' === $product->get_type() ) {
-
 			// if product is a product bundle with individually priced items, we rely on their pricing
 			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_bundle_price() ) );
-
 		} else {
-
 			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) );
 		}
-
 		$price = (int) ( $price ? round( $price * 100 ) : 0 );
-
 		/**
 		 * Filters the product price used for Facebook sync.
 		 *
@@ -367,7 +356,6 @@ class Products {
 	 * @param \WC_Product $product the product object
 	 */
 	public static function is_product_ready_for_commerce( \WC_Product $product ) {
-
 		return $product->managing_stock()
 			&& self::get_product_price( $product )
 			&& self::is_commerce_enabled_for_product( $product )
@@ -384,11 +372,9 @@ class Products {
 	 * @return bool
 	 */
 	public static function is_commerce_enabled_for_product( \WC_Product $product ) {
-
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}
-
 		return $product instanceof \WC_Product && wc_string_to_bool( $product->get_meta( self::COMMERCE_ENABLED_META_KEY ) );
 	}
 
@@ -402,7 +388,6 @@ class Products {
 	 * @param bool        $is_enabled whether or not Commerce is to be enabled
 	 */
 	public static function update_commerce_enabled_for_product( \WC_Product $product, $is_enabled ) {
-
 		$product->update_meta_data( self::COMMERCE_ENABLED_META_KEY, wc_bool_to_string( $is_enabled ) );
 		$product->save_meta_data();
 	}
@@ -419,7 +404,6 @@ class Products {
 	 * @return string
 	 */
 	public static function get_google_product_category_id( \WC_Product $product ) {
-
 		// attempt to get from product or parent product metadata
 		if ( $product->is_type( 'variation' ) ) {
 			$parent_product             = wc_get_product( $product->get_parent_id() );
@@ -427,22 +411,16 @@ class Products {
 		} else {
 			$google_product_category_id = $product->get_meta( self::GOOGLE_PRODUCT_CATEGORY_META_KEY );
 		}
-
 		// fallback to the highest category's Google product category ID
 		if ( empty( $google_product_category_id ) ) {
-
 			$google_product_category_id = self::get_google_product_category_id_from_highest_category( $product );
 		}
-
 		// fallback to plugin-level default Google product category ID
 		if ( empty( $google_product_category_id ) ) {
-
 			$google_product_category_id = facebook_for_woocommerce()->get_commerce_handler()->get_default_google_product_category_id();
 		}
-
 		return $google_product_category_id;
 	}
-
 
 	/**
 	 * Gets the stored Google product category ID from the highest category.
