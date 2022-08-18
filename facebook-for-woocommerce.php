@@ -120,24 +120,12 @@ class WC_Facebook_Loader {
 			return;
 		}
 
-		$this->load_framework();
-
 		require_once plugin_dir_path( __FILE__ ) . 'class-wc-facebookcommerce.php';
 
 		// fire it up!
 		if ( function_exists( 'facebook_for_woocommerce' ) ) {
 			facebook_for_woocommerce();
 		}
-	}
-
-
-	/**
-	 * Loads the base framework classes.
-	 *
-	 * @since 1.10.0
-	 */
-	private function load_framework() {
-		require_once plugin_dir_path( __FILE__ ) . 'includes/Framework/Plugin.php';
 	}
 
 
@@ -255,7 +243,6 @@ class WC_Facebook_Loader {
 	 * @return bool
 	 */
 	private function plugins_compatible() {
-
 		return $this->is_wp_compatible() && $this->is_wc_compatible();
 	}
 

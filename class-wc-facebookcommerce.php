@@ -171,8 +171,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			$this->connection_handler = new WooCommerce\Facebook\Handlers\Connection( $this );
 			$this->webhook_handler    = new WooCommerce\Facebook\Handlers\WebHook( $this );
-
-			$this->tracker = new WooCommerce\Facebook\Utilities\Tracker();
+			$this->tracker            = new WooCommerce\Facebook\Utilities\Tracker();
 
 			// Init jobs
 			$this->job_registry = new WooCommerce\Facebook\Jobs\JobRegistry();
@@ -332,11 +331,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		}
 	}
 
-
-	public function add_wordpress_integration() {
-		new WP_Facebook_Integration();
-	}
-
 	/**
 	 * Saves errors or messages to WooCommerce Log (woocommerce/logs/plugin-id-xxx.txt)
 	 *
@@ -364,7 +358,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @param null  $log_id log ID
 	 */
 	public function log_api_request( $request, $response, $log_id = null ) {
-
 		// bail if logging isn't enabled
 		if ( ! $this->get_integration() || ! $this->get_integration()->is_debug_mode_enabled() ) {
 			return;
@@ -398,7 +391,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @since 2.3.0
 	 */
 	public function register_custom_taxonomy() {
-
 		$plural   = esc_html__( 'FB Product Sets', 'facebook-for-woocommerce' );
 		$singular = esc_html__( 'FB Product Set', 'facebook-for-woocommerce' );
 
@@ -411,7 +403,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 				'edit_item'                  => sprintf( esc_html__( 'Edit %s', 'facebook-for-woocommerce' ), $singular ),
 				// translators: Add new label
 				'add_new_item'               => sprintf( esc_html__( 'Add new %s', 'facebook-for-woocommerce' ), $singular ),
-				'menu_name'                  => $plural,
 				// translators: No items found text
 				'not_found'                  => sprintf( esc_html__( 'No %s found.', 'facebook-for-woocommerce' ), $plural ),
 				// translators: Search label
@@ -472,7 +463,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return array
 	 */
 	public function wc_page_breadcrumbs_filter( $breadcrumbs ) {
-
 		if ( 'edit-fb_product_set' !== $this->get_current_page_id() ) {
 			return $breadcrumbs;
 		}
@@ -483,13 +473,11 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		);
 
 		$term_id = empty( $_GET['tag_ID'] ) ? '' : $_GET['tag_ID']; //phpcs:ignore WordPress.Security
-
 		if ( ! empty( $term_id ) ) {
 			$breadcrumbs[] = array( 'edit-tags.php?taxonomy=fb_product_set&post_type=product', 'Products Sets' );
 		}
 
 		$breadcrumbs[] = ( empty( $term_id ) ? 'Product Sets' : 'Edit Product Set' );
-
 		return $breadcrumbs;
 	}
 
@@ -504,7 +492,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return boolean
 	 */
 	public function is_current_page_conected_filter( $is_conected ) {
-
 		if ( 'edit-fb_product_set' === $this->get_current_page_id() ) {
 			return true;
 		}
@@ -757,7 +744,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_settings_url( $plugin_id = null ) {
-
 		return admin_url( 'admin.php?page=wc-facebook' );
 	}
 
@@ -770,7 +756,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_documentation_url() {
-
 		return 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
 	}
 
@@ -783,7 +768,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_support_url() {
-
 		return 'https://wordpress.org/support/plugin/facebook-for-woocommerce/';
 	}
 
@@ -796,7 +780,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_sales_page_url() {
-
 		return 'https://woocommerce.com/products/facebook/';
 	}
 
@@ -809,7 +792,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_reviews_url() {
-
 		return 'https://wordpress.org/support/plugin/facebook-for-woocommerce/reviews/';
 	}
 
@@ -822,7 +804,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_plugin_name() {
-
 		return __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 	}
 
@@ -862,9 +843,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @since 1.10.0
 	 */
 	protected function init_lifecycle_handler() {
-
-		require_once __DIR__ . '/includes/Lifecycle.php';
-
 		$this->lifecycle_handler = new Lifecycle( $this );
 	}
 
@@ -879,11 +857,9 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return \WC_Facebookcommerce the plugin singleton instance
 	 */
 	public static function instance() {
-
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
-
 		return self::$instance;
 	}
 
@@ -896,7 +872,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	protected function get_file() {
-
 		return __FILE__;
 	}
 
@@ -909,7 +884,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	protected function get_current_page_id() {
-
 		$current_screen_id = '';
 		$current_screen    = get_current_screen();
 		if ( ! empty( $current_screen ) ) {
@@ -931,10 +905,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @deprecated 1.10.0
 	 */
 	public function add_settings_link() {
-
 		wc_deprecated_function( __METHOD__, '1.10.0' );
 	}
-
 }
 
 
@@ -946,7 +918,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
  * @return \WC_Facebookcommerce instance of the plugin
  */
 function facebook_for_woocommerce() {
-
 	return \WC_Facebookcommerce::instance();
 }
 
