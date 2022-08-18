@@ -346,7 +346,6 @@ class WC_Facebook_Loader {
 	 * @return bool
 	 */
 	private function is_environment_compatible() {
-
 		return version_compare( PHP_VERSION, self::MINIMUM_PHP_VERSION, '>=' );
 	}
 

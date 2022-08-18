@@ -109,6 +109,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			[ 'text_domain' => 'facebook-for-woocommerce' ]
 		);
 		$this->init();
+		$this->init_admin();
 	}
 
 
@@ -193,7 +194,13 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @since 1.10.0
 	 */
 	public function init_admin() {
-		$this->admin = new WooCommerce\Facebook\Admin();
+		add_action(
+			'admin_init',
+			function () {
+				$this->admin = new WooCommerce\Facebook\Admin();
+			},
+			0
+		);
 	}
 
 

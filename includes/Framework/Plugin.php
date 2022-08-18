@@ -182,12 +182,6 @@ abstract class Plugin {
 	 * @since 5.2.0
 	 */
 	private function add_hooks() {
-		// initialize the plugin
-		add_action( 'plugins_loaded', array( $this, 'init_plugin' ), 15 );
-
-		// initialize the plugin admin
-		add_action( 'admin_init', array( $this, 'init_admin' ), 0 );
-
 		// hook for translations separately to ensure they're loaded
 		add_action( 'init', array( $this, 'load_translations' ) );
 
@@ -280,10 +274,6 @@ abstract class Plugin {
 
 		load_plugin_textdomain( $textdomain, false, untrailingslashit( $path ) . '/i18n/languages' );
 	}
-
-	public function init_plugin() {}
-
-	public function init_admin() {}
 
 	/**
 	 * Returns true if on the admin plugin settings page, if any
