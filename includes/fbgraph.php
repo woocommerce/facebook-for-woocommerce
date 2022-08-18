@@ -753,16 +753,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) :
 			return $connect_woo;
 		}
 
-		/*public function get_facebook_id( $facebook_catalog_id, $product_id ) {
-			$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
-			base64_encode( $product_id ) . '/?fields=id,product_group{id}';
-			$url   = $this->build_url( '', $param );
-			// success API call will return
-			// {id: <fb product id>, product_group{id} <fb product group id>}
-			// failure API will return {error: <error message>}
-			return self::_get( $url );
-		}*/
-
 		/**
 		 * Returns product Facebook id.
 		 *
