@@ -1691,22 +1691,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product_group_data['default_product_id'] = $default_product_fbid;
 		}
 
-		$result = $this->check_api_result(
+		$this->check_api_result(
 			$this->fbgraph->update_product_group(
 				$fb_product_group_id,
 				$product_group_data
 			)
 		);
-
-		/** TODO: restore when adopting FBE 2.0
-		if ( $result ) {
-			$this->display_success_message(
-				'Updated product group <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
-				'</a> on Facebook.'
-			);
-		}
-		*/
 	}
 
 	/**
@@ -1803,21 +1793,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product_data['additional_image_urls'] = '';
 		}
 
-		$result = $this->check_api_result(
+		$this->check_api_result(
 			$this->fbgraph->update_product_item(
 				$fb_product_item_id,
 				$product_data
 			)
 		);
-
-		/** TODO: restore when adopting FBE 2.0
-		if ( $result ) {
-			$this->display_success_message(
-				'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
-				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
-			);
-		}
-		*/
 	}
 
 	/**
@@ -3069,8 +3050,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		return wc_clean( is_string( $value ) ? $value : '' );
 	}
 
-	/** Conditional methods *******************************************************************************************/
-
 	/**
 	 * Determines whether Facebook for WooCommerce is configured.
 	 *
@@ -3576,8 +3555,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		printf( json_encode( $response ) );
 		wp_die();
 	}
-
-	/** Deprecated methods ********************************************************************************************/
 
 	/**
 	 * Enables product sync delay notice when a post is moved to the trash.
