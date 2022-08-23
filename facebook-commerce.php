@@ -329,7 +329,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				add_action( 'before_delete_post', [ $this, 'on_product_delete' ] );
 
 				// Ensure product is deleted from FB when moved to trash.
-				add_action( 'wp_trash_post', array( $this, 'on_product_delete' ) );
+				add_action( 'wp_trash_post', [ $this, 'on_product_delete' ] );
 
 				add_action( 'add_meta_boxes', 'SkyVerge\WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
 
@@ -366,7 +366,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			]
 		);
 
-		add_action( 'untrashed_post', array( $this, 'fb_restore_untrashed_variable_product' ) );
+		add_action( 'untrashed_post', [ $this, 'fb_restore_untrashed_variable_product' ] );
 
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
@@ -1356,10 +1356,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $post_id
 	 */
-	public function fb_restore_untrashed_variable_product ( $post_id ) {
+	public function fb_restore_untrashed_variable_product( $post_id ) {
 		$product = wc_get_product( $post_id );
 
-		if ( ! $product instanceof \WC_Product  ) {
+		if ( ! $product instanceof \WC_Product ) {
 			return;
 		}
 
