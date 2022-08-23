@@ -165,7 +165,24 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @return string
 		 */
 		public static function clean_string( $string ) {
-			$string = do_shortcode( $string );
+
+			/**
+			 * Filters whether the shortcodes should be applied for a string when syncing a product or be stripped out.
+			 *
+			 * @since 2.6.19
+			 *
+			 * @param bool   $apply_shortcodes Shortcodes are applied if set to `true` and stripped out if set to `false`.
+			 * @param string $string           String to clean up.
+			 */
+			$apply_shortcodes = apply_filters( 'wc_facebook_string_apply_shortcodes', false, $string );
+			if ( $apply_shortcodes ) {
+				// Apply active shortcodes
+				$string = do_shortcode( $string );
+			} else {
+				// Strip out active shortcodes
+				$string = strip_shortcodes( $string );
+			}
+
 			$string = str_replace( array( '&amp%3B', '&amp;' ), '&', $string );
 			$string = str_replace( array( "\r", '&nbsp;', "\t" ), ' ', $string );
 			$string = wp_strip_all_tags( $string, false ); // true == remove line breaks

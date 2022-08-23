@@ -1,6 +1,6 @@
 {
   "name": "facebook-for-woocommerce",
-  "version": "2.6.14",
+  "version": "2.6.21",
   "author": "Facebook",
   "homepage": "https://woocommerce.com/products/facebook/",
   "license": "GPL-2.0",
@@ -13,13 +13,12 @@
   },
   "devDependencies": {
     "@wordpress/scripts": "^14.0.0",
-    "sake": "github:skyverge/sake"
+    "sake": "git+https://github.com/skyverge/sake"
   },
   "scripts": {
     "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
-    "lint:php": "vendor/bin/phpcs . --extensions=php -p -s --colors ",
-    "lint:php:pr": "vendor/bin/phpcs . --extensions=php --warning-severity=0 --report=checkstyle ",
-    "lint:php:summary": "vendor/bin/phpcs . --extensions=php --colors --report=summary",
+    "lint:php": "vendor/bin/phpcs -p -s --colors",
+    "lint:php:summary": "vendor/bin/phpcs --colors --report=summary",
     "build:assets": "NODE_ENV=production wp-scripts build",
     "start": "wp-scripts start",
     "deploy:sake": "npm run build:assets && npx sake deploy --deployAssets=0",

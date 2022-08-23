@@ -340,7 +340,7 @@ class Product_Categories {
 					<?php $this->render_enhanced_catalog_attributes_tooltip(); ?>
 				</label>
 			</div>
-			<table>
+			<table class="form-table">
 				<?php $enhanced_attribute_fields->render( $category_id ); ?>
 			</table>
 		<?php

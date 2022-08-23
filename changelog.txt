@@ -1,5 +1,42 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 2.6.21 - 2022-08-16 =
+* Dev - Add branch-labels GH workflow.
+* Fix - `Undefined array key "HTTP_REFERER"` not longer happens when `new Event` is triggered from an AJAX call that doesn't include a referrer (likely due to browser configuration).
+* Tweak - WC 6.8 compatibility.
+* Tweak - WP 6.0 compatibility.
+
+2022-08-09 - version 2.6.20
+* Fix - Ensure product is deleted from FB when moved to trash.
+* Fix - Price not updating when the sale price is removed.
+
+= 2.6.19 - 2022-07-27 =
+* Add  - `wc_facebook_string_apply_shortcodes` filter to check whether to apply shortcodes on a string before syncing.
+* Tweak - Use the Heartbeat system to refresh the local business configuration data with the latest from Facebook.
+* Tweak - WC 6.8 compatibility.
+
+2022-07-19 - version 2.6.18
+* Fix - Misaligned help icons on Product Categories > Google Product Categories form.
+* Fix - Syncing WC custom placeholder to Facebook shop.
+* Fix - is_search() causing fatal error when custom queries are used.
+
+= 2.6.17 - 2022-07-06 =
+* Fix - Add allow-plugins directive and adjust phpcs GitHub workflow.
+* Fix - Scheduled product not synced when status becomes "publish".
+* Tweak - WooCommerce 6.7 compatibility.
+* Update - Facebook Marketing API from v12.0 to v13.0.
+
+= 2.6.16 - 2022-06-07 =
+* Fix - Updating reference from old master branch.
+* Tweak - WC 6.6 compatibility.
+
+2022-06-01 - version 2.6.15
+* Fix - Do not set `sale_price` when the product is not on sale.
+* Fix - FB Pixel is missing some ajax Add to cart events.
+* Fix - Feed visibility field value for hidden items.
+* Fix - Wrong Value Field in AddToCart Events.
+* Tweak - Not show the removed from sync confirm modal for unpublished products.
+
 2022-05-18 - version 2.6.14
 * Fix - Non-latin custom product attribute names sync.
 * Fix - Syncing brand FB attribute instead of the website name.
