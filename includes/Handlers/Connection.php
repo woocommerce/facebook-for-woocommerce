@@ -107,6 +107,7 @@ class Connection {
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
+		/** @TODO: replace facebook_for_woocommerce() with $this->plugin. */
 		$this->plugin = $plugin;
 
 		add_action( 'init', array( $this, 'refresh_business_configuration' ) );
@@ -147,7 +148,7 @@ class Connection {
 			$response['ig_cta']['enabled'] ?? false
 		);
 		// update the messenger settings
-		$messenger_configuration = $response['messenger_chat'] ?? array();
+		$messenger_configuration = $response['messenger_chat'] ?? [];
 		if ( $messenger_configuration ) {
 			$enabled = $messenger_configuration['enabled'] ?? false;
 			// store the local "enabled" setting
@@ -157,7 +158,7 @@ class Connection {
 				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
 			}
 			// if the site's domain is somehow missing from the allowed domains, re-add it
-			$domains = $messenger_configuration['domains'] ?? array();
+			$domains = $messenger_configuration['domains'] ?? [];
 			if ( $enabled && ! in_array( home_url( '/' ), $domains, true ) ) {
 				$domains[]                          = home_url( '/' );
 				$messenger_configuration['domains'] = $domains;
@@ -215,9 +216,9 @@ class Connection {
 		$catalog_id
 		&& update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, $catalog_id );
 
-		$business_manager_id && $this->update_business_manager_id( $business_manager_id );
-		$ad_account_id && $this->update_ad_account_id( $ad_account_id );
-		$instagram_business_id && $this->update_instagram_business_id( $instagram_business_id );
+		$business_manager_id           && $this->update_business_manager_id( $business_manager_id );
+		$ad_account_id                 && $this->update_ad_account_id( $ad_account_id );
+		$instagram_business_id         && $this->update_instagram_business_id( $instagram_business_id );
 		$commerce_merchant_settings_id && $this->update_commerce_merchant_settings_id( $commerce_merchant_settings_id );
 	}
 

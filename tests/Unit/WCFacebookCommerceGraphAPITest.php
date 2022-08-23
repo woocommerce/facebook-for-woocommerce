@@ -1,6 +1,8 @@
 <?php
 declare( strict_types=1 );
 
+require_once __DIR__ . '/../../includes/fbgraph.php';
+
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
 
 /**
@@ -688,5 +690,40 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'data', $response );
 		$this->assertArrayHasKey( 'paging', $response );
+	}
+
+	/**
+	 * Testing get facebook id api returns facebook product id.
+	 *
+	 * @return void
+	 * @throws JsonException Thrown in case json can not be parsed properly or is not a proper JSON.
+	 */
+	public function test_get_facebook_id_returns_facebook_product_id() {
+		$facebook_catalog_id  = '726635365295186';
+		$facebook_retailer_id = 'wc_post_id_127';
+
+		$expected = [
+			'id'            => 'product-id',
+			'product_group' => [
+				'id' => 'product-group-id',
+			],
+		];
+
+		$response = function( $result, $parsed_args, $url ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( 'https://graph.facebook.com/v12.0/catalog:726635365295186:d2NfcG9zdF9pZF8xMjc=/?fields=id,product_group{id}', $url );
+			return [
+				'body'     => '{"id":"product-id","product_group":{"id":"product-group-id"}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$facebook_product_id = $this->api->get_facebook_id( $facebook_catalog_id, $facebook_retailer_id );
+
+		$this->assertEquals( $expected, $facebook_product_id );
 	}
 }

@@ -17,7 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'WC_Facebookcommerce_WarmConfig' ) ) :
 
 	class WC_Facebookcommerce_WarmConfig {
+		/**
+		 * @deprecated
+		 * @var null
+		 */
 		static $fb_warm_pixel_id                     = null;
+		/**
+		 * @deprecated
+		 * @var null
+		 */
 		static $fb_warm_is_advanced_matching_enabled = null;
 		static $fb_warm_use_s2s                      = null;
 		static $fb_warm_access_token                 = null;
