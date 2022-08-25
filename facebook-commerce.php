@@ -1544,8 +1544,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Determines whether the product with the given ID should be synced.
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate instead
-	 *
 	 * @since 2.0.0
 	 *
 	 * @param WC_Product $product product object

@@ -1231,10 +1231,19 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->method( 'is_connected' )
 			->willReturn( true );
 
-		$product = WC_Helper_Product::create_simple_product();
+		$product          = WC_Helper_Product::create_simple_product();
+		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 
 		add_post_meta( $product->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
 		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-id' );
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->once() )
+			->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->once() )
+			->method( 'get_product_sync_validator' )
+			->with( $product )
+			->willReturn( $validator );
 
 		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$facebook_output_update_product_item = [
@@ -1245,12 +1254,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
+
+		$data = $facebook_product->prepare_product();
+		$data['additional_image_urls'] = '';
 		$graph_api->expects( $this->once() )
 			->method( 'update_product_item' )
-			->with(
-				'facebook-product-id',
-				[ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ]
-			)
+			->with( 'facebook-product-id', $data )
 			->willReturn( $facebook_output_update_product_item );
 		$this->integration->fbgraph = $graph_api;
 
@@ -1263,8 +1272,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$post     = new WP_Post( $data );
 
 		$this->integration->fb_change_product_published_status( $new_status, $old_status, $post );
-
-		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
 	}
 
 	/**
@@ -1275,13 +1282,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	public function test_fb_change_product_published_status_for_variable_product() {
 		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
 		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
+		// add_option( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
 
 		/** @var WC_Product_Variable $product */
-		$product = WC_Helper_Product::create_variation_product();
+		$product          = WC_Helper_Product::create_variation_product();
 
 		$this->connection_handler->expects( $this->once() )
 			->method( 'is_connected' )
 			->willReturn( true );
+
+		$validator = $this->createMock( ProductValidator::class );
+		$validator->expects( $this->exactly( 7 ) )->method( 'validate' );
+		$this->facebook_for_woocommerce->expects( $this->exactly( 7 ) )
+			->method( 'get_product_sync_validator' )
+			->willReturn( $validator );
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -1292,6 +1306,20 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->method( 'get_products_sync_handler' )
 			->willReturn( $sync_handler );
 
+		$facebook_output_create_product_group = [
+			'headers'  => [],
+			'body'     => '{"id":"facebook-variable-product-group-item-id"}',
+			'response' => [
+				'code'    => 200,
+				'message' => 'OK',
+			],
+		];
+		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
+		$graph_api->expects( $this->once() )
+			->method( 'create_product_group' )
+			->willReturn( $facebook_output_create_product_group );
+		$this->integration->fbgraph = $graph_api;
+
 		/* Statuses involved into logic: publish, trash */
 		$new_status = 'publish';
 		$old_status = 'trash';
@@ -1301,11 +1329,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$post     = new WP_Post( $data );
 
 		$this->integration->fb_change_product_published_status( $new_status, $old_status, $post );
-
-		$this->assertEquals( 'yes', get_post_meta( $product->get_id(), Products::VISIBILITY_META_KEY, true ) );
-		foreach ( $product->get_children() as $id ) {
-			$this->assertEquals( 'yes', get_post_meta( $id, Products::VISIBILITY_META_KEY, true ) );
-		}
 	}
 
 	/**
@@ -4170,7 +4193,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		ob_start();
 		$this->integration->maybe_display_facebook_api_messages();
-		$output = ob_get_clean();
+		ob_get_clean();
 
 		$this->assertEquals( '<div class="notice is-dismissible notice-error"><p><strong>Facebook for WooCommerce error:</strong></br>Api error message.</p></div><div class="notice is-dismissible notice-warning"><p>Api warning message.</p></div><div class="notice is-dismissible notice-success"><p>Api success message.</p></div><div class="notice is-dismissible notice-info"><p>Api info message.</p></div><div class="notice is-dismissible notice-info"><p>Api sticky message.</p></div>', $output );
 
