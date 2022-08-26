@@ -772,13 +772,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
 
-			if ( $product instanceof \WC_Product ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
-			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $_GET['add-to-cart'] );
+			// Bail if the session variable has been set.
+			if ( WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
+				return $redirect;
 			}
 
+			$product_id = 0;
+
+			if ( $product instanceof \WC_Product ) {
+				$product_id = $_POST['variation_id'] ?? $product->get_id();
+			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
+				$product_id = $_GET['add-to-cart'];
+			}
+
+			WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $product_id );
+
 			return $redirect;
+
 		}
 
 
