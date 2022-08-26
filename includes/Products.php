@@ -173,7 +173,7 @@ class Products {
 	/**
 	 * Determines whether the given product should be synced.
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
+	 * @deprecated use \WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
 	 *
 	 * @since 1.10.0
 	 *
@@ -195,7 +195,7 @@ class Products {
 	 *
 	 * If a product is enabled for sync, but belongs to an excluded term, it will return as excluded from sync:
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
+	 * @deprecated use \WooCommerce\Facebook\ProductSync\ProductValidator::validate() instead
 	 *
 	 * @since 2.0.0-dev.1
 	 *
@@ -234,7 +234,7 @@ class Products {
 	 * If the product is not explicitly set to disable sync, it'll be considered enabled.
 	 * This applies to products that may not have the meta value set.
 	 *
-	 * @deprecated use \SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator::passes_product_sync_field_check() instead
+	 * @deprecated use \WooCommerce\Facebook\ProductSync\ProductValidator::passes_product_sync_field_check() instead
 	 *
 	 * @since 1.10.0
 	 *

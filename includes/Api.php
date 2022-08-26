@@ -283,8 +283,8 @@ class Api extends Base {
 	 * @throws ApiException
 	 */
 	public function find_product_item( $catalog_id, $retailer_id ) {
-		$request = new \SkyVerge\WooCommerce\Facebook\Api\Catalog\Product_Item\Find\Request( $catalog_id, $retailer_id );
-		$this->set_response_handler( \SkyVerge\WooCommerce\Facebook\Api\Catalog\Product_Item\Response::class );
+		$request = new \WooCommerce\Facebook\Api\Catalog\Product_Item\Find\Request( $catalog_id, $retailer_id );
+		$this->set_response_handler( \WooCommerce\Facebook\Api\Catalog\Product_Item\Response::class );
 		return $this->perform_request( $request );
 	}
 

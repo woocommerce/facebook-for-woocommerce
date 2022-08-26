@@ -2399,8 +2399,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since 1.10.2
 	 * @return bool
-	 * @throws Framework\SV_WC_API_Exception Some comment.
-	 * @throws Framework\SV_WC_Plugin_Exception If product sync disabled.
+	 * @throws ApiException Some comment.
+	 * @throws PluginException If product sync disabled.
 	 */
 	private function sync_facebook_products_using_background_processor() {
 		if ( ! $this->is_product_sync_enabled() ) {
@@ -3193,7 +3193,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function is_feed_migrated() {
 		if ( ! is_bool( $this->feed_migrated ) ) {
-			$value = get_option( 'wc_facebook_feed_migrated', 'no' );
+			$value               = get_option( 'wc_facebook_feed_migrated', 'no' );
 			$this->feed_migrated = wc_string_to_bool( $value );
 		}
 		return $this->feed_migrated;

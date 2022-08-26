@@ -9,8 +9,8 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Framework\Helper;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -465,7 +465,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 						'contents'      => $contents,
 						'search_string' => get_search_query(),
-						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
+						'value'         => Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					),
 					'user_data'   => $this->pixel->get_user_info(),

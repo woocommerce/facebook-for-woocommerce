@@ -7,9 +7,7 @@ use WC_Facebookcommerce_Integration;
 use WC_Product;
 use WooCommerce\Facebook\Products;
 
-if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) {
-	include_once '../fbutils.php';
-}
+require_once '../fbutils.php';
 
 /**
  * Class ProductValidator
@@ -25,28 +23,28 @@ class ProductValidator {
 	 *
 	 * @var string
 	 */
-	const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
+	public const SYNC_ENABLED_META_KEY = '_wc_facebook_sync_enabled';
 
 	/**
 	 * Maximum length of product description.
 	 *
 	 * @var int
 	 */
-	const MAX_DESCRIPTION_LENGTH = 5000;
+	public const MAX_DESCRIPTION_LENGTH = 5000;
 
 	/**
 	 * Maximum length of product title.
 	 *
 	 * @var int
 	 */
-	const MAX_TITLE_LENGTH = 150;
+	public const MAX_TITLE_LENGTH = 150;
 
 	/**
 	 * Maximum allowed attributes in a variation;
 	 *
 	 * @var int
 	 */
-	const MAX_NUMBER_OF_ATTRIBUTES_IN_VARIATION = 4;
+	public const MAX_NUMBER_OF_ATTRIBUTES_IN_VARIATION = 4;
 
 	/**
 	 * The FB integration instance.
@@ -294,7 +292,7 @@ class ProductValidator {
 		$primary_product = $this->product_parent ? $this->product_parent : $this->product;
 
 		// Variable and simple products are allowed to have no price.
-		if ( in_array( $primary_product->get_type(), array( 'simple', 'variable' ), true ) ) {
+		if ( in_array( $primary_product->get_type(), [ 'simple', 'variable' ], true ) ) {
 			return;
 		}
 
