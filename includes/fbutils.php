@@ -186,25 +186,25 @@ class WC_Facebookcommerce_Utils {
 		return $string;
 	}
 
-	/**
-	 * Returns flat array of woo IDs for variable products, or
-	 * an array with a single woo ID for simple products.
-	 *
-	 * @access public
-	 * @param WC_Product $woo_product
-	 * @return array
-	 */
-	public static function get_product_array( $woo_product ) {
-		$result = [];
-		if ( self::is_variable_type( $woo_product->get_type() ) ) {
-			foreach ( $woo_product->get_children() as $item_id ) {
-				array_push( $result, $item_id );
+		/**
+		 * Returns flat array of woo IDs for variable products, or
+		 * an array with a single woo ID for simple products.
+		 *
+		 * @access public
+		 * @param WC_Facebook_Product $woo_product
+		 * @return array
+		 */
+		public static function get_product_array( WC_Facebook_Product $woo_product ): array {
+			$result = [];
+			if ( self::is_variable_type( $woo_product->get_type() ) ) {
+				foreach ( $woo_product->get_children() as $item_id ) {
+					array_push( $result, $item_id );
+				}
+				return $result;
+			} else {
+				return [ $woo_product->get_id() ];
 			}
-			return $result;
-		} else {
-			return array( $woo_product->get_id() );
 		}
-	}
 
 	/**
 	 * Returns true if WooCommerce plugin found.

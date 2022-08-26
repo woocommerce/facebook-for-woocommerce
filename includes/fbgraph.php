@@ -38,39 +38,36 @@ class WC_Facebookcommerce_Graph_API {
 
 	/**
 	 * Issues a GET request to the Graph API.
+	 * @TODO: could be made private since it not used outside of the class.
 	 *
 	 * @param string $url request URL
 	 * @param string $api_key Graph API key
-	 * @return array|\WP_Error
+	 * @return array|WP_Error
 	 */
 	public function _get( $url, $api_key = '' ) {
-
-		$api_key = $api_key ?: $this->api_key;
-
+		$api_key      = $api_key ?: $this->api_key;
 		$request_args = array(
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $api_key,
 			),
 			'timeout' => self::CURL_TIMEOUT,
 		);
-
 		$response = wp_remote_get( $url, $request_args );
-
 		$this->log_request( $url, $request_args, $response );
-
 		return $response;
 	}
 
 
 	/**
 	 * Performs a Graph API request to the given URL.
+	 * @TODO: can be replaced with _get, _post methods, is not used outside the class.
 	 *
 	 * Throws an exception if a WP_Error is returned or we receive a 401 Not Authorized response status.
 	 *
 	 * @since 1.10.2
 	 *
 	 * @param string $url
-	 * @throws ApiException
+	 * @throws Framework\SV_WC_API_Exception
 	 * @return array
 	 */
 	public function perform_request( $url ) {
@@ -104,7 +101,14 @@ class WC_Facebookcommerce_Graph_API {
 		return $response;
 	}
 
-
+	/**
+	 * @TODO: can be made private, is not used outside the class.
+	 *
+	 * @param $url
+	 * @param $data
+	 * @param $api_key
+	 * @return array|WP_Error
+	 */
 	public function _post( $url, $data, $api_key = '' ) {
 		if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
 			return self::_post_async( $url, $data );
@@ -113,6 +117,14 @@ class WC_Facebookcommerce_Graph_API {
 		}
 	}
 
+	/**
+	 * @TODO: can be removed, not used at all.
+	 *
+	 * @param $url
+	 * @param $data
+	 * @param $api_key
+	 * @return array|WP_Error
+	 */
 	public function _post_sync( $url, $data, $api_key = '' ) {
 		$api_key = $api_key ?: $this->api_key;
 
@@ -134,6 +146,7 @@ class WC_Facebookcommerce_Graph_API {
 
 	/**
 	 * Issues an asynchronous POST request to the Graph API.
+	 * @TODO: can be removed, not used at all.
 	 *
 	 * @param string $url request URL
 	 * @param array  $data request data
@@ -171,6 +184,7 @@ class WC_Facebookcommerce_Graph_API {
 
 	/**
 	 * Issues a DELETE request to the Graph API.
+	 * @TODO: can be made private, not used outside the class.
 	 *
 	 * @param string $url request URL
 	 * @param string $api_key Graph API key
@@ -268,63 +282,13 @@ class WC_Facebookcommerce_Graph_API {
 	}
 
 
-	// GET https://graph.facebook.com/vX.X/{page-id}/?fields=name
-	public function get_page_name( $page_id, $api_key = '' ) {
-		$api_key  = $api_key ?: $this->api_key;
-		$url      = $this->build_url( $page_id, '/?fields=name' );
-		$response = self::_get( $url, $api_key );
-
-		if ( is_wp_error( $response ) ) {
-			WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-			return '';
-		}
-
-		if ( $response['response']['code'] != '200' ) {
-			return '';
-		}
-
-		$response_body = json_decode( wp_remote_retrieve_body( $response ) );
-
-		return isset( $response_body->name ) ? $response_body->name : '';
-	}
-
-
-	/**
-	 * Gets a Facebook Page URL.
-	 *
-	 * Endpoint: https://graph.facebook.com/vX.X/{page-id}/?fields=link
-	 *
-	 * @param string|int $page_id page identifier
-	 * @param string     $api_key API key
-	 * @return string URL
-	 */
-	public function get_page_url( $page_id, $api_key = '' ) {
-
-		$api_key  = $api_key ?: $this->api_key;
-		$request  = $this->build_url( $page_id, '/?fields=link' );
-		$response = $this->_get( $request, $api_key );
-		$page_url = '';
-
-		if ( is_wp_error( $response ) ) {
-
-			\WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-
-		} elseif ( 200 === (int) $response['response']['code'] ) {
-
-			$response_body = wp_remote_retrieve_body( $response );
-			$page_url      = json_decode( $response_body )->link;
-		}
-
-		return $page_url;
-	}
-
-
 	/**
 	 * Determines whether the product catalog ID is valid.
+	 * @TODO: remove it, method is not used anywhere at all.
 	 *
 	 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
 	 *
-	 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
+	 * TODO: deprecate this method in 1.11.0 or newer {WV 2020-03-12}
 	 *
 	 * @param int $product_catalog_id the ID of the product catalog
 	 * @return bool
@@ -359,18 +323,193 @@ class WC_Facebookcommerce_Graph_API {
 		return 200 === (int) wp_remote_retrieve_response_code( $response );
 	}
 
+		/**
+		 * Gets a Catalog name from Facebook.
+		 *
+		 * @param $catalog_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_catalog( $catalog_id ): array {
+			$url      = $this->build_url( $catalog_id, '?fields=name' );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
 
-	// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
-	public function create_product_group( $product_catalog_id, $data ) {
-		$url = $this->build_url( $product_catalog_id, '/product_groups' );
-		return self::_post( $url, $data );
-	}
+		/**
+		 * Gets Facebook user information.
+		 *
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_user(): array {
+			$url      = $this->build_url( 'me' );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
 
-	// POST https://graph.facebook.com/vX.X/{product-group-id}/products
-	public function create_product_item( $product_group_id, $data ) {
-		$url = $this->build_url( $product_group_id, '/products' );
-		return self::_post( $url, $data );
-	}
+		/**
+		 * Used to revoke Facebook user permission.
+		 *
+		 * @param string $user_id Facebook bigint user id
+		 * @param string $permission Facebook permissions
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function revoke_user_permission( string $user_id, string $permission ): array {
+			$url      = $this->build_url( "{$user_id}/permissions/{$permission}" );
+			$response = $this->_delete( $url );
+			return self::process_response_body( $response );
+		}
+
+		/**
+		 * Uses the Catalog Batch API to update or remove items from catalog.
+		 *
+		 * @param string $catalog_id Facebook, possibly bigint, catalog id
+		 * @param array  $requests array of requests to be made to Facebook Catalog batch api
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function send_item_updates( $catalog_id, array $requests ): array {
+			$url    = $this->build_url( "{$catalog_id}/items_batch" );
+			$data   = array(
+				'allow_upsert' => true,
+				'requests'     => json_encode( $requests ),
+				'item_type'    => 'PRODUCT_ITEM',
+			);
+			return self::process_response_body( $this->_post( $url, $data ) );
+		}
+
+		/**
+		 * Sends pixel events to Facebook.
+		 *
+		 * @param string $pixel_id
+		 * @param array $events
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function send_pixel_events( string $pixel_id, array $events ): array {
+
+			$url  = $this->build_url( "{$pixel_id}/events" );
+			$data = array(
+				'data'          => array(),
+				'partner_agent' => Event::get_platform_identifier(),
+			);
+			foreach ( $events as $event ) {
+				if ( ! $event instanceof Event ) {
+					continue;
+				}
+				$event_data = $event->get_data();
+				if ( isset( $event_data['user_data']['click_id'] ) ) {
+					$event_data['user_data']['fbc'] = $event_data['user_data']['click_id'];
+					unset( $event_data['user_data']['click_id'] );
+				}
+				if ( isset( $event_data['user_data']['browser_id'] ) ) {
+					$event_data['user_data']['fbp'] = $event_data['user_data']['browser_id'];
+					unset( $event_data['user_data']['browser_id'] );
+				}
+				$data['data'][] = array_filter( $event_data );
+			}
+
+			/**
+			 * Filters the Pixel event API request data.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param array $data request data
+			 * @param Request $request request object
+			 */
+			$data = apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
+
+			return self::process_response_body( $this->_post( $url, $data ) );
+		}
+
+
+		/**
+		 * Gets the business configuration.
+		 *
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_business_configuration( $external_business_id ): array {
+			$url      = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
+
+
+		/**
+		 * Updates the messenger configuration.
+		 *
+		 * @param $external_business_id
+		 * @param $configuration
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function update_messenger_configuration( $external_business_id, $configuration ): array {
+			$url  = $this->build_url( 'fbe_business', '?fbe_external_business_id=' . $external_business_id );
+			$data = array(
+				'fbe_external_business_id' => $external_business_id,
+				'messenger_chat'           => array(
+					'enabled' => $configuration['enabled'] ?? false,
+					'domains' => $configuration['domains'] ?? array(),
+				),
+			);
+			$response = $this->_post( $url, $data );
+			return self::process_response_body( $response );
+		}
+
+
+		/**
+		 * Fetches Facebook Business Extension object ids.
+		 * 	e.g. business manager id, merchant settings id and others.
+		 *
+		 * @param $external_business_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_installation_ids( $external_business_id ): array {
+			$url      = $this->build_url( 'fbe_business/fbe_installs', '?fbe_external_business_id=' . $external_business_id );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
+
+		/**
+		 * Fetches Facebook Page Access Token.
+		 *
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function retrieve_page_access_token(): array {
+			$url      = $this->build_url( 'me/accounts' );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
+
+		/**
+		 * Create Variable Product.
+		 *
+		 * @param string $facebook_catalog_id - Facebook Catalog ID.
+		 * @param array  $data - Variable Product data.
+		 * @return array|WP_Error
+		 */
+		public function create_product_group( string $facebook_catalog_id, array $data ) {
+			$url = $this->build_url( $facebook_catalog_id, '/product_groups' );
+			return self::_post( $url, $data );
+		}
+
+		/**
+		 * Add Variable Product Item.
+		 *
+		 * @param string $product_group_id - Variable Product ID.
+		 * @param array $data - Variable product item.
+		 * @return array|WP_Error
+		 */
+		public function create_product_item( $product_group_id, $data ) {
+			$url = $this->build_url( $product_group_id, '/products' );
+			return self::_post( $url, $data );
+		}
 
 	public function update_product_group( $product_catalog_id, $data ) {
 		$url = $this->build_url( $product_catalog_id );
@@ -413,6 +552,37 @@ class WC_Facebookcommerce_Graph_API {
 		return self::_delete( $url );
 	}
 
+		/**
+		 * Gets a list of Product Item ids in the given Product Group.
+		 *
+		 * @param string $product_group_id product group ID
+		 * @param int    $limit max number of results returned per page of data
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_product_group_product_ids( $product_group_id, $limit = 1000 ): array {
+			$request  = $this->build_url(
+				"{$product_group_id}/products",
+				"?fields=id,retailer_id&limit={$limit}"
+			);
+			$response = $this->_get( $request );
+			return self::process_response_body( $response );
+		}
+
+		/**
+		 * Retrieves response body and parses it to return array of results.
+		 *
+		 * @param array|WP_Error $response
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		private static function process_response_body( $response ): array {
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_message(), $response->get_error_code() );
+			}
+			$body = wp_remote_retrieve_body( $response );
+			return json_decode( $body, true, 512, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+		}
 
 	public function log( $ems_id, $message, $error ) {
 		$log_url = $this->build_url( $ems_id, '/log_events' );
@@ -468,7 +638,6 @@ class WC_Facebookcommerce_Graph_API {
 
 	public function create_feed( $facebook_catalog_id, $data ) {
 		$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );
-		$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
 		// success API call will return {id: <product feed id>}
 		// failure API will return {error: <error message>}
 		return self::_post( $url, $data );
@@ -484,7 +653,7 @@ class WC_Facebookcommerce_Graph_API {
 	 * @return Array Facebook feeds configurations.
 	 */
 	public function read_feeds( $facebook_catalog_id ) {
-		$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
+		$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );
 		return $this->_get( $url );
 	}
 
@@ -530,25 +699,13 @@ class WC_Facebookcommerce_Graph_API {
 		return $this->_get( $url );
 	}
 
-	/**
-	 * Create product_feeds graph edge url.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @param String $facebook_catalog_id Facebook Catalog Id.
-	 * @return String Graph edge url.
-	 */
-	public function get_feed_endpoint_url( $facebook_catalog_id ) {
-		return $this->build_url( $facebook_catalog_id, '/product_feeds' );
-	}
-
-	public function get_upload_status( $facebook_upload_id ) {
-		$url = $this->build_url( $facebook_upload_id, '/?fields=end_time' );
-		// success API call will return
-		// {id: <upload id>, end_time: <time when upload completes>}
-		// failure API will return {error: <error message>}
-		return self::_get( $url );
-	}
+		public function get_upload_status( $facebook_upload_id ) {
+			$url = $this->build_url( $facebook_upload_id, '/?fields=end_time' );
+			// success API call will return
+			// {id: <upload id>, end_time: <time when upload completes>}
+			// failure API will return {error: <error message>}
+			return self::_get( $url );
+		}
 
 	// success API call will return a JSON of tip info
 	public function get_tip_info( $external_merchant_settings_id ) {
@@ -576,29 +733,33 @@ class WC_Facebookcommerce_Graph_API {
 			return;
 		}
 
-		$response_body = wp_remote_retrieve_body( $response );
-		$connect_woo   =
-		WC_Facebookcommerce_Utils::decode_json( $response_body )->connect_woo;
-		if ( ! isset( $connect_woo ) ) {
-			$data['error_type'] = 'Response body not set';
-			WC_Facebookcommerce_Utils::fblog(
-				'Failed to get AYMT tip info via API.',
-				$data,
-				true
-			);
+			$response_body = wp_remote_retrieve_body( $response );
+			$connect_woo   = WC_Facebookcommerce_Utils::decode_json( $response_body )->connect_woo;
+			if ( ! isset( $connect_woo ) ) {
+				$data['error_type'] = 'Response body not set';
+				WC_Facebookcommerce_Utils::fblog(
+					'Failed to get AYMT tip info via API.',
+					$data,
+					true
+				);
+			}
+			return $connect_woo;
 		}
-		return $connect_woo;
-	}
 
-	public function get_facebook_id( $facebook_catalog_id, $product_id ) {
-		$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
-		base64_encode( $product_id ) . '/?fields=id,product_group{id}';
-		$url   = $this->build_url( '', $param );
-		// success API call will return
-		// {id: <fb product id>, product_group{id} <fb product group id>}
-		// failure API will return {error: <error message>}
-		return self::_get( $url );
-	}
+		/**
+		 * Returns product Facebook id.
+		 *
+		 * @param string $facebook_catalog_id
+		 * @param string $facebook_retailer_id
+		 * @return array
+		 * @throws Exception|JsonException
+		 */
+		public function get_facebook_id( string $facebook_catalog_id, string $facebook_retailer_id ): array {
+			$param    = 'catalog:' . $facebook_catalog_id . ':' . base64_encode( $facebook_retailer_id ) . '/?fields=id,product_group{id}';
+			$url      = $this->build_url( '', $param );
+			$response = $this->_get( $url );
+			return self::process_response_body( $response );
+		}
 
 	public function check_product_info( $facebook_catalog_id, $product_id, $pr_v ) {
 		$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
@@ -657,13 +818,65 @@ class WC_Facebookcommerce_Graph_API {
 		return self::_post( $url, $data );
 	}
 
-	private function build_url( $field_id, $param = '', $api_version = '' ) {
-		$api_url = self::GRAPH_API_URL;
-		if ( ! empty( $api_version ) ) {
-			$api_url = $api_url . $api_version . '/';
-		} else {
-			$api_url = $api_url . self::API_VERSION . '/';
+		private function build_url( $field_id, $param = '', $api_version = '' ) {
+			$api_url = self::GRAPH_API_URL;
+			if ( ! empty( $api_version ) ) {
+				$api_url = $api_url . $api_version . '/';
+			} else {
+				$api_url = $api_url . self::API_VERSION . '/';
+			}
+			return $api_url . (string) $field_id . $param;
 		}
-		return $api_url . (string) $field_id . $param;
+
+		/**
+		 * Used to parse and decorate/transform response data if needed
+		 *
+		 * @param array $response
+		 * @param callable|null $decorator
+		 * @return mixed
+		 */
+		public static function get_data( array $response, callable $decorator = null ) {
+			/* for the requests with paging, response is packed into `data` key, for others - straight in the root */
+			$data = $response['data'] ?? $response;
+			if ( is_callable( $decorator ) ) {
+				$data = call_user_func( $decorator, $data );
+			}
+			return $data;
+		}
+
+		/**
+		 * @param array $response
+		 * @param int $steps_till_stop parameter used to limit paging if any.
+		 * 	e.g.
+		 * 		$response = $this->_get( $url );
+		 *      // ...
+		 * 		$pages    = 2;
+		 * 		while ( $next_url = WC_Facebookcommerce_Graph_API::get_paging_next( $response, $pages-- ) ) {
+		 * 			$response = $this->_get( $next_url );
+		 * 			// do something
+		 * 		}
+		 * @return string next graph api url to make request to
+		 */
+		public static function get_paging_next( array $response, int $steps_till_stop = 1 ) {
+			if ( 0 === $steps_till_stop ) {
+				return '';
+			}
+			return $response['paging']['next'] ?? '';
+		}
+
+		/**
+		 * Gets the next page of results for a paginated response.
+		 *
+		 * @param string $url paging data from previous response.
+		 * @return array
+		 * @throws Exception
+		 */
+		public function next( string $url ): array {
+			try {
+				$response = $this->_get( $url );
+				return self::process_response_body( $response );
+			} catch ( JsonException $e ) {
+				return array();
+			}
+		}
 	}
-}

@@ -120,7 +120,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function init() {
 
-		add_action( 'init', array( $this, 'get_integration' ) );
 		add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
 		add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 		add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
@@ -687,7 +686,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function get_integration() {
 		if ( null === $this->integration ) {
-			$this->integration = new WC_Facebookcommerce_Integration();
+			$this->integration = new WC_Facebookcommerce_Integration( $this );
 		}
 
 		return $this->integration;

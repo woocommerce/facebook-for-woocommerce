@@ -189,20 +189,6 @@ class Api extends Base {
 		throw $exception;
 	}
 
-	/**
-	 * Gets the FBE installation IDs.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $external_business_id external business ID
-	 * @return Api\FBE\Installation\Read\Response
-	 * @throws ApiException
-	 */
-	public function get_installation_ids( $external_business_id ) {
-		$request = new Api\FBE\Installation\Read\Request( $external_business_id );
-		$this->set_response_handler( Api\FBE\Installation\Read\Response::class );
-		return $this->perform_request( $request );
-	}
 
 	/**
 	 * Gets a Page object from Facebook.
@@ -219,106 +205,6 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
-	/**
-	 * Gets a Catalog object from Facebook.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @return Api\Catalog\Response
-	 * @throws ApiException
-	 */
-	public function get_catalog( $catalog_id ) {
-		$request = new Api\Catalog\Request( $catalog_id );
-		$this->set_response_handler( Api\Catalog\Response::class );
-		return $this->perform_request( $request );
-	}
-
-	/**
-	 * Gets a user object from Facebook.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $user_id user ID. Defaults to the currently authenticated user
-	 * @return Api\User\Response
-	 * @throws ApiException
-	 */
-	public function get_user( $user_id = '' ) {
-		$request = new Api\User\Request( $user_id );
-		$this->set_response_handler( Api\User\Response::class );
-		return $this->perform_request( $request );
-	}
-
-	/**
-	 * Delete's a user's API permission.
-	 *
-	 * This is their form of "revoke".
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $user_id user ID. Defaults to the currently authenticated user
-	 * @param string $permission permission to delete
-	 * @return Api\User\Response
-	 * @throws ApiException
-	 */
-	public function delete_user_permission( $user_id, $permission ) {
-		$request = new Api\User\Permissions\Delete\Request( $user_id, $permission );
-		$this->set_response_handler( Api\User\Response::class );
-		return $this->perform_request( $request );
-	}
-
-	/**
-	 * Gets the business configuration.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $external_business_id external business ID
-	 * @return Api\FBE\Configuration\Read\Response
-	 * @throws ApiException
-	 */
-	public function get_business_configuration( $external_business_id ) {
-		$request = new Api\FBE\Configuration\Request( $external_business_id, 'GET' );
-		$this->set_response_handler( Api\FBE\Configuration\Read\Response::class );
-		return $this->perform_request( $request );
-	}
-
-	/**
-	 * Updates the messenger configuration.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string                          $external_business_id external business ID
-	 * @param Api\FBE\Configuration\Messenger $configuration messenger configuration
-	 * @return Response
-	 * @throws ApiException
-	 */
-	public function update_messenger_configuration( $external_business_id, Api\FBE\Configuration\Messenger $configuration ) {
-		$request = new Api\FBE\Configuration\Update\Request( $external_business_id );
-		$request->set_messenger_configuration( $configuration );
-		$this->set_response_handler( Api\Response::class );
-		return $this->perform_request( $request );
-	}
-
-	/**
-	 * Uses the Catalog Batch API to update or remove items from catalog.
-	 *
-	 * @see Sync::create_or_update_products()
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @param array  $requests array of prefixed product IDs to create, update or remove
-	 * @param bool   $allow_upsert whether to allow updates to insert new items
-	 * @return Api\Catalog\Send_Item_Updates\Response
-	 * @throws ApiException
-	 */
-	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
-		$request = new Api\Catalog\Send_Item_Updates\Request( $catalog_id );
-		$request->set_requests( $requests );
-		$request->set_allow_upsert( $allow_upsert );
-		$this->set_response_handler( Api\Catalog\Send_Item_Updates\Response::class );
-		return $this->perform_request( $request );
-	}
 
 	/**
 	 * Creates a Product Group object.
@@ -384,21 +270,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
-	/**
-	 * Gets a list of Product Items in the given Product Group.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id product group ID
-	 * @param int    $limit max number of results returned per page of data
-	 * @return Api\Catalog\Product_Group\Products\Read\Response
-	 * @throws ApiException
-	 */
-	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
-		$request = new Api\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
-		$this->set_response_handler( Api\Catalog\Product_Group\Products\Read\Response::class );
-		return $this->perform_request( $request );
-	}
+
 
 	/**
 	 * Finds a Product Item using the Catalog ID and the Retailer ID of the product or product variation.
@@ -476,22 +348,7 @@ class Api extends Base {
 				'method' => 'DELETE',
 			)
 		);
-		$this->set_response_handler( Response::class );
-		return $this->perform_request( $request );
-	}
 
-	/**
-	 * Sends Pixel events.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string  $pixel_id pixel ID
-	 * @param Event[] $events events to send
-	 * @return Response
-	 * @throws ApiException
-	 */
-	public function send_pixel_events( $pixel_id, array $events ) {
-		$request = new Api\Pixel\Events\Request( $pixel_id, $events );
 		$this->set_response_handler( Response::class );
 		return $this->perform_request( $request );
 	}

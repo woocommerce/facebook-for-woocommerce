@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards for Plugins">
+	<description>Generally-applicable sniffs for WordPress plugins</description>
+
+	<!-- Set the minimum WP version -->
+	<config name="minimum_supported_wp_version" value="5.3"/>
+
+	<rule ref="WordPress">
+		<!-- We don't require conforming to WP file naming -->
+		<exclude name="WordPress.Files.FileName"/>
+
+		<!-- These comments are unnecessary -->
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<exclude name="Squiz.Commenting.FileComment"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<exclude name="Squiz.Commenting.LongConditionClosingComment"/>
+
+		<!-- No thanks -->
+		<exclude name="WordPress.PHP.DisallowShortTernary"/>
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+
+		<!-- These overrides are useful for code hinting -->
+		<exclude name="Generic.CodeAnalysis.UselessOverridingMethod.Found"/>
+
+		<!-- We do direct DB queries for our custom tables, and we have custom caching. -->
+		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+
+		<!-- We like short array syntax -->
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+
+		<!-- Multiple throws tags are fine -->
+		<exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
+	</rule>
+
+	<!-- Include some other sniffs we want to enforce. -->
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+	<rule ref="Generic.VersionControl.GitMergeConflict"/>
+	<rule ref="Generic.WhiteSpace.SpreadOperatorSpacingAfter"/>
+	<rule ref="PSR12.Classes.AnonClassDeclaration"/>
+	<rule ref="PSR12.Functions.NullableTypeDeclaration"/>
+	<rule ref="PSR12.Functions.ReturnTypeDeclaration"/>
+	<rule ref="PSR12.Properties.ConstantVisibility"/>
+	<rule ref="Squiz.Classes">
+		<exclude name="Squiz.Classes.ClassDeclaration.OpenBraceNewLine"/>
+		<exclude name="Squiz.Classes.ClassDeclaration.CloseBraceSameLine"/>
+	</rule>
+	<rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace"/>
+
+	<!-- Set the appropriate text domain. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array" value="facebook-for-woocommerce"/>
+		</properties>
+	</rule>
+
+	<!-- This rule flags space indents in HTML tags, which are generally OK. -->
+	<rule ref="WordPress.WhiteSpace.PrecisionAlignment">
+		<exclude name="WordPress.WhiteSpace.PrecisionAlignment.Found"/>
+	</rule>
+
+	<!-- We allow the use of / in hooks -->
+	<rule ref="WordPress.NamingConventions.ValidHookName">
+		<properties>
+			<property name="additionalWordDelimiters" value="/"/>
+		</properties>
+	</rule>
+
+	<!-- We don't use these functions for purposes of obfuscation -->
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<properties>
+			<property name="exclude" type="array">
+				<element value="obfuscation"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- We'd rather use native functions -->
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<properties>
+			<property name="exclude" type="array">
+				<element value="json_encode"/>
+				<element value="rand"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- We're judicious in our usage of meta queries -->
+	<rule ref="WordPress.DB.SlowDBQuery">
+		<properties>
+			<property name="exclude" type="array">
+				<element value="slow_db_query"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- We utilize views, and almost never work on global scope -->
+	<!-- See: https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties#global-wp-variable-override-check-in-the-global-namespace -->
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<properties>
+			<property name="treat_files_as_scoped" value="true"/>
+		</properties>
+	</rule>
+
+	<!-- Check the main PHP file and everything in /includes -->
+	<arg name="extensions" value="php"/>
+	<file>./includes</file>
+	<file>./tests/Unit</file>
+	<file>./class-wc-facebookcommerce.php</file>
+	<file>./facebook-commerce.php</file>
+	<file>./facebook-commerce-events-tracker.php</file>
+	<file>./facebook-commerce-messenger-chat.php</file>
+	<file>./facebook-commerce-pixel-event.php</file>
+	<file>./facebook-config-warmer.php</file>
+	<file>./facebook-for-woocommerce.php</file>
+
+	<!-- Show progress and sniff codes in all reports -->
+	<arg value="ps"/>
+
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>./tests/_*</exclude-pattern>
+	<exclude-pattern>./tests/acceptance</exclude-pattern>
+	<exclude-pattern>./tests/integration</exclude-pattern>
+	<exclude-pattern>./js/*</exclude-pattern>
+</ruleset>

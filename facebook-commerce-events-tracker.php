@@ -606,7 +606,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'user_data'   => $this->pixel->get_user_info(),
 			);
 
-			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new Event( $event_data );
 
 			$this->send_api_event( $event );
 
@@ -772,13 +772,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
 
-			if ( $product instanceof \WC_Product ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
-			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $_GET['add-to-cart'] );
+			// Bail if the session variable has been set.
+			if ( WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
+				return $redirect;
 			}
 
+			$product_id = 0;
+
+			if ( $product instanceof \WC_Product ) {
+				$product_id = $_POST['variation_id'] ?? $product->get_id();
+			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
+				$product_id = $_GET['add-to-cart'];
+			}
+
+			WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $product_id );
+
 			return $redirect;
+
 		}
 
 
@@ -1080,23 +1090,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @param Event $event event object
 		 * @return bool
 		 */
-		protected function send_api_event( Event $event ) {
+		protected function send_api_event( Event $event ): bool {
 			$this->tracked_events[] = $event;
-
-			try {
-
-				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
-
-				$success = true;
-
-			} catch ( Framework\SV_WC_API_Exception $exception ) {
-
-				$success = false;
-
-				facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
-			}
-
-			return $success;
+			return facebook_for_woocommerce()->get_integration()->send_pixel_events(
+				facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(),
+				array( $event )
+			);
 		}
 
 

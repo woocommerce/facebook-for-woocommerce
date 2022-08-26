@@ -245,7 +245,7 @@ class Admin {
 	/**
 	 * Determines whether the current product is published.
 	 *
-	 * @since 2.6.15
+	 * @since x.x.x
 	 *
 	 * @return bool
 	 */

@@ -30,8 +30,18 @@ class Messenger extends Abstract_Settings_Screen {
 	const ID = 'messenger';
 
 
-	/** @var null|Configuration\Messenger */
-	private $remote_configuration;
+	/**
+	 * Facebook messenger data.
+	 * e.g.
+	 * 		array(
+	 * 		'enabled'        => true,
+	 * 			'default_locale' => 'en_US',
+	 * 			'domains'        => array( 'https://internet.com' ),
+	 * 		)
+	 *
+	 * @var null|array
+	 */
+	private $messenger_configuration;
 
 
 	/**
@@ -69,10 +79,12 @@ class Messenger extends Abstract_Settings_Screen {
 	 * @param array $field field data
 	 */
 	public function render_locale_field( $field ) {
-		if ( ! $this->remote_configuration ) {
+
+		if ( ! $this->messenger_configuration ) {
 			return;
 		}
-		$configured_locale = $this->remote_configuration->get_default_locale();
+
+		$configured_locale = $this->messenger_configuration['default_locale'] ?? '';
 		$supported_locales = Locale::get_supported_locales();
 		if ( ! empty( $supported_locales[ $configured_locale ] ) ) {
 			$configured_locale = $supported_locales[ $configured_locale ];
@@ -132,7 +144,9 @@ class Messenger extends Abstract_Settings_Screen {
 	 * @return array
 	 */
 	public function get_settings() {
-		$is_enabled = $this->remote_configuration && $this->remote_configuration->is_enabled();
+
+		$is_enabled = $this->messenger_configuration['enabled'] ?? false;
+
 		$settings = array(
 			array(
 				'title' => __( 'Messenger', 'facebook-for-woocommerce' ),
@@ -193,21 +207,17 @@ class Messenger extends Abstract_Settings_Screen {
 			parent::render();
 			return;
 		}
-		$plugin = facebook_for_woocommerce();
-		try {
-			$response = $plugin->get_api()->get_business_configuration( $plugin->get_connection_handler()->get_external_business_id() );
-			$configuration = $response->get_messenger_configuration();
-			if ( ! $configuration ) {
-				throw new ApiException( 'Could not retrieve latest messenger configuration' );
-			}
-			update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $configuration->is_enabled() ) );
-			if ( $default_locale = $configuration->get_default_locale() ) {
-				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, $default_locale );
+		$external_business_id = facebook_for_woocommerce()->get_connection_handler()->get_external_business_id();
+		$configuration        = facebook_for_woocommerce()->get_integration()->get_messenger_configuration( $external_business_id );
+		if ( $configuration ) {
+			update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $configuration['enabled'] ) );
+			if ( $default_locale = $configuration['default_locale'] ) {
+				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
 			}
 			// set the remote configuration so other methods can use its values
-			$this->remote_configuration = $configuration;
+			$this->messenger_configuration = $configuration;
 			parent::render();
-		} catch ( ApiException $exception ) {
+		} else {
 			?>
 			<div class="notice notice-error">
 				<p>
@@ -215,7 +225,7 @@ class Messenger extends Abstract_Settings_Screen {
 					printf(
 					/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 						esc_html__( 'There was an error communicating with the Facebook Business Extension. %1$sClick here%2$s to manage your Messenger settings.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( $plugin->get_connection_handler()->get_manage_url() ) . '" target="_blank">',
+						'<a href="' . esc_url( facebook_for_woocommerce()->get_connection_handler()->get_manage_url() ) . '" target="_blank">',
 						'</a>'
 					);
 					?>
@@ -223,7 +233,7 @@ class Messenger extends Abstract_Settings_Screen {
 			</div>
 			<?php
 			// always log this error, regardless of debug setting
-			$plugin->log( 'Could not display messenger settings. ' . $exception->getMessage() );
+			facebook_for_woocommerce()->log( 'Could not display messenger settings. Could not retrieve latest messenger configuration.' );
 		}
 	}
 
@@ -238,38 +248,34 @@ class Messenger extends Abstract_Settings_Screen {
 	 * @throws PluginException
 	 */
 	public function save() {
-		$plugin               = facebook_for_woocommerce();
-		$external_business_id = $plugin->get_connection_handler()->get_external_business_id();
-		try {
-			// first get the latest configuration details
-			$response = $plugin->get_api()->get_business_configuration( $external_business_id );
-			$configuration = $response->get_messenger_configuration();
-			if ( ! $configuration ) {
-				throw new ApiException( 'Could not retrieve latest messenger configuration' );
-			}
+		// first get the latest configuration details
+		$external_business_id = facebook_for_woocommerce()->get_connection_handler()->get_external_business_id();
+		$configuration        = facebook_for_woocommerce()->get_integration()->get_messenger_configuration( $external_business_id );
+		if ( $configuration ) {
 			$update          = false;
-			$setting_enabled = wc_string_to_bool( Helper::get_posted_value( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER ) );
+			$setting_enabled = wc_string_to_bool( Framework\SV_WC_Helper::get_posted_value( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER ) );
 			// only consider updating if the setting has changed
-			if ( $setting_enabled !== $configuration->is_enabled() ) {
-				$update = true;
+			if ( $setting_enabled !== $configuration['enabled'] ) {
+				$update                   = true;
+				$configuration['enabled'] = $setting_enabled;
 			}
 			// also consider updating if the site's URL was removed from approved URLs
-			if ( ! in_array( home_url( '/' ), $configuration->get_domains(), true ) ) {
-				$update = true;
+			if ( ! in_array( home_url( '/' ), $configuration['domains'], true ) ) {
+				$update                     = true;
+				$configuration['domains'][] = home_url( '/' );
+				$configuration['domains']   = array_unique( array_filter( $configuration['domains'], 'wc_is_valid_url' ) );
 			}
 			// make the API call if settings have changed
 			if ( $update ) {
-				$configuration->set_enabled( $setting_enabled );
-				$configuration->add_domain( home_url( '/' ) );
-				$plugin->get_api()->update_messenger_configuration( $external_business_id, $configuration );
+				facebook_for_woocommerce()->get_integration()->update_messenger_configuration( $external_business_id, $configuration );
 				delete_transient( 'wc_facebook_business_configuration_refresh' );
 			}
 			// save any real settings
 			parent::save();
-		} catch ( ApiException $exception ) {
+		} else {
 			// always log this error, regardless of debug setting
-			$plugin->log( 'Could not update remote messenger settings. ' . $exception->getMessage() );
-			throw new PluginException( __( 'Please try again.', 'facebook-for-woocommerce' ) );
+			facebook_for_woocommerce()->log( 'Could not update remote messenger settings. Could not retrieve latest messenger configuration.' );
+			throw new Framework\SV_WC_Plugin_Exception( __( 'Please try again.', 'facebook-for-woocommerce' ) );
 		}
 	}
 }

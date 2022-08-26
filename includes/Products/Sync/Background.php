@@ -146,21 +146,9 @@ class Background extends BackgroundJobHandler {
 
 		// send item updates to Facebook and update the job with the returned array of batch handles
 		if ( ! empty( $requests ) ) {
-
-			try {
-
-				$handles = $this->send_item_updates( $requests );
-
-				$job->handles = ! isset( $job->handles ) || ! is_array( $job->handles ) ? $handles : array_merge( $job->handles, $handles );
-
-				$job = $this->update_job( $job );
-
-			} catch ( ApiException $e ) {
-
-				$message = sprintf( __( 'There was an error trying sync products using the Catalog Batch API for job %1$s: %2$s' ), $job->id, $e->getMessage() );
-
-				facebook_for_woocommerce()->log( $message );
-			}
+			$handles      = $this->send_item_updates( $requests );
+			$job->handles = ! isset( $job->handles ) || ! is_array( $job->handles ) ? $handles : array_merge( $job->handles, $handles );
+			$this->update_job( $job );
 		}
 	}
 
@@ -378,20 +366,16 @@ class Background extends BackgroundJobHandler {
 
 
 	/**
-	 * Sends item updates to Facebook.
+	 * Sends upsert item updates to Facebook.
 	 *
 	 * @since 2.0.0
 	 *
 	 * @param array $requests sync requests
 	 * @return array
-	 * @throws ApiException
 	 */
 	private function send_item_updates( array $requests ) {
-
 		$catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
-		$response   = facebook_for_woocommerce()->get_api()->send_item_updates( $catalog_id, $requests, true );
-
-		return $response->get_handles();
+		return facebook_for_woocommerce()->get_integration()->send_item_updates( $catalog_id, $requests );
 	}
 
 

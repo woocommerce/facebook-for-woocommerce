@@ -138,38 +138,30 @@ class Connection {
 		if ( ! $this->is_connected() ) {
 			return;
 		}
-
-		try {
-
-			$response = $this->get_plugin()->get_api()->get_business_configuration( $this->get_external_business_id() );
-			facebook_for_woocommerce()->get_tracker()->track_facebook_business_config(
-				$response->is_ig_shopping_enabled(),
-				$response->is_ig_cta_enabled()
-			);
-
-			// update the messenger settings
-			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
-
-				// store the local "enabled" setting
-				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
-
-				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
-					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
-				}
-
-				// if the site's domain is somehow missing from the allowed domains, re-add it
-				if ( $messenger_configuration->is_enabled() && ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
-
-					$messenger_configuration->add_domain( home_url( '/' ) );
-
-					$this->get_plugin()->get_api()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
-				}
+		$response = facebook_for_woocommerce()->get_integration()->get_business_configuration( $this->get_external_business_id() );
+		facebook_for_woocommerce()->get_tracker()->track_facebook_business_config(
+			$response['ig_shopping']['enabled'] ?? false,
+			$response['ig_cta']['enabled'] ?? false
+		);
+		// update the messenger settings
+		$messenger_configuration = $response['messenger_chat'] ?? [];
+		if ( $messenger_configuration ) {
+			$enabled = $messenger_configuration['enabled'] ?? false;
+			// store the local "enabled" setting
+			update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $enabled ) );
+			$default_locale = $messenger_configuration['default_locale'] ?? '';
+			if ( $default_locale ) {
+				update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
 			}
-		} catch ( ApiException $exception ) {
-
-			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
+			// if the site's domain is somehow missing from the allowed domains, re-add it
+			$domains = $messenger_configuration['domains'] ?? [];
+			if ( $enabled && ! in_array( home_url( '/' ), $domains, true ) ) {
+				$domains[]                          = home_url( '/' );
+				$messenger_configuration['domains'] = $domains;
+				facebook_for_woocommerce()->get_integration()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
+			}
 		}
-
+		set_transient( 'wc_facebook_business_configuration_refresh', time(), HOUR_IN_SECONDS );
 	}
 
 
@@ -179,21 +171,16 @@ class Connection {
 	 * @since 2.0.0
 	 */
 	public function refresh_installation_data() {
-
 		// bail if not connected
 		if ( ! $this->is_connected() ) {
 			return;
 		}
-
-		try {
-
-			$this->update_installation_data();
-
-		} catch ( ApiException $exception ) {
-
-			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
+		// only refresh once a day
+		if ( get_transient( 'wc_facebook_connection_refresh' ) ) {
+			return;
 		}
-
+		$this->update_installation_data();
+		set_transient( 'wc_facebook_connection_refresh', time(), DAY_IN_SECONDS );
 	}
 
 
@@ -206,43 +193,33 @@ class Connection {
 	 */
 	private function update_installation_data() {
 
-		$response = $this->get_plugin()->get_api()->get_installation_ids( $this->get_external_business_id() );
+		$response = facebook_for_woocommerce()->get_integration()->get_installation_ids( $this->get_external_business_id() );
 
-		$page_id = sanitize_text_field( $response->get_page_id() );
+		$response = current( $response );
+		$page_id                       = sanitize_text_field( $response['pages'][0] ?? '' );
+		$pixel_id                      = sanitize_text_field( $response['pixel_id'] ?? '' );
+		$catalog_id                    = sanitize_text_field( $response['catalog_id'] ?? '' );
+		$business_manager_id           = sanitize_text_field( $response['business_manager_id'] ?? '' );
+		$ad_account_id                 = sanitize_text_field( $response['ad_account_id'] ?? '' );
+		$instagram_business_id         = sanitize_text_field( $response['instagram_business_id'] ?? '' );
+		$commerce_merchant_settings_id = sanitize_text_field( $response['commerce_merchant_settings_id'] ?? '' );
 
 		if ( $page_id ) {
-
 			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, $page_id );
-
 			// get and store a current access token for the configured page
-			$page_access_token = $this->retrieve_page_access_token( $page_id );
-
-			$this->update_page_access_token( $page_access_token );
+			$page_access_token = facebook_for_woocommerce()->get_integration()->retrieve_page_access_token( $page_id );
+			$page_access_token && $this->update_page_access_token( $page_access_token );
 		}
 
-		if ( $response->get_pixel_id() ) {
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $response->get_pixel_id() ) );
-		}
+		$pixel_id
+		&& update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, $pixel_id );
+		$catalog_id
+		&& update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, $catalog_id );
 
-		if ( $response->get_catalog_id() ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $response->get_catalog_id() ) );
-		}
-
-		if ( $response->get_business_manager_id() ) {
-			$this->update_business_manager_id( sanitize_text_field( $response->get_business_manager_id() ) );
-		}
-
-		if ( $response->get_ad_account_id() ) {
-			$this->update_ad_account_id( sanitize_text_field( $response->get_ad_account_id() ) );
-		}
-
-		if ( $response->get_instagram_business_id() ) {
-			$this->update_instagram_business_id( sanitize_text_field( $response->get_instagram_business_id() ) );
-		}
-
-		if ( $response->get_commerce_merchant_settings_id() ) {
-			$this->update_commerce_merchant_settings_id( sanitize_text_field( $response->get_commerce_merchant_settings_id() ) );
-		}
+		$business_manager_id           && $this->update_business_manager_id( $business_manager_id );
+		$ad_account_id                 && $this->update_ad_account_id( $ad_account_id );
+		$instagram_business_id         && $this->update_instagram_business_id( $instagram_business_id );
+		$commerce_merchant_settings_id && $this->update_commerce_merchant_settings_id( $commerce_merchant_settings_id );
 	}
 
 
@@ -346,14 +323,16 @@ class Connection {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
 		}
-		try {
-			$response = facebook_for_woocommerce()->get_api()->get_user();
-			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
-			$this->disconnect();
+
+		$id     = facebook_for_woocommerce()->get_integration()->get_user_id();
+		$result = facebook_for_woocommerce()->get_integration()->revoke_user_permission( $id, 'manage_business_extension' );
+
+		$this->disconnect();
+
+		if ( $result ) {
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
-		} catch ( ApiException $exception ) {
-			facebook_for_woocommerce()->log( sprintf( 'An error occurred during disconnection: %s. Your Facebook connection settings have been reset.', $exception->getMessage() ) );
-			$this->disconnect();
+		} else {
+			facebook_for_woocommerce()->log( 'Disconnection failed.' );
 		}
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
 		exit;
@@ -379,46 +358,6 @@ class Connection {
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
-	}
-
-
-	/**
-	 * Retrieves the configured page access token remotely.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $page_id desired Facebook page ID
-	 * @return string
-	 * @throws ApiException
-	 */
-	private function retrieve_page_access_token( $page_id ) {
-		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-		$api_url = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
-		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
-		$body = wp_remote_retrieve_body( $response );
-		$body = json_decode( $body, true );
-		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-			facebook_for_woocommerce()->log( print_r( $body, true ) );
-			throw new ApiException(
-				sprintf(
-				/* translators: Placeholders: %s - API error message */
-					__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
-					wp_remote_retrieve_response_message( $response )
-				)
-			);
-		}
-		$page_access_tokens = wp_list_pluck( $body['data'], 'access_token', 'id' );
-		// bail if the user isn't authorized to manage the page
-		if ( empty( $page_access_tokens[ $page_id ] ) ) {
-			throw new ApiException(
-				sprintf(
-				/* translators: Placeholders: %s - Facebook page ID */
-					__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
-					$page_id
-				)
-			);
-		}
-		return $page_access_tokens[ $page_id ];
 	}
 
 
@@ -611,7 +550,7 @@ class Connection {
 	 *
 	 * @return string
 	 */
-	public function get_external_business_id() {
+	public function get_external_business_id(): string {
 		if ( ! is_string( $this->external_business_id ) ) {
 			$external_id = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
 			if ( ! is_string( $external_id ) || empty( $external_id ) ) {
@@ -634,7 +573,6 @@ class Connection {
 			}
 			$this->external_business_id = $external_id;
 		}
-
 		/**
 		 * Filters the external business ID.
 		 *
@@ -883,7 +821,7 @@ class Connection {
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 				'domain'               => home_url(),
-				'channel'              => 'COMMERCE_OFFSITE',
+				'channel'              => 'DEFAULT',
 			),
 			'business_config' => array(
 				'business' => array(
@@ -1030,7 +968,7 @@ class Connection {
 	 * @param string $value the access token
 	 */
 	public function update_page_access_token( $value ) {
-		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
+		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? sanitize_text_field( $value ) : '' );
 	}
 
 	/**
@@ -1223,7 +1161,7 @@ class Connection {
 				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $page_id ) );
 				$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = sanitize_text_field( $page_id );
 				// get and store a current access token for the configured page
-				$page_access_token = $this->retrieve_page_access_token( $page_id );
+				$page_access_token = facebook_for_woocommerce()->get_integration()->retrieve_page_access_token( $page_id );
 				$this->update_page_access_token( $page_access_token );
 				$log_data[ self::OPTION_PAGE_ACCESS_TOKEN ] = sanitize_text_field( $page_access_token );
 			} catch ( \Exception $e ) {
