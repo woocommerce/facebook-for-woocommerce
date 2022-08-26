@@ -101,6 +101,12 @@ class Products {
 					$product->update_meta_data( self::SYNC_ENABLED_META_KEY, $enabled );
 					$product->save_meta_data();
 				}
+
+				// Remove excluded product from FB.
+				if ( "no" === $enabled && self::product_should_be_deleted( $product ) ) {
+					facebook_for_woocommerce()->get_integration()->delete_fb_product( $product );
+				}
+
 			}//end if
 		}//end foreach
 	}
@@ -238,7 +244,7 @@ class Products {
 	 */
 	public static function product_should_be_deleted( \WC_Product $product ) {
 
-		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock();
+		return 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! $product->is_in_stock() || ! facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_product_terms_check();;
 	}
 
 
