@@ -110,7 +110,7 @@ class Sync {
 	public function delete_products( array $retailer_ids ) {
 
 		foreach ( $retailer_ids as $retailer_id ) {
-			$this->requests[ $retailer_id ] = self::ACTION_DELETE;
+			$this->requests[ $this->get_product_index( $retailer_id ) ] = self::ACTION_DELETE;
 		}
 	}
 
