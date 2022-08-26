@@ -5,10 +5,6 @@
   "license": "GPL-2.0+",
   "repositories": [
     {
-      "type": "git",
-      "url": "git@github.com:facebookincubator/facebook-for-woocommerce.git"
-    },
-    {
       "type": "vcs",
       "url": "https://github.com/woocommerce/action-scheduler-job-framework"
     }
