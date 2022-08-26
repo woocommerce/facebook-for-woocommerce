@@ -1031,7 +1031,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param \WC_Product $product WooCommerce product object
 	 */
-	private function delete_fb_product( $product ) {
+	public function delete_fb_product( $product ) {
 
 		$product_id = $product->get_id();
 
