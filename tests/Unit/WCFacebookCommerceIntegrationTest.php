@@ -4192,7 +4192,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		ob_start();
 		$this->integration->maybe_display_facebook_api_messages();
-		ob_get_clean();
+		$output = ob_get_clean();
 
 		$this->assertEquals( '<div class="notice is-dismissible notice-error"><p><strong>Facebook for WooCommerce error:</strong></br>Api error message.</p></div><div class="notice is-dismissible notice-warning"><p>Api warning message.</p></div><div class="notice is-dismissible notice-success"><p>Api success message.</p></div><div class="notice is-dismissible notice-info"><p>Api info message.</p></div><div class="notice is-dismissible notice-info"><p>Api sticky message.</p></div>', $output );
 
