@@ -7,7 +7,7 @@ use WC_Facebookcommerce_Integration;
 use WC_Product;
 use WooCommerce\Facebook\Products;
 
-require_once '../fbutils.php';
+require_once __DIR__ . '/../fbutils.php';
 
 /**
  * Class ProductValidator
