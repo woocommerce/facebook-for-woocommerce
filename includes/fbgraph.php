@@ -11,6 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use WooCommerce\Facebook\Events\Event;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
 require_once 'fbasync.php';
@@ -67,7 +68,7 @@ class WC_Facebookcommerce_Graph_API {
 	 * @since 1.10.2
 	 *
 	 * @param string $url
-	 * @throws Framework\SV_WC_API_Exception
+	 * @throws ApiException
 	 * @return array
 	 */
 	public function perform_request( $url ) {
@@ -417,7 +418,6 @@ class WC_Facebookcommerce_Graph_API {
 			 * @since 2.0.0
 			 *
 			 * @param array $data request data
-			 * @param Request $request request object
 			 */
 			$data = apply_filters( 'wc_facebook_api_pixel_event_request_data', $data, $this );
 

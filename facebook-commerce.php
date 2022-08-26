@@ -588,11 +588,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param WC_Product $product product
-	 * @param string     $product_group_id product group ID
+	 * @param WC_Facebook_Product|WC_Product $product product
+	 * @param string                         $product_group_id product group ID
 	 * @return array
 	 */
-	public function get_variation_product_item_ids( WC_Product $product, string $product_group_id ): array {
+	public function get_variation_product_item_ids( $product, string $product_group_id ): array {
 		$ids_by_variation_id = [];
 		$missing_ids         = [];
 		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored

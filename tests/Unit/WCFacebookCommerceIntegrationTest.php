@@ -4,13 +4,13 @@ declare( strict_types=1 );
 require_once __DIR__ . '/../../facebook-commerce.php';
 
 use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
-use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\Facebook\Admin\Products as AdminProducts;
-use SkyVerge\WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
-use SkyVerge\WooCommerce\Facebook\Handlers\Connection;
-use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WP_Admin_Message_Handler;
+use WooCommerce\Facebook\Admin;
+use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
+use WooCommerce\Facebook\Admin\Products as AdminProducts;
+use WooCommerce\Facebook\Framework\AdminMessageHandler;
+use WooCommerce\Facebook\Handlers\Connection;
+use WooCommerce\Facebook\Products;
+use WooCommerce\Facebook\ProductSync\ProductValidator;
 
 /**
  * Unit tests for Facebook Graph API calls.
@@ -4218,7 +4218,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_admin_options() {
-		$message_handler = $this->createMock( SV_WP_Admin_Message_Handler::class );
+		$message_handler = $this->createMock( AdminMessageHandler::class );
 		$message_handler->expects( $this->once() )
 			->method( 'show_messages' );
 

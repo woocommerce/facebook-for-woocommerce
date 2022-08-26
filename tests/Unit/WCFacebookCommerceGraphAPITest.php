@@ -3,7 +3,8 @@ declare( strict_types=1 );
 
 require_once __DIR__ . '/../../includes/fbgraph.php';
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
+use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
 /**
  * Unit tests for Facebook Graph API calls.
@@ -26,7 +27,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Test Authorisation header added with a proper key set into.
 	 *
 	 * @return void
-	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 * @throws ApiException Throws exception in case of connection error.
 	 */
 	public function test_api_has_authorisation_header_with_proper_api_key() {
 		$api      = new WC_Facebookcommerce_Graph_API( 'test-api-key-09869asfdasf56' );
@@ -106,12 +107,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Tests if product catalog valid api return true in case it gets a successful response from Facebook.
 	 *
 	 * @return void
-	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 * @throws ApiException Throws exception in case of connection error.
 	 */
 	public function test_is_product_catalog_valid_returns_true() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/product-catalog-id-654129', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/product-catalog-id-654129', $url );
 			return [
 				'response' => [
 					'code' => 200,
@@ -129,12 +130,12 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Tests if product catalog valid api return false in case it gets a failed response from Facebook.
 	 *
 	 * @return void
-	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 * @throws ApiException Throws exception in case of connection error.
 	 */
 	public function test_is_product_catalog_valid_returns_false() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/product-catalog-id-654129', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/product-catalog-id-654129', $url );
 			return [
 				'response' => [
 					'code' => 400,
@@ -152,16 +153,16 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	 * Test if the method throws an exception in case of connection error.
 	 *
 	 * @return void
-	 * @throws SV_WC_API_Exception Throws exception in case of connection error.
+	 * @throws ApiException Throws exception in case of connection error.
 	 */
 	public function test_is_product_catalog_valid_throws_an_error() {
-		$this->expectException( SV_WC_API_Exception::class );
+		$this->expectException( ApiException::class );
 		$this->expectExceptionCode( 007 );
 		$this->expectExceptionMessage( 'message' );
 
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/product-catalog-id-2174129410', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/product-catalog-id-2174129410', $url );
 			return new WP_Error( 007, 'message' );
 		};
 		add_filter( 'pre_http_request', $response, 10, 3 );
@@ -178,7 +179,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_catalog_returns_catalog_id_and_name() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/2536275516506259?fields=name', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/2536275516506259?fields=name', $url );
 			return [
 				'body'     => '{"name":"Facebook for WooCommerce 2 - Catalog","id":"2536275516506259"}',
 				'response' => [
@@ -207,7 +208,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_user_must_return_facebook_user_id() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/me', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/me', $url );
 			return [
 				'body'     => '{"id":"2525362755165069"}',
 				'response' => [
@@ -233,7 +234,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_revoke_user_permission_must_result_success() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'DELETE', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/2525362755165069/permissions/manage_business_extension', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/2525362755165069/permissions/manage_business_extension', $url );
 			return [
 				'body'     => '{"success":true}',
 				'response' => [
@@ -308,7 +309,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 		$response = function( $result, $parsed_args, $url ) use ( $items ) {
 			$this->assertEquals( 'POST', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/2536275516506259/items_batch', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/2536275516506259/items_batch', $url );
 			$body = [
 				'allow_upsert' => true,
 				'requests'     => json_encode( $items ),
@@ -369,11 +370,11 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 			],
 		];
 
-		$events = [ new \SkyVerge\WooCommerce\Facebook\Events\Event( $data ) ];
+		$events = [ new Event( $data ) ];
 
 		$response = function( $result, $parsed_args, $url ) use ( $events ) {
 			$this->assertEquals( 'POST', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/1964583793745557/events', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/1964583793745557/events', $url );
 
 			$body = [
 				'data'          => array_map(
@@ -425,7 +426,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 			],
 		];
 
-		$events = [ new \SkyVerge\WooCommerce\Facebook\Events\Event( $data ) ];
+		$events = [ new Event( $data ) ];
 
 		$filter = function( $data ) {
 			$data['data'][0]['action_source']        = 'universe';
@@ -463,7 +464,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_business_configuration_returns_data() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business?fbe_external_business_id=wordpress-facebook-627c01b68bc60', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/fbe_business?fbe_external_business_id=wordpress-facebook-627c01b68bc60', $url );
 			return [
 				'body'     => '{"business":{"name":"WordPress-Facebook"},"catalogs":[{"feature_instance_id":"392979412771234","enabled":true}],"catalog_feed_scheduled":{"enabled":false},"fb_shops":[{"feature_instance_id":"342416671202958","enabled":true}],"ig_cta":{"enabled":false},"ig_shopping":{"enabled":false},"messenger_chat":{"enabled":false},"messenger_menu":{"enabled":false},"page_card":{"enabled":false},"page_cta":{"enabled":false},"page_post":{"enabled":false},"page_shop":{"enabled":false},"pixels":[{"feature_instance_id":"528503782251953","enabled":true}],"thread_intent":{"enabled":false}}',
 				'response' => [
@@ -500,7 +501,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 		$response = function( $result, $parsed_args, $url ) use ( $configuration ) {
 			$this->assertEquals( 'POST', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/fbe_business?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
 
 			$body = [
 				'fbe_external_business_id' => 'wordpress-facebook-6283669706474',
@@ -536,7 +537,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_installation_ids_returns_data() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/fbe_business/fbe_installs?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/fbe_business/fbe_installs?fbe_external_business_id=wordpress-facebook-6283669706474', $url );
 
 			return [
 				'body'     => '{"data":[{"business_manager_id":"973766133343161","commerce_merchant_settings_id":"400812858215678","onsite_eligible":false,"pixel_id":"1964583793745557","profiles":["100564162645958"],"ad_account_id":"0","catalog_id":"2536275516506259","pages":["100564162645958"],"token_type":"User","installed_features":[{"feature_instance_id":"2581241938677946","feature_type":"messenger_chat","connected_assets":{"page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"342416671202958","feature_type":"fb_shop","connected_assets":{"catalog_id":"2536275516506259","commerce_merchant_settings_id":"400812858215678","page_id":"100564162645958"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1468417443607539","feature_type":"pixel","connected_assets":{"page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}},{"feature_instance_id":"1150084395846296","feature_type":"catalog","connected_assets":{"catalog_id":"2536275516506259","page_id":"100564162645958","pixel_id":"1964583793745557"},"additional_info":{"onsite_eligible":false}}]}]}',
@@ -581,7 +582,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_retrieve_page_access_token_retrieves_a_token() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/me/accounts', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/me/accounts', $url );
 
 			return [
 				'body'     => '{"data":[{"access_token":"EAAGvQJc4NAQBAJCNYEmiQhS9tEL0RBtyZAkuYZAbhHCdPymmakc2L3cwCCfY6fh2bD7u7LA7hapY6IfRw5xQqpO324K749GHl46NUNByhbKDBXfUq33JM5lIOucbdZBAc6FrqkZBleLZBaCjVWBsQ1ticFay9iNmw9tMSIml4i6MRyPw4t4dXmK5LQZCD1oUzKeYkCICnEOgZDZD","category":"E-commerce website","category_list":[{"id":"1756049968005436","name":"E-commerce website"}],"name":"Dima for WooCommerce Second Page","id":"100564162645958","tasks":["ANALYZE","ADVERTISE","MESSAGING","MODERATE","CREATE_CONTENT","MANAGE"]},{"access_token":"EAAGvQJc4NAQBAGpwt4W1JYnG6OvLZCXWOpv713bWRDdWtEjy8c8bHonrZCKW0Q7sYf4a1AR0rW2C0p8XqOWwroQnZBP1peH986oB9fjxy8WCZBOb9bM3j50532TBWTT9ehDthXbJyheaTugj1qhmttfehS3nmGmG8gN3dGSwfqUcIDBgCG5CZC0vR22cajhUfaV2CfJ2qUgZDZD","category":"E-commerce website","category_list":[{"id":"1756049968005436","name":"E-commerce website"}],"name":"My Local Woo Commerce Store Page","id":"109649988385192","tasks":["ANALYZE","ADVERTISE","MESSAGING","MODERATE","CREATE_CONTENT","MANAGE"]}],"paging":{"cursors":{"before":"MTAwNTY0MTYyNjQ1OTU4","after":"MTA5NjQ5OTg4Mzg1MTky"}}}',
@@ -615,10 +616,10 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_product_group_product_ids() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
 
 			return [
-				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
 				'response' => [
 					'code'    => 200,
 					'message' => 'OK',
@@ -642,10 +643,10 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_get_paging_next() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/5904678649559740/products?fields=id,retailer_id&limit=1000', $url );
 
 			return [
-				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
 				'response' => [
 					'code'    => 200,
 					'message' => 'OK',
@@ -658,7 +659,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 		$next = WC_Facebookcommerce_Graph_API::get_paging_next( $result );
 
-		$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id%2Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $next );
+		$this->assertEquals( 'https://graph.facebook.com/v13.0/5904678649559740/products?fields=id%2Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $next );
 
 		$next = WC_Facebookcommerce_Graph_API::get_paging_next( $result, 0 );
 
@@ -674,10 +675,10 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 	public function test_next() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3', $url );
 
 			return [
-				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v12.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
+				'body'     => '{"data":[{"id":"7487461394628803","retailer_id":"woo-vneck-tee-green_106"},{"id":"5904678682893070","retailer_id":"woo-vneck-tee_91"},{"id":"4890491151060707","retailer_id":"woo-vneck-tee-blue_107"},{"id":"4121381831320113","retailer_id":"woo-vneck-tee-red_105"}],"paging":{"cursors":{"before":"QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn","after":"QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3"},"next":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3","previous":"https:\/\/graph.facebook.com\/v13.0\/5904678649559740\/products?fields=id\u00252Cretailer_id&limit=1000&before=QVFIUl9LZAlBVdjVFT0VvNF96RVg4R1QtYXpKRVdZAaDg1SmU4YTNuMmx2NVZAxTXV2czBtYkxUemI4amhSZAFpkX0ZAZAcVF3ejlmNVpUZAHEyMTdUcFBySDExZAmZAn"}}',
 				'response' => [
 					'code'    => 200,
 					'message' => 'OK',
@@ -686,7 +687,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 		};
 		add_filter( 'pre_http_request', $response, 10, 3 );
 
-		$response = $this->api->next( 'https://graph.facebook.com/v12.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3' );
+		$response = $this->api->next( 'https://graph.facebook.com/v13.0/5904678649559740/products?fields=id\u00252Cretailer_id&limit=1000&after=QVFIUm5WY2Y4V1NRbHRlU1RkOVk3MkRPdFB0ZAHJFSXRHT3ZADMG9FXzZAYaDQtMG9Odkt0YlB4Mi1IcktwbXJVcEI1TU1HTkI1eFBuWjZASVlltanVJcGxzbkt3' );
 
 		$this->assertArrayHasKey( 'data', $response );
 		$this->assertArrayHasKey( 'paging', $response );
@@ -711,7 +712,7 @@ class WCFacebookCommerceGraphAPITest extends WP_UnitTestCase {
 
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
-			$this->assertEquals( 'https://graph.facebook.com/v12.0/catalog:726635365295186:d2NfcG9zdF9pZF8xMjc=/?fields=id,product_group{id}', $url );
+			$this->assertEquals( 'https://graph.facebook.com/v13.0/catalog:726635365295186:d2NfcG9zdF9pZF8xMjc=/?fields=id,product_group{id}', $url );
 			return [
 				'body'     => '{"id":"product-id","product_group":{"id":"product-group-id"}}',
 				'response' => [

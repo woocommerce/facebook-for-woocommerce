@@ -16,18 +16,18 @@ use WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) || exit;
 
-	/**
-	 * Custom FB Product proxy class.
-	 *
-	 * @method int get_id()
-	 */
-	class WC_Facebook_Product {
-		// Used for the background sync
-		const PRODUCT_PREP_TYPE_ITEMS_BATCH = 'items_batch';
-		// Used for the background feed upload
-		const PRODUCT_PREP_TYPE_FEED = 'feed';
-		// Used for direct update and create calls
-		const PRODUCT_PREP_TYPE_NORMAL = 'normal';
+/**
+ * Custom FB Product proxy class.
+ *
+ * @method int get_id()
+ */
+class WC_Facebook_Product {
+	// Used for the background sync
+	const PRODUCT_PREP_TYPE_ITEMS_BATCH = 'items_batch';
+	// Used for the background feed upload
+	const PRODUCT_PREP_TYPE_FEED = 'feed';
+	// Used for direct update and create calls
+	const PRODUCT_PREP_TYPE_NORMAL = 'normal';
 
 	// Should match facebook-commerce.php while we migrate that code over
 	// to this object.
