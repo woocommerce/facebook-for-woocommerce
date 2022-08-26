@@ -1255,7 +1255,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$data = $facebook_product->prepare_product();
+		$data                          = $facebook_product->prepare_product();
 		$data['additional_image_urls'] = '';
 		$graph_api->expects( $this->once() )
 			->method( 'update_product_item' )
@@ -1282,10 +1282,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	public function test_fb_change_product_published_status_for_variable_product() {
 		add_option( WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, 'facebook-page-id' );
 		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1234567891011121314' );
-		// add_option( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
 
 		/** @var WC_Product_Variable $product */
-		$product          = WC_Helper_Product::create_variation_product();
+		$product = WC_Helper_Product::create_variation_product();
 
 		$this->connection_handler->expects( $this->once() )
 			->method( 'is_connected' )
