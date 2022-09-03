@@ -360,7 +360,6 @@ class WC_Facebookcommerce_Graph_API {
 	}
 
 
-	// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_groups
 	public function create_product_group( $product_catalog_id, $data ) {
 		$url = $this->build_url( $product_catalog_id, '/product_groups' );
 		return self::_post( $url, $data );
@@ -465,6 +464,7 @@ class WC_Facebookcommerce_Graph_API {
 		}
 		return WC_Facebookcommerce_Utils::decode_json( $response, true );
 	}
+
 
 	public function create_feed( $facebook_catalog_id, $data ) {
 		$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );

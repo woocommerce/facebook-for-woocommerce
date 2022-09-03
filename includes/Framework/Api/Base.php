@@ -211,7 +211,7 @@ abstract class Base {
 		 *     @type string $headers response HTTP headers
 		 *     @type string $body response body
 		 * }
-		 * @param SV_WC_API_Base $this instance
+		 * @param \WooCommerce\Facebook\Framework\Api\Base $this instance
 		 */
 		do_action( 'wc_' . $this->get_api_id() . '_api_request_performed', $request_data, $response_data, $this );
 	}

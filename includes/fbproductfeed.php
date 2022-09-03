@@ -605,25 +605,21 @@ class WC_Facebook_Product_Feed {
 	}
 
 
-	private function create_feed() {
-		$result = $this->fbgraph->create_feed(
-			$this->facebook_catalog_id,
-			array( 'name' => self::FEED_NAME )
-		);
-		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-			$this->log_feed_progress( json_encode( $result ) );
-			return null;
-		}
-		$decode_result = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-		$feed_id       = $decode_result->id;
+	/**
+	 * @return string|null
+	 * @throws \WooCommerce\Facebook\Api\Exceptions\Request_Limit_Reached
+	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
+	 */
+	private function create_feed(): ?string {
+		$result  = facebook_for_woocommerce()->get_api()->create_feed( $this->facebook_catalog_id, [ 'name' => self::FEED_NAME ] );
+		$feed_id = $result->id;
 		if ( ! $feed_id ) {
-			$this->log_feed_progress(
-				'Response from creating feed not return feed id!'
-			);
+			$this->log_feed_progress( 'Response from creating feed not return feed id!' );
 			return null;
 		}
 		return $feed_id;
 	}
+
 
 	private function create_upload( $facebook_feed_id ) {
 		$result = $this->fbgraph->create_upload(
@@ -711,26 +707,19 @@ class WC_Facebook_Product_Feed {
 	public function is_upload_complete( &$settings ) {
 
 		$upload_id = facebook_for_woocommerce()->get_integration()->get_upload_id();
-		$result    = $this->fbgraph->get_upload_status( $upload_id );
+		$result    = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
 
 		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-
 			 $this->log_feed_progress( json_encode( $result ) );
-
 			 return 'error';
 		}
 
-		$response_body = json_decode( wp_remote_retrieve_body( $result ) );
 		$upload_status = 'error';
 
-		if ( isset( $response_body->end_time ) ) {
-
-			$settings['upload_end_time'] = $response_body->end_time;
-
+		if ( isset( $result->end_time ) ) {
+			$settings['upload_end_time'] = $result->end_time;
 			$upload_status = 'complete';
-
 		} elseif ( 200 === (int) wp_remote_retrieve_response_code( $result ) ) {
-
 			$upload_status = 'in progress';
 		}
 

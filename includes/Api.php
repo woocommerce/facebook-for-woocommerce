@@ -189,6 +189,7 @@ class Api extends Base {
 		throw $exception;
 	}
 
+
 	/**
 	 * Gets the FBE installation IDs.
 	 *
@@ -203,6 +204,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\FBE\Installation\Read\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Gets a Page object from Facebook.
@@ -219,6 +221,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Gets a Catalog object from Facebook.
 	 *
@@ -234,6 +237,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Gets a user object from Facebook.
 	 *
@@ -248,6 +252,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\User\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Delete's a user's API permission.
@@ -267,6 +272,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Gets the business configuration.
 	 *
@@ -281,6 +287,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\FBE\Configuration\Read\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Updates the messenger configuration.
@@ -298,6 +305,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Uses the Catalog Batch API to update or remove items from catalog.
@@ -320,69 +328,50 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
-	 * Creates a Product Group object.
+	 * Creates Facebook Product Group.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @param array  $data product group data
-	 * @return Response
+	 * @param string $product_catalog_id Facebook Product Catalog ID.
+	 * @param array  $data Facebook Product Group Data.
+	 * @return Api\ProductCatalog\ProductGroups\Create\Response
 	 * @throws ApiException
 	 */
-	public function create_product_group( $catalog_id, $data ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$catalog_id}/product_groups",
-				'method' => 'POST',
-			)
-		);
-		$request->set_data( $data );
-		$this->set_response_handler( Response::class );
+	public function create_product_group( string $product_catalog_id, array $data ): Api\ProductCatalog\ProductGroups\Create\Response {
+		$request = new Api\ProductCatalog\ProductGroups\Create\Request( $product_catalog_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\ProductGroups\Create\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Updates the default product item and the available variation attributes of a product group.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id product group ID
-	 * @param array  $data product group data
-	 * @return Response
+	 * @param string $product_group_id Facebook Product Group ID.
+	 * @param array  $data Facebook Product Group Data.
+	 * @return Api\ProductCatalog\ProductGroups\Update\Response
 	 * @throws ApiException
 	 */
-	public function update_product_group( $product_group_id, $data ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$product_group_id}",
-				'method' => 'POST',
-			)
-		);
-		$request->set_data( $data );
-		$this->set_response_handler( Response::class );
+	public function update_product_group( string $product_group_id, array $data ): Api\ProductCatalog\ProductGroups\Update\Response {
+		$request = new Api\ProductCatalog\ProductGroups\Update\Request( $product_group_id , $data );
+		$this->set_response_handler( Api\ProductCatalog\ProductGroups\Update\Response::class );
 		return $this->perform_request( $request );
 	}
 
+
 	/**
-	 * Deletes a Product Group object.
+	 * Deletes a Facebook Product Group object.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $product_group_id
-	 * @return Response
+	 * @param string $product_group_id Facebook Product Group ID.
+	 * @return Api\ProductCatalog\ProductGroups\Delete\Response
 	 * @throws ApiException
 	 */
-	public function delete_product_group( $product_group_id ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$product_group_id}",
-				'method' => 'DELETE',
-			)
-		);
-		$this->set_response_handler( Response::class );
+	public function delete_product_group( string $product_group_id ): Api\ProductCatalog\ProductGroups\Delete\Response {
+		$request = new Api\ProductCatalog\ProductGroups\Delete\Request( $product_group_id );
+		$this->set_response_handler( Api\ProductCatalog\ProductGroups\Delete\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Gets a list of Product Items in the given Product Group.
@@ -400,6 +389,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Finds a Product Item using the Catalog ID and the Retailer ID of the product or product variation.
 	 *
@@ -416,69 +406,145 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
-	 * Creates a Product Item object.
+	 * Creates a Product under the specified Product Group.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string $product_group_id parent product ID
-	 * @param array  $data product data
-	 * @return Response
+	 * @param string $product_group_id Facebook Product Group ID.
+	 * @param array  $data Facebook Product Data.
+	 * @return Api\ProductCatalog\Products\Create\Response
 	 * @throws ApiException
 	 */
-	public function create_product_item( $product_group_id, $data ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$product_group_id}/products",
-				'method' => 'POST',
-			)
-		);
-		$request->set_data( $data );
-		$this->set_response_handler( Response::class );
+	public function create_product_item( string $product_group_id, array $data ): Api\ProductCatalog\ProductGroups\Products\Create\Response {
+		$request = new Api\ProductCatalog\Products\Create\Request( $product_group_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\Products\Create\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Updates a Product Item object.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string $product_item_id product item ID
-	 * @param array  $data product data
-	 * @return Response
+	 * @param string $facebook_product_id Facebook Product ID.
+	 * @param array  $data Product Data.
+	 * @return Api\ProductCatalog\Products\Update\Response
 	 * @throws ApiException
 	 */
-	public function update_product_item( $product_item_id, $data ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$product_item_id}",
-				'method' => 'POST',
-			)
-		);
-		$request->set_data( $data );
-		$this->set_response_handler( Response::class );
+	public function update_product_item( string $facebook_product_id, array $data ): Api\ProductCatalog\ProductGroups\Products\Update\Response {
+		$request = new Api\ProductCatalog\Products\Update\Request( $facebook_product_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\Products\Update\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Deletes a Product Item object.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string $product_item_id product item ID
-	 * @return Response
+	 * @param string $facebook_product_id Facebook Product ID.
+	 * @return Api\ProductCatalog\Products\Delete\Response
 	 * @throws ApiException
 	 */
-	public function delete_product_item( $product_item_id ) {
-		$request = $this->get_new_request(
-			array(
-				'path'   => "/{$product_item_id}",
-				'method' => 'DELETE',
-			)
-		);
-		$this->set_response_handler( Response::class );
+	public function delete_product_item( string $facebook_product_id ): Api\ProductCatalog\Products\Delete\Response {
+		$request = new Api\ProductCatalog\Products\Delete\Request( $facebook_product_id );
+		$this->set_response_handler( Api\ProductCatalog\Products\Delete\Response::class );
 		return $this->perform_request( $request );
 	}
+
+
+	/**
+	 * @param string $product_catalog_id
+	 * @param array $data
+	 * @return Api\ProductCatalog\ProductSets\Create\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function create_product_set_item( string $product_catalog_id, array $data ): Api\ProductCatalog\ProductSets\Create\Response {
+		$request = new Api\ProductCatalog\ProductSets\Create\Request( $product_catalog_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\ProductSets\Create\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $product_set_id
+	 * @param array $data
+	 * @return Api\ProductCatalog\ProductSets\Update\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function update_product_set_item( string $product_set_id, array $data ): Api\ProductCatalog\ProductSets\Update\Response {
+		$request = new Api\ProductCatalog\ProductSets\Update\Request( $product_set_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\ProductSets\Update\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $product_set_id Facebook Product Set ID.
+	 * @param bool   $allow_live_deletion Allow live Facebook Product Set Deletion.
+	 * @return Api\ProductCatalog\ProductSets\Delete\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function delete_product_set_item( string $product_set_id, bool $allow_live_deletion ): Api\ProductCatalog\ProductSets\Delete\Response {
+		$request = new Api\ProductCatalog\ProductSets\Delete\Request( $product_set_id, $allow_live_deletion );
+		$this->set_response_handler( Api\ProductCatalog\ProductSets\Delete\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $product_catalog_id
+	 * @param array  $data
+	 * @return Api\ProductCatalog\ProductFeeds\Create\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function create_feed( string $product_catalog_id, array $data ): Api\ProductCatalog\ProductFeeds\Create\Response {
+		$request = new Api\ProductCatalog\ProductFeeds\Create\Request( $product_catalog_id, $data );
+		$this->set_response_handler( Api\ProductCatalog\ProductFeeds\Create\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $product_catalog_id
+	 * @return Api\ProductCatalog\ProductFeeds\ReadAll\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function read_feeds( string $product_catalog_id ): Api\ProductCatalog\ProductFeeds\ReadAll\Response {
+		$request = new Api\ProductCatalog\ProductFeeds\ReadAll\Request( $product_catalog_id );
+		$this->set_response_handler( Api\ProductCatalog\ProductFeeds\ReadAll\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $product_feed_id Facebook Product Feed ID.
+	 * @return Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function read_feed( string $product_feed_id ) {
+		$request = new Api\ProductCatalog\ProductFeeds\Read\Request( $product_feed_id );
+		$this->set_response_handler( Api\ProductCatalog\ProductFeeds\Read\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	public function read_upload( string $product_feed_upload_id ) {
+		$request = new Api\ProductCatalog\ProductFeedUploads\Read\Request( $product_feed_upload_id );
+		$this->set_response_handler( Api\ProductCatalog\ProductFeedUploads\Read\Response::class );
+		return $this->perform_request( $request );
+	}
+
 
 	/**
 	 * Sends Pixel events.
@@ -495,6 +561,7 @@ class Api extends Base {
 		$this->set_response_handler( Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Gets the next page of results for a paginated response.
@@ -526,6 +593,7 @@ class Api extends Base {
 		return $next_response;
 	}
 
+
 	/**
 	 * Gets all new orders.
 	 *
@@ -546,6 +614,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Orders\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Gets the latest cancelled orders.
@@ -569,6 +638,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Gets a single order based on its remote ID.
 	 *
@@ -583,6 +653,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Orders\Read\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Acknowledges the given order.
@@ -599,6 +670,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Issues a fulfillment request for the given order.
@@ -618,6 +690,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Cancels the given order.
 	 *
@@ -634,6 +707,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Issues a refund request for the given order.
@@ -652,6 +726,7 @@ class Api extends Base {
 		$this->set_response_handler( Api\Response::class );
 		return $this->perform_request( $request );
 	}
+
 
 	/**
 	 * Returns a new request object.
@@ -680,6 +755,7 @@ class Api extends Base {
 		}
 		return $request;
 	}
+
 
 	/**
 	 * Returns the plugin class instance associated with this API.

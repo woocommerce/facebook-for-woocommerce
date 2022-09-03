@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\API\Catalog;
+namespace WooCommerce\Facebook\Api\Catalog;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -17,6 +17,8 @@ use WooCommerce\Facebook\Api\Request as ApiRequest;
 
 /**
  * Request object for the Catalog API.
+ *
+ * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/v13.0
  *
  * @since 2.0.0
  */

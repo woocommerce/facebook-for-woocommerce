@@ -18,17 +18,15 @@ use WooCommerce\Facebook\Api\Response as ApiResponse;
 /**
  * Catalog API response object
  *
- * @since 2.0.0
+ * @property string name Facebook Catalog Name.
  */
 class Response extends ApiResponse {
 	/**
-	 * Gets the catalog name.
+	 * Gets Facebook Catalog Name.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @return string|null
+	 * @return ?string
 	 */
-	public function get_name() {
+	public function get_name(): ?string {
 		return $this->name;
 	}
 }

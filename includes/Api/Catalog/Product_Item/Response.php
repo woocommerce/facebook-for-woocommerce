@@ -9,18 +9,18 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item;
+namespace WooCommerce\Facebook\Api\Catalog\Product_Item;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
+use WooCommerce\Facebook\Api;
 
 /**
  * Response object for API requests that return a Product Item.
  *
  * @since 2.0.0
  */
-class Response extends API\Response {
+class Response extends Api\Response {
 
 
 	/**
