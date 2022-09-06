@@ -1031,7 +1031,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param \WC_Product $product WooCommerce product object
 	 */
-	private function delete_fb_product( $product ) {
+	public function delete_fb_product( $product ) {
 
 		$product_id = $product->get_id();
 
@@ -1053,13 +1053,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				if ( $variation instanceof \WC_Product ) {
 					$retailer_ids[] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
 				}
+				delete_post_meta( $variation_id, self::FB_PRODUCT_ITEM_ID );
 			}
 
 			// enqueue variations to be deleted in the background
 			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( $retailer_ids );
 
 			$this->delete_product_group( $product_id );
-
 		} else {
 
 			$this->delete_product_item( $product_id );
@@ -1198,8 +1198,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	function delete_on_out_of_stock( $wp_id, $woo_product ) {
 
 		if ( Products::product_should_be_deleted( $woo_product ) ) {
-
-			$this->delete_product_item( $wp_id );
+			$product = wc_get_product( $wp_id );
+			$this->delete_fb_product( $product );
 			return true;
 		}
 
@@ -1219,11 +1219,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new \WC_Facebook_Product( $wp_id );
 		}
 
-		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -1274,11 +1274,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new \WC_Facebook_Product( $wp_id, $parent_product );
 		}
 
-		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
