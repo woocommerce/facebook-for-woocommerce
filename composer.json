@@ -5,23 +5,20 @@
   "license": "GPL-2.0+",
   "repositories": [
     {
-      "type": "git",
-      "url": "git@github.com:facebookincubator/facebook-for-woocommerce.git"
-    },
-    {
       "type": "vcs",
       "url": "https://github.com/woocommerce/action-scheduler-job-framework"
     }
   ],
   "require": {
     "composer/installers": "~1.0",
-    "php": ">=5.6",
+    "php": ">=7.3",
     "woocommerce/action-scheduler-job-framework": "2.0.0"
   },
   "require-dev": {
-    "woocommerce/woocommerce-sniffs": "0.1.0",
-    "phpcompatibility/php-compatibility": "~9.3.5",
-    "lucatume/wp-browser": ">= 2.3.4 <2.4.0"
+    "phpunit/phpunit": "^7.5",
+    "yoast/phpunit-polyfills": "^1.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^v0.7",
+    "wp-coding-standards/wpcs": "^2.3"
   },
   "autoload": {
     "psr-4": {
@@ -33,5 +30,8 @@
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "scripts": {
+    "test-unit": "./vendor/bin/phpunit"
   }
 }

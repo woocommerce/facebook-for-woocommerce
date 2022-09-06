@@ -107,10 +107,10 @@ abstract class Base {
 	 * @since 2.2.0
 	 *
 	 * @param string $request_uri
-	 * @param string $request_args
+	 * @param array  $request_args
 	 * @return array|\WP_Error
 	 */
-	protected function do_remote_request( $request_uri, $request_args ) {
+	protected function do_remote_request( string $request_uri, array $request_args ) {
 		return wp_safe_remote_request( $request_uri, $request_args );
 	}
 

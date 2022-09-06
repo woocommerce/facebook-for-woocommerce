@@ -19,34 +19,7 @@ use WooCommerce\Facebook\Api;
  * Page API response object.
  *
  * @since 2.0.0
+ * @property-read string $name Facebook Page Name.
+ * @property-read string $link Facebook Page URL.
  */
-class Response extends Api\Response {
-
-
-	/**
-	 * Gets the page name.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string|null
-	 */
-	public function get_name() {
-
-		return $this->name;
-	}
-
-
-	/**
-	 * Gets the page URL.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string|null
-	 */
-	public function get_url() {
-
-		return $this->link;
-	}
-
-
-}
+class Response extends Api\Response {}
