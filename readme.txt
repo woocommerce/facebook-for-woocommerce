@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.0
-Stable tag: 2.6.21
+Stable tag: 2.6.22
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,13 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.22 - 2022-09-06 =
+* Fix - Adding an excluded category doesn't remove that category synced products.
+* Fix - Ensure content_name and content_ids addToCart pixel event properties are correct for variable products when redirect to cart is enabled in WooCommerce.
+* Fix - Remove out-of-stock products on Facebook when the "Hide out of stock items from the catalog" option in WooCommerce is checked.
+* Tweak - WC 6.9 compatibility.
+* Update - Facebook Business Extension flow from COMMERCE_OFFSITE to DEFAULT.
 
 = 2.6.21 - 2022-08-16 =
 * Dev - Add branch-labels GH workflow.
