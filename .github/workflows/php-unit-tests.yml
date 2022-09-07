@@ -1,0 +1,59 @@
+name: PHP Unit Tests
+
+on:
+  push:
+    branches:
+      - trunk
+      - develop
+    paths:
+      - "**.php"
+      - composer.json
+      - composer.lock
+      - .github/workflows/php-unit-tests.yml
+  pull_request:
+    paths:
+      - "**.php"
+      - composer.json
+      - composer.lock
+      - .github/workflows/php-unit-tests.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  UnitTests:
+    name: PHP unit tests - PHP ${{ matrix.php }}, WP ${{ matrix.wp-version }}
+    runs-on: ubuntu-latest
+    env:
+      WP_CORE_DIR: "/tmp/wordpress/src"
+      WP_TESTS_DIR: "/tmp/wordpress/tests/phpunit"
+    strategy:
+      matrix:
+        php: [7.3, 7.4]
+        wp-version: [5.7, 5.8, latest]
+        include:
+          - php: 8.0
+            wp-version: latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Prepare PHP
+        uses: woocommerce/grow/prepare-php@actions-v1
+        with:
+          php-version: "${{ matrix.php }}"
+
+      - name: Prepare MySQL
+        uses: woocommerce/grow/prepare-mysql@actions-v1
+
+      - name: Install WP tests
+        run: ./bin/install-wp-tests.sh wordpress_test root root localhost ${{ matrix.wp-version }}
+
+      - name: PHP8, PHPUnit9 with WordPress v5.9+
+        if: matrix.php >= 8
+        run: composer require phpunit/phpunit "^9.5" --dev --update-with-all-dependencies
+
+      - name: Run PHP unit tests
+        run: composer test-unit
