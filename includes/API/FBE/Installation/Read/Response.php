@@ -84,9 +84,7 @@ class Response extends API\Response {
 	 */
 	public function get_page_id() {
 
-		$pages = ! empty( $this->get_data()->pages ) ? $this->get_data()->pages : '';
-
-		if ( empty( $pages ) ) {
+		if ( empty( $pages = $this->get_data()->pages ) ) {
 			return '';
 		}
 
