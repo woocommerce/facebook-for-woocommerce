@@ -10,15 +10,14 @@
     }
   ],
   "require": {
-    "composer/installers": "~1.0",
     "php": ">=7.3",
     "woocommerce/action-scheduler-job-framework": "2.0.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5",
-    "yoast/phpunit-polyfills": "^1.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^v0.7",
-    "wp-coding-standards/wpcs": "^2.3"
+    "phpunit/phpunit": "^7.5",
+    "wp-coding-standards/wpcs": "^2.3",
+    "yoast/phpunit-polyfills": "^1.0"
   },
   "autoload": {
     "psr-4": {
@@ -27,7 +26,6 @@
   },
   "config": {
     "allow-plugins": {
-      "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
