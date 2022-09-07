@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80154521220cba059decb1f96b846e1c",
+    "content-hash": "2dbbb68d48059d21830d72120e8f2c99",
     "packages": [
         {
             "name": "woocommerce/action-scheduler-job-framework",
@@ -1916,8 +1916,11 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3"
+        "php": ">=7.4"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.4.30"
+    },
     "plugin-api-version": "2.3.0"
 }
