@@ -1,13 +1,11 @@
 <?php
-/**
- *
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api\ProductCatalog\ProductFeedUploads\Read;
 
 use WooCommerce\Facebook\Api\Response as ApiResponse;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Response object for Product Catalog > Product Feeds > Read Graph Api.

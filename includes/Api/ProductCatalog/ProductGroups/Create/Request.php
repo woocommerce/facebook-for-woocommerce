@@ -1,13 +1,11 @@
 <?php
-/**
- *
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api\ProductCatalog\ProductGroups\Create;
 
 use WooCommerce\Facebook\Api\Request as ApiRequest;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Request object for Product Catalog > Product Groups > Create Graph Api.

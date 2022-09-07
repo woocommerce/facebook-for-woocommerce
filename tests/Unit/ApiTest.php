@@ -4,6 +4,9 @@ declare( strict_types=1 );
 use WooCommerce\Facebook\Api;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
+/**
+ * Api unit test clas.
+ */
 class ApiTest extends WP_UnitTestCase {
 
 	/**
@@ -19,6 +22,12 @@ class ApiTest extends WP_UnitTestCase {
 		$this->api = new Api( 'test-api-key-9678djyad552' );
 	}
 
+	/**
+	 * Tests preform request succeeds.
+	 *
+	 * @return void
+	 * @throws ApiException In case of failed request.
+	 */
 	public function test_perform_request_performs_successful_request() {
 		$response = function( $result, $parsed_args, $url ) {
 			$this->assertEquals( 'GET', $parsed_args['method'] );
@@ -39,6 +48,12 @@ class ApiTest extends WP_UnitTestCase {
 		$this->assertEquals( 'https://google.com', $response->link );
 	}
 
+	/**
+	 * Tests preform request method returns WP_Error response.
+	 *
+	 * @return void
+	 * @throws ApiException In case of failed request.
+	 */
 	public function test_perform_request_produces_wp_error() {
 		$this->expectException( ApiException::class );
 		$this->expectExceptionCode( 007 );

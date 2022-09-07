@@ -1,4 +1,5 @@
 <?php
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Jobs;
 
@@ -25,7 +26,7 @@ class CleanupSkyvergeFrameworkJobOptions {
 	 */
 	public function init() {
 		// Register our cleanup routine to run regularly.
-		add_action( Heartbeat::DAILY, array( $this, 'clean_up_old_completed_options' ) );
+		add_action( Heartbeat::DAILY, [ $this, 'clean_up_old_completed_options' ] );
 	}
 
 	/**

@@ -1,13 +1,11 @@
 <?php
-/**
- *
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api\ProductCatalog\ProductSets\Delete;
 
 use WooCommerce\Facebook\Api\Request as ApiRequest;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Request object for Product Catalog > Product Sets > Delete Graph Api.
@@ -21,7 +19,7 @@ class Request extends ApiRequest {
 	 * @param bool   $allow_live_deletion Allow live Facebook Product Set Deletion.
 	 */
 	public function __construct( string $product_set_id, bool $allow_live_deletion = false ) {
-		$path = "/{$product_set_id}";
+		$path  = "/{$product_set_id}";
 		$path .= $allow_live_deletion ? '?allow_live_product_set_deletion=true' : '';
 		parent::__construct( $path, 'DELETE' );
 	}
