@@ -30,8 +30,8 @@ jobs:
       WP_TESTS_DIR: "/tmp/wordpress/tests/phpunit"
     strategy:
       matrix:
-        php: [7.3, 7.4]
-        wp-version: [5.7, 5.8, latest]
+        php: [7.4]
+        wp-version: [5.8, 5.9, latest]
         include:
           - php: 8.0
             wp-version: latest
