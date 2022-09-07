@@ -84,11 +84,12 @@ class Response extends API\Response {
 	 */
 	public function get_page_id() {
 
-		$pages = $this->get_data()->pages;
+		if ( empty( $pages = $this->get_data()->pages ) ) {
+			return '';
+		}
 
-		return ! empty( $pages ) && is_array( $pages ) ? current( $pages ) : '';
+		return is_array( $pages ) ? current( $pages ) : $pages;
 	}
-
 
 	/**
 	 * Gets Instagram Business ID.
