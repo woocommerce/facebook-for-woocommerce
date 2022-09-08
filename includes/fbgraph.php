@@ -268,79 +268,6 @@ class WC_Facebookcommerce_Graph_API {
 	}
 
 
-	// GET https://graph.facebook.com/vX.X/{page-id}/?fields=name
-	public function get_page_name( $page_id, $api_key = '' ) {
-		$api_key  = $api_key ?: $this->api_key;
-		$url      = $this->build_url( $page_id, '/?fields=name' );
-		$response = self::_get( $url, $api_key );
-
-		if ( is_wp_error( $response ) ) {
-			WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-			return '';
-		}
-
-		if ( $response['response']['code'] != '200' ) {
-			return '';
-		}
-
-		$response_body = json_decode( wp_remote_retrieve_body( $response ) );
-
-		return isset( $response_body->name ) ? $response_body->name : '';
-	}
-
-
-	/**
-	 * Gets a Facebook Page URL.
-	 *
-	 * Endpoint: https://graph.facebook.com/vX.X/{page-id}/?fields=link
-	 *
-	 * @param string|int $page_id page identifier
-	 * @param string     $api_key API key
-	 * @return string URL
-	 */
-	public function get_page_url( $page_id, $api_key = '' ) {
-
-		$api_key  = $api_key ?: $this->api_key;
-		$request  = $this->build_url( $page_id, '/?fields=link' );
-		$response = $this->_get( $request, $api_key );
-		$page_url = '';
-
-		if ( is_wp_error( $response ) ) {
-
-			\WC_Facebookcommerce_Utils::log( $response->get_error_message() );
-
-		} elseif ( 200 === (int) $response['response']['code'] ) {
-
-			$response_body = wp_remote_retrieve_body( $response );
-			$page_url      = json_decode( $response_body )->link;
-		}
-
-		return $page_url;
-	}
-
-
-	/**
-	 * Determines whether the product catalog ID is valid.
-	 *
-	 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
-	 *
-	 * TODO: deprecate this methid in 1.11.0 or newer {WV 2020-03-12}
-	 *
-	 * @param int $product_catalog_id the ID of the product catalog
-	 * @return bool
-	 */
-	public function validate_product_catalog( $product_catalog_id ) {
-
-		try {
-			$is_valid = $this->is_product_catalog_valid( $product_catalog_id );
-		} catch ( ApiException $e ) {
-			$is_valid = false;
-		}
-
-		return $is_valid;
-	}
-
-
 	/**
 	 * Determines whether the product catalog ID is valid.
 	 *
@@ -371,24 +298,9 @@ class WC_Facebookcommerce_Graph_API {
 		return self::_post( $url, $data );
 	}
 
-	public function update_product_group( $product_catalog_id, $data ) {
-		$url = $this->build_url( $product_catalog_id );
-		return self::_post( $url, $data );
-	}
-
-	public function update_product_item( $product_id, $data ) {
-		$url = $this->build_url( $product_id );
-		return self::_post( $url, $data );
-	}
-
 	public function delete_product_item( $product_item_id ) {
 		$product_item_url = $this->build_url( $product_item_id );
 		return self::_delete( $product_item_url );
-	}
-
-	public function delete_product_group( $product_group_id ) {
-		$product_group_url = $this->build_url( $product_group_id, '?deletion_method=delete_items' );
-		return self::_delete( $product_group_url );
 	}
 
 	// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
@@ -403,15 +315,6 @@ class WC_Facebookcommerce_Graph_API {
 		return self::_post( $url, $data );
 	}
 
-	public function delete_product_set_item( $product_set_id ) {
-
-		$params = ( true === apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $product_set_id ) ) ? '?allow_live_product_set_deletion=true' : '';
-
-		$url = $this->build_url( $product_set_id, $params );
-
-		return self::_delete( $url );
-	}
-
 
 	public function log( $ems_id, $message, $error ) {
 		$log_url = $this->build_url( $ems_id, '/log_events' );
@@ -422,18 +325,6 @@ class WC_Facebookcommerce_Graph_API {
 		);
 
 		self::_post( $log_url, $data );
-	}
-
-	public function log_tip_event( $tip_id, $channel_id, $event ) {
-		$tip_event_log_url = $this->build_url( '', '/log_tip_events' );
-
-		$data = array(
-			'tip_id'     => $tip_id,
-			'channel_id' => $channel_id,
-			'event'      => $event,
-		);
-
-		self::_post( $tip_event_log_url, $data );
 	}
 
 	public function create_upload( $facebook_feed_id, $path_to_feed_file ) {
@@ -499,34 +390,6 @@ class WC_Facebookcommerce_Graph_API {
 	 */
 	public function read_feed_information( $feed_id ) {
 		$url = $this->build_url( $feed_id, '/?fields=id,name,schedule,update_schedule,uploads' );
-		return $this->_get( $url );
-	}
-
-	/**
-	 * Get metadata about a feed (data source) configured in Facebook Business.
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-	 * @since 2.6.0
-	 *
-	 * @param String $feed_id Facebook Catalog Id.
-	 * @return Array Facebook feed metadata.
-	 */
-	public function read_feed_metadata( $feed_id ) {
-		$url = $this->build_url( $feed_id, '/?fields=created_time,latest_upload,product_count,schedule,update_schedule' );
-		return $this->_get( $url );
-	}
-
-	/**
-	 * Get metadata about a recent feed upload.
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed-upload/
-	 * @since 2.6.0
-	 *
-	 * @param String $upload_id Feed Upload Id.
-	 * @return Array Feed upload metadata.
-	 */
-	public function read_upload_metadata( $upload_id ) {
-		$url = $this->build_url( $upload_id, '/?fields=error_count,warning_count,num_detected_items,num_persisted_items,url' );
 		return $this->_get( $url );
 	}
 

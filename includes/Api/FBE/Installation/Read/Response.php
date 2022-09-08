@@ -1,24 +1,15 @@
 <?php
 // phpcs:ignoreFile
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @package FacebookCommerce
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api\FBE\Installation\Read;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Api;
 
 /**
  * FBE Installation API read response object.
- *
- * @since 2.0.0
  */
 class Response extends Api\Response {
 	/**
@@ -58,25 +49,21 @@ class Response extends Api\Response {
 
 
 	/**
-	 * Gets the catalog ID.
-	 *
-	 * @since 2.0.0
+	 * Returns Facebook Catalog id.
 	 *
 	 * @return string
 	 */
-	public function get_catalog_id() {
+	public function get_catalog_id(): string {
 		return ! empty( $this->get_data()->catalog_id ) ? $this->get_data()->catalog_id : '';
 	}
 
 
 	/**
-	 * Gets the page ID.
-	 *
-	 * @since 2.0.0
+	 * Returns facebook page id.
 	 *
 	 * @return string
 	 */
-	public function get_page_id() {
+	public function get_page_id(): string {
 		$pages = $this->get_data()->pages;
 		return ! empty( $pages ) && is_array( $pages ) ? current( $pages ) : '';
 	}
@@ -130,7 +117,7 @@ class Response extends Api\Response {
 	 * @return \stdClass
 	 */
 	public function get_data() {
-		$data = ! empty( $this->response_data->data ) && is_array( $this->response_data->data ) ? $this->response_data->data : array();
+		$data = ! empty( $this->response_data->data ) && is_array( $this->response_data->data ) ? $this->response_data->data :[];
 		return is_object( $data[0] ) ? $data[0] : new \stdClass();
 	}
 }

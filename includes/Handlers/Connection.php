@@ -13,6 +13,7 @@ namespace WooCommerce\Facebook\Handlers;
 
 use WooCommerce\Facebook\Api\Exceptions\ConnectApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) or exit;

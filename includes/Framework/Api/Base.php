@@ -70,7 +70,7 @@ abstract class Base {
 	 * @since 2.2.0
 	 *
 	 * @param Request|object $request class instance which implements SV_WC_API_Request
-	 * @return Response|object class instance which implements SV_WC_API_Response
+	 * @return Response class instance which implements Api/Response
 	 * @throws ApiException may be thrown in implementations
 	 */
 	protected function perform_request( $request ) {
@@ -121,9 +121,9 @@ abstract class Base {
 	 * @since 2.2.0
 	 * @param array|\WP_Error $response response data
 	 * @throws ApiException network issues, timeouts, API errors, etc
-	 * @return Request|object request class instance that implements SV_WC_API_Request
+	 * @return \WooCommerce\Facebook\Api\Response Response class instance.
 	 */
-	protected function handle_response( $response ) {
+	protected function handle_response( $response ): \WooCommerce\Facebook\Api\Response {
 		// check for WP HTTP API specific errors (network timeout, etc)
 		if ( is_wp_error( $response ) ) {
 			throw new ApiException( $response->get_error_message(), (int) $response->get_error_code() );

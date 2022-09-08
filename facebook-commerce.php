@@ -1546,38 +1546,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Create or update product set
+	 * Creates or Updates a product set.
 	 *
-	 * @since 2.3.0
-	 *
-	 * @param array  $product_set_data Product Set data.
-	 * @param string $product_set_id   Product Set ID.
-	 **/
+	 * @param array $product_set_data
+	 * @param string $product_set_id
+	 * @return void
+	 * @throws ApiException
+	 */
 	public function create_or_update_product_set_item( array $product_set_data, string $product_set_id ) {
 		// check if exists in FB
 		$fb_product_set_id = get_term_meta( $product_set_id, self::FB_PRODUCT_SET_ID, true );
 
 		// set data and execute API call
-		$method = empty( $fb_product_set_id ) ? 'create' : 'update';
-		$id     = empty( $fb_product_set_id ) ? $this->get_product_catalog_id() : $fb_product_set_id;
-		$result = $this->check_api_result(
-			call_user_func_array(
-				array(
-					facebook_for_woocommerce()->get_api(),
-					$method . '_product_set_item',
-				),
-				array(
-					$id,
-					$product_set_data,
-				)
-			)
-		);
+		$result = empty( $fb_product_set_id )
+			? facebook_for_woocommerce()->get_api()->create_product_item( $this->get_product_catalog_id(), $product_set_data )
+			: facebook_for_woocommerce()->get_api()->update_product_item( $fb_product_set_id, $product_set_data );
 
 		// update product set to set FB Product Set ID
 		if ( $result && empty( $fb_product_set_id ) ) {
-			// decode and get ID from result body
-			$decode_result     = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-			$fb_product_set_id = $decode_result->id;
+			$fb_product_set_id = $result->id;
 			update_term_meta(
 				$product_set_id,
 				self::FB_PRODUCT_SET_ID,
@@ -2381,16 +2368,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the product catalog ID.
 	 *
-	 * @since 1.10.0
-	 *
 	 * @return string
 	 */
-	public function get_product_catalog_id() {
-
+	public function get_product_catalog_id(): string {
 		if ( ! is_string( $this->product_catalog_id ) ) {
-
 			$value = get_option( self::OPTION_PRODUCT_CATALOG_ID, '' );
-
 			$this->product_catalog_id = is_string( $value ) ? $value : '';
 		}
 
@@ -2402,7 +2384,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param string $product_catalog_id Facebook product catalog ID
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (string) apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
+		return apply_filters( 'wc_facebook_product_catalog_id', $this->product_catalog_id, $this );
 	}
 
 
@@ -3138,61 +3120,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			echo $this->get_message_html( $sticky_msg, 'info' );
 			// transient must be deleted elsewhere, or wait for timeout
 		}
-	}
-
-
-	/**
-	 * Gets the array that holds the name and url of the configured Facebook page.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return array
-	 */
-	private function get_page() {
-		if ( ! is_array( $this->page ) && $this->is_configured() ) {
-			try {
-				$response = facebook_for_woocommerce()->get_api()->get_page( $this->get_facebook_page_id() );
-				$this->page = array(
-					'name' => $response->get_name(),
-					'url'  => $response->get_url(),
-				);
-			} catch ( ApiException $e ) {
-				// we intentionally set $this->page to an empty array if an error occurs to avoid additional API requests
-				// it's unlikely that we will get a different result if the exception was caused by an expired token, incorrect page ID, or rate limiting error
-				$this->page = array();
-				$message = sprintf( __( 'There was an error trying to retrieve information about the Facebook page: %s' ), $e->getMessage() );
-				facebook_for_woocommerce()->log( $message );
-			}
-		}
-		return is_array( $this->page ) ? $this->page : array();
-	}
-
-
-	/**
-	 * Gets the name of the configured Facebook page.
-	 *
-	 * @return string
-	 */
-	public function get_page_name() {
-
-		$page = $this->get_page();
-
-		return isset( $page['name'] ) ? $page['name'] : '';
-	}
-
-
-	/**
-	 * Gets the Facebook page URL.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return string
-	 */
-	public function get_page_url() {
-
-		$page = $this->get_page();
-
-		return isset( $page['url'] ) ? $page['url'] : '';
 	}
 
 

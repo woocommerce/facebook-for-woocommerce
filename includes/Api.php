@@ -82,13 +82,11 @@ class Api extends Base {
 	/**
 	 * Performs an API request.
 	 *
-	 * @since 2.1.0
-	 *
 	 * @param Api\Request $request request object
 	 * @return Api\Response
 	 * @throws Api\Exceptions\Request_Limit_Reached|ApiException
 	 */
-	public function perform_request( $request ) {
+	protected function perform_request( $request ): Api\Response {
 		$rate_limit_id   = $request::get_rate_limit_id();
 		$delay_timestamp = $this->get_rate_limit_delay( $rate_limit_id );
 		// if there is a delayed timestamp in the future, throw an exception
@@ -193,13 +191,11 @@ class Api extends Base {
 	/**
 	 * Gets the FBE installation IDs.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $external_business_id external business ID
-	 * @return Api\FBE\Installation\Read\Response
+	 * @param string $external_business_id External business id.
+	 * @return Api\Response|Api\FBE\Installation\Read\Response
 	 * @throws ApiException
 	 */
-	public function get_installation_ids( $external_business_id ) {
+	public function get_installation_ids( string $external_business_id ): Api\FBE\Installation\Read\Response {
 		$request = new Api\FBE\Installation\Read\Request( $external_business_id );
 		$this->set_response_handler( Api\FBE\Installation\Read\Response::class );
 		return $this->perform_request( $request );
@@ -212,10 +208,10 @@ class Api extends Base {
 	 * @since 2.0.0
 	 *
 	 * @param string $page_id page ID
-	 * @return Api\Pages\Read\Response
+	 * @return Api\Response|Api\Pages\Read\Response
 	 * @throws ApiException
 	 */
-	public function get_page( $page_id ) {
+	public function get_page( $page_id ): Api\Pages\Read\Response {
 		$request = new Api\Pages\Read\Request( $page_id );
 		$this->set_response_handler( Api\Pages\Read\Response::class );
 		return $this->perform_request( $request );
@@ -225,13 +221,11 @@ class Api extends Base {
 	/**
 	 * Gets a Catalog object from Facebook.
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @return Api\Catalog\Response
+	 * @param string $catalog_id Facebook catalog id.
+	 * @return Api\Response|Api\Catalog\Response
 	 * @throws ApiException
 	 */
-	public function get_catalog( $catalog_id ) {
+	public function get_catalog( string $catalog_id ): Api\Catalog\Response {
 		$request = new Api\Catalog\Request( $catalog_id );
 		$this->set_response_handler( Api\Catalog\Response::class );
 		return $this->perform_request( $request );
@@ -241,13 +235,11 @@ class Api extends Base {
 	/**
 	 * Gets a user object from Facebook.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
-	 * @return Api\User\Response
+	 * @return Api\Response|Api\User\Response
 	 * @throws ApiException
 	 */
-	public function get_user( $user_id = '' ) {
+	public function get_user( string $user_id = '' ): Api\User\Response {
 		$request = new Api\User\Request( $user_id );
 		$this->set_response_handler( Api\User\Response::class );
 		return $this->perform_request( $request );
@@ -255,20 +247,18 @@ class Api extends Base {
 
 
 	/**
-	 * Delete's a user's API permission.
+	 * Deletes user API permission.
 	 *
 	 * This is their form of "revoke".
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $user_id user ID. Defaults to the currently authenticated user
 	 * @param string $permission permission to delete
-	 * @return Api\User\Response
+	 * @return Api\Response|Api\User\Permissions\Delete\Response
 	 * @throws ApiException
 	 */
-	public function delete_user_permission( $user_id, $permission ) {
+	public function delete_user_permission( string $user_id, string $permission ): Api\User\Permissions\Delete\Response {
 		$request = new Api\User\Permissions\Delete\Request( $user_id, $permission );
-		$this->set_response_handler( Api\User\Response::class );
+		$this->set_response_handler( Api\User\Permissions\Delete\Response::class );
 		return $this->perform_request( $request );
 	}
 
