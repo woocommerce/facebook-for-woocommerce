@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Request object for Product Catalog > Product Groups > Update Graph Api.
  *
- * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/product_groups/
+ * @link https://developers.facebook.com/docs/marketing-api/reference/product-group/v13.0
  */
 class Request extends ApiRequest {
 

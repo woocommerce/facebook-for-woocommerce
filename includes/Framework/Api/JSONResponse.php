@@ -31,7 +31,7 @@ abstract class JSONResponse implements Response {
 	 */
 	public function __construct( string $raw_response_json ) {
 		$this->raw_response_json = $raw_response_json;
-		$this->response_data     = json_decode( $raw_response_json );
+		$this->response_data     = json_decode( $raw_response_json, true );
 	}
 
 
@@ -44,7 +44,7 @@ abstract class JSONResponse implements Response {
 	 */
 	public function __get( string $name ) {
 		// accessing the response_data object indirectly via attribute (useful when it's a class)
-		return isset( $this->response_data->$name ) ? $this->response_data->$name : null;
+		return $this->response_data[ $name ] ?? null;
 	}
 
 

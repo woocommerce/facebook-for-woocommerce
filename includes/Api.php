@@ -266,10 +266,8 @@ class Api extends Base {
 	/**
 	 * Gets the business configuration.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $external_business_id external business ID
-	 * @return Api\FBE\Configuration\Read\Response
+	 * @return Api\Response|Api\FBE\Configuration\Read\Response
 	 * @throws ApiException
 	 */
 	public function get_business_configuration( $external_business_id ) {
@@ -282,17 +280,15 @@ class Api extends Base {
 	/**
 	 * Updates the messenger configuration.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string                          $external_business_id external business ID
 	 * @param Api\FBE\Configuration\Messenger $configuration messenger configuration
-	 * @return Response
+	 * @return Api\Response|Api\FBE\Configuration\Update\Response
 	 * @throws ApiException
 	 */
-	public function update_messenger_configuration( $external_business_id, Api\FBE\Configuration\Messenger $configuration ) {
+	public function update_messenger_configuration( string $external_business_id, Api\FBE\Configuration\Messenger $configuration ): Api\FBE\Configuration\Update\Response {
 		$request = new Api\FBE\Configuration\Update\Request( $external_business_id );
 		$request->set_messenger_configuration( $configuration );
-		$this->set_response_handler( Api\Response::class );
+		$this->set_response_handler( Api\FBE\Configuration\Update\Response::class );
 		return $this->perform_request( $request );
 	}
 
@@ -302,19 +298,14 @@ class Api extends Base {
 	 *
 	 * @see Sync::create_or_update_products()
 	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $catalog_id catalog ID
-	 * @param array  $requests array of prefixed product IDs to create, update or remove
-	 * @param bool   $allow_upsert whether to allow updates to insert new items
-	 * @return Api\Catalog\Send_Item_Updates\Response
+	 * @param string $facebook_product_catalog_id Facebook Product Catalog ID.
+	 * @param array  $requests array of prefixed product IDs to create, update or remove.
+	 * @return Api\Response|Api\ProductCatalog\ItemsBatch\Create\Response
 	 * @throws ApiException
 	 */
-	public function send_item_updates( $catalog_id, $requests, $allow_upsert ) {
-		$request = new Api\Catalog\Send_Item_Updates\Request( $catalog_id );
-		$request->set_requests( $requests );
-		$request->set_allow_upsert( $allow_upsert );
-		$this->set_response_handler( Api\Catalog\Send_Item_Updates\Response::class );
+	public function send_item_updates( string $facebook_product_catalog_id, array $requests ) {
+		$request = new Api\ProductCatalog\ItemsBatch\Create\Request( $facebook_product_catalog_id, $requests );
+		$this->set_response_handler( Api\ProductCatalog\ItemsBatch\Create\Response::class );
 		return $this->perform_request( $request );
 	}
 
@@ -324,7 +315,7 @@ class Api extends Base {
 	 *
 	 * @param string $product_catalog_id Facebook Product Catalog ID.
 	 * @param array  $data Facebook Product Group Data.
-	 * @return Api\ProductCatalog\ProductGroups\Create\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductGroups\Create\Response
 	 * @throws ApiException
 	 */
 	public function create_product_group( string $product_catalog_id, array $data ): Api\ProductCatalog\ProductGroups\Create\Response {
@@ -366,16 +357,14 @@ class Api extends Base {
 	/**
 	 * Gets a list of Product Items in the given Product Group.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $product_group_id product group ID
 	 * @param int    $limit max number of results returned per page of data
-	 * @return Api\Catalog\Product_Group\Products\Read\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductGroups\Read\Response
 	 * @throws ApiException
 	 */
-	public function get_product_group_products( $product_group_id, $limit = 1000 ) {
-		$request = new Api\Catalog\Product_Group\Products\Read\Request( $product_group_id, $limit );
-		$this->set_response_handler( Api\Catalog\Product_Group\Products\Read\Response::class );
+	public function get_product_group_products( string $product_group_id, int $limit = 1000 ): Api\ProductCatalog\ProductGroups\Read\Response {
+		$request = new Api\ProductCatalog\ProductGroups\Read\Request( $product_group_id, $limit );
+		$this->set_response_handler( Api\ProductCatalog\ProductGroups\Read\Response::class );
 		return $this->perform_request( $request );
 	}
 
@@ -421,10 +410,10 @@ class Api extends Base {
 	 *
 	 * @param string $facebook_product_id Facebook Product ID.
 	 * @param array  $data Product Data.
-	 * @return Api\ProductCatalog\Products\Update\Response
+	 * @return Api\Request|Api\ProductCatalog\Products\Update\Response
 	 * @throws ApiException
 	 */
-	public function update_product_item( string $facebook_product_id, array $data ): Api\ProductCatalog\ProductGroups\Products\Update\Response {
+	public function update_product_item( string $facebook_product_id, array $data ): Api\ProductCatalog\Products\Update\Response {
 		$request = new Api\ProductCatalog\Products\Update\Request( $facebook_product_id, $data );
 		$this->set_response_handler( Api\ProductCatalog\Products\Update\Response::class );
 		return $this->perform_request( $request );

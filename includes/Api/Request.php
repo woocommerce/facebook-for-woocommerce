@@ -1,19 +1,11 @@
 <?php
-// phpcs:ignoreFile
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @package FacebookCommerce
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api;
 
 use WooCommerce\Facebook\Framework\Api\JSONRequest;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Base API request object.
