@@ -15,11 +15,11 @@ defined( 'ABSPATH' ) || exit;
 class Request extends ApiRequest {
 
 	/**
-	 * @param string $product_id Facebook Product ID.
+	 * @param string $facebook_product_id Facebook Product ID.
 	 * @param array  $data Facebook Product Data.
 	 */
-	public function __construct( string $product_id, array $data ) {
-		parent::__construct( "/{$product_id}", 'POST' );
+	public function __construct( string $facebook_product_id, array $data ) {
+		parent::__construct( "/{$facebook_product_id}", 'POST' );
 		parent::set_data( $data );
 	}
 }

@@ -393,25 +393,22 @@ class Api extends Base {
 	 *
 	 * @param string $product_group_id Facebook Product Group ID.
 	 * @param array  $data Facebook Product Data.
-	 * @return Api\ProductCatalog\Products\Create\Response
-	 * @throws ApiException
+	 * @return Api\Response|Api\ProductCatalog\Products\Create\Response
+	 * @throws ApiException In case of network request error.
 	 */
-	public function create_product_item( string $product_group_id, array $data ): Api\ProductCatalog\ProductGroups\Products\Create\Response {
+	public function create_product_item( string $product_group_id, array $data ): Api\ProductCatalog\Products\Create\Response {
 		$request = new Api\ProductCatalog\Products\Create\Request( $product_group_id, $data );
 		$this->set_response_handler( Api\ProductCatalog\Products\Create\Response::class );
 		return $this->perform_request( $request );
 	}
 
-
 	/**
 	 * Updates a Product Item object.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $facebook_product_id Facebook Product ID.
 	 * @param array  $data Product Data.
-	 * @return Api\Request|Api\ProductCatalog\Products\Update\Response
-	 * @throws ApiException
+	 * @return Api\Response|Api\ProductCatalog\Products\Update\Response
+	 * @throws ApiException In case of network request error.
 	 */
 	public function update_product_item( string $facebook_product_id, array $data ): Api\ProductCatalog\Products\Update\Response {
 		$request = new Api\ProductCatalog\Products\Update\Request( $facebook_product_id, $data );
@@ -419,15 +416,12 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
-
 	/**
 	 * Deletes a Product Item object.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $facebook_product_id Facebook Product ID.
-	 * @return Api\ProductCatalog\Products\Delete\Response
-	 * @throws ApiException
+	 * @return Api\Response|Api\ProductCatalog\Products\Delete\Response
+	 * @throws ApiException In case of network request error.
 	 */
 	public function delete_product_item( string $facebook_product_id ): Api\ProductCatalog\Products\Delete\Response {
 		$request = new Api\ProductCatalog\Products\Delete\Request( $facebook_product_id );
@@ -439,7 +433,7 @@ class Api extends Base {
 	/**
 	 * @param string $product_catalog_id
 	 * @param array $data
-	 * @return Api\ProductCatalog\ProductSets\Create\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductSets\Create\Response
 	 * @throws ApiException
 	 * @throws Api\Exceptions\Request_Limit_Reached
 	 */
@@ -453,7 +447,7 @@ class Api extends Base {
 	/**
 	 * @param string $product_set_id
 	 * @param array $data
-	 * @return Api\ProductCatalog\ProductSets\Update\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductSets\Update\Response
 	 * @throws ApiException
 	 * @throws Api\Exceptions\Request_Limit_Reached
 	 */
@@ -467,7 +461,7 @@ class Api extends Base {
 	/**
 	 * @param string $product_set_id Facebook Product Set ID.
 	 * @param bool   $allow_live_deletion Allow live Facebook Product Set Deletion.
-	 * @return Api\ProductCatalog\ProductSets\Delete\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductSets\Delete\Response
 	 * @throws ApiException
 	 * @throws Api\Exceptions\Request_Limit_Reached
 	 */
@@ -481,7 +475,7 @@ class Api extends Base {
 	/**
 	 * @param string $product_catalog_id
 	 * @param array  $data
-	 * @return Api\ProductCatalog\ProductFeeds\Create\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductFeeds\Create\Response
 	 * @throws ApiException
 	 * @throws Api\Exceptions\Request_Limit_Reached
 	 */
@@ -494,7 +488,7 @@ class Api extends Base {
 
 	/**
 	 * @param string $product_catalog_id
-	 * @return Api\ProductCatalog\ProductFeeds\ReadAll\Response
+	 * @return Api\Response|Api\ProductCatalog\ProductFeeds\ReadAll\Response
 	 * @throws ApiException
 	 * @throws Api\Exceptions\Request_Limit_Reached
 	 */

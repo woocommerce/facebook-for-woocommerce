@@ -76,7 +76,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of failed request.
 	 */
-	public function test_get_installation_ids_returns_installation_ids() {
+	public function test_get_installation_ids_returns_installation_ids_request() {
 		$external_business_id = 'wordpress-facebook-62c3f1add134a';
 
 		$response = function( $result, $parsed_args, $url ) use ( $external_business_id ) {
@@ -103,7 +103,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of failed request.
 	 */
-	public function test_get_catalog_returns_catalog_id_and_name() {
+	public function test_get_catalog_returns_catalog_id_and_name_request() {
 		$catalog_id = '726635365295186';
 
 		$response = function( $result, $parsed_args, $url ) use ( $catalog_id ) {
@@ -131,7 +131,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of failed request.
 	 */
-	public function test_get_user_returns_user_information() {
+	public function test_get_user_returns_user_information_request() {
 		$user_id = '';
 
 		$response = function( $result, $parsed_args, $url ) {
@@ -159,7 +159,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of failed request.
 	 */
-	public function test_delete_user_permission_deletes_user_permission() {
+	public function test_delete_user_permission_deletes_user_permission_request() {
 		$user_id    = '111189594891749';
 		$permission = 'manage_business_extension';
 
@@ -187,7 +187,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of failed request.
 	 */
-	public function test_get_business_configuration_returns_business_configuration() {
+	public function test_get_business_configuration_returns_business_configuration_request() {
 		$external_business_id = 'wordpress-facebook-62c3f1add134a';
 
 		$response = function( $result, $parsed_args, $url ) use ( $external_business_id ) {
@@ -218,7 +218,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of network request error.
 	 */
-	public function test_update_messenger_configuration_sends_message_configuration_update() {
+	public function test_update_messenger_configuration_sends_message_configuration_update_request() {
 		$external_business_id = 'wordpress-facebook-62c3f1add134a';
 		$configuration        = new Messenger(
 			[
@@ -253,7 +253,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of network request error.
 	 */
-	public function test_send_item_updates_sends_item_updates() {
+	public function test_send_item_updates_sends_item_updates_request() {
 		$facebook_catalog_id = '726635365295186';
 		$requests            = [
 			[
@@ -393,7 +393,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of network request error.
 	 */
-	public function test_delete_product_group_deletes_product_group() {
+	public function test_delete_product_group_deletes_product_group_request() {
 		$facebook_product_group_id = '5427299404026432';
 
 		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_group_id ) {
@@ -420,7 +420,7 @@ class ApiTest extends WP_UnitTestCase {
 	 * @return void
 	 * @throws ApiException In case of network request error.
 	 */
-	public function test_get_product_group_products_returns_group_products() {
+	public function test_get_product_group_products_returns_group_products_request() {
 		$facebook_product_group_id = '5427299404026432';
 		$limit                     = 999;
 
@@ -452,6 +452,256 @@ class ApiTest extends WP_UnitTestCase {
 				[
 					'id'          => '5454083851373820',
 					'retailer_id' => 'woo-vneck-tee-red_105',
+				],
+			],
+			$response->data
+		);
+	}
+
+	/**
+	 * Tests create product prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_create_product_item_creates_product_item_request() {
+		$facebook_product_group_id = '8672727046074523';
+		$data                      = [
+			'name'                  => 'Cap',
+			'description'           => 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo',
+			'image_url'             => 'https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/cap-2.jpg',
+			'additional_image_urls' => [
+				'https://wordpress-facebook.ddev.site/wp-content/uploads/2022/04/cap-2.jpg',
+			],
+			'url'                   => 'https://wordpress-facebook.ddev.site/product/long-sleeve-tee-2/',
+			'category'              => 'Accessories',
+			'brand'                 => 'WordPress-Facebook',
+			'retailer_id'           => 'woo-cap_97',
+			'price'                 => 1600,
+			'currency'              => 'USD',
+			'availability'          => 'in stock',
+			'visibility'            => 'published',
+			'sale_price_start_date' => '1970-01-29T00:00+00:00',
+			'sale_price_end_date'   => '2038-01-17T23:59+00:00',
+			'sale_price'            => 0,
+		];
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_group_id ) {
+			$this->assertEquals( 'POST', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_group_id}/products", $url );
+			$this->assertEquals( '{"name":"Cap","description":"Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo","image_url":"https:\/\/woocommercecore.mystagingwebsite.com\/wp-content\/uploads\/2017\/12\/cap-2.jpg","additional_image_urls":["https:\/\/wordpress-facebook.ddev.site\/wp-content\/uploads\/2022\/04\/cap-2.jpg"],"url":"https:\/\/wordpress-facebook.ddev.site\/product\/long-sleeve-tee-2\/","category":"Accessories","brand":"WordPress-Facebook","retailer_id":"woo-cap_97","price":1600,"currency":"USD","availability":"in stock","visibility":"published","sale_price_start_date":"1970-01-29T00:00+00:00","sale_price_end_date":"2038-01-17T23:59+00:00","sale_price":0}', $parsed_args['body'] );
+			return [
+				'body'     => '{"id":"8672727132741181"}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->create_product_item( $facebook_product_group_id, $data );
+
+		$this->assertEquals( '8672727132741181', $response->id );
+	}
+
+	/**
+	 * Tests update product prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_update_product_item_updated_product_item_request() {
+		$facebook_product_id = '8672727132741181';
+		$data                = [
+			'name'                  => 'Cap',
+			'description'           => 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo',
+			'image_url'             => 'https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/cap-2.jpg',
+			'additional_image_urls' => [
+				'https://wordpress-facebook.ddev.site/wp-content/uploads/2022/04/cap-2.jpg',
+			],
+			'url'                   => 'https://wordpress-facebook.ddev.site/product/long-sleeve-tee-2/',
+			'category'              => 'Accessories',
+			'brand'                 => 'WordPress-Facebook',
+			'retailer_id'           => 'woo-cap_97',
+			'price'                 => 1600,
+			'currency'              => 'USD',
+			'availability'          => 'in stock',
+			'visibility'            => 'published',
+			'sale_price_start_date' => '1970-01-29T00:00+00:00',
+			'sale_price_end_date'   => '2038-01-17T23:59+00:00',
+			'sale_price'            => 0,
+		];
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_id ) {
+			$this->assertEquals( 'POST', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_id}", $url );
+			$this->assertEquals( '{"name":"Cap","description":"Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo","image_url":"https:\/\/woocommercecore.mystagingwebsite.com\/wp-content\/uploads\/2017\/12\/cap-2.jpg","additional_image_urls":["https:\/\/wordpress-facebook.ddev.site\/wp-content\/uploads\/2022\/04\/cap-2.jpg"],"url":"https:\/\/wordpress-facebook.ddev.site\/product\/long-sleeve-tee-2\/","category":"Accessories","brand":"WordPress-Facebook","retailer_id":"woo-cap_97","price":1600,"currency":"USD","availability":"in stock","visibility":"published","sale_price_start_date":"1970-01-29T00:00+00:00","sale_price_end_date":"2038-01-17T23:59+00:00","sale_price":0}', $parsed_args['body'] );
+			return [
+				'body'     => '{"success":true}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->update_product_item( $facebook_product_id, $data );
+
+		$this->assertTrue( $response->success );
+	}
+
+	/**
+	 * Tests delete product prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_delete_product_item_deletes_product_item_request() {
+		$facebook_product_id = '8672727132741181';
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_id ) {
+			$this->assertEquals( 'DELETE', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_id}", $url );
+			return [
+				'body'     => '{"success":true}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->delete_product_item( $facebook_product_id );
+
+		$this->assertTrue( $response->success );
+	}
+
+	/**
+	 * Tests create product set prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_create_product_set_item_creates_set_request() {
+		$facebook_product_catalog_id = '726635365295186';
+		$data                        = [
+			'name'     => 'Fb excluded set',
+			'filter'   => '{"or":[{"retailer_id":{"eq":"bundle-one_134"}},{"retailer_id":{"eq":"woo-sunglasses_98"}},{"retailer_id":{"eq":"Woo-beanie-logo_112"}},{"retailer_id":{"eq":"woo-album_103"}},{"retailer_id":{"eq":"woo-single_104"}},{"retailer_id":{"eq":"woo-belt_96"}},{"retailer_id":{"eq":"woo-cap_97"}},{"retailer_id":{"eq":"woo-beanie_95"}}]}',
+			'metadata' => '{"description":""}',
+		];
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_catalog_id ) {
+			$this->assertEquals( 'POST', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_catalog_id}/product_sets", $url );
+			$this->assertEquals( '{"name":"Fb excluded set","filter":"{\"or\":[{\"retailer_id\":{\"eq\":\"bundle-one_134\"}},{\"retailer_id\":{\"eq\":\"woo-sunglasses_98\"}},{\"retailer_id\":{\"eq\":\"Woo-beanie-logo_112\"}},{\"retailer_id\":{\"eq\":\"woo-album_103\"}},{\"retailer_id\":{\"eq\":\"woo-single_104\"}},{\"retailer_id\":{\"eq\":\"woo-belt_96\"}},{\"retailer_id\":{\"eq\":\"woo-cap_97\"}},{\"retailer_id\":{\"eq\":\"woo-beanie_95\"}}]}","metadata":"{\"description\":\"\"}"}', $parsed_args['body'] );
+			return [
+				'body'     => '{"id":"848141989502356"}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->create_product_set_item( $facebook_product_catalog_id, $data );
+
+		$this->assertEquals( '848141989502356', $response->id );
+	}
+
+	/**
+	 * Tests update product set prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_update_product_set_item_updates_set_request() {
+		$facebook_product_set_id = '609903163910641';
+		$data                    = [
+			'name'     => 'Fb excluded set',
+			'filter'   => '{"or":[{"retailer_id":{"eq":"bundle-one_134"}},{"retailer_id":{"eq":"woo-sunglasses_98"}},{"retailer_id":{"eq":"Woo-beanie-logo_112"}},{"retailer_id":{"eq":"woo-album_103"}},{"retailer_id":{"eq":"woo-single_104"}},{"retailer_id":{"eq":"woo-belt_96"}},{"retailer_id":{"eq":"woo-cap_97"}},{"retailer_id":{"eq":"woo-beanie_95"}}]}',
+			'metadata' => '{"description":""}',
+		];
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_set_id ) {
+			$this->assertEquals( 'POST', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_set_id}", $url );
+			$this->assertEquals( '{"name":"Fb excluded set","filter":"{\"or\":[{\"retailer_id\":{\"eq\":\"bundle-one_134\"}},{\"retailer_id\":{\"eq\":\"woo-sunglasses_98\"}},{\"retailer_id\":{\"eq\":\"Woo-beanie-logo_112\"}},{\"retailer_id\":{\"eq\":\"woo-album_103\"}},{\"retailer_id\":{\"eq\":\"woo-single_104\"}},{\"retailer_id\":{\"eq\":\"woo-belt_96\"}},{\"retailer_id\":{\"eq\":\"woo-cap_97\"}},{\"retailer_id\":{\"eq\":\"woo-beanie_95\"}}]}","metadata":"{\"description\":\"\"}"}', $parsed_args['body'] );
+			return [
+				'body'     => '{"success":true}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->update_product_set_item( $facebook_product_set_id, $data );
+
+		$this->assertTrue( $response->success );
+	}
+
+	/**
+	 * Tests delete product set prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_delete_product_set_item_deletes_set_request() {
+		$facebook_product_set_id = '609903163910641';
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_set_id ) {
+			$this->assertEquals( 'DELETE', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_set_id}?allow_live_product_set_deletion=true", $url );
+			return [
+				'body'     => '{"success":true}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->delete_product_set_item( $facebook_product_set_id, true );
+
+		$this->assertTrue( $response->success );
+	}
+
+	/**
+	 * Tests read feeds prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_read_feeds_creates_read_feeds_request() {
+		$facebook_product_catalog_id = '726635365295186';
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_catalog_id ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+			$this->assertEquals( "https://graph.facebook.com/v13.0/{$facebook_product_catalog_id}/product_feeds", $url );
+			return [
+				'body'     => '{"data":[{"id":"1068839467367301","file_name":"WooCommerce Catalog - Feed","name":"WooCommerce Catalog - Feed"}],"paging":{"cursors":{"before":"QVFIUmJybjEwNU81U29oZAXdmcXl2MEhBdWthLVhSUlhUcV9PLWtSR1RQVkJqTnlWVTRtQzRvTExRdjZAheDlsZA0JKYUkxaHJLOVZAqYmU2eVZAYQXJRNG5pRXp3","after":"QVFIUmJybjEwNU81U29oZAXdmcXl2MEhBdWthLVhSUlhUcV9PLWtSR1RQVkJqTnlWVTRtQzRvTExRdjZAheDlsZA0JKYUkxaHJLOVZAqYmU2eVZAYQXJRNG5pRXp3"}}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->read_feeds( $facebook_product_catalog_id );
+
+		$this->assertEquals(
+			[
+				[
+					'id'        => '1068839467367301',
+					'file_name' => 'WooCommerce Catalog - Feed',
+					'name'      => 'WooCommerce Catalog - Feed',
 				],
 			],
 			$response->data
