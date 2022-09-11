@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
@@ -178,75 +178,6 @@ class WC_Facebook_Product_Feed {
 		 * @param string $file_name the temporary file name
 		 */
 		return apply_filters( 'wc_facebook_product_catalog_temp_feed_file_name', $file_name );
-	}
-
-
-	public function sync_all_products_using_feed() {
-		$start_time = microtime( true );
-		$this->log_feed_progress( 'Sync all products using feed' );
-
-		try {
-
-			if ( ! $this->generate_productfeed_file() ) {
-				throw new PluginException( 'Feed file not generated' );
-			}
-		} catch ( PluginException $exception ) {
-
-			$this->log_feed_progress(
-				'Failure - Sync all products using feed. ' . $exception->getMessage()
-			);
-			return false;
-		}
-
-		$this->log_feed_progress( 'Sync all products using feed, feed file generated' );
-
-		if ( ! $this->feed_id ) {
-			$this->feed_id = $this->create_feed();
-			if ( ! $this->feed_id ) {
-				$this->log_feed_progress(
-					'Failure - Sync all products using feed, facebook feed not created'
-				);
-				return false;
-			}
-			$this->log_feed_progress(
-				'Sync all products using feed, facebook feed created'
-			);
-		} else {
-			$this->log_feed_progress(
-				'Sync all products using feed, facebook feed already exists.'
-			);
-		}
-
-		$this->upload_id = $this->create_upload( $this->feed_id );
-		if ( ! $this->upload_id ) {
-			$this->log_feed_progress(
-				'Failure - Sync all products using feed, facebook upload not created'
-			);
-			return false;
-		}
-		$this->log_feed_progress(
-			'Sync all products using feed, facebook upload created'
-		);
-
-		$total_product_count        =
-		$this->has_default_product_count + $this->no_default_product_count;
-		$default_product_percentage =
-		( $total_product_count == 0 || $this->has_default_product_count == 0 )
-		? 0
-		: $this->has_default_product_count / $total_product_count * 100;
-		$time_spent                 = microtime( true ) - $start_time;
-		$data                       = array();
-		// Only log performance if this store has products in order to get average
-		// performance.
-		if ( $total_product_count != 0 ) {
-			$data = array(
-				'sync_time'                  => $time_spent,
-				'total'                      => $total_product_count,
-				'default_product_percentage' => $default_product_percentage,
-			);
-		}
-		$this->log_feed_progress( 'Complete - Sync all products using feed.', $data );
-		return true;
 	}
 
 
@@ -602,36 +533,6 @@ class WC_Facebook_Product_Feed {
 		static::get_value_from_product_data( $product_data, 'google_product_category' ) . ',' .
 		static::get_value_from_product_data( $product_data, 'default_product' ) . ',' .
 		static::get_value_from_product_data( $product_data, 'variant' ) . PHP_EOL;
-	}
-
-
-	/**
-	 * @return string|null
-	 * @throws \WooCommerce\Facebook\Api\Exceptions\Request_Limit_Reached
-	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
-	 */
-	private function create_feed(): ?string {
-		$result  = facebook_for_woocommerce()->get_api()->create_feed( $this->facebook_catalog_id, [ 'name' => self::FEED_NAME ] );
-		$feed_id = $result->id;
-		if ( ! $feed_id ) {
-			$this->log_feed_progress( 'Response from creating feed not return feed id!' );
-			return null;
-		}
-		return $feed_id;
-	}
-
-
-	private function create_upload( $facebook_feed_id ) {
-		$result = $this->fbgraph->create_upload(
-			$facebook_feed_id,
-			$this->get_file_path()
-		);
-		if ( is_null( $result ) || ! isset( $result['id'] ) || ! $result['id'] ) {
-			$this->log_feed_progress( json_encode( $result ) );
-			return null;
-		}
-		$upload_id = $result['id'];
-		return $upload_id;
 	}
 
 	private static function format_additional_image_url( $product_image_urls ) {

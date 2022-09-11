@@ -32,8 +32,12 @@ class Api extends Base {
 
 	use Api\Traits\Rate_Limited_API;
 
+	public const GRAPH_API_URL = 'https://graph.facebook.com/';
+
+	public const API_VERSION = 'v13.0';
+
 	/** @var string URI used for the request */
-	protected $request_uri = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
+	protected $request_uri = self::GRAPH_API_URL . self::API_VERSION;
 
 	/** @var string the configured access token */
 	protected $access_token;
@@ -470,21 +474,6 @@ class Api extends Base {
 		$this->set_response_handler( Api\ProductCatalog\ProductSets\Delete\Response::class );
 		return $this->perform_request( $request );
 	}
-
-
-	/**
-	 * @param string $product_catalog_id
-	 * @param array  $data
-	 * @return Api\Response|Api\ProductCatalog\ProductFeeds\Create\Response
-	 * @throws ApiException
-	 * @throws Api\Exceptions\Request_Limit_Reached
-	 */
-	public function create_feed( string $product_catalog_id, array $data ): Api\ProductCatalog\ProductFeeds\Create\Response {
-		$request = new Api\ProductCatalog\ProductFeeds\Create\Request( $product_catalog_id, $data );
-		$this->set_response_handler( Api\ProductCatalog\ProductFeeds\Create\Response::class );
-		return $this->perform_request( $request );
-	}
-
 
 	/**
 	 * @param string $product_catalog_id

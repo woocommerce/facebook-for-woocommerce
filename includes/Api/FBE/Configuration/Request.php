@@ -9,8 +9,6 @@ use WooCommerce\Facebook\Api;
 
 /**
  * FBE Configuration API request object.
- *
- * @since 2.0.0
  */
 class Request extends Api\Request {
 	/**
