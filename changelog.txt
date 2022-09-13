@@ -1,6 +1,6 @@
 *** Facebook for WooCommerce Changelog ***
 
-2022-09-13 - version 2.6.23
+2022-xx-xx - version X.X.X
 * Add - Show warning when creating product set with excluded categories.
 * Fix - Messenger settings are no longer overridden after business config refresh.
 * Fix - PHP notice thrown by get_page_id() in facebook-for-woocommerce/includes/API/FBE/Installation/Read/Response.php.
