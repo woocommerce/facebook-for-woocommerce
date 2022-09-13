@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.0
-Stable tag: 2.6.22
+Stable tag: 2.6.23
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.23 - 2022-09-13 =
+* Add - Show warning when creating product set with excluded categories.
+* Fix - Messenger settings are no longer overridden after business config refresh.
+* Fix - PHP notice thrown by get_page_id() in facebook-for-woocommerce/includes/API/FBE/Installation/Read/Response.php.
+* Fix - When disabling Enable Messenger on the Messenger setting page, the setting does not persist after selecting Save Changes.
 
 = 2.6.22 - 2022-09-06 =
 * Fix - Adding an excluded category doesn't remove that category synced products.
