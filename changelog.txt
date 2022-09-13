@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 2.6.23 - 2022-09-13 =
+* Add - Show warning when creating product set with excluded categories.
+* Fix - Messenger settings are no longer overridden after business config refresh.
+* Fix - PHP notice thrown by get_page_id() in facebook-for-woocommerce/includes/API/FBE/Installation/Read/Response.php.
+* Fix - When disabling Enable Messenger on the Messenger setting page, the setting does not persist after selecting Save Changes.
+
 = 2.6.22 - 2022-09-06 =
 * Fix - Adding an excluded category doesn't remove that category synced products.
 * Fix - Ensure content_name and content_ids addToCart pixel event properties are correct for variable products when redirect to cart is enabled in WooCommerce.
