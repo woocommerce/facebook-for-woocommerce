@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= X.X.X - 2022-xx-xx =
+= 2.6.23 - 2022-09-13 =
 * Add - Show warning when creating product set with excluded categories.
 * Fix - Messenger settings are no longer overridden after business config refresh.
 * Fix - PHP notice thrown by get_page_id() in facebook-for-woocommerce/includes/API/FBE/Installation/Read/Response.php.
