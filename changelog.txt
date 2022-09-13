@@ -1,5 +1,5 @@
 *** Facebook for WooCommerce Changelog ***
-z
+
 = 2.6.22 - 2022-09-06 =
 * Fix - Adding an excluded category doesn't remove that category synced products.
 * Fix - Ensure content_name and content_ids addToCart pixel event properties are correct for variable products when redirect to cart is enabled in WooCommerce.
