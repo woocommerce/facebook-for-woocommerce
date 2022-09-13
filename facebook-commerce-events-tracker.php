@@ -918,10 +918,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			// use a session flag to ensure an order is tracked with any payment method, also when the order is placed through AJAX
-			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order_id;
 
 			// use a session flag to ensure a Purchase event is not tracked multiple times
-			$purchase_tracked_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked';
+			$purchase_tracked_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked' . $order_id;
 
 			// when saving the order meta data: add a flag to mark the order tracked
 			if ( 'woocommerce_checkout_update_order_meta' === current_action() ) {
@@ -1015,7 +1015,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order->get_id();
 			WC()->session->set( $order_placed_session_flag, 'yes' );
 
 		}
