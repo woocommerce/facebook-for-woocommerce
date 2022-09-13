@@ -84,7 +84,7 @@ class WC_Facebookcommerce_Utils {
 	 * from WooCommerce
 	 *
 	 * @access public
-	 * @param WC_Product $woo_product
+	 * @param WC_Product|WC_Facebook_Product $woo_product
 	 * @return string
 	 */
 	public static function get_fb_retailer_id( $woo_product ) {
@@ -191,7 +191,7 @@ class WC_Facebookcommerce_Utils {
 	 * an array with a single woo ID for simple products.
 	 *
 	 * @access public
-	 * @param WC_Product $woo_product
+	 * @param WC_Product|WC_Facebook_Product $woo_product
 	 * @return array
 	 */
 	public static function get_product_array( $woo_product ) {

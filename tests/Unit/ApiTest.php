@@ -567,6 +567,39 @@ class ApiTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests get product ids prepares a request to Facebook.
+	 *
+	 * @return void
+	 * @throws ApiException In case of network request error.
+	 */
+	public function test_get_product_facebook_ids_creates_get_ids_request() {
+		$facebook_product_catalog_id  = '726635365295186';
+		$facebook_product_retailer_id = 'woo-cap_97';
+
+		$response = function( $result, $parsed_args, $url ) use ( $facebook_product_catalog_id, $facebook_product_retailer_id ) {
+			$this->assertEquals( 'GET', $parsed_args['method'] );
+
+			$path = "catalog:{$facebook_product_catalog_id}:" . base64_encode( $facebook_product_retailer_id );
+			$path = "/{$path}/?fields=id,product_group{id}";
+
+			$this->assertEquals( "{$this->endpoint}{$this->version}{$path}", $url );
+			return [
+				'body'     => '{"id":"8672727132741181","product_group":{"id":"8672727046074523"}}',
+				'response' => [
+					'code'    => 200,
+					'message' => 'OK',
+				],
+			];
+		};
+		add_filter( 'pre_http_request', $response, 10, 3 );
+
+		$response = $this->api->get_product_facebook_ids( $facebook_product_catalog_id, $facebook_product_retailer_id );
+
+		$this->assertEquals( '8672727132741181', $response->id );
+		$this->assertEquals( '8672727046074523', $response->get_facebook_product_group_id() );
+	}
+
+	/**
 	 * Tests delete product prepares a request to Facebook.
 	 *
 	 * @return void

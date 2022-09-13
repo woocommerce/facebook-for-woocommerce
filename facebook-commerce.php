@@ -265,12 +265,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				}
 			}
 
-			if ( ! class_exists( 'WC_Facebook_Integration_Test' ) ) {
-				include_once 'includes/test/facebook-integration-test.php';
-			}
-			$integration_test           = WC_Facebook_Integration_Test::get_instance( $this );
-			$integration_test::$fbgraph = $this->fbgraph;
-
 			if ( ! $this->get_pixel_install_time() && $this->get_facebook_pixel_id() ) {
 				$this->update_pixel_install_time( time() );
 			}
@@ -1997,9 +1991,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			return false;
 		}
 
-		$test_instance   = WC_Facebook_Integration_Test::get_instance( $this );
-		$this->test_mode = $test_instance::$test_mode;
-
 		// Include draft products (omit 'post_status' => 'publish')
 		WC_Facebookcommerce_Utils::log( 'Removing FBIDs from all products' );
 
@@ -2963,23 +2954,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
  	 * @return bool
  	 */
  	public function is_legacy_feed_file_generation_enabled() {
- 		return (bool) ( 'yes' === get_option( self::OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED, 'yes' ) );
+ 		return 'yes' === get_option( self::OPTION_LEGACY_FEED_FILE_GENERATION_ENABLED, 'yes' );
  	}
-
-
-	/**
-	 * Determines whether the scheduled re-sync is enabled.
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.0.0
-	 *
-	 * @return bool
-	 */
-	public function is_scheduled_resync_enabled() {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-		return false;
-	}
-
 
 	/**
 	 * Determines whether the Facebook messenger is enabled.
@@ -3317,12 +3293,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param WC_Facebook_Product|null $woo_product product
 	 * @return mixed|void|null
 	 */
-	public function get_product_fbid( $fbid_type, $wp_id, $woo_product = null ) {
-
-		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta(
-			$wp_id,
-			$fbid_type
-		);
+	public function get_product_fbid( string $fbid_type, int $wp_id, ?WC_Facebook_Product $woo_product = null ) {
+		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta( $wp_id, $fbid_type );
 
 		if ( $fb_id ) {
 			return $fb_id;
@@ -3339,72 +3311,64 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
-		$product_fbid_result = $this->fbgraph->get_facebook_id(
+		$facebook_ids = facebook_for_woocommerce()->get_api()->get_product_facebook_ids(
 			$this->get_product_catalog_id(),
 			$fb_retailer_id
 		);
 
-		if ( is_wp_error( $product_fbid_result ) ) {
+//		$product_fbid_result = $this->fbgraph->get_facebook_id(
+//			$this->get_product_catalog_id(),
+//			$fb_retailer_id
+//		);
 
-			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
+//		if ( is_wp_error( $product_fbid_result ) ) {
+//
+//			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
+//
+//			$this->display_error_message(
+//				sprintf(
+//					/* translators: Placeholders %1$s - original error message from Facebook API */
+//					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
+//					$product_fbid_result->get_error_message()
+//				)
+//			);
+//
+//			return;
+//		}
 
-			$this->display_error_message(
-				sprintf(
-					/* translators: Placeholders %1$s - original error message from Facebook API */
-					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
-					$product_fbid_result->get_error_message()
-				)
-			);
+//		if ( $product_fbid_result && isset( $product_fbid_result['body'] ) ) {
+//
+//			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
+//
+//			if ( ! empty( $response->id ) ) {
+//
+//				if ( $fbid_type == self::FB_PRODUCT_GROUP_ID ) {
+//					$fb_id = $response->get_facebook_product_group_id();
+//				} else {
+//					$fb_id = $response->id;
+//				}
+//
+//				update_post_meta(
+//					$wp_id,
+//					$fbid_type,
+//					$fb_id
+//				);
+//
+//				return $fb_id;
+//			}
+//		}
 
-			return;
+		if ( ! empty( $facebook_ids->id ) ) {
+			$fb_id = $fbid_type == self::FB_PRODUCT_GROUP_ID
+				? $facebook_ids->get_facebook_product_group_id()
+				: $facebook_ids->id;
+
+			update_post_meta( $wp_id, $fbid_type, $fb_id );
+
+			return $fb_id;
 		}
 
-		if ( $product_fbid_result && isset( $product_fbid_result['body'] ) ) {
-
-			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
-
-			if ( ! empty( $body->id ) ) {
-
-				if ( $fbid_type == self::FB_PRODUCT_GROUP_ID ) {
-					$fb_id = $body->product_group->id;
-				} else {
-					$fb_id = $body->id;
-				}
-
-				update_post_meta(
-					$wp_id,
-					$fbid_type,
-					$fb_id
-				);
-
-				return $fb_id;
-			}
-		}
-
-		return;
-	}
-
-
-	private function set_default_variant( $product_group_id, $product_item_id ) {
-		$result = $this->check_api_result(
-			$this->fbgraph->set_default_variant(
-				$product_group_id,
-				array( 'default_product_id' => $product_item_id )
-			)
-		);
-		if ( ! $result ) {
-			WC_Facebookcommerce_Utils::fblog(
-				'Fail to set default product item',
-				array(),
-				true
-			);
-		}
-	}
-
-	private function fb_wp_die() {
-		if ( ! $this->test_mode ) {
-			wp_die();
-		}
+		return null;
 	}
 
 	/**

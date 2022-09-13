@@ -35,7 +35,6 @@ class WC_Facebookcommerce_Graph_API {
 		$this->api_key = $api_key;
 	}
 
-
 	/**
 	 * Issues a GET request to the Graph API.
 	 *
@@ -60,7 +59,6 @@ class WC_Facebookcommerce_Graph_API {
 
 		return $response;
 	}
-
 
 	/**
 	 * Performs a Graph API request to the given URL.
@@ -104,7 +102,6 @@ class WC_Facebookcommerce_Graph_API {
 		return $response;
 	}
 
-
 	public function _post( $url, $data, $api_key = '' ) {
 		if ( class_exists( 'WC_Facebookcommerce_Async_Request' ) ) {
 			return self::_post_async( $url, $data );
@@ -130,7 +127,6 @@ class WC_Facebookcommerce_Graph_API {
 
 		return $response;
 	}
-
 
 	/**
 	 * Issues an asynchronous POST request to the Graph API.
@@ -168,7 +164,6 @@ class WC_Facebookcommerce_Graph_API {
 		return $response;
 	}
 
-
 	/**
 	 * Issues a DELETE request to the Graph API.
 	 *
@@ -194,7 +189,6 @@ class WC_Facebookcommerce_Graph_API {
 
 		return $response;
 	}
-
 
 	/**
 	 * Logs the request and response data.
@@ -267,7 +261,6 @@ class WC_Facebookcommerce_Graph_API {
 		facebook_for_woocommerce()->log_api_request( $request_data, $response_data );
 	}
 
-
 	/**
 	 * Determines whether the product catalog ID is valid.
 	 *
@@ -286,36 +279,6 @@ class WC_Facebookcommerce_Graph_API {
 		return 200 === (int) wp_remote_retrieve_response_code( $response );
 	}
 
-
-	public function create_product_group( $product_catalog_id, $data ) {
-		$url = $this->build_url( $product_catalog_id, '/product_groups' );
-		return self::_post( $url, $data );
-	}
-
-	// POST https://graph.facebook.com/vX.X/{product-group-id}/products
-	public function create_product_item( $product_group_id, $data ) {
-		$url = $this->build_url( $product_group_id, '/products' );
-		return self::_post( $url, $data );
-	}
-
-	public function delete_product_item( $product_item_id ) {
-		$product_item_url = $this->build_url( $product_item_id );
-		return self::_delete( $product_item_url );
-	}
-
-	// POST https://graph.facebook.com/vX.X/{product-catalog-id}/product_sets
-	public function create_product_set_item( $product_catalog_id, $data ) {
-		$url = $this->build_url( $product_catalog_id, '/product_sets' );
-		return self::_post( $url, $data );
-	}
-
-	// POST https://graph.facebook.com/vX.X/{product-set-id}
-	public function update_product_set_item( $product_set_id, $data ) {
-		$url = $this->build_url( $product_set_id, '' );
-		return self::_post( $url, $data );
-	}
-
-
 	public function log( $ems_id, $message, $error ) {
 		$log_url = $this->build_url( $ems_id, '/log_events' );
 
@@ -325,84 +288,6 @@ class WC_Facebookcommerce_Graph_API {
 		);
 
 		self::_post( $log_url, $data );
-	}
-
-	public function create_upload( $facebook_feed_id, $path_to_feed_file ) {
-		$url = $this->build_url(
-			$facebook_feed_id,
-			'/uploads?access_token=' . $this->api_key
-		);
-
-		$data = array(
-			'file'        => new CurlFile( $path_to_feed_file, 'text/csv' ),
-			'update_only' => true,
-		);
-
-		$curl = curl_init();
-		curl_setopt_array(
-			$curl,
-			array(
-				CURLOPT_URL            => $url,
-				CURLOPT_POST           => 1,
-				CURLOPT_POSTFIELDS     => $data,
-				CURLOPT_RETURNTRANSFER => 1,
-			)
-		);
-		$response = curl_exec( $curl );
-		if ( curl_errno( $curl ) ) {
-			WC_Facebookcommerce_Utils::fblog( $response );
-			return null;
-		}
-		return WC_Facebookcommerce_Utils::decode_json( $response, true );
-	}
-
-
-	public function create_feed( $facebook_catalog_id, $data ) {
-		$url = $this->build_url( $facebook_catalog_id, '/product_feeds' );
-		$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
-		// success API call will return {id: <product feed id>}
-		// failure API will return {error: <error message>}
-		return self::_post( $url, $data );
-	}
-
-	/**
-	 * Get all feed configurations for a given catalog id.
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-	 * @since 2.6.0
-	 *
-	 * @param String $facebook_catalog_id Facebook Catalog Id.
-	 * @return Array Facebook feeds configurations.
-	 */
-	public function read_feeds( $facebook_catalog_id ) {
-		$url = $this->get_feed_endpoint_url( $facebook_catalog_id );
-		return $this->_get( $url );
-	}
-
-	/**
-	 * Get general info about a feed (data source) configured in Facebook Business.
-	 *
-	 * @see https://developers.facebook.com/docs/marketing-api/reference/product-feed/
-	 * @since 2.6.0
-	 *
-	 * @param String $feed_id Feed Id.
-	 * @return Array Facebook feeds configurations.
-	 */
-	public function read_feed_information( $feed_id ) {
-		$url = $this->build_url( $feed_id, '/?fields=id,name,schedule,update_schedule,uploads' );
-		return $this->_get( $url );
-	}
-
-	/**
-	 * Create product_feeds graph edge url.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @param String $facebook_catalog_id Facebook Catalog Id.
-	 * @return String Graph edge url.
-	 */
-	public function get_feed_endpoint_url( $facebook_catalog_id ) {
-		return $this->build_url( $facebook_catalog_id, '/product_feeds' );
 	}
 
 	public function get_upload_status( $facebook_upload_id ) {
@@ -453,33 +338,6 @@ class WC_Facebookcommerce_Graph_API {
 		return $connect_woo;
 	}
 
-	public function get_facebook_id( $facebook_catalog_id, $product_id ) {
-		$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
-		base64_encode( $product_id ) . '/?fields=id,product_group{id}';
-		$url   = $this->build_url( '', $param );
-		// success API call will return
-		// {id: <fb product id>, product_group{id} <fb product group id>}
-		// failure API will return {error: <error message>}
-		return self::_get( $url );
-	}
-
-	public function check_product_info( $facebook_catalog_id, $product_id, $pr_v ) {
-		$param = 'catalog:' . (string) $facebook_catalog_id . ':' .
-		base64_encode( $product_id ) . '/?fields=id,name,description,price,' .
-		'sale_price,sale_price_start_date,sale_price_end_date,image_url,' .
-		'visibility';
-		if ( $pr_v ) {
-			$param = $param . ',additional_variant_attributes{value}';
-		}
-		$url = $this->build_url( '', $param );
-		// success API call will return
-		// {id: <fb product id>, name,description,price,sale_price,sale_price_start_date
-		// sale_price_end_date
-		// failure API will return {error: <error message>}
-		return self::_get( $url );
-	}
-
-
 	/**
 	 * Gets the connected asset IDs.
 	 *
@@ -512,12 +370,6 @@ class WC_Facebookcommerce_Graph_API {
 		}
 
 		return $ids;
-	}
-
-
-	public function set_default_variant( $product_group_id, $data ) {
-		$url = $this->build_url( $product_group_id );
-		return self::_post( $url, $data );
 	}
 
 	private function build_url( $field_id, $param = '', $api_version = '' ) {

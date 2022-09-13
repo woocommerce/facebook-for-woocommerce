@@ -406,6 +406,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Updates a Product Item object.
 	 *
@@ -420,6 +421,7 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
 	/**
 	 * Deletes a Product Item object.
 	 *
@@ -430,6 +432,22 @@ class Api extends Base {
 	public function delete_product_item( string $facebook_product_id ): Api\ProductCatalog\Products\Delete\Response {
 		$request = new Api\ProductCatalog\Products\Delete\Request( $facebook_product_id );
 		$this->set_response_handler( Api\ProductCatalog\Products\Delete\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * Returns product Facebook ID and Facebook Group ID.
+	 *
+	 * @param string $facebook_product_catalog_id
+	 * @param string $facebook_retailer_id
+	 * @return Api\Response|Api\ProductCatalog\Products\Id\Response
+	 * @throws ApiException In case of network request error.
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function get_product_facebook_ids( string $facebook_product_catalog_id, string $facebook_retailer_id ): Api\ProductCatalog\Products\Id\Response {
+		$request = new Api\ProductCatalog\Products\Id\Request( $facebook_product_catalog_id, $facebook_retailer_id );
+		$this->set_response_handler( Api\ProductCatalog\Products\Id\Response::class );
 		return $this->perform_request( $request );
 	}
 
