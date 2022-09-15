@@ -519,9 +519,28 @@ class Api extends Base {
 	}
 
 
+	/**
+	 * @param string $product_feed_upload_id
+	 * @return Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
 	public function read_upload( string $product_feed_upload_id ) {
 		$request = new Api\ProductCatalog\ProductFeedUploads\Read\Request( $product_feed_upload_id );
 		$this->set_response_handler( Api\ProductCatalog\ProductFeedUploads\Read\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	/**
+	 * @param string $external_merchant_settings_id
+	 * @return Api\Response|Api\Tip\Read\Response
+	 * @throws ApiException
+	 * @throws Api\Exceptions\Request_Limit_Reached
+	 */
+	public function get_tip_info( string $external_merchant_settings_id ): Api\Tip\Read\Response {
+		$request = new Api\Tip\Read\Request( $external_merchant_settings_id );
+		$this->set_response_handler( Api\Tip\Read\Response::class );
 		return $this->perform_request( $request );
 	}
 
