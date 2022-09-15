@@ -11,12 +11,12 @@
 
 namespace WooCommerce\Facebook\API\FBE\Configuration;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The messenger configuration object.
  *
- * @since 2.0.0
+ * @linlk https://developers.facebook.com/docs/facebook-business-extension/fbe/reference#FBEMessengerChatConfigData
  */
 class Messenger {
 

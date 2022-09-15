@@ -15,7 +15,6 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Handlers\Connection;
-use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
 
 defined( 'ABSPATH' ) || exit;
@@ -593,8 +592,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_variation_product_item_ids( $product, $product_group_id ) {
 
-		$product_item_ids_by_variation_id = array();
-		$missing_product_item_ids         = array();
+		$product_item_ids_by_variation_id = [];
+		$missing_product_item_ids         = [];
 
 		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored
 		foreach ( $product->get_children() as $variation_id ) {
@@ -647,7 +646,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function find_variation_product_item_ids( $product_group_id ) {
 
-		$product_item_ids = array();
+		$product_item_ids = [];
 
 		try {
 
@@ -748,7 +747,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_enqueue_script(
 			'wc_facebook_infobanner_jsx',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/infobanner.js',
-			array(),
+			[],
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 		wp_localize_script(
@@ -763,7 +762,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'/assets/css/facebook-infobanner.css',
 				__FILE__
 			),
-			array(),
+			[],
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 
@@ -826,7 +825,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'/assets/css/facebook.css',
 				__FILE__
 			),
-			array(),
+			[],
 			\WC_Facebookcommerce::PLUGIN_VERSION
 		);
 	}
@@ -844,7 +843,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	private function get_removed_from_sync_products_to_delete() {
 		$posted_products = Helper::get_posted_value( WC_Facebook_Product::FB_REMOVE_FROM_SYNC );
 		if ( empty( $posted_products ) ) {
-			return array();
+			return [];
 		}
 		return array_map( 'absint', explode( ',', $posted_products ) );
 	}
@@ -1006,7 +1005,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		} elseif ( $product->is_type( 'variable' ) ) {
 
-			$retailer_ids = array();
+			$retailer_ids = [];
 
 			foreach ( $product->get_children() as $variation_id ) {
 
@@ -1206,7 +1205,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->create_product_group( $woo_product, $retailer_id, true );
 		}
 
-		$variation_ids = array();
+		$variation_ids = [];
 
 		// scheduled update for each variation that should be synced
 		foreach ( $woo_product->get_children() as $variation_id ) {
@@ -1264,7 +1263,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				} else {
 					WC_Facebookcommerce_Utils::fblog(
 						'Wrong! simple_product_publish called without group ID for a variable product!',
-						array(),
+						[],
 						true
 					);
 				}
@@ -1498,7 +1497,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function get_product_variation_attributes( $variation ) {
 
-		$final_attributes     = array();
+		$final_attributes     = [];
 		$variation_attributes = $variation['attributes'];
 
 		foreach ( $variation_attributes as $attribute_name => $attribute_value ) {
@@ -1938,7 +1937,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		$post_ids = get_posts( $args );
-		$items    = array();
+		$items    = [];
 
 		foreach ( $post_ids as $post_id ) {
 
@@ -2002,7 +2001,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
-		$children = array();
+		$children = [];
 		foreach ( $post_ids as $post_id ) {
 			$children = array_merge(
 				get_posts(
@@ -2162,11 +2161,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $currently_syncing ) {
-
 			WC_Facebookcommerce_Utils::log( 'Not syncing again, sync already in progress' );
 			WC_Facebookcommerce_Utils::fblog(
 				'Tried to sync during an in-progress sync!',
-				array(),
+				[],
 				true
 			);
 
@@ -2174,13 +2172,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		$catalog = facebook_for_woocommerce()->get_api()->get_catalog( $this->get_product_catalog_id() );
-		if ( $catalog ) {
-//		if ( ! $this->fbgraph->is_product_catalog_valid( $this->get_product_catalog_id() ) ) {
-
+		if ( $catalog->id ) {
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
 			WC_Facebookcommerce_Utils::fblog(
 				'Tried to sync with an invalid product catalog!',
-				array(),
+				[],
 				true
 			);
 
@@ -2596,7 +2592,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int[] $category_ids the configured excluded product category IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (array) apply_filters( 'wc_facebook_excluded_product_category_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, array() ), $this );
+		return (array) apply_filters( 'wc_facebook_excluded_product_category_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_CATEGORY_IDS, [] ), $this );
 	}
 
 
@@ -2617,7 +2613,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * @param int[] $tag_ids the configured excluded product tag IDs
 		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
 		 */
-		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, array() ), $this );
+		return (array) apply_filters( 'wc_facebook_excluded_product_tag_ids', get_option( self::SETTING_EXCLUDED_PRODUCT_TAG_IDS, [] ), $this );
 	}
 
 
@@ -3068,7 +3064,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			delete_transient( 'facebook_plugin_api_error' );
 			WC_Facebookcommerce_Utils::fblog(
 				$error_msg,
-				array(),
+				[],
 				true
 			);
 		}
@@ -3229,7 +3225,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// we should not add the parent product ID to the array of product IDs to be
 			// updated because product groups, which are used to represent the parent product
 			// for variable products, don't have the visibility property on Facebook
-			$product_ids = array();
+			$product_ids = [];
 			// set visibility for all children
 			foreach ( $product->get_children() as $index => $id ) {
 				$product = wc_get_product( $id );
@@ -3245,7 +3241,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} else {
 			$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $product_id );
 			if ( ! $fb_product_item_id ) {
-				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", array(), true );
+				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
 				 return;
 			}
 
@@ -3293,7 +3289,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param WC_Facebook_Product|null $woo_product product
 	 * @return mixed|void|null
 	 */
-	public function get_product_fbid( string $fbid_type, int $wp_id, ?WC_Facebook_Product $woo_product = null ) {
+	public function get_product_fbid( string $fbid_type, int $wp_id, $woo_product = null ) {
 		$fb_id = WC_Facebookcommerce_Utils::get_fbid_post_meta( $wp_id, $fbid_type );
 
 		if ( $fb_id ) {

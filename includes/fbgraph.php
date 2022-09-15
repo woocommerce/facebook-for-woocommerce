@@ -165,32 +165,6 @@ class WC_Facebookcommerce_Graph_API {
 	}
 
 	/**
-	 * Issues a DELETE request to the Graph API.
-	 *
-	 * @param string $url request URL
-	 * @param string $api_key Graph API key
-	 * @return array|\WP_Error
-	 */
-	public function _delete( $url, $api_key = '' ) {
-
-		$api_key = $api_key ?: $this->api_key;
-
-		$request_args = array(
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $api_key,
-			),
-			'timeout' => self::CURL_TIMEOUT,
-			'method'  => 'DELETE',
-		);
-
-		$response = wp_remote_request( $url, $request_args );
-
-		$this->log_request( $url, $request_args, $response, 'DELETE' );
-
-		return $response;
-	}
-
-	/**
 	 * Logs the request and response data.
 	 *
 	 * @since 1.10.2
@@ -261,24 +235,6 @@ class WC_Facebookcommerce_Graph_API {
 		facebook_for_woocommerce()->log_api_request( $request_data, $response_data );
 	}
 
-	/**
-	 * Determines whether the product catalog ID is valid.
-	 *
-	 * Returns true if the product catalog ID can be successfully retrieved using the Graph API.
-	 *
-	 * @since 1.10.2
-	 *
-	 * @param int $product_catalog_id the ID of the product catalog
-	 * @return boolean
-	 * @throws ApiException
-	 */
-	public function is_product_catalog_valid( $product_catalog_id ) {
-
-		$response = $this->perform_request( $this->build_url( $product_catalog_id ) );
-
-		return 200 === (int) wp_remote_retrieve_response_code( $response );
-	}
-
 	public function log( $ems_id, $message, $error ) {
 		$log_url = $this->build_url( $ems_id, '/log_events' );
 
@@ -288,14 +244,6 @@ class WC_Facebookcommerce_Graph_API {
 		);
 
 		self::_post( $log_url, $data );
-	}
-
-	public function get_upload_status( $facebook_upload_id ) {
-		$url = $this->build_url( $facebook_upload_id, '/?fields=end_time' );
-		// success API call will return
-		// {id: <upload id>, end_time: <time when upload completes>}
-		// failure API will return {error: <error message>}
-		return self::_get( $url );
 	}
 
 	// success API call will return a JSON of tip info
@@ -336,40 +284,6 @@ class WC_Facebookcommerce_Graph_API {
 			);
 		}
 		return $connect_woo;
-	}
-
-	/**
-	 * Gets the connected asset IDs.
-	 *
-	 * These will be things like pixel & page ID.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string $external_business_id the connected external business ID
-	 * @return array
-	 * @throws ApiException
-	 */
-	public function get_asset_ids( $external_business_id ) {
-
-		$url = $this->build_url( 'fbe_business/fbe_installs?fbe_external_business_id=', $external_business_id );
-
-		$response = $this->perform_request( $url );
-
-		$data = wp_remote_retrieve_body( $response );
-		$data = json_decode( $data, true );
-
-		if ( ! is_array( $data ) || empty( $data['data'][0] ) ) {
-			throw new ApiException( 'Data is missing' );
-		}
-
-		$ids = $data['data'][0];
-
-		// normalize the page ID to match the others
-		if ( ! empty( $ids['profiles'] ) && is_array( $ids['profiles'] ) ) {
-			$ids['page_id'] = current( $ids['profiles'] );
-		}
-
-		return $ids;
 	}
 
 	private function build_url( $field_id, $param = '', $api_version = '' ) {
