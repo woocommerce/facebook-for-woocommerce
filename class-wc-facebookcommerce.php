@@ -687,7 +687,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function get_integration() {
 		if ( null === $this->integration ) {
-			$this->integration = new WC_Facebookcommerce_Integration();
+			$this->integration = new WC_Facebookcommerce_Integration( $this );
 		}
 
 		return $this->integration;

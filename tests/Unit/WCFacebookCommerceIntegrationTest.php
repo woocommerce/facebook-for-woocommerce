@@ -7,6 +7,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use WooCommerce\Facebook\Admin;
 use WooCommerce\Facebook\Admin\Products as AdminProducts;
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
+use WooCommerce\Facebook\Api;
 use WooCommerce\Facebook\Handlers\Connection;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\ProductSync\ProductValidator;
@@ -17,21 +18,18 @@ use WooCommerce\Facebook\Framework\AdminMessageHandler;
  */
 class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
-	/** @var WC_Facebookcommerce */
-	private $facebook_for_woocommerce;
+	private WC_Facebookcommerce $facebook_for_woocommerce;
 
-	/** @var Connection */
-	private $connection_handler;
+	private Connection $connection_handler;
 
-	/** @var WC_Facebookcommerce_Integration */
-	private $integration;
+	private Api $api;
+
+	private WC_Facebookcommerce_Integration $integration;
 
 	/**
 	 * Default plugin options.
-	 *
-	 * @var array
 	 */
-	private static $default_options = [
+	private static array $default_options = [
 		WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
 		WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
 		WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
@@ -48,6 +46,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->connection_handler       = $this->createMock( Connection::class );
 		$this->facebook_for_woocommerce->method( 'get_connection_handler' )
 			->willReturn( $this->connection_handler );
+		$this->api = $this->createMock( Api::class );
+		$this->facebook_for_woocommerce->method( 'get_api' )
+			->willReturn( $this->api );
 
 		$this->integration = new WC_Facebookcommerce_Integration( $this->facebook_for_woocommerce );
 
@@ -267,8 +268,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		/* From Product Meta or FB API. */
 		$facebook_product_id = 'some-facebook-product-group-id';
 
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_product_group_product_ids' )
 			->with( $facebook_product_id )
 			->willReturn( [ 'data' => $facebook_output ] );
@@ -303,8 +303,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		/* From Product Meta or FB API. */
 		$facebook_product_id = 'some-facebook-product-group-id';
 
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_product_group_product_ids' )
 			->with( $facebook_product_id )
 			->willReturn( [ 'data' => $facebook_output ] );
@@ -333,8 +332,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'name' => 'Facebook for WooCommerce Catalog',
 			'id'   => '2536275516506259',
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_catalog' )
 			->with( $catalog_id )
 			->willReturn( [ 'data' => $facebook_output ] );
@@ -350,9 +348,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_catalog_name_handles_any_exception() {
-		$catalog_id                 = 'some-facebook_catalog-id';
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'get_catalog' )
+		$catalog_id = 'some-facebook_catalog-id';
+		$this->api->method( 'get_catalog' )
 			->will( $this->throwException( new Exception() ) );
 
 		$name = $this->integration->get_catalog_name( $catalog_id );
@@ -370,8 +367,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			'name' => 'WooCommerce Integration System User',
 			'id'   => '111189594891749',
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_user' )
 			->willReturn( [ 'data' => $facebook_output ] );
 
@@ -386,8 +382,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_user_id_handles_any_exception() {
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'get_user' )
+		$this->api->method( 'get_user' )
 			->will( $this->throwException( new Exception() ) );
 
 		$id = $this->integration->get_user_id();
@@ -401,11 +396,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_revoke_user_permission_revokes_given_permission() {
-		$user_id                    = '111189594891749';
-		$permission                 = 'manage_business_extension';
-		$facebook_output            = [ 'success' => true ];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$user_id         = '111189594891749';
+		$permission      = 'manage_business_extension';
+		$facebook_output = [ 'success' => true ];
+		$this->api->expects( $this->once() )
 			->method( 'revoke_user_permission' )
 			->with( $user_id, $permission )
 			->willReturn( [ 'data' => $facebook_output ] );
@@ -421,10 +415,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_revoke_user_permission_handles_any_exception() {
-		$user_id                    = '111189594891749';
-		$permission                 = 'manage_business_extension';
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'revoke_user_permission' )
+		$user_id    = '111189594891749';
+		$permission = 'manage_business_extension';
+		$this->api->method( 'revoke_user_permission' )
 			->will( $this->throwException( new Exception() ) );
 
 		$response = $this->integration->revoke_user_permission( $user_id, $permission );
@@ -438,11 +431,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_send_item_updates_sends_updates() {
-		$catalog_id                 = 'some-facebook_catalog-id';
-		$requests                   = [];
-		$facebook_output            = [ 'handles' => [ 'AcwiLiSrWtRI_uCzelJ4qe5Ji4AOIjb2vBlrUlXTq6PH9unpjNzWpU_Xhl8JA1ygVFsSzhi8DedPF8TSLAU8YNsb' ] ];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$catalog_id      = 'some-facebook_catalog-id';
+		$requests        = [];
+		$facebook_output = [ 'handles' => [ 'AcwiLiSrWtRI_uCzelJ4qe5Ji4AOIjb2vBlrUlXTq6PH9unpjNzWpU_Xhl8JA1ygVFsSzhi8DedPF8TSLAU8YNsb' ] ];
+		$this->api->expects( $this->once() )
 			->method( 'send_item_updates' )
 			->with( $catalog_id, $requests )
 			->willReturn( [ 'data' => $facebook_output ] );
@@ -461,10 +453,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_send_item_updates_handles_any_exception() {
-		$catalog_id                 = 'some-facebook_catalog-id';
-		$requests                   = [];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'send_item_updates' )
+		$catalog_id = 'some-facebook_catalog-id';
+		$requests   = [];
+		$this->api->method( 'send_item_updates' )
 			->will( $this->throwException( new Exception() ) );
 
 		$handles = $this->integration->send_item_updates( $catalog_id, $requests );
@@ -478,15 +469,14 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_send_pixel_events_sends_pixel_events() {
-		$pixel_id                   = '1964583793745557';
-		$events                     = [];
-		$facebook_output            = [
+		$pixel_id        = '1964583793745557';
+		$events          = [];
+		$facebook_output = [
 			'events_received' => 1,
 			'messages'        => [],
 			'fbtrace_id'      => 'ACkWGi-ptHPA897dD0liZEg',
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'send_pixel_events' )
 			->with( $pixel_id, $events )
 			->willReturn( $facebook_output );
@@ -502,10 +492,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_send_pixel_events_handles_any_exception() {
-		$pixel_id                   = '1964583793745557';
-		$events                     = [];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'send_pixel_events' )
+		$pixel_id = '1964583793745557';
+		$events   = [];
+		$this->api->method( 'send_pixel_events' )
 			->will( $this->throwException( new Exception() ) );
 
 		$result = $this->integration->send_pixel_events( $pixel_id, $events );
@@ -519,16 +508,15 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_messenger_configuration_returns_messenger_configuration() {
-		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output            = [
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [
 			'messenger_chat' => [
 				'enabled'        => true,
 				'domains'        => [ 'https://somesite.com/' ],
 				'default_locale' => 'en_US',
 			],
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_business_configuration' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
@@ -551,10 +539,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_messenger_configuration_returns_default_messenger_configuration() {
-		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output            = [];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [];
+		$this->api->expects( $this->once() )
 			->method( 'get_business_configuration' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
@@ -570,9 +557,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_messenger_configuration_handles_any_exception() {
-		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'get_business_configuration' )
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$this->api->method( 'get_business_configuration' )
 			->will( $this->throwException( new Exception() ) );
 
 		$configuration = $this->integration->get_messenger_configuration( $external_business_id );
@@ -586,15 +572,14 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_update_messenger_configuration_updates_messenger_configuration() {
-		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
-		$configuration              = [
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$configuration        = [
 			'enabled'        => false,
 			'default_locale' => '',
 			'domains'        => [],
 		];
-		$facebook_output            = [ 'success' => true ];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$facebook_output = [ 'success' => true ];
+		$this->api->expects( $this->once() )
 			->method( 'update_messenger_configuration' )
 			->with( $external_business_id, $configuration )
 			->willReturn( $facebook_output );
@@ -610,8 +595,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_update_messenger_configuration_handles_any_exception() {
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'update_messenger_configuration' )
+		$this->api->method( 'update_messenger_configuration' )
 			->will( $this->throwException( new Exception() ) );
 
 		$result = $this->integration->update_messenger_configuration( 'wordpress-facebook-627c01b68bc60', [] );
@@ -625,14 +609,13 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_business_configuration_gets_business_configuration() {
-		$external_business_id       = 'wordpress-facebook-627c01b68bc60';
-		$facebook_output            = [
+		$external_business_id = 'wordpress-facebook-627c01b68bc60';
+		$facebook_output      = [
 			'ig_shopping'    => [ 'enabled' => false ],
 			'ig_cta'         => [ 'enabled' => false ],
 			'messenger_chat' => [ 'enabled' => false ],
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_business_configuration' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
@@ -654,8 +637,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_business_configuration_handles_any_exception() {
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'get_business_configuration' )
+		$this->api->method( 'get_business_configuration' )
 			->will( $this->throwException( new Exception() ) );
 
 		$result = $this->integration->get_business_configuration( 'wordpress-facebook-627c01b68bc60', [] );
@@ -723,8 +705,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				],
 			],
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_installation_ids' )
 			->with( $external_business_id )
 			->willReturn( $facebook_output );
@@ -754,8 +735,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_installation_ids_handles_any_exception() {
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'get_installation_ids' )
+		$this->api->method( 'get_installation_ids' )
 			->will( $this->throwException( new Exception() ) );
 
 		$result = $this->integration->get_installation_ids( 'wordpress-facebook-627c01b68bc60', [] );
@@ -786,8 +766,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				],
 			],
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'retrieve_page_access_token' )
 			->willReturn( $facebook_output );
 
@@ -822,8 +801,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				],
 			],
 		];
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'retrieve_page_access_token' )
 			->willReturn( $facebook_output );
 
@@ -838,8 +816,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_retrieve_page_access_token_handles_any_exception() {
-		$this->integration->fbgraph = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$this->integration->fbgraph->method( 'retrieve_page_access_token' )
+		$this->api->method( 'retrieve_page_access_token' )
 			->will( $this->throwException( new Exception() ) );
 
 		$token = $this->integration->retrieve_page_access_token( '100564162645958' );
@@ -1040,12 +1017,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product_data['description'] = 'Facebook product description.';
 		$facebook_product_data['price']       = 19900;
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $facebook_product_data )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->on_product_save( $product_to_update->get_id() );
 
@@ -1075,8 +1050,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_on_product_save_existing_variable_product_sync_enabled_updates_the_product() {
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-
 		$parent           = WC_Helper_Product::create_variation_product();
 		$fb_product       = new WC_Facebook_Product( $parent->get_id() );
 		$parent_to_delete = WC_Helper_Product::create_variation_product();
@@ -1133,7 +1106,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$parent->set_meta_data( Products::VISIBILITY_META_KEY, true );
 
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with(
 				'facebook-variable-product-group-item-id',
@@ -1142,7 +1115,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				]
 			)
 			->willReturn( $facebook_output_update_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->on_product_save( $parent->get_id() );
 
@@ -1168,14 +1140,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		add_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-id' );
 		add_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'delete_product_item' )
 			->with( 'facebook-product-id' );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'delete_product_group' )
 			->with( 'facebook-product-group-id' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->on_product_delete( $product_to_delete->get_id() );
 
@@ -1227,7 +1197,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		add_post_meta( $product->get_id(), ProductValidator::SYNC_ENABLED_META_KEY, 'yes' );
 		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-id' );
 
-		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$facebook_output_update_product_item = [
 			'headers'  => [],
 			'body'     => '', // Does not matter much we check only response code.
@@ -1236,14 +1205,13 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with(
 				'facebook-product-id',
 				[ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ]
 			)
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		/* Statuses involved into logic: publish, trash */
 		$new_status = 'publish';
@@ -1337,12 +1305,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product_data                          = $facebook_product->prepare_product();
 		$facebook_product_data['additional_image_urls'] = '';
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $facebook_product_data )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->on_product_publish( $product->get_id() );
 	}
@@ -1380,8 +1346,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with(
 				'facebook-variable-product-group-item-id',
@@ -1390,7 +1355,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				]
 			)
 			->willReturn( $facebook_output_update_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -1416,11 +1380,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'delete_product_item' )
 			->with( 'facebook-product-item-id' );
-		$this->integration->fbgraph = $graph_api;
 
 		$result = $this->integration->delete_on_out_of_stock( $product->get_id(), $product );
 
@@ -1438,10 +1400,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		update_option( 'woocommerce_hide_out_of_stock_items', 'no' );
 		$product->set_stock_status( 'outofstock' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'delete_product_item' );
-		$this->integration->fbgraph = $graph_api;
 
 		$result = $this->integration->delete_on_out_of_stock( $product->get_id(), $product );
 
@@ -1459,10 +1419,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
 		$product->set_stock_status( 'instock' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'delete_product_item' );
-		$this->integration->fbgraph = $graph_api;
 
 		$result = $this->integration->delete_on_out_of_stock( $product->get_id(), $product );
 
@@ -1499,8 +1457,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with(
 				'facebook-variable-product-group-item-id',
@@ -1509,7 +1466,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				]
 			)
 			->willReturn( $facebook_output_update_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -1552,11 +1508,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -1606,12 +1560,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		];
 		$facebook_product_data                          = $facebook_product->prepare_product();
 		$facebook_product_data['additional_image_urls'] = '';
-		$graph_api                                      = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-simple-product-item-id', $facebook_product_data )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
 
@@ -1650,8 +1602,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with(
 				'1234567891011121314',
@@ -1666,14 +1617,13 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with(
 				'facebook-simple-product-group-item-id',
 				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ),
 			)
 			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
 
@@ -1739,8 +1689,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
 
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                 = [
+		$data             = [
 			'retailer_id' => $retailer_id,
 		];
 		$facebook_output_create_product_group = [
@@ -1751,7 +1700,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
 			->willReturn( $facebook_output_create_product_group );
@@ -1765,11 +1714,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-simple-product-group-id', $data )
 			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
 
@@ -1790,7 +1738,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
 
-		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$data                                = $facebook_product->prepare_product( $retailer_id );
 		$facebook_output_create_product_item = [
 			'headers'  => [],
@@ -1800,11 +1747,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-simple-product-group-id', $data )
 			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product, 'facebook-simple-product-group-id' );
 
@@ -1823,9 +1769,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$product          = WC_Helper_Product::create_simple_product();
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
-
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                 = [
+		$data             = [
 			'retailer_id' => $retailer_id,
 		];
 		$facebook_output_create_product_group = [
@@ -1836,11 +1780,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
 			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
 
@@ -1861,8 +1804,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = 'product-retailer-id';
 
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                 = [
+		$data             = [
 			'retailer_id' => $retailer_id,
 		];
 		$facebook_output_create_product_group = [
@@ -1873,11 +1815,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
 			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
 
@@ -1896,9 +1837,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$product          = WC_Helper_Product::create_simple_product();
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = 'product-retailer-id';
-
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                 = [
+		$data             = [
 			'retailer_id' => $retailer_id,
 			'variants'    => $facebook_product->prepare_variants_for_group(),
 		];
@@ -1910,11 +1849,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
 			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id, true );
 
@@ -1933,9 +1871,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$product          = WC_Helper_Product::create_simple_product();
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = 'product-retailer-id';
-
-		$graph_api                            = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                 = [
+		$data             = [
 			'retailer_id' => $retailer_id,
 		];
 		$facebook_output_create_product_group = [
@@ -1946,11 +1882,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
 			->willReturn( $facebook_output_create_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
 
@@ -1967,9 +1902,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$product_group_id = 'facebook-product-group-id';
 		$retailer_id      = 'product-retailer-id';
-
-		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$data             = $facebook_product->prepare_product( $retailer_id );
 		$facebook_output_create_product_item = [
 			'headers'  => [],
 			'body'     => '{"id":"facebook-product-item-id"}',
@@ -1978,11 +1911,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-product-group-id', $data )
 			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
 
@@ -2000,9 +1932,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$product_group_id = 'facebook-product-group-id';
 		$retailer_id      = 'product-retailer-id';
-
-		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$data                                = $facebook_product->prepare_product( $retailer_id );
+		$data             = $facebook_product->prepare_product( $retailer_id );
 		$facebook_output_create_product_item = [
 			'headers'  => [],
 			'body'     => '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}',
@@ -2011,11 +1941,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-product-group-id', $data )
 			->willReturn( $facebook_output_create_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
 
@@ -2032,9 +1961,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		add_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-
-		$data                                 = [
+		$data = [
 			'variants' => $facebook_product->prepare_variants_for_group(),
 		];
 		$facebook_output_update_product_group = [
@@ -2045,11 +1972,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with( 'facebook-product-group-id', $data )
 			->willReturn( $facebook_output_update_product_group );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_product_group( $facebook_product );
 	}
@@ -2063,13 +1989,11 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$product          = WC_Helper_Product::create_variation_product();
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_facebook_id' )
 			->will( $this->throwException( new Exception() ) );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'update_product_group' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_product_group( $facebook_product );
 	}
@@ -2084,11 +2008,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		add_post_meta( $facebook_product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, 'facebook-product-group-id' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'update_product_group' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_product_group( $facebook_product );
 	}
@@ -2103,7 +2024,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product         = new WC_Facebook_Product( $product->get_id() );
 		$facebook_product_item_id = 'facebook-product-item-id';
 
-		$graph_api                           = $this->createMock( WC_Facebookcommerce_Graph_API::class );
 		$data                                = $facebook_product->prepare_product();
 		$data['additional_image_urls']       = '';
 		$facebook_output_update_product_item = [
@@ -2114,11 +2034,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'message' => 'OK',
 			],
 		];
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $data )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_product_item( $facebook_product, $facebook_product_item_id );
 	}
@@ -2143,12 +2062,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_set_item' )
 			->with( 'facebook-product-set-id', $product_set_data )
 			->willReturn( $facebook_output_update_product_set_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
 	}
@@ -2176,12 +2093,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'create_product_set_item' )
 			->with( '123456789101112', $product_set_data )
 			->willReturn( $facebook_output_create_product_set_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
 
@@ -2198,8 +2113,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	public function test_delete_product_set_item() {
 		$facebook_product_set_id = 'facebook-product-set-id';
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-
 		$facebook_output_delete_product_set_item = [
 			'headers'  => [],
 			'body'     => '', // Response does not matter, method does check response status code only.
@@ -2209,11 +2122,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'delete_product_set_item' )
 			->with( $facebook_product_set_id )
 			->willReturn( $facebook_output_delete_product_set_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->delete_product_set_item( $facebook_product_set_id );
 	}
@@ -4219,11 +4131,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		add_post_meta( $id, WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, '00998877665544332211' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'delete_product_item' )
 			->with( '00998877665544332211' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->delete_product_item( $id );
 	}
@@ -4261,10 +4171,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->facebook_for_woocommerce->expects( $this->never() )
 			->method( 'get_products_sync_handler' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'update_product_item' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_fb_visibility( 123, '' );
 	}
@@ -4278,10 +4186,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->facebook_for_woocommerce->expects( $this->never() )
 			->method( 'get_products_sync_handler' );
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'update_product_item' );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_fb_visibility( 123, '' );
 	}
@@ -4449,12 +4355,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ] )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_fb_visibility(
 			$product->get_id(),
@@ -4488,12 +4392,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ] )
 			->willReturn( $facebook_output_update_product_item );
-		$this->integration->fbgraph = $graph_api;
 
 		$this->integration->update_fb_visibility(
 			$product->get_id(),
@@ -4514,10 +4416,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$product->add_meta_data( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'some-facebook-product-item-id' );
 		$product->save_meta_data();
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->never() )
+		$this->api->expects( $this->never() )
 			->method( 'get_facebook_id' );
-		$this->integration->fbgraph = $graph_api;
 
 		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $product->get_id() );
 		$item_id  = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
@@ -4545,12 +4445,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_facebook_id' )
 			->with( '1122334455', $fb_retailer_id )
 			->willReturn( $facebook_output_get_facebook_id );
-		$this->integration->fbgraph = $graph_api;
 
 		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $product->get_id() );
 
@@ -4578,12 +4476,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			],
 		];
 
-		$graph_api = $this->createMock( WC_Facebookcommerce_Graph_API::class );
-		$graph_api->expects( $this->once() )
+		$this->api->expects( $this->once() )
 			->method( 'get_facebook_id' )
 			->with( '1122334455', $fb_retailer_id )
 			->willReturn( $facebook_output_get_facebook_id );
-		$this->integration->fbgraph = $graph_api;
 
 		$group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
 
