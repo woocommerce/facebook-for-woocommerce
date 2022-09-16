@@ -139,9 +139,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var array the page name and url */
 	private $page;
 
-	/** @var WC_Facebookcommerce_Graph_API API handling class. */
-	private $fbgraph;
-
 	/** Legacy properties *********************************************************************************************/
 
 
@@ -226,13 +223,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		WC_Facebookcommerce_Utils::$ems = $this->get_external_merchant_settings_id();
 
-		if ( ! class_exists( 'WC_Facebookcommerce_Graph_API' ) ) {
-			include_once 'includes/fbgraph.php';
-			$this->fbgraph = new WC_Facebookcommerce_Graph_API( facebook_for_woocommerce()->get_connection_handler()->get_access_token() );
-		}
-
-		WC_Facebookcommerce_Utils::$fbgraph = $this->fbgraph;
-
 		if ( is_admin() ) {
 
 			$this->init_pixel();
@@ -256,11 +246,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 					if ( ! class_exists( 'WC_Facebookcommerce_Info_Banner' ) ) {
 						include_once 'includes/fbinfobanner.php';
 					}
-					WC_Facebookcommerce_Info_Banner::get_instance(
-						$this->get_external_merchant_settings_id(),
-						$this->fbgraph,
-						$should_query_tip
-					);
+					WC_Facebookcommerce_Info_Banner::get_instance( $this->get_external_merchant_settings_id(), $should_query_tip );
 				}
 			}
 
@@ -569,17 +555,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function fb_render_product_columns( $column ) {
 
 		wc_deprecated_function( __METHOD__, '1.10.0', '\\SkyVerge\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
-	}
-
-	/**
-	 * Returns graph API client object.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @return WC_Facebookcommerce_Graph_API
-	 */
-	public function get_graph_api() {
-		return $this->fbgraph;
 	}
 
 	/**
@@ -1645,10 +1620,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						include_once 'includes/fbproductfeed.php';
 					}
 
-					$this->fbproductfeed = new \WC_Facebook_Product_Feed(
-						$this->get_product_catalog_id(),
-						$this->fbgraph
-					);
+					$this->fbproductfeed = new \WC_Facebook_Product_Feed( $this->get_product_catalog_id() );
 				}
 
 				$status = $this->fbproductfeed->is_upload_complete( $this->settings );
@@ -3183,7 +3155,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
 		if ( $product_group_id ) {
 			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
-//			$pg_result = $this->fbgraph->delete_product_group( $product_group_id );
 			$pg_result = facebook_for_woocommerce()->get_api()->delete_product_group( $product_group_id );
 			\WC_Facebookcommerce_Utils::log( $pg_result );
 		}
@@ -3311,48 +3282,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->get_product_catalog_id(),
 			$fb_retailer_id
 		);
-
-//		$product_fbid_result = $this->fbgraph->get_facebook_id(
-//			$this->get_product_catalog_id(),
-//			$fb_retailer_id
-//		);
-
-//		if ( is_wp_error( $product_fbid_result ) ) {
-//
-//			WC_Facebookcommerce_Utils::log( $product_fbid_result->get_error_message() );
-//
-//			$this->display_error_message(
-//				sprintf(
-//					/* translators: Placeholders %1$s - original error message from Facebook API */
-//					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
-//					$product_fbid_result->get_error_message()
-//				)
-//			);
-//
-//			return;
-//		}
-
-//		if ( $product_fbid_result && isset( $product_fbid_result['body'] ) ) {
-//
-//			$body = WC_Facebookcommerce_Utils::decode_json( $product_fbid_result['body'] );
-//
-//			if ( ! empty( $response->id ) ) {
-//
-//				if ( $fbid_type == self::FB_PRODUCT_GROUP_ID ) {
-//					$fb_id = $response->get_facebook_product_group_id();
-//				} else {
-//					$fb_id = $response->id;
-//				}
-//
-//				update_post_meta(
-//					$wp_id,
-//					$fbid_type,
-//					$fb_id
-//				);
-//
-//				return $fb_id;
-//			}
-//		}
 
 		if ( ! empty( $facebook_ids->id ) ) {
 			$fb_id = $fbid_type == self::FB_PRODUCT_GROUP_ID

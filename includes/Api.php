@@ -26,7 +26,7 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
  *
  * @since 2.0.0
  *
- * @method \WooCommerce\Facebook\Framework\Api\Request get_request()
+ * @method Framework\Api\Request get_request()
  */
 class Api extends Base {
 
@@ -544,6 +544,19 @@ class Api extends Base {
 		return $this->perform_request( $request );
 	}
 
+
+	public function log_tip_event( $tip_id, $channel_id, $event ) {
+		$request = new Api\Tip\Log\Request( $tip_id, $channel_id, $event );
+		$this->set_response_handler( Api\Tip\Log\Response::class );
+		return $this->perform_request( $request );
+	}
+
+
+	public function log( $facebook_external_merchant_settings_id, $message, $error ) {
+		$request = new Api\Log\Create\Request( $facebook_external_merchant_settings_id, $message, $error );
+		$this->set_response_handler( Api\Log\Create\Response::class );
+		return $this->perform_request( $request );
+	}
 
 	/**
 	 * Sends Pixel events.

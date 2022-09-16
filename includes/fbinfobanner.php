@@ -27,35 +27,23 @@ class WC_Facebookcommerce_Info_Banner {
 
 	/** @var string If the banner has been dismissed */
 	private $external_merchant_settings_id;
-	private $fbgraph;
 	private $should_query_tip;
 
 	/**
 	 * Get the class instance
 	 */
-	public static function get_instance(
-	$external_merchant_settings_id,
-	$fbgraph,
-	$should_query_tip = false ) {
+	public static function get_instance( $external_merchant_settings_id, $should_query_tip = false ) {
 		return null === self::$instance
-		? ( self::$instance = new self(
-			$external_merchant_settings_id,
-			$fbgraph,
-			$should_query_tip
-		) )
+		? ( self::$instance = new self( $external_merchant_settings_id, $should_query_tip ) )
 		: self::$instance;
 	}
 
 	/**
 	 * Constructor
 	 */
-	public function __construct(
-	$external_merchant_settings_id,
-	$fbgraph,
-	$should_query_tip = false ) {
+	public function __construct( $external_merchant_settings_id, $should_query_tip = false ) {
 		$this->should_query_tip              = $should_query_tip;
 		$this->external_merchant_settings_id = $external_merchant_settings_id;
-		$this->fbgraph                       = $fbgraph;
 		add_action( 'wp_ajax_ajax_woo_infobanner_post_click', array( $this, 'ajax_woo_infobanner_post_click' ) );
 		add_action( 'wp_ajax_ajax_woo_infobanner_post_xout', array( $this, 'ajax_woo_infobanner_post_xout' ) );
 		add_action( 'admin_notices', array( $this, 'banner' ) );

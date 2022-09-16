@@ -3,10 +3,9 @@
 
 namespace WooCommerce\Facebook\Feed;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use Error;
-use WC_Facebookcommerce_Graph_API;
 use WooCommerce\Facebook\Products\Feed;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
@@ -49,7 +48,6 @@ class FeedConfigurationDetection {
 	 */
 	private function get_data_source_feed_tracker_info() {
 		$integration         = facebook_for_woocommerce()->get_integration();
-		$graph_api           = $integration->get_graph_api();
 		$integration_feed_id = $integration->get_feed_id();
 		$catalog_id          = $integration->get_product_catalog_id();
 
@@ -62,7 +60,7 @@ class FeedConfigurationDetection {
 		}
 
 		// Get all feeds configured for the catalog.
-		$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id, $graph_api );
+		$feed_nodes = $this->get_feed_nodes_for_catalog( $catalog_id );
 
 		$info['feed-count'] = count( $feed_nodes );
 
@@ -139,7 +137,7 @@ class FeedConfigurationDetection {
 			}
 
 			// Get more detailed metadata about the most recent feed upload.
-			$upload_metadata = $this->get_feed_upload_metadata( $latest_upload['id'], $graph_api );
+			$upload_metadata = $this->get_feed_upload_metadata( $latest_upload['id'] );
 
 			$upload['error-count']         = $upload_metadata['error_count'];
 			$upload['warning-count']       = $upload_metadata['warning_count'];
@@ -188,13 +186,6 @@ class FeedConfigurationDetection {
 	 */
 	private function get_feed_metadata( string $feed_id ) {
 		$response = facebook_for_woocommerce()->get_api()->read_feed( $feed_id );
-		/*$response = $graph_api->read_feed_metadata( $feed_id );
-		$code     = (int) wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $code ) {
-			throw new Error( 'Error reading feed metadata', $code );
-		}
-		$response_body = wp_remote_retrieve_body( $response );
-		return json_decode( $response_body, true );*/
 		return $response;
 	}
 
@@ -208,13 +199,6 @@ class FeedConfigurationDetection {
 	private function get_feed_upload_metadata( $upload_id ) {
 		$response = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
 		return $response;
-		/*$response = $graph_api->read_upload_metadata( $upload_id );
-		$code     = (int) wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $code ) {
-			throw new Error( 'Error reading feed upload metadata', $code );
-		}
-		$response_body = wp_remote_retrieve_body( $response );
-		return json_decode( $response_body, true );*/
 	}
 
 }

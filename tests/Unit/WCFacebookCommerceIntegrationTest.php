@@ -214,15 +214,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get graph api init and return function.
-	 *
-	 * @return void
-	 */
-	public function test_get_graph_api() {
-		$this->assertInstanceOf( WC_Facebookcommerce_Graph_API::class, $this->integration->get_graph_api() );
-	}
-
-	/**
 	 * Tests fetching variable product item ids from product meta.
 	 *
 	 * @return void

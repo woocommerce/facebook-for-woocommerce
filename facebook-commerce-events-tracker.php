@@ -9,8 +9,9 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Helper;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -465,7 +466,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 						'contents'      => $contents,
 						'search_string' => get_search_query(),
-						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
+						'value'         => Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					),
 					'user_data'   => $this->pixel->get_user_info(),
@@ -606,7 +607,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'user_data'   => $this->pixel->get_user_info(),
 			);
 
-			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new WooCommerce\Facebook\Events\Event( $event_data );
 
 			$this->send_api_event( $event );
 
@@ -1089,7 +1090,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 				$success = true;
 
-			} catch ( Framework\SV_WC_API_Exception $exception ) {
+			} catch ( ApiException $exception ) {
 
 				$success = false;
 

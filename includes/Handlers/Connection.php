@@ -11,6 +11,7 @@
 
 namespace WooCommerce\Facebook\Handlers;
 
+use WooCommerce\Facebook\Api;
 use WooCommerce\Facebook\Api\Exceptions\ConnectApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
@@ -394,7 +395,7 @@ class Connection {
 	 */
 	private function retrieve_page_access_token( $page_id ) {
 		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-		$api_url = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
+		$api_url = Api::GRAPH_API_URL . Api::API_VERSION;
 		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
@@ -402,7 +403,7 @@ class Connection {
 			facebook_for_woocommerce()->log( print_r( $body, true ) );
 			throw new ApiException(
 				sprintf(
-				/* translators: Placeholders: %s - API error message */
+					/* translators: Placeholders: %s - API error message */
 					__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
 					wp_remote_retrieve_response_message( $response )
 				)
