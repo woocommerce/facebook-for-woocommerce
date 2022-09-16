@@ -1485,7 +1485,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		);
 
 		// Figure out the matching default variation.
-		$default_product_fbid = $this->get_product_group_default_variation( $woo_product, $fb_product_group_id );
+		$default_product_fbid = apply_filters(
+			'wc_facebook_product_group_default_variation',
+			$this->get_product_group_default_variation( $woo_product, $fb_product_group_id ),
+			$woo_product,
+			$fb_product_group_id
+		);
 
 		if ( $default_product_fbid ) {
 			$product_group_data['default_product_id'] = $default_product_fbid;
