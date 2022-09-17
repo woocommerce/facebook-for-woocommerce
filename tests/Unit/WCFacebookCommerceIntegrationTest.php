@@ -19,16 +19,30 @@ use WooCommerce\Facebook\Framework\AdminMessageHandler;
  */
 class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
+	/**
+	 * @var WC_Facebookcommerce
+	 */
 	private WC_Facebookcommerce $facebook_for_woocommerce;
 
+	/**
+	 * @var Connection
+	 */
 	private Connection $connection_handler;
 
+	/**
+	 * @var Api
+	 */
 	private Api $api;
 
+	/**
+	 * @var WC_Facebookcommerce_Integration
+	 */
 	private WC_Facebookcommerce_Integration $integration;
 
 	/**
 	 * Default plugin options.
+	 *
+	 * @var array
 	 */
 	private static array $default_options = [
 		WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
@@ -1112,7 +1126,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product = new WC_Facebook_Product( $product->get_id() );
 		$retailer_id      = WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product );
 
-		$data             = [
+		$data = [
 			'retailer_id' => $retailer_id,
 		];
 		$this->api->expects( $this->once() )
@@ -3723,8 +3737,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	public function test_get_product_fbid_calls_facebook_and_sets_post_meta_value_for_group_id() {
 		add_option( WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, '1122334455' );
 
-		$product                         = WC_Helper_Product::create_simple_product();
-		$fb_retailer_id                  = WC_Facebookcommerce_Utils::get_fb_retailer_id( new WC_Facebook_Product( $product->get_id() ) );
+		$product        = WC_Helper_Product::create_simple_product();
+		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( new WC_Facebook_Product( $product->get_id() ) );
 
 		$this->api->expects( $this->once() )
 			->method( 'get_product_facebook_ids' )
