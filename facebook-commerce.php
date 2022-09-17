@@ -16,6 +16,7 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Handlers\Connection;
+use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
 
 defined( 'ABSPATH' ) || exit;
@@ -580,41 +581,28 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return array
 	 */
 	public function get_variation_product_item_ids( $product, $product_group_id ) {
-
 		$product_item_ids_by_variation_id = [];
 		$missing_product_item_ids         = [];
 
 		// get the product item IDs from meta data and build a list of variations that don't have a product item ID stored
 		foreach ( $product->get_children() as $variation_id ) {
-
 			if ( $variation = wc_get_product( $variation_id ) ) {
-
 				if ( $product_item_id = $variation->get_meta( self::FB_PRODUCT_ITEM_ID ) ) {
-
 					$product_item_ids_by_variation_id[ $variation_id ] = $product_item_id;
-
 				} else {
-
 					$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
-
 					$missing_product_item_ids[ $retailer_id ] = $variation;
-
 					$product_item_ids_by_variation_id[ $variation_id ] = null;
 				}
 			}
 		}
 		// use the Graph API to try to find and store the product item IDs for variations that don't have a value yet
 		if ( $missing_product_item_ids ) {
-
 			$product_item_ids = $this->find_variation_product_item_ids( $product_group_id );
-
 			foreach ( $missing_product_item_ids as $retailer_id => $variation ) {
-
 				if ( isset( $product_item_ids[ $retailer_id ] ) ) {
-
 					$variation->update_meta_data( self::FB_PRODUCT_ITEM_ID, $product_item_ids[ $retailer_id ] );
 					$variation->save_meta_data();
-
 					$product_item_ids_by_variation_id[ $variation->get_id() ] = $product_item_ids[ $retailer_id ];
 				}
 			}
@@ -1010,7 +998,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$product = wc_get_product( $post->ID );
 
-		// bail if we couldn't retrieve a valid product object or the product isn't enabled for sync
+		// Bail if we couldn't retrieve a valid product object or the product isn't enabled for sync
 		//
 		// Note that while moving a variable product to the trash, this method is called for each one of the
 		// variations before it gets called with the variable product. As a result, Products::product_should_be_synced()
@@ -1189,6 +1177,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Check if this product has already been published to FB.
 		// If not, it's new!
 		$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $wp_id, $woo_product );
+
 		if ( $fb_product_item_id ) {
 			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
 			$this->update_product_item( $woo_product, $fb_product_item_id );
@@ -1492,11 +1481,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// set data and execute API call
 		$result = empty( $fb_product_set_id )
-			? $this->facebook_for_woocommerce->get_api()->create_product_item( $this->get_product_catalog_id(), $product_set_data )
-			: $this->facebook_for_woocommerce->get_api()->update_product_item( $fb_product_set_id, $product_set_data );
+			? $this->facebook_for_woocommerce->get_api()->create_product_set_item( $this->get_product_catalog_id(), $product_set_data )
+			: $this->facebook_for_woocommerce->get_api()->update_product_set_item( $fb_product_set_id, $product_set_data );
 
 		// update product set to set FB Product Set ID
-		if ( $result && empty( $fb_product_set_id ) ) {
+		if ( $result /*&& empty( $fb_product_set_id )*/ ) {
 			$fb_product_set_id = $result->id;
 			update_term_meta(
 				$product_set_id,
@@ -3155,19 +3144,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
 
-		$facebook_ids = $this->facebook_for_woocommerce->get_api()->get_product_facebook_ids(
-			$this->get_product_catalog_id(),
-			$fb_retailer_id
-		);
+		try {
+			$facebook_ids = $this->facebook_for_woocommerce->get_api()->get_product_facebook_ids(
+				$this->get_product_catalog_id(),
+				$fb_retailer_id
+			);
 
-		if ( ! empty( $facebook_ids->id ) ) {
-			$fb_id = $fbid_type == self::FB_PRODUCT_GROUP_ID
-				? $facebook_ids->get_facebook_product_group_id()
-				: $facebook_ids->id;
+			if ( $facebook_ids->id ) {
+				$fb_id = $fbid_type == self::FB_PRODUCT_GROUP_ID
+					? $facebook_ids->get_facebook_product_group_id()
+					: $facebook_ids->id;
+				update_post_meta( $wp_id, $fbid_type, $fb_id );
 
-			update_post_meta( $wp_id, $fbid_type, $fb_id );
-
-			return $fb_id;
+				return $fb_id;
+			}
+		} catch ( Exception $e ) {
+			/* @TODO: Log exception. */
 		}
 
 		return null;
