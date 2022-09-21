@@ -948,7 +948,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param \WC_Product $product WooCommerce product object
 	 */
-	private function delete_fb_product( $product ) {
+	public function delete_fb_product( $product ) {
 
 		$product_id = $product->get_id();
 
@@ -963,6 +963,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				if ( $variation instanceof \WC_Product ) {
 					$retailer_ids[] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $variation );
 				}
+				delete_post_meta( $variation_id, self::FB_PRODUCT_ITEM_ID );
 			}
 			// enqueue variations to be deleted in the background
 			$this->facebook_for_woocommerce->get_products_sync_handler()->delete_products( $retailer_ids );
@@ -1104,7 +1105,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( Products::product_should_be_deleted( $woo_product ) ) {
 			$product = wc_get_product( $wp_id );
 			$this->delete_fb_product( $product );
-			$this->delete_product_item( $wp_id );
 			return true;
 		}
 		return false;
@@ -1121,11 +1121,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new \WC_Facebook_Product( $wp_id );
 		}
 
-		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -1166,11 +1166,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$woo_product = new \WC_Facebook_Product( $wp_id, $parent_product );
 		}
 
-		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
+		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
 			return;
 		}
 
-		if ( $this->delete_on_out_of_stock( $wp_id, $woo_product->woo_product ) ) {
+		if ( ! $this->product_should_be_synced( $woo_product->woo_product ) ) {
 			return;
 		}
 
@@ -1507,7 +1507,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$allow_live_deletion = apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $fb_product_set_id );
 		$this->facebook_for_woocommerce->get_api()->delete_product_set_item( $fb_product_set_id, $allow_live_deletion );
 	}
-
 
 
 	/**
@@ -3160,6 +3159,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( Exception $e ) {
 			/* @TODO: Log exception. */
+			WC_Facebookcommerce_Utils::log( $e->getMessage() );
+			$this->display_error_message(
+				sprintf(
+					/* translators: Placeholders %1$s - original error message from Facebook API */
+					esc_html__( 'There was an issue connecting to the Facebook API: %s', 'facebook-for-woocommerce' ),
+					$e->getMessage()
+				)
+			);
 		}
 
 		return null;

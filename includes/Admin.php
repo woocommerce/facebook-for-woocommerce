@@ -159,6 +159,16 @@ class Admin {
 					\WC_Facebookcommerce::PLUGIN_VERSION,
 					true
 				);
+
+				wp_localize_script(
+					'facebook-for-woocommerce-product-sets',
+					'facebook_for_woocommerce_product_sets',
+					array(
+
+						'excluded_category_ids'             => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
+						'excluded_category_warning_message' => __( 'You have selected one or more categories currently excluded from the Facebook sync. Products belonging to the excluded categories will not be added to your FB product set.', 'facebook-for-woocommerce' ),
+					)
+				);
 			}
 
 			if ( 'product' === $current_screen->id || 'edit-product' === $current_screen->id ) {

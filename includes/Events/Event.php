@@ -200,7 +200,7 @@ class Event {
 	 */
 	protected function get_current_url() {
 		if ( wp_doing_ajax() ) {
-			$url = $_SERVER['HTTP_REFERER'];
+			$url = wp_get_raw_referer();
 		} else {
 			/**
 			 * Instead of relying on the HTTP_HOST server var, we use home_url(),

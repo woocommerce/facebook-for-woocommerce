@@ -773,13 +773,23 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
 
-			if ( $product instanceof \WC_Product ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
-			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $_GET['add-to-cart'] );
+			// Bail if the session variable has been set.
+			if ( WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
+				return $redirect;
 			}
 
+			$product_id = 0;
+
+			if ( $product instanceof \WC_Product ) {
+				$product_id = $_POST['variation_id'] ?? $product->get_id();
+			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
+				$product_id = $_GET['add-to-cart'];
+			}
+
+			WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $product_id );
+
 			return $redirect;
+
 		}
 
 
@@ -908,21 +918,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// use an order meta to ensure an order is tracked with any payment method, also when the order is placed through AJAX
-			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
+			// use a session flag to ensure an order is tracked with any payment method, also when the order is placed through AJAX
+			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order_id;
 
-			// use an order meta to ensure a Purchase event is not tracked multiple times
-			$purchase_tracked_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked';
+			// use a session flag to ensure a Purchase event is not tracked multiple times
+			$purchase_tracked_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked_' . $order_id;
 
 			// when saving the order meta data: add a flag to mark the order tracked
 			if ( 'woocommerce_checkout_update_order_meta' === current_action() ) {
-				$order->update_meta_data( $order_placed_meta, 'yes' );
-				$order->save_meta_data();
+				WC()->session->set( $order_placed_session_flag, 'yes' );
 				return;
 			}
 
 			// bail if by the time we are on the thank you page the meta has not been set or we already tracked a Purchase event
-			if ( 'yes' !== $order->get_meta( $order_placed_meta ) || 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
+			if ( 'yes' !== WC()->session->get( $order_placed_session_flag, 'no' ) || 'yes' === WC()->session->get( $purchase_tracked_session_flag, 'no' ) ) {
 				return;
 			}
 
@@ -977,8 +986,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->inject_subscribe_event( $order_id );
 
 			// mark the order as tracked
-			$order->update_meta_data( $purchase_tracked_meta, 'yes' );
-			$order->save_meta_data();
+			WC()->session->set( $purchase_tracked_session_flag, 'yes' );
 		}
 
 		/**
@@ -1008,9 +1016,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$order_placed_meta = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed';
-			$order->update_meta_data( $order_placed_meta, 'yes' );
-			$order->save_meta_data();
+			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order->get_id();
+			WC()->session->set( $order_placed_session_flag, 'yes' );
+
 		}
 
 
