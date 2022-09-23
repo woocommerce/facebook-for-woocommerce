@@ -223,7 +223,8 @@ class WC_Facebook_Loader {
 					'update_wordpress',
 					'error',
 					sprintf(
-						'%s requires WordPress version %s or higher. Please %supdate WordPress &raquo;%s',
+						/* translators: %1$s - plugin name, %2$s - minimum WordPress version required, %3$s - update WordPress link open, %4$s - update WordPress link close */
+						esc_html__( '%1$s requires WordPress version %2$s or higher. Please %3$supdate WordPress &raquo;%4$s', 'facebook-for-woocommerce' ),
 						'<strong>' . self::PLUGIN_NAME . '</strong>',
 						self::MINIMUM_WP_VERSION,
 						'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
