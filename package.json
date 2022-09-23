@@ -12,8 +12,7 @@
     "url": "https://wordpress.org/support/plugin/facebook-for-woocommerce"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^14.0.0",
-    "sake": "git+https://github.com/skyverge/sake"
+    "@wordpress/scripts": "^14.0.0"
   },
   "scripts": {
     "prearchive": "rm -rf vendor && composer install --no-dev && composer dump-autoload -o",
@@ -27,8 +26,7 @@
     "lint:php": "vendor/bin/phpcs -p -s --colors",
     "lint:php:summary": "vendor/bin/phpcs --colors --report=summary",
     "build:assets": "NODE_ENV=production wp-scripts build",
-    "start": "wp-scripts start",
-    "deploy:sake": "npm run build:assets && npx sake deploy --deployAssets=0"
+    "start": "wp-scripts start"
   },
   "woorelease": {
     "wp_org_slug": "facebook-for-woocommerce",
