@@ -21,7 +21,7 @@
     "prebuild": "composer install",
     "build": "npm run build:assets && npm run i18n",
     "postbuild": "npm run archive",
-    "i18n": "WP_CLI_PHP_ARGS='-d memory_limit=2048M' ./vendor/bin/wp i18n make-pot ./ languages/$npm_package_name.pot --slug=$npm_package_name --domain=$npm_package_name --exclude=bin,data,js/src,node_modules,tests,vendor",
+    "i18n": "WP_CLI_PHP_ARGS='-d memory_limit=2048M' ./vendor/bin/wp i18n make-pot ./ i18n/languages/$npm_package_name.pot --slug=$npm_package_name --domain=$npm_package_name --exclude=bin,data,js/src,node_modules,tests,vendor",
     "generate:category_attribute_json": "php bin/GenerateCategoryAttributeMapping.php",
     "lint:php": "vendor/bin/phpcs -p -s --colors",
     "lint:php:summary": "vendor/bin/phpcs --colors --report=summary",
