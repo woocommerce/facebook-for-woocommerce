@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.24 - 2022-09-27 =
+* Fix - Adds helpful admin notices for correct user roles.
+* Fix - Track purchase event flag in session variable instead post meta table.
+
 = 2.6.23 - 2022-09-13 =
 * Add - Show warning when creating product set with excluded categories.
 * Fix - Messenger settings are no longer overridden after business config refresh.
