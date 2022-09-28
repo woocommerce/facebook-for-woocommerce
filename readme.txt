@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.0
-Stable tag: 2.6.23
+Stable tag: 2.6.24
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.24 - 2022-09-27 =
+* Fix - Adds helpful admin notices for correct user roles.
+* Fix - Track purchase event flag in session variable instead post meta table.
 
 = 2.6.23 - 2022-09-13 =
 * Add - Show warning when creating product set with excluded categories.

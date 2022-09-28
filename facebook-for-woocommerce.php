@@ -11,7 +11,7 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 2.6.23
+ * Version: 2.6.24
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.0
  * WC requires at least: 3.5.0
@@ -33,7 +33,7 @@ class WC_Facebook_Loader {
 	/**
 	 * @var string the plugin version. This must be in the main plugin file to be automatically bumped by Woorelease.
 	 */
-	const PLUGIN_VERSION = '2.6.23'; // WRCS: DEFINED_VERSION.
+	const PLUGIN_VERSION = '2.6.24'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
 	const MINIMUM_PHP_VERSION = '7.0.0';
@@ -76,8 +76,8 @@ class WC_Facebook_Loader {
 		register_activation_hook( __FILE__, array( $this, 'activation_check' ) );
 
 		add_action( 'admin_init', array( $this, 'check_environment' ) );
-		add_action( 'admin_init', array( $this, 'add_plugin_notices' ) );
 
+		add_action( 'admin_notices', array( $this, 'add_plugin_notices' ) ); // admin_init is too early for the get_current_screen() function.
 		add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
 
 		// If the environment check fails, initialize the plugin.
@@ -218,35 +218,85 @@ class WC_Facebook_Loader {
 	public function add_plugin_notices() {
 
 		if ( ! $this->is_wp_compatible() ) {
-
-			$this->add_admin_notice(
-				'update_wordpress',
-				'error',
-				sprintf(
-					'%s requires WordPress version %s or higher. Please %supdate WordPress &raquo;%s',
-					'<strong>' . self::PLUGIN_NAME . '</strong>',
-					self::MINIMUM_WP_VERSION,
-					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
-					'</a>'
-				)
-			);
+			if ( current_user_can( 'update_core' ) ) {
+				$this->add_admin_notice(
+					'update_wordpress',
+					'error',
+					sprintf(
+						/* translators: %1$s - plugin name, %2$s - minimum WordPress version required, %3$s - update WordPress link open, %4$s - update WordPress link close */
+						esc_html__( '%1$s requires WordPress version %2$s or higher. Please %3$supdate WordPress &raquo;%4$s', 'facebook-for-woocommerce' ),
+						'<strong>' . self::PLUGIN_NAME . '</strong>',
+						self::MINIMUM_WP_VERSION,
+						'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
+						'</a>'
+					)
+				);
+			}
 		}
 
-		if ( ! $this->is_wc_compatible() ) {
+		// Notices to install and activate or update WooCommerce.
+		$screen = get_current_screen();
+		if ( isset( $screen->parent_file ) && 'plugins.php' === $screen->parent_file && 'update' === $screen->id ) {
+			return; // Do not display the install/update/activate notice in the update plugin screen.
+		}
 
-			$this->add_admin_notice(
-				'update_woocommerce',
-				'error',
-				sprintf(
-					'%1$s requires WooCommerce version %2$s or higher. Please %3$supdate WooCommerce%4$s to the latest version, or %5$sdownload the minimum required version &raquo;%6$s',
-					'<strong>' . self::PLUGIN_NAME . '</strong>',
-					self::MINIMUM_WC_VERSION,
-					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
-					'</a>',
-					'<a href="' . esc_url( 'https://downloads.wordpress.org/plugin/woocommerce.' . self::MINIMUM_WC_VERSION . '.zip' ) . '">',
-					'</a>'
-				)
-			);
+		$plugin = 'woocommerce/woocommerce.php';
+		// Check if WooCommerce is activated.
+		if ( ! $this->is_wc_activated() ) {
+
+			if ( $this->is_wc_installed() ) {
+				// WooCommerce is installed but not activated. Ask the user to activate WooCommerce.
+				if ( current_user_can( 'activate_plugins' ) ) {
+					$activation_url = wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $plugin . '&amp;plugin_status=all&amp;paged=1&amp;s', 'activate-plugin_' . $plugin );
+					$message        = sprintf(
+						/* translators: %1$s - Plugin Name, %2$s - activate WooCommerce link open, %3$s - activate WooCommerce link close. */
+						esc_html__( '%1$s requires WooCommerce to be activated. Please %2$sactivate WooCommerce%3$s.', 'facebook-for-woocommerce' ),
+						'<strong>' . self::PLUGIN_NAME . '</strong>',
+						'<a href="' . esc_url( $activation_url ) . '">',
+						'</a>'
+					);
+					$this->add_admin_notice(
+						'activate_woocommerce',
+						'error',
+						$message
+					);
+				}
+			} else {
+				// WooCommerce is not installed. Ask the user to install WooCommerce.
+				if ( current_user_can( 'install_plugins' ) ) {
+					$install_url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=woocommerce' ), 'install-plugin_woocommerce' );
+					$message     = sprintf(
+						/* translators: %1$s - Plugin Name, %2$s - install WooCommerce link open, %3$s - install WooCommerce link close. */
+						esc_html__( '%1$s requires WooCommerce to be installed and activated. Please %2$sinstall WooCommerce%3$s.', 'facebook-for-woocommerce' ),
+						'<strong>' . self::PLUGIN_NAME . '</strong>',
+						'<a href="' . esc_url( $install_url ) . '">',
+						'</a>'
+					);
+					$this->add_admin_notice(
+						'install_woocommerce',
+						'error',
+						$message
+					);
+				}
+			}
+		} elseif ( ! $this->is_wc_compatible() ) { // If WooCommerce is activated, check for the version.
+			if ( current_user_can( 'update_plugins' ) ) {
+				$update_url = wp_nonce_url( self_admin_url( 'update.php?action=upgrade-plugin&plugin=' ) . $plugin, 'upgrade-plugin_' . $plugin );
+				$this->add_admin_notice(
+					'update_woocommerce',
+					'error',
+					sprintf(
+						/* translators: %1$s - Plugin Name, %2$s - minimum WooCommerce version, %3$s - update WooCommerce link open, %4$s - update WooCommerce link close, %5$s - download minimum WooCommerce link open, %6$s - download minimum WooCommerce link close. */
+						esc_html__( '%1$s requires WooCommerce version %2$s or higher. Please %3$supdate WooCommerce%4$s to the latest version, or %5$sdownload the minimum required version &raquo;%6$s', 'facebook-for-woocommerce' ),
+						'<strong>' . self::PLUGIN_NAME . '</strong>',
+						self::MINIMUM_WC_VERSION,
+						'<a href="' . esc_url( $update_url ) . '">',
+						'</a>',
+						'<a href="' . esc_url( 'https://downloads.wordpress.org/plugin/woocommerce.' . self::MINIMUM_WC_VERSION . '.zip' ) . '">',
+						'</a>'
+					)
+				);
+			}
 		}
 	}
 
@@ -280,6 +330,28 @@ class WC_Facebook_Loader {
 		return version_compare( get_bloginfo( 'version' ), self::MINIMUM_WP_VERSION, '>=' );
 	}
 
+	/**
+	 * Query WooCommerce activation.
+	 *
+	 * @since 2.6.24
+	 * @return bool
+	 */
+	private function is_wc_activated() {
+		return class_exists( 'WooCommerce' ) ? true : false;
+	}
+
+	/**
+	 * Determins if WooCommerce is installed.
+	 *
+	 * @since 2.6.24
+	 * @return bool
+	 */
+	private function is_wc_installed() {
+		$plugin            = 'woocommerce/woocommerce.php';
+		$installed_plugins = get_plugins();
+
+		return isset( $installed_plugins[ $plugin ] );
+	}
 
 	/**
 	 * Determines if the WooCommerce compatible.
@@ -346,7 +418,19 @@ class WC_Facebook_Loader {
 
 			?>
 			<div class="<?php echo esc_attr( $notice['class'] ); ?>">
-				<p><?php echo wp_kses( $notice['message'], array( 'a' => array( 'href' => array() ) ) ); ?></p>
+				<p>
+				<?php
+				echo wp_kses(
+					$notice['message'],
+					array(
+						'a'      => array(
+							'href' => array(),
+						),
+						'strong' => array(),
+					)
+				);
+				?>
+				</p>
 			</div>
 			<?php
 		}
