@@ -38,5 +38,12 @@
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "archive": {
+    "exclude": [
+      "!/assets/*",
+      "!/vendor/*",
+      "!/i18n/*"
+    ]
   }
 }
