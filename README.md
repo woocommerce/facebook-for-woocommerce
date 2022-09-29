@@ -28,11 +28,8 @@ By default plugin omits headers in the requests to make the logs more readable. 
 	- `npm run lint:php` to run PHPCS linter on all PHP files
 
 #### Production build
-This plugin uses a custom build tool called [`sake`](https://github.com/skyverge/sake). 
 
-If you have `sake` set up on your system, these commands can be used to generate a production build.
-
-- `npm run build` builds and zips to `/build/facebook-for-woocommerce.{version}.zip`.
+- `npm run build` : Builds a production version.
 
 ### Releasing
 Refer to the [wiki for details of how to build and release the plugin](https://github.com/woocommerce/facebook-for-woocommerce/wiki/Build-&-Release). 
