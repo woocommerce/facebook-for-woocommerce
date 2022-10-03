@@ -272,10 +272,9 @@ class ProductValidator {
 		 * @since x.x.x
 		 *
 		 * @param WC_Product $product the product object.
-		 *
 		 */
 		if ( ! apply_filters( 'wc_facebook_should_sync_product', $this->product, $this ) ) {
-			throw $invalid_exception;
+			throw new ProductExcludedException( __( 'Product excluded by wc_facebook_should_sync_product filter.', 'facebook-for-woocommerce' ));
 		}
 
 		if ( $this->product->is_type( 'variable' ) ) {
