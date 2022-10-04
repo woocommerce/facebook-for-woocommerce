@@ -1373,49 +1373,67 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function get_product_group_default_variation( WC_Facebook_Product $woo_product, string $fb_product_group_id ) {
 		$default_attributes = $woo_product->woo_product->get_default_attributes( 'edit' );
-
-		if ( empty( $default_attributes ) ) {
-			return null;
-		}
-
 		$default_variation = null;
+
 		// Fetch variations that exist in the catalog.
 		$existing_catalog_variations              = $this->find_variation_product_item_ids( $fb_product_group_id );
 		$existing_catalog_variations_retailer_ids = array_keys( $existing_catalog_variations );
+
 		// All woocommerce variations for the product.
-		$product_variations = $woo_product->woo_product->get_available_variations();
+		$product_variations                       = $woo_product->woo_product->get_available_variations();
 
-		$best_match_count = 0;
-		foreach ( $product_variations as $variation ) {
+		if ( ! empty( $default_attributes ) ) {
 
-			$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
-				wc_get_product(
-					$variation['variation_id']
-				)
-			);
+			$best_match_count = 0;
+			foreach ( $product_variations as $variation ) {
 
-			// Check if currently processed variation exist in the catalog.
-			if ( ! in_array( $fb_retailer_id, $existing_catalog_variations_retailer_ids ) ) {
-				continue;
-			}
+				$fb_retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id(
+					wc_get_product(
+						$variation['variation_id']
+					)
+				);
 
-			$variation_attributes       = $this->get_product_variation_attributes( $variation );
-			$variation_attributes_count = count( $variation_attributes );
-			$matching_attributes_count  = count( array_intersect_assoc( $default_attributes, $variation_attributes ) );
+				// Check if currently processed variation exist in the catalog.
+				if (!in_array($fb_retailer_id, $existing_catalog_variations_retailer_ids)) {
+					continue;
+				}
 
-			// Check how much current variation matches the selected default attributes.
-			if ( $matching_attributes_count === $variation_attributes_count ) {
-				// We found a perfect match;
-				$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
-				break;
-			}
-			if ( $matching_attributes_count > $best_match_count ) {
-				// We found a better match.
-				$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
+				$variation_attributes = $this->get_product_variation_attributes($variation);
+				$variation_attributes_count = count($variation_attributes);
+				$matching_attributes_count = count(array_intersect_assoc($default_attributes, $variation_attributes));
+
+				// Check how much current variation matches the selected default attributes.
+				if ( $matching_attributes_count === $variation_attributes_count ) {
+					// We found a perfect match;
+					$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
+					break;
+				}
+				if ( $matching_attributes_count > $best_match_count ) {
+					// We found a better match.
+					$default_variation = $existing_catalog_variations[ $fb_retailer_id ];
+				}
 			}
 		}
 
-		return $default_variation;
+		/**
+		 * Filter product group default variation.
+		 * This can be used to customize the choice of a default variation (e.g. choose one with the lowest price).
+		 *
+		 * @since x.x.x
+		 * @param integer|null Facebook Catalog variation id.
+		 * @param \WC_Facebook_Product WooCommerce product.
+		 * @param string product group ID.
+		 * @param array List of available WC_Product variations.
+		 * @param array List of Product Item IDs indexed by the variation's retailer ID.
+		 */
+		return apply_filters(
+			'wc_facebook_product_group_default_variation',
+			$default_variation,
+			$woo_product,
+			$fb_product_group_id,
+			$product_variations,
+			$existing_catalog_variations
+		);
 	}
 
 	/**
@@ -1841,7 +1859,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 			return $error_data->product_item_id;
 		} else {
-			return;
+			return null;
 		}
 	}
 
