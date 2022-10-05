@@ -266,6 +266,17 @@ class ProductValidator {
 	protected function validate_product_sync_field() {
 		$invalid_exception = new ProductExcludedException( __( 'Sync disabled in product field.', 'facebook-for-woocommerce' ) );
 
+		/**
+		 * Filters whether a product should be synced to FB.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param WC_Product $product the product object.
+		 */
+		if ( ! apply_filters( 'wc_facebook_should_sync_product', true, $this->product ) ) {
+			throw new ProductExcludedException( __( 'Product excluded by wc_facebook_should_sync_product filter.', 'facebook-for-woocommerce' ) );
+		}
+
 		if ( $this->product->is_type( 'variable' ) ) {
 			foreach ( $this->product->get_children() as $child_id ) {
 				$child_product = wc_get_product( $child_id );
