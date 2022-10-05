@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.0
-Stable tag: 2.6.24
+Stable tag: 2.6.25
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.25 - 2022-10-04 =
+* Add - New filter (wc_facebook_product_group_default_variation) to allow customizing a product group's default variation.
+* Update - Remove Skyverge's sake as a dependency from the extension build process.
 
 = 2.6.24 - 2022-09-27 =
 * Fix - Adds helpful admin notices for correct user roles.

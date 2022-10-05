@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 2.6.25 - 2022-10-04 =
+* Add - New filter (wc_facebook_product_group_default_variation) to allow customizing a product group's default variation.
+* Update - Remove Skyverge's sake as a dependency from the extension build process.
+
 = 2.6.24 - 2022-09-27 =
 * Fix - Adds helpful admin notices for correct user roles.
 * Fix - Track purchase event flag in session variable instead post meta table.

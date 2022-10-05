@@ -1419,7 +1419,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		 * Filter product group default variation.
 		 * This can be used to customize the choice of a default variation (e.g. choose one with the lowest price).
 		 *
-		 * @since x.x.x
+		 * @since 2.6.25
 		 * @param integer|null Facebook Catalog variation id.
 		 * @param \WC_Facebook_Product WooCommerce product.
 		 * @param string product group ID.
