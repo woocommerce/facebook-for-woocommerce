@@ -18,8 +18,7 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^v0.7",
     "phpunit/phpunit": "^7.5",
     "wp-coding-standards/wpcs": "^2.3",
-    "yoast/phpunit-polyfills": "^1.0",
-    "lucatume/wp-browser": ">= 2.3.4 <2.4.0"
+    "yoast/phpunit-polyfills": "^1.0"
   },
   "autoload": {
     "psr-4": {
