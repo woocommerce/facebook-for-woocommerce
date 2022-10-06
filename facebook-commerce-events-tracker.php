@@ -231,14 +231,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				}
 			}
 
-			$categories = WC_Facebookcommerce_Utils::get_product_categories( get_the_ID() );
+			$category = get_queried_object();
 
 			$event_name = 'ViewCategory';
 			$event_data = array(
 				'event_name'  => $event_name,
 				'custom_data' => array(
-					'content_name'     => $categories['name'],
-					'content_category' => $categories['categories'],
+					'content_name'     => $category->name,
+					'content_category' => $category->name,
 					'content_ids'      => json_encode( array_slice( $product_ids, 0, 10 ) ),
 					'content_type'     => $content_type,
 					'contents'         => $contents,
