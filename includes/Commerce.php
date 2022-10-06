@@ -131,7 +131,7 @@ class Commerce {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @return \SkyVerge\WooCommerce\Facebook\Commerce\Orders
+	 * @return \WooCommerce\Facebook\Commerce\Orders
 	 */
 	public function get_orders_handler() {
 
