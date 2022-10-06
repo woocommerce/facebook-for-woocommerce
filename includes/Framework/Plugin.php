@@ -207,7 +207,7 @@ abstract class Plugin {
 	 */
 	public function __clone() {
 		/* translators: Placeholders: %s - plugin name */
-		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'You cannot clone instances of %s.', 'woocommerce-plugin-framework' ), esc_html( $this->get_plugin_name() ) ), '3.1.0' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'You cannot clone instances of %s.', 'facebook-for-woocommerce' ), esc_html( $this->get_plugin_name() ) ), '3.1.0' );
 	}
 
 
@@ -218,7 +218,7 @@ abstract class Plugin {
 	 */
 	public function __wakeup() {
 		/* translators: Placeholders: %s - plugin name */
-		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'You cannot unserialize instances of %s.', 'woocommerce-plugin-framework' ), esc_html( $this->get_plugin_name() ) ), '3.1.0' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'You cannot unserialize instances of %s.', 'facebook-for-woocommerce' ), esc_html( $this->get_plugin_name() ) ), '3.1.0' );
 	}
 
 
@@ -244,7 +244,7 @@ abstract class Plugin {
 	 * @since 4.5.0
 	 */
 	protected function load_framework_textdomain() {
-		$this->load_textdomain( 'woocommerce-plugin-framework', dirname( plugin_basename( $this->get_framework_file() ) ) );
+		$this->load_textdomain( 'facebook-for-woocommerce', dirname( plugin_basename( $this->get_framework_file() ) ) );
 	}
 
 
@@ -356,7 +356,7 @@ abstract class Plugin {
 			$this->get_admin_notice_handler()->add_admin_notice(
 				sprintf(
 					/* translators: Placeholders: %1$s - plugin name, %2$s - WooCommerce version number, %3$s - opening <a> HTML link tag, %4$s - closing </a> HTML link tag */
-					__( 'Heads up! %1$s will soon discontinue support for WooCommerce %2$s. Please %3$supdate WooCommerce%4$s to take advantage of the latest updates and features.', 'woocommerce-plugin-framework' ),
+					__( 'Heads up! %1$s will soon discontinue support for WooCommerce %2$s. Please %3$supdate WooCommerce%4$s to take advantage of the latest updates and features.', 'facebook-for-woocommerce' ),
 					$this->get_plugin_name(),
 					$current_wc_version,
 					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) .'">', '</a>'
@@ -387,17 +387,17 @@ abstract class Plugin {
 		// documentation url if any
 		if ( $this->get_documentation_url() ) {
 			/* translators: Docs as in Documentation */
-			$custom_actions['docs'] = sprintf( '<a href="%s" target="_blank">%s</a>', $this->get_documentation_url(), esc_html__( 'Docs', 'woocommerce-plugin-framework' ) );
+			$custom_actions['docs'] = sprintf( '<a href="%s" target="_blank">%s</a>', $this->get_documentation_url(), esc_html__( 'Docs', 'facebook-for-woocommerce' ) );
 		}
 
 		// support url if any
 		if ( $this->get_support_url() ) {
-			$custom_actions['support'] = sprintf( '<a href="%s">%s</a>', $this->get_support_url(), esc_html_x( 'Support', 'noun', 'woocommerce-plugin-framework' ) );
+			$custom_actions['support'] = sprintf( '<a href="%s">%s</a>', $this->get_support_url(), esc_html_x( 'Support', 'noun', 'facebook-for-woocommerce' ) );
 		}
 
 		// review url if any
 		if ( $this->get_reviews_url() ) {
-			$custom_actions['review'] = sprintf( '<a href="%s">%s</a>', $this->get_reviews_url(), esc_html_x( 'Review', 'verb', 'woocommerce-plugin-framework' ) );
+			$custom_actions['review'] = sprintf( '<a href="%s">%s</a>', $this->get_reviews_url(), esc_html_x( 'Review', 'verb', 'facebook-for-woocommerce' ) );
 		}
 
 		// add the links to the front of the actions list
@@ -469,7 +469,7 @@ abstract class Plugin {
 					continue;
 				}
 
-				$note = __( '%1$s - A minimum of %2$s is required.', 'woocommerce-plugin-framework' );
+				$note = __( '%1$s - A minimum of %2$s is required.', 'facebook-for-woocommerce' );
 
 			} else {
 
@@ -478,7 +478,7 @@ abstract class Plugin {
 					continue;
 				}
 
-				$note = __( 'Set as %1$s - %2$s is required.', 'woocommerce-plugin-framework' );
+				$note = __( 'Set as %1$s - %2$s is required.', 'facebook-for-woocommerce' );
 			}
 
 			$note = sprintf( $note, $values['actual'], $values['expected'] );
@@ -654,7 +654,7 @@ abstract class Plugin {
 	public function get_settings_link( $plugin_id = null ) {
 		$settings_url = $this->get_settings_url( $plugin_id );
 		if ( $settings_url ) {
-			return sprintf( '<a href="%s">%s</a>', $settings_url, esc_html__( 'Configure', 'woocommerce-plugin-framework' ) );
+			return sprintf( '<a href="%s">%s</a>', $settings_url, esc_html__( 'Configure', 'facebook-for-woocommerce' ) );
 		}
 		// no settings
 		return '';

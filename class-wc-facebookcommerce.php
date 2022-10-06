@@ -43,7 +43,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WC_Facebookcommerce singleton instance */
 	protected static $instance;
 
-	/** @var WooCommerce\Facebook\API instance */
+	/** @var WooCommerce\Facebook\Api instance */
 	private $api;
 
 	/** @var \WC_Facebookcommerce_Integration instance */
@@ -543,7 +543,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return WooCommerce\Facebook\Api
 	 * @throws ApiException
 	 */
-	public function get_api( $access_token = '' ) {
+	public function get_api( string $access_token = '' ): WooCommerce\Facebook\Api {
 		// if none provided, use the general access token
 		if ( ! $access_token ) {
 			$access_token = $this->get_connection_handler()->get_access_token();
@@ -687,7 +687,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function get_integration() {
 		if ( null === $this->integration ) {
-			$this->integration = new WC_Facebookcommerce_Integration();
+			$this->integration = new WC_Facebookcommerce_Integration( $this );
 		}
 
 		return $this->integration;

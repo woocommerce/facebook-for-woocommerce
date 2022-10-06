@@ -1,21 +1,16 @@
 <?php
-// phpcs:ignoreFile
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @package FacebookCommerce
- */
+declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\Api\User;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
+
+use WooCommerce\Facebook\Api;
 
 /**
  * User API response object
  *
- * @since 2.0.0
+ * @property-read string id Facebook User ID.
+ * @property-read string name Facebook User Name.
  */
-class Response extends WooCommerce\Facebook\Api\Response {}
+class Response extends Api\Response {}

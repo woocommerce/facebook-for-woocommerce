@@ -70,7 +70,7 @@ abstract class Base {
 	 * @since 2.2.0
 	 *
 	 * @param Request|object $request class instance which implements SV_WC_API_Request
-	 * @return Response|object class instance which implements SV_WC_API_Response
+	 * @return Response class instance which implements Api/Response
 	 * @throws ApiException may be thrown in implementations
 	 */
 	protected function perform_request( $request ) {
@@ -107,10 +107,10 @@ abstract class Base {
 	 * @since 2.2.0
 	 *
 	 * @param string $request_uri
-	 * @param string $request_args
+	 * @param array  $request_args
 	 * @return array|\WP_Error
 	 */
-	protected function do_remote_request( $request_uri, $request_args ) {
+	protected function do_remote_request( string $request_uri, array $request_args ) {
 		return wp_safe_remote_request( $request_uri, $request_args );
 	}
 
@@ -121,9 +121,9 @@ abstract class Base {
 	 * @since 2.2.0
 	 * @param array|\WP_Error $response response data
 	 * @throws ApiException network issues, timeouts, API errors, etc
-	 * @return Request|object request class instance that implements SV_WC_API_Request
+	 * @return \WooCommerce\Facebook\Api\Response Response class instance.
 	 */
-	protected function handle_response( $response ) {
+	protected function handle_response( $response ): \WooCommerce\Facebook\Api\Response {
 		// check for WP HTTP API specific errors (network timeout, etc)
 		if ( is_wp_error( $response ) ) {
 			throw new ApiException( $response->get_error_message(), (int) $response->get_error_code() );
@@ -211,7 +211,7 @@ abstract class Base {
 		 *     @type string $headers response HTTP headers
 		 *     @type string $body response body
 		 * }
-		 * @param SV_WC_API_Base $this instance
+		 * @param \WooCommerce\Facebook\Framework\Api\Base $this instance
 		 */
 		do_action( 'wc_' . $this->get_api_id() . '_api_request_performed', $request_data, $response_data, $this );
 	}

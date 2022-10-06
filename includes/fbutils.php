@@ -31,7 +31,6 @@ class WC_Facebookcommerce_Utils {
 	const FB_VARIANT_GENDER  = 'gender';
 
 	public static $ems        = null;
-	public static $fbgraph    = null;
 	public static $store_name = null;
 
 	public static $validGenderArray =
@@ -84,7 +83,7 @@ class WC_Facebookcommerce_Utils {
 	 * from WooCommerce
 	 *
 	 * @access public
-	 * @param WC_Product $woo_product
+	 * @param WC_Product|WC_Facebook_Product $woo_product
 	 * @return string
 	 */
 	public static function get_fb_retailer_id( $woo_product ) {
@@ -191,7 +190,7 @@ class WC_Facebookcommerce_Utils {
 	 * an array with a single woo ID for simple products.
 	 *
 	 * @access public
-	 * @param WC_Product $woo_product
+	 * @param WC_Product|WC_Facebook_Product $woo_product
 	 * @return array
 	 */
 	public static function get_product_array( $woo_product ) {
@@ -297,11 +296,7 @@ class WC_Facebookcommerce_Utils {
 		);
 		$ems     = $ems ?: self::$ems;
 		if ( $ems ) {
-			self::$fbgraph->log(
-				$ems,
-				$message,
-				$error
-			);
+			facebook_for_woocommerce()->get_api()->log( $ems, $message, $error );
 		} else {
 			error_log(
 				'external merchant setting is null, something wrong here: ' .
@@ -313,19 +308,10 @@ class WC_Facebookcommerce_Utils {
 	/**
 	 * Utility function for development Tip Events logging.
 	 */
-	public static function tip_events_log(
-	$tip_id,
-	$channel_id,
-	$event,
-	$ems = '' ) {
-
+	public static function tip_events_log( $tip_id, $channel_id, $event, $ems = '' ) {
 		$ems = $ems ?: self::$ems;
 		if ( $ems ) {
-			self::$fbgraph->log_tip_event(
-				$tip_id,
-				$channel_id,
-				$event
-			);
+			facebook_for_woocommerce()->get_api()->log_tip_event( $tip_id, $channel_id, $event );
 		} else {
 			error_log( 'external merchant setting is null' );
 		}

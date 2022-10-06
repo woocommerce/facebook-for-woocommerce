@@ -11,8 +11,10 @@
 
 namespace WooCommerce\Facebook\Handlers;
 
+use WooCommerce\Facebook\Api;
 use WooCommerce\Facebook\Api\Exceptions\ConnectApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) or exit;
@@ -147,24 +149,6 @@ class Connection {
 				$response->is_ig_cta_enabled()
 			);
 
-			// update the messenger settings
-			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
-
-				// store the local "enabled" setting
-				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
-
-				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
-					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
-				}
-
-				// if the site's domain is somehow missing from the allowed domains, re-add it
-				if ( $messenger_configuration->is_enabled() && ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
-
-					$messenger_configuration->add_domain( home_url( '/' ) );
-
-					$this->get_plugin()->get_api()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
-				}
-			}
 		} catch ( ApiException $exception ) {
 
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
@@ -393,7 +377,7 @@ class Connection {
 	 */
 	private function retrieve_page_access_token( $page_id ) {
 		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-		$api_url = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
+		$api_url = Api::GRAPH_API_URL . Api::API_VERSION;
 		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
@@ -401,7 +385,7 @@ class Connection {
 			facebook_for_woocommerce()->log( print_r( $body, true ) );
 			throw new ApiException(
 				sprintf(
-				/* translators: Placeholders: %s - API error message */
+					/* translators: Placeholders: %s - API error message */
 					__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
 					wp_remote_retrieve_response_message( $response )
 				)
@@ -883,7 +867,7 @@ class Connection {
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 				'domain'               => home_url(),
-				'channel'              => 'COMMERCE_OFFSITE',
+				'channel'              => 'DEFAULT',
 			),
 			'business_config' => array(
 				'business' => array(

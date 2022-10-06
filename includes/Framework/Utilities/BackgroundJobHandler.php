@@ -610,11 +610,11 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		$data_key = $this->data_key;
 
 		if ( ! isset( $job->{$data_key} ) ) {
-			throw new \Exception( sprintf( __( 'Job data key "%s" not set', 'woocommerce-plugin-framework' ), $data_key ) );
+			throw new \Exception( sprintf( __( 'Job data key "%s" not set', 'facebook-for-woocommerce' ), $data_key ) );
 		}
 
 		if ( ! is_array( $job->{$data_key} ) ) {
-			throw new \Exception( sprintf( __( 'Job data key "%s" is not an array', 'woocommerce-plugin-framework' ), $data_key ) );
+			throw new \Exception( sprintf( __( 'Job data key "%s" is not an array', 'facebook-for-woocommerce' ), $data_key ) );
 		}
 
 		$data = $job->{$data_key};
@@ -973,9 +973,9 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 
 		// this key is not unique to the plugin to avoid duplicate tools
 		$tools['sv_wc_background_job_test'] = array(
-			'name'     => __( 'Background Processing Test', 'woocommerce-plugin-framework' ),
-			'button'   => __( 'Run Test', 'woocommerce-plugin-framework' ),
-			'desc'     => __( 'This tool will test whether your server is capable of processing background jobs.', 'woocommerce-plugin-framework' ),
+			'name'     => __( 'Background Processing Test', 'facebook-for-woocommerce' ),
+			'button'   => __( 'Run Test', 'facebook-for-woocommerce' ),
+			'desc'     => __( 'This tool will test whether your server is capable of processing background jobs.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'run_debug_tool' ),
 		);
 
@@ -993,10 +993,10 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	public function run_debug_tool() {
 
 		if ( $this->test_connection() ) {
-			$this->debug_message = esc_html__( 'Success! You should be able to process background jobs.', 'woocommerce-plugin-framework' );
+			$this->debug_message = esc_html__( 'Success! You should be able to process background jobs.', 'facebook-for-woocommerce' );
 			$result = true;
 		} else {
-			$this->debug_message = esc_html__( 'Could not connect. Please ask your hosting company to ensure your server has loopback connections enabled.', 'woocommerce-plugin-framework' );
+			$this->debug_message = esc_html__( 'Could not connect. Please ask your hosting company to ensure your server has loopback connections enabled.', 'facebook-for-woocommerce' );
 			$result = false;
 		}
 

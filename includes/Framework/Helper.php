@@ -319,7 +319,7 @@ class Helper {
 	 */
 	public static function list_array_items( array $items, $conjunction = null, $separator = '' ) {
 		if ( ! is_string( $conjunction ) ) {
-			$conjunction = _x( 'and', 'coordinating conjunction for a list of items: a, b, and c', 'woocommerce-plugin-framework' );
+			$conjunction = _x( 'and', 'coordinating conjunction for a list of items: a, b, and c', 'facebook-for-woocommerce' );
 		}
 		// append the conjunction to the last item
 		if ( count( $items ) > 1 ) {
@@ -786,7 +786,7 @@ class Helper {
 	 */
 	public static function f__( $text ) {
 
-		return __( $text, 'woocommerce-plugin-framework' );
+		return __( $text, 'facebook-for-woocommerce' );
 	}
 
 
@@ -803,7 +803,7 @@ class Helper {
 	 */
 	public static function f_e( $text ) {
 
-		_e( $text, 'woocommerce-plugin-framework' );
+		_e( $text, 'facebook-for-woocommerce' );
 	}
 
 
@@ -823,7 +823,7 @@ class Helper {
 	 */
 	public static function f_x( $text, $context ) {
 
-		return _x( $text, $context, 'woocommerce-plugin-framework' );
+		return _x( $text, $context, 'facebook-for-woocommerce' );
 	}
 
 

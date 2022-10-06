@@ -121,7 +121,7 @@ class Dependencies {
 					'%1$s requires the %2$s PHP extension to function. Contact your host or server administrator to install and configure the missing extension.',
 					'%1$s requires the following PHP extensions to function: %2$s. Contact your host or server administrator to install and configure the missing extensions.',
 					count( $missing_extensions ),
-					'woocommerce-plugin-framework'
+					'facebook-for-woocommerce'
 				),
 				esc_html( $this->get_plugin()->get_plugin_name() ),
 				'<strong>' . implode( ', ', $missing_extensions ) . '</strong>'
@@ -145,7 +145,7 @@ class Dependencies {
 					'%1$s requires the %2$s PHP function to exist.  Contact your host or server administrator to install and configure the missing function.',
 					'%1$s requires the following PHP functions to exist: %2$s.  Contact your host or server administrator to install and configure the missing functions.',
 					count( $missing_functions ),
-					'woocommerce-plugin-framework'
+					'facebook-for-woocommerce'
 				),
 				esc_html( $this->get_plugin()->get_plugin_name() ),
 				'<strong>' . implode( ', ', $missing_functions ) . '</strong>'
@@ -175,14 +175,14 @@ class Dependencies {
 						if ( ! empty( $values['type'] ) && 'min' === $values['type'] ) {
 							$setting_message = sprintf(
 								/** translators: Placeholders: %s - a PHP setting value */
-								__( '%s or higher', 'woocommerce-plugin-framework' ),
+								__( '%s or higher', 'facebook-for-woocommerce' ),
 								$setting_message
 							);
 						}
 						$message .= '<li>' . $setting_message . '</li>';
 					}
 				$message .= '</ul>';
-				$message .= __( 'Please contact your hosting provider or server administrator to configure these settings.', 'woocommerce-plugin-framework' );
+				$message .= __( 'Please contact your hosting provider or server administrator to configure these settings.', 'facebook-for-woocommerce' );
 				$this->add_admin_notice( 'wc-' . $this->get_plugin()->get_id_dasherized() . '-incompatibile-php-settings', $message, 'warning' );
 			}
 		}
@@ -203,7 +203,7 @@ class Dependencies {
 				__( 'Hey there! We\'ve noticed that your server is running %1$san outdated version of PHP%2$s, which is the programming language that WooCommerce and its extensions are built on.
 					The PHP version that is currently used for your site is no longer maintained, nor %1$sreceives security updates%2$s; newer versions are faster and more secure.
 					As a result, %3$s no longer supports this version and you should upgrade PHP as soon as possible.
-					Your hosting provider can do this for you. %4$sHere are some resources to help you upgrade%5$s and to explain PHP versions further.', 'woocommerce-plugin-framework' ),
+					Your hosting provider can do this for you. %4$sHere are some resources to help you upgrade%5$s and to explain PHP versions further.', 'facebook-for-woocommerce' ),
 				'<strong>', '</strong>',
 				esc_html( $this->get_plugin()->get_plugin_name() ),
 				'<a href="http://skyver.ge/upgradephp">', '</a>'

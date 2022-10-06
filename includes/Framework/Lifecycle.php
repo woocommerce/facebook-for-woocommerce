@@ -258,16 +258,16 @@ class Lifecycle {
 		if ( $this->get_plugin()->get_reviews_url() ) {
 			// to be prepended at random to each milestone notice
 			$exclamations = array(
-				__( 'Awesome', 'woocommerce-plugin-framework' ),
-				__( 'Fantastic', 'woocommerce-plugin-framework' ),
-				__( 'Cowabunga', 'woocommerce-plugin-framework' ),
-				__( 'Congratulations', 'woocommerce-plugin-framework' ),
-				__( 'Hot dog', 'woocommerce-plugin-framework' ),
+				__( 'Awesome', 'facebook-for-woocommerce' ),
+				__( 'Fantastic', 'facebook-for-woocommerce' ),
+				__( 'Cowabunga', 'facebook-for-woocommerce' ),
+				__( 'Congratulations', 'facebook-for-woocommerce' ),
+				__( 'Hot dog', 'facebook-for-woocommerce' ),
 			);
 			$message = $exclamations[ array_rand( $exclamations ) ] . ', ' . esc_html( $custom_message ) . ' ';
 			$message .= sprintf(
 				/* translators: Placeholders: %1$s - plugin name, %2$s - <a> tag, %3$s - </a> tag, %4$s - <a> tag, %5$s - </a> tag */
-				__( 'Are you having a great experience with %1$s so far? Please consider %2$sleaving a review%3$s! If things aren\'t going quite as expected, we\'re happy to help -- please %4$sreach out to our support team%5$s.', 'woocommerce-plugin-framework' ),
+				__( 'Are you having a great experience with %1$s so far? Please consider %2$sleaving a review%3$s! If things aren\'t going quite as expected, we\'re happy to help -- please %4$sreach out to our support team%5$s.', 'facebook-for-woocommerce' ),
 				'<strong>' . esc_html( $this->get_plugin()->get_plugin_name() ) . '</strong>',
 				'<a href="' . esc_url( $this->get_plugin()->get_reviews_url() ) . '">', '</a>',
 				'<a href="' . esc_url( $this->get_plugin()->get_support_url() ) . '">', '</a>'

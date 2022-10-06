@@ -164,10 +164,8 @@ class Connection extends Abstract_Settings_Screen {
 			$static_items['catalog']['url'] = "https://facebook.com/products/catalogs/{$catalog_id}";
 
 			try {
-
 				$response = facebook_for_woocommerce()->get_api()->get_catalog( $catalog_id );
-
-				if ( $name = $response->get_name() ) {
+				if ( $name = $response->name ) {
 					$static_items['catalog']['value'] = $name;
 				}
 			} catch ( ApiException $exception ) {

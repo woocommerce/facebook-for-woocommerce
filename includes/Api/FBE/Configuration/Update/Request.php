@@ -31,9 +31,7 @@ class Request extends Configuration\Request {
 	 * @param string $external_business_id external business ID
 	 */
 	public function __construct( $external_business_id ) {
-
 		parent::__construct( $external_business_id, 'POST' );
-
 		// include the business ID in the request body
 		$this->data['fbe_external_business_id'] = $external_business_id;
 	}

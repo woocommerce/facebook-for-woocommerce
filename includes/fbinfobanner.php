@@ -27,35 +27,23 @@ class WC_Facebookcommerce_Info_Banner {
 
 	/** @var string If the banner has been dismissed */
 	private $external_merchant_settings_id;
-	private $fbgraph;
 	private $should_query_tip;
 
 	/**
 	 * Get the class instance
 	 */
-	public static function get_instance(
-	$external_merchant_settings_id,
-	$fbgraph,
-	$should_query_tip = false ) {
+	public static function get_instance( $external_merchant_settings_id, $should_query_tip = false ) {
 		return null === self::$instance
-		? ( self::$instance = new self(
-			$external_merchant_settings_id,
-			$fbgraph,
-			$should_query_tip
-		) )
+		? ( self::$instance = new self( $external_merchant_settings_id, $should_query_tip ) )
 		: self::$instance;
 	}
 
 	/**
 	 * Constructor
 	 */
-	public function __construct(
-	$external_merchant_settings_id,
-	$fbgraph,
-	$should_query_tip = false ) {
+	public function __construct( $external_merchant_settings_id, $should_query_tip = false ) {
 		$this->should_query_tip              = $should_query_tip;
 		$this->external_merchant_settings_id = $external_merchant_settings_id;
-		$this->fbgraph                       = $fbgraph;
 		add_action( 'wp_ajax_ajax_woo_infobanner_post_click', array( $this, 'ajax_woo_infobanner_post_click' ) );
 		add_action( 'wp_ajax_ajax_woo_infobanner_post_xout', array( $this, 'ajax_woo_infobanner_post_xout' ) );
 		add_action( 'admin_notices', array( $this, 'banner' ) );
@@ -143,9 +131,7 @@ class WC_Facebookcommerce_Info_Banner {
 			// tip pass time cap.
 			$tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
 		} else {
-			$tip_info = $this->fbgraph->get_tip_info(
-				$this->external_merchant_settings_id
-			);
+			$tip_info = facebook_for_woocommerce()->get_api()->get_tip_info( $this->external_merchant_settings_id );
 			update_option( 'fb_info_banner_last_query_time', current_time( 'mysql' ) );
 		}
 
@@ -156,31 +142,15 @@ class WC_Facebookcommerce_Info_Banner {
 			return;
 		} else {
 			// Get tip creatives via API
-			if ( is_string( $tip_info ) ) {
-				$tip_info = WC_Facebookcommerce_Utils::decode_json( $tip_info );
-			}
-			$tip_title = isset( $tip_info->tip_title->__html )
-			? $tip_info->tip_title->__html
-			: null;
+			$tip_title       = $tip_info->get_tip_title_html() ?? null;
+			$tip_body        = $tip_info->get_tip_body_html() ?? null;
+			$tip_action_link = $tip_info->tip_action_link ?? null;
+			$tip_action      = $tip_info->get_tip_action_html() ?? null;
+			$tip_img_url     = isset( $tip_info->tip_img_url )
+				? self::DEFAULT_TIP_IMG_URL_PREFIX . $tip_info->tip_img_url
+				: null;
 
-			$tip_body = isset( $tip_info->tip_body->__html )
-			? $tip_info->tip_body->__html
-			: null;
-
-			$tip_action_link = isset( $tip_info->tip_action_link )
-			? $tip_info->tip_action_link
-			: null;
-
-			$tip_action = isset( $tip_info->tip_action->__html )
-			? $tip_info->tip_action->__html
-			: null;
-
-			$tip_img_url = isset( $tip_info->tip_img_url )
-			? self::DEFAULT_TIP_IMG_URL_PREFIX . $tip_info->tip_img_url
-			: null;
-
-			if ( $tip_title == null || $tip_body == null || $tip_action_link == null
-			|| $tip_action == null || $tip_action == null ) {
+			if ( $tip_title == null || $tip_body == null || $tip_action_link == null || $tip_action == null || $tip_action == null ) {
 				WC_Facebookcommerce_Utils::fblog(
 					'Unexpected response from FB for tip info.',
 					array( 'tip_info' => $tip_info ),
@@ -235,7 +205,6 @@ class WC_Facebookcommerce_Info_Banner {
 	 * The banner will remain dismissed for at least one day and until a new info tip can be retrieved.
 	 *
 	 * @see \WC_Facebookcommerce_Integration::FB_TIP_QUERY
-	 * @see \WC_Facebookcommerce_Graph_API::get_tip_info()
 	 */
 	public function dismiss_banner() {
 
