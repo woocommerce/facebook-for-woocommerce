@@ -9,10 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Handlers;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+namespace WooCommerce\Facebook\Handlers;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -34,7 +31,6 @@ class WebHook {
 	 * @since 2.3.0
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
-
 		add_action( 'rest_api_init', array( $this, 'init_webhook_endpoint' ) );
 	}
 
@@ -45,7 +41,6 @@ class WebHook {
 	 * @since 2.3.0
 	 */
 	public function init_webhook_endpoint() {
-
 		register_rest_route(
 			'wc-facebook/v1',
 			'webhook',
@@ -69,7 +64,6 @@ class WebHook {
 	 * @return boolean
 	 */
 	public function permission_callback() {
-
 		return current_user_can( 'manage_woocommerce' );
 	}
 
@@ -78,21 +72,17 @@ class WebHook {
 	 * WebHook Listener
 	 *
 	 * @since 2.3.0
-	 * @see SkyVerge\WooCommerce\Facebook\Handlers\Connection
+	 * @see Connection
 	 *
 	 * @param \WP_REST_Request $request The request.
 	 * @return \WP_REST_Response
 	 */
 	public function webhook_callback( \WP_REST_Request $request ) {
-
 		$request_body = json_decode( $request->get_body() );
-
 		if ( empty( $request_body ) ) {
 			return new \WP_REST_Response( null, 204 );
 		}
-
 		do_action( 'fbe_webhook', $request_body );
-
 		return new \WP_REST_Response( null, 200 );
 	}
 }

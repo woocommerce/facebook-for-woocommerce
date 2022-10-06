@@ -1,7 +1,7 @@
 <?php
 // phpcs:ignoreFile
 
-namespace SkyVerge\WooCommerce\Facebook\Debug;
+namespace WooCommerce\Facebook\Debug;
 
 defined( 'ABSPATH' ) || exit;
 

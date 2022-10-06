@@ -9,12 +9,13 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Handlers;
+namespace WooCommerce\Facebook\Handlers;
 
-use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_API_Exception;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
-use SkyVerge\WooCommerce\Facebook\API\Exceptions\Connect_WC_API_Exception;
+use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\Api\Exceptions\ConnectApiException;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Utilities\Heartbeat;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -148,25 +149,7 @@ class Connection {
 				$response->is_ig_cta_enabled()
 			);
 
-			// update the messenger settings
-			if ( $messenger_configuration = $response->get_messenger_configuration() ) {
-
-				// store the local "enabled" setting
-				update_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, wc_bool_to_string( $messenger_configuration->is_enabled() ) );
-
-				if ( $default_locale = $messenger_configuration->get_default_locale() ) {
-					update_option( \WC_Facebookcommerce_Integration::SETTING_MESSENGER_LOCALE, sanitize_text_field( $default_locale ) );
-				}
-
-				// if the site's domain is somehow missing from the allowed domains, re-add it
-				if ( $messenger_configuration->is_enabled() && ! in_array( home_url( '/' ), $messenger_configuration->get_domains(), true ) ) {
-
-					$messenger_configuration->add_domain( home_url( '/' ) );
-
-					$this->get_plugin()->get_api()->update_messenger_configuration( $this->get_external_business_id(), $messenger_configuration );
-				}
-			}
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( ApiException $exception ) {
 
 			$this->get_plugin()->log( 'Could not refresh business configuration. ' . $exception->getMessage() );
 		}
@@ -190,7 +173,7 @@ class Connection {
 
 			$this->update_installation_data();
 
-		} catch ( SV_WC_API_Exception $exception ) {
+		} catch ( ApiException $exception ) {
 
 			$this->get_plugin()->log( 'Could not refresh installation data. ' . $exception->getMessage() );
 		}
@@ -203,7 +186,7 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	private function update_installation_data() {
 
@@ -255,45 +238,35 @@ class Connection {
 	 * @since 2.0.0
 	 */
 	public function handle_connect() {
-
 		// don't handle anything unless the user can manage WooCommerce settings
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
-
 		try {
-
 			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT ) ) {
-				throw new SV_WC_API_Exception( 'Invalid nonce' );
+				throw new ApiException( 'Invalid nonce' );
 			}
-
 			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
 			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( $_GET['err_code'] ) ) : '';
 			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
 			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
 			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
-
 			if ( $is_error && $error_code ) {
-				throw new Connect_WC_API_Exception( $error_code );
+				throw new ConnectApiException( $error_code );
 			}
-
 			if ( ! $merchant_access_token ) {
-				throw new SV_WC_API_Exception( 'Access token is missing' );
+				throw new ApiException( 'Access token is missing' );
 			}
-
 			if ( ! $system_user_access_token ) {
-				throw new SV_WC_API_Exception( 'System User access token is missing' );
+				throw new ApiException( 'System User access token is missing' );
 			}
-
 			if ( ! $system_user_id ) {
-				throw new SV_WC_API_Exception( 'System User ID is missing' );
+				throw new ApiException( 'System User ID is missing' );
 			}
-
 			$this->update_access_token( $system_user_access_token );
 			$this->update_merchant_access_token( $merchant_access_token );
 			$this->update_system_user_id( $system_user_id );
 			$this->update_installation_data();
-
 			// Allow opt-out of full batch-API sync, for example if store has a large number of products.
 			if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
@@ -301,30 +274,20 @@ class Connection {
 			else {
 				facebook_for_woocommerce()->log( 'Initial full product sync disabled by filter hook `facebook_for_woocommerce_allow_full_batch_api_sync`', 'facebook_for_woocommerce_connect' );
 			}
-
-
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
-
 			// redirect to the Commerce onboarding if directed to do so
-			if ( ! empty( SV_WC_Helper::get_requested_value( 'connect_commerce' ) ) ) {
-
+			if ( ! empty( Helper::get_requested_value( 'connect_commerce' ) ) ) {
 				wp_redirect( $this->get_commerce_connect_url() );
 				exit;
 			}
-
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful!', 'facebook-for-woocommerce' ) );
-
-		} catch ( SV_WC_API_Exception $exception ) {
-
+		} catch ( ApiException $exception ) {
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
-
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
-		} catch ( Connect_WC_API_Exception $exception ) {
+		} catch ( ConnectApiException $exception ) {
 			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
-
 			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message ), 'facebook_for_woocommerce_connect' );
-
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
 
@@ -363,28 +326,19 @@ class Connection {
 	 * @since 2.0.0
 	 */
 	public function handle_disconnect() {
-
 		check_admin_referer( self::ACTION_DISCONNECT );
-
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
 		}
-
 		try {
-
 			$response = facebook_for_woocommerce()->get_api()->get_user();
 			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
-
 			$this->disconnect();
-
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
-
-		} catch ( SV_WC_API_Exception $exception ) {
-
+		} catch ( ApiException $exception ) {
 			facebook_for_woocommerce()->log( sprintf( 'An error occurred during disconnection: %s. Your Facebook connection settings have been reset.', $exception->getMessage() ) );
 			$this->disconnect();
 		}
-
 		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
 		exit;
 	}
@@ -398,7 +352,6 @@ class Connection {
 	 * @since 2.0.0
 	 */
 	private function disconnect() {
-
 		$this->update_access_token( '' );
 		$this->update_merchant_access_token( '' );
 		$this->update_system_user_id( '' );
@@ -407,12 +360,9 @@ class Connection {
 		$this->update_instagram_business_id( '' );
 		$this->update_commerce_merchant_settings_id( '' );
 		$this->update_external_business_id('');
-
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
-
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
-
 	}
 
 
@@ -423,38 +373,28 @@ class Connection {
 	 *
 	 * @param string $page_id desired Facebook page ID
 	 * @return string
-	 * @throws SV_WC_API_Exception
+	 * @throws ApiException
 	 */
 	private function retrieve_page_access_token( $page_id ) {
-
 		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-
-		$api_url = \WC_Facebookcommerce_Graph_API::GRAPH_API_URL . \WC_Facebookcommerce_Graph_API::API_VERSION;
-
+		$api_url = Api::GRAPH_API_URL . Api::API_VERSION;
 		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
-
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
-
 		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-
 			facebook_for_woocommerce()->log( print_r( $body, true ) );
-
-			throw new SV_WC_API_Exception(
+			throw new ApiException(
 				sprintf(
-				/* translators: Placeholders: %s - API error message */
+					/* translators: Placeholders: %s - API error message */
 					__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
 					wp_remote_retrieve_response_message( $response )
 				)
 			);
 		}
-
 		$page_access_tokens = wp_list_pluck( $body['data'], 'access_token', 'id' );
-
 		// bail if the user isn't authorized to manage the page
 		if ( empty( $page_access_tokens[ $page_id ] ) ) {
-
-			throw new SV_WC_API_Exception(
+			throw new ApiException(
 				sprintf(
 				/* translators: Placeholders: %s - Facebook page ID */
 					__( 'Page %s not authorized.', 'facebook-for-woocommerce' ),
@@ -462,7 +402,6 @@ class Connection {
 				)
 			);
 		}
-
 		return $page_access_tokens[ $page_id ];
 	}
 
@@ -475,9 +414,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_access_token() {
-
 		$access_token = get_option( self::OPTION_ACCESS_TOKEN, '' );
-
 		/**
 		 * Filters the API access token.
 		 *
@@ -498,9 +435,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_merchant_access_token() {
-
 		$access_token = get_option( self::OPTION_MERCHANT_ACCESS_TOKEN, '' );
-
 		/**
 		 * Filters the merchant access token.
 		 *
@@ -521,9 +456,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_page_access_token() {
-
 		$access_token = get_option( self::OPTION_PAGE_ACCESS_TOKEN, '' );
-
 		/**
 		 * Filters the page access token.
 		 *
@@ -545,7 +478,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_connect_url( $connect_commerce = false ) {
-
 		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
 	}
 
@@ -571,7 +503,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_commerce_connect_url() {
-
 		// build the site URL to which the user will ultimately return
 		$site_url = add_query_arg(
 			array(
@@ -580,10 +511,8 @@ class Connection {
 			),
 			home_url( '/' )
 		);
-
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
 		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_connection_authentication_url() );
-
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg(
 			array(
@@ -592,7 +521,6 @@ class Connection {
 			),
 			'https://www.facebook.com/commerce_manager/onboarding/'
 		);
-
 		/**
 		 * Filters the URL used to connect to Facebook Commerce.
 		 *
@@ -612,10 +540,8 @@ class Connection {
 	 * @return string
 	 */
 	public function get_manage_url() {
-
 		$app_id      = $this->get_client_id();
 		$business_id = $this->get_external_business_id();
-
 		return "https://www.facebook.com/facebook_business_extension?app_id={$app_id}&external_business_id={$business_id}";
 	}
 
@@ -628,7 +554,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_disconnect_url() {
-
 		return wp_nonce_url( add_query_arg( 'action', self::ACTION_DISCONNECT, admin_url( 'admin.php' ) ), self::ACTION_DISCONNECT );
 	}
 
@@ -643,7 +568,6 @@ class Connection {
 	 * @return string[]
 	 */
 	public function get_scopes() {
-
 		$scopes = array(
 			'manage_business_extension',
 			'catalog_management',
@@ -652,7 +576,6 @@ class Connection {
 			'pages_read_engagement', // this scope is needed to enable order management if using the Commerce feature
 			'instagram_basic',
 		);
-
 		/**
 		 * Filters the scopes that will be requested during the connection flow.
 		 *
@@ -673,13 +596,9 @@ class Connection {
 	 * @return string
 	 */
 	public function get_external_business_id() {
-
 		if ( ! is_string( $this->external_business_id ) ) {
-
 			$external_id = get_option( self::OPTION_EXTERNAL_BUSINESS_ID );
-
 			if ( ! is_string( $external_id ) || empty( $external_id ) ) {
-
 				/**
 				 * Filters the shop's business external ID.
 				 *
@@ -691,17 +610,12 @@ class Connection {
 				 * @param string $external_id the shop's business external ID
 				 */
 				$external_id = sanitize_key( (string) apply_filters( 'wc_facebook_connection_business_id', get_bloginfo( 'name' ) ) );
-
 				if ( empty( $external_id ) ) {
 					$external_id = sanitize_key( str_replace( array( 'http', 'https', 'www' ), '', get_bloginfo( 'url' ) ) );
 				}
-
 				$external_id = uniqid( sprintf( '%s-', $external_id ), false );
-
 				$this->update_external_business_id( $external_id );
-
 			}
-
 			$this->external_business_id = $external_id;
 		}
 
@@ -725,9 +639,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_business_name() {
-
 		$business_name = get_bloginfo( 'name' );
-
 		/**
 		 * Filters the shop's business name.
 		 *
@@ -739,11 +651,9 @@ class Connection {
 		 * @param string $business_name the shop's business name
 		 */
 		$business_name = trim( (string) apply_filters( 'wc_facebook_connection_business_name', is_string( $business_name ) ? $business_name : '' ) );
-
 		if ( empty( $business_name ) ) {
 			$business_name = get_bloginfo( 'url' );
 		}
-
 		return html_entity_decode( $business_name, ENT_QUOTES, 'UTF-8' );
 	}
 
@@ -756,7 +666,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_business_manager_id() {
-
 		return get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
 	}
 
@@ -769,7 +678,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_ad_account_id() {
-
 		return get_option( self::OPTION_AD_ACCOUNT_ID, '' );
 	}
 
@@ -782,7 +690,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_system_user_id() {
-
 		return get_option( self::OPTION_SYSTEM_USER_ID, '' );
 	}
 
@@ -795,7 +702,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_commerce_manager_id() {
-
 		return get_option( self::OPTION_COMMERCE_MANAGER_ID, '' );
 	}
 
@@ -808,7 +714,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_instagram_business_id() {
-
 		return get_option( self::OPTION_INSTAGRAM_BUSINESS_ID, '' );
 	}
 
@@ -821,7 +726,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_commerce_merchant_settings_id() {
-
 		return get_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, '' );
 	}
 
@@ -834,7 +738,6 @@ class Connection {
 	 * @return string URL
 	 */
 	public function get_proxy_url() {
-
 		/**
 		 * Filters the proxy URL.
 		 *
@@ -854,7 +757,6 @@ class Connection {
 	 * @return string URL
 	 */
 	public function get_app_store_login_url() {
-
 		/**
 		 * Filters App Store login URL.
 		 *
@@ -891,7 +793,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_redirect_url() {
-
 		$redirect_url = add_query_arg(
 			array(
 				'wc-api'               => self::ACTION_CONNECT,
@@ -901,7 +802,6 @@ class Connection {
 			),
 			home_url( '/' )
 		);
-
 		/**
 		 * Filters the redirect URL where the user will return to after OAuth.
 		 *
@@ -923,9 +823,7 @@ class Connection {
 	 * @return array
 	 */
 	public function get_connect_parameters( $connect_commerce = false ) {
-
 		$state = $this->get_redirect_url();
-
 		if ( $connect_commerce ) {
 			$state = add_query_arg( 'connect_commerce', true, $state );
 		}
@@ -962,7 +860,6 @@ class Connection {
 	 * @return array associative array (to be converted to JSON encoded for connection purposes)
 	 */
 	private function get_connect_parameters_extras() {
-
 		$parameters = array(
 			'setup'           => array(
 				'external_business_id' => $this->get_external_business_id(),
@@ -970,7 +867,7 @@ class Connection {
 				'currency'             => get_woocommerce_currency(),
 				'business_vertical'    => 'ECOMMERCE',
 				'domain'               => home_url(),
-				'channel'              => 'COMMERCE_OFFSITE',
+				'channel'              => 'DEFAULT',
 			),
 			'business_config' => array(
 				'business' => array(
@@ -979,14 +876,11 @@ class Connection {
 			),
 			'repeat'          => false,
 		);
-
 		if ( $external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id() ) {
 			$parameters['setup']['merchant_settings_id'] = $external_merchant_settings_id;
 		}
-
 		// if messenger was previously enabled
 		if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) {
-
 			$parameters['business_config']['messenger_chat'] = array(
 				'enabled' => true,
 				'domains' => array(
@@ -994,7 +888,6 @@ class Connection {
 				),
 			);
 		}
-
 		return $parameters;
 	}
 
@@ -1007,16 +900,12 @@ class Connection {
 	 * @return string
 	 */
 	private function get_timezone_string() {
-
 		$timezone = wc_timezone_string();
-
 		// convert +05:30 and +05:00 into Etc/GMT+5 - we ignore the minutes because Facebook does not allow minute offsets
 		if ( preg_match( '/([+-])(\d{2}):\d{2}/', $timezone, $matches ) ) {
-
 			$hours    = (int) $matches[2];
 			$timezone = "Etc/GMT{$matches[1]}{$hours}";
 		}
-
 		return $timezone;
 	}
 
@@ -1029,7 +918,6 @@ class Connection {
 	 * @param string $value the business manager ID
 	 */
 	public function update_business_manager_id( $value ) {
-
 		update_option( self::OPTION_BUSINESS_MANAGER_ID, $value );
 	}
 
@@ -1042,7 +930,6 @@ class Connection {
 	 * @param string $value the ad account ID
 	 */
 	public function update_ad_account_id( $value ) {
-
 		update_option( self::OPTION_AD_ACCOUNT_ID, $value );
 	}
 
@@ -1055,7 +942,6 @@ class Connection {
 	 * @param string $value the ID
 	 */
 	public function update_system_user_id( $value ) {
-
 		update_option( self::OPTION_SYSTEM_USER_ID, $value );
 	}
 
@@ -1068,7 +954,6 @@ class Connection {
 	 * @param string $id the ID
 	 */
 	public function update_commerce_manager_id( $id ) {
-
 		update_option( self::OPTION_COMMERCE_MANAGER_ID, $id );
 	}
 
@@ -1081,7 +966,6 @@ class Connection {
 	 * @param string $id the ID
 	 */
 	public function update_instagram_business_id( $id ) {
-
 		update_option( self::OPTION_INSTAGRAM_BUSINESS_ID, $id );
 	}
 
@@ -1094,7 +978,6 @@ class Connection {
 	 * @param string $id the ID
 	 */
 	public function update_commerce_merchant_settings_id( $id ) {
-
 		update_option( self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID, $id );
 	}
 
@@ -1107,7 +990,6 @@ class Connection {
 	 * @param string $value the access token
 	 */
 	public function update_access_token( $value ) {
-
 		update_option( self::OPTION_ACCESS_TOKEN, $value );
 	}
 
@@ -1120,7 +1002,6 @@ class Connection {
 	 * @param string $value the access token
 	 */
 	public function update_merchant_access_token( $value ) {
-
 		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
 	}
 
@@ -1133,7 +1014,6 @@ class Connection {
 	 * @param string $value the access token
 	 */
 	public function update_page_access_token( $value ) {
-
 		update_option( self::OPTION_PAGE_ACCESS_TOKEN, is_string( $value ) ? $value : '' );
 	}
 
@@ -1145,7 +1025,6 @@ class Connection {
 	 * @param string $value external business id
 	 */
 	public function update_external_business_id( $value ) {
-
 		update_option( self::OPTION_EXTERNAL_BUSINESS_ID, is_string( $value ) ? $value : '' );
 	}
 
@@ -1160,7 +1039,6 @@ class Connection {
 	 * @return bool
 	 */
 	public function is_connected() {
-
 		return (bool) $this->get_access_token();
 	}
 
@@ -1173,7 +1051,6 @@ class Connection {
 	 * @return bool
 	 */
 	public function has_previously_connected_fbe_2() {
-
 		return 'yes' === get_option( 'wc_facebook_has_connected_fbe_2' );
 	}
 
@@ -1186,9 +1063,7 @@ class Connection {
 	 * @return bool
 	 */
 	public function has_previously_connected_fbe_1() {
-
 		$integration = $this->get_plugin()->get_integration();
-
 		return $integration && $integration->get_external_merchant_settings_id();
 	}
 
@@ -1201,7 +1076,6 @@ class Connection {
 	 * @return string
 	 */
 	public function get_client_id() {
-
 		/**
 		 * Filters the client ID.
 		 *
@@ -1221,7 +1095,6 @@ class Connection {
 	 * @return \WC_Facebookcommerce
 	 */
 	public function get_plugin() {
-
 		return $this->plugin;
 	}
 
@@ -1235,27 +1108,19 @@ class Connection {
 	 * @param object $data WebHook event data.
 	 */
 	public function fbe_install_webhook( $data ) {
-
 		// Reject other objects other than subscribed object
 		if ( empty( $data ) || ! isset( $data->object ) || self::WEBHOOK_SUBSCRIBED_OBJECT !== $data->object ) {
-
 			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
 			$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
 			return;
 		}
-
 		$log_data = array();
-
 		$this->get_plugin()->log( 'WebHook User Event received' );
 		$this->get_plugin()->log( print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-
 		$entry = (array) $data->entry[0];
 		if ( empty( $entry ) ) {
 			return;
 		}
-
 		// Filter event by subscribed field
 		$event = array_filter(
 			$entry['changes'],
@@ -1263,12 +1128,10 @@ class Connection {
 				return self::WEBHOOK_SUBSCRIBED_FIELD === $change->field;
 			}
 		);
-
 		$values = ! empty( $event[0] ) ? $event[0]->value : '';
 		if ( empty( $values ) ) {
 			return;
 		}
-
 		/**
 		 * If profiles, pages and instagram_profiles fields are not included in the Webhook payload, this means the business has uninstalled FBE.
 		 * In this case also the field access_token will not be included.
@@ -1284,19 +1147,15 @@ class Connection {
 
 			return;
 		}
-
 		update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
 		update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
-
 		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
 		$this->update_access_token( $system_user_access_token );
 		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
-
 		if ( ! empty( $entry['uid'] ) ) {
 			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
 			$log_data[ self::OPTION_SYSTEM_USER_ID ] = sanitize_text_field( $entry['uid'] );
 		}
-
 		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
 		$this->update_merchant_access_token( $merchant_access_token );
 		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
@@ -1332,9 +1191,7 @@ class Connection {
 		}
 
 		if ( ! empty( $values->instagram_profiles ) ) {
-
 			$instagram_business_id = current( $values->instagram_profiles );
-
 			$this->update_instagram_business_id( sanitize_text_field( $instagram_business_id ) );
 			$log_data[ self::OPTION_INSTAGRAM_BUSINESS_ID ] = sanitize_text_field( $instagram_business_id );
 		}
@@ -1345,22 +1202,15 @@ class Connection {
 		}
 
 		if ( ! empty( $values->pages ) ) {
-
 			$page_id = current( $values->pages );
-
 			try {
-
 				update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $page_id ) );
 				$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = sanitize_text_field( $page_id );
-
 				// get and store a current access token for the configured page
 				$page_access_token = $this->retrieve_page_access_token( $page_id );
-
 				$this->update_page_access_token( $page_access_token );
 				$log_data[ self::OPTION_PAGE_ACCESS_TOKEN ] = sanitize_text_field( $page_access_token );
-
 			} catch ( \Exception $e ) {
-
 				$this->get_plugin()->log( 'Could not request Page Token: ' . $e->getMessage() );
 			}
 		}//end if
@@ -1376,7 +1226,6 @@ class Connection {
 	 * @since 2.3.0
 	 */
 	public function init_extras_endpoint() {
-
 		register_rest_route(
 			'wc-facebook/v1',
 			'extras',
@@ -1399,7 +1248,6 @@ class Connection {
 	 * @return boolean
 	 */
 	public function extras_permission_callback() {
-
 		return current_user_can( 'manage_woocommerce' );
 	}
 
@@ -1412,12 +1260,10 @@ class Connection {
 	 * @return \WP_REST_Response
 	 */
 	public function extras_callback() {
-
 		$extras = $this->get_connect_parameters_extras();
 		if ( empty( $extras ) ) {
 			return new \WP_REST_Response( null, 204 );
 		}
-
 		return new \WP_REST_Response( $extras, 200 );
 	}
 
@@ -1428,37 +1274,28 @@ class Connection {
 	 * @since 2.3.0
 	 */
 	public function handle_fbe_redirect() {
-
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to finish App Store login.', 'facebook-for-woocommerce' ) );
 		}
-
 		$redirect_uri = base64_decode( $_REQUEST['redirect_uri'] ); //phpcs:ignore
-
 		// To ensure that we are not sharing any user data with other parties, only redirect to the redirect_uri if it matches the regular expression
 		if ( empty( $redirect_uri ) || ! preg_match( '/https?:\/\/(www\.|m\.|l\.)?(\d{5}\.od\.)?(facebook|instagram|whatsapp)\.com(\/.*)?/', explode( '?', $redirect_uri )[0] ) ) {
 			wp_safe_redirect( site_url() );
 			exit;
 		}
-
 		if ( empty( $_REQUEST['success'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 			$url_params = array(
 				'store_url'    => '',
 				'redirect_uri' => rawurlencode( $redirect_uri ),
 				'errors'       => array( 'You need to grant access to WooCommerce.' ),
 			);
-
 			$redirect_url = add_query_arg(
 				$url_params,
 				$this->get_app_store_login_url()
 			);
-
 		} else {
-
 			$redirect_url = $redirect_uri . '&extras=' . rawurlencode_deep( wp_json_encode( $this->get_connect_parameters_extras() ) );
 		}
-
 		wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
 	}

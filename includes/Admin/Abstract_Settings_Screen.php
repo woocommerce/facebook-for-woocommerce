@@ -9,9 +9,10 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -84,10 +85,9 @@ abstract class Abstract_Settings_Screen {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws Framework\SV_WC_Plugin_Exception
+	 * @throws PluginException
 	 */
 	public function save() {
-
 		woocommerce_update_options( $this->get_settings() );
 	}
 
@@ -100,14 +100,11 @@ abstract class Abstract_Settings_Screen {
 	 * @return bool
 	 */
 	protected function is_current_screen_page() {
-
-		if ( Settings::PAGE_ID !== Framework\SV_WC_Helper::get_requested_value( 'page' ) ) {
+		if ( Settings::PAGE_ID !== Helper::get_requested_value( 'page' ) ) {
 			return false;
 		}
-
 		// assume we are on the Connection tab by default because the link under Marketing doesn't include the tab query arg
-		$tab = Framework\SV_WC_Helper::get_requested_value( 'tab', 'connection' );
-
+		$tab = Helper::get_requested_value( 'tab', 'connection' );
 		return ! empty( $tab ) && $tab === $this->get_id();
 	}
 
@@ -133,7 +130,6 @@ abstract class Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_disconnected_message() {
-
 		return '';
 	}
 
@@ -146,7 +142,6 @@ abstract class Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_id() {
-
 		return $this->id;
 	}
 
@@ -159,7 +154,6 @@ abstract class Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_label() {
-
 		/**
 		 * Filters the screen label.
 		 *
@@ -179,7 +173,6 @@ abstract class Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_title() {
-
 		/**
 		 * Filters the screen title.
 		 *
@@ -199,7 +192,6 @@ abstract class Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_description() {
-
 		/**
 		 * Filters the screen description.
 		 *
@@ -209,6 +201,4 @@ abstract class Abstract_Settings_Screen {
 		 */
 		return (string) apply_filters( 'wc_facebook_admin_settings_' . $this->get_id() . '_screen_description', $this->description, $this );
 	}
-
-
 }

@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 5.9
-Stable tag: 2.6.20
+Tested up to: 6.0
+Stable tag: 2.6.25
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,33 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.25 - 2022-10-04 =
+* Add - New filter (wc_facebook_product_group_default_variation) to allow customizing a product group's default variation.
+* Update - Remove Skyverge's sake as a dependency from the extension build process.
+
+= 2.6.24 - 2022-09-27 =
+* Fix - Adds helpful admin notices for correct user roles.
+* Fix - Track purchase event flag in session variable instead post meta table.
+
+= 2.6.23 - 2022-09-13 =
+* Add - Show warning when creating product set with excluded categories.
+* Fix - Messenger settings are no longer overridden after business config refresh.
+* Fix - PHP notice thrown by get_page_id() in facebook-for-woocommerce/includes/API/FBE/Installation/Read/Response.php.
+* Fix - When disabling Enable Messenger on the Messenger setting page, the setting does not persist after selecting Save Changes.
+
+= 2.6.22 - 2022-09-06 =
+* Fix - Adding an excluded category doesn't remove that category synced products.
+* Fix - Ensure content_name and content_ids addToCart pixel event properties are correct for variable products when redirect to cart is enabled in WooCommerce.
+* Fix - Remove out-of-stock products on Facebook when the "Hide out of stock items from the catalog" option in WooCommerce is checked.
+* Tweak - WC 6.9 compatibility.
+* Update - Facebook Business Extension flow from COMMERCE_OFFSITE to DEFAULT.
+
+= 2.6.21 - 2022-08-16 =
+* Dev - Add branch-labels GH workflow.
+* Fix - `Undefined array key "HTTP_REFERER"` not longer happens when `new Event` is triggered from an AJAX call that doesn't include a referrer (likely due to browser configuration).
+* Tweak - WC 6.8 compatibility.
+* Tweak - WP 6.0 compatibility.
 
 = 2.6.20 - 2022-08-09 =
 * Fix - Ensure product is deleted from FB when moved to trash.

@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Products;
+use WooCommerce\Facebook\Products;
 
 /**
  * The product stock handler.
@@ -22,14 +22,12 @@ use SkyVerge\WooCommerce\Facebook\Products;
  */
 class Stock {
 
-
 	/**
 	 * Stock constructor.
 	 *
 	 * @since 2.0.5
 	 */
 	public function __construct() {
-
 		$this->add_hooks();
 	}
 
@@ -40,7 +38,6 @@ class Stock {
 	 * @since 2.0.5
 	 */
 	private function add_hooks() {
-
 		add_action( 'woocommerce_variation_set_stock', array( $this, 'set_product_stock' ) );
 		add_action( 'woocommerce_product_set_stock', array( $this, 'set_product_stock' ) );
 	}
@@ -56,11 +53,9 @@ class Stock {
 	 * @param \WC_Product $product the product that was updated
 	 */
 	public function set_product_stock( $product ) {
-
 		if ( ! $product instanceof \WC_Product ) {
 			return;
 		}
-
 		foreach ( $this->get_products_to_sync( $product ) as $item ) {
 			$this->maybe_sync_product_stock_status( $item );
 		}
@@ -79,9 +74,7 @@ class Stock {
 	 * @return \WC_Product[]
 	 */
 	private function get_products_to_sync( \WC_Product $product ) {
-
 		if ( $product->is_type( 'variable' ) ) {
-
 			return array_filter(
 				array_map( 'wc_get_product', $product->get_children() ),
 				function ( $item ) {
@@ -89,7 +82,6 @@ class Stock {
 				}
 			);
 		}
-
 		return array( $product );
 	}
 
@@ -104,15 +96,10 @@ class Stock {
 	 * @param \WC_Product $product a product object
 	 */
 	private function maybe_sync_product_stock_status( \WC_Product $product ) {
-
 		if ( Products::product_should_be_deleted( $product ) ) {
-
 			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ) );
 			return;
 		}
-
 		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( array( $product->get_id() ) );
 	}
-
-
 }

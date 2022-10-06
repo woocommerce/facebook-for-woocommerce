@@ -27,4 +27,42 @@ jQuery( document ).ready( function( $ ) {
 
 	}
 
+	let $submitButton = $( 'form[id="addtag"] input[name="submit"]' );
+
+	$submitButton.on( 'click', function( e ) {
+
+		let $selectedCategories = $('#_wc_facebook_product_cats').val();
+		let excludedCategoryIDs   = [];
+
+		if ( window.facebook_for_woocommerce_product_sets && window.facebook_for_woocommerce_product_sets.excluded_category_ids ) {
+			excludedCategoryIDs = window.facebook_for_woocommerce_product_sets.excluded_category_ids;
+		}
+
+		if ( $selectedCategories.length > 0 && excludedCategoryIDs.length > 0 ) {
+			if ( hasExcludedCategories( $selectedCategories, excludedCategoryIDs ) ) {
+				alert( facebook_for_woocommerce_product_sets.excluded_category_warning_message );
+			}
+		}
+
+	});
+
 } );
+
+/**
+ * Checks if selected categories contains any excluded categories.
+ *
+ * @param selectedCategories Array of submitted category ids
+ * @param excludedCategoryIDs Array category ids excluded from sync.
+ * @returns {boolean}
+ */
+function hasExcludedCategories( selectedCategories, excludedCategoryIDs ) {
+
+	let counter = 0;
+
+	for ( let i = 0; i < excludedCategoryIDs.length; i++ ) {
+		if ( excludedCategoryIDs.includes( excludedCategoryIDs[i] ) ) counter++;
+	}
+
+	return counter > 0;
+
+}

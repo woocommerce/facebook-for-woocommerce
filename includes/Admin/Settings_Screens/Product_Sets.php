@@ -9,18 +9,16 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
+namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4\SV_WC_Helper;
+use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 
 /**
  * The Product sets redirect object.
  */
-class Product_Sets extends Admin\Abstract_Settings_Screen {
-
+class Product_Sets extends Abstract_Settings_Screen {
 
 	/** @var string screen ID */
 	const ID = 'product_sets';
@@ -29,7 +27,6 @@ class Product_Sets extends Admin\Abstract_Settings_Screen {
 	 * Connection constructor.
 	 */
 	public function __construct() {
-
 		$this->id    = self::ID;
 		$this->label = __( 'Product sets', 'facebook-for-woocommerce' );
 		$this->title = __( 'Product sets', 'facebook-for-woocommerce' );

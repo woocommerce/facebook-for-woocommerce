@@ -1,6 +1,6 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\ProductSync;
+namespace WooCommerce\Facebook\ProductSync;
 
 use Exception;
 

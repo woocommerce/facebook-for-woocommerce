@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Helper;
 
 /**
  * General handler for the product category admin functionality.
@@ -75,11 +75,11 @@ class Product_Categories {
 				'wc-facebook-product-categories',
 				'facebook_for_woocommerce_product_categories',
 				array(
-					'ajax_url'                             => admin_url( 'admin-ajax.php' ),
-					'enhanced_attribute_optional_selector' => Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
-					'enhanced_attribute_page_type_edit_category' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
-					'enhanced_attribute_page_type_add_category' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
-					'enhanced_attribute_page_type_edit_product' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+					'ajax_url'                                      => admin_url( 'admin-ajax.php' ),
+					'enhanced_attribute_optional_selector'          => Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
+					'enhanced_attribute_page_type_edit_category'    => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
+					'enhanced_attribute_page_type_add_category'     => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
+					'enhanced_attribute_page_type_edit_product'     => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
 					'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
 					'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
 				)
@@ -96,7 +96,6 @@ class Product_Categories {
 	 * @return string
 	 */
 	private function get_default_google_product_category_modal_message() {
-
 		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
 	}
 
@@ -109,9 +108,7 @@ class Product_Categories {
 	 * @return string
 	 */
 	private function get_default_google_product_category_modal_buttons() {
-
 		ob_start();
-
 		?>
 		<button
 				class="button button-large"
@@ -122,7 +119,6 @@ class Product_Categories {
 				class="button button-large button-primary"
 		><?php esc_html_e( 'Update default Google product category', 'facebook-for-woocommerce' ); ?></button>
 		<?php
-
 		return ob_get_clean();
 	}
 
@@ -135,9 +131,7 @@ class Product_Categories {
 	 * @since 2.1.0
 	 */
 	public function render_add_google_product_category_field() {
-
 		$category_field = new Google_Product_Category_Field();
-
 		?>
 			<div class="form-field term-<?php echo esc_attr( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ); ?>-wrap">
 				<span><?php echo esc_html( self::get_enhanced_catalog_explanation_text() ); ?></span>
@@ -175,10 +169,8 @@ class Product_Categories {
 	 * @param \WP_Term $term current taxonomy term object.
 	 */
 	public function render_edit_google_product_category_field( \WP_Term $term ) {
-
 		$category_field = new Google_Product_Category_Field();
-		$value          = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
-
+		$value          = get_term_meta( $term->term_id, \WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 		?>
 			<tr class="form-field">
 				<td colspan="2">
@@ -211,9 +203,7 @@ class Product_Categories {
 	 * @since 2.1.0
 	 */
 	public function render_google_product_category_tooltip() {
-
 		$tooltip_text = __( 'Choose a default Google product category for products in this category. Products need at least two category levels defined for tax to be correctly applied.', 'facebook-for-woocommerce' );
-
 		?>
 			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
 		<?php
@@ -229,7 +219,6 @@ class Product_Categories {
 	 * @return string
 	 */
 	public function get_google_product_category_field_title() {
-
 		return __( 'Default Google product category', 'facebook-for-woocommerce' );
 	}
 
@@ -241,13 +230,13 @@ class Product_Categories {
 	 * @since 2.1.0
 	 */
 	public function ajax_render_enhanced_catalog_attributes_field() {
-		$category_id = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'selected_category' ) );
-		$page_type   = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'page_type' ) );
+		$category_id = wc_clean( Helper::get_requested_value( 'selected_category' ) );
+		$page_type   = wc_clean( Helper::get_requested_value( 'page_type' ) );
 
 		switch ( $page_type ) {
 			case Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY:
-				$tag_id   = intval( wc_clean( Framework\SV_WC_Helper::get_requested_value( 'tag_id' ) ) );
-				$taxonomy = wc_clean( Framework\SV_WC_Helper::get_requested_value( 'taxonomy' ) );
+				$tag_id   = intval( wc_clean( Helper::get_requested_value( 'tag_id' ) ) );
+				$taxonomy = wc_clean( Helper::get_requested_value( 'taxonomy' ) );
 				$term     = get_term( $tag_id, $taxonomy );
 				$this->render_edit_enhanced_catalog_attributes_field( $term, $category_id );
 				break;
@@ -255,9 +244,9 @@ class Product_Categories {
 				$this->render_add_enhanced_catalog_attributes_field( $category_id );
 				break;
 			case Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT:
-				$item_id = intval( wc_clean( Framework\SV_WC_Helper::get_requested_value( 'item_id' ) ) );
+				$item_id = intval( wc_clean( Helper::get_requested_value( 'item_id' ) ) );
 				$product = new \WC_Product( $item_id );
-				\SkyVerge\WooCommerce\Facebook\Admin\Products::render_enhanced_catalog_attributes_fields( $category_id, $product );
+				Products::render_enhanced_catalog_attributes_fields( $category_id, $product );
 				break;
 		}
 	}
@@ -274,7 +263,7 @@ class Product_Categories {
 	 */
 	public function render_edit_enhanced_catalog_attributes_field( \WP_Term $term, $category_id = null ) {
 		if ( empty( $category_id ) ) {
-			$category_id = get_term_meta( $term->term_id, \SkyVerge\WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
+			$category_id = get_term_meta( $term->term_id, \WooCommerce\Facebook\Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 		}
 
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY, $term );
@@ -354,9 +343,7 @@ class Product_Categories {
 	 * @since 2.1.0
 	 */
 	public function render_enhanced_catalog_attributes_tooltip() {
-
 		$tooltip_text = __( 'Select default values for enhanced attributes within this category', 'facebook-for-woocommerce' );
-
 		?>
 			<span class="woocommerce-help-tip" data-tip="<?php echo esc_attr( $tooltip_text ); ?>"></span>
 		<?php
@@ -372,7 +359,6 @@ class Product_Categories {
 	 * @return string
 	 */
 	public function render_enhanced_catalog_attributes_title() {
-
 		return __( 'Category Specific Attributes', 'facebook-for-woocommerce' );
 	}
 
@@ -389,9 +375,9 @@ class Product_Categories {
 	 */
 	public function save_google_product_category_and_enhanced_attributes( $term_id, $tt_id, $taxonomy ) {
 
-		$google_product_category_id = wc_clean( Framework\SV_WC_Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
+		$google_product_category_id = wc_clean( Helper::get_posted_value( self::FIELD_GOOGLE_PRODUCT_CATEGORY_ID ) );
 
-		\SkyVerge\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
+		\WooCommerce\Facebook\Product_Categories::update_google_product_category_id( $term_id, $google_product_category_id );
 		$this->save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy );
 
 		$term = get_term( $term_id, $taxonomy );
@@ -443,17 +429,17 @@ class Product_Categories {
 	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function save_enhanced_catalog_attributes( $term_id, $tt_id, $taxonomy ) {
-		$enhanced_catalog_attributes = \SkyVerge\WooCommerce\Facebook\Products::get_enhanced_catalog_attributes_from_request();
+		$enhanced_catalog_attributes = \WooCommerce\Facebook\Products::get_enhanced_catalog_attributes_from_request();
 
 		foreach ( $enhanced_catalog_attributes as $key => $value ) {
-			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key;
+			$meta_key = \WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $key;
 			update_term_meta( $term_id, $meta_key, $value );
 		}
 
 		if ( ! isset( $enhanced_catalog_attributes[ Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY ] ) ) {
 			// This is a checkbox so won't show in the post data if it's been unchecked,
 			// hence if it's unset we should clear the term meta for it.
-			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;
+			$meta_key = \WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY;
 			update_term_meta( $term_id, $meta_key, null );
 		}
 	}
@@ -469,9 +455,6 @@ class Product_Categories {
 	 * @return bool
 	 */
 	public function is_categories_screen() {
-
-		return Framework\SV_WC_Helper::is_current_screen( 'edit-product_cat' );
+		return Helper::is_current_screen( 'edit-product_cat' );
 	}
-
-
 }

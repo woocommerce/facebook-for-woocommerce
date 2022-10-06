@@ -9,12 +9,9 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Events\Event;
 
-if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
-
-
-	class WC_Facebookcommerce_Pixel {
+class WC_Facebookcommerce_Pixel {
 
 
 		const SETTINGS_KEY     = 'facebook_config';
@@ -42,7 +39,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @var array Cache array.
 		 */
-		public static $render_cache = array();
+		public static $render_cache = [];
 
 		/**
 		 * User information.
@@ -63,8 +60,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @param array $user_info User information array.
 		 */
-		public function __construct( $user_info = array() ) {
-
+		public function __construct( $user_info = [] ) {
 			$this->user_info  = $user_info;
 			$this->last_event = '';
 		}
@@ -162,7 +158,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 				<?php echo $this->get_pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( array(), 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
+				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -495,7 +491,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $event  The event name the params are for.
 		 * @return array
 		 */
-		private static function build_params( $params = array(), $event = '' ) {
+		private static function build_params( $params = [], $event = '' ) {
 
 			$params = array_replace( Event::get_version_info(), $params );
 
@@ -714,5 +710,3 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return $this->user_info;
 		}
 	}
-
-endif;
