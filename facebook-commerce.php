@@ -1334,7 +1334,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 	}
 
-	function create_product_item( $woo_product, $retailer_id, $product_group_id ) {
+	function create_product_item( $woo_product, $retailer_id, $product_group_id ): string {
 		$product_data   = $woo_product->prepare_product( $retailer_id );
 		$product_result = $this->facebook_for_woocommerce->get_api()->create_product_item( $product_group_id, $product_data );
 
@@ -1355,7 +1355,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			return $fb_product_item_id;
 		}
-		return null;
+		return '';
 	}
 
 	/**

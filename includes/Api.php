@@ -585,17 +585,17 @@ class Api extends Base {
 	 * @return Api\Response|null
 	 * @throws ApiException
 	 */
-	public function next( Api\Response $response, $additional_pages = null ) {
+	public function next( Api\Response $response, int $additional_pages = 0 ) {
 		$next_response = null;
 		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
-		if ( ( null === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
+		if ( ( 0 === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
 			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
 			$request = $this->get_new_request(
-				array(
-					'path'   => isset( $components['path'] ) ? $components['path'] : '',
+				[
+					'path'   => $components['path'] ?? '',
 					'method' => 'GET',
-					'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : array(),
-				)
+					'params' => isset( $components['query'] ) ? wp_parse_args( $components['query'] ) : [],
+				]
 			);
 			$this->set_response_handler( get_class( $response ) );
 			$next_response = $this->perform_request( $request );
@@ -754,11 +754,11 @@ class Api extends Base {
 	 * }
 	 * @return Request
 	 */
-	protected function get_new_request( $args = array() ) {
+	protected function get_new_request( $args = [] ) {
 		$defaults = array(
 			'path'   => '/',
 			'method' => 'GET',
-			'params' => array(),
+			'params' => [],
 		);
 		$args    = wp_parse_args( $args, $defaults );
 		$request = new Request( $args['path'], $args['method'] );

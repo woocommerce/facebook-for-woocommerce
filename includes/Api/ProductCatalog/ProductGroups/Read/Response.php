@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace WooCommerce\Facebook\Api\ProductCatalog\ProductGroups\Read;
 
 use WooCommerce\Facebook\Api\Response as ApiResponse;
+use WooCommerce\Facebook\Api\Traits\Paginated_Response;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,6 +17,8 @@ defined( 'ABSPATH' ) || exit;
  * @property-read array summary Aggregated information about the edge, such as counts. Specify the fields to fetch in the summary param (like summary=total_count).
  */
 class Response extends ApiResponse {
+
+	use Paginated_Response;
 
 	/**
 	 * Gets the Product Item IDs indexed by the retailer ID.
