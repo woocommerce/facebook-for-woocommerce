@@ -143,7 +143,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 
 			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-				require_once __DIR__ . '/vendor/autoload.php';
+				require_once __DIR__ . '/vendor/autoload_packages.php';
 
 				include_once 'facebook-commerce.php';
 
