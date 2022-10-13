@@ -269,7 +269,7 @@ class ProductValidator {
 		/**
 		 * Filters whether a product should be synced to FB.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.26
 		 *
 		 * @param WC_Product $product the product object.
 		 */
