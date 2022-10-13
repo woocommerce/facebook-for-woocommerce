@@ -39,6 +39,13 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.26 - 2022-10-13 =
+* Add - wc_facebook_should_sync_product filter.
+* Dev - Rename JobRegistry to JobManager.
+* Dev - Replace composer autoloader with Jetpack autoloader.
+* Fix - Fix content_name and content_category attributes set on ViewCategory pixel events.
+* Tweak - WC 7.0 compatibility.
+
 = 2.6.25 - 2022-10-04 =
 * Add - New filter (wc_facebook_product_group_default_variation) to allow customizing a product group's default variation.
 * Update - Remove Skyverge's sake as a dependency from the extension build process.
