@@ -95,8 +95,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/** @var \SkyVerge\WooCommerce\Facebook\Tracker */
 		private $tracker;
 
-		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry */
-		public $job_registry;
+		/** @var \SkyVerge\WooCommerce\Facebook\Jobs\JobManager */
+		public $job_manager;
 
 		/** @var Heartbeat */
 		public $heartbeat;
@@ -196,8 +196,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->tracker = new \SkyVerge\WooCommerce\Facebook\Utilities\Tracker();
 
 				// Init jobs
-				$this->job_registry = new \SkyVerge\WooCommerce\Facebook\Jobs\JobRegistry();
-				add_action( 'init', [ $this->job_registry, 'init' ] );
+				$this->job_manager = new \SkyVerge\WooCommerce\Facebook\Jobs\JobManager();
+				add_action( 'init', [ $this->job_manager, 'init' ] );
 
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
