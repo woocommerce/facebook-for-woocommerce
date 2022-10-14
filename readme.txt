@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 2.6.27 - 2022-10-14 =
+* Fix - Revert "Switch to Jetpack autoloader. (#1996 PR refresh)".
+
 = 2.6.26 - 2022-10-13 =
 * Add - wc_facebook_should_sync_product filter.
 * Dev - Rename JobRegistry to JobManager.
