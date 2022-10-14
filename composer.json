@@ -12,8 +12,7 @@
   "require": {
     "php": ">=7.4",
     "woocommerce/action-scheduler-job-framework": "2.0.0",
-    "composer/installers": "~1.0",
-    "automattic/jetpack-autoloader": "^2.11"
+    "composer/installers": "~1.0"
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^v0.7",
@@ -33,8 +32,7 @@
     },
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "composer/installers": false,
-      "automattic/jetpack-autoloader": true
+      "composer/installers": false
     }
   },
   "archive": {

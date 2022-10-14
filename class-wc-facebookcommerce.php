@@ -9,6 +9,7 @@
  * @package FacebookCommerce
  */
 
+require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/includes/fbutils.php';
 
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
@@ -135,16 +136,10 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		);
 
 		if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-			require_once __DIR__ . '/vendor/autoload_packages.php';
-
 			include_once 'facebook-commerce.php';
-
-			require_once $this->get_framework_path() . '/utilities/class-sv-wp-async-request.php';
-			require_once $this->get_framework_path() . '/utilities/class-sv-wp-background-job-handler.php';
 
 			require_once __DIR__ . '/includes/fbproductfeed.php';
 			require_once __DIR__ . '/facebook-commerce-messenger-chat.php';
-			require_once __DIR__ . '/includes/Exceptions/ConnectWCAPIException.php';
 
 			$this->heartbeat = new Heartbeat( WC()->queue() );
 			$this->heartbeat->init();
@@ -179,9 +174,9 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			$this->webhook_handler    = new WooCommerce\Facebook\Handlers\WebHook( $this );
 			$this->tracker            = new WooCommerce\Facebook\Utilities\Tracker();
 
-				// Init jobs
-				$this->job_manager = new WooCommerce\Facebook\Jobs\JobManager();
-				add_action( 'init', [ $this->job_manager, 'init' ] );
+			// Init jobs
+			$this->job_manager = new WooCommerce\Facebook\Jobs\JobManager();
+			add_action( 'init', [ $this->job_manager, 'init' ] );
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {
@@ -338,34 +333,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			$this->get_admin_notice_handler()->add_admin_notice(
 				$message,
 				'connection_invalid',
-				[ 'notice_class' => 'notice-error', ]
+				[ 'notice_class' => 'notice-error' ]
 			);
-		}
-
-		/** @TODO: check this one after merge */
-		if ( Framework\SV_WC_Plugin_Compatibility::is_enhanced_admin_available() ) {
-			if (  class_exists( WooAdminFeatures::class ) ) {
-				$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
-			} else {
-				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
-					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
-			}
-			if ( $is_marketing_enabled ) {
-				$this->get_admin_notice_handler()->add_admin_notice(
-					sprintf(
-						/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-						esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( $this->get_settings_url() ) . '">',
-						'</a>'
-					),
-					'settings_moved_to_marketing',
-					[
-						'dismissible'             => true,
-						'always_show_on_settings' => false,
-						'notice_class'            => 'notice-info',
-					]
-				);
-			}
 		}
 	}
 
