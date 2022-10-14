@@ -8,11 +8,11 @@ use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionScheduler;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class JobRegistry
+ * Class JobManager
  *
  * @since 2.5.0
  */
-class JobRegistry {
+class JobManager {
 
 	/**
 	 * @var GenerateProductFeed
