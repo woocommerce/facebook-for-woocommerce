@@ -1667,7 +1667,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			)
 		);
 
-		// update product set to set FB Product Set ID
+		// update product set to set Facebook Product Set ID
 		if ( $result && empty( $fb_product_set_id ) ) {
 
 			// decode and get ID from result body
