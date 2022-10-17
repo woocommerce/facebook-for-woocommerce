@@ -35,3 +35,4 @@ codeception.yml
 # local dev configurations
 .wp-env.json
 php.ini
+wp-config.php
