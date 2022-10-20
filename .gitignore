@@ -36,3 +36,6 @@ codeception.yml
 .wp-env.json
 php.ini
 wp-config.php
+
+# IDE files
+.vscode/*
