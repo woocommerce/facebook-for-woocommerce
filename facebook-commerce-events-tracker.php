@@ -1289,7 +1289,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			foreach ( $pending_events as $event ) {
 
-				$this->send_api_event( $event);
+				$this->send_api_event( $event );
 			}
 		}
 
