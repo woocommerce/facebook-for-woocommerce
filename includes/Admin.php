@@ -35,6 +35,9 @@ class Admin {
 	/** @var \Admin\Product_Categories the product category admin handler */
 	protected $product_categories;
 
+	/** @var array screens ids where to include scripts */
+	protected $screen_ids = [];
+
 
 	/**
 	 * Admin constructor.
@@ -42,6 +45,15 @@ class Admin {
 	 * @since 1.10.0
 	 */
 	public function __construct() {
+
+		$this->screen_ids = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
+			'edit-product_cat',
+			'shop_order',
+		];
 
 		// enqueue admin scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -130,16 +142,9 @@ class Admin {
 	public function enqueue_scripts() {
 		global $current_screen;
 
-		$modal_screens = array(
-			'product',
-			'edit-product',
-			'edit-product_cat',
-			'shop_order',
-		);
-
 		if ( isset( $current_screen->id ) ) {
 
-			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
+			if ( in_array( $current_screen->id, $this->screen_ids, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
 
 				// enqueue modal functions
 				wp_enqueue_script(
@@ -228,7 +233,7 @@ class Admin {
 
 			}//end if
 
-			if ( 'edit-product_cat' === $current_screen->id || 'product_cat' === $current_screen->id ) {
+			if ( in_array( $current_screen->id, $this->screen_ids ) ) {
 
 				wp_enqueue_script(
 					'wc-facebook-google-product-category-fields',
@@ -1608,17 +1613,8 @@ class Admin {
 	public function render_modal_template() {
 		global $current_screen;
 
-		$modal_screens = array(
-			'product',
-			'edit-product',
-			'woocommerce_page_wc-facebook',
-			'marketing_page_wc-facebook',
-			'edit-product_cat',
-			'shop_order',
-		);
-
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, $modal_screens, true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, $this->screen_ids, true ) ) {
 			return;
 		}
 
