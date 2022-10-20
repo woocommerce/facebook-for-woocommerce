@@ -637,7 +637,9 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 
 			// Exclude variations that are "virtual" products from export to Facebook &&
 			// No Visibility Option for Variations
-			if ( true === $this->get_virtual() ) {
+			// get_virtual() returns true for "unassembled bundles", so we exclude
+			// bundles from this check.
+			if ( true === $this->get_virtual() && 'bundle' !== $this->get_type() ) {
 				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
 			}
 

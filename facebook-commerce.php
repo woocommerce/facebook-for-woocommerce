@@ -883,7 +883,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$sync_mode    = isset( $_POST['wc_facebook_sync_mode'] ) ? $_POST['wc_facebook_sync_mode'] : Admin::SYNC_MODE_SYNC_DISABLED;
 		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
-		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
+		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() && 'bundle' !== $product->get_type() ) {
 			// force to Sync and hide
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
@@ -1526,14 +1526,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		$default_attributes = $woo_product->woo_product->get_default_attributes( 'edit' );
 		$default_variation = null;
-		
+
 		// Fetch variations that exist in the catalog.
 		$existing_catalog_variations              = $this->find_variation_product_item_ids( $fb_product_group_id );
 		$existing_catalog_variations_retailer_ids = array_keys( $existing_catalog_variations );
-		
+
 		// All woocommerce variations for the product.
 		$product_variations                       = $woo_product->woo_product->get_available_variations();
-		
+
 		if ( ! empty( $default_attributes ) ) {
 
 			$best_match_count = 0;
@@ -1566,7 +1566,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 			}
 		}
-		
+
 		/**
 		 * Filter product group default variation.
 		 * This can be used to customize the choice of a default variation (e.g. choose one with the lowest price).
