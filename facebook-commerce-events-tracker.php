@@ -1281,7 +1281,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function send_pending_events() {
 
-			$pending_events = facebook_for_woocommerce()->get_integration()->events_tracker->get_pending_events();
+			$pending_events = $this->get_pending_events();
 
 			if ( empty( $pending_events ) ) {
 				return;
