@@ -470,14 +470,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
-		 * Register FB Product Set Taxonomy
+		 * Register Facebook Product Set Taxonomy
 		 *
 		 * @since 2.3.0
 		 */
 		public function register_custom_taxonomy() {
 
-			$plural   = esc_html__( 'FB Product Sets', 'facebook-for-woocommerce' );
-			$singular = esc_html__( 'FB Product Set', 'facebook-for-woocommerce' );
+			$plural   = esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' );
+			$singular = esc_html__( 'Facebook Product Set', 'facebook-for-woocommerce' );
 
 			$args = array(
 				'labels'            => array(
@@ -502,6 +502,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				'public'            => true,
 				'show_in_nav_menus' => false,
 				'show_tagcloud'     => false,
+				'show_in_menu'      => false,
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
@@ -509,7 +510,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter FB Product Set Taxonomy table links
+		 * Filter Facebook Product Set Taxonomy table links
 		 *
 		 * @since 2.3.0
 		 *
@@ -525,7 +526,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Remove posts count column from FB Product Set custom taxonomy
+		 * Remove posts count column from Facebook Product Set custom taxonomy
 		 *
 		 * @since 2.3.0
 		 *
@@ -540,7 +541,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter WC Breadcrumbs when the page is FB Product Sets
+		 * Filter WC Breadcrumbs when the page is Facebook Product Sets
 		 *
 		 * @since 2.3.0
 		 *
@@ -572,7 +573,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Return that FB Product Set page is a WC Conected Page
+		 * Return that Facebook Product Set page is a WC Conected Page
 		 *
 		 * @since 2.3.0
 		 *
