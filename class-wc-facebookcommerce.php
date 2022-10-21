@@ -18,6 +18,8 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
+use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
+use SkyVerge\WooCommerce\Facebook\Admin\Tasks\Setup;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -132,6 +134,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
+
+			// Hook the setup task.
+			add_action( 'init', array( $this, 'add_setup_task' ), 20 );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
@@ -250,6 +255,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 		}
 
+		/**
+		 * Adds the setup task to the Tasklists.
+		 *
+		 * @since x.x.x
+		 */
+		public function add_setup_task() {
+			TaskLists::add_task(
+				'extended',
+				new Setup(
+					TaskLists::get_list( 'extended' )
+				)
+			);
+		}
 
 		/**
 		 * Adds the plugin admin notices.
@@ -303,30 +321,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 							)
 						);
 					}
-
-					// otherwise, a general getting started message
-				} elseif ( ! $this->is_plugin_settings() ) {
-
-					$message = sprintf(
-						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-						esc_html__(
-							'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
-							'facebook-for-woocommerce'
-						),
-						'<strong>',
-						'</strong>',
-						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-						'</a>'
-					);
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						$message,
-						self::PLUGIN_ID . '_get_started',
-						array(
-							'dismissible'  => true,
-							'notice_class' => 'notice-info',
-						)
-					);
 				}
 
 				// notices for those connected to FBE 2
