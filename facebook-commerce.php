@@ -113,7 +113,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
-	/** @var string custom taxonomy FB product set ID */
+	/** @var string custom taxonomy Facebook Product Set ID */
 	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
 	/** @var string|null the configured product catalog ID */
