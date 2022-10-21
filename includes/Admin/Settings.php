@@ -29,6 +29,12 @@ class Settings {
 	/** @var string base settings page ID */
 	const PAGE_ID = 'wc-facebook';
 
+	/**
+	 * Submenu page ID
+	 *
+	 * @var string
+	 */
+	const SUBMENU_PAGE_ID = 'edit-tags.php?taxonomy=fb_product_set&post_type=product';
 
 	/** @var Abstract_Settings_Screen[] */
 	private $screens;
@@ -60,8 +66,8 @@ class Settings {
 
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 
+		add_filter( 'parent_file', array( $this, 'set_parent_and_submenu_file' ) );
 	}
-
 
 	/**
 	 * Adds the Facebook menu item.
@@ -120,16 +126,33 @@ class Settings {
 			return;
 		}
 
-		$product_sets_url = admin_url( 'edit-tags.php?taxonomy=fb_product_set&post_type=product' );
 		add_submenu_page(
 			'woocommerce-marketing',
 			esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' ),
 			esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' ),
 			'manage_woocommerce',
-			$product_sets_url,
+			admin_url( self::SUBMENU_PAGE_ID ),
 			'',
 			10
 		);
+	}
+
+	/**
+	 * Set the parent and submenu file while accessing Facebook Product Sets in the marketing menu.
+	 *
+	 * @since x.x.x
+	 * @param string $parent_file The parent file.
+	 * @return string
+	 */
+	public function set_parent_and_submenu_file( $parent_file ){
+		global $submenu_file, $current_screen;
+
+		if ( isset( $current_screen->taxonomy ) && 'fb_product_set' === $current_screen->taxonomy ) {
+			$parent_file  = 'woocommerce-marketing';
+			$submenu_file = admin_url( self::SUBMENU_PAGE_ID );
+		}
+
+		return $parent_file;
 	}
 
 	/**
