@@ -18,6 +18,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
+use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -390,25 +391,28 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				if ( $is_marketing_enabled ) {
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						sprintf(
-							/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-							esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
-							'<a href="' . esc_url( $this->get_settings_url() ) . '">',
-							'</a>'
-						),
-						'settings_moved_to_marketing',
-						array(
-							'dismissible'             => true,
-							'always_show_on_settings' => false,
-							'notice_class'            => 'notice-info',
-						)
-					);
+					SettingsMoved::possibly_add_note();
 				}
 			}
 		}
 
+		/**
+		 * Get the version last upgraded from or return the current version.
+		 *
+		 * @since x.x.x
+		 * @return string
+		 */
+		public function get_last_upgrade_from_version() {
+			$from_version   = self::PLUGIN_VERSION;
+			$history_events = $this->lifecycle_handler->get_event_history();
+			foreach ( $history_events as $event ) {
+				if ( 'upgrade' === $event['name'] ) {
+					$from_version = $event['data']['from_version'];
+					break;
+				}
+			}
+			return $from_version;
+		}
 
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
