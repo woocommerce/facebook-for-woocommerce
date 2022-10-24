@@ -23,6 +23,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// HPOS compatibility declaration.
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', 'facebook-for-woocommerce/facebook-for-woocommerce.php', false );
+    }
+} );
+
 /**
  * The plugin loader class.
  *
