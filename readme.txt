@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.0
-Stable tag: 2.6.27
+Stable tag: 2.6.28
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 2.6.28 - 2022-10-25 =
+* Fix - Ensure bundles are not treated as virtual products on product_sync.
+* Fix - Ensure google-product-category-fields-loads.js loads only on the product category screens.
+* Fix - Server side sending of pixel events blocks generating pages .
 
 = 2.6.27 - 2022-10-14 =
 * Fix - Revert "Switch to Jetpack autoloader. (#1996 PR refresh)".
