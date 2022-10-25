@@ -43,6 +43,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		/** @var array with events tracked */
 		private $tracked_events;
 
+		/** @var array array with epnding events */
+		private $pending_events = [];
+
 		/** @var AAMSettings aam settings instance, used to filter advanced matching fields*/
 		private $aam_settings;
 
@@ -141,9 +144,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				add_action( '__experimental_woocommerce_blocks_checkout_update_order_meta', array( $this, 'inject_order_meta_event_for_checkout_block_flow' ), 10, 1 );
 			}
 
-
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
+
+			add_action( 'shutdown', array( $this, 'send_pending_events' ) );
+
 		}
 
 
@@ -248,7 +253,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = new Event( $event_data );
 
-			$this->send_api_event( $event );
+			$this->send_api_event( $event, false );
 
 			$event_data['event_id'] = $event->get_id();
 
@@ -554,7 +559,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = new Event( $event_data );
 
-			$this->send_api_event( $event );
+			$this->send_api_event( $event, false );
 
 			$event_data['event_id'] = $event->get_id();
 
@@ -608,7 +613,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
 
-			$this->send_api_event( $event );
+			$this->send_api_event( $event, false );
 
 			// send the event ID to prevent duplication
 			$event_data['event_id'] = $event->get_id();
@@ -881,7 +886,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$event = new Event( $event_data );
 
-			$this->send_api_event( $event );
+			$this->send_api_event( $event, false );
 
 			$event_data['event_id'] = $event->get_id();
 
@@ -1086,25 +1091,29 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 * @since 2.0.0
 		 *
 		 * @param Event $event event object
-		 * @return bool
+		 * @param bool $send_now optional, defaults to true
 		 */
-		protected function send_api_event( Event $event ) {
+		protected function send_api_event( Event $event, bool $send_now = true ) {
 			$this->tracked_events[] = $event;
 
-			try {
+			if ( $send_now ) {
 
-				facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
+				try {
 
-				$success = true;
+					facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
 
-			} catch ( Framework\SV_WC_API_Exception $exception ) {
+				} catch ( Framework\SV_WC_API_Exception $exception ) {
 
-				$success = false;
+					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
+				}
 
-				facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
+			} else {
+
+				$this->pending_events[] = $event;
+
 			}
 
-			return $success;
+
 		}
 
 
@@ -1256,6 +1265,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function get_tracked_events() {
 			return $this->tracked_events;
+		}
+
+		/**
+		 * Gets the pending events awaiting to be sent
+		 *
+		 * @return array
+		 */
+		public function get_pending_events() {
+			return $this->pending_events;
+		}
+
+		/**
+		 * Send pending events.
+		 */
+		public function send_pending_events() {
+
+			$pending_events = $this->get_pending_events();
+
+			if ( empty( $pending_events ) ) {
+				return;
+			}
+
+			foreach ( $pending_events as $event ) {
+
+				$this->send_api_event( $event );
+			}
 		}
 
 	}
