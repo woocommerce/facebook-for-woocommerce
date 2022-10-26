@@ -36,14 +36,26 @@ class SettingsMoved {
 		 * The Facebook menu was moved under Marketing menu in v2.2.0. Display this note
 		 * only to users updating from a version prior to v2.2.0.
 		 */
-		$last_version = \facebook_for_woocommerce()->get_last_upgrade_from_version();
-		if ( version_compare( $last_version, '2.2.0', '<' ) ) {
-			$should_display = true;
-		} else {
-			$should_display = false;
+		$should_display = false;
+		$last_event     = \facebook_for_woocommerce()->get_last_event_from_history();
+
+		if ( isset( $last_event['name'] ) && 'upgrade' === $last_event['name'] ) {
+			$last_version = $last_event['data']['from_version'];
+			if ( version_compare( $last_version, '2.2.0', '<' ) ) {
+				$should_display = true;
+			}
 		}
 
 		return $should_display;
+	}
+
+	public static function possibly_add_or_delete_note() {
+		// Verify the conditions to display the note.
+		if ( self::should_display() ) {
+			self::possibly_add_note();
+		} elseif ( self::note_exists() ) {
+			self::possibly_delete_note();
+		}
 	}
 
 	/**
@@ -52,11 +64,6 @@ class SettingsMoved {
 	 * @return Note
 	 */
 	public static function get_note() {
-
-		// Verify the conditions to display the note.
-		if ( ! self::should_display() ) {
-			return;
-		}
 
 		$settings_url = facebook_for_woocommerce()->get_settings_url();
 		$content      = esc_html__( 'Sync your products and reach customers across Facebook, Instagram, Messenger and WhatsApp through your Facebook plugin, which can be found at Marketing > Facebook.', 'facebook-for-woocommerce' );

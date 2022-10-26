@@ -391,27 +391,25 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				if ( $is_marketing_enabled ) {
-					SettingsMoved::possibly_add_note();
+					SettingsMoved::possibly_add_or_delete_note();
 				}
 			}
 		}
 
 		/**
-		 * Get the version last upgraded from or return the current version.
+		 * Get the last event from the plugin lifecycle.
 		 *
 		 * @since x.x.x
-		 * @return string
+		 * @return array
 		 */
-		public function get_last_upgrade_from_version() {
-			$from_version   = self::PLUGIN_VERSION;
+		public function get_last_event_from_history() {
+			$last_event     = array();
 			$history_events = $this->lifecycle_handler->get_event_history();
-			foreach ( $history_events as $event ) {
-				if ( 'upgrade' === $event['name'] ) {
-					$from_version = $event['data']['from_version'];
-					break;
-				}
+
+			if ( isset( $history_events[0] ) ) {
+				$last_event = $history_events[0];
 			}
-			return $from_version;
+			return $last_event;
 		}
 
 		public function add_wordpress_integration() {
