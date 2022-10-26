@@ -3,6 +3,8 @@
  * Facebook Menu Settings moved note.
  *
  * Adds a note to merchant's inbox about Facebook Menu being moved to Marketing menu.
+ *
+ * @package FacebookCommerce
  */
 
 namespace SkyVerge\WooCommerce\Facebook\Admin\Notes;
@@ -16,12 +18,12 @@ use \Automattic\WooCommerce\Admin\Notes\NoteTraits;
  * SettingsMoved class.
  */
 class SettingsMoved {
-    /**
+	/**
 	 * Note traits.
 	 */
 	use NoteTraits;
 
-    /**
+	/**
 	 * Name of the note for use in the database.
 	 */
 	const NOTE_NAME = 'facebook-for-woocommerce-settings-moved-to-marketing';
@@ -49,6 +51,11 @@ class SettingsMoved {
 		return $should_display;
 	}
 
+	/**
+	 * Add or delete note depending on the conditions to display the note.
+	 *
+	 * @throws NotesUnavailableException Throws exception when notes are unavailable.
+	 */
 	public static function possibly_add_or_delete_note() {
 		// Verify the conditions to display the note.
 		if ( self::should_display() ) {
