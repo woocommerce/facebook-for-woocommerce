@@ -20,6 +20,7 @@ use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 use SkyVerge\WooCommerce\Facebook\Admin\Tasks\Setup;
+use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -384,25 +385,26 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				if ( $is_marketing_enabled ) {
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						sprintf(
-							/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-							esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
-							'<a href="' . esc_url( $this->get_settings_url() ) . '">',
-							'</a>'
-						),
-						'settings_moved_to_marketing',
-						array(
-							'dismissible'             => true,
-							'always_show_on_settings' => false,
-							'notice_class'            => 'notice-info',
-						)
-					);
+					SettingsMoved::possibly_add_or_delete_note();
 				}
 			}
 		}
 
+		/**
+		 * Get the last event from the plugin lifecycle.
+		 *
+		 * @since x.x.x
+		 * @return array
+		 */
+		public function get_last_event_from_history() {
+			$last_event     = array();
+			$history_events = $this->lifecycle_handler->get_event_history();
+
+			if ( isset( $history_events[0] ) ) {
+				$last_event = $history_events[0];
+			}
+			return $last_event;
+		}
 
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
@@ -464,14 +466,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
-		 * Register FB Product Set Taxonomy
+		 * Register Facebook Product Set Taxonomy
 		 *
 		 * @since 2.3.0
 		 */
 		public function register_custom_taxonomy() {
 
-			$plural   = esc_html__( 'FB Product Sets', 'facebook-for-woocommerce' );
-			$singular = esc_html__( 'FB Product Set', 'facebook-for-woocommerce' );
+			$plural   = esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' );
+			$singular = esc_html__( 'Facebook Product Set', 'facebook-for-woocommerce' );
 
 			$args = array(
 				'labels'            => array(
@@ -496,6 +498,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				'public'            => true,
 				'show_in_nav_menus' => false,
 				'show_tagcloud'     => false,
+				'show_in_menu'      => false,
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
@@ -503,7 +506,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter FB Product Set Taxonomy table links
+		 * Filter Facebook Product Set Taxonomy table links
 		 *
 		 * @since 2.3.0
 		 *
@@ -519,7 +522,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Remove posts count column from FB Product Set custom taxonomy
+		 * Remove posts count column from Facebook Product Set custom taxonomy
 		 *
 		 * @since 2.3.0
 		 *
@@ -534,7 +537,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter WC Breadcrumbs when the page is FB Product Sets
+		 * Filter WC Breadcrumbs when the page is Facebook Product Sets
 		 *
 		 * @since 2.3.0
 		 *
@@ -566,7 +569,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Return that FB Product Set page is a WC Conected Page
+		 * Return that Facebook Product Set page is a WC Conected Page
 		 *
 		 * @since 2.3.0
 		 *
