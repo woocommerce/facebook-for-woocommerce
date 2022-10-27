@@ -136,7 +136,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
 			// Hook the setup task.
-			add_action( 'init', array( $this, 'add_setup_task' ), 20 );
+			add_action( 'admin_init', array( $this, 'add_setup_task' ), 20 );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
