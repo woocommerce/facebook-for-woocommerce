@@ -21,14 +21,19 @@
  * @package FacebookCommerce
  */
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
 defined( 'ABSPATH' ) || exit;
 
 // HPOS compatibility declaration.
-add_action( 'before_woocommerce_init', function() {
-    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', 'facebook-for-woocommerce/facebook-for-woocommerce.php', false );
-    }
-} );
+add_action(
+	'before_woocommerce_init',
+	function() {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', plugin_basename( __FILE__ ), false );
+		}
+	}
+);
 
 /**
  * The plugin loader class.
