@@ -61,7 +61,7 @@ class Setup extends Task {
 	 * @return string
 	 */
 	public function get_action_url() {
-		return \facebook_for_woocommerce()->get_settings_url();
+		return facebook_for_woocommerce()->get_settings_url();
 	}
 
 	/**
@@ -70,6 +70,6 @@ class Setup extends Task {
 	 * @return bool
 	 */
 	public function is_complete() {
-		return \facebook_for_woocommerce()->get_connection_handler()->is_connected();
+		return facebook_for_woocommerce()->get_connection_handler()->is_connected();
 	}
 }
