@@ -39,7 +39,7 @@ class SettingsMoved {
 		 * only to users updating from a version prior to v2.2.0.
 		 */
 		$should_display = false;
-		$last_event     = \facebook_for_woocommerce()->get_last_event_from_history();
+		$last_event     = facebook_for_woocommerce()->get_last_event_from_history();
 
 		if ( isset( $last_event['name'] ) && 'upgrade' === $last_event['name'] ) {
 			$last_version = $last_event['data']['from_version'];
