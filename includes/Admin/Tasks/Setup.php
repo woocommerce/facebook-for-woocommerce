@@ -52,7 +52,7 @@ class Setup extends Task {
 	 * @return string
 	 */
 	public function get_time() {
-		return esc_html__( '5 minutes', 'facebook-for-woocommerce' );
+		return esc_html__( '20 minutes', 'facebook-for-woocommerce' );
 	}
 
 	/**
