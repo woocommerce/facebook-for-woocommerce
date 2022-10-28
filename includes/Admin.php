@@ -47,7 +47,7 @@ class Admin {
 	 */
 	public function __construct() {
 
-		$screen_order = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+		$order_screen_id = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
 		? wc_get_page_screen_id( 'shop-order' )
 		: 'shop_order';
 
@@ -57,7 +57,7 @@ class Admin {
 			'woocommerce_page_wc-facebook',
 			'marketing_page_wc-facebook',
 			'edit-product_cat',
-			$screen_order,
+			$order_screen_id,
 		];
 
 		// enqueue admin scripts
