@@ -136,8 +136,8 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
-			// Hook the setup task.
-			add_action( 'admin_init', array( $this, 'add_setup_task' ), 20 );
+			// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
+			add_action( 'init', array( $this, 'add_setup_task' ), 20 );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
