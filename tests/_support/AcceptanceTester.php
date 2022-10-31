@@ -1,7 +1,7 @@
 <?php
 
 use SkyVerge\WooCommerce\Facebook;
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 /**
  * Inherited Methods
@@ -198,7 +198,7 @@ class AcceptanceTester extends \Codeception\Actor {
 	 */
 	public function amOnOrdersPage() {
 
-		if ( wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+		if ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
 			$orders_page = 'admin.php?page=wc-orders';
 		} else {
 			$orders_page = 'edit.php?post_type=shop_order';
@@ -215,7 +215,7 @@ class AcceptanceTester extends \Codeception\Actor {
 	 */
 	public function amOnOrderPage( $order_id ) {
 
-		if ( wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+		if ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
 			$order_page = "admin.php?page=wc-orders&id={$order_id}&action=edit";
 		} else {
 			$order_page = "post.php?post={$order_id}&action=edit";
