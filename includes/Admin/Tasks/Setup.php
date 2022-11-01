@@ -11,7 +11,6 @@ namespace SkyVerge\WooCommerce\Facebook\Admin\Tasks;
 
 defined( 'ABSPATH' ) || exit;
 
-use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\Task;
 
 /**
