@@ -18,6 +18,9 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
+use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
+use SkyVerge\WooCommerce\Facebook\Admin\Tasks\Setup;
+use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
 if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
@@ -132,6 +135,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 			add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 			add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
+
+			// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
+			add_action( 'init', array( $this, 'add_setup_task' ), 20 );
 
 			// Product Set breadcrumb filters
 			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
@@ -250,6 +256,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 			);
 		}
 
+		/**
+		 * Adds the setup task to the Tasklists.
+		 *
+		 * @since x.x.x
+		 */
+		public function add_setup_task() {
+			TaskLists::add_task(
+				'extended',
+				new Setup(
+					TaskLists::get_list( 'extended' )
+				)
+			);
+		}
 
 		/**
 		 * Adds the plugin admin notices.
@@ -303,30 +322,6 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 							)
 						);
 					}
-
-					// otherwise, a general getting started message
-				} elseif ( ! $this->is_plugin_settings() ) {
-
-					$message = sprintf(
-						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-						esc_html__(
-							'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
-							'facebook-for-woocommerce'
-						),
-						'<strong>',
-						'</strong>',
-						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-						'</a>'
-					);
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						$message,
-						self::PLUGIN_ID . '_get_started',
-						array(
-							'dismissible'  => true,
-							'notice_class' => 'notice-info',
-						)
-					);
 				}
 
 				// notices for those connected to FBE 2
@@ -390,25 +385,26 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				}
 
 				if ( $is_marketing_enabled ) {
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						sprintf(
-							/* translators: Placeholders: %1$s - opening <a> HTML link tag, %2$s - closing </a> HTML link tag */
-							esc_html__( 'Heads up! The Facebook menu is now located under the %1$sMarketing%2$s menu.', 'facebook-for-woocommerce' ),
-							'<a href="' . esc_url( $this->get_settings_url() ) . '">',
-							'</a>'
-						),
-						'settings_moved_to_marketing',
-						array(
-							'dismissible'             => true,
-							'always_show_on_settings' => false,
-							'notice_class'            => 'notice-info',
-						)
-					);
+					SettingsMoved::possibly_add_or_delete_note();
 				}
 			}
 		}
 
+		/**
+		 * Get the last event from the plugin lifecycle.
+		 *
+		 * @since x.x.x
+		 * @return array
+		 */
+		public function get_last_event_from_history() {
+			$last_event     = array();
+			$history_events = $this->lifecycle_handler->get_event_history();
+
+			if ( isset( $history_events[0] ) ) {
+				$last_event = $history_events[0];
+			}
+			return $last_event;
+		}
 
 		public function add_wordpress_integration() {
 			new WP_Facebook_Integration();
@@ -470,14 +466,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		}
 
 		/**
-		 * Register FB Product Set Taxonomy
+		 * Register Facebook Product Set Taxonomy
 		 *
 		 * @since 2.3.0
 		 */
 		public function register_custom_taxonomy() {
 
-			$plural   = esc_html__( 'FB Product Sets', 'facebook-for-woocommerce' );
-			$singular = esc_html__( 'FB Product Set', 'facebook-for-woocommerce' );
+			$plural   = esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' );
+			$singular = esc_html__( 'Facebook Product Set', 'facebook-for-woocommerce' );
 
 			$args = array(
 				'labels'            => array(
@@ -502,6 +498,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				'public'            => true,
 				'show_in_nav_menus' => false,
 				'show_tagcloud'     => false,
+				'show_in_menu'      => false,
 			);
 
 			register_taxonomy( 'fb_product_set', array( 'product' ), $args );
@@ -509,7 +506,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter FB Product Set Taxonomy table links
+		 * Filter Facebook Product Set Taxonomy table links
 		 *
 		 * @since 2.3.0
 		 *
@@ -525,7 +522,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Remove posts count column from FB Product Set custom taxonomy
+		 * Remove posts count column from Facebook Product Set custom taxonomy
 		 *
 		 * @since 2.3.0
 		 *
@@ -540,7 +537,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Filter WC Breadcrumbs when the page is FB Product Sets
+		 * Filter WC Breadcrumbs when the page is Facebook Product Sets
 		 *
 		 * @since 2.3.0
 		 *
@@ -572,7 +569,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 
 		/**
-		 * Return that FB Product Set page is a WC Conected Page
+		 * Return that Facebook Product Set page is a WC Conected Page
 		 *
 		 * @since 2.3.0
 		 *
