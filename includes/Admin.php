@@ -47,10 +47,7 @@ class Admin {
 	 */
 	public function __construct() {
 
-		$order_screen_id = 'shop_order';
-		if ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
-			$order_screen_id = wc_get_page_screen_id( 'shop-order' );
-		}
+		$order_screen_id = class_exists( OrderUtil::class ) ? OrderUtil::get_order_admin_screen() : 'shop_order';
 
 		$this->screen_ids = [
 			'product',
