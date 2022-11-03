@@ -13,6 +13,7 @@ namespace WooCommerce\Facebook;
 
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
 use WooCommerce\Facebook\Framework\Helper;
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -35,6 +36,9 @@ class Admin {
 	/** @var Product_Categories the product category admin handler */
 	protected $product_categories;
 
+	/** @var array screens ids where to include scripts */
+	protected $screen_ids = [];
+
 
 	/**
 	 * Admin constructor.
@@ -42,6 +46,20 @@ class Admin {
 	 * @since 1.10.0
 	 */
 	public function __construct() {
+
+		$order_screen_id = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+		? wc_get_page_screen_id( 'shop-order' )
+		: 'shop_order';
+
+		$this->screen_ids = [
+			'product',
+			'edit-product',
+			'woocommerce_page_wc-facebook',
+			'marketing_page_wc-facebook',
+			'edit-product_cat',
+			$order_screen_id,
+		];
+
 		// enqueue admin scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
@@ -119,21 +137,37 @@ class Admin {
 	 */
 	public function enqueue_scripts() {
 		global $current_screen;
-		$modal_screens = array(
-			'product',
-			'edit-product',
-			'edit-product_cat',
-			'shop_order',
-		);
 
 		if ( isset( $current_screen->id ) ) {
-			if ( in_array( $current_screen->id, $modal_screens, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
+
+			if ( in_array( $current_screen->id, $this->screen_ids, true ) || facebook_for_woocommerce()->is_plugin_settings() ) {
+
 				// enqueue modal functions
 				wp_enqueue_script(
 					'facebook-for-woocommerce-modal',
 					facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/modal.js',
 					array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
 					\WC_Facebookcommerce::PLUGIN_VERSION
+				);
+
+				// enqueue google product category select
+				wp_enqueue_script(
+					'wc-facebook-google-product-category-fields',
+					facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/google-product-category-fields.js',
+					array( 'jquery' ),
+					\WC_Facebookcommerce::PLUGIN_VERSION
+				);
+
+				wp_localize_script(
+					'wc-facebook-google-product-category-fields',
+					'facebook_for_woocommerce_google_product_category',
+					array(
+						'i18n' => array(
+							'top_level_dropdown_placeholder' => __( 'Search main categories...', 'facebook-for-woocommerce' ),
+							'second_level_empty_dropdown_placeholder' => __( 'Choose a main category', 'facebook-for-woocommerce' ),
+							'general_dropdown_placeholder'   => __( 'Choose a category', 'facebook-for-woocommerce' ),
+						),
+					)
 				);
 			}
 
@@ -166,7 +200,7 @@ class Admin {
 					array(
 
 						'excluded_category_ids'             => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
-						'excluded_category_warning_message' => __( 'You have selected one or more categories currently excluded from the Facebook sync. Products belonging to the excluded categories will not be added to your FB product set.', 'facebook-for-woocommerce' ),
+						'excluded_category_warning_message' => __( 'You have selected one or more categories currently excluded from the Facebook sync. Products belonging to the excluded categories will not be added to your Facebook Product Set.', 'facebook-for-woocommerce' ),
 					)
 				);
 			}
@@ -216,24 +250,6 @@ class Admin {
 			}
 		}//end if
 
-		wp_enqueue_script(
-			'wc-facebook-google-product-category-fields',
-			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/google-product-category-fields.js',
-			[ 'jquery' ],
-			\WC_Facebookcommerce::PLUGIN_VERSION
-		);
-
-		wp_localize_script(
-			'wc-facebook-google-product-category-fields',
-			'facebook_for_woocommerce_google_product_category',
-			[
-				'i18n' => [
-					'top_level_dropdown_placeholder'          => __( 'Search main categories...', 'facebook-for-woocommerce' ),
-					'second_level_empty_dropdown_placeholder' => __( 'Choose a main category', 'facebook-for-woocommerce' ),
-					'general_dropdown_placeholder'            => __( 'Choose a category', 'facebook-for-woocommerce' ),
-				],
-			]
-		);
 	}
 
 	/**
@@ -1455,16 +1471,9 @@ class Admin {
 	 */
 	public function render_modal_template() {
 		global $current_screen;
-		$modal_screens = array(
-			'product',
-			'edit-product',
-			'woocommerce_page_wc-facebook',
-			'marketing_page_wc-facebook',
-			'edit-product_cat',
-			'shop_order',
-		);
+
 		// bail if not on the products, product edit, or settings screen
-		if ( ! $current_screen || ! in_array( $current_screen->id, $modal_screens, true ) ) {
+		if ( ! $current_screen || ! in_array( $current_screen->id, $this->screen_ids, true ) ) {
 			return;
 		}
 		?>

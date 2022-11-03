@@ -31,6 +31,13 @@ class Settings {
 	/** @var string base settings page ID */
 	const PAGE_ID = 'wc-facebook';
 
+	/**
+	 * Submenu page ID
+	 *
+	 * @var string
+	 */
+	const SUBMENU_PAGE_ID = 'edit-tags.php?taxonomy=fb_product_set&post_type=product';
+
 	/** @var Abstract_Settings_Screen[] */
 	private $screens;
 
@@ -56,8 +63,8 @@ class Settings {
 		);
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 		add_action( 'wp_loaded', array( $this, 'save' ) );
+		add_filter( 'parent_file', array( $this, 'set_parent_and_submenu_file' ) );
 	}
-
 
 	/**
 	 * Adds the Facebook menu item.
@@ -92,8 +99,53 @@ class Settings {
 		);
 		$this->connect_to_enhanced_admin( $is_marketing_enabled ? 'marketing_page_wc-facebook' : 'woocommerce_page_wc-facebook' );
 		$this->register_woo_nav_menu_items();
+
+		if ( $is_marketing_enabled ) {
+			$this->add_fb_product_sets_to_marketing_menu();
+		}
 	}
 
+	/**
+	 * Checks for connection and if established adds Facebook Product Sets taxonomy page to the Marketing menu.
+	 *
+	 * @since x.x.x
+	 */
+	private function add_fb_product_sets_to_marketing_menu() {
+		$is_connected = facebook_for_woocommerce()->get_connection_handler()->is_connected();
+
+		// If a connection is not established, do not add Facebook Product Sets to Marketing menu.
+		if ( ! $is_connected ) {
+			return;
+		}
+
+		add_submenu_page(
+			'woocommerce-marketing',
+			esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' ),
+			esc_html__( 'Facebook Product Sets', 'facebook-for-woocommerce' ),
+			'manage_woocommerce',
+			admin_url( self::SUBMENU_PAGE_ID ),
+			'',
+			10
+		);
+	}
+
+	/**
+	 * Set the parent and submenu file while accessing Facebook Product Sets in the marketing menu.
+	 *
+	 * @since x.x.x
+	 * @param string $parent_file The parent file.
+	 * @return string
+	 */
+	public function set_parent_and_submenu_file( $parent_file ){
+		global $submenu_file, $current_screen;
+
+		if ( isset( $current_screen->taxonomy ) && 'fb_product_set' === $current_screen->taxonomy ) {
+			$parent_file  = 'woocommerce-marketing';
+			$submenu_file = admin_url( self::SUBMENU_PAGE_ID );
+		}
+
+		return $parent_file;
+	}
 
 	/**
 	 * Enables enhanced admin support for the main Facebook settings page.

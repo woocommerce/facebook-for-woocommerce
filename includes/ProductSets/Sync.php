@@ -307,7 +307,7 @@ class Sync {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param int $product_set_id FB Product Set Term ID.
+	 * @param int $product_set_id Facebook Product Set Term ID.
 	 */
 	public function maybe_sync_product_set( $product_set_id ) {
 

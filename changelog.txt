@@ -1,5 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 2.6.28 - 2022-10-25 =
+* Fix - Ensure bundles are not treated as virtual products on product_sync.
+* Fix - Ensure google-product-category-fields-loads.js loads only on the product category screens.
+* Fix - Server side sending of pixel events blocks generating pages .
+
 = 2.6.27 - 2022-10-14 =
 * Fix - Revert "Switch to Jetpack autoloader. (#1996 PR refresh)".
 

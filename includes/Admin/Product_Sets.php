@@ -70,7 +70,7 @@ class Product_Sets {
 
 
 	/**
-	 * Add field to FB Product Set new term
+	 * Add field to Facebook Product Set new term
 	 *
 	 * @since 2.3.0
 	 */
@@ -85,7 +85,7 @@ class Product_Sets {
 
 
 	/**
-	 * Add field to FB Product Set new term
+	 * Add field to Facebook Product Set new term
 	 *
 	 * @since 2.3.0
 	 *
@@ -166,7 +166,7 @@ class Product_Sets {
 			<option value="<?php echo esc_attr( $product_cat->term_id ); ?>" <?php echo esc_attr( $selected ); ?>><?php echo esc_attr( $product_cat->name ); ?></option>
 		<?php endforeach; ?>
 		<select>
-		<p class="description"><?php echo esc_html__( 'Map FB Product Set to WC Product Categories', 'facebook-for-woocommerce' ); ?>.</p>
+		<p class="description"><?php echo esc_html__( 'Map Facebook Product Set to WC Product Categories', 'facebook-for-woocommerce' ); ?>.</p>
 		<?php
 	}
 }

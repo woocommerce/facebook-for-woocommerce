@@ -114,7 +114,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var string the short product description mode name */
 	const PRODUCT_DESCRIPTION_MODE_SHORT = 'short';
 
-	/** @var string custom taxonomy FB product set ID */
+	/** @var string custom taxonomy Facebook Product Set ID */
 	const FB_PRODUCT_SET_ID = 'fb_product_set_id';
 
 	/** @var string|null the configured product catalog ID */
@@ -826,8 +826,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			: Admin::SYNC_MODE_SYNC_DISABLED;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
-		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() ) {
-			// force sync and hide
+
+		if ( Admin::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $product->is_virtual() && 'bundle' !== $product->get_type() ) {
+			// force to Sync and hide
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
 		$products_to_delete_from_facebook = $this->get_removed_from_sync_products_to_delete();
@@ -1502,9 +1503,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			? $this->facebook_for_woocommerce->get_api()->create_product_set_item( $this->get_product_catalog_id(), $product_set_data )
 			: $this->facebook_for_woocommerce->get_api()->update_product_set_item( $fb_product_set_id, $product_set_data );
 
-		// update product set to set FB Product Set ID
-		if ( $result /*&& empty( $fb_product_set_id )*/ ) {
-			$fb_product_set_id = $result->id;
+		// update product set to set Facebook Product Set ID
+		if ( $result && empty( $fb_product_set_id ) ) {
+
+			// decode and get ID from result body
+			$decode_result     = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
+			$fb_product_set_id = $decode_result->id;
+
 			update_term_meta(
 				$product_set_id,
 				self::FB_PRODUCT_SET_ID,

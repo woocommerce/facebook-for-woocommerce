@@ -629,11 +629,13 @@ class WC_Facebook_Product {
 			}
 		}
 
-		// Exclude variations that are "virtual" products from export to Facebook &&
-		// No Visibility Option for Variations
-		if ( true === $this->get_virtual() ) {
-			$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
-		}
+			// Exclude variations that are "virtual" products from export to Facebook &&
+			// No Visibility Option for Variations
+			// get_virtual() returns true for "unassembled bundles", so we exclude
+			// bundles from this check.
+			if ( true === $this->get_virtual() && 'bundle' !== $this->get_type() ) {
+				$product_data['visibility'] = \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN;
+			}
 
 		if ( self::PRODUCT_PREP_TYPE_FEED !== $type_to_prepare_for ) {
 			$this->prepare_variants_for_item( $product_data );
