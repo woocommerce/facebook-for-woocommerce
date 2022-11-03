@@ -12,6 +12,8 @@
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/includes/fbutils.php';
 
+use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
+use WooCommerce\Facebook\Admin\Tasks\Setup;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Integrations\Bookings as BookingsIntegration;
@@ -119,19 +121,18 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @internal
 	 */
 	public function init() {
-
 		add_action( 'init', array( $this, 'get_integration' ) );
 		add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
 		add_action( 'add_meta_boxes_product', array( $this, 'remove_product_fb_product_set_metabox' ), 50 );
 		add_filter( 'fb_product_set_row_actions', array( $this, 'product_set_links' ) );
 		add_filter( 'manage_edit-fb_product_set_columns', array( $this, 'manage_fb_product_set_columns' ) );
 
-			// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
-			add_action( 'init', array( $this, 'add_setup_task' ), 20 );
+		// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
+		add_action( 'init', array( $this, 'add_setup_task' ), 20 );
 
-			// Product Set breadcrumb filters
-			add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
-			add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
+		// Product Set breadcrumb filters
+		add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
+		add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
 
 		add_filter(
 			'wc_' . WC_Facebookcommerce::PLUGIN_ID . '_http_request_args',
@@ -223,208 +224,18 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		);
 	}
 
-		/**
-		 * Adds the setup task to the Tasklists.
-		 *
-		 * @since x.x.x
-		 */
-		public function add_setup_task() {
-			TaskLists::add_task(
-				'extended',
-				new Setup(
-					TaskLists::get_list( 'extended' )
-				)
-			);
-		}
-
 	/**
-	 * Adds the plugin admin notices.
-	 *
-	 * @since 1.11.0
-	 */
-	public function add_admin_notices() {
-		parent::add_admin_notices();
-		// inform users who are not connected to Facebook
-		if ( ! $this->get_connection_handler()->is_connected() ) {
-			// users who've never connected to FBE 2 but have previously connected to FBE 1
-			if ( ! $this->get_connection_handler()->has_previously_connected_fbe_2() && $this->get_connection_handler()->has_previously_connected_fbe_1() ) {
-				$message = sprintf(
-					/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-					__( '%1$sHeads up!%2$s You\'re ready to migrate to a more secure, reliable Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!', 'facebook-for-woocommerce' ),
-					'<strong>',
-					'</strong>',
-					'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">',
-					'</a>'
-				);
-				$this->get_admin_notice_handler()->add_admin_notice(
-					$message,
-					self::PLUGIN_ID . '_migrate_to_v2_0',
-					array(
-						'dismissible'  => false,
-						'notice_class' => 'notice-info',
-					)
-				);
-				// direct these users to the new plugin settings page
-				if ( ! $this->is_plugin_settings() ) {
-					$message = sprintf(
-						/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
-						__( 'For your convenience, the Facebook for WooCommerce settings are now located under %1$sWooCommerce > Facebook%2$s.', 'facebook-for-woocommerce' ),
-						'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-						'</a>'
-					);
-					$this->get_admin_notice_handler()->add_admin_notice(
-						$message,
-						self::PLUGIN_ID . '_relocated_settings',
-						array(
-							'dismissible'  => true,
-							'notice_class' => 'notice-info',
-						)
-					);
-				}
-				// otherwise, a general getting started message
-			} elseif ( ! $this->is_plugin_settings() ) {
-
-				$message = sprintf(
-					/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-					esc_html__(
-						'%1$sFacebook for WooCommerce is almost ready.%2$s To complete your configuration, %3$scomplete the setup steps%4$s.',
-						'facebook-for-woocommerce'
-					),
-					'<strong>',
-					'</strong>',
-					'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-					'</a>'
-				);
-
-				$this->get_admin_notice_handler()->add_admin_notice(
-					$message,
-					self::PLUGIN_ID . '_get_started',
-					array(
-						'dismissible'  => true,
-						'notice_class' => 'notice-info',
-					)
-				);
-			}
-		/**
-		 * Adds the plugin admin notices.
-		 *
-		 * @since 1.11.0
-		 */
-		public function add_admin_notices() {
-
-			parent::add_admin_notices();
-
-			// inform users who are not connected to Facebook
-			if ( ! $this->get_connection_handler()->is_connected() ) {
-
-				// users who've never connected to FBE 2 but have previously connected to FBE 1
-				if ( ! $this->get_connection_handler()->has_previously_connected_fbe_2() && $this->get_connection_handler()->has_previously_connected_fbe_1() ) {
-
-					$message = sprintf(
-						/* translators: Placeholders %1$s - opening strong HTML tag, %2$s - closing strong HTML tag, %3$s - opening link HTML tag, %4$s - closing link HTML tag */
-						__( '%1$sHeads up!%2$s You\'re ready to migrate to a more secure, reliable Facebook for WooCommerce connection. Please %3$sclick here%4$s to reconnect!', 'facebook-for-woocommerce' ),
-						'<strong>',
-						'</strong>',
-						'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">',
-						'</a>'
-					);
-
-					$this->get_admin_notice_handler()->add_admin_notice(
-						$message,
-						self::PLUGIN_ID . '_migrate_to_v2_0',
-						array(
-							'dismissible'  => false,
-							'notice_class' => 'notice-info',
-						)
-					);
-
-					// direct these users to the new plugin settings page
-					if ( ! $this->is_plugin_settings() ) {
-
-						$message = sprintf(
-							/* translators: Placeholders %1$s - opening link HTML tag, %2$s - closing link HTML tag */
-							__( 'For your convenience, the Facebook for WooCommerce settings are now located under %1$sWooCommerce > Facebook%2$s.', 'facebook-for-woocommerce' ),
-							'<a href="' . esc_url( facebook_for_woocommerce()->get_settings_url() ) . '">',
-							'</a>'
-						);
-
-						$this->get_admin_notice_handler()->add_admin_notice(
-							$message,
-							self::PLUGIN_ID . '_relocated_settings',
-							array(
-								'dismissible'  => true,
-								'notice_class' => 'notice-info',
-							)
-						);
-					}
-				}
-
-			// notices for those connected to FBE 2
-		} else {
-
-			// if upgraders had messenger enabled and one of the removed settings was customized, alert them to reconfigure
-			if (
-				   $this->get_integration()->get_external_merchant_settings_id()
-				&& $this->get_integration()->is_messenger_enabled()
-				&& ( '#0084ff' !== $this->get_integration()->get_messenger_color_hex() || ! in_array( $this->get_integration()->get_messenger_greeting(), array( 'Hi! How can we help you?', "Hi! We're here to answer any questions you may have.", '' ), true ) )
-			) {
-
-				$message = sprintf(
-				/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag */
-					__( '%1$sHeads up!%2$s If you\'ve customized your Facebook Messenger color or greeting settings, please update those settings again from the %3$sManage Connection%4$s area.', 'facebook-for-woocommerce' ),
-					'<strong>',
-					'</strong>',
-					'<a href="' . esc_url( $this->get_connection_handler()->get_manage_url() ) . '" target="_blank">',
-					'</a>'
-				);
-
-				$this->get_admin_notice_handler()->add_admin_notice(
-					$message,
-					'update_messenger',
-					[
-						'always_show_on_settings' => false,
-						'notice_class'            => 'notice-info',
-					]
-				);
-			}
-		}
-
-		// if the connection is otherwise invalid, but there is an access token
-		if ( get_transient( 'wc_facebook_connection_invalid' ) && $this->get_connection_handler()->is_connected() ) {
-			$message = sprintf(
-				/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag, %3$s - <a> tag, %4$s - </a> tag */
-				__( '%1$sHeads up!%2$s Your connection to Facebook is no longer valid. Please %3$sclick here%4$s to securely reconnect your account and continue syncing products.', 'facebook-for-woocommerce' ),
-				'<strong>',
-				'</strong>',
-				'<a href="' . esc_url( $this->get_connection_handler()->get_connect_url() ) . '">',
-				'</a>'
-			);
-			$this->get_admin_notice_handler()->add_admin_notice(
-				$message,
-				'connection_invalid',
-				[ 'notice_class' => 'notice-error' ]
-			);
-		}
-	}
-
-	/**
-	 * Get the last event from the plugin lifecycle.
+	 * Adds the setup task to the Tasklists.
 	 *
 	 * @since x.x.x
-	 * @return array
 	 */
-	public function get_last_event_from_history() {
-		$last_event     = array();
-		$history_events = $this->lifecycle_handler->get_event_history();
-
-		if ( isset( $history_events[0] ) ) {
-			$last_event = $history_events[0];
-		}
-		return $last_event;
-	}
-
-	public function add_wordpress_integration() {
-		new WP_Facebook_Integration();
+	public function add_setup_task() {
+		TaskLists::add_task(
+			'extended',
+			new Setup(
+				TaskLists::get_list( 'extended' )
+			)
+		);
 	}
 
 	/**
