@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\API\FBE\Configuration;
+namespace WooCommerce\Facebook\Api\FBE\Configuration;
 
 defined( 'ABSPATH' ) || exit;
 

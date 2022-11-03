@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\API\Orders;
+namespace WooCommerce\Facebook\Api\Orders;
 
 defined( 'ABSPATH' ) or exit;
 

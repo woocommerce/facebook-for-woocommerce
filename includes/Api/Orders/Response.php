@@ -31,7 +31,7 @@ class Response extends Api\Response {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @return \WooCommerce\Facebook\API\Orders\Order[]
+	 * @return \WooCommerce\Facebook\Api\Orders\Order[]
 	 */
 	public function get_orders() {
 
