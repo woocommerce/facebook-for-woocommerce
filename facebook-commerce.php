@@ -1505,11 +1505,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// update product set to set Facebook Product Set ID
 		if ( $result && empty( $fb_product_set_id ) ) {
-
-			// decode and get ID from result body
-			$decode_result     = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-			$fb_product_set_id = $decode_result->id;
-
+			$fb_product_set_id = $result->id;
 			update_term_meta(
 				$product_set_id,
 				self::FB_PRODUCT_SET_ID,
@@ -1713,83 +1709,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		WC_Facebookcommerce_Utils::log( $msg );
 		set_transient( 'facebook_plugin_api_error', $msg, self::FB_MESSAGE_DISPLAY_TIME );
 	}
-
-	/**
-	 * Displays error message from API result (sugar).
-	 *
-	 * @param array $result
-	 * @return void
-	 */
-	public function display_error_message_from_result( array $result ): void {
-		$error = json_decode( $result['body'] )->error;
-		$msg   = ( 'Fatal' === $error->message && ! empty( $error->error_user_title ) ) ? $error->error_user_title : $error->message;
-		$this->display_error_message( $msg );
-	}
-
-	/**
-	 * Deals with FB API responses, displays error if FB API returns error.
-	 *
-	 * @param WP_Error|array $result API response
-	 * @param array|null     $logdata additional data for logging
-	 * @param int|null       $wpid post ID
-	 * @return array|null|void result if response is 200, null otherwise
-	 */
-	public function check_api_result( $result, $logdata = null, $wpid = null ) {
-		if ( is_wp_error( $result ) ) {
-			WC_Facebookcommerce_Utils::log( $result->get_error_message() );
-			$message = sprintf(
-				/* translators: Placeholders %1$s - original error message from Facebook API */
-				esc_html__( 'There was an issue connecting to the Facebook API:  %1$s', 'facebook-for-woocommerce' ),
-				$result->get_error_message()
-			);
-			$this->display_error_message( $message );
-			return;
-		}
-
-		if ( $result['response']['code'] !== 200 ) {
-			// Catch 10800 fb error code ("Duplicate retailer ID") and capture FBID
-			// if possible, otherwise let user know we found dupe SKUs
-			$body = WC_Facebookcommerce_Utils::decode_json( $result['body'] );
-
-			if ( $body && $body->error->code == '10800' ) {
-
-				$error_data = $body->error->error_data; // error_data may contain FBIDs
-
-				if ( $error_data && $wpid ) {
-
-					$existing_id = $this->get_existing_fbid( $error_data, $wpid );
-
-					if ( $existing_id ) {
-
-						// Add "existing_id" ID to result
-						$body->id       = $existing_id;
-						$result['body'] = json_encode( $body );
-						return $result;
-					}
-				}
-			} else {
-
-				$this->display_error_message_from_result( $result );
-			}
-
-			WC_Facebookcommerce_Utils::log( $result );
-
-			$data = array(
-				'result' => $result,
-				'data'   => $logdata,
-			);
-			WC_Facebookcommerce_Utils::fblog(
-				'Non-200 error code from FB',
-				$data,
-				true
-			);
-
-			return null;
-		}
-
-		return $result;
-	}
-
 
 	/**
 	 * Displays out of sync message if products are edited using WooCommerce Advanced Bulk Edit.

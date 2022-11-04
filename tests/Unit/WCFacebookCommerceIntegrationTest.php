@@ -1410,7 +1410,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
 
 		/* We start with a different value of `facebook-product-set-id` for the term meta on purpose to check it is updated. */
-		$this->assertEquals( '5191364664265911', get_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true ) );
+		$this->assertEquals( 'facebook-product-set-id', get_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, true ) );
 	}
 
 	/**
@@ -1543,134 +1543,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->integration->display_error_message( 'Hello, this is a test message.' );
 
 		$this->assertEquals( 'Hello, this is a test message.', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests display error message from results when error message
-	 * equals to 'Fatal' and a non-empty error_user_title.
-	 *
-	 * @return void
-	 */
-	public function test_display_error_message_from_result_error_message_equals_fatal_and_non_empty_error_user_title() {
-		$data = [
-			'body' => '{"error":{"message":"Fatal","error_user_title":"Non-empty error user title."}}',
-		];
-		$this->integration->display_error_message_from_result( $data );
-
-		$this->assertEquals( 'Non-empty error user title.', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests display error message from results when error message
-	 * equals to 'Fatal' and an empty error_user_title.
-	 *
-	 * @return void
-	 */
-	public function test_display_error_message_from_result_error_message_equals_fatal_and_an_empty_error_user_title() {
-		$data = [
-			'body' => '{"error":{"message":"Fatal","error_user_title":""}}',
-		];
-		$this->integration->display_error_message_from_result( $data );
-
-		$this->assertEquals( 'Fatal', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests display error message from results when error message is not equal 'Fatal'.
-	 *
-	 * @return void
-	 */
-	public function test_display_error_message_from_result_error_message_not_equal_fatal() {
-		$data = [
-			'body' => '{"error":{"message":"Non-fatal","error_user_title":""}}',
-		];
-		$this->integration->display_error_message_from_result( $data );
-
-		$this->assertEquals( 'Non-fatal', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests check api result function receives WP_Error input.
-	 *
-	 * @return void
-	 */
-	public function test_check_api_result_processes_wp_error() {
-		$input = new WP_Error( 999, 'Some error text message.' );
-
-		$this->integration->check_api_result( $input );
-
-		$this->assertEquals( 'There was an issue connecting to the Facebook API:  Some error text message.', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests check api result function receives input with 200 status.
-	 *
-	 * @return void
-	 */
-	public function test_check_api_result_processes_200_status_input() {
-		$input = [
-			'headers'  => [],
-			'body'     => '{"id":"5191364664265911"}',
-			'response' => [
-				'code'    => 200,
-				'message' => 'OK',
-			],
-		];
-
-		$output = $this->integration->check_api_result( $input );
-
-		$this->assertEquals( $input, $output );
-	}
-
-	/**
-	 * Tests check api result function receives input with non 200 status and some non 10800 error code.
-	 *
-	 * @return void
-	 */
-	public function test_check_api_result_processes_non_200_status_and_some_error_code_input() {
-		$input = [
-			'headers'  => [],
-			'body'     => '{"error":{"code":9999,"message":"Fatal","error_user_title":"Some error user title here."}}',
-			'response' => [
-				'code'    => 1111,
-				'message' => '',
-			],
-		];
-
-		$output = $this->integration->check_api_result( $input );
-
-		$this->assertNull( $output );
-		$this->assertEquals( 'Some error user title here.', get_transient( 'facebook_plugin_api_error' ) );
-	}
-
-	/**
-	 * Tests check api result function receives input with non 200 status and 10800 error code.
-	 *
-	 * @return void
-	 */
-	public function test_check_api_result_processes_non_200_status_and_10800_error_code_input() {
-		$input = [
-			'headers'  => [],
-			'body'     => '{"error":{"code":10800,"message":"Fatal","error_user_title":"Some error user title here.","error_data":{"product_group_id":"987654321","product_item_id":"123456789"}}}',
-			'response' => [
-				'code'    => 1111,
-				'message' => '',
-			],
-		];
-
-		$expected = [
-			'headers'  => [],
-			'body'     => '{"error":{"code":10800,"message":"Fatal","error_user_title":"Some error user title here.","error_data":{"product_group_id":"987654321","product_item_id":"123456789"}},"id":"987654321"}',
-			'response' => [
-				'code'    => 1111,
-				'message' => '',
-			],
-		];
-
-		$output = $this->integration->check_api_result( $input, null, '112233445566' );
-
-		$this->assertEquals( $expected, $output );
-		$this->assertEquals( '987654321', get_post_meta( '112233445566', WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
 	}
 
 	/**
