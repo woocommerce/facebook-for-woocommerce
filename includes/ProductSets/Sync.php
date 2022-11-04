@@ -90,7 +90,7 @@ class Sync {
 	protected static $new_product_set = array();
 
 	/**
-	 * Product's Product Set Previous Name
+	 * Product's Product Set New Name
 	 *
 	 * @since x.x.x
 	 *
