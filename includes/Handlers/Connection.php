@@ -310,7 +310,7 @@ class Connection {
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 		}
 
-		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+		wp_safe_redirect( facebook_for_woocommerce()->get_advertise_tab_url() );
 		exit;
 	}
 
