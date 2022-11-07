@@ -304,6 +304,7 @@ class Connection {
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 
 			wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+			exit;
 
 		} catch ( Connect_WC_API_Exception $exception ) {
 			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
@@ -313,6 +314,7 @@ class Connection {
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
 
 			wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+			exit;
 
 		}
 
