@@ -302,12 +302,18 @@ class Connection {
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
+
+			wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+
 		} catch ( Connect_WC_API_Exception $exception ) {
 			$message = $this->prepare_connect_server_message_for_user_display( $exception->getMessage() );
 
 			facebook_for_woocommerce()->log( sprintf( 'Failed to connect to Facebook. Reason: %s', $message ), 'facebook_for_woocommerce_connect' );
 
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );
+
+			wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+
 		}
 
 		wp_safe_redirect( facebook_for_woocommerce()->get_advertise_tab_url() );
