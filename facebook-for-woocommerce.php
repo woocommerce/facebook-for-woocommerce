@@ -14,7 +14,7 @@
  * Version: 2.6.28
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.0
- * WC requires at least: 3.5.0
+ * WC requires at least: 5.3
  * WC tested up to: 7.0
  * Requires PHP: 7.0
  *
@@ -53,7 +53,7 @@ class WC_Facebook_Loader {
 	const MINIMUM_WP_VERSION = '4.4';
 
 	// Minimum WooCommerce version required by this plugin.
-	const MINIMUM_WC_VERSION = '3.5.0';
+	const MINIMUM_WC_VERSION = '5.3';
 
 	// SkyVerge plugin framework version used by this plugin.
 	const FRAMEWORK_VERSION = '5.10.0';
