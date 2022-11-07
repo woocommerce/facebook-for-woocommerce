@@ -19,6 +19,7 @@ use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncVal
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
+use Automattic\WooCommerce\Admin\Notes\Note;
 use SkyVerge\WooCommerce\Facebook\Admin\Tasks\Setup;
 use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
@@ -262,7 +263,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * @since x.x.x
 		 */
 		public function add_setup_task() {
-			if ( class_exists( 'TaskLists' ) ) { // This is added for backward compatibility.
+			if ( class_exists( TaskLists::class ) ) { // This is added for backward compatibility.
 				TaskLists::add_task(
 					'extended',
 					new Setup(
@@ -386,7 +387,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
 				}
 
-				if ( $is_marketing_enabled && class_exists( '\Automattic\WooCommerce\Admin\Notes\Note' ) ) { // Checking for Note class is for backward compatibility.
+				if ( $is_marketing_enabled && class_exists( Note::class ) ) { // Checking for Note class is for backward compatibility.
 					SettingsMoved::possibly_add_or_delete_note();
 				}
 			}
