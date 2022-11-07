@@ -262,12 +262,14 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		 * @since x.x.x
 		 */
 		public function add_setup_task() {
-			TaskLists::add_task(
-				'extended',
-				new Setup(
-					TaskLists::get_list( 'extended' )
-				)
-			);
+			if ( class_exists( 'TaskLists' ) ) { // This is added for backward compatibility.
+				TaskLists::add_task(
+					'extended',
+					new Setup(
+						TaskLists::get_list( 'extended' )
+					)
+				);
+			}
 		}
 
 		/**
@@ -384,7 +386,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 						&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
 				}
 
-				if ( $is_marketing_enabled ) {
+				if ( $is_marketing_enabled && class_exists( '\Automattic\WooCommerce\Admin\Notes\Note' ) ) { // Checking for Note class is for backward compatibility.
 					SettingsMoved::possibly_add_or_delete_note();
 				}
 			}
