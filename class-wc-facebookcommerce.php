@@ -1013,6 +1013,19 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			return admin_url( 'admin.php?page=wc-facebook' );
 		}
+		
+		/**
+         * Gets the advertise tab page URL.
+         *
+         * @since x.x.x
+         *
+         * @return string
+         */
+        public function get_advertise_tab_url() {
+			
+			return admin_url( 'admin.php?page=wc-facebook&tab=advertise' );
+        }
+
 
 
 		/**
