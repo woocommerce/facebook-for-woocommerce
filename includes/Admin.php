@@ -12,7 +12,7 @@
 namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -47,9 +47,7 @@ class Admin {
 	 */
 	public function __construct() {
 
-		$order_screen_id = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
-		? wc_get_page_screen_id( 'shop-order' )
-		: 'shop_order';
+		$order_screen_id = class_exists( OrderUtil::class ) ? OrderUtil::get_order_admin_screen() : 'shop_order';
 
 		$this->screen_ids = [
 			'product',
