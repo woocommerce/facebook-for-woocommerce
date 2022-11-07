@@ -961,22 +961,6 @@ class Admin {
 
 
 	/**
-	 * Prints a notice on products page in case the current cart URL is not the original sync URL.
-	 *
-	 * TODO remove this deprecated method by version 3.0.0 or by June 2021 {FN 2020-06-09}
-	 *
-	 * @internal
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.0.0
-	 */
-	public function validate_cart_url() {
-
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-
-	/**
 	 * Adds a transient so an informational notice is displayed on the next page load.
 	 *
 	 * @since 2.0.0
@@ -1554,54 +1538,4 @@ class Admin {
 			endif;
 		endif;
 	}
-
-
-	/** Deprecated methods ********************************************************************************************/
-
-
-	/**
-	 * No-op: Prints a notice on products page to inform users about changes in product sync.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 * @deprecated 2.0.0
-	 */
-	public function add_product_sync_delay_notice() {
-
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-
-	/**
-	 * No-op: Handles dismissed notices.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 * @deprecated 2.0.0
-	 *
-	 * @param string $message_id the dismissed notice ID
-	 * @param int    $user_id the ID of the user the noticed was dismissed for
-	 */
-	public function handle_dismiss_notice( $message_id, $user_id = null ) {
-
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-
-	/**
-	 * No-op: Prints a notice on products page to inform users that catalog visibility settings were removed.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 * @deprecated 2.0.0
-	 */
-	public function add_catalog_visibility_settings_removed_notice() {
-
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-
 }

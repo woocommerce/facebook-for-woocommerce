@@ -519,59 +519,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Adds a new tab to the Product edit page.
-	 *
-	 * @internal
-	 * @deprecated since 1.10.0
-	 *
-	 * @param array $tabs Array of tabs.
-	 * @return array
-	 */
-	public function fb_new_product_tab( $tabs ) {
-		wc_deprecated_function( __METHOD__, '1.10.0', '\\WooCommerce\\Facebook\\Admin::add_product_settings_tab()' );
-		return $tabs;
-	}
-
-
-	/**
-	 * Adds content to the new Facebook tab on the Product edit page.
-	 *
-	 * @internal
-	 * @deprecated since 1.10.0
-	 */
-	public function fb_new_product_tab_content() {
-		wc_deprecated_function( __METHOD__, '1.10.0', '\\WooCommerce\\Facebook\\Admin::add_product_settings_tab_content()' );
-	}
-
-
-	/**
-	 * Filters the product columns in the admin edit screen.
-	 *
-	 * @internal
-	 * @deprecated since 1.10.0
-	 *
-	 * @param array $existing_columns Array of columns and labels.
-	 * @return array
-	 */
-	public function fb_product_columns( $existing_columns ) {
-		wc_deprecated_function( __METHOD__, '1.10.0', '\\WooCommerce\\Facebook\\Admin::add_product_list_table_column()' );
-		return $existing_columns;
-	}
-
-
-	/**
-	 * Outputs content for the FB Shop column in the edit screen.
-	 *
-	 * @internal
-	 * @deprecated since 1.10.0
-	 *
-	 * @param string $column Name of the column to display.
-	 */
-	public function fb_render_product_columns( $column ) {
-		wc_deprecated_function( __METHOD__, '1.10.0', '\\WooCommerce\\Facebook\\Admin::add_product_list_table_columns_content()' );
-	}
-
-	/**
 	 * Gets a list of Product Item IDs indexed by the ID of the variation.
 	 *
 	 * @since 2.0.0
@@ -1529,26 +1476,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 
 	/**
-	 * Saves settings via AJAX (to preserve window context for onboarding).
-	 *
-	 * @internal
-	 *
-	 * @deprecated 2.0.0
-	 */
-	public function ajax_save_fb_settings() {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-	/**
-	 * Delete all settings via AJAX
-	 *
-	 * @deprecated 2.0.0
-	 */
-	public function ajax_delete_fb_settings() {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-	/**
 	 * Checks the feed upload status (FBE v1.0).
 	 *
 	 * @internal
@@ -1625,23 +1552,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$msg = self::FB_ADMIN_MESSAGE_PREPEND . $msg;
 		set_transient(
 			'facebook_plugin_api_success',
-			$msg,
-			self::FB_MESSAGE_DISPLAY_TIME
-		);
-	}
-
-	/**
-	 * Display custom warning message (sugar).
-	 *
-	 * @deprecated 2.1.0
-	 *
-	 * @param string $msg
-	 * @return void
-	 */
-	public function display_warning_message( string $msg ): void {
-		$msg = self::FB_ADMIN_MESSAGE_PREPEND . $msg;
-		set_transient(
-			'facebook_plugin_api_warning',
 			$msg,
 			self::FB_MESSAGE_DISPLAY_TIME
 		);
@@ -2143,58 +2053,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wc_deprecated_function( __METHOD__, '1.10.0' );
 	}
 
-	/**
-	 * Initializes the settings form fields.
-	 *
-	 * @since 1.0.0
-	 * @deprecated 2.0.0
-	 *
-	 * @internal
-	 */
-	public function init_form_fields() {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
-	/**
-	 * Processes and saves options.
-	 *
-	 * TODO: remove this or move it to the new settings processing
-	 *
-	 * @internal
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.0.0
-	 */
-	public function process_admin_options() {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
-
 	/** Getter methods ************************************************************************************************/
-
-	/**
-	 * Gets the page access token.
-	 *
-	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.1.0
-	 *
-	 * @return string
-	 */
-	public function get_page_access_token() {
-		wc_deprecated_function( __METHOD__, '2.1.0', Connection::class . '::get_page_access_token()' );
-		$access_token = $this->facebook_for_woocommerce->get_connection_handler()->get_page_access_token();
-		/**
-		 * Filters the Facebook page access token.
-		 *
-		 * @since 1.10.0
-		 * @deprecated 2.1.0
-		 *
-		 * @param string $page_access_token Facebook page access token
-		 * @param \WC_Facebookcommerce_Integration $integration the integration instance
-		 */
-		return (string) apply_filters( 'wc_facebook_page_access_token', ! $this->is_feed_migrated() ? $access_token : '', $this );
-	}
 
 	/**
 	 * Gets the product catalog ID.
@@ -2379,30 +2238,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Gets the configured use s2s flag.
-	 *
-	 * @deprecated
-	 * @return bool
-	 */
-	public function is_use_s2s_enabled() {
-		wc_deprecated_function( __METHOD__, '2.6.14' );
-
-		return WC_Facebookcommerce_Pixel::get_use_s2s();
-	}
-
-	/**
-	 * Gets the configured access token
-	 *
-	 * @deprecated
-	 * @return string
-	 */
-	public function get_access_token() {
-		wc_deprecated_function( __METHOD__, '2.6.14' );
-
-		return WC_Facebookcommerce_Pixel::get_access_token();
-	}
-
-	/**
 	 * Gets the IDs of the categories to be excluded from sync.
 	 *
 	 * @since 1.10.0
@@ -2468,20 +2303,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		return $mode;
-	}
-
-	/**
-	 * Gets the configured scheduled re-sync offset in seconds.
-	 *
-	 * Returns null if no offset is configured.
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.0.0
-	 *
-	 * @return void
-	 */
-	public function get_scheduled_resync_offset(): void {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
 	}
 
 	/**
@@ -2568,24 +2389,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/** Setter methods ************************************************************************************************/
-
-
-	/**
-	 * Updates the Facebook page access token.
-	 *
-	 * TODO: remove this method by version 3.0.0 or by 2021-08-21 {WV 2020-08-21}
-	 *
-	 * @since 1.10.0
-	 * @deprecated 2.1.0
-	 *
-	 * @param string $value page access token value
-	 */
-	public function update_page_access_token( $value ) {
-
-		wc_deprecated_function( __METHOD__, '2.1.0', Connection::class . '::update_page_access_token()' );
-
-		facebook_for_woocommerce()->get_connection_handler()->update_page_access_token( $value );
-	}
 
 
 	/**
@@ -2884,45 +2687,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Gets Messenger or Instagram tooltip message.
-	 *
-	 * @return string
-	 */
-	public function get_nux_message_ifexist() {
-		wc_deprecated_function( __METHOD__, '2.6.14' );
-
-		$nux_type_to_elemid_map = [
-			'messenger_chat'     => 'connect_button',
-			'instagram_shopping' => 'connect_button',
-		];
-
-		$nux_type_to_message_map = [
-			'messenger_chat'     => __( 'Get started with Messenger Customer Chat', 'facebook-for-woocommerce' ),
-			'instagram_shopping' => __( 'Get started with Instagram Shopping', 'facebook-for-woocommerce' ),
-		];
-
-		$message = '';
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['nux'] ) ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$nux_type = sanitize_text_field( wp_unslash( $_GET['nux'] ) );
-			$elem_id  = esc_attr( $nux_type_to_elemid_map[ $nux_type ] );
-			$msg      = esc_attr( $nux_type_to_message_map[ $nux_type ] );
-			$message  = <<<HTML
-			<div class="nux-message" style="display: none;" data-target="{$elem_id}">
-				<div class="nux-message-text">{$msg}</div>
-				<div class="nux-message-arrow"></div>
-				<i class="nux-message-close-btn">x</i>
-			</div>
-			<script>( function () { fbe_init_nux_messages(); } )();</script>
-			HTML;
-		}
-
-		return $message;
-	}
-
-	/**
 	 * Admin Panel Options
 	 */
 	public function admin_options() {
@@ -3141,17 +2905,4 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
-	/**
-	 * Enables product sync delay notice when a post is moved to the trash.
-	 *
-	 * @internal
-	 *
-	 * @since 1.11.0
-	 * @deprecated 2.0.0
-	 *
-	 * @param int $post_id the post ID
-	 */
-	public function on_product_trash( $post_id ) {
-		wc_deprecated_function( __METHOD__, '2.0.0' );
-	}
 }

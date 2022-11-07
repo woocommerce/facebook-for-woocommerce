@@ -801,22 +801,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		}
 		return $current_screen_id;
 	}
-
-
-	/** Deprecated methods ****************************************************************************************/
-
-
-	/**
-	 * Adds the settings link on the plugin page.
-	 *
-	 * @internal
-	 *
-	 * @since 1.10.0
-	 * @deprecated 1.10.0
-	 */
-	public function add_settings_link() {
-		wc_deprecated_function( __METHOD__, '1.10.0' );
-	}
 }
 
 

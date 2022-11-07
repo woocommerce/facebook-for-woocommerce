@@ -494,19 +494,4 @@ class Lifecycle {
 	protected function get_plugin() {
 		return $this->plugin;
 	}
-
-
-	/** Deprecated methods ****************************************************/
-
-
-	/**
-	 * Handles tasks after the plugin has been updated.
-	 *
-	 * @internal
-	 *
-	 * @since 5.1.0
-	 */
-	public function do_update() {
-		wc_deprecated_function( __METHOD__, '5.2.0' );
-	}
 }

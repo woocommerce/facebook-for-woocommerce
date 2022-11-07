@@ -225,24 +225,6 @@ class WC_Facebookcommerce_Pixel {
 
 
 		/**
-		 * Determines if the last event in the current thread matches a given event.
-		 *
-		 * TODO remove this deprecated method by March 2020 or version 2.0.0 {FN 2020-03-25}.
-		 *
-		 * @deprecated since 1.11.0
-		 *
-		 * @param string $event_name Name of the event.
-		 * @return bool
-		 */
-		public function check_last_event( $event_name ) {
-
-			wc_deprecated_function( __METHOD__, '1.11.0', __CLASS__ . '::has_last_event()' );
-
-			return $this->is_last_event( $event_name );
-		}
-
-
-		/**
 		 * Gets the JavaScript code to track an event.
 		 *
 		 * Updates the last event property and returns the code.
@@ -686,20 +668,6 @@ class WC_Facebookcommerce_Pixel {
 			);
 		}
 
-
-		/**
-		 * Gets Facebook Pixel base code.
-		 *
-		 * @deprecated since 1.10.2
-		 *
-		 * @return string
-		 */
-		public static function get_basecode() {
-
-			wc_deprecated_function( __METHOD__, '1.10.2' );
-
-			return '';
-		}
 
 		/**
 		 * Gets the logged in user info

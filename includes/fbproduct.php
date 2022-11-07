@@ -390,22 +390,6 @@ class WC_Facebook_Product {
 	}
 
 
-	/**
-	 * Determines whether a product should be excluded from all-products sync or the feed file.
-	 *
-	 * @see WooCommerce\Facebook\Products\Sync::create_or_update_all_products()
-	 * @see WC_Facebook_Product_Feed::write_product_feed_file()
-	 *
-	 * @deprecated 2.0.2
-	 */
-	public function is_hidden() {
-
-		wc_deprecated_function( __METHOD__, '2.0.2', 'Products::product_should_be_synced()' );
-
-		return $this->woo_product instanceof \WC_Product && ! Products::product_should_be_synced( $this->woo_product );
-	}
-
-
 	public function get_price_plus_tax( $price ) {
 		$woo_product = $this->woo_product;
 		// // wc_get_price_including_tax exist for Woo > 2.7

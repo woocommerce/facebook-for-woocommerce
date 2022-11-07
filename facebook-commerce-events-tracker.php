@@ -25,13 +25,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 	class WC_Facebookcommerce_EventsTracker {
 
-
-		/** @deprecated since 2.2.0 */
-		const FB_PRIORITY_HIGH = 2;
-		/** @deprecated since 2.2.0 */
-		const FB_PRIORITY_LOW = 11;
-
-
 		/** @var \WC_Facebookcommerce_Pixel instance */
 		private $pixel;
 
@@ -148,19 +141,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
 			add_action( 'shutdown', array( $this, 'send_pending_events' ) );
-		}
-
-
-		/**
-		 * Adds filter hooks.
-		 *
-		 * @internal
-		 *
-		 * @deprecated since 2.2.0
-		 */
-		public function apply_filters() {
-
-			wc_deprecated_function( __METHOD__, '2.2.0' );
 		}
 
 
@@ -748,18 +728,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			return $fragments;
-		}
-
-
-		/**
-		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
-		 *
-		 * @internal
-		 * @deprecated since 1.10.2
-		 */
-		public function inject_ajax_add_to_cart_event() {
-
-			wc_deprecated_function( __METHOD__, '1.10.2' );
 		}
 
 

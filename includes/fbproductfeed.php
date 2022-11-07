@@ -631,19 +631,4 @@ class WC_Facebook_Product_Feed {
 		$msg = empty( $object ) ? $msg : $msg . json_encode( $object );
 		WC_Facebookcommerce_Utils::log( $msg );
 	}
-
-	/**
-	 * @deprecated in favor of WC_Facebookcommerce_Utils::get_all_product_ids_for_sync() due to duplicate functionality
-	 */
-	public function get_product_wpid() {
-
-		wc_deprecated_function( __METHOD__, '2.4.0', '\\WC_Facebookcommerce_Utils::get_all_product_ids_for_sync()' );
-
-		$post_ids = WC_Facebookcommerce_Utils::get_wp_posts(
-			null,
-			null,
-			array( 'product', 'product_variation' )
-		);
-		return $post_ids;
-	}
 }

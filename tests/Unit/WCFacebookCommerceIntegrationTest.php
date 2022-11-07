@@ -1883,74 +1883,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get access token returns access token if feed is not migrated and no filters are set.
-	 *
-	 * @return void
-	 */
-	public function test_get_page_access_token_without_filter_and_no_feed_migrated() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		remove_all_filters( 'wc_facebook_page_access_token' );
-
-		add_option( 'wc_facebook_feed_migrated', 'no' );
-
-		$this->connection_handler->expects( $this->once() )
-			->method( 'get_page_access_token' )
-			->willReturn( '11223344556677889900' );
-
-		$access_token = $this->integration->get_page_access_token();
-
-		$this->assertEquals( '11223344556677889900', $access_token );
-	}
-
-	/**
-	 * Tests get access token returns empty access token if feed is migrated and no filters are set.
-	 *
-	 * @return void
-	 */
-	public function test_get_page_access_token_without_filter_and_feed_migrated() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		remove_all_filters( 'wc_facebook_page_access_token' );
-
-		add_option( 'wc_facebook_feed_migrated', 'yes' );
-
-		$this->connection_handler->expects( $this->once() )
-			->method( 'get_page_access_token' )
-			->willReturn( '11223344556677889900' );
-
-		$access_token = $this->integration->get_page_access_token();
-
-		$this->assertEquals( '', $access_token );
-	}
-
-	/**
-	 * Tests get access token returns filtered access token.
-	 *
-	 * @return void
-	 */
-	public function test_get_page_access_token_with_filter() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		add_filter(
-			'wc_facebook_page_access_token',
-			function( $access_token ) {
-				return '00998877665544332211';
-			}
-		);
-
-		$access_token = $this->integration->get_page_access_token();
-
-		$this->assertEquals( '00998877665544332211', $access_token );
-	}
-
-	/**
 	 * Tests get_product_catalog_id returns product catalog id from object properly with no filters on it.
 	 *
 	 * @return void
@@ -2272,84 +2204,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_pixel_id = $this->integration->get_facebook_pixel_id();
 
 		$this->assertEquals( '444333222111999888777666555', $facebook_pixel_id );
-	}
-
-	/**
-	 * Tests is_use_s2s_enabled returns false if no option set.
-	 *
-	 * @return void
-	 */
-	public function test_is_use_s2s_enabled_has_no_options() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		delete_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY );
-
-		$output = $this->integration->is_use_s2s_enabled();
-
-		$this->assertFalse( $output );
-	}
-
-	/**
-	 * Tests is_use_s2s_enabled returns option value.
-	 *
-	 * @return void
-	 */
-	public function test_is_use_s2s_enabled_returns_option_value() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		add_option(
-			WC_Facebookcommerce_Pixel::SETTINGS_KEY,
-			[
-				WC_Facebookcommerce_Pixel::USE_S2S_KEY => true,
-			]
-		);
-
-		$output = $this->integration->is_use_s2s_enabled();
-
-		$this->assertTrue( $output );
-	}
-
-	/**
-	 * Tests get_access_token returns false if no option set.
-	 *
-	 * @return void
-	 */
-	public function test_get_access_token_no_options_set() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		delete_option( WC_Facebookcommerce_Pixel::SETTINGS_KEY );
-
-		$output = $this->integration->get_access_token();
-
-		$this->assertEmpty( $output );
-	}
-
-	/**
-	 * Tests get_access_token returns option value.
-	 *
-	 * @return void
-	 */
-	public function test_get_access_token_returns_set_option() {
-		/* Remove deprecation notices. */
-		add_filter( 'deprecated_function_trigger_error', '__return_false' );
-		remove_all_actions( 'deprecated_function_run' );
-
-		add_option(
-			WC_Facebookcommerce_Pixel::SETTINGS_KEY,
-			[
-				WC_Facebookcommerce_Pixel::ACCESS_TOKEN_KEY => '11223344556677889900',
-			]
-		);
-
-		$output = $this->integration->get_access_token();
-
-		$this->assertEquals( '11223344556677889900', $output );
 	}
 
 	/**
@@ -3278,15 +3132,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertEmpty( get_transient( 'facebook_plugin_api_success' ) );
 		$this->assertEmpty( get_transient( 'facebook_plugin_api_info' ) );
 		$this->assertEquals( 'Api sticky message.', get_transient( 'facebook_plugin_api_sticky' ) );
-	}
-
-	/**
-	 * Skip this test since the method is not used anywhere.
-	 *
-	 * @return void
-	 */
-	public function test_get_nux_message_ifexist() {
-		$this->markTestSkipped( 'A never used method. Skip it.' );
 	}
 
 	/**
