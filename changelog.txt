@@ -1,5 +1,20 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 2.6.29 - 2022-11-08 =
+* Add - Facebook Product Set under the Marketing menu.
+* Add - HPOS Compatibility.
+* Add - Inbox note about Facebook menu moved under the Marketing menu.
+* Add - Set up Facebook task to the WooCommerce admin tasks.
+* Dev - Replaced methods from classes in the `Internal` namespace.
+* Fix - Ensure the enhanced product enhance catalog attributes value is unslashed before saving in the post_meta table.
+* Fix - Hosted Woo Updates.
+* Fix - Release/2.6.28.
+* Fix - duplicate InitiateCheckout when using checkout block.
+* Tweak - WC 7.1 compatibility.
+* Tweak - WP 6.1 compatibility.
+* Update - FB Product Set name changed to Facebook Product Set.
+* Update - On successful FBE install users will be redirected to Advertise tab of the plugin.
+
 = 2.6.28 - 2022-10-25 =
 * Fix - Ensure bundles are not treated as virtual products on product_sync.
 * Fix - Ensure google-product-category-fields-loads.js loads only on the product category screens.
