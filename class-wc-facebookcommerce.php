@@ -260,7 +260,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Adds the setup task to the Tasklists.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.29
 		 */
 		public function add_setup_task() {
 			if ( class_exists( TaskLists::class ) ) { // This is added for backward compatibility.
@@ -396,7 +396,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
 		 * Get the last event from the plugin lifecycle.
 		 *
-		 * @since x.x.x
+		 * @since 2.6.29
 		 * @return array
 		 */
 		public function get_last_event_from_history() {
@@ -1020,7 +1020,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 		/**
          * Gets the advertise tab page URL.
          *
-         * @since x.x.x
+         * @since 2.6.29
          *
          * @return string
          */
