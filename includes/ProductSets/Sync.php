@@ -74,7 +74,7 @@ class Sync {
 	/**
 	 * Product's Product Set Previous Name
 	 *
-	 * @since x.x.x
+	 * @since 2.6.30
 	 *
 	 * @var string
 	 */
@@ -92,7 +92,7 @@ class Sync {
 	/**
 	 * Product's Product Set New Name
 	 *
-	 * @since x.x.x
+	 * @since 2.6.30
 	 *
 	 * @var string
 	 */
