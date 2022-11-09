@@ -71,4 +71,17 @@ class Setup extends Task {
 	public function is_complete() {
 		return facebook_for_woocommerce()->get_connection_handler()->is_connected();
 	}
+
+	/**
+	 * Parent ID. This method is abstract in WooCommerce 6.1.x, 6.2.x and 6.3.x. This implementation is for backward compatibility for these versions.
+	 *
+	 * @return string
+	 */
+	public function get_parent_id() {
+		if ( is_callable( 'parent::get_parent_id' ) ) {
+			return parent::get_parent_id();
+		}
+
+		return 'extended'; // The parent task list id.
+	}
 }
