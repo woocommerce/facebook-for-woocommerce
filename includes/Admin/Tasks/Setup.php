@@ -82,9 +82,6 @@ class Setup extends Task {
 			return parent::get_parent_id();
 		}
 
-		if ( ! $this->task_list ) {
-			return '';
-		}
-		return $this->task_list->get_list_id();
+		return 'extended'; // The parent task list id.
 	}
 }
