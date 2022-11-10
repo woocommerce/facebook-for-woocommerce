@@ -670,19 +670,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	}
 
 	/**
-	 * Gets the settings page URL.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param null $plugin_id unused
-	 * @return string
-	 */
-	public function get_settings_url( $plugin_id = null ) {
-
-		return admin_url( 'admin.php?page=wc-facebook' );
-	}
-
-	/**
 	 * Gets the advertise tab page URL.
 	 *
 	 * @since 2.6.29
@@ -704,7 +691,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	public function get_settings_url( $plugin_id = null ) {
 		return admin_url( 'admin.php?page=wc-facebook' );
 	}
-
 
 	/**
 	 * Gets the plugin's documentation URL.
