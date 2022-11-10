@@ -1275,7 +1275,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			);
 		} else {
 			$this->display_error_message(
-				'Up[dating product group <a href="https://facebook.com/' .
+				'Updating product group <a href="https://facebook.com/' .
 				$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
 				'</a> on Facebook has failed.'
 			);

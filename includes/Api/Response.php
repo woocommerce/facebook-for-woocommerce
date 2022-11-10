@@ -22,9 +22,7 @@ defined( 'ABSPATH' ) or exit;
  */
 class Response extends JSONResponse {
 
-
 	use Traits\Rate_Limited_Response;
-
 
 	/**
 	 * Gets the response ID.
@@ -34,7 +32,6 @@ class Response extends JSONResponse {
 	 * @return string
 	 */
 	public function get_id() {
-
 		return $this->id;
 	}
 
@@ -49,7 +46,6 @@ class Response extends JSONResponse {
 	 * @return boolean
 	 */
 	public function has_api_error() {
-
 		return (bool) $this->error;
 	}
 
@@ -62,8 +58,7 @@ class Response extends JSONResponse {
 	 * @return string|null
 	 */
 	public function get_api_error_type() {
-
-		return isset( $this->error->type ) ? $this->error->type : null;
+		return $this->error['type'] ?? null;
 	}
 
 
@@ -75,8 +70,7 @@ class Response extends JSONResponse {
 	 * @return string|null
 	 */
 	public function get_api_error_message() {
-
-		return isset( $this->error->message ) ? $this->error->message : null;
+		return $this->error['message'] ?? null;
 	}
 
 
@@ -88,8 +82,7 @@ class Response extends JSONResponse {
 	 * @return int|null
 	 */
 	public function get_api_error_code() {
-
-		return isset( $this->error->code ) ? (int) $this->error->code : null;
+		return $this->error['code'] ?? null;
 	}
 
 
@@ -101,9 +94,6 @@ class Response extends JSONResponse {
 	 * @return string|null
 	 */
 	public function get_user_error_message() {
-
-		return isset( $this->error->error_user_msg ) ? $this->error->error_user_msg : null;
+		return $this->error['error_user_msg'] ?? null;
 	}
-
-
 }
