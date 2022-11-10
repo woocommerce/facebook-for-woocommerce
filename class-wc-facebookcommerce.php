@@ -22,6 +22,8 @@ use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use WooCommerce\Facebook\Utilities\Heartbeat;
+use Automattic\WooCommerce\Admin\Notes\Note;
+use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
 class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var string the plugin version */
@@ -227,15 +229,37 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/**
 	 * Adds the setup task to the Tasklists.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.29
 	 */
 	public function add_setup_task() {
-		TaskLists::add_task(
-			'extended',
-			new Setup(
-				TaskLists::get_list( 'extended' )
-			)
-		);
+		if ( class_exists( TaskLists::class ) ) { // This is added for backward compatibility.
+			TaskLists::add_task(
+				'extended',
+				new Setup(
+					TaskLists::get_list( 'extended' )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Get the last event from the plugin lifecycle.
+	 *
+	 * @since 2.6.29
+	 * @return array
+	 */
+	public function get_last_event_from_history() {
+		$last_event     = array();
+		$history_events = $this->lifecycle_handler->get_event_history();
+
+		if ( isset( $history_events[0] ) ) {
+			$last_event = $history_events[0];
+		}
+		return $last_event;
+	}
+
+	public function add_wordpress_integration() {
+		new WP_Facebook_Integration();
 	}
 
 	/**
@@ -643,6 +667,30 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function get_product_sync_validator( WC_Product $product ) {
 		return new ProductSyncValidator( $this->get_integration(), $product );
+	}
+
+	/**
+	 * Gets the settings page URL.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param null $plugin_id unused
+	 * @return string
+	 */
+	public function get_settings_url( $plugin_id = null ) {
+
+		return admin_url( 'admin.php?page=wc-facebook' );
+	}
+
+	/**
+	 * Gets the advertise tab page URL.
+	 *
+	 * @since 2.6.29
+	 *
+	 * @return string
+	 */
+	public function get_advertise_tab_url() {
+		return admin_url( 'admin.php?page=wc-facebook&tab=advertise' );
 	}
 
 	/**

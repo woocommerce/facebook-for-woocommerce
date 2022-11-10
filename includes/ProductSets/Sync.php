@@ -70,6 +70,15 @@ class Sync {
 	protected static $prev_product_set = array();
 
 	/**
+	 * Product's Product Set Previous Name
+	 *
+	 * @since 2.6.30
+	 *
+	 * @var string
+	 */
+	protected static $prev_product_name = "";
+
+	/**
 	 * Product's Product Set New List
 	 *
 	 * @since 2.3.0
@@ -77,6 +86,15 @@ class Sync {
 	 * @var array
 	 */
 	protected static $new_product_set = array();
+
+	/**
+	 * Product's Product Set New Name
+	 *
+	 * @since 2.6.30
+	 *
+	 * @var string
+	 */
+	protected static $new_product_name = "";
 
 	/**
 	 * Categories field name
@@ -120,7 +138,7 @@ class Sync {
 		// product set hooks, compare taxonomies the lists before and after saving product to see if must sync
 		add_action( 'created_fb_product_set', array( $this, 'fb_product_set_hook_before' ), 1 );
 		add_action( 'created_fb_product_set', array( $this, 'fb_product_set_hook_after' ), 99 );
-		add_action( 'edited_fb_product_set', array( $this, 'fb_product_set_hook_before' ), 1 );
+		add_action( 'edit_fb_product_set', array( $this, 'fb_product_set_hook_before' ), 1 );
 		add_action( 'edited_fb_product_set', array( $this, 'fb_product_set_hook_after' ), 99 );
 
 		// product cat and product set delete hooks, remove or check if must remove any product set
@@ -238,6 +256,7 @@ class Sync {
 	 */
 	public function fb_product_set_hook_before( $term_id ) {
 		self::$prev_product_cat = get_term_meta( $term_id, $this->categories_field, true );
+		self::$prev_product_name = get_term( $term_id )->name;
 	}
 
 
@@ -250,7 +269,8 @@ class Sync {
 	 */
 	public function fb_product_set_hook_after( $term_id ) {
 		self::$new_product_cat = get_term_meta( $term_id, $this->categories_field, true );
-		if ( ! empty( $this->get_all_diff( 'product_cat' ) ) ) {
+		self::$new_product_name = get_term( $term_id )->name;
+		if ( ! empty( $this->get_all_diff( 'product_cat' ) ) || self::$prev_product_name !== self::$new_product_name ) {
 			$this->maybe_sync_product_set( $term_id );
 		}
 	}

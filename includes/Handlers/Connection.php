@@ -282,6 +282,8 @@ class Connection {
 				exit;
 			}
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful!', 'facebook-for-woocommerce' ) );
+			wp_safe_redirect( facebook_for_woocommerce()->get_advertise_tab_url() );
+			exit;
 		} catch ( ApiException $exception ) {
 			facebook_for_woocommerce()->log( sprintf( 'Connection failed: %s', $exception->getMessage() ) );
 			set_transient( 'wc_facebook_connection_failed', time(), 30 );

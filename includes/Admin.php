@@ -14,6 +14,7 @@ namespace WooCommerce\Facebook;
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
 use WooCommerce\Facebook\Framework\Helper;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -47,9 +48,7 @@ class Admin {
 	 */
 	public function __construct() {
 
-		$order_screen_id = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
-		? wc_get_page_screen_id( 'shop-order' )
-		: 'shop_order';
+		$order_screen_id = class_exists( OrderUtil::class ) ? OrderUtil::get_order_admin_screen() : 'shop_order';
 
 		$this->screen_ids = [
 			'product',

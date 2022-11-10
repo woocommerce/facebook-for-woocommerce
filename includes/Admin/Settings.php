@@ -108,7 +108,7 @@ class Settings {
 	/**
 	 * Checks for connection and if established adds Facebook Product Sets taxonomy page to the Marketing menu.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.29
 	 */
 	private function add_fb_product_sets_to_marketing_menu() {
 		$is_connected = facebook_for_woocommerce()->get_connection_handler()->is_connected();
@@ -132,7 +132,7 @@ class Settings {
 	/**
 	 * Set the parent and submenu file while accessing Facebook Product Sets in the marketing menu.
 	 *
-	 * @since x.x.x
+	 * @since 2.6.29
 	 * @param string $parent_file The parent file.
 	 * @return string
 	 */
