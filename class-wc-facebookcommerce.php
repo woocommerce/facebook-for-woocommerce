@@ -22,8 +22,6 @@ use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use WooCommerce\Facebook\Utilities\Heartbeat;
-use Automattic\WooCommerce\Admin\Notes\Note;
-use SkyVerge\WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 
 class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var string the plugin version */
@@ -486,42 +484,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		return $this->api;
 	}
 
-
-	/**
-	 * Gets the admin handler instance.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return WooCommerce\Facebook\Admin|null
-	 */
-	public function get_admin_handler() {
-		return $this->admin;
-	}
-
-
-	/**
-	 * Gets the AJAX handler instance.
-	 *
-	 * @sinxe 1.10.0
-	 *
-	 * @return WooCommerce\Facebook\AJAX|null
-	 */
-	public function get_ajax_handler() {
-		return $this->ajax;
-	}
-
-
-	/**
-	 * Gets the product feed handler.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return WooCommerce\Facebook\Products\Feed
-	 */
-	public function get_product_feed_handler() {
-		return $this->product_feed;
-	}
-
 	/**
 	 * Gets the category handler.
 	 *
@@ -554,18 +516,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function get_background_remove_duplicate_visibility_meta_instance() {
 		return $this->background_remove_duplicate_visibility_meta;
-	}
-
-
-	/**
-	 * Gets the products stock handler.
-	 *
-	 * @since 2.0.5
-	 *
-	 * @return WooCommerce\Facebook\Products\Stock
-	 */
-	public function get_products_stock_handler() {
-		return $this->products_stock_handler;
 	}
 
 
