@@ -14,6 +14,7 @@ use SkyVerge\WooCommerce\Facebook\Integrations\Bookings as BookingsIntegration;
 use SkyVerge\WooCommerce\Facebook\Lifecycle;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use SkyVerge\WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
+use SkyVerge\WooCommerce\Facebook\Utilities\WC_Facebook_Debug_Tools;
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 use SkyVerge\WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use SkyVerge\WooCommerce\Facebook\Utilities\Heartbeat;
@@ -104,6 +105,9 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 		/** @var Heartbeat */
 		public $heartbeat;
+
+		/** @var WC_Facebook_Debug_Tools */
+		private  $debug_tools;
 
 		/**
 		 * Constructs the plugin.
@@ -206,6 +210,10 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 				$this->job_manager = new \SkyVerge\WooCommerce\Facebook\Jobs\JobManager();
 				add_action( 'init', [ $this->job_manager, 'init' ] );
 
+				// Load debug tools if debug mode is enabled.
+				require_once __DIR__ . '/includes/Utilities/Debug_Tools.php';
+				$this->debug_tools    = new WC_Facebook_Debug_Tools();
+
 				// load admin handlers, before admin_init
 				if ( is_admin() ) {
 
@@ -220,6 +228,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 					require_once __DIR__ . '/includes/Admin/Enhanced_Catalog_Attribute_Fields.php';
 
 					$this->admin_settings = new \SkyVerge\WooCommerce\Facebook\Admin\Settings();
+
 				}
 			}
 		}
@@ -1016,7 +1025,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
 
 			return admin_url( 'admin.php?page=wc-facebook' );
 		}
-		
+
 		/**
          * Gets the advertise tab page URL.
          *
@@ -1025,7 +1034,7 @@ if ( ! class_exists( 'WC_Facebookcommerce' ) ) :
          * @return string
          */
         public function get_advertise_tab_url() {
-			
+
 			return admin_url( 'admin.php?page=wc-facebook&tab=advertise' );
         }
 

@@ -387,7 +387,7 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 */
-	private function disconnect() {
+	public function disconnect() {
 
 		$this->update_access_token( '' );
 		$this->update_merchant_access_token( '' );
