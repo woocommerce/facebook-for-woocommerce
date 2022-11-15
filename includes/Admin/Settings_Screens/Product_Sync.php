@@ -46,6 +46,8 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		add_action( 'woocommerce_admin_field_product_sync_title', array( $this, 'render_title' ) );
+		add_action( 'woocommerce_admin_field_facebook_for_woocommerce_status_item', array( $this, 'render_status_item' ) );
+
 
 		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', array( $this, 'render_google_product_category_field' ) );
 	}
@@ -196,6 +198,76 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		<?php
 	}
 
+	/**
+	 * Renders a custom status / info text item.
+	 *
+	 * @internal
+	 *
+	 * @since x.x.x
+	 *
+	 * @param array $field field data TBD list all required and available fields
+	 */
+	public function render_status_item( $field ) {
+		$label     = array_key_exists('label', $field ) ? $field['label'] : '';
+		$text      = array_key_exists('text', $field ) ? $field['text'] : '';
+		$help_tip  = array_key_exists('help_tip', $field ) ? $field['help_tip'] : '';
+		$status    = array_key_exists('status', $field ) ? $field['status'] : '';
+		$info_text = array_key_exists('info_text', $field ) ? $field['info_text'] : '';
+
+		$link_label       = array_key_exists('link_label', $field ) ? $field['link_label'] : '';
+		$link_url         = array_key_exists('link_url', $field ) ? $field['link_url'] : '';
+		$link_is_external = array_key_exists('link_is_external', $field ) ? $field['link_is_external'] : false;
+
+		$clipboard_label   = array_key_exists('clipboard_label', $field ) ? $field['clipboard_label'] : '';
+		$clipboard_content = array_key_exists('clipboard_content', $field ) ? $field['clipboard_content'] : '';
+
+		$status_color = '';
+		$status_icon = '';
+		if ( $status === 'success' ) {
+			$status_icon = '<span class="dashicons dashicons-yes-alt"></span>';
+			$status_color = 'green';
+		} else if ( $status === 'warning' ) {
+			$status_icon = '<span class="dashicons dashicons-warning"></span>';
+			$status_color = 'orange';
+		} else if ( $status === 'error' ) {
+			$status_icon = '<span class="dashicons dashicons-dismiss"></span>';
+			$status_color = 'red';
+		}
+
+		?>
+			<tr class='facebook-for-woocommerce-status-item'>
+				<th scope="row" class="titledesc">
+					<label for=""><?php esc_html_e( $label ) ?>
+						<?php if ( ! empty( $help_tip ) ) : ?>
+					 		<span class="woocommerce-help-tip" data-tip="<?php esc_attr_e( $help_tip ) ?>"></span>
+						<?php endif; ?>
+					 </label>
+				</th>
+				<td class="">
+					<span class="facebook-for-woocommerce-feed-text" style="font-weight: 600; color: <?php esc_attr_e( $status_color ) ?>">
+						<?php echo $status_icon ?>
+						<?php echo esc_html( $text ) ?>
+					</span>
+					<?php if ( ! empty( $link_label ) && ! empty( $link_url ) ) : ?>
+				 		 • <a class=""
+				 			href="<?php esc_attr_e( $link_url ) ?>" style="font-size: smaller;">
+				 			    <?php esc_html_e( $link_label ) ?></a>
+			 				<?php if ( $link_is_external ) {
+			 					echo '<span style="color: #2271b1" class="dashicons dashicons-external"></span>';
+			 				} ?>
+					<?php endif; ?>
+					<?php if ( ! empty( $info_text ) ) : ?>
+				 		<span class="facebook-for-woocommerce-feed-info-text" style="font-size: smaller;"> • <?php esc_html_e( $info_text ) ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $clipboard_label ) && ! empty( $clipboard_content ) ) : ?>
+				 		 • <a class="facebook-for-woocommerce-copy-to-clipboard"
+				 			data-clipboard-text="<?php esc_attr_e( $clipboard_content ) ?>" style="font-size: smaller;"><?php esc_html_e( $clipboard_label ) ?></a>
+					<?php endif; ?>
+				</td>
+			</tr>
+		<?php
+	}
+
 
 	/**
 	 * Saves the Product Sync settings.
@@ -246,6 +318,62 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 		);
 	}
 
+	/**
+	 * Define settings UI for product feed (data source) sync.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return array
+	 */
+	public function get_product_feed_settings() {
+		return array(
+			array(
+				'type'  => 'title',
+				'title' => __( 'Product feed', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'             => 'facebook_for_woocommerce_status_item',
+				'label'            => __( 'Facebook data source', 'facebook-for-woocommerce' ),
+				'status'           => 'success',
+				'help_tip'         => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'text'             => __( 'Data source configured', 'facebook-for-woocommerce' ),
+				'link_label'       => __( 'ID 987458740587', 'facebook-for-woocommerce' ),
+				'link_url'         => __( 'http://business.facebook.com/myshop?feed=987458740587', 'facebook-for-woocommerce' ),
+				'link_is_external' => true,
+			),
+			array(
+				'type'              => 'facebook_for_woocommerce_status_item',
+				'label'             => __( 'Feed file', 'facebook-for-woocommerce' ),
+				'help_tip'          => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'status'            => 'success',
+				'clipboard_label'   => __( 'Copy feed URL', 'facebook-for-woocommerce' ),
+				'clipboard_content' => __( 'http://arealfeedurl.com/feed?secret=1235', 'facebook-for-woocommerce' ),
+				'text'              => __( 'CSV file generated', 'facebook-for-woocommerce' ),
+				'info_text'         => __( 'Completed 9 June 2021 3:12 am, containing 125 items', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'      => 'facebook_for_woocommerce_status_item',
+				'label'     => __( 'Sync with Facebook', 'facebook-for-woocommerce' ),
+				'status'    => 'success',
+				'help_tip'  => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'text'      => __( 'Sync successful', 'facebook-for-woocommerce' ),
+				'info_text' => __( 'Last sync 9 June 2021 4:41 am, 125 products persisted', 'facebook-for-woocommerce' ),
+			),
+			array(
+				'type'              => 'facebook_for_woocommerce_status_item',
+				'label'             => __( 'label', 'facebook-for-woocommerce' ),
+				'help_tip'          => __( 'docs / help', 'facebook-for-woocommerce' ),
+				'status'            => 'success',
+				'link_label'        => __( 'link', 'facebook-for-woocommerce' ),
+				'link_url'          => __( 'http://business.facebook.com/myshop?feed=987458740587', 'facebook-for-woocommerce' ),
+				'text'              => __( 'text', 'facebook-for-woocommerce' ),
+				'info_text'         => __( 'info_text', 'facebook-for-woocommerce' ),
+				'clipboard_label'   => __( 'clipboard_label', 'facebook-for-woocommerce' ),
+				'clipboard_content' => __( 'http://arealfeedurl.com/feed?secret=1235', 'facebook-for-woocommerce' ),
+			),
+			array( 'type' => 'sectionend' ),
+		);
+	}
 
 	/**
 	 * Gets the screen settings.
@@ -277,7 +405,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 
 		$product_tags = $term_query->get_terms();
 
-		return array(
+		$sync_settings = array(
 
 			array(
 				'type'  => 'product_sync_title',
@@ -340,6 +468,12 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			),
 			array( 'type' => 'sectionend' ),
 
+
+		);
+
+		return array_merge(
+			$sync_settings,
+			$this->get_product_feed_settings(),
 		);
 	}
 
