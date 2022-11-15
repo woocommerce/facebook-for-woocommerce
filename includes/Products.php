@@ -1120,7 +1120,7 @@ class Products {
 		if ( self::get_enhanced_catalog_attribute( $attribute_key, $product ) === $value ) {
 			return;
 		}
-		$product->update_meta_data( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key, $value );
+		$product->update_meta_data( self::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key, wp_unslash( $value ) );
 		$product->save_meta_data();
 	}
 

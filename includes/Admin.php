@@ -12,6 +12,7 @@
 namespace SkyVerge\WooCommerce\Facebook;
 
 use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -46,13 +47,15 @@ class Admin {
 	 */
 	public function __construct() {
 
+		$order_screen_id = class_exists( OrderUtil::class ) ? OrderUtil::get_order_admin_screen() : 'shop_order';
+
 		$this->screen_ids = [
 			'product',
 			'edit-product',
 			'woocommerce_page_wc-facebook',
 			'marketing_page_wc-facebook',
 			'edit-product_cat',
-			'shop_order',
+			$order_screen_id,
 		];
 
 		// enqueue admin scripts
@@ -205,7 +208,7 @@ class Admin {
 					array(
 
 						'excluded_category_ids'             => facebook_for_woocommerce()->get_integration()->get_excluded_product_category_ids(),
-						'excluded_category_warning_message' => __( 'You have selected one or more categories currently excluded from the Facebook sync. Products belonging to the excluded categories will not be added to your FB product set.', 'facebook-for-woocommerce' ),
+						'excluded_category_warning_message' => __( 'You have selected one or more categories currently excluded from the Facebook sync. Products belonging to the excluded categories will not be added to your Facebook Product Set.', 'facebook-for-woocommerce' ),
 					)
 				);
 			}
