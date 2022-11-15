@@ -83,6 +83,11 @@ if ( ! class_exists( 'WC_Facebook_Product' ) ) :
 				$this->gallery_urls        = $parent_product->get_gallery_urls();
 				$this->fb_use_parent_image = $parent_product->get_use_parent_image();
 				$this->main_description    = $parent_product->get_fb_description();
+				
+				// Make descriptions translate properly with WP Mulilang plugin
+				if(function_exists('wpm')){
+					$this->main_description = strip_tags( apply_filters('the_content', $parent_product->get_fb_description()) );
+				}
 			}
 		}
 
