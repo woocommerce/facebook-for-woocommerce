@@ -34,29 +34,34 @@ class WC_Facebook_Debug_Tools {
 	 */
 	public function add_debug_tool( $tools ) {
 
+		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected()
+			&& ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+			return $tools;
+		}
+
 		$tools['wc_facebook_settings_reset'] = array(
-			'name'     => __( 'Reset Facebook for WooCommerce settings', 'facebook-for-woocommerce' ),
+			'name'     => __( 'Facebook: Reset connection settings', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Reset settings', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will clear your Facebook settings to reset them, allowing you to rebuild your connection.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'clear_facebook_settings' ),
 		);
 
 		$tools['wc_facebook_delete_background_jobs'] = array(
-			'name'     => __( 'Delete Background Sync Jobs', 'facebook-for-woocommerce' ),
+			'name'     => __( 'Facebook: Delete Background Sync Jobs', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Clear', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will clear your clear background sync jobs from the options table.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'clean_up_old_background_sync_options' ),
 		);
 
 		$tools['reset_all_product_fb_settings'] = array(
-			'name'     => __( 'Reset all products Facebook settings', 'facebook-for-woocommerce' ),
+			'name'     => __( 'Facebook: Reset all products', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Reset products Facebook settings', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will reset Facebook settings for all product on your WooCommerce store.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'reset_all_product_fb_settings' ),
 		);
 
 		$tools['wc_facebook_delete_all_products'] = array(
-			'name'     => __( 'Delete all products from your Facebook Catalog', 'facebook-for-woocommerce' ),
+			'name'     => __( 'Facebook: Delete all products from your Facebook Catalog', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Delete all products', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will delete all products from  your Facebook Catalog.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'delete_all_products' ),
