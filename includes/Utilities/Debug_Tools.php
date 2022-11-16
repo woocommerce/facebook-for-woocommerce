@@ -20,7 +20,6 @@ class WC_Facebook_Debug_Tools {
 	public function __construct() {
 		if ( is_admin() && ! is_ajax() ) {
 			add_filter( 'woocommerce_debug_tools', array( $this, 'add_debug_tool' ) );
-			add_action( 'wc_facebook_delete_products_action_job', array( $this, 'cleanup_fb_catalog' ), 10, 2 );
 		}
 	}
 
@@ -48,7 +47,7 @@ class WC_Facebook_Debug_Tools {
 
 		$tools['wc_facebook_delete_background_jobs'] = array(
 			'name'     => __( 'Facebook: Delete Background Sync Jobs', 'facebook-for-woocommerce' ),
-			'button'   => __( 'Clear', 'facebook-for-woocommerce' ),
+			'button'   => __( 'Clear Background Sync Jobs', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will clear your clear background sync jobs from the options table.', 'facebook-for-woocommerce' ),
 			'callback' => array( $this, 'clean_up_old_background_sync_options' ),
 		);
@@ -80,7 +79,7 @@ class WC_Facebook_Debug_Tools {
 	public function clean_up_old_background_sync_options() {
 		global $wpdb;
 
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'wc_facebook_background_product_sync_job_%'" );
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wc_facebook_background_product_sync%'" );
 
 		return __( 'Background sync jobs have been deleted.', 'facebook-for-woocommerce' );
 
