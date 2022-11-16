@@ -23,14 +23,14 @@ class DeleteProductsFromFBCatalog extends AbstractChainedJob {
 	 * Called before starting the job.
 	 */
 	protected function handle_start() {
-		$this->log( 'Starting job to reset all product FB data.' );
+		$this->log( 'Starting job to delete all product FB data.' );
 	}
 
 	/**
 	 * Called after the finishing the job.
 	 */
 	protected function handle_end() {
-		$this->log( 'Finished job to reset all product FB data.' );
+		$this->log( 'Finished job to delete all product FB data.' );
 	}
 
 	/**
@@ -73,7 +73,13 @@ class DeleteProductsFromFBCatalog extends AbstractChainedJob {
 	protected function process_items( array $items, array $args ) {
 		$integration = facebook_for_woocommerce()->get_integration();
 		foreach ( $items as $product_id ) {
-			$integration->delete_product_item( $product_id );
+			$product = wc_get_product( $product_id );
+			// check if variable product
+			if ( $product->is_type( 'variable' ) ) {
+				$integration->delete_product_group( $product_id );
+			} else {
+				$integration->delete_product_item( $product_id );
+			}
 		}
 	}
 
