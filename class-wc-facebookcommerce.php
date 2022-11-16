@@ -21,8 +21,8 @@ use WooCommerce\Facebook\Lifecycle;
 use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
 use WooCommerce\Facebook\Utilities\Background_Handle_Virtual_Products_Variations;
 use WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
+use WooCommerce\Facebook\Utilities\DebugTools;
 use WooCommerce\Facebook\Utilities\Heartbeat;
-use WooCommerce\Facebook\Utilities\WC_Facebook_Debug_Tools;
 
 class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var string the plugin version */
@@ -100,7 +100,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WooCommerce\Facebook\Utilities\Heartbeat */
 	public $heartbeat;
 
-	/** @var WooCommerce\Facebook\Utilities\WC_Facebook_Debug_Tools */
+	/** @var WooCommerce\Facebook\Utilities\DebugTools */
 	private  $debug_tools;
 
 	/**
@@ -187,8 +187,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			add_action( 'init', [ $this->job_manager, 'init' ] );
 
 			// Load debug tools if debug mode is enabled.
-			require_once __DIR__ . '/includes/Utilities/Debug_Tools.php';
-			$this->debug_tools    = new WC_Facebook_Debug_Tools();
+			require_once __DIR__ . '/includes/Utilities/DebugTools.php';
+			$this->debug_tools    = new DebugTools();
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {

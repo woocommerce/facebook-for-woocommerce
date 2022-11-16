@@ -7,7 +7,7 @@ namespace WooCommerce\Facebook\Utilities;
  *
  * @since x.x.x
  */
-class WC_Facebook_Debug_Tools {
+class DebugTools {
 
 	/**
 	 * Initialize the class.
@@ -16,7 +16,7 @@ class WC_Facebook_Debug_Tools {
 	 */
 	public function __construct() {
 		if ( is_admin() && ! is_ajax() ) {
-			add_filter( 'woocommerce_debug_tools', array( $this, 'add_debug_tool' ) );
+			add_filter( 'woocommerce_debug_tools', [ $this, 'add_debug_tool' ] );
 		}
 	}
 
@@ -29,39 +29,38 @@ class WC_Facebook_Debug_Tools {
 	 * @return array
 	 */
 	public function add_debug_tool( $tools ) {
-
 		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected()
 			|| ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
 			return $tools;
 		}
 
-		$tools['wc_facebook_settings_reset'] = array(
+		$tools['wc_facebook_settings_reset'] = [
 			'name'     => __( 'Facebook: Reset connection settings', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Reset settings', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will clear your Facebook settings to reset them, allowing you to rebuild your connection.', 'facebook-for-woocommerce' ),
-			'callback' => array( $this, 'clear_facebook_settings' ),
-		);
+			'callback' => [ $this, 'clear_facebook_settings' ],
+		];
 
-		$tools['wc_facebook_delete_background_jobs'] = array(
+		$tools['wc_facebook_delete_background_jobs'] = [
 			'name'     => __( 'Facebook: Delete Background Sync Jobs', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Clear Background Sync Jobs', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will clear your clear background sync jobs from the options table.', 'facebook-for-woocommerce' ),
-			'callback' => array( $this, 'clean_up_old_background_sync_options' ),
-		);
+			'callback' => [ $this, 'clean_up_old_background_sync_options' ],
+		];
 
-		$tools['reset_all_product_fb_settings'] = array(
+		$tools['reset_all_product_fb_settings'] = [
 			'name'     => __( 'Facebook: Reset all products', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Reset products Facebook settings', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will reset Facebook settings for all product on your WooCommerce store.', 'facebook-for-woocommerce' ),
-			'callback' => array( $this, 'reset_all_product_fb_settings' ),
-		);
+			'callback' => [ $this, 'reset_all_product_fb_settings' ],
+		];
 
-		$tools['wc_facebook_delete_all_products'] = array(
+		$tools['wc_facebook_delete_all_products'] = [
 			'name'     => __( 'Facebook: Delete all products from your Facebook Catalog', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Delete all products', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will delete all products from  your Facebook Catalog.', 'facebook-for-woocommerce' ),
-			'callback' => array( $this, 'delete_all_products' ),
-		);
+			'callback' => [ $this, 'delete_all_products' ],
+		];
 
 		return $tools;
 	}
@@ -90,7 +89,6 @@ class WC_Facebook_Debug_Tools {
 	 * @return string
 	 */
 	public function clear_facebook_settings() {
-
 		// Disconnect FB.
 		facebook_for_woocommerce()->get_connection_handler()->disconnect();
 
