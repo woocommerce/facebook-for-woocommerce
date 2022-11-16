@@ -22,7 +22,7 @@ class GenerateCategories {
 		// File content START.
 		$export_string =
 		'<?php' . PHP_EOL .
-		'namespace SkyVerge\WooCommerce\Facebook\Products;' . PHP_EOL .
+		'namespace WooCommerce\Facebook\Products;' . PHP_EOL .
 		'// This file was generated using GenerateCategories.php, do not modify it manually' . PHP_EOL .
 		'// php GenerateCategories.php taxonomy-with-ids.en-US.txt' . PHP_EOL .
 		'class GoogleProductTaxonomy {' . PHP_EOL .

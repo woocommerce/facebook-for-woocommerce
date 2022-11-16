@@ -1,9 +1,6 @@
 <?php
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
-
-use Automattic\WooCommerce\ActionSchedulerJobFramework\Proxies\ActionScheduler;
-use SkyVerge\WooCommerce\Facebook\Jobs\ResetAllProductsFBSettings;
+namespace WooCommerce\Facebook\Utilities;
 
 /**
  * Class WC_Facebook_Debug_Tools

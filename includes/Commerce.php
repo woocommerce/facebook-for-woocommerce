@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -35,9 +35,6 @@ class Commerce {
 	 * @since 2.1.0
 	 */
 	public function __construct() {
-
-		require_once __DIR__ . '/Commerce/Orders.php';
-
 		$this->orders = new Commerce\Orders();
 	}
 
@@ -134,7 +131,7 @@ class Commerce {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @return \SkyVerge\WooCommerce\Facebook\Commerce\Orders
+	 * @return \WooCommerce\Facebook\Commerce\Orders
 	 */
 	public function get_orders_handler() {
 

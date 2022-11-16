@@ -9,12 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
+namespace WooCommerce\Facebook\Utilities;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
-
+use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
 
 /**
  * Background job handler to remove duplicate fb_visibility entries from the postmeta table.
@@ -23,7 +22,7 @@ use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
  *
  * @since 2.0.3
  */
-class Background_Remove_Duplicate_Visibility_Meta extends Framework\SV_WP_Background_Job_Handler {
+class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 
 
 	/**

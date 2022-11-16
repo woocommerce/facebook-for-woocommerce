@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Products as Products_Handler;
+use WooCommerce\Facebook\Products as Products_Handler;
 
 /**
  * Enhanced Catalog attribute fields.
@@ -132,7 +132,7 @@ class Enhanced_Catalog_Attribute_Fields {
 		if ( ! is_null( $this->product ) ) {
 			$value = Products_Handler::get_enhanced_catalog_attribute( $attribute_key, $this->product );
 		} elseif ( ! is_null( $this->term ) ) {
-			$meta_key = \SkyVerge\WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key;
+			$meta_key = \WooCommerce\Facebook\Products::ENHANCED_CATALOG_ATTRIBUTES_META_KEY_PREFIX . $attribute_key;
 			$value    = get_term_meta( $this->term->term_id, $meta_key, true );
 		}
 

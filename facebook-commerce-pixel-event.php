@@ -9,12 +9,9 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Events\Event;
 
-if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
-
-
-	class WC_Facebookcommerce_Pixel {
+class WC_Facebookcommerce_Pixel {
 
 
 		const SETTINGS_KEY     = 'facebook_config';
@@ -42,7 +39,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @var array Cache array.
 		 */
-		public static $render_cache = array();
+		public static $render_cache = [];
 
 		/**
 		 * User information.
@@ -63,8 +60,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 *
 		 * @param array $user_info User information array.
 		 */
-		public function __construct( $user_info = array() ) {
-
+		public function __construct( $user_info = [] ) {
 			$this->user_info  = $user_info;
 			$this->last_event = '';
 		}
@@ -162,7 +158,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 				<?php echo $this->get_pixel_init_code(); ?>
 
-				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( array(), 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
+				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
 					jQuery && jQuery( function( $ ) {
@@ -225,24 +221,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		public function is_last_event( $event_name ) {
 
 			return $event_name === $this->last_event;
-		}
-
-
-		/**
-		 * Determines if the last event in the current thread matches a given event.
-		 *
-		 * TODO remove this deprecated method by March 2020 or version 2.0.0 {FN 2020-03-25}.
-		 *
-		 * @deprecated since 1.11.0
-		 *
-		 * @param string $event_name Name of the event.
-		 * @return bool
-		 */
-		public function check_last_event( $event_name ) {
-
-			wc_deprecated_function( __METHOD__, '1.11.0', __CLASS__ . '::has_last_event()' );
-
-			return $this->is_last_event( $event_name );
 		}
 
 
@@ -495,7 +473,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 		 * @param string $event  The event name the params are for.
 		 * @return array
 		 */
-		private static function build_params( $params = array(), $event = '' ) {
+		private static function build_params( $params = [], $event = '' ) {
 
 			$params = array_replace( Event::get_version_info(), $params );
 
@@ -692,20 +670,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 
 
 		/**
-		 * Gets Facebook Pixel base code.
-		 *
-		 * @deprecated since 1.10.2
-		 *
-		 * @return string
-		 */
-		public static function get_basecode() {
-
-			wc_deprecated_function( __METHOD__, '1.10.2' );
-
-			return '';
-		}
-
-		/**
 		 * Gets the logged in user info
 		 *
 		 * @return string[]
@@ -714,5 +678,3 @@ if ( ! class_exists( 'WC_Facebookcommerce_Pixel' ) ) :
 			return $this->user_info;
 		}
 	}
-
-endif;

@@ -9,20 +9,20 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens;
+namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\Admin;
-use SkyVerge\WooCommerce\Facebook\Products;
-use SkyVerge\WooCommerce\Facebook\Products\Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0\SV_WC_Helper;
+use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
+use WooCommerce\Facebook\Admin\Google_Product_Category_Field;
+use WooCommerce\Facebook\Commerce;
+use WooCommerce\Facebook\Products;
+use WooCommerce\Facebook\Products\Sync;
 
 /**
  * The Messenger settings screen object.
  */
-class Product_Sync extends Admin\Abstract_Settings_Screen {
-
+class Product_Sync extends Abstract_Settings_Screen {
 
 	/** @var string screen ID */
 	const ID = 'product_sync';
@@ -38,15 +38,11 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * Connection constructor.
 	 */
 	public function __construct() {
-
 		$this->id    = self::ID;
 		$this->label = __( 'Product sync', 'facebook-for-woocommerce' );
 		$this->title = __( 'Product sync', 'facebook-for-woocommerce' );
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-
 		add_action( 'woocommerce_admin_field_product_sync_title', array( $this, 'render_title' ) );
-
 		add_action( 'woocommerce_admin_field_product_sync_google_product_categories', array( $this, 'render_google_product_category_field' ) );
 	}
 
@@ -59,11 +55,9 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @since 2.0.0
 	 */
 	public function enqueue_assets() {
-
 		if ( ! $this->is_current_screen_page() ) {
 			return;
 		}
-
 		wp_enqueue_script( 'wc-backbone-modal', null, array( 'backbone' ) );
 		wp_enqueue_script(
 			'facebook-for-woocommerce-modal',
@@ -117,7 +111,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @return string
 	 */
 	private function get_default_google_product_category_modal_message() {
-
 		return wp_kses_post( __( 'Products and categories that inherit this global setting (i.e. they do not have a specific Google product category set) will use the new default immediately. Are you sure you want to proceed?', 'facebook-for-woocommerce' ) );
 	}
 
@@ -130,7 +123,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @return string
 	 */
 	private function get_default_google_product_category_modal_message_empty() {
-
 		return sprintf(
 			/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
 			esc_html__( 'Products and categories that inherit this global setting (they do not have a specific Google product category set) will use the new default immediately.  %1$sIf you have cleared the Google Product Category%2$s, items inheriting the default will not be available for Instagram checkout. Are you sure you want to proceed?', 'facebook-for-woocommerce' ),
@@ -148,9 +140,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @return string
 	 */
 	private function get_default_google_product_category_modal_buttons() {
-
 		ob_start();
-
 		?>
 		<button
 			class="button button-large"
@@ -203,18 +193,13 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @since 2.0.0
 	 */
 	public function save() {
-
 		$integration = facebook_for_woocommerce()->get_integration();
-
 		$previous_product_cat_ids = $integration->get_excluded_product_category_ids();
 		$previous_product_tag_ids = $integration->get_excluded_product_tag_ids();
-
 		parent::save();
-
 		// when settings are saved, if there are new excluded categories/terms we should exclude corresponding products from sync
 		$new_product_cat_ids = array_diff( $integration->get_excluded_product_category_ids(), $previous_product_cat_ids );
 		$new_product_tag_ids = array_diff( $integration->get_excluded_product_tag_ids(), $previous_product_tag_ids );
-
 		$this->disable_sync_for_excluded_products( $new_product_cat_ids, $new_product_tag_ids );
 	}
 
@@ -228,7 +213,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @param array $product_tag_ids IDs of excluded tags
 	 */
 	private function disable_sync_for_excluded_products( $product_cat_ids, $product_tag_ids ) {
-
 		// disable sync for all products belonging to excluded categories
 		Products::disable_sync_for_products_with_terms(
 			array(
@@ -236,7 +220,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'include'  => $product_cat_ids,
 			)
 		);
-
 		// disable sync for all products belonging to excluded tags
 		Products::disable_sync_for_products_with_terms(
 			array(
@@ -255,7 +238,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @return array
 	 */
 	public function get_settings() {
-
 		$term_query = new \WP_Term_Query(
 			array(
 				'taxonomy'   => 'product_cat',
@@ -263,9 +245,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'fields'     => 'id=>name',
 			)
 		);
-
 		$product_categories = $term_query->get_terms();
-
 		$term_query = new \WP_Term_Query(
 			array(
 				'taxonomy'     => 'product_tag',
@@ -274,16 +254,12 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				'fields'       => 'id=>name',
 			)
 		);
-
 		$product_tags = $term_query->get_terms();
-
 		return array(
-
 			array(
 				'type'  => 'product_sync_title',
 				'title' => __( 'Product sync', 'facebook-for-woocommerce' ),
 			),
-
 			array(
 				'id'      => \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC,
 				'title'   => __( 'Enable product sync', 'facebook-for-woocommerce' ),
@@ -333,7 +309,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 				),
 			),
 			array(
-				'id'       => \SkyVerge\WooCommerce\Facebook\Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
+				'id'       => Commerce::OPTION_GOOGLE_PRODUCT_CATEGORY_ID,
 				'type'     => 'product_sync_google_product_categories',
 				'title'    => __( 'Default Google product category', 'facebook-for-woocommerce' ),
 				'desc_tip' => __( 'Choose a default Google product category for your products. Defaults can also be set for product categories. Products need at least two category levels defined for tax to be correctly applied.', 'facebook-for-woocommerce' ),
@@ -353,9 +329,7 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @param array $field field data
 	 */
 	public function render_google_product_category_field( $field ) {
-
-		$category_field = new Admin\Google_Product_Category_Field();
-
+		$category_field = new Google_Product_Category_Field();
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
@@ -379,7 +353,6 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 	 * @return string
 	 */
 	public function get_disconnected_message() {
-
 		return sprintf(
 			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
 			__( 'Please %1$sconnect to Facebook%2$s to enable and manage product sync.', 'facebook-for-woocommerce' ),
@@ -387,6 +360,4 @@ class Product_Sync extends Admin\Abstract_Settings_Screen {
 			'</a>'
 		);
 	}
-
-
 }

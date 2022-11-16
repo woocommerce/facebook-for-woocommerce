@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Events;
+namespace WooCommerce\Facebook\Events;
 
 use InvalidArgumentException;
 

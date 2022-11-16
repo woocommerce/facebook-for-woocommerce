@@ -1,5 +1,6 @@
 <?php
-namespace SkyVerge\WooCommerce\Facebook\Products;
+// phpcs:ignoreFile
+namespace WooCommerce\Facebook\Products;
 // This file was generated using GenerateCategories.php, do not modify it manually
 // php GenerateCategories.php taxonomy-with-ids.en-US.txt
 class GoogleProductTaxonomy {

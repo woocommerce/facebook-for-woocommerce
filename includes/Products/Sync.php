@@ -9,11 +9,9 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) or exit;
-
-use SkyVerge\WooCommerce\Facebook\Products;
 
 /**
  * The product sync handler.
@@ -93,7 +91,6 @@ class Sync {
 	 * @param int[] $product_ids
 	 */
 	public function create_or_update_products( array $product_ids ) {
-
 		foreach ( $product_ids as $product_id ) {
 			$this->requests[ $this->get_product_index( $product_id ) ] = self::ACTION_UPDATE;
 		}
