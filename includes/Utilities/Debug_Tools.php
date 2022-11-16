@@ -35,7 +35,7 @@ class WC_Facebook_Debug_Tools {
 	public function add_debug_tool( $tools ) {
 
 		if ( ! facebook_for_woocommerce()->get_connection_handler()->is_connected()
-			&& ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
+			|| ! facebook_for_woocommerce()->get_integration()->is_debug_mode_enabled() ) {
 			return $tools;
 		}
 
