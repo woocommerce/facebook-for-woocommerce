@@ -192,7 +192,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			// Instantiate the debug tools.
 			require_once __DIR__ . '/includes/Utilities/DebugTools.php';
-			$this->debug_tools    = new DebugTools();
+			$this->debug_tools = new DebugTools();
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {
