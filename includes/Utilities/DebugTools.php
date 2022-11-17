@@ -3,7 +3,7 @@
 namespace WooCommerce\Facebook\Utilities;
 
 /**
- * Class WC_Facebook_Debug_Tools
+ * Class DebugTools
  *
  * @since x.x.x
  */
