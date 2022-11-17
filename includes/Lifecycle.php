@@ -9,9 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+namespace WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -22,7 +20,7 @@ defined( 'ABSPATH' ) or exit;
  *
  * @method \WC_Facebookcommerce get_plugin()
  */
-class Lifecycle extends Framework\Plugin\Lifecycle {
+class Lifecycle extends Framework\Lifecycle {
 
 
 	/**
@@ -30,12 +28,10 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 *
 	 * @since 1.10.0
 	 *
-	 * @param Framework\SV_WC_Plugin $plugin
+	 * @param Framework\Plugin $plugin
 	 */
-	public function __construct( $plugin ) {
-
+	public function __construct( Framework\Plugin $plugin ) {
 		parent::__construct( $plugin );
-
 		$this->upgrade_versions = array(
 			'1.10.0',
 			'1.10.1',
@@ -55,13 +51,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.0
 	 */
 	protected function install() {
-
 		/**
 		 * Versions prior to 1.10.0 did not set a version option, so the upgrade method needs to be called manually.
 		 * We do this by checking first if an old option exists, but a new one doesn't.
 		 */
 		if ( get_option( 'woocommerce_facebookcommerce_settings' ) && ! get_option( 'wc_facebook_page_access_token' ) ) {
-
 			$this->upgrade( '1.9.15' );
 		}
 	}
@@ -73,7 +67,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.0
 	 */
 	protected function upgrade_to_1_10_0() {
-
 		$this->migrate_1_9_settings();
 	}
 
@@ -87,14 +80,11 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.1
 	 */
 	private function migrate_1_9_settings() {
-
 		$values = get_option( 'woocommerce_facebookcommerce_settings', array() );
-
 		// preserve legacy values
 		if ( false === get_option( 'woocommerce_facebookcommerce_legacy_settings' ) ) {
 			update_option( 'woocommerce_facebookcommerce_legacy_settings', $values );
 		}
-
 		// migrate options from woocommerce_facebookcommerce_settings
 		$options = array(
 			'fb_api_key'                       => \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN,
@@ -106,23 +96,17 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		);
 
 		foreach ( $options as $old_index => $new_option_name ) {
-
 			if ( isset( $values[ $old_index ] ) && false === get_option( $new_option_name ) ) {
-
 				$new_value = $values[ $old_index ];
-
 				if ( 'pixel_install_time' === $old_index ) {
-
 					// convert to UTC timestamp
 					try {
 						$pixel_install_time = \DateTime::createFromFormat( 'Y-m-d G:i:s', $new_value, new \DateTimeZone( wc_timezone_string() ) );
 					} catch ( \Exception $e ) {
 						$pixel_install_time = false;
 					}
-
 					$new_value = $pixel_install_time instanceof \DateTime ? $pixel_install_time->getTimestamp() : null;
 				}
-
 				update_option( $new_option_name, $new_value );
 			}
 		}
@@ -141,7 +125,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		);
 
 		foreach ( $settings as $old_index => $new_index ) {
-
 			if ( isset( $values[ $old_index ] ) && ! isset( $new_settings[ $new_index ] ) ) {
 				$new_settings[ $new_index ] = $values[ $old_index ];
 			}
@@ -149,9 +132,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// migrate settings from standalone options
 		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] ) ) {
-
 			$product_sync_enabled = empty( get_option( 'fb_disable_sync_on_dev_environment', 0 ) );
-
 			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_ENABLE_PRODUCT_SYNC ] = $product_sync_enabled ? 'yes' : 'no';
 		}
 
@@ -160,18 +141,13 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		if ( ! isset( $new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] ) ) {
-
 			$autosync_time = get_option( 'woocommerce_fb_autosync_time' );
 			$parsed_time   = ! empty( $autosync_time ) ? strtotime( $autosync_time ) : false;
 			$resync_offset = null;
-
 			if ( false !== $parsed_time ) {
-
 				$midnight = ( new \DateTime() )->setTimestamp( $parsed_time )->setTime( 0, 0, 0 );
-
 				$resync_offset = $parsed_time - $midnight->getTimestamp();
 			}
-
 			$new_settings[ \WC_Facebookcommerce_Integration::SETTING_SCHEDULED_RESYNC_OFFSET ] = $resync_offset;
 		}
 
@@ -183,9 +159,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		}
 
 		update_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', $new_settings );
-
 	}
-
 
 	/**
 	 * Upgrades to version 1.10.1.
@@ -193,7 +167,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.10.1
 	 */
 	protected function upgrade_to_1_10_1() {
-
 		$this->migrate_1_9_settings();
 	}
 
@@ -204,9 +177,7 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 1.11.0
 	 */
 	protected function upgrade_to_1_11_0() {
-
 		$settings = get_option( 'woocommerce_' . \WC_Facebookcommerce::INTEGRATION_ID . '_settings', array() );
-
 		// moves the upload ID to a standalone option
 		if ( ! empty( $settings['fb_upload_id'] ) ) {
 			$this->get_plugin()->get_integration()->update_upload_id( $settings['fb_upload_id'] );
@@ -220,21 +191,15 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 2.0.0
 	 */
 	protected function upgrade_to_2_0_0() {
-
 		// handle sync enabled and visible virtual products and variations
 		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
-
 			// create_job() expects an non-empty array of attributes
 			$handler->create_job( array( 'created_at' => current_time( 'mysql' ) ) );
 			$handler->dispatch();
 		}
-
 		update_option( 'wc_facebook_has_connected_fbe_2', 'no' );
-
 		$settings = get_option( 'woocommerce_facebookcommerce_settings' );
-
 		if ( is_array( $settings ) ) {
-
 			$settings_map = array(
 				'facebook_pixel_id'             => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID,
 				'facebook_page_id'              => \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID,
@@ -248,15 +213,12 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 				'messenger_color_hex'           => \WC_Facebookcommerce_Integration::SETTING_MESSENGER_COLOR_HEX,
 				'enable_debug_mode'             => \WC_Facebookcommerce_Integration::SETTING_ENABLE_DEBUG_MODE,
 			);
-
 			foreach ( $settings_map as $old_name => $new_name ) {
-
 				if ( ! empty( $settings[ $old_name ] ) ) {
 					update_option( $new_name, $settings[ $old_name ] );
 				}
 			}
 		}
-
 		// deletes an option that is not longer used to generate an admin notice
 		delete_option( 'fb_cart_url' );
 	}
@@ -268,7 +230,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 2.0.3
 	 */
 	protected function upgrade_to_2_0_3() {
-
 		if ( ! $this->should_create_remove_duplicate_visibility_meta_background_job() ) {
 			return;
 		}
@@ -280,7 +241,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 
 		// create a job to remove duplicate visibility meta data entries
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
-
 			// create_job() expects an non-empty array of attributes
 			$handler->create_job( array( 'created_at' => current_time( 'mysql' ) ) );
 			$handler->dispatch();
@@ -296,19 +256,15 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @return bool
 	 */
 	private function should_create_remove_duplicate_visibility_meta_background_job() {
-
 		// we should try to remove duplicate meta if the virtual product variations job ran
 		if ( 'yes' === get_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'no' ) ) {
 			return true;
 		}
-
 		$handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance();
-
 		// the virtual product variations job is not marked as complete but there is at least one job in the database
 		if ( $handler && $handler->get_jobs() ) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -319,12 +275,10 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 	 * @since 2.0.4
 	 */
 	protected function upgrade_to_2_0_4() {
-
 		// if unfinished jobs are stuck, give the handlers a chance to complete them
 		if ( $handler = $this->get_plugin()->get_background_handle_virtual_products_variations_instance() ) {
 			$handler->dispatch();
 		}
-
 		if ( $handler = $this->get_plugin()->get_background_remove_duplicate_visibility_meta_instance() ) {
 			$handler->dispatch();
 		}
@@ -351,7 +305,6 @@ class Lifecycle extends Framework\Plugin\Lifecycle {
 		 * Update procedure just needs to remove all current actions.
 		 * The Feed class will reschedule new generation with proper cadence.
 		 */
-		as_unschedule_all_actions( \SkyVerge\WooCommerce\Facebook\Products\Feed::GENERATE_FEED_ACTION );
+		as_unschedule_all_actions( Products\Feed::GENERATE_FEED_ACTION );
 	}
-
 }

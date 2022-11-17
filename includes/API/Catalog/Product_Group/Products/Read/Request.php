@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Group\Products\Read;
+namespace WooCommerce\Facebook\API\Catalog\Product_Group\Products\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API;
 
 /**
  * Request object for the API endpoint that returns a list of Product Items in a particular Product Group.

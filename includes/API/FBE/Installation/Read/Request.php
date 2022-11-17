@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\FBE\Installation\Read;
+namespace WooCommerce\Facebook\API\FBE\Installation\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API\FBE\Installation;
+use WooCommerce\Facebook\API\FBE\Installation;
 
 /**
  * FBE installation API read request object.
@@ -21,8 +21,6 @@ use SkyVerge\WooCommerce\Facebook\API\FBE\Installation;
  * @since 2.0.0
  */
 class Request extends Installation\Request {
-
-
 	/**
 	 * API request constructor.
 	 *
@@ -31,13 +29,9 @@ class Request extends Installation\Request {
 	 * @param string $external_business_id external business_id
 	 */
 	public function __construct( $external_business_id ) {
-
 		parent::__construct( 'fbe_installs', 'GET' );
-
 		$this->params = array(
 			'fbe_external_business_id' => $external_business_id,
 		);
 	}
-
-
 }

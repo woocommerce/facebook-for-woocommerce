@@ -8,7 +8,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
+namespace WooCommerce\Facebook\Utilities;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,56 +26,56 @@ class Tracker {
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_LIFE_TIME = 2 * WEEK_IN_SECONDS;
+	public const TRANSIENT_WCTRACKER_LIFE_TIME = 2 * WEEK_IN_SECONDS;
 
 	/**
 	 * Transient key name; how long it took to generate the most recent feed file, or minus one if it failed.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_GENERATION_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_time';
+	public const TRANSIENT_WCTRACKER_FEED_GENERATION_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_time';
 
 	/**
 	 * Transient key name; how long it took to generate already generated batches.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_time';
+	public const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_time';
 
 	/**
 	 * Transient key name; how much wall ( clock ) time it took to generate the feed file.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_WALL_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_wall_time';
+	public const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_WALL_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_wall_time';
 
 	/**
 	 * Transient key name; the time when was the batched feed generation started.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_WALL_START_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_wall_time';
+	public const TRANSIENT_WCTRACKER_FEED_GENERATION_BATCH_WALL_START_TIME = 'facebook_for_woocommerce_wctracker_feed_generation_batch_wall_time';
 
 	/**
 	 * Transient key name; true if feed has been requested by Facebook.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FEED_REQUESTED = 'facebook_for_woocommerce_wctracker_feed_requested';
+	public const TRANSIENT_WCTRACKER_FEED_REQUESTED = 'facebook_for_woocommerce_wctracker_feed_requested';
 
 	/**
 	 * Transient key name; stores various FBE business settings.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG = 'facebook_for_woocommerce_wctracker_fbe_business_config';
+	public const TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG = 'facebook_for_woocommerce_wctracker_fbe_business_config';
 
 	/**
 	 * Transient key name; stores feed (data source) settings for catalog sync.
 	 *
 	 * @var string
 	 */
-	const TRANSIENT_WCTRACKER_FB_FEED_CONFIG = 'facebook_for_woocommerce_wctracker_fb_feed_config';
+	public const TRANSIENT_WCTRACKER_FB_FEED_CONFIG = 'facebook_for_woocommerce_wctracker_fb_feed_config';
 
 	/**
 	 * Constructor.
@@ -85,7 +85,7 @@ class Tracker {
 	public function __construct() {
 		add_filter(
 			'woocommerce_tracker_data',
-			array( $this, 'add_tracker_data' )
+			[ $this, 'add_tracker_data' ]
 		);
 	}
 
@@ -96,9 +96,9 @@ class Tracker {
 	 * @return array $data Snapshot updated with our data.
 	 * @since 2.3.4
 	 */
-	public function add_tracker_data( array $data = array() ) {
+	public function add_tracker_data( array $data = [] ) {
 		if ( ! isset( $data['extensions'] ) ) {
-			$data['extensions'] = array();
+			$data['extensions'] = [];
 		}
 
 		/**
@@ -266,10 +266,10 @@ class Tracker {
 		bool $ig_shopping_enabled,
 		bool $ig_cta_enabled
 	) {
-		$transient = array(
+		$transient = [
 			'ig_shopping_enabled' => $ig_shopping_enabled,
 			'ig_cta_enabled'      => $ig_cta_enabled,
-		);
+		];
 		set_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG, $transient, self::TRANSIENT_WCTRACKER_LIFE_TIME );
 	}
 

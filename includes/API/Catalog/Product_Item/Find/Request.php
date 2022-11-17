@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Product_Item\Find;
+namespace WooCommerce\Facebook\API\Catalog\Product_Item\Find;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API;
 
 /**
  * Find Product Item API request object.

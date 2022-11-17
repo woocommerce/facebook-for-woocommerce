@@ -9,18 +9,14 @@
  * @package FacebookCommerce
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WP_Background_Process', false ) ) {
 	// Do not attempt to create this class without WP_Background_Process
 	return;
 }
 
-if ( ! class_exists( 'WC_Facebookcommerce_Background_Process' ) ) :
-
-	class WC_Facebookcommerce_Background_Process extends WP_Background_Process {
+class WC_Facebookcommerce_Background_Process extends WP_Background_Process {
 
 		public function __construct( $commerce ) {
 			$this->commerce = $commerce; // Full WC_Facebookcommerce_Integration obj
@@ -160,5 +156,3 @@ if ( ! class_exists( 'WC_Facebookcommerce_Background_Process' ) ) :
 		}
 
 	}
-
-endif;

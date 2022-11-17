@@ -1,7 +1,7 @@
 <?php
 // phpcs:ignoreFile
 
-namespace SkyVerge\WooCommerce\Facebook\Utilities;
+namespace WooCommerce\Facebook\Utilities;
 
 use WC_Queue_Interface;
 

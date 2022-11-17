@@ -9,29 +9,25 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog;
+namespace WooCommerce\Facebook\API\Catalog;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API\Request as ApiRequest;
 
 /**
  * Request object for the Catalog API.
  *
- * @since 2.0.0
+ * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/v13.0
  */
-class Request extends API\Request {
-
-
+class Request extends ApiRequest
+{
 	/**
 	 * Gets the rate limit ID.
 	 *
-	 * @since 2.1.0
-	 *
 	 * @return string
 	 */
-	public static function get_rate_limit_id() {
-
+	public static function get_rate_limit_id(): string {
 		return 'ads_management';
 	}
 
@@ -39,27 +35,9 @@ class Request extends API\Request {
 	/**
 	 * API request constructor.
 	 *
-	 * @since 2.0.0
-	 *
 	 * @param string $catalog_id catalog ID
 	 */
-	public function __construct( $catalog_id ) {
-
-		parent::__construct( "/{$catalog_id}", 'GET' );
+	public function __construct( string $catalog_id ) {
+		parent::__construct("/{$catalog_id}?fields=name", 'GET');
 	}
-
-
-	/**
-	 * Gets the request parameters.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return array
-	 */
-	public function get_params() {
-
-		return array( 'fields' => 'name' );
-	}
-
-
 }

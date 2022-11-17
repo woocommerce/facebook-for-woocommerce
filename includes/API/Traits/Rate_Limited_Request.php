@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Traits;
+namespace WooCommerce\Facebook\API\Traits;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -20,7 +20,6 @@ defined( 'ABSPATH' ) or exit;
  */
 trait Rate_Limited_Request {
 
-
 	/**
 	 * Gets the ID of this request for rate limiting purposes.
 	 *
@@ -29,9 +28,6 @@ trait Rate_Limited_Request {
 	 * @return string
 	 */
 	public static function get_rate_limit_id() {
-
 		return 'graph_api_request';
 	}
-
-
 }

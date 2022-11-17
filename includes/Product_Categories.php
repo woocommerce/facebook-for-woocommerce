@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -19,7 +19,6 @@ defined( 'ABSPATH' ) or exit;
  * @since 2.2.0
  */
 class Product_Categories {
-
 
 	/**
 	 * Gets the category’s stored Products::GOOGLE_PRODUCT_CATEGORY_META_KEY meta.
@@ -32,10 +31,8 @@ class Product_Categories {
 	 * @return string
 	 */
 	public static function get_google_product_category_id( $category_id ) {
-
 		return get_term_meta( $category_id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, true );
 	}
-
 
 	/**
 	 * Updates the stored Google product category ID for the Products::GOOGLE_PRODUCT_CATEGORY_META_KEY meta.
@@ -46,9 +43,6 @@ class Product_Categories {
 	 * @param string $category_id Google product category ID
 	 */
 	public static function update_google_product_category_id( $id, $category_id ) {
-
 		update_term_meta( $id, Products::GOOGLE_PRODUCT_CATEGORY_META_KEY, $category_id );
 	}
-
-
 }

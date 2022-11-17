@@ -1,7 +1,7 @@
 <?php
 // phpcs:ignoreFile
 
-namespace SkyVerge\WooCommerce\Facebook\Jobs;
+namespace WooCommerce\Facebook\Jobs;
 
 use WC_Facebookcommerce;
 
@@ -34,6 +34,4 @@ trait LoggingTrait {
 			sprintf( '%s_%s', WC_Facebookcommerce::PLUGIN_ID, $this->get_name() )
 		);
 	}
-
-
 }

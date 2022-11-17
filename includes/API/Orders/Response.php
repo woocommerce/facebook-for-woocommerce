@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Orders;
+namespace WooCommerce\Facebook\API\Orders;
 
 defined( 'ABSPATH' ) or exit;
 
-use SkyVerge\WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API;
 
 /**
  * Orders API list response object.
@@ -31,7 +31,7 @@ class Response extends API\Response {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @return \SkyVerge\WooCommerce\Facebook\API\Orders\Order[]
+	 * @return \WooCommerce\Facebook\API\Orders\Order[]
 	 */
 	public function get_orders() {
 

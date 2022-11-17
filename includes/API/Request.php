@@ -1,30 +1,20 @@
 <?php
-// phpcs:ignoreFile
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @package FacebookCommerce
- */
+declare( strict_types=1 );
 
-namespace SkyVerge\WooCommerce\Facebook\API;
+namespace WooCommerce\Facebook\API;
 
-defined( 'ABSPATH' ) or exit;
+use WooCommerce\Facebook\Framework\Api\JSONRequest;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Base API request object.
  *
  * @since 2.0.0
  */
-class Request extends Framework\SV_WC_API_JSON_Request {
-
+class Request extends JSONRequest {
 
 	use Traits\Rate_Limited_Request;
-
 
 	/** @var int maximum number of retries to attempt if told to do so by Facebook */
 	protected $retry_limit = 5;
@@ -33,8 +23,7 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	protected $retry_count = 0;
 
 	/** @var int[] the response codes that should trigger a retry */
-	protected $retry_codes = array();
-
+	protected $retry_codes = [];
 
 	/**
 	 * API request constructor.
@@ -45,7 +34,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @param string $method HTTP method
 	 */
 	public function __construct( $path, $method ) {
-
 		$this->method = $method;
 		$this->path   = $path;
 	}
@@ -59,7 +47,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @param array $params request parameters
 	 */
 	public function set_params( $params ) {
-
 		$this->params = $params;
 	}
 
@@ -72,7 +59,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @param array $data request data
 	 */
 	public function set_data( $data ) {
-
 		$this->data = $data;
 	}
 
@@ -85,7 +71,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @return int
 	 */
 	public function get_retry_count() {
-
 		return $this->retry_count;
 	}
 
@@ -96,7 +81,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @since 2.1.0
 	 */
 	public function mark_retry() {
-
 		$this->retry_count++;
 	}
 
@@ -109,7 +93,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @return int
 	 */
 	public function get_retry_limit() {
-
 		/**
 		 * Filters the maximum number of retries allowed for the request.
 		 *
@@ -130,9 +113,6 @@ class Request extends Framework\SV_WC_API_JSON_Request {
 	 * @return int[]
 	 */
 	public function get_retry_codes() {
-
 		return $this->retry_codes;
 	}
-
-
 }

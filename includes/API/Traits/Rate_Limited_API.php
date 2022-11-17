@@ -9,9 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Traits;
-
-use SkyVerge\WooCommerce\Facebook\API\Response;
+namespace WooCommerce\Facebook\API\Traits;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -34,15 +32,10 @@ trait Rate_Limited_API {
 	 * @param int    $delay delay in seconds
 	 */
 	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
-
 		if ( ! empty( $delay ) ) {
-
 			$expiration = min( $delay, 24 * HOUR_IN_SECONDS );
-
 			set_transient( "wc_facebook_rate_limit_${rate_limit_id}", $delay, $expiration );
-
 		} else {
-
 			delete_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
 		}
 	}
@@ -57,7 +50,6 @@ trait Rate_Limited_API {
 	 * @return int
 	 */
 	public function get_rate_limit_delay( $rate_limit_id ) {
-
 		return (int) get_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
 	}
 
@@ -73,9 +65,6 @@ trait Rate_Limited_API {
 	 * @return int delay in seconds
 	 */
 	protected function calculate_rate_limit_delay( $response, $headers ) {
-
 		return $response->get_rate_limit_estimated_time_to_regain_access( $headers ) * MINUTE_IN_SECONDS;
 	}
-
-
 }

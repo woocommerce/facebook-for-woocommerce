@@ -9,13 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined( 'ABSPATH' ) || exit;
 
-use SkyVerge\WooCommerce\PluginFramework\v5_5_4 as Framework;
+use WP_Term;
 
 /**
  * General handler for the product set admin functionality.
@@ -33,15 +31,15 @@ class Product_Sets {
 	 */
 	protected $allowed_html = array(
 		'label' => array(
-			'for' => array(),
+			'for' => [],
 		),
 		'input' => array(
-			'type' => array(),
-			'name' => array(),
-			'id'   => array(),
+			'type' => [],
+			'name' => [],
+			'id'   => [],
 		),
 		'p'     => array(
-			'class' => array(),
+			'class' => [],
 		),
 	);
 
@@ -61,13 +59,10 @@ class Product_Sets {
 	 * @since 2.3.0
 	 */
 	public function __construct() {
-
 		$this->categories_field = \WC_Facebookcommerce::PRODUCT_SET_META;
-
 		// add taxonomy custom field
 		add_action( 'fb_product_set_add_form_fields', array( $this, 'category_field_on_new' ) );
 		add_action( 'fb_product_set_edit_form', array( $this, 'category_field_on_edit' ) );
-
 		// save custom field data
 		add_action( 'created_fb_product_set', array( $this, 'save_custom_field' ), 10, 2 );
 		add_action( 'edited_fb_product_set', array( $this, 'save_custom_field' ), 10, 2 );
@@ -97,10 +92,8 @@ class Product_Sets {
 	 * @param WP_Term $term Term object.
 	 */
 	public function category_field_on_edit( $term ) {
-
 		// gets term id
 		$term_id = empty( $term->term_id ) ? '' : $term->term_id;
-
 		?>
 		<table class="form-table" role="presentation">
 			<tbody>
@@ -110,7 +103,6 @@ class Product_Sets {
 				</tr>
 			</tbody>
 		</table>
-
 		<?php
 	}
 
@@ -124,10 +116,8 @@ class Product_Sets {
 	 * @param int $tt_id Term taxonomy ID.
 	 */
 	public function save_custom_field( $term_id, $tt_id ) {
-
 		$wc_product_cats = empty( $_POST[ $this->categories_field ] ) ? '' : $_POST[ $this->categories_field ]; //phpcs:ignore
 		if ( ! empty( $wc_product_cats ) ) {
-
 			$wc_product_cats = array_map(
 				function( $item ) {
 					return absint( $item );
@@ -135,7 +125,6 @@ class Product_Sets {
 				$wc_product_cats
 			);
 		}
-
 		update_term_meta( $term_id, $this->categories_field, $wc_product_cats );
 	}
 
@@ -160,10 +149,8 @@ class Product_Sets {
 	 * @param int $term_id The Term ID that is editing.
 	 */
 	protected function get_field( $term_id = '' ) {
-
 		$saved_items  = get_term_meta( $term_id, $this->categories_field, true );
 		$product_cats = get_terms( 'product_cat', array( 'hide_empty' => 0 ) );
-
 		?>
 		<div class="select2 updating-message"><p></p></div>
 		<select

@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Products;
+namespace WooCommerce\Facebook\Products;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,14 +21,6 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.11.0
  */
 class FBCategories {
-
-	/**
-	 * This function ensures that everything is loaded before the we start using the data.
-	 */
-	private function ensure_data_is_loaded() {
-		// This makes the GoogleProductTaxonomy available.
-		require_once __DIR__ . '/GoogleProductTaxonomy.php';
-	}
 
 	/**
 	 * Fetches the attribute from a category using attribute key.
@@ -88,7 +80,6 @@ class FBCategories {
 	 * @return null|array Null if category was not found or the category array.
 	 */
 	public function get_category( $category_id ) {
-		$this->ensure_data_is_loaded();
 		if ( $this->is_category( $category_id ) ) {
 			return GoogleProductTaxonomy::TAXONOMY[ $category_id ];
 		} else {
@@ -152,7 +143,6 @@ class FBCategories {
 	 * @return null|array Null if no attributes were found or category is invalid, otherwise array of attributes.
 	 */
 	public function get_attributes_with_fallback_to_parent_category( $category_id ) {
-		$this->ensure_data_is_loaded();
 		if ( ! $this->is_category( $category_id ) ) {
 			return null;
 		}
@@ -189,7 +179,6 @@ class FBCategories {
 	 * @return boolean Is the id a valid category id.
 	 */
 	public function is_category( $category_id ) {
-		$this->ensure_data_is_loaded();
 		return isset( GoogleProductTaxonomy::TAXONOMY[ $category_id ] );
 	}
 
@@ -199,7 +188,6 @@ class FBCategories {
 	 * @return array All categories data.
 	 */
 	public function get_categories() {
-		$this->ensure_data_is_loaded();
 		return GoogleProductTaxonomy::TAXONOMY;
 	}
 
@@ -227,7 +215,6 @@ class FBCategories {
 	 */
 	protected function get_raw_attributes_data() {
 		static $data = null;
-
 		if ( null === $data ) {
 			$contents = file_get_contents( facebook_for_woocommerce()->get_plugin_path() . '/data/google_category_to_attribute_mapping.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			if ( $contents ) {
@@ -237,7 +224,6 @@ class FBCategories {
 				facebook_for_woocommerce()->log( 'Error reading category attributes JSON data.' );
 			}
 		}
-
 		return $data;
 	}
 
@@ -261,36 +247,4 @@ class FBCategories {
 
 		return $data;
 	}
-
-	/**
-	 * @deprecated in version 2.4.0. Use `::get_attributes_with_fallback_to_parent_category()` instead.
-	 *
-	 * @see \SkyVerge\WooCommerce\Facebook\Products\FBCategories::get_attributes_with_fallback_to_parent_category()
-	 *
-	 * Get attributes for the category.
-	 *
-	 * @param string $category_id Id of the category for which we want to fetch attributes.
-	 *
-	 * @return null|array
-	 */
-	public function get_category_with_attrs( $category_id ) {
-		wc_deprecated_function( __METHOD__, '2.4.0', __CLASS__ . '::get_attributes_with_fallback_to_parent_category' );
-
-		$attributes = $this->get_attributes_with_fallback_to_parent_category( $category_id );
-		if ( ! is_array( $attributes ) ) {
-			return null;
-		}
-
-		// Use legacy return format for backwards compatibility with 3rd party code
-		$all_attributes_data = $this->get_raw_attributes_data();
-		if ( ! isset( $all_attributes_data[ $category_id ] ) ) {
-			return null;
-		}
-
-		$category               = $all_attributes_data[ $category_id ];
-		$category['attributes'] = $attributes;
-
-		return $category;
-	}
-
 }

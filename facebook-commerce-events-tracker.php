@@ -9,8 +9,9 @@
  * @package FacebookCommerce
  */
 
-use SkyVerge\WooCommerce\Facebook\Events\Event;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Events\Event;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Framework\Helper;
 
 if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
@@ -23,13 +24,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 	}
 
 	class WC_Facebookcommerce_EventsTracker {
-
-
-		/** @deprecated since 2.2.0 */
-		const FB_PRIORITY_HIGH = 2;
-		/** @deprecated since 2.2.0 */
-		const FB_PRIORITY_LOW = 11;
-
 
 		/** @var \WC_Facebookcommerce_Pixel instance */
 		private $pixel;
@@ -146,22 +140,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			// TODO move this in some 3rd party plugin integrations handler at some point {FN 2020-03-20}
 			add_action( 'wpcf7_contact_form', array( $this, 'inject_lead_event_hook' ), 11 );
-
 			add_action( 'shutdown', array( $this, 'send_pending_events' ) );
-
-		}
-
-
-		/**
-		 * Adds filter hooks.
-		 *
-		 * @internal
-		 *
-		 * @deprecated since 2.2.0
-		 */
-		public function apply_filters() {
-
-			wc_deprecated_function( __METHOD__, '2.2.0' );
 		}
 
 
@@ -470,7 +449,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 						'content_ids'   => json_encode( array_slice( $product_ids, 0, 10 ) ),
 						'contents'      => $contents,
 						'search_string' => get_search_query(),
-						'value'         => Framework\SV_WC_Helper::number_format( $total_value ),
+						'value'         => Helper::number_format( $total_value ),
 						'currency'      => get_woocommerce_currency(),
 					),
 					'user_data'   => $this->pixel->get_user_info(),
@@ -611,7 +590,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				'user_data'   => $this->pixel->get_user_info(),
 			);
 
-			$event = new SkyVerge\WooCommerce\Facebook\Events\Event( $event_data );
+			$event = new WooCommerce\Facebook\Events\Event( $event_data );
 
 			$this->send_api_event( $event, false );
 
@@ -749,18 +728,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			return $fragments;
-		}
-
-
-		/**
-		 * Sends a JSON response with the JavaScript code to track an AddToCart event.
-		 *
-		 * @internal
-		 * @deprecated since 1.10.2
-		 */
-		public function inject_ajax_add_to_cart_event() {
-
-			wc_deprecated_function( __METHOD__, '1.10.2' );
 		}
 
 
@@ -1097,23 +1064,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->tracked_events[] = $event;
 
 			if ( $send_now ) {
-
 				try {
-
 					facebook_for_woocommerce()->get_api()->send_pixel_events( facebook_for_woocommerce()->get_integration()->get_facebook_pixel_id(), array( $event ) );
-
-				} catch ( Framework\SV_WC_API_Exception $exception ) {
-
+				} catch ( ApiException $exception ) {
 					facebook_for_woocommerce()->log( 'Could not send Pixel event: ' . $exception->getMessage() );
 				}
-
 			} else {
-
 				$this->pending_events[] = $event;
-
 			}
-
-
 		}
 
 

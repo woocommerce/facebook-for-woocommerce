@@ -9,19 +9,16 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog\Send_Item_Updates;
+namespace WooCommerce\Facebook\API\Catalog\Send_Item_Updates;
 
 defined( 'ABSPATH' ) or exit;
-
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
 
 /**
  * Send_Item_Updates API response object
  *
  * @since 2.0.0
  */
-class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
-
+class Response extends \WooCommerce\Facebook\API\Response {
 
 	/**
 	 * Gets the handles field from the response.
@@ -31,9 +28,6 @@ class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
 	 * @return array|null
 	 */
 	public function get_handles() {
-
 		return $this->handles;
 	}
-
-
 }

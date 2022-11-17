@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Admin;
+namespace WooCommerce\Facebook\Admin;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -34,7 +34,6 @@ class Google_Product_Category_Field {
 			json_encode( $facebook_category_handler->get_categories() ),
 			esc_js( $input_id )
 		);
-
 		wc_enqueue_js( $facebook_category_fields );
 	}
 }

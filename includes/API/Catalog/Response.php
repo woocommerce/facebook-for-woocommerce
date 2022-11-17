@@ -1,37 +1,16 @@
 <?php
-// phpcs:ignoreFile
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @package FacebookCommerce
- */
+declare( strict_types=1 );
 
-namespace SkyVerge\WooCommerce\Facebook\API\Catalog;
+namespace WooCommerce\Facebook\API\Catalog;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
+
+use WooCommerce\Facebook\API\Response as ApiResponse;
 
 /**
  * Catalog API response object
  *
- * @since 2.0.0
+ * @property-read string id   Facebook Catalog ID.
+ * @property-read string name Facebook Catalog Name.
  */
-class Response extends \SkyVerge\WooCommerce\Facebook\API\Response {
-
-
-	/**
-	 * Gets the catalog name.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @return string|null
-	 */
-	public function get_name() {
-
-		return $this->name;
-	}
-
-
-}
+class Response extends ApiResponse {}

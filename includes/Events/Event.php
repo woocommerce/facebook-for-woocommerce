@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook\Events;
+namespace WooCommerce\Facebook\Events;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -39,7 +39,6 @@ class Event {
 	 * }
 	 */
 	public static function get_version_info() {
-
 		return array(
 			'source'        => 'woocommerce',
 			'version'       => WC()->version,
@@ -54,9 +53,7 @@ class Event {
 	 * @return string
 	 */
 	public static function get_platform_identifier() {
-
 		$info = self::get_version_info();
-
 		return "{$info['source']}-{$info['version']}-{$info['pluginVersion']}";
 	}
 
@@ -71,7 +68,6 @@ class Event {
 	 * @param array $data event data
 	 */
 	public function __construct( $data = array() ) {
-
 		$this->prepare_data( $data );
 	}
 
@@ -87,7 +83,6 @@ class Event {
 	 * @param array $data event data
 	 */
 	protected function prepare_data( $data ) {
-
 		$this->data = wp_parse_args(
 			$data,
 			array(
@@ -123,7 +118,6 @@ class Event {
 				'browser_id'        => $this->get_browser_id(),
 			)
 		);
-
 		// Country key is not the same in pixel and CAPI events, see:
 		// https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
 		// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
@@ -132,9 +126,7 @@ class Event {
 			$this->data['user_data']['country'] = $country;
 			unset( $this->data['user_data']['cn'] );
 		}
-
 		$this->data['user_data'] = Normalizer::normalize_array( $this->data['user_data'], false );
-
 		$this->data['user_data'] = $this->hash_pii_data( $this->data['user_data'] );
 	}
 
@@ -169,17 +161,12 @@ class Event {
 	 * @return string
 	 */
 	protected function generate_event_id() {
-
 		try {
 			$data = random_bytes( 16 );
-
 			$data[6] = chr( ord( $data[6] ) & 0x0f | 0x40 ); // set version to 0100
 			$data[8] = chr( ord( $data[8] ) & 0x3f | 0x80 ); // set bits 6-7 to 10
-
 			return vsprintf( '%s%s-%s-%s-%s-%s%s%s', str_split( bin2hex( $data ), 4 ) );
-
 		} catch ( \Exception $e ) {
-
 			// fall back to mt_rand if random_bytes is unavailable
 			return sprintf(
 				'%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -212,13 +199,9 @@ class Event {
 	 * @return string
 	 */
 	protected function get_current_url() {
-
 		if ( wp_doing_ajax() ) {
-
 			$url = wp_get_raw_referer();
-
 		} else {
-
 			/**
 			 * Instead of relying on the HTTP_HOST server var, we use home_url(),
 			 * so that we get the host configured in site options.
@@ -227,7 +210,6 @@ class Event {
 			 */
 			$url = home_url() . $_SERVER['REQUEST_URI'];
 		}
-
 		return $url;
 	}
 
@@ -240,7 +222,6 @@ class Event {
 	 * @return string
 	 */
 	protected function get_client_ip() {
-
 		return \WC_Geolocation::get_ip_address();
 	}
 
@@ -253,7 +234,6 @@ class Event {
 	 * @return string
 	 */
 	protected function get_client_user_agent() {
-
 		return ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
@@ -268,24 +248,17 @@ class Event {
 	 * @return string
 	 */
 	protected function get_click_id() {
-
 		$click_id = '';
-
 		if ( ! empty( $_COOKIE['_fbc'] ) ) {
-
 			$click_id = $_COOKIE['_fbc'];
-
 		} elseif ( ! empty( $_REQUEST['fbclid'] ) ) {
-
 			// generate the click ID based on the query parameter
 			$version         = 'fb';
 			$subdomain_index = 1;
 			$creation_time   = time();
 			$fbclid          = $_REQUEST['fbclid'];
-
-			$click_id = "{$version}.{$subdomain_index}.{$creation_time}.{$fbclid}";
+			$click_id        = "{$version}.{$subdomain_index}.{$creation_time}.{$fbclid}";
 		}
-
 		return $click_id;
 	}
 
@@ -298,7 +271,6 @@ class Event {
 	 * @return string
 	 */
 	protected function get_browser_id() {
-
 		return ! empty( $_COOKIE['_fbp'] ) ? $_COOKIE['_fbp'] : '';
 	}
 
@@ -311,7 +283,6 @@ class Event {
 	 * @return array
 	 */
 	public function get_data() {
-
 		return $this->data;
 	}
 
@@ -324,7 +295,6 @@ class Event {
 	 * @return string
 	 */
 	public function get_id() {
-
 		return ! empty( $this->data['event_id'] ) ? $this->data['event_id'] : '';
 	}
 
@@ -337,7 +307,6 @@ class Event {
 	 * @return string
 	 */
 	public function get_name() {
-
 		return ! empty( $this->data['event_name'] ) ? $this->data['event_name'] : '';
 	}
 
@@ -350,7 +319,6 @@ class Event {
 	 * @return array
 	 */
 	public function get_user_data() {
-
 		return ! empty( $this->data['user_data'] ) ? $this->data['user_data'] : array();
 	}
 
@@ -363,8 +331,6 @@ class Event {
 	 * @return array
 	 */
 	public function get_custom_data() {
-
 		return ! empty( $this->data['custom_data'] ) ? $this->data['custom_data'] : array();
 	}
-
 }

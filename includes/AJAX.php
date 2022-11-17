@@ -9,10 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace SkyVerge\WooCommerce\Facebook;
+namespace WooCommerce\Facebook;
 
-use SkyVerge\WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
-use SkyVerge\WooCommerce\PluginFramework\v5_10_0 as Framework;
+use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
+use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -78,32 +79,32 @@ class AJAX {
 
 		try {
 
-			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Invalid nonce.', 'facebook-for-woocommerce' ) );
+			if ( ! wp_verify_nonce( Helper::get_posted_value( 'security' ), self::ACTION_CANCEL_ORDER ) ) {
+				throw new PluginException( __( 'Invalid nonce.', 'facebook-for-woocommerce' ) );
 			}
 
-			$order_id    = Framework\SV_WC_Helper::get_posted_value( 'order_id' );
-			$reason_code = Framework\SV_WC_Helper::get_posted_value( 'reason_code' );
+			$order_id    = Helper::get_posted_value( 'order_id' );
+			$reason_code = Helper::get_posted_value( 'reason_code' );
 
 			if ( empty( $order_id ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Order ID is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $reason_code ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Cancel reason is required.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Cancel reason is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			$order = wc_get_order( absint( $order_id ) );
 
 			if ( false === $order ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'A valid Order ID is required.', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'A valid Order ID is required.', 'facebook-for-woocommerce' ) );
 			}
 
 			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->cancel_order( $order, $reason_code );
 
 			wp_send_json_success();
 
-		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			wp_send_json_error( $exception->getMessage() );
 		}
@@ -121,20 +122,20 @@ class AJAX {
 
 		try {
 
-			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_requested_value( 'security' ), self::ACTION_SEARCH_PRODUCT_ATTRIBUTES ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce' );
+			if ( ! wp_verify_nonce( Helper::get_requested_value( 'security' ), self::ACTION_SEARCH_PRODUCT_ATTRIBUTES ) ) {
+				throw new PluginException( 'Invalid nonce' );
 			}
 
-			$term = Framework\SV_WC_Helper::get_requested_value( 'term' );
+			$term = Helper::get_requested_value( 'term' );
 
 			if ( ! $term ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'A search term is required' );
+				throw new PluginException( 'A search term is required' );
 			}
 
-			$product = wc_get_product( (int) Framework\SV_WC_Helper::get_requested_value( 'request_data' ) );
+			$product = wc_get_product( (int) Helper::get_requested_value( 'request_data' ) );
 
 			if ( ! $product instanceof \WC_Product ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'A valid product ID is required' );
+				throw new PluginException( 'A valid product ID is required' );
 			}
 
 			$attributes = Admin\Products::get_available_product_attribute_names( $product );
@@ -152,7 +153,7 @@ class AJAX {
 
 			wp_send_json( $results );
 
-		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			die();
 		}
@@ -170,37 +171,37 @@ class AJAX {
 
 		try {
 
-			if ( ! wp_verify_nonce( Framework\SV_WC_Helper::get_posted_value( 'nonce' ), self::ACTION_COMPLETE_ORDER ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( 'Invalid nonce', 403 );
+			if ( ! wp_verify_nonce( Helper::get_posted_value( 'nonce' ), self::ACTION_COMPLETE_ORDER ) ) {
+				throw new PluginException( 'Invalid nonce', 403 );
 			}
 
-			$order_id        = (int) Framework\SV_WC_Helper::get_posted_value( 'order_id' );
-			$tracking_number = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'tracking_number' ) );
-			$carrier_code    = wc_clean( Framework\SV_WC_Helper::get_posted_value( 'carrier_code' ) );
+			$order_id        = (int) Helper::get_posted_value( 'order_id' );
+			$tracking_number = wc_clean( Helper::get_posted_value( 'tracking_number' ) );
+			$carrier_code    = wc_clean( Helper::get_posted_value( 'carrier_code' ) );
 
 			if ( empty( $order_id ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order ID is required', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Order ID is required', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $tracking_number ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Tracking number is required', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Tracking number is required', 'facebook-for-woocommerce' ) );
 			}
 
 			if ( empty( $carrier_code ) ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Carrier code is required', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Carrier code is required', 'facebook-for-woocommerce' ) );
 			}
 
 			$order = wc_get_order( $order_id );
 
 			if ( ! $order instanceof \WC_Order ) {
-				throw new Framework\SV_WC_Plugin_Exception( __( 'Order not found', 'facebook-for-woocommerce' ) );
+				throw new PluginException( __( 'Order not found', 'facebook-for-woocommerce' ) );
 			}
 
 			facebook_for_woocommerce()->get_commerce_handler()->get_orders_handler()->fulfill_order( $order, $tracking_number, $carrier_code );
 
 			wp_send_json_success();
 
-		} catch ( Framework\SV_WC_Plugin_Exception $exception ) {
+		} catch ( PluginException $exception ) {
 
 			wp_send_json_error( $exception->getMessage(), $exception->getCode() );
 		}
