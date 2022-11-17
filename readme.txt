@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.1 - 2022-11-17 =
+* Fix - Wrong path to the fbutils.php file.
+
 = 3.0.0 - 2022-11-17 =
 * Dev - Adding API Unit Tests.
 * Dev - Adding unit test workflow.
