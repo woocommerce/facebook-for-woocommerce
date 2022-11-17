@@ -12,4 +12,4 @@ use WooCommerce\Facebook\API;
  *
  * @property-read bool success Facebook User ID.
  */
-class Response extends Api\Response {}
+class Response extends API\Response {}

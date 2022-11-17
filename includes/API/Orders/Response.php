@@ -20,10 +20,10 @@ use WooCommerce\Facebook\API;
  *
  * @since 2.1.0
  */
-class Response extends Api\Response {
+class Response extends API\Response {
 
 
-	use Api\Traits\Paginated_Response;
+	use API\Traits\Paginated_Response;
 
 
 	/**

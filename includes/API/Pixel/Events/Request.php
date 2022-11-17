@@ -21,7 +21,7 @@ use WooCommerce\Facebook\Events\Event;
  *
  * @since 2.0.0
  */
-class Request extends Api\Request {
+class Request extends API\Request {
 
 
 	/** @var Event[] events to send */

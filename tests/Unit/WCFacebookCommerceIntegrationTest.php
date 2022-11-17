@@ -282,7 +282,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		}
 		/* From Product Meta or FB API. */
 		$facebook_product_group_id = 'some-facebook-product-group-id';
-		$facebook_response         = new Api\ProductCatalog\ProductGroups\Read\Response( json_encode( [ 'data' => $facebook_output ] ) );
+		$facebook_response         = new API\ProductCatalog\ProductGroups\Read\Response( json_encode( [ 'data' => $facebook_output ] ) );
 
 		$this->api->expects( $this->once() )
 			->method( 'get_product_group_products' )
@@ -318,7 +318,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		}
 		/* From Product Meta or FB API. */
 		$facebook_product_group_id = 'some-facebook-product-group-id';
-		$facebook_response         = new Api\ProductCatalog\ProductGroups\Read\Response( json_encode( [ 'data' => $facebook_output ] ) );
+		$facebook_response         = new API\ProductCatalog\ProductGroups\Read\Response( json_encode( [ 'data' => $facebook_output ] ) );
 
 		$this->api->expects( $this->once() )
 			->method( 'get_product_group_products' )
@@ -526,7 +526,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $facebook_product_data )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$this->integration->on_product_save( $product_to_update->get_id() );
 
@@ -611,7 +611,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 					'variants' => $fb_product->prepare_variants_for_group(),
 				]
 			)
-			->willReturn( new Api\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
 
 		$this->integration->on_product_save( $parent->get_id() );
 
@@ -707,7 +707,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-id', $product_data )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		/* Statuses involved into logic: publish, trash */
 		$new_status = 'publish';
@@ -793,7 +793,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $facebook_product_data )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$this->integration->on_product_publish( $product->get_id() );
 	}
@@ -831,7 +831,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 					'variants' => $facebook_product->prepare_variants_for_group(),
 				]
 			)
-			->willReturn( new Api\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -934,7 +934,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 					'variants' => $facebook_product->prepare_variants_for_group(),
 				]
 			)
-			->willReturn( new Api\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -971,7 +971,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-variable-product-group-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-variable-product-group-item-id"}' ) );
 
 		$sync_handler = $this->createMock( Products\Sync::class );
 		$sync_handler->expects( $this->once() )
@@ -1016,7 +1016,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-simple-product-item-id', $facebook_product_data )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
 
@@ -1053,14 +1053,14 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 				'1234567891011121314',
 				[ 'retailer_id' => WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ]
 			)
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
 		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with(
 				'facebook-simple-product-group-item-id',
 				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ),
 			)
-			->willReturn( new Api\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
 
 		$facebook_product_item_id = $this->integration->on_simple_product_publish( $product->get_id(), $facebook_product );
 
@@ -1132,13 +1132,13 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-simple-product-group-id"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-simple-product-group-id"}' ) );
 
 		$data = $facebook_product->prepare_product( $retailer_id );
 		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-simple-product-group-id', $data )
-			->willReturn( new Api\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-item-id"}' ) );
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
 
@@ -1163,7 +1163,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-simple-product-group-id', $data )
-			->willReturn( new Api\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-item-id"}' ) );
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product, 'facebook-simple-product-group-id' );
 
@@ -1188,7 +1188,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
 
 		$facebook_product_item_id = $this->integration->create_product_simple( $facebook_product );
 
@@ -1214,7 +1214,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-product-group-id"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-product-group-id"}' ) );
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
 
@@ -1240,7 +1240,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-product-group-id"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"id":"facebook-product-group-id"}' ) );
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id, true );
 
@@ -1265,7 +1265,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_group' )
 			->with( '123456789101112', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
 
 		$facebook_product_group_id = $this->integration->create_product_group( $facebook_product, $retailer_id );
 
@@ -1286,7 +1286,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-product-group-id', $data )
-			->willReturn( new Api\ProductCatalog\Products\Create\Response( '{"id":"facebook-product-item-id"}' ) );
+			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-product-item-id"}' ) );
 
 		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
 
@@ -1308,7 +1308,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_item' )
 			->with( 'facebook-product-group-id', $data )
-			->willReturn( new Api\ProductCatalog\Products\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
+			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"error":{"message":"Unsupported post request. Object with ID \'4964146013695812\' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\/\/developers.facebook.com\/docs\/graph-api","type":"GraphMethodException","code":100,"error_subcode":33,"fbtrace_id":"AtmMkt0H2dwNBhdRfcYqzVY"}}' ) );
 
 		$facebook_item_id = $this->integration->create_product_item( $facebook_product, $retailer_id, $product_group_id );
 
@@ -1331,7 +1331,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_group' )
 			->with( 'facebook-product-group-id', $data )
-			->willReturn( new Api\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
+			->willReturn( new API\ProductCatalog\ProductGroups\Update\Response( '{"id":"5191364664265911"}' ) );
 
 		$this->integration->update_product_group( $facebook_product );
 	}
@@ -1384,7 +1384,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'facebook-product-item-id', $data )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$this->integration->update_product_item( $facebook_product, $facebook_product_item_id );
 	}
@@ -1400,7 +1400,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		add_term_meta( $product_set_id, WC_Facebookcommerce_Integration::FB_PRODUCT_SET_ID, 'facebook-product-set-id' );
 
-		$facebook_output_update_product_set_item = new Api\ProductCatalog\ProductSets\Update\Response( '{"id":"5191364664265911"}' );
+		$facebook_output_update_product_set_item = new API\ProductCatalog\ProductSets\Update\Response( '{"id":"5191364664265911"}' );
 
 		$this->api->expects( $this->once() )
 			->method( 'update_product_set_item' )
@@ -1430,7 +1430,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'create_product_set_item' )
 			->with( '123456789101112', $product_set_data )
-			->willReturn( new Api\ProductCatalog\ProductSets\Create\Response( '{"id":"5191364664265911"}' ) );
+			->willReturn( new API\ProductCatalog\ProductSets\Create\Response( '{"id":"5191364664265911"}' ) );
 
 		$this->integration->create_or_update_product_set_item( $product_set_data, $product_set_id );
 
@@ -1449,7 +1449,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'delete_product_set_item' )
 			->with( $facebook_product_set_id )
-			->willReturn( new Api\ProductCatalog\ProductSets\Delete\Response( '' ) );
+			->willReturn( new API\ProductCatalog\ProductSets\Delete\Response( '' ) );
 
 		$this->integration->delete_product_set_item( $facebook_product_set_id );
 	}
@@ -3390,7 +3390,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN ] )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$this->integration->update_fb_visibility(
 			$product->get_id(),
@@ -3418,7 +3418,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
 			->with( 'some-facebook-product-group-id', [ 'visibility' => WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE ] )
-			->willReturn( new Api\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
 
 		$this->integration->update_fb_visibility(
 			$product->get_id(),
@@ -3460,7 +3460,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'get_product_facebook_ids' )
 			->with( '1122334455', $fb_retailer_id )
-			->willReturn( new Api\ProductCatalog\Products\Id\Response( '{"id":"product-id","product_group":{"id":"product-group-id"}}' ) );
+			->willReturn( new API\ProductCatalog\Products\Id\Response( '{"id":"product-id","product_group":{"id":"product-group-id"}}' ) );
 
 		$facebook_product_group_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, $product->get_id() );
 
@@ -3482,7 +3482,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->api->expects( $this->once() )
 			->method( 'get_product_facebook_ids' )
 			->with( '1122334455', $fb_retailer_id )
-			->willReturn( new Api\ProductCatalog\Products\Id\Response( '{"id":"product-id","product_group":{"id":"product-group-id"}}' ) );
+			->willReturn( new API\ProductCatalog\Products\Id\Response( '{"id":"product-id","product_group":{"id":"product-group-id"}}' ) );
 
 		$facebook_product_id = $this->integration->get_product_fbid( WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, $product->get_id() );
 

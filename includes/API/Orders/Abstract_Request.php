@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or exit;
 
 use WooCommerce\Facebook\API;
 
-abstract class Abstract_Request extends Api\Request {
+abstract class Abstract_Request extends API\Request {
 
 
 	/**

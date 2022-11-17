@@ -21,7 +21,7 @@ use WooCommerce\Facebook\API\Orders\Order;
  *
  * @since 2.1.0
  */
-class Response extends Api\Response {
+class Response extends API\Response {
 
 
 	/**

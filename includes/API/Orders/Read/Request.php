@@ -20,7 +20,7 @@ use WooCommerce\Facebook\API;
  *
  * @since 2.1.0
  */
-class Request extends Api\Orders\Abstract_Request {
+class Request extends API\Orders\Abstract_Request {
 
 
 	/**

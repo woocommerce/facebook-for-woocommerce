@@ -13,4 +13,4 @@ use WooCommerce\Facebook\API;
  * @property-read string id Facebook User ID.
  * @property-read string name Facebook User Name.
  */
-class Response extends Api\Response {}
+class Response extends API\Response {}

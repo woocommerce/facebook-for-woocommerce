@@ -14,4 +14,4 @@ use WooCommerce\Facebook\API;
  * @property-read string $name Facebook Page Name.
  * @property-read string $link Facebook Page URL.
  */
-class Response extends Api\Response {}
+class Response extends API\Response {}

@@ -11,7 +11,7 @@ use WooCommerce\Facebook\API;
 /**
  * FBE Installation API read response object.
  */
-class Response extends Api\Response {
+class Response extends API\Response {
 	/**
 	 * Gets the pixel ID.
 	 *
