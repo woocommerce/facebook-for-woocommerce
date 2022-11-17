@@ -355,6 +355,7 @@ class Connection {
 	 */
 	public function disconnect() {
 		$this->update_access_token( '' );
+		$this->update_page_access_token( '' );
 		$this->update_merchant_access_token( '' );
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
