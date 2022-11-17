@@ -2,11 +2,11 @@
 // phpcs:ignoreFile
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\FBE\Installation\Read;
+namespace WooCommerce\Facebook\API\FBE\Installation\Read;
 
 defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * FBE Installation API read response object.

@@ -1,7 +1,7 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api;
+namespace WooCommerce\Facebook\API;
 
 use WooCommerce\Facebook\Framework\Api\JSONRequest;
 

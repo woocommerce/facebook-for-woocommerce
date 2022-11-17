@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\FBE\Configuration\Update;
+namespace WooCommerce\Facebook\API\FBE\Configuration\Update;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api\FBE\Configuration;
+use WooCommerce\Facebook\API\FBE\Configuration;
 
 /**
  * FBE Configuration update request object.

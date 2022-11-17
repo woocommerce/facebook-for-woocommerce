@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Pixel\Events;
+namespace WooCommerce\Facebook\API\Pixel\Events;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Events\Event;
 
 /**

@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\FBE\Configuration;
+namespace WooCommerce\Facebook\API\FBE\Configuration;
 
 defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * FBE Configuration API request object.

@@ -121,9 +121,9 @@ abstract class Base {
 	 * @since 2.2.0
 	 * @param array|\WP_Error $response response data
 	 * @throws ApiException network issues, timeouts, API errors, etc
-	 * @return \WooCommerce\Facebook\Api\Response Response class instance.
+	 * @return \WooCommerce\Facebook\API\Response Response class instance.
 	 */
-	protected function handle_response( $response ): \WooCommerce\Facebook\Api\Response {
+	protected function handle_response( $response ): \WooCommerce\Facebook\API\Response {
 		// check for WP HTTP API specific errors (network timeout, etc)
 		if ( is_wp_error( $response ) ) {
 			throw new ApiException( $response->get_error_message(), (int) $response->get_error_code() );

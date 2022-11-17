@@ -11,7 +11,7 @@
 
 namespace WooCommerce\Facebook\Commerce;
 
-use WooCommerce\Facebook\Api\Orders\Order;
+use WooCommerce\Facebook\API\Orders\Order;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;

@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Catalog\Product_Group\Products\Read;
+namespace WooCommerce\Facebook\API\Catalog\Product_Group\Products\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Response object for the API endpoint that returns a list of Product Items in a particular Product Group.

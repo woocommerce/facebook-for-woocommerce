@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\User\Permissions\Delete;
+namespace WooCommerce\Facebook\API\User\Permissions\Delete;
 
 defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Request object for the Business Manager API.

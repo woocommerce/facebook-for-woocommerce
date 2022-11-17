@@ -168,7 +168,7 @@ class FeedConfigurationDetection {
 	/**
 	 * @param string $product_catalog_id
 	 * @return array Facebook Product Feeds.
-	 * @throws \WooCommerce\Facebook\Api\Exceptions\Request_Limit_Reached
+	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
 	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
 	 */
 	private function get_feed_nodes_for_catalog( string $product_catalog_id ) {
@@ -180,8 +180,8 @@ class FeedConfigurationDetection {
 	 * Given feed id fetch this feed configuration metadata.
 	 *
 	 * @param string $feed_id Facebook Product Feed ID.
-	 * @return \WooCommerce\Facebook\Api\Response
-	 * @throws \WooCommerce\Facebook\Api\Exceptions\Request_Limit_Reached
+	 * @return \WooCommerce\Facebook\API\Response
+	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
 	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
 	 */
 	private function get_feed_metadata( string $feed_id ) {

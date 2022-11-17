@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api;
+namespace WooCommerce\Facebook\API;
 
 use WooCommerce\Facebook\Framework\Api\JSONResponse;
 

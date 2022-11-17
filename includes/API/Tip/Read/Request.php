@@ -1,9 +1,9 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\Tip\Read;
+namespace WooCommerce\Facebook\API\Tip\Read;
 
-use WooCommerce\Facebook\Api\Request as ApiRequest;
+use WooCommerce\Facebook\API\Request as ApiRequest;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Catalog\Send_Item_Updates;
+namespace WooCommerce\Facebook\API\Catalog\Send_Item_Updates;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Request object for the Send Item Updates API request.

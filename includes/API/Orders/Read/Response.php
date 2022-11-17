@@ -9,12 +9,12 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Orders\Read;
+namespace WooCommerce\Facebook\API\Orders\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
-use WooCommerce\Facebook\Api\Orders\Order;
+use WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API\Orders\Order;
 
 /**
  * Orders API read response object.
@@ -29,7 +29,7 @@ class Response extends Api\Response {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @return \WooCommerce\Facebook\Api\Orders\Order
+	 * @return \WooCommerce\Facebook\API\Orders\Order
 	 */
 	public function get_order() {
 

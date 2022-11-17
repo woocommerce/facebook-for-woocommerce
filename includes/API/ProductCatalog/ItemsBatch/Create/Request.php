@@ -1,9 +1,9 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\ProductCatalog\ItemsBatch\Create;
+namespace WooCommerce\Facebook\API\ProductCatalog\ItemsBatch\Create;
 
-use WooCommerce\Facebook\Api\Request as ApiRequest;
+use WooCommerce\Facebook\API\Request as ApiRequest;
 
 defined( 'ABSPATH' ) || exit;
 

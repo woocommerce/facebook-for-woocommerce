@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\FBE\Installation\Read;
+namespace WooCommerce\Facebook\API\FBE\Installation\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api\FBE\Installation;
+use WooCommerce\Facebook\API\FBE\Installation;
 
 /**
  * FBE installation API read request object.
