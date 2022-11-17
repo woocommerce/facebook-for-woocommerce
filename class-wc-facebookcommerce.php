@@ -190,7 +190,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			$this->job_manager = new WooCommerce\Facebook\Jobs\JobManager();
 			add_action( 'init', [ $this->job_manager, 'init' ] );
 
-			// Load debug tools if debug mode is enabled.
+			// Instantiate the debug tools.
 			require_once __DIR__ . '/includes/Utilities/DebugTools.php';
 			$this->debug_tools    = new DebugTools();
 
