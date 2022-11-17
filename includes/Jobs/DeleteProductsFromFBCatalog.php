@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace WooCommerce\Facebook\Jobs;
 
@@ -45,16 +44,17 @@ class DeleteProductsFromFBCatalog extends AbstractChainedJob {
 	 * @throws Exception On error. The failure will be logged by Action Scheduler and the job chain will stop.
 	 */
 	protected function get_items_for_batch( int $batch_number, array $args ): array {
-
 		global $wpdb;
 
-		$products = get_posts( array(
-			'post_type'      => 'product',
-			'post_status'    => 'any',
-			'fields'         => 'ids',
-			'offset'         => $this->get_query_offset( $batch_number ),
-			'posts_per_page' => $this->get_batch_size(),
-		) );
+		$products = get_posts(
+			[
+				'post_type'      => 'product',
+				'post_status'    => 'any',
+				'fields'         => 'ids',
+				'offset'         => $this->get_query_offset( $batch_number ),
+				'posts_per_page' => $this->get_batch_size(),
+			]
+		);
 
 		return array_map( 'intval', $products );
 
@@ -86,6 +86,13 @@ class DeleteProductsFromFBCatalog extends AbstractChainedJob {
 	/**
 	 * Empty function to satisfy parent class requirements.
 	 * We don't use it because we are processing the whole batch at once in process_items.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $item The items of the current batch.
+	 * @param array $args  The args for the job.
+	 *
+	 * @return void
 	 */
 	protected function process_item( $item, array $args ) {}
 
