@@ -100,8 +100,12 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WooCommerce\Facebook\Utilities\Heartbeat */
 	public $heartbeat;
 
-	/** @var WooCommerce\Facebook\Utilities\DebugTools */
-	private  $debug_tools;
+	/**
+	 * The Debug tools instance.
+	 *
+	 * @var WooCommerce\Facebook\Utilities\DebugTools
+	 */
+	private $debug_tools;
 
 	/**
 	 * Constructs the plugin.
