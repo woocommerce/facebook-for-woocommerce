@@ -51,7 +51,7 @@ class DebugTools {
 		$tools['reset_all_product_fb_settings'] = [
 			'name'     => __( 'Facebook: Reset all products', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Reset products Facebook settings', 'facebook-for-woocommerce' ),
-			'desc'     => __( 'This tool will reset Facebook settings for all product on your WooCommerce store.', 'facebook-for-woocommerce' ),
+			'desc'     => __( 'This tool will reset Facebook settings for all products on your WooCommerce store.', 'facebook-for-woocommerce' ),
 			'callback' => [ $this, 'reset_all_product_fb_settings' ],
 		];
 
