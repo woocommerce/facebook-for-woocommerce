@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\Pages\Read;
+namespace WooCommerce\Facebook\API\Pages\Read;
 
 defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Page API response object.

@@ -7,7 +7,7 @@ use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use WooCommerce\Facebook\Admin;
 use WooCommerce\Facebook\Admin\Products as AdminProducts;
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Handlers\Connection;
 use WooCommerce\Facebook\Products;

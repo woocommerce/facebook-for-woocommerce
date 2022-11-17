@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Catalog\Product_Item\Find;
+namespace WooCommerce\Facebook\API\Catalog\Product_Item\Find;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Find Product Item API request object.

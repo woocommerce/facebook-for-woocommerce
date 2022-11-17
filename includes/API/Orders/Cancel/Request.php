@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Orders\Cancel;
+namespace WooCommerce\Facebook\API\Orders\Cancel;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Orders API cancel request object.

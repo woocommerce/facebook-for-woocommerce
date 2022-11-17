@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Orders\Acknowledge;
+namespace WooCommerce\Facebook\API\Orders\Acknowledge;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Orders API acknowledge request object.

@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\Catalog;
+namespace WooCommerce\Facebook\API\Catalog;
 
 defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\Api\Response as ApiResponse;
+use WooCommerce\Facebook\API\Response as ApiResponse;
 
 /**
  * Catalog API response object

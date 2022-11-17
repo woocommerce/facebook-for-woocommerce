@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Orders;
+namespace WooCommerce\Facebook\API\Orders;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 abstract class Abstract_Request extends Api\Request {
 

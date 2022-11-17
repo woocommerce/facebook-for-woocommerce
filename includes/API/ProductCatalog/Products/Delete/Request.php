@@ -1,9 +1,9 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\ProductCatalog\Products\Delete;
+namespace WooCommerce\Facebook\API\ProductCatalog\Products\Delete;
 
-use WooCommerce\Facebook\Api\Request as ApiRequest;
+use WooCommerce\Facebook\API\Request as ApiRequest;
 
 defined( 'ABSPATH' ) || exit;
 

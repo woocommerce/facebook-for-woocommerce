@@ -9,11 +9,11 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Orders\Read;
+namespace WooCommerce\Facebook\API\Orders\Read;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 
 /**
  * Orders API read request object.

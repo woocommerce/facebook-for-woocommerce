@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Catalog\Send_Item_Updates;
+namespace WooCommerce\Facebook\API\Catalog\Send_Item_Updates;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) or exit;
  *
  * @since 2.0.0
  */
-class Response extends \WooCommerce\Facebook\Api\Response {
+class Response extends \WooCommerce\Facebook\API\Response {
 
 	/**
 	 * Gets the handles field from the response.

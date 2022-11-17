@@ -1,9 +1,9 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\ProductCatalog\ProductFeeds\ReadAll;
+namespace WooCommerce\Facebook\API\ProductCatalog\ProductFeeds\ReadAll;
 
-use WooCommerce\Facebook\Api\Response as ApiResponse;
+use WooCommerce\Facebook\API\Response as ApiResponse;
 
 defined( 'ABSPATH' ) || exit;
 

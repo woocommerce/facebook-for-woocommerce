@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
-namespace WooCommerce\Facebook\Api\Exceptions;
+namespace WooCommerce\Facebook\API\Exceptions;
 
 defined( 'ABSPATH' ) or exit;
 

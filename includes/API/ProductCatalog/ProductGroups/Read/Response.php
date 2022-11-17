@@ -1,10 +1,10 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\Facebook\Api\ProductCatalog\ProductGroups\Read;
+namespace WooCommerce\Facebook\API\ProductCatalog\ProductGroups\Read;
 
-use WooCommerce\Facebook\Api\Response as ApiResponse;
-use WooCommerce\Facebook\Api\Traits\Paginated_Response;
+use WooCommerce\Facebook\API\Response as ApiResponse;
+use WooCommerce\Facebook\API\Traits\Paginated_Response;
 
 defined( 'ABSPATH' ) || exit;
 

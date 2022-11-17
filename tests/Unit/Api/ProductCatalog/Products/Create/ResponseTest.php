@@ -10,7 +10,7 @@ class ResponseTest extends WP_UnitTestCase {
 	 */
 	public function test_request() {
 		$json     = '{"id":"facebook-product-id"}';
-		$response = new WooCommerce\Facebook\Api\ProductCatalog\Products\Create\Response( $json );
+		$response = new WooCommerce\Facebook\API\ProductCatalog\Products\Create\Response( $json );
 
 		$this->assertEquals( 'facebook-product-id', $response->id );
 	}
