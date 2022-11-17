@@ -69,7 +69,7 @@ class Product_Sync_Meta_Box {
 			if ( $fb_product->woo_product->is_type( 'variable' ) ) {
 				$fb_product_id = $fb_integration->get_product_fbid( $fb_integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
 			} else {
-				$fb_product_id = $fb_integration->get_product_fbid($fb_integration::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product);
+				$fb_product_id = $fb_integration->get_product_fbid( $fb_integration::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product );
 			}
 		}
 		?>
