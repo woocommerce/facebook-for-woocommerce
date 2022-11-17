@@ -52,7 +52,7 @@ class Product_Sync_Meta_Box {
 
 		$fb_integration      = facebook_for_woocommerce()->get_integration();
 		$fb_product          = new \WC_Facebook_Product( $post->ID );
-		$fb_product_id = null;
+		$fb_product_id       = null;
 		$should_sync         = true;
 		$no_sync_reason      = '';
 
