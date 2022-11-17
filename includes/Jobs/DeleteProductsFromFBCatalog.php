@@ -80,6 +80,9 @@ class DeleteProductsFromFBCatalog extends AbstractChainedJob {
 			} else {
 				$integration->delete_product_item( $product_id );
 			}
+
+			// Reset product.
+			$integration->reset_single_product( $product_id );
 		}
 	}
 
