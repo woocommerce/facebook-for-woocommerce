@@ -1205,20 +1205,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product_group_data['variants'] = $woo_product->prepare_variants_for_group();
 		}
 
-		$create_product_group_result = $this->facebook_for_woocommerce->get_api()->create_product_group(
-			$this->get_product_catalog_id(),
-			$product_group_data
-		);
-
-		// New variant added
-		if ( $create_product_group_result->id ) {
-			$fb_product_group_id = $create_product_group_result->id;
-			update_post_meta(
-				$woo_product->get_id(),
-				self::FB_PRODUCT_GROUP_ID,
-				$fb_product_group_id
+		try {
+			$create_product_group_result = $this->facebook_for_woocommerce->get_api()->create_product_group(
+				$this->get_product_catalog_id(),
+				$product_group_data
 			);
-			return $fb_product_group_id;
+
+			// New variant added
+			if ( $create_product_group_result->id ) {
+				$fb_product_group_id = $create_product_group_result->id;
+				update_post_meta(
+					$woo_product->get_id(),
+					self::FB_PRODUCT_GROUP_ID,
+					$fb_product_group_id
+				);
+				return $fb_product_group_id;
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to create the product group: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 		return null;
 	}
@@ -1266,42 +1271,52 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$product_group_data['default_product_id'] = $default_product_fbid;
 		}
 
-		$response = $this->facebook_for_woocommerce->get_api()->update_product_group( $fb_product_group_id, $product_group_data );
-		if ( $response->success ) {
-			$this->display_success_message(
-				'Updated product group <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
-				'</a> on Facebook.'
-			);
-		} else {
-			$this->display_error_message(
-				'Updating product group <a href="https://facebook.com/' .
-				$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
-				'</a> on Facebook has failed.'
-			);
+		try {
+			$response = $this->facebook_for_woocommerce->get_api()->update_product_group( $fb_product_group_id, $product_group_data );
+			if ( $response->success ) {
+				$this->display_success_message(
+					'Updated product group <a href="https://facebook.com/' .
+					$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
+					'</a> on Facebook.'
+				);
+			} else {
+				$this->display_error_message(
+					'Updating product group <a href="https://facebook.com/' .
+					$fb_product_group_id . '" target="_blank">' . $fb_product_group_id .
+					'</a> on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to update Product Group %s: %s', $fb_product_group_id, $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 	}
 
-	function create_product_item( $woo_product, $retailer_id, $product_group_id ): string {
-		$product_data   = $woo_product->prepare_product( $retailer_id );
-		$product_result = $this->facebook_for_woocommerce->get_api()->create_product_item( $product_group_id, $product_data );
+	public function create_product_item( $woo_product, $retailer_id, $product_group_id ): string {
+		try {
+			$product_data   = $woo_product->prepare_product( $retailer_id );
+			$product_result = $this->facebook_for_woocommerce->get_api()->create_product_item( $product_group_id, $product_data );
 
-		if ( $product_result->id ) {
-			$fb_product_item_id = $product_result->id;
+			if ( $product_result->id ) {
+				$fb_product_item_id = $product_result->id;
 
-			update_post_meta(
-				$woo_product->get_id(),
-				self::FB_PRODUCT_ITEM_ID,
-				$fb_product_item_id
-			);
+				update_post_meta(
+					$woo_product->get_id(),
+					self::FB_PRODUCT_ITEM_ID,
+					$fb_product_item_id
+				);
 
-			$this->display_success_message(
-				'Created product item <a href="https://facebook.com/' .
-				$fb_product_item_id . '" target="_blank">' .
-				$fb_product_item_id . '</a> on Facebook.'
-			);
+				$this->display_success_message(
+					'Created product item <a href="https://facebook.com/' .
+					$fb_product_item_id . '" target="_blank">' .
+					$fb_product_item_id . '</a> on Facebook.'
+				);
 
-			return $fb_product_item_id;
+				return $fb_product_item_id;
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to create a product item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 		return '';
 	}
@@ -1417,18 +1432,22 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( empty( $product_data['additional_image_urls'] ) ) {
 			$product_data['additional_image_urls'] = '';
 		}
-
-		$result = $this->facebook_for_woocommerce->get_api()->update_product_item( $fb_product_item_id, $product_data );
-		if ( $result->success ) {
-			$this->display_success_message(
-				'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
-				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
-			);
-		} else {
-			$this->display_error_message(
-				'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
-				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook has failed.'
-			);
+		try {
+			$result = $this->facebook_for_woocommerce->get_api()->update_product_item( $fb_product_item_id, $product_data );
+			if ( $result->success ) {
+				$this->display_success_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
+				);
+			} else {
+				$this->display_error_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to update a product item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 	}
 
@@ -1445,19 +1464,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// check if exists in FB
 		$fb_product_set_id = get_term_meta( $product_set_id, self::FB_PRODUCT_SET_ID, true );
 
-		// set data and execute API call
-		$result = empty( $fb_product_set_id )
-			? $this->facebook_for_woocommerce->get_api()->create_product_set_item( $this->get_product_catalog_id(), $product_set_data )
-			: $this->facebook_for_woocommerce->get_api()->update_product_set_item( $fb_product_set_id, $product_set_data );
+		try {
+			// set data and execute API call
+			$result = empty( $fb_product_set_id )
+				? $this->facebook_for_woocommerce->get_api()->create_product_set_item( $this->get_product_catalog_id(), $product_set_data )
+				: $this->facebook_for_woocommerce->get_api()->update_product_set_item( $fb_product_set_id, $product_set_data );
 
-		// update product set to set Facebook Product Set ID
-		if ( $result && empty( $fb_product_set_id ) ) {
-			$fb_product_set_id = $result->id;
-			update_term_meta(
-				$product_set_id,
-				self::FB_PRODUCT_SET_ID,
-				$fb_product_set_id
-			);
+			// update product set to set Facebook Product Set ID
+			if ( $result && empty( $fb_product_set_id ) ) {
+				$fb_product_set_id = $result->id;
+				update_term_meta(
+					$product_set_id,
+					self::FB_PRODUCT_SET_ID,
+					$fb_product_set_id
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to create/update a product set: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 	}
 
@@ -1471,7 +1495,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function delete_product_set_item( string $fb_product_set_id ) {
 		$allow_live_deletion = apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $fb_product_set_id );
-		$this->facebook_for_woocommerce->get_api()->delete_product_set_item( $fb_product_set_id, $allow_live_deletion );
+		try {
+			$this->facebook_for_woocommerce->get_api()->delete_product_set_item( $fb_product_set_id, $allow_live_deletion );
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+		}
 	}
 
 
@@ -2714,8 +2743,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$wp_id
 		);
 		if ( $fb_product_item_id ) {
-			$pi_result = $this->facebook_for_woocommerce->get_api()->delete_product_item( $fb_product_item_id );
-			WC_Facebookcommerce_Utils::log( $pi_result );
+			try {
+				$pi_result = $this->facebook_for_woocommerce->get_api()->delete_product_item( $fb_product_item_id );
+				\WC_Facebookcommerce_Utils::log( $pi_result );
+			} catch ( ApiException $e ) {
+				$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
+				facebook_for_woocommerce()->log( $message );
+			}
 		}
 	}
 
@@ -2730,8 +2764,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
 		if ( $product_group_id ) {
 			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
-			$pg_result = $this->facebook_for_woocommerce->get_api()->delete_product_group( $product_group_id );
-			\WC_Facebookcommerce_Utils::log( $pg_result );
+			try {
+				$pg_result = $this->facebook_for_woocommerce->get_api()->delete_product_group( $product_group_id );
+				\WC_Facebookcommerce_Utils::log( $pg_result );
+			} catch ( ApiException $e ) {
+				$message = sprintf( 'There was an error trying to delete a product group: %s', $e->getMessage() );
+				facebook_for_woocommerce()->log( $message );
+			}
 		}
 	}
 
@@ -2794,9 +2833,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				\WC_Facebookcommerce_Utils::fblog( $fb_product_item_id . " doesn't exist but underwent a visibility transform.", [], true );
 				 return;
 			}
-			$set_visibility = $this->facebook_for_woocommerce->get_api()->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
-			if ( $set_visibility->success ) {
-				Products::set_product_visibility( $product, $should_set_visible );
+			try {
+				$set_visibility = $this->facebook_for_woocommerce->get_api()->update_product_item( $fb_product_item_id, [ 'visibility' => $visibility ] );
+				if ( $set_visibility->success ) {
+					Products::set_product_visibility( $product, $should_set_visible );
+				}
+			} catch ( ApiException $e ) {
+				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+				facebook_for_woocommerce()->log( $message );
 			}
 		}
 	}
