@@ -13,6 +13,7 @@ namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
 defined( 'ABSPATH' ) or exit;
 
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Locale;
 use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 
@@ -84,7 +85,7 @@ class Advertise extends Abstract_Settings_Screen {
 					appId            : '<?php echo esc_js( $connection_handler->get_client_id() ); ?>',
 					autoLogAppEvents : true,
 					xfbml            : true,
-					version          : 'v8.0', // Note: This expires on November 1 2022
+					version          : '<?php echo esc_js( API::API_VERSION )?>',
 				} );
 			};
 		</script>
