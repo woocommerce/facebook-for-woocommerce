@@ -605,7 +605,13 @@ class WC_Facebook_Product_Feed {
 	public function is_upload_complete( &$settings ) {
 
 		$upload_id = facebook_for_woocommerce()->get_integration()->get_upload_id();
-		$result    = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
+		try {
+			$result = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
+		} catch ( \Exception $e ) {
+			// if the upload ID is invalid, the feed is not complete
+			$this->log_feed_progress( $e->getMessage() );
+			return 'error';
+		}
 
 		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
 			 $this->log_feed_progress( json_encode( $result ) );

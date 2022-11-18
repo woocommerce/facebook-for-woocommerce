@@ -6,6 +6,8 @@ namespace WooCommerce\Facebook\Feed;
 defined( 'ABSPATH' ) || exit;
 
 use Error;
+use WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached;
+use WooCommerce\Facebook\Framework\Api\Exception;
 use WooCommerce\Facebook\Products\Feed;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
@@ -172,7 +174,13 @@ class FeedConfigurationDetection {
 	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
 	 */
 	private function get_feed_nodes_for_catalog( string $product_catalog_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_feeds( $product_catalog_id );
+		try {
+			$response = facebook_for_woocommerce()->get_api()->read_feeds($product_catalog_id);
+		} catch ( \Exception $e ) {
+			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+			return array();
+		}
 		return $response->data;
 	}
 
@@ -180,12 +188,18 @@ class FeedConfigurationDetection {
 	 * Given feed id fetch this feed configuration metadata.
 	 *
 	 * @param string $feed_id Facebook Product Feed ID.
-	 * @return \WooCommerce\Facebook\API\Response
+	 * @return \WooCommerce\Facebook\API\Response|bool
 	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
 	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
 	 */
 	private function get_feed_metadata( string $feed_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_feed( $feed_id );
+		try {
+			$response = facebook_for_woocommerce()->get_api()->read_feed($feed_id);
+		} catch ( \Exception $e ) {
+			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+			return false;
+		}
 		return $response;
 	}
 
@@ -194,10 +208,16 @@ class FeedConfigurationDetection {
 	 *
 	 * @throws Error Upload metadata fetch was not successful.
 	 * @param String                        $upload_id Facebook Feed upload ID.
-	 * @return array Array of feed configurations.
+	 * @return \WooCommerce\Facebook\API\Response|bool
 	 */
 	private function get_feed_upload_metadata( $upload_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
+		try {
+			$response = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
+		} catch ( \Exception $e ) {
+			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+			return false;
+		}
 		return $response;
 	}
 

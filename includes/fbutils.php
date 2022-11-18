@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Events\Normalizer;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
 /**
  * FB Graph API helper functions
@@ -296,7 +297,12 @@ class WC_Facebookcommerce_Utils {
 		);
 		$ems     = $ems ?: self::$ems;
 		if ( $ems ) {
-			facebook_for_woocommerce()->get_api()->log( $ems, $message, $error );
+			try {
+				facebook_for_woocommerce()->get_api()->log($ems, $message, $error);
+			} catch ( ApiException $e ) {
+				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+				facebook_for_woocommerce()->log( $message );
+			}
 		} else {
 			error_log(
 				'external merchant setting is null, something wrong here: ' .
@@ -311,7 +317,12 @@ class WC_Facebookcommerce_Utils {
 	public static function tip_events_log( $tip_id, $channel_id, $event, $ems = '' ) {
 		$ems = $ems ?: self::$ems;
 		if ( $ems ) {
-			facebook_for_woocommerce()->get_api()->log_tip_event( $tip_id, $channel_id, $event );
+			try {
+				facebook_for_woocommerce()->get_api()->log_tip_event($tip_id, $channel_id, $event);
+			} catch ( ApiException $e ) {
+				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+				facebook_for_woocommerce()->log( $message );
+			}
 		} else {
 			error_log( 'external merchant setting is null' );
 		}
