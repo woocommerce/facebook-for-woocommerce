@@ -15,14 +15,14 @@ class ApiTest extends WP_UnitTestCase {
 	 *
 	 * @var string
 	 */
-	private string $endpoint = Api::GRAPH_API_URL;
+	private $endpoint = Api::GRAPH_API_URL;
 
 	/**
 	 * Facebook Graph API version.
 	 *
 	 * @var string
 	 */
-	private string $version = Api::API_VERSION;
+	private $version = Api::API_VERSION;
 
 	/**
 	 * @var Api
