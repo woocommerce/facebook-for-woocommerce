@@ -579,7 +579,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			} while ( $response = $this->facebook_for_woocommerce->get_api()->next( $response, 2 ) );
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to find the IDs for Product Items in the Product Group %s: %s', $product_group_id, $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 		return $product_item_ids;
 	}
@@ -1221,7 +1221,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to create the product group: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 		return null;
 	}
@@ -1286,7 +1286,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to update Product Group %s: %s', $fb_product_group_id, $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 	}
 
@@ -1314,7 +1314,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to create a product item: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 		return '';
 	}
@@ -1445,7 +1445,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to update a product item: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 	}
 
@@ -1479,7 +1479,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			}
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to create/update a product set: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 	}
 
@@ -1497,7 +1497,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$this->facebook_for_woocommerce->get_api()->delete_product_set_item( $fb_product_set_id, $allow_live_deletion );
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 	}
 
@@ -1991,7 +1991,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$catalog = $this->facebook_for_woocommerce->get_api()->get_catalog($this->get_product_catalog_id());
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
-			facebook_for_woocommerce()->log( $message );
+			WC_Facebookcommerce_Utils::log( $message );
 		}
 		if ( $catalog->id ) {
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
@@ -2748,10 +2748,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $fb_product_item_id ) {
 			try {
 				$pi_result = $this->facebook_for_woocommerce->get_api()->delete_product_item( $fb_product_item_id );
-				\WC_Facebookcommerce_Utils::log( $pi_result );
+				WC_Facebookcommerce_Utils::log( $pi_result );
 			} catch ( ApiException $e ) {
 				$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
-				facebook_for_woocommerce()->log( $message );
+				WC_Facebookcommerce_Utils::log( $message );
 			}
 		}
 	}
@@ -2769,10 +2769,10 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
 			try {
 				$pg_result = $this->facebook_for_woocommerce->get_api()->delete_product_group( $product_group_id );
-				\WC_Facebookcommerce_Utils::log( $pg_result );
+				WC_Facebookcommerce_Utils::log( $pg_result );
 			} catch ( ApiException $e ) {
 				$message = sprintf( 'There was an error trying to delete a product group: %s', $e->getMessage() );
-				facebook_for_woocommerce()->log( $message );
+				WC_Facebookcommerce_Utils::log( $message );
 			}
 		}
 	}
@@ -2843,7 +2843,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				}
 			} catch ( ApiException $e ) {
 				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
-				facebook_for_woocommerce()->log( $message );
+				WC_Facebookcommerce_Utils::log( $message );
 			}
 		}
 	}
