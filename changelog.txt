@@ -1,5 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.0.2 - 2022-11-18 =
+* Fix - Properly handle API exceptions
+* Fix - Set correct PHP version in plugin header
+* Dev - Add ArrayAccess implementation to JSONResponse class
+
 = 3.0.1 - 2022-11-17 =
 * Fix - Wrong path to the fbutils.php file.
 

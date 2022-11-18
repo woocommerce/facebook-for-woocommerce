@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -13,7 +12,7 @@ namespace WooCommerce\Facebook\API;
 
 use WooCommerce\Facebook\Framework\Api\JSONResponse;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Base API response object

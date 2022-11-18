@@ -652,24 +652,23 @@ class Orders {
 	 */
 	public function add_order_refund( \WC_Order_Refund $refund, $reason_code ) {
 
-		$plugin = facebook_for_woocommerce();
-
-		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
-
-		$valid_reason_codes = array(
-			self::REFUND_REASON_BUYERS_REMORSE,
-			self::REFUND_REASON_DAMAGED_GOODS,
-			self::REFUND_REASON_NOT_AS_DESCRIBED,
-			self::REFUND_REASON_QUALITY_ISSUE,
-			self::REFUND_REASON_OTHER,
-			self::REFUND_REASON_WRONG_ITEM,
-		);
-
-		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = self::REFUND_REASON_OTHER;
-		}
-
 		try {
+			$plugin = facebook_for_woocommerce();
+
+			$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
+
+			$valid_reason_codes = array(
+				self::REFUND_REASON_BUYERS_REMORSE,
+				self::REFUND_REASON_DAMAGED_GOODS,
+				self::REFUND_REASON_NOT_AS_DESCRIBED,
+				self::REFUND_REASON_QUALITY_ISSUE,
+				self::REFUND_REASON_OTHER,
+				self::REFUND_REASON_WRONG_ITEM,
+			);
+
+			if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
+				$reason_code = self::REFUND_REASON_OTHER;
+			}
 
 			$parent_order = wc_get_order( $refund->get_parent_id() );
 
@@ -797,17 +796,17 @@ class Orders {
 	 */
 	public function cancel_order( \WC_Order $order, $reason_code ) {
 
-		$plugin = facebook_for_woocommerce();
-
-		$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
-
-		$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
-
-		if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
-			$reason_code = self::CANCEL_REASON_OTHER;
-		}
-
 		try {
+
+			$plugin = facebook_for_woocommerce();
+
+			$api = $plugin->get_api( $plugin->get_connection_handler()->get_page_access_token() );
+
+			$valid_reason_codes = array_keys( $this->get_cancellation_reasons() );
+
+			if ( ! in_array( $reason_code, $valid_reason_codes, true ) ) {
+				$reason_code = self::CANCEL_REASON_OTHER;
+			}
 
 			$remote_id = $order->get_meta( self::REMOTE_ID_META_KEY );
 
