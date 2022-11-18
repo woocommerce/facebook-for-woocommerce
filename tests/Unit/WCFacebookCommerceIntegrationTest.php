@@ -3,7 +3,6 @@ declare( strict_types=1 );
 
 require_once __DIR__ . '/../../facebook-commerce.php';
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use WooCommerce\Facebook\Admin;
 use WooCommerce\Facebook\Admin\Products as AdminProducts;
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
@@ -22,29 +21,29 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	/**
 	 * @var WC_Facebookcommerce
 	 */
-	private WC_Facebookcommerce $facebook_for_woocommerce;
+	private $facebook_for_woocommerce;
 
 	/**
 	 * @var Connection
 	 */
-	private Connection $connection_handler;
+	private $connection_handler;
 
 	/**
 	 * @var Api
 	 */
-	private Api $api;
+	private $api;
 
 	/**
 	 * @var WC_Facebookcommerce_Integration
 	 */
-	private WC_Facebookcommerce_Integration $integration;
+	private $integration;
 
 	/**
 	 * Default plugin options.
 	 *
 	 * @var array
 	 */
-	private static array $default_options = [
+	private static $default_options = [
 		WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
 		WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
 		WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
@@ -224,7 +223,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			10,
 			has_action(
 				'wp_ajax_ajax_fb_background_check_queue',
-				[ $this->integration, 'ajax_fb_background_check_queue' ],
+				[ $this->integration, 'ajax_fb_background_check_queue' ]
 			)
 		);
 	}
@@ -1058,7 +1057,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->method( 'create_product_item' )
 			->with(
 				'facebook-simple-product-group-item-id',
-				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ),
+				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) )
 			)
 			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
 
@@ -3153,11 +3152,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		$this->assertEquals(
-			<<<HTML
-			<div id="integration-settings" style="display: none">
-				<table class="form-table"></table>
-			</div>
-			HTML,
+			'<div id="integration-settings" style="display: none"><table class="form-table"></table></div>',
 			$output
 		);
 	}

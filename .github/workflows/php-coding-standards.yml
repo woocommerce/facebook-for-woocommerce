@@ -35,3 +35,6 @@ jobs:
 
       - name: Run PHPCS on all files
         run: vendor/bin/phpcs -q -n --report=checkstyle | cs2pr
+
+      - name: PHP Syntax checker
+        uses: StephaneBour/actions-php-lint@7.2
