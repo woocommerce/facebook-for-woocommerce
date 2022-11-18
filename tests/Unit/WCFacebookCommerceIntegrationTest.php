@@ -3,7 +3,6 @@ declare( strict_types=1 );
 
 require_once __DIR__ . '/../../facebook-commerce.php';
 
-use Automattic\WooCommerce\GoogleListingsAndAds\Product\ProductHelper;
 use WooCommerce\Facebook\Admin;
 use WooCommerce\Facebook\Admin\Products as AdminProducts;
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
@@ -22,29 +21,29 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	/**
 	 * @var WC_Facebookcommerce
 	 */
-	private WC_Facebookcommerce $facebook_for_woocommerce;
+	private $facebook_for_woocommerce;
 
 	/**
 	 * @var Connection
 	 */
-	private Connection $connection_handler;
+	private $connection_handler;
 
 	/**
 	 * @var Api
 	 */
-	private Api $api;
+	private $api;
 
 	/**
 	 * @var WC_Facebookcommerce_Integration
 	 */
-	private WC_Facebookcommerce_Integration $integration;
+	private $integration;
 
 	/**
 	 * Default plugin options.
 	 *
 	 * @var array
 	 */
-	private static array $default_options = [
+	private static $default_options = [
 		WC_Facebookcommerce_Pixel::PIXEL_ID_KEY     => '0',
 		WC_Facebookcommerce_Pixel::USE_PII_KEY      => true,
 		WC_Facebookcommerce_Pixel::USE_S2S_KEY      => false,
