@@ -6,6 +6,11 @@ namespace WooCommerce\Facebook\Feed;
 defined( 'ABSPATH' ) || exit;
 
 use Error;
+use Exception;
+use WC_Facebookcommerce_Utils;
+use WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached;
+use WooCommerce\Facebook\API\Response;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Products\Feed;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
@@ -78,20 +83,33 @@ class FeedConfigurationDetection {
 		 */
 		$active_feed_metadata = array();
 		foreach ( $feed_nodes as $feed ) {
-			$metadata = $this->get_feed_metadata( $feed['id'] );
+			try {
+				$metadata = $this->get_feed_metadata( $feed['id'] );
+			} catch ( Exception $e ) {
+				$message = sprintf( 'There was an error trying to get feed metadata: %s', $e->getMessage() );
+				WC_Facebookcommerce_Utils::log( $message );
+				continue;
+			}
 
 			if ( $feed['id'] === $integration_feed_id ) {
-				$active_feed_metadata = $metadata;
+				$active_feed_metadata = clone $metadata;
 				break;
 			}
 
-			if ( ! array_key_exists( 'latest_upload', $metadata ) || ! array_key_exists( 'start_time', $metadata['latest_upload'] ) ) {
+			if (
+				! isset( $metadata['latest_upload'] ) ||
+				! is_array( $metadata['latest_upload'] ) ||
+				! array_key_exists( 'start_time', $metadata['latest_upload'] )
+			) {
 				continue;
 			}
+
 			$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload']['start_time'] );
-			if ( ! $active_feed_metadata ||
-				( $metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time'] ) ) {
-				$active_feed_metadata = $metadata;
+			if (
+				! $active_feed_metadata ||
+				$metadata['latest_upload_time'] > $active_feed_metadata['latest_upload_time']
+			) {
+				$active_feed_metadata = clone $metadata;
 			}
 		}
 
@@ -102,11 +120,11 @@ class FeedConfigurationDetection {
 		}
 
 		$active_feed = array();
-		if ( array_key_exists( 'created_time', $active_feed_metadata ) ) {
+		if ( isset( $active_feed_metadata['created_time'] ) ) {
 			$active_feed['created-time'] = gmdate( 'Y-m-d H:i:s', strtotime( $active_feed_metadata['created_time'] ) );
 		}
 
-		if ( array_key_exists( 'product_count', $active_feed_metadata ) ) {
+		if ( isset( $active_feed_metadata['product_count'] ) ) {
 			$active_feed['product-count'] = $active_feed_metadata['product_count'];
 		}
 
@@ -117,18 +135,18 @@ class FeedConfigurationDetection {
 		 * These may both be configured; we will track settings for each individually (i.e. both).
 		 * https://developers.facebook.com/docs/marketing-api/reference/product-feed/
 		 */
-		if ( array_key_exists( 'schedule', $active_feed_metadata ) ) {
+		if ( isset( $active_feed_metadata['schedule'] ) ) {
 			$active_feed['schedule']['interval']       = $active_feed_metadata['schedule']['interval'];
 			$active_feed['schedule']['interval-count'] = $active_feed_metadata['schedule']['interval_count'];
 		}
-		if ( array_key_exists( 'update_schedule', $active_feed_metadata ) ) {
+		if ( isset( $active_feed_metadata['update_schedule'] ) ) {
 			$active_feed['update-schedule']['interval']       = $active_feed_metadata['update_schedule']['interval'];
 			$active_feed['update-schedule']['interval-count'] = $active_feed_metadata['update_schedule']['interval_count'];
 		}
 
 		$info['active-feed'] = $active_feed;
 
-		if ( array_key_exists( 'latest_upload', $active_feed_metadata ) ) {
+		if ( isset( $active_feed_metadata['latest_upload'] ) ) {
 			$latest_upload = $active_feed_metadata['latest_upload'];
 			$upload        = array();
 
@@ -138,6 +156,12 @@ class FeedConfigurationDetection {
 
 			// Get more detailed metadata about the most recent feed upload.
 			$upload_metadata = $this->get_feed_upload_metadata( $latest_upload['id'] );
+
+			// If no metadata is available, we can't track any more details.
+			if ( ! $upload_metadata ) {
+				$info['active-feed']['latest-upload'] = $upload;
+				return $info;
+			}
 
 			$upload['error-count']         = $upload_metadata['error_count'];
 			$upload['warning-count']       = $upload_metadata['warning_count'];
@@ -167,12 +191,19 @@ class FeedConfigurationDetection {
 
 	/**
 	 * @param string $product_catalog_id
+	 *
 	 * @return array Facebook Product Feeds.
-	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
-	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
+	 * @throws Request_Limit_Reached
+	 * @throws ApiException
 	 */
 	private function get_feed_nodes_for_catalog( string $product_catalog_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_feeds( $product_catalog_id );
+		try {
+			$response = facebook_for_woocommerce()->get_api()->read_feeds($product_catalog_id);
+		} catch ( \Exception $e ) {
+			$message = sprintf( 'There was an error trying to get feed nodes for catalog: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+			return array();
+		}
 		return $response->data;
 	}
 
@@ -180,24 +211,31 @@ class FeedConfigurationDetection {
 	 * Given feed id fetch this feed configuration metadata.
 	 *
 	 * @param string $feed_id Facebook Product Feed ID.
-	 * @return \WooCommerce\Facebook\API\Response
-	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
-	 * @throws \WooCommerce\Facebook\Framework\Api\Exception
+	 *
+	 * @return Response
+	 * @throws Request_Limit_Reached
+	 * @throws ApiException
 	 */
 	private function get_feed_metadata( string $feed_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_feed( $feed_id );
-		return $response;
+		return facebook_for_woocommerce()->get_api()->read_feed( $feed_id );
 	}
 
 	/**
 	 * Given upload id fetch this upload execution metadata.
 	 *
+	 * @param string $upload_id Facebook Feed upload ID.
+	 *
+	 * @return Response
 	 * @throws Error Upload metadata fetch was not successful.
-	 * @param String                        $upload_id Facebook Feed upload ID.
-	 * @return array Array of feed configurations.
 	 */
 	private function get_feed_upload_metadata( $upload_id ) {
-		$response = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
+		try {
+			$response = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
+		} catch ( \Exception $e ) {
+			$message = sprintf( 'There was an error trying to get feed upload metadata: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+			return false;
+		}
 		return $response;
 	}
 
