@@ -46,7 +46,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WC_Facebookcommerce singleton instance */
 	protected static $instance;
 
-	/** @var WooCommerce\Facebook\Api instance */
+	/** @var WooCommerce\Facebook\API instance */
 	private $api;
 
 	/** @var \WC_Facebookcommerce_Integration instance */
@@ -476,10 +476,10 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @since 2.0.0
 	 *
 	 * @param string $access_token access token to use for this API request
-	 * @return WooCommerce\Facebook\Api
+	 * @return WooCommerce\Facebook\API
 	 * @throws ApiException
 	 */
-	public function get_api( string $access_token = '' ): WooCommerce\Facebook\Api {
+	public function get_api( string $access_token = '' ): WooCommerce\Facebook\API {
 		// if none provided, use the general access token
 		if ( ! $access_token ) {
 			$access_token = $this->get_connection_handler()->get_access_token();
@@ -488,7 +488,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 			if ( ! $access_token ) {
 				throw new ApiException( __( 'Cannot create the API instance because the access token is missing.', 'facebook-for-woocommerce' ) );
 			}
-			$this->api = new WooCommerce\Facebook\Api( $access_token );
+			$this->api = new WooCommerce\Facebook\API( $access_token );
 		} else {
 			$this->api->set_access_token( $access_token );
 		}

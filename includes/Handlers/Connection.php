@@ -11,8 +11,8 @@
 
 namespace WooCommerce\Facebook\Handlers;
 
-use WooCommerce\Facebook\Api;
-use WooCommerce\Facebook\Api\Exceptions\ConnectApiException;
+use WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API\Exceptions\ConnectApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Utilities\Heartbeat;

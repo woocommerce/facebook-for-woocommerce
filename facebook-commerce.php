@@ -10,7 +10,7 @@
  */
 
 use WooCommerce\Facebook\Admin;
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
@@ -1467,7 +1467,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @param string $fb_product_set_id Facebook Product Set ID.
 	 * @return void
 	 * @throws ApiException
-	 * @throws \WooCommerce\Facebook\Api\Exceptions\Request_Limit_Reached
+	 * @throws \WooCommerce\Facebook\API\Exceptions\Request_Limit_Reached
 	 */
 	public function delete_product_set_item( string $fb_product_set_id ) {
 		$allow_live_deletion = apply_filters( 'wc_facebook_commerce_allow_live_product_set_deletion', true, $fb_product_set_id );

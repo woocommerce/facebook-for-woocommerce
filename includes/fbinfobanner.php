@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once 'includes/fbutils.php';
+require_once __DIR__ . '/fbutils.php';
 
 /**
  * FB Info Banner class

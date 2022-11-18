@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 2.6.30
+Stable tag: 3.0.1
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,18 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.1 - 2022-11-17 =
+* Fix - Wrong path to the fbutils.php file.
+
+= 3.0.0 - 2022-11-17 =
+* Dev - Adding API Unit Tests.
+* Dev - Adding unit test workflow.
+* Dev - Adjusting php code styling.
+* Dev - Refactoring multiple Facebook APIs into a single one.
+* Dev - Removing SkyVerge dependency.
+* Dev - Removing deprecations.
+* Tweak - WC 5.4 compatibility.
 
 = 2.6.30 - 2022-11-09 =
 * Fix - Add backward compatibility for WC 6.1, 6.2, and 6.3 versions.

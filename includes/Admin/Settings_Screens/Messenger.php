@@ -14,7 +14,6 @@ namespace WooCommerce\Facebook\Admin\Settings_Screens;
 defined( 'ABSPATH' ) or exit;
 
 use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
-use WooCommerce\Facebook\API\FBE\Configuration;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;

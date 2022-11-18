@@ -1,7 +1,7 @@
 <?php
 declare( strict_types=1 );
 
-use WooCommerce\Facebook\Api;
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\API\FBE\Configuration\Messenger;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 
