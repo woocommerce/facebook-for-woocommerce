@@ -177,7 +177,7 @@ class FeedConfigurationDetection {
 		try {
 			$response = facebook_for_woocommerce()->get_api()->read_feeds($product_catalog_id);
 		} catch ( \Exception $e ) {
-			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			$message = sprintf( 'There was an error trying to get feed nodes for catalog: %s', $e->getMessage() );
 			facebook_for_woocommerce()->log( $message );
 			return array();
 		}
@@ -196,7 +196,7 @@ class FeedConfigurationDetection {
 		try {
 			$response = facebook_for_woocommerce()->get_api()->read_feed($feed_id);
 		} catch ( \Exception $e ) {
-			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			$message = sprintf( 'There was an error trying to get feed metadata: %s', $e->getMessage() );
 			facebook_for_woocommerce()->log( $message );
 			return false;
 		}
@@ -214,7 +214,7 @@ class FeedConfigurationDetection {
 		try {
 			$response = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
 		} catch ( \Exception $e ) {
-			$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+			$message = sprintf( 'There was an error trying to get feed upload metadata: %s', $e->getMessage() );
 			facebook_for_woocommerce()->log( $message );
 			return false;
 		}
