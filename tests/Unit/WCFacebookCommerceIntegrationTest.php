@@ -223,7 +223,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			10,
 			has_action(
 				'wp_ajax_ajax_fb_background_check_queue',
-				[ $this->integration, 'ajax_fb_background_check_queue' ],
+				[ $this->integration, 'ajax_fb_background_check_queue' ]
 			)
 		);
 	}
@@ -1057,7 +1057,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->method( 'create_product_item' )
 			->with(
 				'facebook-simple-product-group-item-id',
-				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) ),
+				$facebook_product->prepare_product( WC_Facebookcommerce_Utils::get_fb_retailer_id( $facebook_product ) )
 			)
 			->willReturn( new API\ProductCatalog\Products\Create\Response( '{"id":"facebook-simple-product-group-item-id"}' ) );
 
