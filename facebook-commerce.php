@@ -1989,7 +1989,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			throw new PluginException( __( 'A product sync is in progress. Please wait until the sync finishes before starting a new one.', 'facebook-for-woocommerce' ) );
 		}
 
-		$catalog = $this->facebook_for_woocommerce->get_api()->get_catalog( $this->get_product_catalog_id() );
+		try {
+			$catalog = $this->facebook_for_woocommerce->get_api()->get_catalog($this->get_product_catalog_id());
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
+		}
 		if ( $catalog->id ) {
 			WC_Facebookcommerce_Utils::log( 'Not syncing, invalid product catalog!' );
 			WC_Facebookcommerce_Utils::fblog(
