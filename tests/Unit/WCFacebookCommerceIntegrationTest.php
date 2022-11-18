@@ -3153,11 +3153,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		$this->assertEquals(
-			<<<HTML
-			<div id="integration-settings" style="display: none">
-				<table class="form-table"></table>
-			</div>
-			HTML,
+			'<div id="integration-settings" style="display: none"><table class="form-table"></table></div>',
 			$output
 		);
 	}

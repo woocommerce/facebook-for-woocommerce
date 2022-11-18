@@ -2668,11 +2668,13 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	private function get_message_html( string $message, string $type = 'error' ): string {
 		ob_start();
-		$type = esc_attr( $type );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo <<<MESSAGE
-		<div class="notice is-dismissible notice-{$type}"><p>{$message}</p></div>
-		MESSAGE;
+		printf(
+			'<div class="notice is-dismissible notice-%s"><p>%s</p></div>',
+			esc_attr( $type ),
+			$message
+		);
+
 		return ob_get_clean();
 	}
 
@@ -2724,14 +2726,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	public function admin_options() {
 		$this->facebook_for_woocommerce->get_message_handler()->show_messages();
 
-		$display  = ! $this->is_configured() ? 'style="display: none"' : '';
-		$settings = $this->generate_settings_html( $this->get_form_fields() );
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo <<<HTML
-		<div id="integration-settings" {$display}>
-			<table class="form-table">{$settings}</table>
-		</div>
-		HTML;
+		printf(
+			'<div id="integration-settings" %s>%s</div>',
+			! $this->is_configured() ? 'style="display: none"' : '',
+			sprintf(
+				'<table class="form-table">%s</table>',
+				$this->generate_settings_html( $this->get_form_fields() )
+			)
+		);
 	}
 
 	/**
