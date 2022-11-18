@@ -47,7 +47,7 @@ class WC_Facebook_Loader {
 	const PLUGIN_VERSION = '3.0.2'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
-	const MINIMUM_PHP_VERSION = '7.0.0';
+	const MINIMUM_PHP_VERSION = '7.2.0';
 
 	// Minimum WordPress version required by this plugin.
 	const MINIMUM_WP_VERSION = '4.4';
