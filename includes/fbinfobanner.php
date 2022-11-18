@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+
 require_once __DIR__ . '/fbutils.php';
 
 /**
@@ -131,8 +133,14 @@ class WC_Facebookcommerce_Info_Banner {
 			// tip pass time cap.
 			$tip_info = WC_Facebookcommerce_Utils::get_cached_best_tip();
 		} else {
-			$tip_info = facebook_for_woocommerce()->get_api()->get_tip_info( $this->external_merchant_settings_id );
-			update_option( 'fb_info_banner_last_query_time', current_time( 'mysql' ) );
+
+			try {
+				$tip_info = facebook_for_woocommerce()->get_api()->get_tip_info( $this->external_merchant_settings_id );
+				update_option( 'fb_info_banner_last_query_time', current_time( 'mysql' ) );
+			} catch ( ApiException $exception ) {
+				// always log this error, regardless of debug setting
+				facebook_for_woocommerce()->log( 'Could not retrieve tip. ' . $exception->getMessage() );
+			}
 		}
 
 		// Not render if no cached best tip, or no best tip returned from FB.
