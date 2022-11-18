@@ -74,7 +74,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	/**
 	 * Determine whether the given offset exists.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.2
 	 *
 	 * @param int|string $offset The offset key.
 	 *
@@ -87,7 +87,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	/**
 	 * Get the given offset.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.2
 	 *
 	 * @param int|string $offset The offset key.
 	 *
@@ -100,7 +100,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	/**
 	 * Set the offset to the given value.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.2
 	 *
 	 * @param int|string $offset The offset key.
 	 * @param mixed      $value  The offset value.
@@ -114,7 +114,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	/**
 	 * Unset the given offset.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.2
 	 *
 	 * @param int|string $offset The offset key.
 	 *

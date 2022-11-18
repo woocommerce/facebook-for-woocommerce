@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,7 +39,7 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
-= 3.0.2 - 2022-xx-xx =
+= 3.0.2 - 2022-11-18 =
 * Fix - Properly handle API exceptions
 * Fix - Set correct PHP version in plugin header
 * Dev - Add ArrayAccess implementation to JSONResponse class
