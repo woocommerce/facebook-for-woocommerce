@@ -87,7 +87,7 @@ class FeedConfigurationDetection {
 				break;
 			}
 
-			if ( ! array_key_exists( 'latest_upload', $metadata ) || ! array_key_exists( 'start_time', $metadata['latest_upload'] ) ) {
+			if ( ! $metadata || ! array_key_exists( 'latest_upload', $metadata ) || ! array_key_exists( 'start_time', $metadata['latest_upload'] ) ) {
 				continue;
 			}
 			$metadata['latest_upload_time'] = strtotime( $metadata['latest_upload']['start_time'] );
@@ -140,6 +140,12 @@ class FeedConfigurationDetection {
 
 			// Get more detailed metadata about the most recent feed upload.
 			$upload_metadata = $this->get_feed_upload_metadata( $latest_upload['id'] );
+
+			// If no metadata is available, we can't track any more details.
+			if ( ! $upload_metadata ) {
+				$info['active-feed']['latest-upload'] = $upload;
+				return $info;
+			}
 
 			$upload['error-count']         = $upload_metadata['error_count'];
 			$upload['warning-count']       = $upload_metadata['warning_count'];
