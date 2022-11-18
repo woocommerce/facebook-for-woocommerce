@@ -300,7 +300,7 @@ class WC_Facebookcommerce_Utils {
 			try {
 				facebook_for_woocommerce()->get_api()->log($ems, $message, $error);
 			} catch ( ApiException $e ) {
-				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+				$message = sprintf( 'There was an error trying to log: %s', $e->getMessage() );
 				facebook_for_woocommerce()->log( $message );
 			}
 		} else {
@@ -320,7 +320,7 @@ class WC_Facebookcommerce_Utils {
 			try {
 				facebook_for_woocommerce()->get_api()->log_tip_event($tip_id, $channel_id, $event);
 			} catch ( ApiException $e ) {
-				$message = sprintf( 'There was an error trying to update product item: %s', $e->getMessage() );
+				$message = sprintf( 'There was an error while logging tip events: %s', $e->getMessage() );
 				facebook_for_woocommerce()->log( $message );
 			}
 		} else {
