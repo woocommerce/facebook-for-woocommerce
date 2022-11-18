@@ -20,7 +20,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	protected $raw_response_json;
 
 	/** @var array decoded response data */
-	protected $response_data;
+	public $response_data;
 
 	/**
 	 * Build the data object from the raw JSON.
