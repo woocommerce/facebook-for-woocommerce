@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,17 +10,16 @@
 
 namespace WooCommerce\Facebook\API\Catalog\Product_Item;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-use WooCommerce\Facebook\API;
+use WooCommerce\Facebook\API\Response as BaseResponse;
 
 /**
  * Response object for API requests that return a Product Item.
  *
  * @since 2.0.0
  */
-class Response extends API\Response {
-
+class Response extends BaseResponse {
 
 	/**
 	 * Gets the Product Item group ID.
@@ -31,15 +29,6 @@ class Response extends API\Response {
 	 * @return string
 	 */
 	public function get_group_id() {
-
-		$product_group_id = '';
-
-		if ( isset( $this->response_data->product_group->id ) ) {
-			$product_group_id = $this->response_data->product_group->id;
-		}
-
-		return $product_group_id;
+		return $this->response_data['product_group']['id'] ?? '';
 	}
-
-
 }

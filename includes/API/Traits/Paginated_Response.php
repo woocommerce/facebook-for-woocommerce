@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -7,12 +6,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @package FacebookCommerce
+ *
+ * phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
  */
 
 namespace WooCommerce\Facebook\API\Traits;
 
-defined( 'ABSPATH' ) or exit;
+use stdClass;
 
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Helper methods to traverse Graph API paged results.
@@ -23,13 +25,11 @@ defined( 'ABSPATH' ) or exit;
  */
 trait Paginated_Response {
 
-
-	/** @var string number of pages retrieved from this response */
+	/** @var int number of pages retrieved from this response */
 	private $pages_retrieved = 1;
 
-	/** @var mixed decoded response data */
+	/** @var array decoded response data */
 	public $response_data;
-
 
 	/**
 	 * Sets the number of pages retrieved from this response.
@@ -39,10 +39,8 @@ trait Paginated_Response {
 	 * @param int $pages_retrieved
 	 */
 	public function set_pages_retrieved( $pages_retrieved ) {
-
 		$this->pages_retrieved = $pages_retrieved;
 	}
-
 
 	/**
 	 * Gets the number of pages retrieved from this response.
@@ -52,10 +50,8 @@ trait Paginated_Response {
 	 * @return int
 	 */
 	public function get_pages_retrieved() {
-
 		return $this->pages_retrieved;
 	}
-
 
 	/**
 	 * Gets the response data.
@@ -65,10 +61,8 @@ trait Paginated_Response {
 	 * @return array
 	 */
 	public function get_data() {
-
-		return ! empty( $this->response_data->data ) ? $this->response_data->data : array();
+		return $this->response_data['data'] ?? [];
 	}
-
 
 	/**
 	 * Gets the pagination data.
@@ -78,10 +72,8 @@ trait Paginated_Response {
 	 * @return object
 	 */
 	public function get_pagination_data() {
-
-		return ! empty( $this->response_data->paging ) ? $this->response_data->paging : new \stdClass();
+		return $this->response_data['paging'] ?? new stdClass();
 	}
-
 
 	/**
 	 * Gets the API endpoint for the next page of results.
@@ -91,22 +83,17 @@ trait Paginated_Response {
 	 * @return string
 	 */
 	public function get_next_page_endpoint() {
-
-		return ! empty( $this->get_pagination_data()->next ) ? $this->get_pagination_data()->next : '';
+		return $this->get_pagination_data()->next ?? '';
 	}
-
 
 	/**
 	 * Gets the API endpoint for the previous page of results.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string
+	 * @return string
 	 */
 	public function get_previous_page_endpoint() {
-
-		return ! empty( $this->get_pagination_data()->previous ) ? $this->get_pagination_data()->previous : '';
+		return $this->get_pagination_data()->previous ?? '';
 	}
-
-
 }
