@@ -16,7 +16,7 @@
  * Tested up to: 6.1
  * WC requires at least: 5.3
  * WC tested up to: 5.4
- * Requires PHP: 7.0
+ * Requires PHP: 7.2
  *
  * @package FacebookCommerce
  */
