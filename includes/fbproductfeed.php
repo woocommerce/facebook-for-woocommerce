@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) || exit;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
+use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+
 
 /**
  * Initial Sync by Facebook feed class
@@ -603,28 +605,25 @@ class WC_Facebook_Product_Feed {
 	 * @return string
 	 */
 	public function is_upload_complete( &$settings ) {
-
-		$upload_id = facebook_for_woocommerce()->get_integration()->get_upload_id();
 		try {
-			$result = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
-		} catch ( \Exception $e ) {
-			// if the upload ID is invalid, the feed is not complete
-			$this->log_feed_progress( $e->getMessage() );
-			return 'error';
-		}
+			$upload_status = 'error';
+			$upload_id     = facebook_for_woocommerce()->get_integration()->get_upload_id();
+			$result        = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
 
-		if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-			 $this->log_feed_progress( json_encode( $result ) );
-			 return 'error';
-		}
+			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
+				$this->log_feed_progress( json_encode( $result ) );
+				return $upload_status;
+			}
 
-		$upload_status = 'error';
-
-		if ( isset( $result->end_time ) ) {
-			$settings['upload_end_time'] = $result->end_time;
-			$upload_status = 'complete';
-		} elseif ( 200 === (int) wp_remote_retrieve_response_code( $result ) ) {
-			$upload_status = 'in progress';
+			if ( isset( $result->end_time ) ) {
+				$settings['upload_end_time'] = $result->end_time;
+				$upload_status = 'complete';
+			} elseif ( 200 === (int) wp_remote_retrieve_response_code( $result ) ) {
+				$upload_status = 'in progress';
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to upload the configured feed: %s', $e->getMessage() );
+			facebook_for_woocommerce()->log( $message );
 		}
 
 		return $upload_status;
