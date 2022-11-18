@@ -10,12 +10,10 @@
  */
 
 use WooCommerce\Facebook\Admin;
-use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
-use WooCommerce\Facebook\Handlers\Connection;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
 
