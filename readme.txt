@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.4 - 2022-11-21 =
+* Dev - Ensure return value matches method signature.
+
 = 3.0.3 - 2022-11-18 =
 * Fix - Remove flexible heredoc syntax that is incompatible with PHP 7.2
 
