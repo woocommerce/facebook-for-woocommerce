@@ -7,7 +7,6 @@ const jQueryUIAdminFileNames = [
 	'infobanner',
 	'metabox',
 	'modal',
-	'orders',
 	'product-categories',
 	'product-sets-admin',
 	'products-admin',
