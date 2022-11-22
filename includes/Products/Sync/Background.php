@@ -341,6 +341,7 @@ class Background extends BackgroundJobHandler {
 	private function send_item_updates( array $requests ): array {
 		$facebook_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
 		$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
-		return $response->handles;
+		$handles             = ( isset( $response->handles ) && is_array( $response->handles ) ) ? $response->handles : [];
+		return $handles;
 	}
 }
