@@ -606,41 +606,6 @@ class API extends Base {
 
 
 	/**
-	 * Acknowledges the given order.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $remote_id remote order ID
-	 * @param string $merchant_order_reference WC order ID
-	 * @return API\Response
-	 * @throws ApiException
-	 */
-	public function acknowledge_order( $remote_id, $merchant_order_reference ) {
-		$request = new API\Orders\Acknowledge\Request( $remote_id, $merchant_order_reference );
-		$this->set_response_handler( API\Response::class );
-		return $this->perform_request( $request );
-	}
-
-
-	/**
-	 * Cancels the given order.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @param string $remote_id remote order ID
-	 * @param string $reason cancellation reason
-	 * @param bool   $restock_items whether to restock items remotely
-	 * @return API\Response
-	 * @throws ApiException
-	 */
-	public function cancel_order( $remote_id, $reason, $restock_items = true ) {
-		$request = new API\Orders\Cancel\Request( $remote_id, $reason, $restock_items );
-		$this->set_response_handler( API\Response::class );
-		return $this->perform_request( $request );
-	}
-
-
-	/**
 	 * Returns a new request object.
 	 *
 	 * @since 2.0.0
