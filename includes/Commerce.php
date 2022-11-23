@@ -25,20 +25,6 @@ class Commerce {
 	const OPTION_GOOGLE_PRODUCT_CATEGORY_ID = 'wc_facebook_google_product_category_id';
 
 
-	/** @var Commerce\Orders the orders handler */
-	protected $orders;
-
-
-	/**
-	 * Commerce handler constructor.
-	 *
-	 * @since 2.1.0
-	 */
-	public function __construct() {
-		$this->orders = new Commerce\Orders();
-	}
-
-
 	/**
 	 * Gets the plugin-level fallback Google product category ID.
 	 *
@@ -124,19 +110,4 @@ class Commerce {
 		 */
 		return (bool) apply_filters( 'wc_facebook_commerce_is_connected', $connected, $this );
 	}
-
-
-	/**
-	 * Gets the orders handler instance.
-	 *
-	 * @since 2.1.0
-	 *
-	 * @return \WooCommerce\Facebook\Commerce\Orders
-	 */
-	public function get_orders_handler() {
-
-		return $this->orders;
-	}
-
-
 }
