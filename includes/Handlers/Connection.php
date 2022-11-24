@@ -334,15 +334,23 @@ class Connection {
 		}
 		try {
 			$response = facebook_for_woocommerce()->get_api()->get_user();
-			$response = facebook_for_woocommerce()->get_api()->delete_user_permission( $response->get_id(), 'manage_business_extension' );
-			$this->disconnect();
-			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
+			$id = $response->get_id();
+			if ( null !== $id ) {
+				$response = facebook_for_woocommerce()->get_api()->delete_user_permission( (string) $id , 'manage_business_extension' );
+				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
+			} else {
+				facebook_for_woocommerce()->log( 'User id not found for the disconnection procedure, connection will be reset.' );
+			}
 		} catch ( ApiException $exception ) {
-			facebook_for_woocommerce()->log( sprintf( 'An error occurred during disconnection: %s. Your Facebook connection settings have been reset.', $exception->getMessage() ) );
+			facebook_for_woocommerce()->log( sprintf( 'An error occurred during disconnection: %s.', $exception->getMessage() ) );
+		} catch ( \Exception $exception ) {
+			facebook_for_woocommerce()->log( sprintf( 'Internal error occurred during disconnection: %s.', $exception->getMessage() ) );
+		} finally {
 			$this->disconnect();
+			facebook_for_woocommerce()->log( sprintf( 'Your Facebook connection settings have been reset.' ) );
+			wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
+			exit;
 		}
-		wp_safe_redirect( facebook_for_woocommerce()->get_settings_url() );
-		exit;
 	}
 
 
