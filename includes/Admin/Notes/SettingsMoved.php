@@ -71,7 +71,6 @@ class SettingsMoved {
 	 * @return Note
 	 */
 	public static function get_note() {
-
 		$settings_url = facebook_for_woocommerce()->get_settings_url();
 		$content      = esc_html__( 'Sync your products and reach customers across Facebook, Instagram, Messenger and WhatsApp through your Facebook plugin, which can be found at Marketing > Facebook.', 'facebook-for-woocommerce' );
 
