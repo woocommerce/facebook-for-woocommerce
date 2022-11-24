@@ -12,10 +12,13 @@
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/includes/fbutils.php';
 
+use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 use WooCommerce\Facebook\Admin\Tasks\Setup;
+use WooCommerce\Facebook\Admin\Notes\SettingsMoved;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\Framework\Plugin\Compatibility;
 use WooCommerce\Facebook\Integrations\Bookings as BookingsIntegration;
 use WooCommerce\Facebook\Lifecycle;
 use WooCommerce\Facebook\ProductSync\ProductValidator as ProductSyncValidator;
@@ -137,6 +140,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 		// Hook the setup task. The hook admin_init is not triggered when the WC fetches the tasks using the endpoint: wp-json/wc-admin/onboarding/tasks and hence hooking into init.
 		add_action( 'init', array( $this, 'add_setup_task' ), 20 );
+		add_action( 'admin_notices', array( $this, 'add_inbox_notes' ) );
 
 		// Product Set breadcrumb filters
 		add_filter( 'woocommerce_navigation_is_connected_page', array( $this, 'is_current_page_conected_filter' ), 99, 2 );
@@ -218,6 +222,23 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		);
 	}
 
+	/**
+	 * Add Inbox notes.
+	 */
+	public function add_inbox_notes() {
+		if ( Compatibility::is_enhanced_admin_available() ) {
+			if ( class_exists( WooAdminFeatures::class ) ) {
+				$is_marketing_enabled = WooAdminFeatures::is_enabled( 'marketing' );
+			} else {
+				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
+					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
+			}
+
+			if ( $is_marketing_enabled && class_exists( '\Automattic\WooCommerce\Admin\Notes\Note' ) ) { // Checking for Note class is for backward compatibility.
+				SettingsMoved::possibly_add_or_delete_note();
+			}
+		}
+	}
 
 	/**
 	 * Gets deprecated and removed hooks.
