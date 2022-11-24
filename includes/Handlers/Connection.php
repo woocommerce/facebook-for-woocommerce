@@ -334,7 +334,7 @@ class Connection {
 		}
 		try {
 			$response = facebook_for_woocommerce()->get_api()->get_user();
-			$id = $response->get_id();
+			$id       = $response->get_id();
 			if ( null !== $id ) {
 				$response = facebook_for_woocommerce()->get_api()->delete_user_permission( (string) $id , 'manage_business_extension' );
 				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
