@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Plugin Name: Facebook for WooCommerce
- * Plugin URI: https://github.com/facebookincubator/facebook-for-woocommerce/
+ * Plugin URI: https://github.com/woocommerce/facebook-for-woocommerce/
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
