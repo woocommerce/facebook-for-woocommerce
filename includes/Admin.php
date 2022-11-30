@@ -13,7 +13,6 @@ namespace WooCommerce\Facebook;
 
 use WooCommerce\Facebook\Admin\Enhanced_Catalog_Attribute_Fields;
 use WooCommerce\Facebook\Framework\Helper;
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) or exit;

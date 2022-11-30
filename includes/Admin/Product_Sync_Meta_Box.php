@@ -52,7 +52,7 @@ class Product_Sync_Meta_Box {
 
 		$fb_integration      = facebook_for_woocommerce()->get_integration();
 		$fb_product          = new \WC_Facebook_Product( $post->ID );
-		$fb_product_group_id = null;
+		$fb_product_id       = null;
 		$should_sync         = true;
 		$no_sync_reason      = '';
 
@@ -65,24 +65,28 @@ class Product_Sync_Meta_Box {
 			}
 		}
 
-		if ( $should_sync || $fb_product->woo_product->is_type( 'variable' ) ) {
-			$fb_product_group_id = $fb_integration->get_product_fbid( $fb_integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
+		if ( $should_sync ) {
+			if ( $fb_product->woo_product->is_type( 'variable' ) ) {
+				$fb_product_id = $fb_integration->get_product_fbid( $fb_integration::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
+			} else {
+				$fb_product_id = $fb_integration->get_product_fbid( $fb_integration::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product );
+			}
 		}
 		?>
 			<span id="fb_metadata">
 		<?php
 
-		if ( $fb_product_group_id ) {
+		if ( $fb_product_id ) {
 
 			?>
 
 			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
-			<a href="https://facebook.com/<?php echo esc_attr( $fb_product_group_id ); ?>" target="_blank"><?php echo esc_html( $fb_product_group_id ); ?></a>
+			<a href="https://facebook.com/<?php echo esc_attr( $fb_product_id ); ?>" target="_blank"><?php echo esc_html( $fb_product_id ); ?></a>
 
 			<?php if ( \WC_Facebookcommerce_Utils::is_variable_type( $fb_product->get_type() ) ) : ?>
 
 				<?php
-				$product_item_ids_by_variation_id = $fb_integration->get_variation_product_item_ids( $fb_product, $fb_product_group_id );
+				$product_item_ids_by_variation_id = $fb_integration->get_variation_product_item_ids( $fb_product, $fb_product_id );
 				if ( $product_item_ids_by_variation_id ) :
 					?>
 

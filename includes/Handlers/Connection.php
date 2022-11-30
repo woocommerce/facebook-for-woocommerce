@@ -361,15 +361,16 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 */
-	private function disconnect() {
+	public function disconnect() {
 		$this->update_access_token( '' );
+		$this->update_page_access_token( '' );
 		$this->update_merchant_access_token( '' );
 		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
 		$this->update_instagram_business_id( '' );
 		$this->update_commerce_merchant_settings_id( '' );
-		$this->update_external_business_id('');
+		$this->update_external_business_id( '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, '' );
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );

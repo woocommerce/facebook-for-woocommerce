@@ -2766,7 +2766,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param int $product_id product ID
 	 */
-	private function delete_product_group( int $product_id ) {
+	public function delete_product_group( int $product_id ) {
 		$product_group_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $product_id );
 		if ( $product_group_id ) {
 			// TODO: replace with a call to API::delete_product_group() {WV 2020-05-26}
