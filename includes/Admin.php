@@ -1142,9 +1142,15 @@ class Admin {
 	public function add_product_settings_tab_content() {
 		global $post;
 
+
 		// all products have sync enabled unless explicitly disabled
 		$sync_enabled = 'no' !== get_post_meta( $post->ID, Products::SYNC_ENABLED_META_KEY, true );
 		$is_visible   = ( $visibility = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true ) ) ? wc_string_to_bool( $visibility ) : true;
+
+		$product = wc_get_product( $post );
+		if ( $product && !Products::product_should_be_synced( $product ) ) {
+			$sync_enabled = false;
+		}
 
 		$description  = get_post_meta( $post->ID, \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, true );
 		$price        = get_post_meta( $post->ID, \WC_Facebook_Product::FB_PRODUCT_PRICE, true );
