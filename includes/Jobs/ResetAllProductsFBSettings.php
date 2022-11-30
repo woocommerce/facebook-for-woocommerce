@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class ResetAllProductsFBSettings
  *
- * @since x.x.x
+ * @since 3.0.5
  */
 class ResetAllProductsFBSettings extends AbstractChainedJob {
 
@@ -63,7 +63,7 @@ class ResetAllProductsFBSettings extends AbstractChainedJob {
 	/**
 	 * Processes a batch of items.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @param array $items The items of the current batch.
 	 * @param array $args  The args for the job.
@@ -81,7 +81,7 @@ class ResetAllProductsFBSettings extends AbstractChainedJob {
 	 * Empty function to satisfy parent class requirements.
 	 * We don't use it because we are processing the whole batch at once in process_items.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @param mixed $item The items of the current batch.
 	 * @param array $args  The args for the job.
