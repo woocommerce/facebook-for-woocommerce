@@ -5,14 +5,14 @@ namespace WooCommerce\Facebook\Utilities;
 /**
  * Class DebugTools
  *
- * @since x.x.x
+ * @since 3.0.5
  */
 class DebugTools {
 
 	/**
 	 * Initialize the class.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 */
 	public function __construct() {
 		if ( is_admin() && ! is_ajax() ) {
@@ -23,7 +23,7 @@ class DebugTools {
 	/**
 	 * Adds clear settings tool to WC system status -> tools page.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @param array $tools system status tools.
 	 * @return array
@@ -68,7 +68,7 @@ class DebugTools {
 	/**
 	 * Runs the Delete Background Sync Jobs tool.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @return string
 	 */
@@ -84,7 +84,7 @@ class DebugTools {
 	/**
 	 * Runs the clear settings tool.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @return string
 	 */
@@ -99,7 +99,7 @@ class DebugTools {
 	/**
 	 * Runs the reset all catalog products settings tool.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @return string
 	 */
@@ -112,7 +112,7 @@ class DebugTools {
 	/**
 	 * Delete products from Facebook catalog.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.5
 	 *
 	 * @return string
 	 */
