@@ -16,8 +16,6 @@ use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
-use WooCommerce\Facebook\ProductSync\ProductExcludedException;
-use WooCommerce\Facebook\ProductSync\ProductInvalidException;
 
 defined( 'ABSPATH' ) || exit;
 
