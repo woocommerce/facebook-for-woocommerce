@@ -1148,7 +1148,7 @@ class Admin {
 		$is_visible   = ( $visibility = get_post_meta( $post->ID, Products::VISIBILITY_META_KEY, true ) ) ? wc_string_to_bool( $visibility ) : true;
 
 		$product = wc_get_product( $post );
-		if ( $product && !Products::product_should_be_synced( $product ) ) {
+		if ( $product && !facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks() ) {
 			$sync_enabled = false;
 		}
 
