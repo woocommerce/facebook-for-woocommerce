@@ -1246,7 +1246,6 @@ class Admin {
 				?>
 			</div>
 			<?php
-			$product          = wc_get_product( $post );
 			$commerce_handler = facebook_for_woocommerce()->get_commerce_handler();
 			?>
 			<?php if ( $commerce_handler->is_connected() && $commerce_handler->is_available() ) : ?>
