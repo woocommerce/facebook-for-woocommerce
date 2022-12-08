@@ -175,7 +175,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 			)
 		);
 
-		return ! ( $count > 0 );
+		return intval( $count ) === 0;
 	}
 
 
