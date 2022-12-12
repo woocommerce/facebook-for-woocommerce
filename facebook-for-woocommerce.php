@@ -12,6 +12,7 @@
  * Author: Facebook
  * Author URI: https://www.facebook.com/
  * Version: 3.0.5
+ * Requires at least: 5.6
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.1
  * WC requires at least: 5.3
