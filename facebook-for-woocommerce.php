@@ -15,7 +15,7 @@
  * Requires at least: 5.6
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.1
- * WC requires at least: 5.9
+ * WC requires at least: 5.4
  * WC tested up to: 5.4
  * Requires PHP: 7.2
  *
