@@ -7,6 +7,7 @@
 namespace WooCommerce\Facebook\Framework\Utilities;
 
 use WooCommerce\Facebook\Framework\Plugin\Compatibility;
+use WooCommerce\Facebook\Framework\Helper;
 
 defined( 'ABSPATH' ) || exit;
 
