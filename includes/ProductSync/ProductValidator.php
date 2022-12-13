@@ -138,7 +138,7 @@ class ProductValidator {
 	/**
 	 * Validate whether the product should be synced to Facebook but skip the sync field check.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.6
 	 * @throws ProductExcludedException|ProductInvalidException If product should not be synced.
 	 */
 	public function validate_but_skip_sync_field() {
