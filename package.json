@@ -1,6 +1,6 @@
 {
   "name": "facebook-for-woocommerce",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "author": "Facebook",
   "homepage": "https://woocommerce.com/products/facebook/",
   "license": "GPL-2.0",
@@ -33,5 +33,9 @@
     "version_replace_paths": [
       "./"
     ]
+  },
+  "engines": {
+    "node": ">=12.22 <=16.14.2",
+    "npm": ">=6.14 <=8.5.0"
   }
 }

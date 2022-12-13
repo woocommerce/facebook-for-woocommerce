@@ -161,8 +161,8 @@ class Tracker {
 		 * @since 2.6.0
 		 */
 		$config = get_transient( self::TRANSIENT_WCTRACKER_FBE_BUSINESS_CONFIG );
-		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ? $config->ig_shopping_enabled : false );
-		$data['extensions']['facebook-for-woocommerce']['instagram-cta-enabled']      = wc_bool_to_string( $config ? $config->ig_cta_enabled : false );
+		$data['extensions']['facebook-for-woocommerce']['instagram-shopping-enabled'] = wc_bool_to_string( $config ? $config['ig_shopping_enabled'] : false );
+		$data['extensions']['facebook-for-woocommerce']['instagram-cta-enabled']      = wc_bool_to_string( $config ? $config['ig_cta_enabled'] : false );
 
 		/**
 		 * Feed pull / upload settings configured in Facebook UI.

@@ -769,6 +769,14 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$sync_mode = isset( $_POST['wc_facebook_sync_mode'] )
 			? sanitize_text_field( wp_unslash( $_POST['wc_facebook_sync_mode'] ) )
 			: Admin::SYNC_MODE_SYNC_DISABLED;
+
+		// Restore sync mode if product is marked as visible and meet all the other criteria for sync.
+		$catalog_visibility = isset( $_POST['_visibility'] ) ? wc_clean( wp_unslash( $_POST['_visibility'] ) ) : null;
+		if ( $catalog_visibility && 'hidden' !== $catalog_visibility && $product->is_visible() && $sync_mode !== Admin::SYNC_MODE_SYNC_AND_HIDE ) {
+			$sync_mode = facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks_except_sync_field()
+				? Admin::SYNC_MODE_SYNC_AND_SHOW : $sync_mode;
+		}
+
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$sync_enabled = Admin::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 
@@ -776,6 +784,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			// force to Sync and hide
 			$sync_mode = Admin::SYNC_MODE_SYNC_AND_HIDE;
 		}
+
 		$products_to_delete_from_facebook = $this->get_removed_from_sync_products_to_delete();
 		if ( $product->is_type( 'variable' ) ) {
 			// check variations for deletion

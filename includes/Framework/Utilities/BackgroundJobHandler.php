@@ -1,5 +1,5 @@
 <?php
-// phpcs:ignoreFile
+
 /**
  * Facebook for WooCommerce.
  */
@@ -7,8 +7,9 @@
 namespace WooCommerce\Facebook\Framework\Utilities;
 
 use WooCommerce\Facebook\Framework\Plugin\Compatibility;
+use WooCommerce\Facebook\Framework\Helper;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * SkyVerge WordPress Background Job Handler class
@@ -78,15 +79,15 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @since 4.8.0
 	 */
 	protected function add_hooks() {
-
 		// cron healthcheck
-		add_action( $this->cron_hook_identifier, array( $this, 'handle_cron_healthcheck' ) );
-		add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
+		add_action( $this->cron_hook_identifier, [ $this, 'handle_cron_healthcheck' ] );
+		/* phpcs:ignore WordPress.WP.CronInterval.ChangeDetected */
+		add_filter( 'cron_schedules', [ $this, 'schedule_cron_healthcheck' ] );
 
 		// debugging & testing
-		add_action( "wp_ajax_nopriv_{$this->identifier}_test", array( $this, 'handle_connection_test_response' ) );
-		add_filter( 'woocommerce_debug_tools', array( $this, 'add_debug_tool' ) );
-		add_filter( 'gettext', array( $this, 'translate_success_message' ), 10, 3 );
+		add_action( "wp_ajax_nopriv_{$this->identifier}_test", [ $this, 'handle_connection_test_response' ] );
+		add_filter( 'woocommerce_debug_tools', [ $this, 'add_debug_tool' ] );
+		add_filter( 'gettext', [ $this, 'translate_success_message' ], 10, 3 );
 	}
 
 
@@ -97,7 +98,6 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return array|\WP_Error
 	 */
 	public function dispatch() {
-
 		// schedule the cron healthcheck
 		$this->schedule_event();
 
@@ -113,10 +113,9 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @throws \Exception upon error
+	 * @throws \Exception Upon error.
 	 */
 	public function maybe_handle() {
-
 		if ( $this->is_process_running() ) {
 			// background process already running
 			wp_die();
@@ -127,20 +126,22 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 			wp_die();
 		}
 
-		// WC core does 2 things here that can interfere with our nonce check:
-		// 1. WooCommerce starts a session due to our GET request to dispatch a job
-		//  However, this happens *after* we've generated a nonce without a session (in CRON context)
-		// 2. it then filters nonces for logged-out users indiscriminately without checking the nonce action; if
-		//  there is a session created (and now the server does have one), it tries to filter every.single.nonce
-		//  for logged-out users to use the customer session ID instead of 0 for user ID. We *want* to check
-		//  against a UID of 0 (since that's how the nonce was created), so we temporarily pause the
-		//  logged-out nonce hijacking before standing aside.
-		remove_filter( 'nonce_user_logged_out', array( WC()->session, 'nonce_user_logged_out' ) );
+		/*
+		 * WC core does 2 things here that can interfere with our nonce check:
+		 * 1. WooCommerce starts a session due to our GET request to dispatch a job
+		 *    However, this happens *after* we've generated a nonce without a session (in CRON context)
+		 * 2. It then filters nonces for logged-out users indiscriminately without checking the nonce action; if
+		 *    there is a session created (and now the server does have one), it tries to filter every.single.nonce
+		 *    for logged-out users to use the customer session ID instead of 0 for user ID. We *want* to check
+		 *    against a UID of 0 (since that's how the nonce was created), so we temporarily pause the
+		 *    logged-out nonce hijacking before standing aside.
+		 */
+		remove_filter( 'nonce_user_logged_out', [ WC()->session, 'nonce_user_logged_out' ] );
 
 		check_ajax_referer( $this->identifier, 'nonce' );
 
 		// sorry, later nonce users! please play again
-		add_filter( 'nonce_user_logged_out', array( WC()->session, 'nonce_user_logged_out' ) );
+		add_filter( 'nonce_user_logged_out', [ WC()->session, 'nonce_user_logged_out' ] );
 
 		$this->handle();
 
@@ -163,14 +164,19 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		$queued     = '%"status":"queued"%';
 		$processing = '%"status":"processing"%';
 
-		$count = $wpdb->get_var( $wpdb->prepare( "
-			SELECT COUNT(*)
-			FROM {$wpdb->options}
-			WHERE option_name LIKE %s
-			AND ( option_value LIKE %s OR option_value LIKE %s )
-		", $key, $queued, $processing ) );
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*)
+				FROM {$wpdb->options}
+				WHERE option_name LIKE %s
+				AND ( option_value LIKE %s OR option_value LIKE %s )",
+				$key,
+				$queued,
+				$processing
+			)
+		);
 
-		return ( $count > 0 ) ? false : true;
+		return intval( $count ) === 0;
 	}
 
 
@@ -242,7 +248,6 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return bool True if exceeded memory limit, false otherwise
 	 */
 	protected function memory_exceeded() {
-
 		$memory_limit   = $this->get_memory_limit() * 0.9; // 90% of max memory
 		$current_memory = memory_get_usage( true );
 		$return         = false;
@@ -270,7 +275,6 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return int memory limit in bytes
 	 */
 	protected function get_memory_limit() {
-
 		if ( function_exists( 'ini_get' ) ) {
 			$memory_limit = ini_get( 'memory_limit' );
 		} else {
@@ -298,7 +302,6 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return bool True, if time limit exceeded, false otherwise
 	 */
 	protected function time_exceeded() {
-
 		/**
 		 * Filter default time limit for background job execution, defaults to
 		 * 20 seconds
@@ -361,18 +364,24 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		$attrs = apply_filters( "{$this->identifier}_new_job_attrs", $attrs, $job_id );
 
 		// ensure a few must-have attributes
-		$attrs = wp_parse_args( array(
-			'id'         => $job_id,
-			'created_at' => current_time( 'mysql' ),
-			'created_by' => get_current_user_id(),
-			'status'     => 'queued',
-		), $attrs );
+		$attrs = wp_parse_args(
+			[
+				'id'         => $job_id,
+				'created_at' => current_time( 'mysql' ),
+				'created_by' => get_current_user_id(),
+				'status'     => 'queued',
+			],
+			$attrs
+		);
 
-		$wpdb->insert( $wpdb->options, array(
-			'option_name'  => "{$this->identifier}_job_{$job_id}",
-			'option_value' => json_encode( $attrs ),
-			'autoload'     => 'no'
-		) );
+		$wpdb->insert(
+			$wpdb->options,
+			[
+				'option_name'  => "{$this->identifier}_job_{$job_id}",
+				'option_value' => json_encode( $attrs ),
+				'autoload'     => 'no',
+			]
+		);
 
 		$job = new \stdClass();
 
@@ -411,33 +420,35 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 			$queued     = '%"status":"queued"%';
 			$processing = '%"status":"processing"%';
 
-			$results = $wpdb->get_var( $wpdb->prepare( "
-				SELECT option_value
-				FROM {$wpdb->options}
-				WHERE option_name LIKE %s
-				AND ( option_value LIKE %s OR option_value LIKE %s )
-				ORDER BY option_id ASC
-				LIMIT 1
-			", $key, $queued, $processing ) );
-
+			$results = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT option_value
+					FROM {$wpdb->options}
+					WHERE option_name LIKE %s
+					AND ( option_value LIKE %s OR option_value LIKE %s )
+					ORDER BY option_id ASC
+					LIMIT 1",
+					$key,
+					$queued,
+					$processing
+				)
+			);
 		} else {
-
-			$results = $wpdb->get_var( $wpdb->prepare( "
-				SELECT option_value
-				FROM {$wpdb->options}
-				WHERE option_name = %s
-			", "{$this->identifier}_job_{$id}" ) );
-
+			$results = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT option_value
+					FROM {$wpdb->options}
+					WHERE option_name = %s",
+					"{$this->identifier}_job_{$id}"
+				)
+			);
 		}
 
 		if ( ! empty( $results ) ) {
-
 			$job = new \stdClass();
-
 			foreach ( json_decode( $results, true ) as $key => $value ) {
 				$job->{$key} = $value;
 			}
-
 		} else {
 			return null;
 		}
@@ -467,29 +478,28 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * }
 	 * @return \stdClass[]|object[]|null Found jobs or null if none found
 	 */
-	public function get_jobs( $args = array() ) {
+	public function get_jobs( $args = [] ) {
 		global $wpdb;
 
-		$args = wp_parse_args( $args, array(
-			'order'   => 'DESC',
-			'orderby' => 'option_id',
-		) );
+		$args = wp_parse_args(
+			$args,
+			[
+				'order'   => 'DESC',
+				'orderby' => 'option_id',
+			]
+		);
 
-		$replacements = array( $this->identifier . '_job_%' );
+		$replacements = [ $this->identifier . '_job_%' ];
 		$status_query = '';
 
 		// prepare status query
 		if ( ! empty( $args['status'] ) ) {
-
 			$statuses     = (array) $args['status'];
-			$placeholders = array();
-
+			$placeholders = [];
 			foreach ( $statuses as $status ) {
-
 				$placeholders[] = '%s';
 				$replacements[] = '%"status":"' . sanitize_key( $status ) . '"%';
 			}
-
 			$status_query = 'AND ( option_value LIKE ' . implode( ' OR option_value LIKE ', $placeholders ) . ' )';
 		}
 
@@ -498,33 +508,27 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		$orderby = sanitize_key( $args['orderby'] );
 
 		// put it all together now
-		$query = $wpdb->prepare( "
-			SELECT option_value
-			FROM {$wpdb->options}
-			WHERE option_name LIKE %s
-			{$status_query}
-			ORDER BY {$orderby} {$order}
-		", $replacements );
+		$query = $wpdb->prepare(
+			/* phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
+			"SELECT option_value FROM {$wpdb->options} WHERE option_name LIKE %s {$status_query} ORDER BY {$orderby} {$order}",
+			$replacements
+		);
 
+		/* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared */
 		$results = $wpdb->get_col( $query );
 
 		if ( empty( $results ) ) {
 			return null;
 		}
 
-		$jobs = array();
-
+		$jobs = [];
 		foreach ( $results as $result ) {
-
 			$job = new \stdClass();
-
 			foreach ( json_decode( $result, true ) as $key => $value ) {
 				$job->{$key} = $value;
 			}
-
 			/** This filter is documented above */
-			$job = apply_filters( "{$this->identifier}_returned_job", $job );
-
+			$job    = apply_filters( "{$this->identifier}_returned_job", $job );
 			$jobs[] = $job;
 		}
 
@@ -539,23 +543,18 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @throws \Exception
+	 * @throws \Exception Upon error.
 	 */
 	protected function handle() {
-
 		$this->lock_process();
 
 		do {
-
 			// Get next job in the queue
 			$job = $this->get_job();
-
 			// handle PHP errors from here on out
-			register_shutdown_function( array( $this, 'handle_shutdown' ), $job );
-
+			register_shutdown_function( [ $this, 'handle_shutdown' ], $job );
 			// Start processing
 			$this->process_job( $job );
-
 		} while ( ! $this->time_exceeded() && ! $this->memory_exceeded() && ! $this->is_queue_empty() );
 
 		$this->unlock_process();
@@ -588,12 +587,11 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @since 4.4.0
 	 *
 	 * @param \stdClass|object $job
-	 * @param int $items_per_batch number of items to process in a single request. Defaults to unlimited.
-	 * @throws \Exception when job data is incorrect
+	 * @param int              $items_per_batch number of items to process in a single request. Defaults to unlimited.
+	 * @throws \Exception When job data is incorrect.
 	 * @return \stdClass $job
 	 */
 	public function process_job( $job, $items_per_batch = null ) {
-
 		if ( ! $this->start_time ) {
 			$this->start_time = time();
 		}
@@ -610,10 +608,12 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		$data_key = $this->data_key;
 
 		if ( ! isset( $job->{$data_key} ) ) {
+			/* translators: %s - string representing data key. */
 			throw new \Exception( sprintf( __( 'Job data key "%s" not set', 'facebook-for-woocommerce' ), $data_key ) );
 		}
 
 		if ( ! is_array( $job->{$data_key} ) ) {
+			/* translators: %s - string representing data key. */
 			throw new \Exception( sprintf( __( 'Job data key "%s" is not an array', 'facebook-for-woocommerce' ), $data_key ) );
 		}
 
@@ -734,7 +734,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @since 4.4.0
 	 *
 	 * @param \stdClass|object|string $job Job instance or ID
-	 * @param string $reason Optional. Reason for failure.
+	 * @param string                  $reason Optional. Reason for failure.
 	 * @return \stdClass|false on failure
 	 */
 	public function fail_job( $job, $reason = '' ) {
@@ -778,7 +778,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		if ( ! $job ) {
 			return false;
 		}
-		$wpdb->delete( $wpdb->options, array( 'option_name' => "{$this->identifier}_job_{$job->id}" ) );
+		$wpdb->delete( $wpdb->options, [ 'option_name' => "{$this->identifier}_job_{$job->id}" ] );
 		/**
 		* Runs after a job is deleted.
 		*
@@ -821,10 +821,11 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		 */
 		$interval = apply_filters( "{$this->identifier}_cron_interval", $interval );
 		// adds every 5 minutes to the existing schedules.
-		$schedules[ $this->identifier . '_cron_interval' ] = array(
+		$schedules[ $this->identifier . '_cron_interval' ] = [
 			'interval' => MINUTE_IN_SECONDS * $interval,
-			'display'  => sprintf( __( 'Every %d Minutes' ), $interval ),
-		);
+			/* translators: %d - interval in minutes. */
+			'display'  => sprintf( __( 'Every %d Minutes', 'facebook-for-woocommerce' ), $interval ),
+		];
 		return $schedules;
 	}
 
@@ -886,7 +887,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 *
 	 * @since 4.4.2
 	 *
-	 * @param mixed $item Job data item to iterate over
+	 * @param mixed            $item Job data item to iterate over
 	 * @param \stdClass|object $job Job instance
 	 * @return mixed
 	 */
@@ -923,8 +924,8 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 
 		return $wpdb->update(
 			$wpdb->options,
-			array( 'option_value' => json_encode( $job ) ),
-			array( 'option_name'  => "{$this->identifier}_job_{$job->id}" )
+			[ 'option_value' => json_encode( $job ) ],
+			[ 'option_name' => "{$this->identifier}_job_{$job->id}" ]
 		);
 	}
 
@@ -955,7 +956,6 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @since 4.8.0
 	 */
 	public function handle_connection_test_response() {
-
 		echo '[TEST_LOOPBACK]';
 		exit;
 	}
@@ -970,14 +970,13 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return array
 	 */
 	public function add_debug_tool( $tools ) {
-
 		// this key is not unique to the plugin to avoid duplicate tools
-		$tools['sv_wc_background_job_test'] = array(
+		$tools['sv_wc_background_job_test'] = [
 			'name'     => __( 'Background Processing Test', 'facebook-for-woocommerce' ),
 			'button'   => __( 'Run Test', 'facebook-for-woocommerce' ),
 			'desc'     => __( 'This tool will test whether your server is capable of processing background jobs.', 'facebook-for-woocommerce' ),
-			'callback' => array( $this, 'run_debug_tool' ),
-		);
+			'callback' => [ $this, 'run_debug_tool' ],
+		];
 
 		return $tools;
 	}
@@ -991,13 +990,12 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @return string
 	 */
 	public function run_debug_tool() {
-
 		if ( $this->test_connection() ) {
 			$this->debug_message = esc_html__( 'Success! You should be able to process background jobs.', 'facebook-for-woocommerce' );
-			$result = true;
+			$result              = true;
 		} else {
 			$this->debug_message = esc_html__( 'Could not connect. Please ask your hosting company to ensure your server has loopback connections enabled.', 'facebook-for-woocommerce' );
-			$result = false;
+			$result              = false;
 		}
 
 		return $result;
