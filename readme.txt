@@ -39,6 +39,14 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.6 - 2022-12-13 =
+* Dev - Add node and npm version restrictions.
+* Fix  - PHP Warning: Attempt to read property on array in Tracker.php.
+* Fix - Deprecated notice fix.
+* Fix - Facebook Sync status is incorrect when a product has catalog visibility hidden.
+* Fix - Issue in running Background Process Test debug tool.
+* Tweak - WC 7.2 compatibility.
+
 = 3.0.5 - 2022-11-30 =
 * Add - Debug tools to help reset settings, delete background options and delete catalog products.
 * Add - Inbox note about Facebook menu moved under the Marketing menu.
