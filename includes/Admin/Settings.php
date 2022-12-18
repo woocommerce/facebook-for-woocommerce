@@ -53,17 +53,34 @@ class Settings {
 	 *
 	 * @since 2.0.0
 	 */
-	public function __construct() {
-		$this->screens = array(
-			Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),
-			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
-			Settings_Screens\Product_Sets::ID => new Settings_Screens\Product_Sets(),
-			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
-			Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),
-		);
+	public function __construct( bool $is_connected ) {
+
+		$this->screens = $this->build_menu_item_array( $is_connected );
+
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 		add_filter( 'parent_file', array( $this, 'set_parent_and_submenu_file' ) );
+	}
+
+	/**
+	 * Arranges the tabs. If the plugin is connected to FB, Advertise tab will be first, otherwise the Connection tab will be the first tab.
+	 *
+	 * @since 3.0.5
+	 */
+	private function build_menu_item_array( bool $is_connected ): array{
+		$advertise = [Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),];
+		$connection = [Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),];
+
+		$first = ( $is_connected ) ? $advertise : $connection ;
+		$last = ( $is_connected ) ? $connection : $advertise ;
+
+		$screens = array(
+			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
+			Settings_Screens\Product_Sets::ID => new Settings_Screens\Product_Sets(),
+			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
+		);
+
+		return array(...$first, ...$screens, ...$last);
 	}
 
 	/**
