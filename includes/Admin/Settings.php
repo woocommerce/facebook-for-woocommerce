@@ -80,7 +80,7 @@ class Settings {
 			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
 		);
 
-		return array( ...$first, ...$screens, ...$last );
+		return array_merge( array_merge( $first, $screens ), $last );
 	}
 
 	/**
