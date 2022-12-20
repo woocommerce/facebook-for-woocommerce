@@ -15,14 +15,15 @@
 		<!--All PHP files contain a single class with a comment so a file comment is redundant -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/>
 
-		<!-- We will come back to implementing this rule-->
-		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<!-- Rules related to comments. We will come back to implementing these rules-->
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
 		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
 		<exclude name="WooCommerce.Commenting.CommentHooks.MissingSinceComment"/>
+		<exclude name="WooCommerce.Commenting.CommentHooks.MissingHookComment"/>
 	</rule>
 
 	<!-- Set the appropriate text domain. -->
