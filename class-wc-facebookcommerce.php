@@ -199,7 +199,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {
-				$this->admin_settings = new WooCommerce\Facebook\Admin\Settings( $this->connection_handler->is_connected() );
+				$this->admin_settings = new WooCommerce\Facebook\Admin\Settings();
 			}
 		}
 	}
@@ -830,3 +830,4 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 function facebook_for_woocommerce() {
 	return \WC_Facebookcommerce::instance();
 }
+
