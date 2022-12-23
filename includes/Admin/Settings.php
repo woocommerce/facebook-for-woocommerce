@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -19,7 +18,7 @@ use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Compatibility;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin settings handler.
@@ -78,8 +77,8 @@ class Settings {
 			&& class_exists( WooAdminMenu::class )
 			&& WooAdminFeatures::is_enabled( 'navigation' );
 		if ( Compatibility::is_enhanced_admin_available() ) {
-			if (  class_exists( WooAdminFeatures::class ) ) {
-				$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
+			if ( class_exists( WooAdminFeatures::class ) ) {
+				$is_marketing_enabled = WooAdminFeatures::is_enabled( 'marketing' );
 			} else {
 				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
 					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
@@ -136,12 +135,13 @@ class Settings {
 	 * @param string $parent_file The parent file.
 	 * @return string
 	 */
-	public function set_parent_and_submenu_file( $parent_file ){
+	public function set_parent_and_submenu_file( $parent_file ) {
 		global $submenu_file, $current_screen;
 
+		// The Facebook Product Set is now a submenu of woocommerce-marketing. Hence, we are overriding the $parent_file and $submenu_file when accessing the fb_product_set taxonomy page.
 		if ( isset( $current_screen->taxonomy ) && 'fb_product_set' === $current_screen->taxonomy ) {
 			$parent_file  = 'woocommerce-marketing';
-			$submenu_file = admin_url( self::SUBMENU_PAGE_ID );
+			$submenu_file = admin_url( self::SUBMENU_PAGE_ID ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		return $parent_file;
@@ -236,7 +236,7 @@ class Settings {
 			return;
 		}
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( __( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
+			wp_die( esc_html__( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
 		}
 		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
 		try {
