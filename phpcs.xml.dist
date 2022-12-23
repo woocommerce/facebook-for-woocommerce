@@ -19,6 +19,7 @@
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<exclude name="Squiz.Commenting.FunctionComment.Missing"/>
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
 		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
