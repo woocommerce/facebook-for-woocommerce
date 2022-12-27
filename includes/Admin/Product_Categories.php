@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Framework\Helper;
 
@@ -68,18 +67,19 @@ class Product_Categories {
 					'jquery-tiptip',
 					'facebook-for-woocommerce-modal',
 				),
-				\WC_Facebookcommerce::PLUGIN_VERSION
+				\WC_Facebookcommerce::PLUGIN_VERSION,
+				true
 			);
 
 			wp_localize_script(
 				'wc-facebook-product-categories',
 				'facebook_for_woocommerce_product_categories',
 				array(
-					'ajax_url'                                      => admin_url( 'admin-ajax.php' ),
-					'enhanced_attribute_optional_selector'          => Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
-					'enhanced_attribute_page_type_edit_category'    => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
-					'enhanced_attribute_page_type_add_category'     => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
-					'enhanced_attribute_page_type_edit_product'     => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
+					'ajax_url'                             => admin_url( 'admin-ajax.php' ),
+					'enhanced_attribute_optional_selector' => Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX . Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY,
+					'enhanced_attribute_page_type_edit_category' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_CATEGORY,
+					'enhanced_attribute_page_type_add_category' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY,
+					'enhanced_attribute_page_type_edit_product' => Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_EDIT_PRODUCT,
 					'default_google_product_category_modal_message' => $this->get_default_google_product_category_modal_message(),
 					'default_google_product_category_modal_buttons' => $this->get_default_google_product_category_modal_buttons(),
 				)
@@ -278,7 +278,7 @@ class Product_Categories {
 			?>
 				<tr class='form-field'>
 				<td colspan="2">
-				<span><?php echo $category_id; ?></span>
+				<span><?php echo esc_html( $category_id ); ?></span>
 				</td>
 				</tr>
 			<?php
@@ -306,8 +306,7 @@ class Product_Categories {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param mixed    $category_id the selected category to render attributes for.
-	 * @param \WP_Term $term current taxonomy term object.
+	 * @param mixed $category_id the selected category to render attributes for.
 	 */
 	public function render_add_enhanced_catalog_attributes_field( $category_id ) {
 		$enhanced_attribute_fields = new Enhanced_Catalog_Attribute_Fields( Enhanced_Catalog_Attribute_Fields::PAGE_TYPE_ADD_CATEGORY );

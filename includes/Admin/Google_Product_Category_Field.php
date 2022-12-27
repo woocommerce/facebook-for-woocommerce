@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Google product category field.
@@ -31,7 +30,7 @@ class Google_Product_Category_Field {
 		$facebook_category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
 		$facebook_category_fields  = sprintf(
 			"window.wc_facebook_google_product_category_fields = new WC_Facebook_Google_Product_Category_Fields( %s, '%s' );",
-			json_encode( $facebook_category_handler->get_categories() ),
+			wp_json_encode( $facebook_category_handler->get_categories() ),
 			esc_js( $input_id )
 		);
 		wc_enqueue_js( $facebook_category_fields );

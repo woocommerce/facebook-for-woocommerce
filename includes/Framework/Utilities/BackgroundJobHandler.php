@@ -377,7 +377,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 			$wpdb->options,
 			[
 				'option_name'  => "{$this->identifier}_job_{$job_id}",
-				'option_value' => json_encode( $attrs ),
+				'option_value' => wp_json_encode( $attrs ),
 				'autoload'     => 'no',
 			]
 		);
@@ -923,7 +923,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 
 		return $wpdb->update(
 			$wpdb->options,
-			[ 'option_value' => json_encode( $job ) ],
+			[ 'option_value' => wp_json_encode( $job ) ],
 			[ 'option_name' => "{$this->identifier}_job_{$job->id}" ]
 		);
 	}

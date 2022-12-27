@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace WooCommerce\Facebook\Admin;
 
@@ -24,7 +23,8 @@ class Product_Sync_Meta_Box {
 			'wc_facebook_metabox_jsx',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/metabox.js',
 			array(),
-			\WC_Facebookcommerce::PLUGIN_VERSION
+			\WC_Facebookcommerce::PLUGIN_VERSION,
+			true
 		);
 
 		wp_localize_script(
@@ -50,11 +50,11 @@ class Product_Sync_Meta_Box {
 	public static function output() {
 		global $post;
 
-		$fb_integration      = facebook_for_woocommerce()->get_integration();
-		$fb_product          = new \WC_Facebook_Product( $post->ID );
-		$fb_product_id       = null;
-		$should_sync         = true;
-		$no_sync_reason      = '';
+		$fb_integration = facebook_for_woocommerce()->get_integration();
+		$fb_product     = new \WC_Facebook_Product( $post->ID );
+		$fb_product_id  = null;
+		$should_sync    = true;
+		$no_sync_reason = '';
 
 		if ( $fb_product->woo_product instanceof \WC_Product ) {
 			try {
