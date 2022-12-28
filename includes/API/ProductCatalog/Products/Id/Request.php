@@ -19,7 +19,7 @@ class Request extends ApiRequest {
 	 * @param string $facebook_product_retailer_id Facebook Product Retailer ID.
 	 */
 	public function __construct( string $facebook_product_catalog_id, string $facebook_product_retailer_id ) {
-		$path = "catalog:{$facebook_product_catalog_id}:" . base64_encode( $facebook_product_retailer_id );
+		$path = "catalog:{$facebook_product_catalog_id}:" . base64_encode( $facebook_product_retailer_id ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		parent::__construct( "/{$path}/?fields=id,product_group{id}", 'GET' );
 	}
 }

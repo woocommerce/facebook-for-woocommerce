@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\API\Catalog\Product_Item\Find;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\API;
 
@@ -46,7 +45,7 @@ class Request extends API\Request {
 	 */
 	public function __construct( $catalog_id, $retailer_id ) {
 
-		parent::__construct( "catalog:{$catalog_id}:" . base64_encode( $retailer_id ), 'GET' );
+		parent::__construct( "catalog:{$catalog_id}:" . base64_encode( $retailer_id ), 'GET' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 

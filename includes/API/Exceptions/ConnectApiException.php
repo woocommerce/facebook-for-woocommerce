@@ -1,9 +1,8 @@
 <?php
-// phpcs:ignoreFile
 
 namespace WooCommerce\Facebook\API\Exceptions;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Connect_WC_API_Exception.

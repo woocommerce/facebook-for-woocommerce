@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 declare( strict_types=1 );
 
 namespace WooCommerce\Facebook\API\FBE\Installation\Read;
