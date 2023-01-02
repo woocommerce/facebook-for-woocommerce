@@ -67,7 +67,7 @@ class Settings {
 	 *
 	 * @since x.x.x
 	 */
-	private function build_menu_item_array( bool $is_connected ): array{
+	private function build_menu_item_array( bool $is_connected ): array {
 		$advertise  = [ Settings_Screens\Advertise::ID => new Settings_Screens\Advertise() ];
 		$connection = [ Settings_Screens\Connection::ID => new Settings_Screens\Connection() ];
 
