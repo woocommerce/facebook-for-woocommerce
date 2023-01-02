@@ -68,11 +68,11 @@ class Settings {
 	 * @since x.x.x
 	 */
 	private function build_menu_item_array( bool $is_connected ): array{
-		$advertise = [Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),];
-		$connection = [Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),];
+		$advertise  = [ Settings_Screens\Advertise::ID => new Settings_Screens\Advertise() ];
+		$connection = [ Settings_Screens\Connection::ID => new Settings_Screens\Connection() ];
 
-		$first = ( $is_connected ) ? $advertise : $connection ;
-		$last = ( $is_connected ) ? $connection : $advertise ;
+		$first = ( $is_connected ) ? $advertise : $connection;
+		$last  = ( $is_connected ) ? $connection : $advertise;
 
 		$screens = array(
 			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
