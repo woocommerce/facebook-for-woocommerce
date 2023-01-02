@@ -65,7 +65,7 @@ class Settings {
 	/**
 	 * Arranges the tabs. If the plugin is connected to FB, Advertise tab will be first, otherwise the Connection tab will be the first tab.
 	 *
-	 * @since 3.0.5
+	 * @since x.x.x
 	 */
 	private function build_menu_item_array( bool $is_connected ): array{
 		$advertise = [Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),];
