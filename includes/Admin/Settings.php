@@ -51,6 +51,7 @@ class Settings {
 	/**
 	 * Settings constructor.
 	 *
+	 * @param bool $is_connected is the state of the plugin connection to the Facebook Marketing API
 	 * @since 2.0.0
 	 */
 	public function __construct( bool $is_connected ) {
