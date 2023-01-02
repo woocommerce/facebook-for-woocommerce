@@ -65,6 +65,7 @@ class Settings {
 	/**
 	 * Arranges the tabs. If the plugin is connected to FB, Advertise tab will be first, otherwise the Connection tab will be the first tab.
 	 *
+	 * @param bool $is_connected is Facebook connected
 	 * @since x.x.x
 	 */
 	private function build_menu_item_array( bool $is_connected ): array {
