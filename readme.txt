@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,19 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.7 - 2023-01-03 =
+* Dev - Add node and npm version restrictions.
+* Dev - Ease current node version restrictions.
+* Dev - Fix `phpcs` violations in the `includes/admin` folder.
+* Dev - Fix phpcs violations in the includes/API folder.
+* Dev - Updated `phpcs` ruleset.
+* Fix - Deprecated notice fix.
+* Fix - Facebook Sync status is incorrect when a product has catalog visibility hidden.
+* Fix - Issue in running Background Process Test debug tool.
+* Fix - Made Advertise tab be the default when connected.
+* Fix - PHP Warning: Attempt to read property on array in Tracker.php.
+* Tweak - WC 7.3 compatibility.
 
 = 3.0.6 - 2022-12-13 =
 * Dev - Add node and npm version restrictions.

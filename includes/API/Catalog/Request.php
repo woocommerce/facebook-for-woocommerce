@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\API\Catalog;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\API\Request as ApiRequest;
 
@@ -20,8 +19,7 @@ use WooCommerce\Facebook\API\Request as ApiRequest;
  *
  * @link https://developers.facebook.com/docs/marketing-api/reference/product-catalog/v13.0
  */
-class Request extends ApiRequest
-{
+class Request extends ApiRequest {
 	/**
 	 * Gets the rate limit ID.
 	 *
@@ -38,6 +36,6 @@ class Request extends ApiRequest
 	 * @param string $catalog_id catalog ID
 	 */
 	public function __construct( string $catalog_id ) {
-		parent::__construct("/{$catalog_id}?fields=name", 'GET');
+		parent::__construct( "/{$catalog_id}?fields=name", 'GET' );
 	}
 }

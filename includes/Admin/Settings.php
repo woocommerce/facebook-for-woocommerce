@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -19,7 +18,7 @@ use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Compatibility;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin settings handler.
@@ -51,19 +50,38 @@ class Settings {
 	/**
 	 * Settings constructor.
 	 *
+	 * @param bool $is_connected is the state of the plugin connection to the Facebook Marketing API
 	 * @since 2.0.0
 	 */
-	public function __construct() {
-		$this->screens = array(
-			Settings_Screens\Connection::ID   => new Settings_Screens\Connection(),
-			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
-			Settings_Screens\Product_Sets::ID => new Settings_Screens\Product_Sets(),
-			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
-			Settings_Screens\Advertise::ID    => new Settings_Screens\Advertise(),
-		);
+	public function __construct( bool $is_connected ) {
+
+		$this->screens = $this->build_menu_item_array( $is_connected );
+
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 		add_action( 'wp_loaded', array( $this, 'save' ) );
 		add_filter( 'parent_file', array( $this, 'set_parent_and_submenu_file' ) );
+	}
+
+	/**
+	 * Arranges the tabs. If the plugin is connected to FB, Advertise tab will be first, otherwise the Connection tab will be the first tab.
+	 *
+	 * @param bool $is_connected is Facebook connected
+	 * @since 3.0.7
+	 */
+	private function build_menu_item_array( bool $is_connected ): array {
+		$advertise  = [ Settings_Screens\Advertise::ID => new Settings_Screens\Advertise() ];
+		$connection = [ Settings_Screens\Connection::ID => new Settings_Screens\Connection() ];
+
+		$first = ( $is_connected ) ? $advertise : $connection;
+		$last  = ( $is_connected ) ? $connection : $advertise;
+
+		$screens = array(
+			Settings_Screens\Product_Sync::ID => new Settings_Screens\Product_Sync(),
+			Settings_Screens\Product_Sets::ID => new Settings_Screens\Product_Sets(),
+			Settings_Screens\Messenger::ID    => new Settings_Screens\Messenger(),
+		);
+
+		return array_merge( array_merge( $first, $screens ), $last );
 	}
 
 	/**
@@ -78,8 +96,8 @@ class Settings {
 			&& class_exists( WooAdminMenu::class )
 			&& WooAdminFeatures::is_enabled( 'navigation' );
 		if ( Compatibility::is_enhanced_admin_available() ) {
-			if (  class_exists( WooAdminFeatures::class ) ) {
-				$is_marketing_enabled =  WooAdminFeatures::is_enabled( 'marketing' );
+			if ( class_exists( WooAdminFeatures::class ) ) {
+				$is_marketing_enabled = WooAdminFeatures::is_enabled( 'marketing' );
 			} else {
 				$is_marketing_enabled = is_callable( '\Automattic\WooCommerce\Admin\Loader::is_feature_enabled' )
 					&& \Automattic\WooCommerce\Admin\Loader::is_feature_enabled( 'marketing' );
@@ -136,12 +154,13 @@ class Settings {
 	 * @param string $parent_file The parent file.
 	 * @return string
 	 */
-	public function set_parent_and_submenu_file( $parent_file ){
+	public function set_parent_and_submenu_file( $parent_file ) {
 		global $submenu_file, $current_screen;
 
+		// The Facebook Product Set is now a submenu of woocommerce-marketing. Hence, we are overriding the $parent_file and $submenu_file when accessing the fb_product_set taxonomy page.
 		if ( isset( $current_screen->taxonomy ) && 'fb_product_set' === $current_screen->taxonomy ) {
 			$parent_file  = 'woocommerce-marketing';
-			$submenu_file = admin_url( self::SUBMENU_PAGE_ID );
+			$submenu_file = admin_url( self::SUBMENU_PAGE_ID ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		return $parent_file;
@@ -236,7 +255,7 @@ class Settings {
 			return;
 		}
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( __( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
+			wp_die( esc_html__( 'You do not have permission to save these settings.', 'facebook-for-woocommerce' ) );
 		}
 		check_admin_referer( 'wc_facebook_admin_save_' . $screen->get_id() . '_settings' );
 		try {

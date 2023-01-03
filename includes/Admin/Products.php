@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Products as Products_Handler;
@@ -55,7 +54,7 @@ class Products {
 				$product
 			);
 			?>
-		 </div>
+		</div>
 		<?php
 	}
 
@@ -193,12 +192,12 @@ class Products {
 			<label for="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>">
 				<?php echo esc_html_e( 'Sell on Instagram', 'facebook-for-woocommerce' ); ?>
 				<span class="woocommerce-help-tip"
-					  data-tip="<?php echo esc_attr_e( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ); ?>"></span>
+					data-tip="<?php echo esc_attr_e( 'Enable to sell this product on Instagram. Products that are hidden in the Facebook catalog can be synced, but won’t be available for purchase.', 'facebook-for-woocommerce' ); ?>"></span>
 			</label>
 			<input type="checkbox" class="enable-if-sync-enabled"
-				   name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
-				   id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>" value="yes"
-				   checked="<?php echo Products_Handler::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
+					name="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>"
+					id="<?php echo esc_attr( self::FIELD_COMMERCE_ENABLED ); ?>" value="yes"
+					checked="<?php echo Products_Handler::is_commerce_enabled_for_product( $product ) ? 'checked' : ''; ?>">
 		</p>
 
 		<div id="product-not-ready-notice" style="display:none;">
@@ -245,7 +244,7 @@ class Products {
 			Products_Handler::update_product_enhanced_catalog_attribute( $product, Enhanced_Catalog_Attribute_Fields::OPTIONAL_SELECTOR_KEY, null );
 		}
 		Products_Handler::update_commerce_enabled_for_product( $product, $commerce_enabled );
-		if ( $google_product_category_id !== Products_Handler::get_google_product_category_id( $product ) ) {
+		if ( Products_Handler::get_google_product_category_id( $product ) !== $google_product_category_id ) {
 			Products_Handler::update_google_product_category_id( $product, $google_product_category_id );
 		}
 	}

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -14,7 +13,7 @@ namespace WooCommerce\Facebook\Admin;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The base settings screen object.
@@ -84,8 +83,6 @@ abstract class Abstract_Settings_Screen {
 	 * Saves the settings.
 	 *
 	 * @since 2.0.0
-	 *
-	 * @throws PluginException
 	 */
 	public function save() {
 		woocommerce_update_options( $this->get_settings() );
@@ -104,7 +101,9 @@ abstract class Abstract_Settings_Screen {
 			return false;
 		}
 		// assume we are on the Connection tab by default because the link under Marketing doesn't include the tab query arg
-		$tab = Helper::get_requested_value( 'tab', 'connection' );
+		$connection_handler = facebook_for_woocommerce()->get_connection_handler();
+		$default_tab        = $connection_handler->is_connected() ? 'advertise' : 'connection';
+		$tab                = Helper::get_requested_value( 'tab', $default_tab );
 		return ! empty( $tab ) && $tab === $this->get_id();
 	}
 
