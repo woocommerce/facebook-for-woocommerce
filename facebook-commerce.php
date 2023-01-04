@@ -633,27 +633,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Load DIA specific JS Data
 	 */
 	public function load_assets() {
-		$ajax_data = [
-			'nonce' => wp_create_nonce( 'wc_facebook_infobanner_jsx' ),
-		];
-		// load banner assets
-		wp_enqueue_script(
-			'wc_facebook_infobanner_jsx',
-			$this->facebook_for_woocommerce->get_asset_build_dir_url() . '/admin/infobanner.js',
-			[],
-			\WC_Facebookcommerce::PLUGIN_VERSION
-		);
-		wp_localize_script( 'wc_facebook_infobanner_jsx', 'wc_facebook_infobanner_jsx', $ajax_data );
-		wp_enqueue_style(
-			'wc_facebook_infobanner_css',
-			plugins_url(
-				'/assets/css/facebook-infobanner.css',
-				__FILE__
-			),
-			[],
-			\WC_Facebookcommerce::PLUGIN_VERSION
-		);
-
 		if ( ! $this->facebook_for_woocommerce->is_plugin_settings() ) {
 			return;
 		}
