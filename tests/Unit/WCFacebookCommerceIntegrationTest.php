@@ -1930,54 +1930,6 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_external_merchant_settings_id returns id from object properly with no filters on it.
-	 *
-	 * @return void
-	 */
-	public function test_get_external_merchant_settings_id_returns_settings_id_from_initialised_property_using_no_filter() {
-		$this->integration->external_merchant_settings_id = '123123123123123123';
-		remove_all_filters( 'wc_facebook_external_merchant_settings_id' );
-
-		$external_merchant_settings_id = $this->integration->get_external_merchant_settings_id();
-
-		$this->assertEquals( '123123123123123123', $external_merchant_settings_id );
-	}
-
-	/**
-	 * Tests get_external_merchant_settings_id returns id from options with no filters on it.
-	 *
-	 * @return void
-	 */
-	public function test_get_external_merchant_settings_id_returns_settings_id_from_options_using_no_filter() {
-		$this->integration->external_merchant_settings_id = null;
-		add_option( WC_Facebookcommerce_Integration::OPTION_EXTERNAL_MERCHANT_SETTINGS_ID, '321321321321321321' );
-		remove_all_filters( 'wc_facebook_external_merchant_settings_id' );
-
-		$external_merchant_settings_id = $this->integration->get_external_merchant_settings_id();
-
-		$this->assertEquals( '321321321321321321', $external_merchant_settings_id );
-		$this->assertEquals( '321321321321321321', $this->integration->external_merchant_settings_id );
-	}
-
-	/**
-	 * Tests get_external_merchant_settings_id returns id with filters on it.
-	 *
-	 * @return void
-	 */
-	public function test_get_external_merchant_settings_id_returns_settings_id_with_filter() {
-		add_filter(
-			'wc_facebook_external_merchant_settings_id',
-			function ( $external_merchant_settings_id ) {
-				return '3213-2132-1321-3213-2132';
-			}
-		);
-
-		$external_merchant_settings_id = $this->integration->get_external_merchant_settings_id();
-
-		$this->assertEquals( '3213-2132-1321-3213-2132', $external_merchant_settings_id );
-	}
-
-	/**
 	 * Tests get_feed_id returns id from object properly with no filters on it.
 	 *
 	 * @return void
