@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce.
  */
@@ -11,7 +10,7 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Plugin;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * # WooCommerce Plugin Framework API Base Class
@@ -71,27 +70,28 @@ abstract class Base {
 	 *
 	 * @param Request|object $request class instance which implements SV_WC_API_Request
 	 * @return Response class instance which implements Api/Response
-	 * @throws ApiException may be thrown in implementations
+	 * @throws PluginException May be thrown in implementations.
 	 */
 	protected function perform_request( $request ) {
-		// ensure API is in its default state
+		// Ensure API is in its default state.
 		$this->reset_response();
-		// save the request object
+		// Save the request object.
 		$this->request = $request;
-		$start_time = microtime( true );
-		// if this API requires TLS v1.2, force it
+		$start_time    = microtime( true );
+
+		// If this API requires TLS v1.2, force it.
 		if ( $this->require_tls_1_2() ) {
 			add_action( 'http_api_curl', array( $this, 'set_tls_1_2_request' ), 10, 3 );
 		}
-		// perform the request
+		// Perform the request.
 		$response = $this->do_remote_request( $this->get_request_uri(), $this->get_request_args() );
-		// calculate request duration
+		// Calculate request duration.
 		$this->request_duration = round( microtime( true ) - $start_time, 5 );
 		try {
-			// parse & validate response
+			// Parse & validate response.
 			$response = $this->handle_response( $response );
 		} catch ( PluginException $e ) {
-			// alert other actors that a request has been made
+			// Alert other actors that a request has been made.
 			$this->broadcast_request();
 			throw $e;
 		}
@@ -120,7 +120,7 @@ abstract class Base {
 	 *
 	 * @since 2.2.0
 	 * @param array|\WP_Error $response response data
-	 * @throws ApiException network issues, timeouts, API errors, etc
+	 * @throws ApiException Network issues, timeouts, API errors, etc.
 	 * @return \WooCommerce\Facebook\API\Response Response class instance.
 	 */
 	protected function handle_response( $response ): \WooCommerce\Facebook\API\Response {
@@ -242,11 +242,13 @@ abstract class Base {
 	 * @return string
 	 */
 	protected function get_request_uri() {
-		$uri = $this->request_uri . $this->get_request_path();
-		// append any query params to the URL when necessary
-		if ( $query = $this->get_request_query() ) {
-			$url_parts = parse_url( $uri );
-			// if the URL already has some query params, add to them
+		$uri   = $this->request_uri . $this->get_request_path();
+		$query = $this->get_request_query();
+
+		// Append any query params to the URL when necessary.
+		if ( $query ) {
+			$url_parts = wp_parse_url( $uri );
+			// If the URL already has some query params, add to them.
 			if ( ! empty( $url_parts['query'] ) ) {
 				$query = '&' . $query;
 			} else {
@@ -358,7 +360,7 @@ abstract class Base {
 	 */
 	protected function get_request_body() {
 		// GET & HEAD requests don't support a body
-		if ( in_array( strtoupper( $this->get_request_method() ), [ 'GET', 'HEAD' ] ) ) {
+		if ( in_array( strtoupper( $this->get_request_method() ), [ 'GET', 'HEAD' ], true ) ) {
 			return '';
 		}
 		return ( $this->get_request() && $this->get_request()->to_string() ) ? $this->get_request()->to_string() : '';
@@ -373,7 +375,7 @@ abstract class Base {
 	 */
 	protected function get_sanitized_request_body() {
 		// GET & HEAD requests don't support a body
-		if ( in_array( strtoupper( $this->get_request_method() ), [ 'GET', 'HEAD' ] ) ) {
+		if ( in_array( strtoupper( $this->get_request_method() ), [ 'GET', 'HEAD' ], true ) ) {
 			return '';
 		}
 		return ( $this->get_request() && $this->get_request()->to_string_safe() ) ? $this->get_request()->to_string_safe() : '';
@@ -597,7 +599,6 @@ abstract class Base {
 	 * @since 2.2.0
 	 * @param string $name header name
 	 * @param string $value header value
-	 * @return string
 	 */
 	protected function set_request_header( $name, $value ) {
 		$this->request_headers[ $name ] = $value;
@@ -620,12 +621,12 @@ abstract class Base {
 	/**
 	 * Set HTTP basic auth for the request
 	 *
-	 * Since 2.2.0
+	 * @since 2.2.0
 	 * @param string $username
 	 * @param string $password
 	 */
 	protected function set_http_basic_auth( $username, $password ) {
-		$this->request_headers['Authorization'] = sprintf( 'Basic %s', base64_encode( "{$username}:{$password}" ) );
+		$this->request_headers['Authorization'] = sprintf( 'Basic %s', base64_encode( "{$username}:{$password}" ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 
@@ -672,8 +673,8 @@ abstract class Base {
 	 * @since 4.4.0
 	 *
 	 * @param resource $handle the cURL handle returned by curl_init() (passed by reference)
-	 * @param array $r the HTTP request arguments
-	 * @param $url string the request URL
+	 * @param array    $r the HTTP request arguments
+	 * @param string   $url string the request URL
 	 */
 	public function set_tls_1_2_request( $handle, $r, $url ) {
 		if ( ! Helper::str_starts_with( $url, 'https://' ) ) {
