@@ -295,6 +295,21 @@ class API extends Base {
 		return $this->perform_request( $request );
 	}
 
+	/**
+	 * Updates the messenger configuration.
+	 *
+	 * @param string $external_business_id external business ID
+	 * @param string $plugin_version messenger configuration
+	 * @return API\Response|API\FBE\Configuration\Update\Response
+	 * @throws ApiException
+	 */
+	public function update_plugin_version_configuration( string $external_business_id, string $plugin_version ): API\FBE\Configuration\Update\Response {
+		$request = new API\FBE\Configuration\Update\Request( $external_business_id );
+		$request->set_plugin_version( $plugin_version );
+		$this->set_response_handler( API\FBE\Configuration\Update\Response::class );
+		return $this->perform_request( $request );
+	}
+
 
 	/**
 	 * Uses the Catalog Batch API to update or remove items from catalog.
