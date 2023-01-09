@@ -340,7 +340,7 @@ class Products {
 			// If product is a product bundle with individually priced items, we rely on their pricing.
 			$price = $product->get_bundle_price( 'min', true );
 
-		} elseif ( $product->is_type( 'mix-and-match' ) && is_callable( $product, 'get_container_price' ) ) {
+		} elseif ( $product->is_type( 'mix-and-match' ) && is_callable( array( $product, 'get_container_price' ) ) ) {
 
 			// If product is Mix and Match product with individually priced items, we rely on their pricing, since MNM 2.0.
 			$price = $product->get_container_price( 'min', true );
