@@ -104,7 +104,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	public $heartbeat;
 
 	/** @var WooCommerce\Facebook\ExternalVersionUpdate */
-	private $external_version_update
+	private $external_version_update;
 	/**
 	 * The Debug tools instance.
 	 *
