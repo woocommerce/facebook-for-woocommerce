@@ -331,13 +331,20 @@ class Products {
 		// use the user defined Facebook price if set
 		if ( is_numeric( $facebook_price ) ) {
 			$price = $facebook_price;
-		} elseif ( class_exists( 'WC_Product_Composite' ) && $product instanceof \WC_Product_Composite ) {
-			$price = get_option( 'woocommerce_tax_display_shop' ) === 'incl' ? $product->get_composite_price_including_tax() : $product->get_composite_price();
-		} elseif ( class_exists( 'WC_Product_Bundle' )
-			 && empty( $product->get_regular_price() )
-			 && 'bundle' === $product->get_type() ) {
-			// if product is a product bundle with individually priced items, we rely on their pricing
-			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_bundle_price() ) );
+		} elseif ( $product->is_type( 'composite' ) ) {
+
+			$price = $product->get_composite_price( 'min', true );
+
+		} elseif ( $product->is_type( 'bundle' ) ) {
+
+			// If product is a product bundle with individually priced items, we rely on their pricing.
+			$price = $product->get_bundle_price( 'min', true );
+
+		} elseif ( $product->is_type( 'mix-and-match' ) && is_callable( array( $product, 'get_container_price' ) ) ) {
+
+			// If product is Mix and Match product with individually priced items, we rely on their pricing, since MNM 2.0.
+			$price = $product->get_container_price( 'min', true );
+
 		} else {
 			$price = wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) );
 		}
