@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.8 - 2023-01-10 =
+* Add - Add support for Mix and Match containers with per-item pricing.
+* Dev - Fix phpcs violations in Framework/Api folder.
+* Tweak - Facebook Marketing API from v13.0 to v14.0.
+* Tweak - Use specific Bundles/Composites functions for calculating prices.
+
 = 3.0.7 - 2023-01-03 =
 * Dev - Add node and npm version restrictions.
 * Dev - Ease current node version restrictions.
