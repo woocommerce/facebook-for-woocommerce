@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.8 - 2023-01-10 =
+* Add - Add support for Mix and Match containers with per-item pricing.
+* Dev - Fix phpcs violations in Framework/Api folder.
+* Tweak - Facebook Marketing API from v13.0 to v14.0.
+* Tweak - Use specific Bundles/Composites functions for calculating prices.
 
 = 3.0.7 - 2023-01-03 =
 * Dev - Add node and npm version restrictions.

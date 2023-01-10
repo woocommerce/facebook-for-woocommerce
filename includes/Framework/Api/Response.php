@@ -1,12 +1,11 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce.
  */
 
 namespace WooCommerce\Facebook\Framework\Api;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * API Response
