@@ -51,6 +51,13 @@ class Update {
 			return;
 		}
 
+		$plugin = facebook_for_woocommerce();
+
+		if ( ! $plugin->get_connection_handler()->is_connected() ) {
+			// If the plugin is not connected, we don't need to send the version to the Meta server.
+			return;
+		}
+
 		$this->send_new_version_to_facebook_server();
 	}
 
@@ -60,12 +67,8 @@ class Update {
 	 * @since x.x.x
 	 */
 	public function send_new_version_to_facebook_server() {
-		$plugin = facebook_for_woocommerce();
 
-		if ( ! $plugin->get_connection_handler()->is_connected() ) {
-			// If the plugin is not connected, we don't need to send the version to the Meta server.
-			return;
-		}
+		$plugin = facebook_for_woocommerce();
 
 		// Send the request to the Meta server with the latest plugin version.
 		try {
