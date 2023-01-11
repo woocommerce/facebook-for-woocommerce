@@ -60,9 +60,15 @@ class Update {
 	 * @since x.x.x
 	 */
 	public function send_new_version_to_facebook_server() {
+		$plugin = facebook_for_woocommerce();
+
+		if ( ! $plugin->get_connection_handler()->is_connected() ) {
+			// If the plugin is not connected, we don't need to send the version to the Meta server.
+			return;
+		}
+
 		// Send the request to the Meta server with the latest plugin version.
 		try {
-			$plugin               = facebook_for_woocommerce();
 			$external_business_id = $plugin->get_connection_handler()->get_external_business_id();
 			$plugin->get_api()->update_plugin_version_configuration( $external_business_id, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
 			update_option( self::LATEST_VERSION_SENT, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
