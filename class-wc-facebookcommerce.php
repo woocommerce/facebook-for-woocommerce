@@ -105,6 +105,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 	/** @var WooCommerce\Facebook\ExternalVersionUpdate */
 	private $external_version_update;
+
 	/**
 	 * The Debug tools instance.
 	 *
