@@ -27,7 +27,7 @@ use WooCommerce\Facebook\Utilities\Heartbeat;
 class Update {
 
 	/** @var string Name of the option that stores the latest version that was sent to the Meta server. */
-	const LATEST_VERSION_SENT = 'wc_facebook_latest_version_sent_to_server';
+	const LATEST_VERSION_SENT = 'facebook_for_woocommerce_latest_version_sent_to_server';
 
 	/**
 	 * Update class constructor.
