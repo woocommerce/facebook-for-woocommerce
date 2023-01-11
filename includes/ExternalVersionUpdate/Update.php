@@ -44,7 +44,7 @@ class Update {
 	 * @since x.x.x
 	 */
 	public function maybe_update_external_plugin_version() {
-		$latest_version_sent = get_option( self::LATEST_VERSION_SENT, '0.0.0' );
+		$latest_version_sent = '';//get_option( self::LATEST_VERSION_SENT, '0.0.0' );
 
 		if ( WC_Facebookcommerce_Utils::PLUGIN_VERSION === $latest_version_sent ) {
 			// Up to date. Nothing to do.
@@ -73,7 +73,11 @@ class Update {
 		// Send the request to the Meta server with the latest plugin version.
 		try {
 			$external_business_id = $plugin->get_connection_handler()->get_external_business_id();
-			$plugin->get_api()->update_plugin_version_configuration( $external_business_id, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
+			$response             = $plugin->get_api()->update_plugin_version_configuration( $external_business_id, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
+			if ( ! $response->has_api_error() ) {
+				// If the request fails, we should retry it in the next heartbeat.
+				return;
+			}
 			update_option( self::LATEST_VERSION_SENT, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
 		} catch ( Exception $e ) {
 			WC_Facebookcommerce_Utils::log( $e->getMessage() );
