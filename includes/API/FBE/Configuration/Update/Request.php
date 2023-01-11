@@ -63,7 +63,7 @@ class Request extends Configuration\Request {
 	public function set_plugin_version( string $plugin_version ) {
 
 		$this->data['business_config'] = array(
-			'external_client_version_id' => "\"$plugin_version\"",
+			'external_client_version_id' => "$plugin_version",
 		);
 	}
 
