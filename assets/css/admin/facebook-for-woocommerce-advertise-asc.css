@@ -1,0 +1,200 @@
+.fb-asc-ads {
+  margin: 0;
+  padding: 0;
+}
+
+.fb-asc-ads .default-view-table {
+  width: 1200px;
+}
+
+.fb-asc-ads .top-pad {
+  padding-top:30px;
+}
+
+.fb-asc-ads .default-view-table th {
+  text-align: left;
+  font-weight: 400;
+}
+
+.fb-asc-ads .default-view-table td {
+  text-align: left;
+  vertical-align: top;
+  padding-top: 0px;
+  padding-right: 10px;
+}
+
+.fb-asc-ads .toggle-button {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.fb-asc-ads .toggle-button input {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  height: 0;
+}
+
+.fb-asc-ads .horizontal-align{
+  display:flex;
+  align-items:center;
+}
+
+.fb-asc-ads iframe {
+  border: 0;
+  width: 100%;
+  height: 500px;
+  margin: 10px;
+  border: none;
+  overflow: hidden;
+}
+
+.fb-asc-ads .toggle-button .toggle-button-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: 0 0 1px #2196F3;
+  background-color: #ccc;
+  transition: 0.4s;
+}
+
+.fb-asc-ads .toggle-button .toggle-button-slider:before {
+  position: absolute;
+  content: "";
+  height: 72%;
+  width: 40%;
+  left: 10%;
+  bottom: 14%;
+  background-color: white;
+  transition: 0.4s;
+}
+
+.fb-asc-ads .toggle-button input:checked+.toggle-button-slider {
+  background-color: #2196F3;
+}
+
+.fb-asc-ads .toggle-button input:focus+.toggle-button-slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+.fb-asc-ads .toggle-button input:checked+.toggle-button-slider:before {
+  -ms-transform: translateX(100%);
+  transform: translateX(100%);
+}
+
+.fb-asc-ads .round {
+  border-radius: 20% 20% 20% / 60%;
+}
+
+.fb-asc-ads .round:before {
+  border-radius: 80%;
+}
+
+.fb-asc-ads .bar-chart {
+  width:100%;
+}
+
+.fb-asc-ads .bar-chart thead {
+  height:90%;
+}
+
+.fb-asc-ads .bar-chart tbody {
+  height:10%;
+}
+
+.fb-asc-ads .bar-chart tbody label {
+  white-space:pre-wrap;
+}
+
+.fb-asc-ads .bar-chart th {
+  vertical-align: bottom;
+}
+
+.fb-asc-ads .bar-chart th div {
+  width:70%;
+  position:relative;
+  left:15%;
+  text-align:center;
+  background-color:#2271b1;
+}
+
+.fb-asc-ads .bar-chart td {
+  text-align:center;
+}
+
+.fb-asc-ads .waiting-window{
+  height:100%;
+  width:100%;
+  text-align:center;
+}
+
+.select2{
+  max-height: 100px;
+}
+
+.select2.visible {
+	display: block;
+}
+
+.select2-container {
+	display: table;
+	margin-bottom: 0;
+	position: relative;
+	table-layout: fixed;
+	width: 95% !important;
+}
+
+.fb-asc-ads .select2-selection--multiple {
+  background-color: #fed9ff;
+  height: 105px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: center;
+  padding: 0px;
+}
+
+input[aria-invalid="true"]{
+  color:red;
+}
+
+.fb-asc-ads .error {
+  font-size: x-small;
+  color: red;
+}
+
+.fb-asc-ads .busy-indicator {
+  background-image: linear-gradient(90deg, rgba(9,137,163,1) 0%, rgba(9,137,163,1) 8%, rgba(9,137,163,1) 44%, rgba(255,255,255,1) 50%, rgba(9,137,163,1) 56%, rgba(9,137,163,1) 83%, rgba(9,137,163,1) 90%, rgba(9,137,163,1) 96%);
+  transition: 0.5s;
+  bottom: 0px;
+  height: 5px;
+  width: 100%;
+  background-size: 200%;
+  border-radius: 50px;
+  display: flex;
+  position:relative;
+  animation: busy-indicator-animation 2s infinite linear;
+}
+
+.fb-asc-ads .busy-indicator:after{
+  content  : "";
+  position : absolute;
+  z-index  : 1;
+  border-radius: 10%;
+  left     : 0;
+  pointer-events   : none;
+  background-image : radial-gradient(ellipse at 50%, rgba(255,255,255, 0) 85%, rgba(255,255,255, 1) 95%);
+  width    : 100%;
+  height	 : 100%;
+}
+
+@keyframes busy-indicator-animation {
+  0% {background-position: right;}
+  50% {background-position: left;}
+  100% {background-position: right;}
+}

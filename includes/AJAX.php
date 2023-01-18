@@ -47,6 +47,12 @@ class AJAX {
 		// get the current sync status
 		add_action( 'wp_ajax_wc_facebook_get_sync_status', array( $this, 'get_sync_status' ) );
 
+		// get the ad preview
+		add_action( 'wp_ajax_wc_facebook_get_ad_preview', array( $this, 'get_ad_preview' ) );
+
+		// sync the ad/campaign changes with the marketing api.
+		add_action ( 'wp_ajax_wc_facebook_advertise_asc_publish_changes', array( $this, 'publish_ad_changes' ));
+
 		// search a product's attributes for the given term
 		add_action( 'wp_ajax_' . self::ACTION_SEARCH_PRODUCT_ATTRIBUTES, array( $this, 'admin_search_product_attributes' ) );
 	}
@@ -98,6 +104,101 @@ class AJAX {
 
 			die();
 		}
+	}
+
+
+	/**
+	 * Syncs the changes with the Marketing Api for different ASC campaigns.
+	 *
+	 * Retrieves the changeset for each campaign type and posts them to the backend.
+	 * Makes sure that there is something to be sent.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function publish_ad_changes() {
+
+		$retargetting = isset( $_POST[ \Retargeting::ID ] ) ? $_POST[ \Retargeting::ID ] : null;
+		$new_buyers = isset( $_POST[ \NewBuyers::ID ] ) ? $_POST[ \NewBuyers::ID ] : null;
+
+		$result = '';
+
+		try {
+
+			if ( $retargetting ) {
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( \Retargeting::ID )->update_asc_campaign( $retargetting );
+		   }
+
+		   if ( $new_buyers ) {
+				 $result = facebook_for_woocommerce()->get_advertise_asc_handler( \NewBuyers::ID )->update_asc_campaign( $new_buyers );
+		   }
+
+		   if ( ! $new_buyers && ! $retargetting ) {
+			   wp_send_json_error('Cannot publish empty form.');
+		   }
+
+		   wp_send_json_success( $result );
+
+		}
+		catch ( PluginException $e ) {
+
+			wp_send_json_error( $e->getMessage() );
+
+		}
+	}
+
+
+	/**
+	 * Gets the Ad Preview for a given ad in different formats and merges the results.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function get_ad_preview() {
+
+		$view = isset( $_GET[ 'view' ] ) ? $_GET[ 'view' ] : null;
+		if ( ! $view ) {
+			wp_send_json_error( " No view is selected. " );
+		}
+
+		$result = $this->get_previews_and_merge( $view );
+
+		wp_send_json_success( $result );
+	}
+
+
+	/**
+	 * Gets the Ad Preview for an ASC Campaign in different formats and merges the results.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $asc_campaign ASC Campaign type.
+	 * @return string
+	 */
+	private function get_previews_and_merge ( $asc_campaign ){
+		$previews = array();
+
+		$previews[] = $this->retrieve_ad_preview( $asc_campaign, 'MOBILE_FEED_STANDARD' );
+		$previews[] = $this->retrieve_ad_preview( $asc_campaign, 'INSTAGRAM_STANDARD' );
+		$previews[] = $this->retrieve_ad_preview( $asc_campaign, 'INSTAGRAM_STORY' );
+
+		return $previews;
+	}
+
+
+	/**
+	 * Gets the Ad Preview for an ASC Campaign in a specific format.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $asc_campaign ASC Campaign type.
+	 * @param string $ad_format Ad Preview Format.
+	 * @return string
+	 */
+	private function retrieve_ad_preview( $asc_campaign, $ad_format ){
+		return facebook_for_woocommerce()->get_advertise_asc_handler( $asc_campaign )->get_ad_preview( $ad_format );
 	}
 
 
