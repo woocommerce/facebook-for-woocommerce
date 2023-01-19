@@ -574,7 +574,6 @@ jQuery( document ).ready( function( $ ) {
 				if ( simpleProductSyncModeSelect.val() === 'sync_disabled' ) {
 					simpleProductSyncModeSelect.val( 'sync_and_show' ).trigger( 'change' );;
 				}
-				toggleSyncAndShowOption( true, simpleProductSyncModeSelect );
 			}
 		})
 
