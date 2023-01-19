@@ -554,6 +554,33 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
+	public function test_on_product_save_existing_simple_product_sync_disabled_updates_the_product() {
+		$product_to_update = WC_Helper_Product::create_simple_product();
+		$product_to_delete = WC_Helper_Product::create_simple_product();
+
+		$_POST['wc_facebook_sync_mode'] = Admin::SYNC_MODE_SYNC_DISABLED;
+
+		$_POST[ WC_Facebook_Product::FB_REMOVE_FROM_SYNC ] = $product_to_delete->get_id();
+
+		$product_to_update->set_stock_status( 'instock' );
+
+		add_post_meta( $product_to_update->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-product-item-id' );
+		add_post_meta( $product_to_update->get_id(), Products::VISIBILITY_META_KEY, 'no' );
+
+		$this->integration->on_product_save( $product_to_update->get_id() );
+
+		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, true ) );
+		$this->assertEquals( null, get_post_meta( $product_to_delete->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, true ) );
+		$this->assertEquals( 'no', get_post_meta( $product_to_update->get_id(), Products::SYNC_ENABLED_META_KEY, true ) );
+		$this->assertEquals( 'no', get_post_meta( $product_to_update->get_id(), Products::VISIBILITY_META_KEY, true ) );
+
+	}
+
+	/**
+	 * Sunny day test with all the conditions evaluated to true and maximum conditions triggered.
+	 *
+	 * @return void
+	 */
 	public function test_on_product_save_existing_variable_product_sync_enabled_updates_the_product() {
 		$parent           = WC_Helper_Product::create_variation_product();
 		$fb_product       = new WC_Facebook_Product( $parent->get_id() );
