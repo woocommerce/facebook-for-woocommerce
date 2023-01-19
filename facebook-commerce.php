@@ -772,7 +772,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		// Restore sync mode if product is marked as visible and meet all the other criteria for sync.
 		$catalog_visibility = isset( $_POST['_visibility'] ) ? wc_clean( wp_unslash( $_POST['_visibility'] ) ) : null;
-		if ( $catalog_visibility && 'hidden' !== $catalog_visibility && $product->is_visible() && $sync_mode !== Admin::SYNC_MODE_SYNC_AND_HIDE ) {
+		if ( $catalog_visibility && 'hidden' !== $catalog_visibility && $product->is_visible() && $sync_mode !== Admin::SYNC_MODE_SYNC_AND_HIDE && $sync_mode !== Admin::SYNC_MODE_SYNC_DISABLED ) {
 			$sync_mode = facebook_for_woocommerce()->get_product_sync_validator( $product )->passes_all_checks_except_sync_field()
 				? Admin::SYNC_MODE_SYNC_AND_SHOW : $sync_mode;
 		}
