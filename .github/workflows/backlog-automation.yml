@@ -1,0 +1,16 @@
+name: Add all new issues to the backlog board.
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v0.4.0
+        with:
+          project-url: https://github.com/orgs/woocommerce/projects/117
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
