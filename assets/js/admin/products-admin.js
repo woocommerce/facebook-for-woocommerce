@@ -567,6 +567,17 @@ jQuery( document ).ready( function( $ ) {
 			toggleSyncAndShowOption( ! $( this ).prop( 'checked' ), simpleProductSyncModeSelect );
 		} ).trigger( 'change' );
 
+		// Update the sync when catalog visibility changes.
+		$( 'input[name=_visibility]' ).on ( 'change', function(){
+			if ( $( this ).val() !== 'hidden' && $( this ).val() !== 'search' ) {
+
+				if ( simpleProductSyncModeSelect.val() === 'sync_disabled' ) {
+					simpleProductSyncModeSelect.val( 'sync_and_show' ).trigger( 'change' );;
+				}
+				toggleSyncAndShowOption( true, simpleProductSyncModeSelect );
+			}
+		})
+
 		const $productData = $( '#woocommerce-product-data' );
 
 		// check whether the product meets the requirements for Commerce
