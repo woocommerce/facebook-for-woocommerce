@@ -890,19 +890,19 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			}
 
 			// use a session flag to ensure an order is tracked with any payment method, also when the order is placed through AJAX
-			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order_id;
+			$order_placed_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order_id;
 
 			// use a session flag to ensure a Purchase event is not tracked multiple times
-			$purchase_tracked_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked_' . $order_id;
+			$purchase_tracked_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_purchase_tracked_' . $order_id;
 
 			// when saving the order meta data: add a flag to mark the order tracked
 			if ( 'woocommerce_checkout_update_order_meta' === current_action() ) {
-				WC()->session->set( $order_placed_session_flag, 'yes' );
+				set_transient( $order_placed_flag, 'yes', 15 * MINUTE_IN_SECONDS );
 				return;
 			}
 
 			// bail if by the time we are on the thank you page the meta has not been set or we already tracked a Purchase event
-			if ( 'yes' !== WC()->session->get( $order_placed_session_flag, 'no' ) || 'yes' === WC()->session->get( $purchase_tracked_session_flag, 'no' ) ) {
+			if ( 'yes' !== get_transient( $order_placed_flag ) || 'yes' === get_transient( $purchase_tracked_flag ) ) {
 				return;
 			}
 
@@ -957,7 +957,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$this->inject_subscribe_event( $order_id );
 
 			// mark the order as tracked
-			WC()->session->set( $purchase_tracked_session_flag, 'yes' );
+			set_transient( $purchase_tracked_flag, 'yes', 15 * MINUTE_IN_SECONDS );
+
 		}
 
 		/**
@@ -987,8 +988,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			$order_placed_session_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order->get_id();
-			WC()->session->set( $order_placed_session_flag, 'yes' );
+			$order_placed_flag = '_wc_' . facebook_for_woocommerce()->get_id() . '_order_placed_' . $order->get_id();
+			set_transient( $order_placed_flag, 'yes', 15 * MINUTE_IN_SECONDS );
 
 		}
 
