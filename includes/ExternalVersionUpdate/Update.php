@@ -74,7 +74,7 @@ class Update {
 		try {
 			$external_business_id = $plugin->get_connection_handler()->get_external_business_id();
 			$response             = $plugin->get_api()->update_plugin_version_configuration( $external_business_id, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
-			if ( ! $response->has_api_error() ) {
+			if ( $response->has_api_error() ) {
 				// If the request fails, we should retry it in the next heartbeat.
 				return;
 			}
