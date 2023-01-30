@@ -72,6 +72,8 @@ class Update {
 			// If the plugin is not connected, we don't need to send the version to the Meta server.
 			return false;
 		}
+
+		return true;
 	}
 
 	/**
