@@ -296,7 +296,7 @@ class API extends Base {
 	}
 
 	/**
-	 * Updates the messenger configuration.
+	 * Updates the plugin version configuration.
 	 *
 	 * @param string $external_business_id external business ID
 	 * @param string $plugin_version messenger configuration
