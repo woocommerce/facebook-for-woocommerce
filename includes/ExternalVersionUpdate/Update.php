@@ -42,23 +42,24 @@ class Update {
 	 * Check if we need to inform the Meta server of a new version.
 	 *
 	 * @since x.x.x
+	 * @return bool
 	 */
 	public function maybe_update_external_plugin_version() {
 		$latest_version_sent = get_option( self::LATEST_VERSION_SENT, '0.0.0' );
 
 		if ( WC_Facebookcommerce_Utils::PLUGIN_VERSION === $latest_version_sent ) {
 			// Up to date. Nothing to do.
-			return;
+			return false;
 		}
 
 		$plugin = facebook_for_woocommerce();
 
 		if ( ! $plugin->get_connection_handler()->is_connected() ) {
 			// If the plugin is not connected, we don't need to send the version to the Meta server.
-			return;
+			return false;
 		}
 
-		$this->send_new_version_to_facebook_server();
+		return $this->send_new_version_to_facebook_server();
 	}
 
 	/**
