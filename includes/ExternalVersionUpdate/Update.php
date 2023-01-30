@@ -65,6 +65,7 @@ class Update {
 	 * Sends the latest plugin version to the Meta server.
 	 *
 	 * @since x.x.x
+	 * @return bool
 	 */
 	public function send_new_version_to_facebook_server() {
 
@@ -76,13 +77,13 @@ class Update {
 			$response             = $plugin->get_api()->update_plugin_version_configuration( $external_business_id, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
 			if ( $response->has_api_error() ) {
 				// If the request fails, we should retry it in the next heartbeat.
-				return;
+				return false;
 			}
-			update_option( self::LATEST_VERSION_SENT, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
+			return update_option( self::LATEST_VERSION_SENT, WC_Facebookcommerce_Utils::PLUGIN_VERSION );
 		} catch ( Exception $e ) {
 			WC_Facebookcommerce_Utils::log( $e->getMessage() );
 			// If the request fails, we should retry it in the next heartbeat.
-			return;
+			return false;
 		}
 	}
 
