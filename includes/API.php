@@ -299,7 +299,7 @@ class API extends Base {
 	 * Updates the plugin version configuration.
 	 *
 	 * @param string $external_business_id external business ID
-	 * @param string $plugin_version messenger configuration
+	 * @param string $plugin_version The plugin version.
 	 * @return API\Response|API\FBE\Configuration\Update\Response
 	 * @throws ApiException
 	 */
