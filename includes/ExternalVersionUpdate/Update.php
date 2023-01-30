@@ -45,6 +45,20 @@ class Update {
 	 * @return bool
 	 */
 	public function maybe_update_external_plugin_version() {
+		if ( ! $this->should_update_version() ) {
+			return false;
+		}
+
+		return $this->send_new_version_to_facebook_server();
+	}
+
+	/**
+	 * Checks if the plugin version needs to be updated.
+	 *
+	 * @since x.x.x
+	 * @return bool
+	 */
+	public function should_update_version() {
 		$latest_version_sent = get_option( self::LATEST_VERSION_SENT, '0.0.0' );
 
 		if ( WC_Facebookcommerce_Utils::PLUGIN_VERSION === $latest_version_sent ) {
@@ -58,8 +72,6 @@ class Update {
 			// If the plugin is not connected, we don't need to send the version to the Meta server.
 			return false;
 		}
-
-		return $this->send_new_version_to_facebook_server();
 	}
 
 	/**
