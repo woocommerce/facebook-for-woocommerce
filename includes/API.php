@@ -301,7 +301,7 @@ class API extends Base {
 	 * @param string $external_business_id external business ID
 	 * @param string $plugin_version The plugin version.
 	 * @return API\Response|API\FBE\Configuration\Update\Response
-	 * @throws ApiException
+	 * @throws WooCommerce\Facebook\Framework\Api\Exception
 	 */
 	public function update_plugin_version_configuration( string $external_business_id, string $plugin_version ): API\FBE\Configuration\Update\Response {
 		$request = new API\FBE\Configuration\Update\Request( $external_business_id );
