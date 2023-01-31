@@ -39,6 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.9 - 2023-01-31 =
+* Fix - CAPI purchase event not firing with orders from FB/Instagram app on iOS.
+* Fix - Setting a product's Facebook sync status to "Do not sync" not working.
+* Update - Onboarding task title and remove task content.
+
 = 3.0.8 - 2023-01-10 =
 * Add - Add support for Mix and Match containers with per-item pricing.
 * Dev - Fix phpcs violations in Framework/Api folder.
