@@ -33,7 +33,7 @@ class Setup extends Task {
 	 * @return string
 	 */
 	public function get_title() {
-		return esc_html__( 'Set up Facebook for WooCommerce', 'facebook-for-woocommerce' );
+		return __( 'Advertise your products across Meta\'s platforms, including Facebook, Instagram, and WhatsApp', 'facebook-for-woocommerce' );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class Setup extends Task {
 	 * @return string
 	 */
 	public function get_content() {
-		return esc_html__( 'Sync your products and reach customers across Facebook, Instagram, Messenger and WhatsApp.', 'facebook-for-woocommerce' );
+		return '';
 	}
 
 	/**
