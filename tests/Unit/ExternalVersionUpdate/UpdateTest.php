@@ -5,6 +5,7 @@
 
 namespace WooCommerce\Facebook\Tests\ExternalVersionUpdate;
 
+use WooCommerce\Facebook\ExternalVersionUpdate\Update;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WP_UnitTestCase;
@@ -25,7 +26,7 @@ class UpdateTest extends WP_UnitTestCase {
 	 * Setup the test object for each test.
 	 */
 	public function setUp():void {
-		$this->update = new \WooCommerce\Facebook\ExternalVersionUpdate\Update();
+		$this->update = new Update();
 	}
 
 	/**
