@@ -7,7 +7,7 @@ namespace WooCommerce\Facebook\Tests\ExternalVersionUpdate;
 
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
-use \WP_UnitTestCase;
+use WP_UnitTestCase;
 
 /**
  * The External version update unit test class.
