@@ -56,12 +56,10 @@ class UpdateTest extends WP_UnitTestCase {
 
 		// Connection Handler mock object to return is_connected as false.
 		$mock_connection_handler = $this->getMockBuilder( Connection::class )
-											->disableOriginalConstructor()
-											->setMethods( array( 'is_connected' ) )
-											->getMock();
-		$mock_connection_handler->expects( $this->any() )
-											->method( 'is_connected' )
-											->willReturn( false );
+									->disableOriginalConstructor()
+									->setMethods( array( 'is_connected' ) )
+									->getMock();
+		$mock_connection_handler->expects( $this->any() )->method( 'is_connected' )->willReturn( false );
 		$prop_connection_handler->setValue( $plugin, $mock_connection_handler );
 
 		update_option( 'facebook_for_woocommerce_latest_version_sent_to_server', '0.0.0' ); // Reset the option.
@@ -70,12 +68,10 @@ class UpdateTest extends WP_UnitTestCase {
 
 		// Connection Handler mock object to return is_connected as true.
 		$mock_connection_handler = $this->getMockBuilder( Connection::class )
-											->disableOriginalConstructor()
-											->setMethods( array( 'is_connected' ) )
-											->getMock();
-		$mock_connection_handler->expects( $this->any() )
-											->method( 'is_connected' )
-											->willReturn( true );
+									->disableOriginalConstructor()
+									->setMethods( array( 'is_connected' ) )
+									->getMock();
+		$mock_connection_handler->expects( $this->any() )->method( 'is_connected' )->willReturn( true );
 		$prop_connection_handler->setValue( $plugin, $mock_connection_handler );
 		update_option( 'facebook_for_woocommerce_latest_version_sent_to_server', WC_Facebookcommerce_Utils::PLUGIN_VERSION );
 		$should_update3 = $this->update->should_update_version();
@@ -105,15 +101,11 @@ class UpdateTest extends WP_UnitTestCase {
 
 		// Create the mock connection handler object to return a dummy business id and is_connected true.
 		$mock_connection_handler = $this->getMockBuilder( Connection::class )
-											->disableOriginalConstructor()
-											->setMethods( array( 'get_external_business_id', 'is_connected' ) )
-											->getMock();
-		$mock_connection_handler->expects( $this->any() )
-								->method( 'get_external_business_id' )
-								->willReturn( 'dummy-business-id' );
-		$mock_connection_handler->expects( $this->any() )
-								->method( 'is_connected' )
-								->willReturn( true );
+									->disableOriginalConstructor()
+									->setMethods( array( 'get_external_business_id', 'is_connected' ) )
+									->getMock();
+		$mock_connection_handler->expects( $this->any() )->method( 'get_external_business_id' )->willReturn( 'dummy-business-id' );
+		$mock_connection_handler->expects( $this->any() )->method( 'is_connected' )->willReturn( true );
 		$prop_connection_handler->setValue( $plugin, $mock_connection_handler );
 
 		// Create the mock api object that will return an array, meaning a successful response.
