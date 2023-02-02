@@ -27,6 +27,11 @@
       "WooCommerce\\Facebook\\": "includes"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "WooCommerce\\Facebook\\Tests\\": "tests/Unit"
+    }
+  },
   "config": {
     "platform": {
       "php": "7.2"
