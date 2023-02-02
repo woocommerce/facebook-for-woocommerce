@@ -6,6 +6,8 @@
 namespace WooCommerce\Facebook\Tests\ExternalVersionUpdate;
 
 use WooCommerce\Facebook\ExternalVersionUpdate\Update;
+use WooCommerce\Facebook\Handlers\Connection;
+use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WP_UnitTestCase;
@@ -49,7 +51,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$prop_connection_handler->setAccessible( true );
 
 		// Connection Handler mock object to return is_connected as false.
-		$mock_connection_handler = $this->getMockBuilder( \WooCommerce\Facebook\Handlers\Connection::class )
+		$mock_connection_handler = $this->getMockBuilder( Connection::class )
 											->disableOriginalConstructor()
 											->setMethods( array( 'is_connected' ) )
 											->getMock();
@@ -63,7 +65,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$this->assertFalse( $should_update2 );
 
 		// Connection Handler mock object to return is_connected as true.
-		$mock_connection_handler = $this->getMockBuilder( \WooCommerce\Facebook\Handlers\Connection::class )
+		$mock_connection_handler = $this->getMockBuilder( Connection::class )
 											->disableOriginalConstructor()
 											->setMethods( array( 'is_connected' ) )
 											->getMock();
@@ -98,7 +100,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$prop_api->setAccessible( true );
 
 		// Create the mock connection handler object to return a dummy business id and is_connected true.
-		$mock_connection_handler = $this->getMockBuilder( \WooCommerce\Facebook\Handlers\Connection::class )
+		$mock_connection_handler = $this->getMockBuilder( Connection::class )
 											->disableOriginalConstructor()
 											->setMethods( array( 'get_external_business_id', 'is_connected' ) )
 											->getMock();
@@ -111,7 +113,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$prop_connection_handler->setValue( $plugin, $mock_connection_handler );
 
 		// Create the mock api object that will return an array, meaning a successful response.
-		$mock_api = $this->getMockBuilder( \WooCommerce\Facebook\API::class )->disableOriginalConstructor()->setMethods( array( 'do_remote_request' ) )->getMock();
+		$mock_api = $this->getMockBuilder( API::class )->disableOriginalConstructor()->setMethods( array( 'do_remote_request' ) )->getMock();
 		$mock_api->expects( $this->any() )->method( 'do_remote_request' )->willReturn(
 			array(
 				'response' => array(
@@ -138,7 +140,7 @@ class UpdateTest extends WP_UnitTestCase {
 
 		// Assert correct response.
 		$actual_response = $plugin->get_api()->get_response();
-		$this->assertInstanceOf( \WooCommerce\Facebook\API\FBE\Configuration\Update\Response::class, $actual_response );
+		$this->assertInstanceOf( API\FBE\Configuration\Update\Response::class, $actual_response );
 
 		// Assert the request was made and the latest version sent to server option is updated.
 		$this->assertTrue( $updated, 'Failed asserting that the update plugin request was made.' );
@@ -149,7 +151,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$this->assertFalse( $updated_second_time, 'Failed asserting that the update plugin request was not made.' );
 
 		// Now the mock API object will return a WP_Error.
-		$mock_api2 = $this->getMockBuilder( \WooCommerce\Facebook\API::class )->disableOriginalConstructor()->setMethods( array( 'do_remote_request' ) )->getMock();
+		$mock_api2 = $this->getMockBuilder( API::class )->disableOriginalConstructor()->setMethods( array( 'do_remote_request' ) )->getMock();
 		$mock_api2->expects( $this->any() )->method( 'do_remote_request' )->willReturn( new \WP_Error( 'dummy-code', 'dummy-message', array( 'data' => 'dummy data' ) ) );
 		$prop_api->setValue( $plugin, $mock_api2 );
 
@@ -160,7 +162,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$this->assertNotEquals( \WC_Facebookcommerce_Utils::PLUGIN_VERSION, get_option( 'facebook_for_woocommerce_latest_version_sent_to_server' ) ); // API failed response should not update the option.
 
 		// Now the mock API object will throw a Plugin Exception.
-		$mock_api3 = $this->getMockBuilder( \WooCommerce\Facebook\API::class )->disableOriginalConstructor()->setMethods( array( 'perform_request' ) )->getMock();
+		$mock_api3 = $this->getMockBuilder( API::class )->disableOriginalConstructor()->setMethods( array( 'perform_request' ) )->getMock();
 		$mock_api3->expects( $this->any() )->method( 'perform_request' )->willThrowException( new PluginException( 'Dummy Plugin Exception' ) );
 		$prop_api->setValue( $plugin, $mock_api3 );
 
@@ -171,7 +173,7 @@ class UpdateTest extends WP_UnitTestCase {
 		$this->assertNotEquals( \WC_Facebookcommerce_Utils::PLUGIN_VERSION, get_option( 'facebook_for_woocommerce_latest_version_sent_to_server' ) ); // API failed response should not update the option.
 
 		// Now the mock API object will throw an ApiException.
-		$mock_api4 = $this->getMockBuilder( \WooCommerce\Facebook\API::class )->disableOriginalConstructor()->setMethods( array( 'perform_request' ) )->getMock();
+		$mock_api4 = $this->getMockBuilder( API::class )->disableOriginalConstructor()->setMethods( array( 'perform_request' ) )->getMock();
 		$mock_api4->expects( $this->any() )->method( 'perform_request' )->willThrowException( new ApiException( 'Dummy API Exception' ) );
 		$prop_api->setValue( $plugin, $mock_api4 );
 
