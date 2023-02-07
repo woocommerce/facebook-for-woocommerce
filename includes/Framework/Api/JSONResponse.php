@@ -80,7 +80,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 *
 	 * @return bool Whether the offset exists.
 	 */
-	public function offsetExists( $offset ) {
+	public function offsetExists( $offset ): bool {
 		return array_key_exists( $offset, $this->response_data );
 	}
 
@@ -93,6 +93,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 *
 	 * @return mixed The offset value.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		return $this->response_data[ $offset ];
 	}
@@ -107,7 +108,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 *
 	 * @return void
 	 */
-	public function offsetSet( $offset, $value ) {
+	public function offsetSet( $offset, $value ): void {
 		$this->response_data[ $offset ] = $value;
 	}
 
@@ -120,7 +121,7 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 *
 	 * @return void
 	 */
-	public function offsetUnset( $offset ) {
+	public function offsetUnset( $offset ): void {
 		unset( $this->response_data[ $offset ] );
 	}
 }
