@@ -56,7 +56,7 @@ class Request extends Configuration\Request {
 	/**
 	 * Sets the plugin version for configuration update request.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.10
 	 *
 	 * @param string $plugin_version current plugin version.
 	 */

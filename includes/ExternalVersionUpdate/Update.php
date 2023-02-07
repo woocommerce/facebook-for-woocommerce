@@ -22,7 +22,7 @@ use WooCommerce\Facebook\Utilities\Heartbeat;
  * Whenever this plugin gets updated, we need to inform the Meta server of the new version.
  * This is done by sending a request to the Meta server with the new version number.
  *
- * @since x.x.x
+ * @since 3.0.10
  */
 class Update {
 
@@ -32,7 +32,7 @@ class Update {
 	/**
 	 * Update class constructor.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.10
 	 */
 	public function __construct() {
 		add_action( Heartbeat::HOURLY, array( $this, 'maybe_update_external_plugin_version' ) );
@@ -41,7 +41,7 @@ class Update {
 	/**
 	 * Check if we need to inform the Meta server of a new version.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.10
 	 * @return bool
 	 */
 	public function maybe_update_external_plugin_version() {
@@ -55,7 +55,7 @@ class Update {
 	/**
 	 * Checks if the plugin version needs to be updated.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.10
 	 * @return bool
 	 */
 	public function should_update_version() {
@@ -79,7 +79,7 @@ class Update {
 	/**
 	 * Sends the latest plugin version to the Meta server.
 	 *
-	 * @since x.x.x
+	 * @since 3.0.10
 	 * @return bool
 	 */
 	public function send_new_version_to_facebook_server() {
