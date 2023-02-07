@@ -93,7 +93,8 @@ abstract class JSONResponse implements Response, ArrayAccess {
 	 *
 	 * @return mixed The offset value.
 	 */
-	public function offsetGet( $offset ): mixed {
+	#[\ReturnTypeWillChange]
+	public function offsetGet( $offset ) {
 		return $this->response_data[ $offset ];
 	}
 
