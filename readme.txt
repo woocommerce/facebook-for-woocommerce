@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 3.0.10
+Stable tag: 3.0.11
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.11 - 2023-02-14 =
+* Fix - Default sync mode on new product.
 
 = 3.0.10 - 2023-02-07 =
 * Add - Ping Meta server with the currently installed plugin version.
