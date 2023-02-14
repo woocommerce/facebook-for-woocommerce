@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.11 - 2023-02-14 =
+* Fix - Default sync mode on new product.
+
 = 3.0.10 - 2023-02-07 =
 * Add - Ping Meta server with the currently installed plugin version.
 * Fix - PHP 8.1 deprecated warnings.
