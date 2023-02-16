@@ -97,7 +97,7 @@ class Stock {
 	 */
 	private function maybe_sync_product_stock_status( \WC_Product $product ) {
 		if ( Products::product_should_be_deleted( $product ) ) {
-			facebook_for_woocommerce()->get_products_sync_handler()->delete_products( array( \WC_Facebookcommerce_Utils::get_fb_retailer_id( $product ) ) );
+			facebook_for_woocommerce()->get_integration()->delete_fb_product( $product );
 			return;
 		}
 		facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_products( array( $product->get_id() ) );
