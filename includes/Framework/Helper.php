@@ -406,7 +406,7 @@ class Helper {
 	 */
 	public static function trigger_error( $message, $type = E_USER_NOTICE ) {
 
-		if ( is_callable( 'is_ajax' ) && is_ajax() ) {
+		if ( is_callable( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
 
 			switch ( $type ) {
 
