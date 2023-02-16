@@ -47,7 +47,7 @@ class Lifecycle {
 		add_action( 'admin_init', array( $this, 'handle_activation' ) );
 		// handle deactivation
 		add_action( 'deactivate_' . $this->get_plugin()->get_plugin_file(), array( $this, 'handle_deactivation' ) );
-		if ( is_admin() && ! is_ajax() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			// initialize the plugin lifecycle
 			add_action( 'wp_loaded', array( $this, 'init' ) );
 			// add the admin notices
