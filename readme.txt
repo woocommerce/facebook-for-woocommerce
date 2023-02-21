@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.12 - 2023-02-21 =
+* Fix - Replace is_ajax calls with wp_doing_ajax().
+* Fix - out-of-stock products not deleted in Facebook catalog.
+
 = 3.0.11 - 2023-02-14 =
 * Fix - Default sync mode on new product.
 
