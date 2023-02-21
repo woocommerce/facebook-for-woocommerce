@@ -15,7 +15,7 @@ class DebugTools {
 	 * @since 3.0.5
 	 */
 	public function __construct() {
-		if ( is_admin() && ! is_ajax() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			add_filter( 'woocommerce_debug_tools', [ $this, 'add_debug_tool' ] );
 		}
 	}
