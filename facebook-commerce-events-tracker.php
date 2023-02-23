@@ -744,8 +744,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
 
-			// Bail if the session variable has been set.
-			if ( isset( WC()->session ) && WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
+			// Bail if the session variable has been set or WC()->session is null.
+			if ( ! isset( WC()->session ) || WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
 				return $redirect;
 			}
 
