@@ -1,5 +1,8 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.0.13 - 2023-02-28 =
+* Fix - WC()->session causing fatal error when the `woocommerce_add_to_cart_redirect` filter is called via REST API.
+
 = 3.0.12 - 2023-02-21 =
 * Fix - Replace is_ajax calls with wp_doing_ajax().
 * Fix - out-of-stock products not deleted in Facebook catalog.
