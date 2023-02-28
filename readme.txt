@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.1
-Stable tag: 3.0.12
+Stable tag: 3.0.13
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.13 - 2023-02-28 =
+* Fix - WC()->session causing fatal error when the `woocommerce_add_to_cart_redirect` filter is called via REST API.
 
 = 3.0.12 - 2023-02-21 =
 * Fix - Replace is_ajax calls with wp_doing_ajax().
