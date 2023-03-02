@@ -817,7 +817,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 		 */
 		public function inject_initiate_checkout_event() {
 
-			if ( ! $this->is_pixel_enabled() || WC()->cart->get_cart_contents_count() === 0 || $this->pixel->is_last_event( 'InitiateCheckout' ) ) {
+			if ( ! $this->is_pixel_enabled() || is_null( WC()->cart ) || WC()->cart->get_cart_contents_count() === 0 || $this->pixel->is_last_event( 'InitiateCheckout' ) ) {
 				return;
 			}
 
