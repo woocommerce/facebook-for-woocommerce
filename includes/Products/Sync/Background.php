@@ -283,7 +283,7 @@ class Background extends BackgroundJobHandler {
 					$val
 				);
 				/** Force replacing , and : characters if those were not cleaned up by filters */
-				$attributes[] = $key . ':' . str_replace( [ ',', ':' ], ' ', $attribute_value );
+				$attributes[] = str_replace( [ ',', ':' ], ' ', $key ) . ':' . str_replace( [ ',', ':' ], ' ', $attribute_value );
 			}
 
 			$data['additional_variant_attribute'] = implode( ',', $attributes );
