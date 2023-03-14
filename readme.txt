@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.15 - 2023-03-14 =
+* Tweak - WC 7.5 compatibility.
+* Tweak - WP 6.2 compatibility.
+
 = 3.0.14 - 2023-03-02 =
 * Fix - Fatal error due to the latest WC Blocks changes.
 * Fix custom attribute name with special characters breaks sync.
