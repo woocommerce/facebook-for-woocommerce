@@ -112,7 +112,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @throws \Exception upon error
+	 * @throws \Exception Upon error.
 	 */
 	public function maybe_handle() {
 
@@ -141,11 +141,11 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		 * @see \WC_Session_Handler::nonce_user_logged_out() WC < 5.3 callback
 		 * @see \WC_Session_Handler::maybe_update_nonce_user_logged_out() WC >= 5.3 callback
 		 */
-		if ( Compatibility::is_wc_version_gte('5.3') ) {
-			$callback = [ WC()->session, 'maybe_update_nonce_user_logged_out' ];
+		if ( Compatibility::is_wc_version_gte( '5.3' ) ) {
+			$callback  = [ WC()->session, 'maybe_update_nonce_user_logged_out' ];
 			$arguments = 2;
 		} else {
-			$callback = [ WC()->session, 'nonce_user_logged_out' ];
+			$callback  = [ WC()->session, 'nonce_user_logged_out' ];
 			$arguments = 1;
 		}
 
@@ -206,7 +206,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		// add a random artificial delay to prevent a race condition if 2 or more processes are trying to
 		// process the job queue at the very same moment in time and neither of them have yet set the lock
 		// before the others are calling this method
-		usleep( rand( 100000, 300000 ) );
+		usleep( wp_rand( 100000, 300000 ) );
 		return (bool) get_transient( "{$this->identifier}_process_lock" );
 	}
 
@@ -364,7 +364,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		}
 
 		// generate a unique ID for the job
-		$job_id = md5( microtime() . mt_rand() );
+		$job_id = md5( microtime() . wp_rand() );
 
 		/**
 		 * Filter new background job attributes
