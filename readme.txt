@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.2
-Stable tag: 3.0.15
+Stable tag: 3.0.16
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.16 - 2023-03-21 =
+* Fix - Deprecation notices thrown by nonce_user_logged_out.
+* Fix - Display the Facebook tab and sync settings for external products.
+* Fix - viewContent events triggering PHP server notices on elementor sites.
 
 = 3.0.15 - 2023-03-14 =
 * Tweak - WC 7.5 compatibility.
