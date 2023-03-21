@@ -1125,7 +1125,7 @@ class Admin {
 		$tabs['fb_commerce_tab'] = array(
 			'label'  => __( 'Facebook', 'facebook-for-woocommerce' ),
 			'target' => 'facebook_options',
-			'class'  => array( 'show_if_simple', 'show_if_variable' ),
+			'class'  => array( 'show_if_simple', 'show_if_variable', 'show_if_external' ),
 		);
 
 		return $tabs;
@@ -1162,7 +1162,7 @@ class Admin {
 		// 'id' attribute needs to match the 'target' parameter set above
 		?>
 		<div id='facebook_options' class='panel woocommerce_options_panel'>
-			<div class='options_group show_if_simple'>
+			<div class='options_group hide_if_variable'>
 				<?php
 
 				woocommerce_wp_select(
