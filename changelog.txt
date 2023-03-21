@@ -1,5 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.0.16 - 2023-03-21 =
+* Fix - Deprecation notices thrown by nonce_user_logged_out.
+* Fix - Display the Facebook tab and sync settings for external products.
+* Fix - viewContent events triggering PHP server notices on elementor sites.
+
 = 3.0.15 - 2023-03-14 =
 * Tweak - WC 7.5 compatibility.
 * Tweak - WP 6.2 compatibility.
