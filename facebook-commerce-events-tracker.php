@@ -182,8 +182,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$products = array_values(
 				array_map(
-					function( $item ) {
-						return wc_get_product( $item->ID );
+					function( $post ) {
+						return wc_get_product( $post );
 					},
 					$wp_query->posts
 				)
