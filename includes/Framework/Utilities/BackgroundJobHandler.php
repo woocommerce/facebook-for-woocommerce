@@ -115,6 +115,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 	 * @throws \Exception Upon error.
 	 */
 	public function maybe_handle() {
+
 		if ( $this->is_process_running() ) {
 			// background process already running
 			wp_die();
@@ -125,22 +126,35 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 			wp_die();
 		}
 
-		/*
+		/**
 		 * WC core does 2 things here that can interfere with our nonce check:
+		 *
 		 * 1. WooCommerce starts a session due to our GET request to dispatch a job
-		 *    However, this happens *after* we've generated a nonce without a session (in CRON context)
-		 * 2. It then filters nonces for logged-out users indiscriminately without checking the nonce action; if
-		 *    there is a session created (and now the server does have one), it tries to filter every.single.nonce
-		 *    for logged-out users to use the customer session ID instead of 0 for user ID. We *want* to check
-		 *    against a UID of 0 (since that's how the nonce was created), so we temporarily pause the
-		 *    logged-out nonce hijacking before standing aside.
+		 *  However, this happens *after* we've generated a nonce without a session (in CRON context)
+		 * 2. it then filters nonces for logged-out users indiscriminately without checking the nonce action; if
+		 *  there is a session created (and now the server does have one), it tries to filter every.single.nonce
+		 *  for logged-out users to use the customer session ID instead of 0 for user ID. We *want* to check
+		 *  against a UID of 0 (since that's how the nonce was created), so we temporarily pause the
+		 *  logged-out nonce hijacking before standing aside.
+		 *
+		 * @see \WC_Session_Handler::init() when the action is hooked
+		 * @see \WC_Session_Handler::nonce_user_logged_out() WC < 5.3 callback
+		 * @see \WC_Session_Handler::maybe_update_nonce_user_logged_out() WC >= 5.3 callback
 		 */
-		remove_filter( 'nonce_user_logged_out', [ WC()->session, 'nonce_user_logged_out' ] );
+		if ( Compatibility::is_wc_version_gte( '5.3' ) ) {
+			$callback  = [ WC()->session, 'maybe_update_nonce_user_logged_out' ];
+			$arguments = 2;
+		} else {
+			$callback  = [ WC()->session, 'nonce_user_logged_out' ];
+			$arguments = 1;
+		}
+
+		remove_filter( 'nonce_user_logged_out', $callback );
 
 		check_ajax_referer( $this->identifier, 'nonce' );
 
 		// sorry, later nonce users! please play again
-		add_filter( 'nonce_user_logged_out', [ WC()->session, 'nonce_user_logged_out' ] );
+		add_filter( 'nonce_user_logged_out', $callback, 10, $arguments );
 
 		$this->handle();
 
@@ -192,7 +206,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		// add a random artificial delay to prevent a race condition if 2 or more processes are trying to
 		// process the job queue at the very same moment in time and neither of them have yet set the lock
 		// before the others are calling this method
-		usleep( rand( 100000, 300000 ) );
+		usleep( wp_rand( 100000, 300000 ) );
 		return (bool) get_transient( "{$this->identifier}_process_lock" );
 	}
 
@@ -350,7 +364,7 @@ abstract class BackgroundJobHandler extends AsyncRequest {
 		}
 
 		// generate a unique ID for the job
-		$job_id = md5( microtime() . mt_rand() );
+		$job_id = md5( microtime() . wp_rand() );
 
 		/**
 		 * Filter new background job attributes
