@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.17 - 2023-04-05 =
+* Tweak - WC 7.6 compatibility.
+
 = 3.0.16 - 2023-03-21 =
 * Fix - Deprecation notices thrown by nonce_user_logged_out.
 * Fix - Display the Facebook tab and sync settings for external products.
