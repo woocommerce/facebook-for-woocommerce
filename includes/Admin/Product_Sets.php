@@ -98,7 +98,7 @@ class Product_Sets {
 			<tbody>
 				<tr class="form-field product-categories-wrap">
 					<th scope="row"><?php $this->get_field_label(); ?></th>
-					<td><?php $this->get_field(); ?></td>
+					<td><?php $this->get_field( $term_id ); ?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -164,7 +164,7 @@ class Product_Sets {
 			<?php $selected = ( is_array( $saved_items ) && in_array( $product_cat->term_id, $saved_items, true ) ) ? ' selected="selected"' : ''; ?>
 			<option value="<?php echo esc_attr( $product_cat->term_id ); ?>" <?php echo esc_attr( $selected ); ?>><?php echo esc_attr( $product_cat->name ); ?></option>
 		<?php endforeach; ?>
-		<select>
+		</select>
 		<p class="description"><?php echo esc_html__( 'Map Facebook Product Set to WC Product Categories', 'facebook-for-woocommerce' ); ?>.</p>
 		<?php
 	}
