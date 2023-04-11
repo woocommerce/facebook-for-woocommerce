@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.18 - 2023-04-11 =
+* Fix - Fatal error when facebook_config option is empty.
+* Fix - Selected categories not showing on Product Sets edit page.
+
 = 3.0.17 - 2023-04-05 =
 * Tweak - WC 7.6 compatibility.
 
