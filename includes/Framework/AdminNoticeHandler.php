@@ -1,12 +1,11 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce.
  */
 
 namespace WooCommerce\Facebook\Framework;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin Notice Handler Class
@@ -24,25 +23,26 @@ class AdminNoticeHandler {
 	private $admin_notices = [];
 
 	/** @var boolean static member to enforce a single rendering of the admin notice placeholder element */
-	static private $admin_notice_placeholder_rendered = false;
+	private static $admin_notice_placeholder_rendered = false;
 
 	/** @var boolean static member to enforce a single rendering of the admin notice javascript */
-	static private $admin_notice_js_rendered = false;
-
+	private static $admin_notice_js_rendered = false;
 
 	/**
 	 * Initialize and setup the Admin Notice Handler
+	 *
+	 * @param Plugin $plugin The plugin.
 	 *
 	 * @since 3.0.0
 	 */
 	public function __construct( $plugin ) {
 
-		$this->plugin      = $plugin;
+		$this->plugin = $plugin;
 
 		// render any admin notices, delayed notices, and
-		add_action( 'admin_notices', array( $this, 'render_admin_notices'         ), 15 );
-		add_action( 'admin_footer',  array( $this, 'render_delayed_admin_notices' ), 15 );
-		add_action( 'admin_footer',  array( $this, 'render_admin_notice_js'       ), 20 );
+		add_action( 'admin_notices', array( $this, 'render_admin_notices' ), 15 );
+		add_action( 'admin_footer', array( $this, 'render_delayed_admin_notices' ), 15 );
+		add_action( 'admin_footer', array( $this, 'render_admin_notice_js' ), 20 );
 
 		// AJAX handler to dismiss any warning/error notices
 		add_action( 'wp_ajax_wc_plugin_framework_' . $this->get_plugin()->get_id() . '_dismiss_notice', array( $this, 'handle_dismiss_notice' ) );
@@ -56,7 +56,7 @@ class AdminNoticeHandler {
 	 * @since 3.0.0
 	 * @param string $message the notice message to display
 	 * @param string $message_id the message id
-	 * @param array $params {
+	 * @param array  $params {
 	 *     Optional parameters.
 	 *
 	 *     @type bool $dismissible             If the notice should be dismissible
@@ -67,11 +67,14 @@ class AdminNoticeHandler {
 	 */
 	public function add_admin_notice( $message, $message_id, $params = [] ) {
 
-		$params = wp_parse_args( $params, array(
-			'dismissible'             => true,
-			'always_show_on_settings' => true,
-			'notice_class'            => 'updated',
-		) );
+		$params = wp_parse_args(
+			$params,
+			array(
+				'dismissible'             => true,
+				'always_show_on_settings' => true,
+				'notice_class'            => 'updated',
+			)
+		);
 
 		if ( $this->should_display_notice( $message_id, $params ) ) {
 			$this->admin_notices[ $message_id ] = array(
@@ -88,8 +91,9 @@ class AdminNoticeHandler {
 	 * the plugin settings page (where notices are always displayed)
 	 *
 	 * @since 3.0.0
+	 *
 	 * @param string $message_id the message id
-	 * @param array $params {
+	 * @param array  $params {
 	 *     Optional parameters.
 	 *
 	 *     @type bool $dismissible             If the notice should be dismissible
@@ -105,10 +109,13 @@ class AdminNoticeHandler {
 			return false;
 		}
 
-		$params = wp_parse_args( $params, array(
-			'dismissible'             => true,
-			'always_show_on_settings' => true,
-		) );
+		$params = wp_parse_args(
+			$params,
+			array(
+				'dismissible'             => true,
+				'always_show_on_settings' => true,
+			)
+		);
 
 		// if the notice is always shown on the settings page, and we're on the settings page
 		if ( $params['always_show_on_settings'] && $this->get_plugin()->is_plugin_settings() ) {
@@ -171,7 +178,7 @@ class AdminNoticeHandler {
 	 * @since 3.0.0
 	 * @param string $message the notice message to display
 	 * @param string $message_id the message id
-	 * @param array $params {
+	 * @param array  $params {
 	 *     Optional parameters.
 	 *
 	 *     @type bool $dismissible             If the notice should be dismissible
@@ -183,12 +190,15 @@ class AdminNoticeHandler {
 	 */
 	public function render_admin_notice( $message, $message_id, $params = [] ) {
 
-		$params = wp_parse_args( $params, array(
-			'dismissible'             => true,
-			'is_visible'              => true,
-			'always_show_on_settings' => true,
-			'notice_class'            => 'updated',
-		) );
+		$params = wp_parse_args(
+			$params,
+			array(
+				'dismissible'             => true,
+				'is_visible'              => true,
+				'always_show_on_settings' => true,
+				'notice_class'            => 'updated',
+			)
+		);
 
 		$classes = array(
 			'notice',
@@ -207,7 +217,7 @@ class AdminNoticeHandler {
 			esc_attr( implode( ' ', $classes ) ),
 			esc_attr( $this->get_plugin()->get_id() ),
 			esc_attr( $message_id ),
-			( ! $params['is_visible'] ) ? 'style="display:none;"' : '',
+			esc_html( ( ! $params['is_visible'] ) ? 'style="display:none;"' : '' ),
 			wp_kses_post( $message )
 		);
 	}
@@ -284,15 +294,17 @@ class AdminNoticeHandler {
 	 * Marks the identified admin notice as dismissed for the given user
 	 *
 	 * @since 3.0.0
+	 *
 	 * @param string $message_id the message identifier
-	 * @param int $user_id optional user identifier, defaults to current user
+	 * @param int    $user_id optional user identifier, defaults to current user
 	 */
 	public function dismiss_notice( $message_id, $user_id = null ) {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-		$dismissed_notices = $this->get_dismissed_notices( $user_id );
+		$dismissed_notices                = $this->get_dismissed_notices( $user_id );
 		$dismissed_notices[ $message_id ] = true;
+
 		update_user_meta( $user_id, '_wc_plugin_framework_' . $this->get_plugin()->get_id() . '_dismissed_messages', $dismissed_notices );
 		/**
 		 * Admin Notice Dismissed Action.
@@ -303,7 +315,7 @@ class AdminNoticeHandler {
 		 * @param string $message_id notice identifier
 		 * @param string|int $user_id
 		 */
-		do_action( 'wc_' . $this->get_plugin()->get_id(). '_dismiss_notice', $message_id, $user_id );
+		do_action( 'wc_' . $this->get_plugin()->get_id() . '_dismiss_notice', $message_id, $user_id );
 	}
 
 
@@ -312,13 +324,13 @@ class AdminNoticeHandler {
 	 *
 	 * @since 3.0.0
 	 * @param string $message_id the message identifier
-	 * @param int $user_id optional user identifier, defaults to current user
+	 * @param int    $user_id optional user identifier, defaults to current user
 	 */
 	public function undismiss_notice( $message_id, $user_id = null ) {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-		$dismissed_notices = $this->get_dismissed_notices( $user_id );
+		$dismissed_notices                = $this->get_dismissed_notices( $user_id );
 		$dismissed_notices[ $message_id ] = false;
 		update_user_meta( $user_id, '_wc_plugin_framework_' . $this->get_plugin()->get_id() . '_dismissed_messages', $dismissed_notices );
 	}
@@ -330,7 +342,7 @@ class AdminNoticeHandler {
 	 *
 	 * @since 3.0.0
 	 * @param string $message_id the message identifier
-	 * @param int $user_id optional user identifier, defaults to current user
+	 * @param int    $user_id optional user identifier, defaults to current user
 	 * @return boolean true if the message has been dismissed by the admin user
 	 */
 	public function is_notice_dismissed( $message_id, $user_id = null ) {
@@ -369,7 +381,9 @@ class AdminNoticeHandler {
 	 * @since 3.0.0
 	 */
 	public function handle_dismiss_notice() {
-		$this->dismiss_notice( $_REQUEST['messageid'] );
+		if ( ! empty( $_REQUEST['messageid'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$this->dismiss_notice( wc_clean( wp_unslash( $_REQUEST['messageid'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 	}
 
 
@@ -384,6 +398,5 @@ class AdminNoticeHandler {
 	protected function get_plugin() {
 		return $this->plugin;
 	}
-
 
 }

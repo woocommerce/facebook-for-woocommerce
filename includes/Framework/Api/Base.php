@@ -680,7 +680,7 @@ abstract class Base {
 		if ( ! Helper::str_starts_with( $url, 'https://' ) ) {
 			return;
 		}
-		curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
+		curl_setopt( $handle, CURLOPT_SSLVERSION, 6 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 	}
 
 

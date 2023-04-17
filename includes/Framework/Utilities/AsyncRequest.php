@@ -1,15 +1,14 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce.
  */
 
 namespace WooCommerce\Facebook\Framework\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
- * SkyVerge Wordpress Async Request class
+ * SkyVerge WordPress Async Request class
  *
  * Based on the incredible work by deliciousbrains - most of the code is from
  * here: https://github.com/A5hleyRich/wp-background-processing
@@ -45,7 +44,7 @@ abstract class AsyncRequest {
 	public function __construct() {
 		$this->identifier = $this->prefix . '_' . $this->action;
 
-		add_action( 'wp_ajax_' . $this->identifier,        array( $this, 'maybe_handle' ) );
+		add_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
 		add_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
 	}
 
@@ -142,6 +141,7 @@ abstract class AsyncRequest {
 	 * Maybe handle
 	 *
 	 * Check for correct nonce and pass to handler.
+	 *
 	 * @since 4.4.0
 	 */
 	public function maybe_handle() {

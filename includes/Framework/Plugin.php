@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce.
  */
@@ -10,7 +9,7 @@ use WC_Logger;
 use WooCommerce\Facebook\Framework\Plugin\Compatibility;
 use WooCommerce\Facebook\Framework\Plugin\Dependencies;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * # WooCommerce Plugin Framework
@@ -76,8 +75,8 @@ abstract class Plugin {
 	 *
 	 * @param string $id plugin id
 	 * @param string $version plugin version number
-	 * @param array $args {
-	 *     optional plugin arguments
+	 * @param array  $args {
+	 *      optional plugin arguments
 	 *
 	 *     @type int|float $latest_wc_versions the last supported versions of WooCommerce, as a major.minor float relative to the latest available version
 	 *     @type string $text_domain the plugin textdomain, used to set up translations
@@ -95,11 +94,14 @@ abstract class Plugin {
 		$this->id      = $id;
 		$this->version = $version;
 
-		$args = wp_parse_args( $args, [
-			'min_wc_semver' => 0.2, // by default, 2 minor versions behind the latest published are supported
-			'text_domain'   => '',
-			'dependencies'  => [],
-		] );
+		$args = wp_parse_args(
+			$args,
+			[
+				'min_wc_semver' => 0.2, // by default, 2 minor versions behind the latest published are supported
+				'text_domain'   => '',
+				'dependencies'  => [],
+			]
+		);
 
 		$this->min_wc_semver = is_numeric( $args['min_wc_semver'] ) ? abs( $args['min_wc_semver'] ) : null;
 		$this->text_domain   = $args['text_domain'];
@@ -310,14 +312,15 @@ abstract class Plugin {
 		}
 
 		// grab latest published version
-		$supported_wc_version = $latest_wc_version = current( $latest_wc_versions );
+		$supported_wc_version = current( $latest_wc_versions );
+		$latest_wc_version    = current( $latest_wc_versions );
 
 		// grab semver parts
-		$latest_semver        = explode( '.', $latest_wc_version );
-		$supported_semver     = explode( '.', (string) $this->min_wc_semver );
-		$supported_major      = max( 0,  (int) $latest_semver[0] - (int) $supported_semver[0] );
-		$supported_minor      = isset( $supported_semver[1] ) ? (int) $supported_semver[1] : 0;
-		$previous_minor       = null;
+		$latest_semver    = explode( '.', $latest_wc_version );
+		$supported_semver = explode( '.', (string) $this->min_wc_semver );
+		$supported_major  = max( 0, (int) $latest_semver[0] - (int) $supported_semver[0] );
+		$supported_minor  = isset( $supported_semver[1] ) ? (int) $supported_semver[1] : 0;
+		$previous_minor   = null;
 
 		// loop known WooCommerce versions from the most recent until we get the oldest supported one
 		foreach ( $latest_wc_versions as $older_wc_version ) {
@@ -359,7 +362,8 @@ abstract class Plugin {
 					__( 'Heads up! %1$s will soon discontinue support for WooCommerce %2$s. Please %3$supdate WooCommerce%4$s to take advantage of the latest updates and features.', 'facebook-for-woocommerce' ),
 					$this->get_plugin_name(),
 					$current_wc_version,
-					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) .'">', '</a>'
+					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
+					'</a>'
 				),
 				$this->get_id_dasherized() . '-deprecated-wc-version-as-of-' . str_replace( '.', '-', $supported_wc_version ),
 				[ 'notice_class' => 'notice-info' ]
@@ -422,8 +426,8 @@ abstract class Plugin {
 	 * Log API requests/responses
 	 *
 	 * @since 2.2.0
-	 * @param array $request request data, see SV_WC_API_Base::broadcast_request() for format
-	 * @param array $response response data
+	 * @param array       $request request data, see SV_WC_API_Base::broadcast_request() for format
+	 * @param array       $response response data
 	 * @param string|null $log_id log to write data to
 	 */
 	public function log_api_request( $request, $response, $log_id = null ) {
@@ -445,7 +449,8 @@ abstract class Plugin {
 		$messages   = [];
 		$messages[] = isset( $data['uri'] ) && $data['uri'] ? 'Request' : 'Response';
 		foreach ( (array) $data as $key => $value ) {
-			$messages[] = trim( sprintf( '%s: %s', $key, is_array( $value ) || ( is_object( $value ) && 'stdClass' == get_class( $value ) ) ? print_r( (array) $value, true ) : $value ) );
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			$messages[] = trim( sprintf( '%s: %s', $key, is_array( $value ) || ( is_object( $value ) && 'stdClass' === get_class( $value ) ) ? print_r( (array) $value, true ) : $value ) );
 		}
 		return implode( "\n", $messages ) . "\n";
 	}
@@ -469,6 +474,7 @@ abstract class Plugin {
 					continue;
 				}
 
+				/* translators: %1$s - Current PHP version, %2$s - Minimum PHP version */
 				$note = __( '%1$s - A minimum of %2$s is required.', 'facebook-for-woocommerce' );
 
 			} else {
@@ -478,6 +484,7 @@ abstract class Plugin {
 					continue;
 				}
 
+				/* translators: %1$s - Current PHP version, %2$s - Minimum PHP version */
 				$note = __( 'Set as %1$s - %2$s is required.', 'facebook-for-woocommerce' );
 			}
 
@@ -529,9 +536,7 @@ abstract class Plugin {
 
 
 	/**
-	 * The implementation for this abstract method should simply be:
-	 *
-	 * return __FILE__;
+	 * The implementation for this abstract method should simply be: return __FILE__;
 	 *
 	 * @since 2.0.0
 	 * @return string the full path and filename of the plugin file
@@ -739,7 +744,7 @@ abstract class Plugin {
 	/**
 	 * Gets the plugin's path without a trailing slash.
 	 *
-	 * e.g. /path/to/wp-content/plugins/plugin-directory
+	 * For e.g. /path/to/wp-content/plugins/plugin-directory
 	 *
 	 * @since 2.0.0
 	 *

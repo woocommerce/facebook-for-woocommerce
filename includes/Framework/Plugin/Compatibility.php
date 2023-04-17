@@ -1,12 +1,11 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Facebook for WooCommerce
  */
 
 namespace WooCommerce\Facebook\Framework\Plugin;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * WooCommerce Compatibility Utility Class
