@@ -10,7 +10,7 @@
 
 namespace WooCommerce\Facebook;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\API\Request;
 use WooCommerce\Facebook\API\Response;
@@ -48,7 +48,7 @@ class API extends Base {
 	 * @param string $access_token access token to use for API requests
 	 */
 	public function __construct( $access_token ) {
-		$this->access_token = $access_token;
+		$this->access_token    = $access_token;
 		$this->request_headers = array(
 			'Authorization' => "Bearer {$access_token}",
 		);
@@ -109,14 +109,16 @@ class API extends Base {
 	 * @since 2.0.0
 	 *
 	 * @throws ApiException
+	 * @throws API\Exceptions\Request_Limit_Reached
 	 */
 	protected function do_post_parse_response_validation() {
 		/** @var API\Response $response */
 		$response = $this->get_response();
 		$request  = $this->get_request();
 		if ( $response && $response->has_api_error() ) {
-			$code    = $response->get_api_error_code();
-			$message = sprintf( '%s: %s', $response->get_api_error_type(), $response->get_user_error_message() ?: $response->get_api_error_message() );
+			$code          = $response->get_api_error_code();
+			$error_message = $response->get_user_error_message() ? $response->get_user_error_message() : $response->get_api_error_message();
+			$message       = sprintf( '%s: %s', $response->get_api_error_type(), $error_message );
 			/**
 			 * Graph API
 			 *
@@ -150,14 +152,14 @@ class API extends Base {
 			 *
 			 * @link https://developers.facebook.com/docs/graph-api/using-graph-api/error-handling#errorcodes
 			 */
-			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, array( 10, 102, 190 ), false ) ) {
+			if ( ( $code >= 200 && $code < 300 ) || in_array( $code, array( 10, 102, 190 ), false ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
 			} else {
 				// this was an unrelated error, so the OAuth connection may still be valid
 				delete_transient( 'wc_facebook_connection_invalid' );
 			}
 			// if the code indicates a retry and we've not hit the retry limit, perform the request again
-			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) {
+			if ( in_array( $code, $request->get_retry_codes(), false ) && $request->get_retry_count() < $request->get_retry_limit() ) { // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				$request->mark_retry();
 				$this->response = $this->perform_request( $request );
 				return;
@@ -351,7 +353,7 @@ class API extends Base {
 	 * @throws ApiException
 	 */
 	public function update_product_group( string $product_group_id, array $data ): API\ProductCatalog\ProductGroups\Update\Response {
-		$request = new API\ProductCatalog\ProductGroups\Update\Request( $product_group_id , $data );
+		$request = new API\ProductCatalog\ProductGroups\Update\Request( $product_group_id, $data );
 		$this->set_response_handler( API\ProductCatalog\ProductGroups\Update\Response::class );
 		return $this->perform_request( $request );
 	}
@@ -467,7 +469,7 @@ class API extends Base {
 
 	/**
 	 * @param string $product_catalog_id
-	 * @param array $data
+	 * @param array  $data
 	 * @return API\Response|API\ProductCatalog\ProductSets\Create\Response
 	 * @throws ApiException
 	 * @throws API\Exceptions\Request_Limit_Reached
@@ -481,7 +483,7 @@ class API extends Base {
 
 	/**
 	 * @param string $product_set_id
-	 * @param array $data
+	 * @param array  $data
 	 * @return API\Response|API\ProductCatalog\ProductSets\Update\Response
 	 * @throws ApiException
 	 * @throws API\Exceptions\Request_Limit_Reached
@@ -602,8 +604,8 @@ class API extends Base {
 		$next_response = null;
 		// get the next page if we haven't reached the limit of pages to retrieve and the endpoint for the next page is available
 		if ( ( 0 === $additional_pages || $response->get_pages_retrieved() <= $additional_pages ) && $response->get_next_page_endpoint() ) {
-			$components = parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
-			$request = $this->get_new_request(
+			$components = wp_parse_url( str_replace( $this->request_uri, '', $response->get_next_page_endpoint() ) );
+			$request    = $this->get_new_request(
 				[
 					'path'   => $components['path'] ?? '',
 					'method' => 'GET',
@@ -639,8 +641,8 @@ class API extends Base {
 			'method' => 'GET',
 			'params' => [],
 		);
-		$args    = wp_parse_args( $args, $defaults );
-		$request = new Request( $args['path'], $args['method'] );
+		$args     = wp_parse_args( $args, $defaults );
+		$request  = new Request( $args['path'], $args['method'] );
 		if ( $args['params'] ) {
 			$request->set_params( $args['params'] );
 		}

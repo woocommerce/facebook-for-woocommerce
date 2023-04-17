@@ -26,6 +26,7 @@
 		<exclude name="WooCommerce.Commenting.CommentHooks.MissingSinceComment"/>
 		<exclude name="WooCommerce.Commenting.CommentHooks.MissingHookComment"/>
 		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+		<exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
 	</rule>
 
 	<!-- Set the appropriate text domain. -->
