@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -71,6 +70,7 @@ class Feed {
 	 * @internal
 	 *
 	 * @since 1.11.0
+	 * @throws PluginException When the file is not readable or invalid feed secret or could not open feed file or get its contents.
 	 */
 	public function handle_feed_data_request() {
 		\WC_Facebookcommerce_Utils::log( 'Facebook is requesting the product feed.' );
@@ -80,7 +80,7 @@ class Feed {
 		$file_path    = $feed_handler->get_file_path();
 
 		// regenerate if the file doesn't exist
-		if ( ! empty( $_GET['regenerate'] ) || ! file_exists( $file_path ) ) {
+		if ( ! empty( $_GET['regenerate'] ) || ! file_exists( $file_path ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$feed_handler->generate_feed();
 		}
 
@@ -104,19 +104,19 @@ class Feed {
 			header( 'Pragma: public' );
 			header( 'Content-Length:' . filesize( $file_path ) );
 
-			$file = @fopen( $file_path, 'rb' );
+			$file = @fopen( $file_path, 'rb' ); // phpcs:ignore
 			if ( ! $file ) {
 				throw new PluginException( 'Could not open feed file.', 500 );
 			}
 
 			// fpassthru might be disabled in some hosts (like Flywheel)
-			if ( $this->is_fpassthru_disabled() || ! @fpassthru( $file ) ) {
+			if ( $this->is_fpassthru_disabled() || ! @fpassthru( $file ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 				\WC_Facebookcommerce_Utils::log( 'fpassthru is disabled: getting file contents' );
-				$contents = @stream_get_contents( $file );
+				$contents = @stream_get_contents( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 				if ( ! $contents ) {
 					throw new PluginException( 'Could not get feed file contents.', 500 );
 				}
-				echo $contents;
+				echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} catch ( \Exception $exception ) {
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
@@ -191,8 +191,8 @@ class Feed {
 	private function is_fpassthru_disabled() {
 		$disabled = false;
 		if ( function_exists( 'ini_get' ) ) {
-			$disabled_functions = @ini_get( 'disable_functions' );
-			$disabled = is_string( $disabled_functions ) && in_array( 'fpassthru', explode( ',', $disabled_functions ), false );
+			$disabled_functions = @ini_get( 'disable_functions' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$disabled           = is_string( $disabled_functions ) && in_array( 'fpassthru', explode( ',', $disabled_functions ), false ); // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 		}
 		return $disabled;
 	}

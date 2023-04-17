@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -64,9 +63,9 @@ class FBCategories {
 		// TODO: can perform more validations here.
 		switch ( $attribute['type'] ) {
 			case 'enum':
-				return in_array( $value, $attribute['enum_values'] );
+				return in_array( $value, $attribute['enum_values'], true );
 			case 'boolean':
-				return in_array( $value, array( 'yes', 'no' ) );
+				return in_array( $value, array( 'yes', 'no' ), true );
 			default:
 				return true;
 		}
