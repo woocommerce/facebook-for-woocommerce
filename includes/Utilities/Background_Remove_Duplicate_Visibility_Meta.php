@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
 
@@ -80,7 +79,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 			}
 		}
 
-		// job complete! :)
+		// job complete ! :)
 		if ( $this->count_remaining_products() === 0 ) {
 
 			update_option( 'wc_facebook_background_remove_duplicate_visibility_meta_complete', 'yes' );
@@ -113,7 +112,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 			) AS duplicate_entries
 		";
 
-		return (int) $wpdb->get_var( $sql );
+		return (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 
@@ -138,9 +137,15 @@ class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 
 		foreach ( $results as $result ) {
 
-			$sql = "DELETE FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'fb_visibility' AND meta_id != %d";
+			$query_result = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'fb_visibility' AND meta_id != %d",
+					$result->post_id,
+					$result->last_meta_id
+				)
+			);
 
-			if ( false === $wpdb->query( $wpdb->prepare( $sql, $result->post_id, $result->last_meta_id ) ) ) {
+			if ( false === $query_result ) {
 
 				facebook_for_woocommerce()->log(
 					sprintf(
@@ -179,7 +184,7 @@ class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 			HAVING entries > 1
 		";
 
-		return $wpdb->get_results( $sql );
+		return $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 
@@ -187,6 +192,9 @@ class Background_Remove_Duplicate_Visibility_Meta extends BackgroundJobHandler {
 	 * No-op
 	 *
 	 * @since 2.0.3
+	 *
+	 * @param mixed $item The current item in the batch.
+	 * @param array $job  The arguments for the job.
 	 */
 	protected function process_item( $item, $job ) {
 		// void

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Framework\Utilities\BackgroundJobHandler;
 
@@ -65,7 +64,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 
 		// set to Sync and hide until memory or time limit is exceeded
 		while ( $processed_products < $remaining_products ) {
-			$rows_updated = $this->sync_and_hide();
+			$rows_updated        = $this->sync_and_hide();
 			$processed_products += $rows_updated;
 			$job->progress      += $rows_updated;
 			// update job progress
@@ -76,7 +75,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 			}
 		}
 
-		// job complete! :)
+		// job complete ! :)
 		if ( $this->count_remaining_products() === 0 ) {
 			update_option( 'wc_facebook_background_handle_virtual_products_variations_complete', 'yes' );
 			$this->complete_job( $job );
@@ -107,7 +106,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 			AND ( visibility_meta.meta_value IS NULL OR visibility_meta.meta_value = 'yes' )
 		";
 
-		return (int) $wpdb->get_var( $sql );
+		return (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 
@@ -129,7 +128,8 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 			return 0;
 		}
 
-		$insert = $update = array();
+		$insert = array();
+		$update = array();
 
 		foreach ( $results as $result ) {
 
@@ -172,7 +172,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 			LIMIT 1000
 		";
 
-		return $wpdb->get_results( $sql );
+		return $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 
@@ -205,7 +205,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 				VALUES {$values_str}
 		";
 
-		$rows_inserted = $wpdb->query( $sql );
+		$rows_inserted = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( false === $rows_inserted ) {
 
@@ -238,7 +238,7 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 			implode( ', ', array_map( 'intval', $post_ids ) )
 		);
 
-		$rows_updated = $wpdb->query( $sql );
+		$rows_updated = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( false === $rows_updated ) {
 
@@ -250,11 +250,13 @@ class Background_Handle_Virtual_Products_Variations extends BackgroundJobHandler
 		return (int) $rows_updated;
 	}
 
-
 	/**
 	 * No-op
 	 *
 	 * @since 2.0.0
+	 *
+	 * @param mixed $item The current item in the batch.
+	 * @param array $job  The arguments for the job.
 	 */
 	protected function process_item( $item, $job ) {
 		// void
