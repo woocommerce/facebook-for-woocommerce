@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\API;
 use WooCommerce\Facebook\Locale;
@@ -85,7 +84,7 @@ class Advertise extends Abstract_Settings_Screen {
 					appId            : '<?php echo esc_js( $connection_handler->get_client_id() ); ?>',
 					autoLogAppEvents : true,
 					xfbml            : true,
-					version          : '<?php echo esc_js( API::API_VERSION )?>',
+					version          : '<?php echo esc_js( API::API_VERSION ); ?>',
 				} );
 			};
 		</script>
@@ -125,12 +124,12 @@ class Advertise extends Abstract_Settings_Screen {
 	}
 
 
-	/*
+	/**
 	 * Converts the given timezone string to a name if needed.
 	 *
 	 * @since 2.2.0
 	 *
-	 * @param string $timezone_string Timezone string
+	 * @param string    $timezone_string Timezone string
 	 * @param int|float $timezone_offset Timezone offset
 	 * @return string timezone string
 	 */
@@ -202,7 +201,7 @@ class Advertise extends Abstract_Settings_Screen {
 		$fbe_extras = wp_json_encode( $this->get_lwi_ads_configuration_data() );
 
 		?>
-		<script async defer src="<?php echo esc_url( $this->get_lwi_ads_sdk_url() ); ?>"></script>
+		<script async defer src="<?php echo esc_url( $this->get_lwi_ads_sdk_url() ); ?>"></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 		<div
 			class="fb-lwi-ads-creation"
 			data-hide-manage-button="true"

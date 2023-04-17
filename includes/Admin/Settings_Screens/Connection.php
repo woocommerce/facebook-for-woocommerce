@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
@@ -159,16 +158,20 @@ class Connection extends Abstract_Settings_Screen {
 		);
 
 		// if the catalog ID is set, update the URL and try to get its name for display
-		if ( $catalog_id = $static_items['catalog']['value'] ) {
+		$catalog_id = $static_items['catalog']['value'];
+		if ( $catalog_id ) {
 
 			$static_items['catalog']['url'] = "https://facebook.com/products/catalogs/{$catalog_id}";
 
 			try {
 				$response = facebook_for_woocommerce()->get_api()->get_catalog( $catalog_id );
-				if ( $name = $response->name ) {
+				$name     = $response->name;
+				if ( $name ) {
 					$static_items['catalog']['value'] = $name;
 				}
 			} catch ( ApiException $exception ) {
+				$plugin = facebook_for_woocommerce();
+				$plugin->log( 'Could not get the catalog. ' . $exception->getMessage() );
 			}
 		}
 

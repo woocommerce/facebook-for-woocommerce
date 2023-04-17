@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -11,7 +10,7 @@
 
 namespace WooCommerce\Facebook\Admin\Settings_Screens;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 use WooCommerce\Facebook\Admin\Google_Product_Category_Field;
@@ -58,18 +57,20 @@ class Product_Sync extends Abstract_Settings_Screen {
 		if ( ! $this->is_current_screen_page() ) {
 			return;
 		}
-		wp_enqueue_script( 'wc-backbone-modal', null, array( 'backbone' ) );
+		wp_enqueue_script( 'wc-backbone-modal', null, array( 'backbone' ), \WC_Facebookcommerce::PLUGIN_VERSION, false );
 		wp_enqueue_script(
 			'facebook-for-woocommerce-modal',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/modal.js',
 			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui' ),
-			\WC_Facebookcommerce::PLUGIN_VERSION
+			\WC_Facebookcommerce::PLUGIN_VERSION,
+			false
 		);
 		wp_enqueue_script(
 			'facebook-for-woocommerce-settings-sync',
 			facebook_for_woocommerce()->get_asset_build_dir_url() . '/admin/settings-sync.js',
 			array( 'jquery', 'wc-backbone-modal', 'jquery-blockui', 'jquery-tiptip', 'facebook-for-woocommerce-modal', 'wc-enhanced-select' ),
-			\WC_Facebookcommerce::PLUGIN_VERSION
+			\WC_Facebookcommerce::PLUGIN_VERSION,
+			false
 		);
 
 		/* translators: Placeholders: {count} number of remaining items */
@@ -90,6 +91,7 @@ class Product_Sync extends Abstract_Settings_Screen {
 					/* translators: Placeholders %s - html code for a spinner icon */
 					'confirm_resync'                => esc_html__( 'Your products will now be resynced to Facebook, this may take some time.', 'facebook-for-woocommerce' ),
 					'confirm_sync'                  => esc_html__( "Facebook for WooCommerce automatically syncs your products on create/update. Are you sure you want to force product resync?\n\nThis will query all published products and may take some time. You only need to do this if your products are out of sync or some of your products did not sync.", 'facebook-for-woocommerce' ),
+					/* translators: %s - Spinner HTML */
 					'sync_in_progress'              => sprintf( esc_html__( 'Your products are syncing - you may safely leave this page %s', 'facebook-for-woocommerce' ), '<span class="spinner is-active"></span>' ),
 					'sync_remaining_items_singular' => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 1 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
 					'sync_remaining_items_plural'   => sprintf( esc_html( translate_nooped_plural( $sync_remaining_items_string, 2 ) ), '<strong>', '</strong>', '<span class="spinner is-active"></span>' ),
@@ -193,7 +195,7 @@ class Product_Sync extends Abstract_Settings_Screen {
 	 * @since 2.0.0
 	 */
 	public function save() {
-		$integration = facebook_for_woocommerce()->get_integration();
+		$integration              = facebook_for_woocommerce()->get_integration();
 		$previous_product_cat_ids = $integration->get_excluded_product_category_ids();
 		$previous_product_tag_ids = $integration->get_excluded_product_tag_ids();
 		parent::save();
@@ -238,7 +240,7 @@ class Product_Sync extends Abstract_Settings_Screen {
 	 * @return array
 	 */
 	public function get_settings() {
-		$term_query = new \WP_Term_Query(
+		$term_query         = new \WP_Term_Query(
 			array(
 				'taxonomy'   => 'product_cat',
 				'hide_empty' => false,
@@ -246,7 +248,7 @@ class Product_Sync extends Abstract_Settings_Screen {
 			)
 		);
 		$product_categories = $term_query->get_terms();
-		$term_query = new \WP_Term_Query(
+		$term_query         = new \WP_Term_Query(
 			array(
 				'taxonomy'     => 'product_tag',
 				'hide_empty'   => false,
@@ -254,7 +256,8 @@ class Product_Sync extends Abstract_Settings_Screen {
 				'fields'       => 'id=>name',
 			)
 		);
-		$product_tags = $term_query->get_terms();
+		$product_tags       = $term_query->get_terms();
+
 		return array(
 			array(
 				'type'  => 'product_sync_title',
