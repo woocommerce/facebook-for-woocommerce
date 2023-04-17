@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -17,7 +16,7 @@ use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The connection handler.
@@ -106,6 +105,8 @@ class Connection {
 	 * Constructs a new Connection.
 	 *
 	 * @since 2.0.0
+	 *
+	 * @param \WC_Facebookcommerce $plugin The Plugin.
 	 */
 	public function __construct( \WC_Facebookcommerce $plugin ) {
 
@@ -186,7 +187,7 @@ class Connection {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @throws ApiException
+	 * @throws ApiException When installation data could not be refreshed.
 	 */
 	private function update_installation_data() {
 
@@ -236,6 +237,9 @@ class Connection {
 	 * @internal
 	 *
 	 * @since 2.0.0
+	 *
+	 * @throws ApiException        If the connection fails.
+	 * @throws ConnectApiException If unable to connect to Facebook.
 	 */
 	public function handle_connect() {
 		// don't handle anything unless the user can manage WooCommerce settings
@@ -243,14 +247,14 @@ class Connection {
 			return;
 		}
 		try {
-			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], self::ACTION_CONNECT ) ) {
+			if ( empty( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['nonce'] ), self::ACTION_CONNECT ) ) {
 				throw new ApiException( 'Invalid nonce' );
 			}
 			$is_error                 = ! empty( $_GET['err'] ) ? true : false;
-			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( sanitize_text_field( $_GET['err_code'] ) ) : '';
-			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? sanitize_text_field( $_GET['merchant_access_token'] ) : '';
-			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? sanitize_text_field( $_GET['system_user_access_token'] ) : '';
-			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? sanitize_text_field( $_GET['system_user_id'] ) : '';
+			$error_code               = ! empty( $_GET['err_code'] ) ? stripslashes( wc_clean( wp_unslash( $_GET['err_code'] ) ) ) : '';
+			$merchant_access_token    = ! empty( $_GET['merchant_access_token'] ) ? wc_clean( wp_unslash( $_GET['merchant_access_token'] ) ) : '';
+			$system_user_access_token = ! empty( $_GET['system_user_access_token'] ) ? wc_clean( wp_unslash( $_GET['system_user_access_token'] ) ) : '';
+			$system_user_id           = ! empty( $_GET['system_user_id'] ) ? wc_clean( wp_unslash( $_GET['system_user_id'] ) ) : '';
 			if ( $is_error && $error_code ) {
 				throw new ConnectApiException( $error_code );
 			}
@@ -270,8 +274,7 @@ class Connection {
 			// Allow opt-out of full batch-API sync, for example if store has a large number of products.
 			if ( facebook_for_woocommerce()->get_integration()->allow_full_batch_api_sync() ) {
 				facebook_for_woocommerce()->get_products_sync_handler()->create_or_update_all_products();
-			}
-			else {
+			} else {
 				facebook_for_woocommerce()->log( 'Initial full product sync disabled by filter hook `facebook_for_woocommerce_allow_full_batch_api_sync`', 'facebook_for_woocommerce_connect' );
 			}
 			update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
@@ -305,18 +308,18 @@ class Connection {
 	 * @return string Formatted message string ready for logging.
 	 */
 	public function prepare_connect_server_message_for_user_display( $message ) {
-			/*
-			 * In some scenarios the connect server message is a JSON encoded object.
-			 * This happens when we have detailed information from Facebook API endpoint about the error.
-			 * We want to print it pretty for the customers.
-			 */
-			$decoded_message = json_decode( $message );
-			if ( json_last_error() === JSON_ERROR_NONE ) {
-				// If error is the first key we want to use just the body to simplify the message.
-				$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
-				$message         = json_encode( $decoded_message, JSON_PRETTY_PRINT );
-			}
-			return $message;
+		/*
+			* In some scenarios the connect server message is a JSON encoded object.
+			* This happens when we have detailed information from Facebook API endpoint about the error.
+			* We want to print it pretty for the customers.
+			*/
+		$decoded_message = json_decode( $message );
+		if ( json_last_error() === JSON_ERROR_NONE ) {
+			// If error is the first key we want to use just the body to simplify the message.
+			$decoded_message = isset( $decoded_message->error ) ? $decoded_message->error : $decoded_message;
+			$message         = wp_json_encode( $decoded_message, JSON_PRETTY_PRINT );
+		}
+		return $message;
 	}
 
 
@@ -330,13 +333,13 @@ class Connection {
 	public function handle_disconnect() {
 		check_admin_referer( self::ACTION_DISCONNECT );
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( __( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
+			wp_die( esc_html__( 'You do not have permission to uninstall Facebook Business Extension.', 'facebook-for-woocommerce' ) );
 		}
 		try {
 			$response = facebook_for_woocommerce()->get_api()->get_user();
 			$id       = $response->get_id();
 			if ( null !== $id ) {
-				$response = facebook_for_woocommerce()->get_api()->delete_user_permission( (string) $id , 'manage_business_extension' );
+				$response = facebook_for_woocommerce()->get_api()->delete_user_permission( (string) $id, 'manage_business_extension' );
 				facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Disconnection successful.', 'facebook-for-woocommerce' ) );
 			} else {
 				facebook_for_woocommerce()->log( 'User id not found for the disconnection procedure, connection will be reset.' );
@@ -384,20 +387,22 @@ class Connection {
 	 *
 	 * @param string $page_id desired Facebook page ID
 	 * @return string
-	 * @throws ApiException
+	 * @throws ApiException When Page is not authorized or could not retrieve page access data.
 	 */
 	private function retrieve_page_access_token( $page_id ) {
 		facebook_for_woocommerce()->log( 'Retrieving page access token' );
-		$api_url = Api::GRAPH_API_URL . Api::API_VERSION;
+
+		$api_url  = Api::GRAPH_API_URL . Api::API_VERSION;
 		$response = wp_remote_get( $api_url . '/me/accounts?access_token=' . $this->get_access_token() );
-		$body = wp_remote_retrieve_body( $response );
-		$body = json_decode( $body, true );
+		$body     = wp_remote_retrieve_body( $response );
+		$body     = json_decode( $body, true );
+
 		if ( ! is_array( $body ) || empty( $body['data'] ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-			facebook_for_woocommerce()->log( print_r( $body, true ) );
+			facebook_for_woocommerce()->log( print_r( $body, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			throw new ApiException(
 				sprintf(
 					/* translators: Placeholders: %s - API error message */
-					__( 'Could not retrieve page access data. %s', 'facebook for woocommerce' ),
+					__( 'Could not retrieve page access data. %s', 'facebook-for-woocommerce' ),
 					wp_remote_retrieve_response_message( $response )
 				)
 			);
@@ -523,12 +528,12 @@ class Connection {
 			home_url( '/' )
 		);
 		// build the proxy app URL where the user will land after onboarding, to be redirected to the site URL
-		$redirect_url = add_query_arg( 'site_url', urlencode( $site_url ), $this->get_connection_authentication_url() );
+		$redirect_url = add_query_arg( 'site_url', rawurlencode( $site_url ), $this->get_connection_authentication_url() );
 		// build the final connect URL, direct to Facebook
 		$connect_url = add_query_arg(
 			array(
 				'app_id'       => $this->get_client_id(), // this endpoint calls the client ID "app ID"
-				'redirect_url' => urlencode( $redirect_url ),
+				'redirect_url' => rawurlencode( $redirect_url ),
 			),
 			'https://www.facebook.com/commerce_manager/onboarding/'
 		);
@@ -539,7 +544,7 @@ class Connection {
 		 *
 		 * @param string $connect_url connect URL
 		 */
-		return apply_filters( 'wc_facebook_commerce_connect_url', $connect_url );
+		return esc_url( apply_filters( 'wc_facebook_commerce_connect_url', $connect_url ) );
 	}
 
 
@@ -821,7 +826,7 @@ class Connection {
 		 * @param string $redirect_url redirect URL
 		 * @param Connection $connection connection handler instance
 		 */
-		return (string) apply_filters( 'wc_facebook_connection_redirect_url', $redirect_url, $this );
+		return (string) esc_url( apply_filters( 'wc_facebook_connection_redirect_url', $redirect_url, $this ) );
 	}
 
 
@@ -855,7 +860,7 @@ class Connection {
 				'display'       => 'page',
 				'response_type' => 'code',
 				'scope'         => implode( ',', $this->get_scopes() ),
-				'extras'        => json_encode( $this->get_connect_parameters_extras() ),
+				'extras'        => wp_json_encode( $this->get_connect_parameters_extras() ),
 			)
 		);
 	}
@@ -887,9 +892,12 @@ class Connection {
 			),
 			'repeat'          => false,
 		);
-		if ( $external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id() ) {
+
+		$external_merchant_settings_id = facebook_for_woocommerce()->get_integration()->get_external_merchant_settings_id();
+		if ( $external_merchant_settings_id ) {
 			$parameters['setup']['merchant_settings_id'] = $external_merchant_settings_id;
 		}
+
 		// if messenger was previously enabled
 		if ( facebook_for_woocommerce()->get_integration()->is_messenger_enabled() ) {
 			$parameters['business_config']['messenger_chat'] = array(
@@ -1139,6 +1147,7 @@ class Connection {
 				return self::WEBHOOK_SUBSCRIBED_FIELD === $change->field;
 			}
 		);
+
 		$values = ! empty( $event[0] ) ? $event[0]->value : '';
 		if ( empty( $values ) ) {
 			return;
@@ -1300,6 +1309,7 @@ class Connection {
 				'redirect_uri' => rawurlencode( $redirect_uri ),
 				'errors'       => array( 'You need to grant access to WooCommerce.' ),
 			);
+
 			$redirect_url = add_query_arg(
 				$url_params,
 				$this->get_app_store_login_url()
