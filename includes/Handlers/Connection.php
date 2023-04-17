@@ -278,7 +278,7 @@ class Connection {
 			update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
 			// redirect to the Commerce onboarding if directed to do so
 			if ( ! empty( Helper::get_requested_value( 'connect_commerce' ) ) ) {
-				wp_redirect( $this->get_commerce_connect_url() );
+				wp_safe_redirect( $this->get_commerce_connect_url() );
 				exit;
 			}
 			facebook_for_woocommerce()->get_message_handler()->add_message( __( 'Connection successful!', 'facebook-for-woocommerce' ) );
@@ -489,7 +489,7 @@ class Connection {
 	 * @return string
 	 */
 	public function get_connect_url( $connect_commerce = false ) {
-		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
+		return esc_url( add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL ) );
 	}
 
 
@@ -851,7 +851,7 @@ class Connection {
 			array(
 				'client_id'     => $this->get_client_id(),
 				'redirect_uri'  => $this->get_proxy_url(),
-				'state'         => $state,
+				'state'         => esc_url( $state ),
 				'display'       => 'page',
 				'response_type' => 'code',
 				'scope'         => implode( ',', $this->get_scopes() ),
