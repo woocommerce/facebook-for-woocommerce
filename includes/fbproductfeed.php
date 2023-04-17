@@ -31,8 +31,11 @@ class WC_Facebook_Product_Feed {
 	const FB_PRODUCT_GROUP_ID            = 'fb_product_group_id';
 	const FB_VISIBILITY                  = 'fb_visibility';
 
+	/** @var int Default product count */
 	private $has_default_product_count = 0;
-	private $no_default_product_count  = 0;
+
+	/** @var int Non-default product count */
+	private $no_default_product_count = 0;
 
 	/**
 	 * WC_Facebook_Product_Feed constructor.
@@ -235,10 +238,11 @@ class WC_Facebook_Product_Feed {
 
 			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
 
-				if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+				$file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ); // phpcs:ignore
+				if ( $file_handle ) {
 
-					fwrite( $file_handle, $file['content'] );
-					fclose( $file_handle );
+					fwrite( $file_handle, $file['content'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+					fclose( $file_handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
 				}
 			}
 		}
@@ -270,14 +274,14 @@ class WC_Facebook_Product_Feed {
 
 		} catch ( Exception $e ) {
 
-			WC_Facebookcommerce_Utils::log( json_encode( $e->getMessage() ) );
+			WC_Facebookcommerce_Utils::log( wp_json_encode( $e->getMessage() ) );
 
 			$written = false;
 
 			// close the temporary file
 			if ( ! empty( $temp_feed_file ) && is_resource( $temp_feed_file ) ) {
 
-				fclose( $temp_feed_file );
+				fclose( $temp_feed_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
 			}
 
 			// delete the temporary file
@@ -300,7 +304,7 @@ class WC_Facebook_Product_Feed {
 	 */
 	public function prepare_temporary_feed_file() {
 		$temp_file_path = $this->get_temp_file_path();
-		$temp_feed_file = @fopen( $temp_file_path, 'w' );
+		$temp_feed_file = @fopen( $temp_file_path, 'w' ); // phpcs:ignore
 
 		// check if we can open the temporary feed file
 		if ( false === $temp_feed_file || ! is_writable( $temp_file_path ) ) {
@@ -314,7 +318,7 @@ class WC_Facebook_Product_Feed {
 			throw new PluginException( __( 'Could not open the product catalog feed file for writing', 'facebook-for-woocommerce' ), 500 );
 		}
 
-		fwrite( $temp_feed_file, $this->get_product_feed_header_row() );
+		fwrite( $temp_feed_file, $this->get_product_feed_header_row() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
 		return $temp_feed_file;
 	}
 
@@ -323,6 +327,8 @@ class WC_Facebook_Product_Feed {
 	 *
 	 * @since 2.6.6
 	 *
+	 * @param int[]    $wp_ids Product IDs.
+	 * @param resource $temp_feed_file A file pointer resource.
 	 * @return void
 	 */
 	public function write_products_feed_to_temp_file( $wp_ids, $temp_feed_file ) {
@@ -348,14 +354,14 @@ class WC_Facebook_Product_Feed {
 			);
 
 			if ( ! empty( $temp_feed_file ) ) {
-				fwrite( $temp_feed_file, $product_data_as_feed_row );
+				fwrite( $temp_feed_file, $product_data_as_feed_row ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
 			}
 		}
 
 		wp_reset_postdata();
 
 		if ( ! empty( $temp_feed_file ) ) {
-			fclose( $temp_feed_file );
+			fclose( $temp_feed_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
 		}
 	}
 
@@ -366,6 +372,7 @@ class WC_Facebook_Product_Feed {
 	 * @since 2.6.6
 	 *
 	 * @return void
+	 * @throws PluginException When the product catalg feed file could not be renamed.
 	 */
 	public function rename_temporary_feed_file_to_final_feed_file() {
 		$file_path      = $this->get_file_path();
@@ -471,7 +478,7 @@ class WC_Facebook_Product_Feed {
 				$item_group_id = $parent_attribute_values['item_group_id'];
 			}
 
-			$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $woo_product->id ? 'default' : '';
+			$product_data['default_product'] = $parent_attribute_values['default_variant_id'] == $woo_product->id ? 'default' : ''; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 
 			// If this group has default variant value, log this product item
 			if ( isset( $parent_attribute_values['default_variant_id'] ) && ! empty( $parent_attribute_values['default_variant_id'] ) ) {
@@ -522,7 +529,7 @@ class WC_Facebook_Product_Feed {
 		static::format_additional_image_url( static::get_value_from_product_data( $product_data, 'additional_image_urls' ) ) . ',' .
 		$sale_price_effective_date . ',' .
 		$sale_price . ',' .
-		'new' . ',' .
+		'new,' .
 		static::get_value_from_product_data( $product_data, 'visibility' ) . ',' .
 		static::get_value_from_product_data( $product_data, 'gender' ) . ',' .
 		static::get_value_from_product_data( $product_data, 'color' ) . ',' .
@@ -610,13 +617,13 @@ class WC_Facebook_Product_Feed {
 			$result        = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
 
 			if ( is_wp_error( $result ) || ! isset( $result['body'] ) ) {
-				$this->log_feed_progress( json_encode( $result ) );
+				$this->log_feed_progress( wp_json_encode( $result ) );
 				return $upload_status;
 			}
 
 			if ( isset( $result->end_time ) ) {
 				$settings['upload_end_time'] = $result->end_time;
-				$upload_status = 'complete';
+				$upload_status               = 'complete';
 			} elseif ( 200 === (int) wp_remote_retrieve_response_code( $result ) ) {
 				$upload_status = 'in progress';
 			}
@@ -629,10 +636,15 @@ class WC_Facebook_Product_Feed {
 	}
 
 
-	// Log progress in local log file and FB.
+	/**
+	 * Log progress in local log file and FB.
+	 *
+	 * @param string $msg Log message.
+	 * @param array  $object Log data.
+	 */
 	public function log_feed_progress( $msg, $object = array() ) {
 		WC_Facebookcommerce_Utils::fblog( $msg, $object );
-		$msg = empty( $object ) ? $msg : $msg . json_encode( $object );
+		$msg = empty( $object ) ? $msg : $msg . wp_json_encode( $object );
 		WC_Facebookcommerce_Utils::log( $msg );
 	}
 }

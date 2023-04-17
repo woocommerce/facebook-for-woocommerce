@@ -10,16 +10,28 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * FB_WPML_Language_Status class.
+ */
 class FB_WPML_Language_Status {
 	const VISIBLE    = 1;
 	const HIDDEN     = 2;
 	const NOT_SYNCED = 0;
 }
 
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+/**
+ * WC_Facebook_WPML_Injector class.
+ */
 class WC_Facebook_WPML_Injector {
-	public static $settings     = null;
+
+	/** @var array Settings array */
+	public static $settings = null;
+
+	/** @var string Default language */
 	public static $default_lang = null;
-	const OPTION                = 'fb_wmpl_language_visibility';
+
+	const OPTION = 'fb_wmpl_language_visibility';
 
 
 	/**
@@ -52,26 +64,28 @@ class WC_Facebook_WPML_Injector {
 		if ( ! isset( $settings[ $product_lang ] ) ) {
 			return true;
 		}
-		return $settings[ $product_lang ] !== FB_WPML_Language_Status::VISIBLE;
+		return FB_WPML_Language_Status::VISIBLE !== $settings[ $product_lang ];
 	}
 
+	// phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 	public function wpml_ajax_support( $call, $REQUEST ) {
 		global $sitepress;
 		if ( isset( $REQUEST['icl_ajx_action'] ) ) {
 			$call = $REQUEST['icl_ajx_action'];
 		}
-		if ( $call === 'icl_fb_woo' ) {
+		if ( 'icl_fb_woo' === $call ) {
 			$active_languages = array_keys( $sitepress->get_active_languages() );
 			$settings         = array();
 			foreach ( $active_languages as $lang ) {
-				$settings[ $lang ] = $REQUEST[ $lang ] === 'on' ?
-				FB_WPML_Language_Status::VISIBLE : FB_WPML_Language_Status::HIDDEN;
+				$settings[ $lang ] = 'on' === $REQUEST[ $lang ] ?
+					FB_WPML_Language_Status::VISIBLE : FB_WPML_Language_Status::HIDDEN;
 			}
 
 			update_option( 'fb_wmpl_language_visibility', $settings, false );
 			self::$settings = $settings;
 		}
 	}
+	// phpcs:enable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 
 
 	/**
@@ -133,7 +147,7 @@ class WC_Facebook_WPML_Injector {
 								<input
 									class="button button-primary"
 									name="save"
-									value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
+									value="<?php esc_attr_e( 'Save', 'facebook-for-woocommerce' ); ?>"
 									type="submit"
 								/>
 							</p>
@@ -155,3 +169,4 @@ class WC_Facebook_WPML_Injector {
 
 
 }
+// phpcs:enable Generic.Files.OneObjectStructurePerFile.MultipleFound

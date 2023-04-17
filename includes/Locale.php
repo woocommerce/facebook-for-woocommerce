@@ -10,7 +10,7 @@
 
 namespace WooCommerce\Facebook;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Helper class with utility methods for handling locales in Facebook.
@@ -149,8 +149,8 @@ class Locale {
 
 			foreach ( self::$supported_locales as $locale ) {
 
-				if ( $name = \Locale::getDisplayName( $locale, substr( $locale, 0, 2 ) ) ) {
-
+				$name = \Locale::getDisplayName( $locale, substr( $locale, 0, 2 ) );
+				if ( $name ) {
 					$locales[ $locale ] = ucfirst( $name );
 				}
 			}

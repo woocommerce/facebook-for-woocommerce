@@ -32,21 +32,26 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		const FB_VARIANT_PATTERN = 'pattern';
 		const FB_VARIANT_GENDER  = 'gender';
 
-		public static $ems        = null;
+		/** @var string Facebook external merchant settings ID. */
+		public static $ems = null;
+
+		/** @var string Store Name. */
 		public static $store_name = null;
 
-		public static $validGenderArray =
-		array(
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+		/** @var array Gender array. */
+		public static $validGenderArray = array(
 			'male'   => 1,
 			'female' => 1,
 			'unisex' => 1,
 		);
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+
 		/**
 		 * WooCommerce 2.1 support for wc_enqueue_js
 		 *
 		 * @since 1.2.1
 		 *
-		 * @access public
 		 * @param string $code
 		 * @return void
 		 */
@@ -63,7 +68,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Validate URLs, make relative URLs absolute
 		 *
-		 * @access public
 		 * @param string $url
 		 * @return string
 		 */
@@ -84,7 +88,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * This function should be used to get retailer_id based on a WC_Product
 		 * from WooCommerce
 		 *
-		 * @access public
 		 * @param WC_Product|WC_Facebook_Product $woo_product
 		 * @return string
 		 */
@@ -113,7 +116,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Return categories for products/pixel
 		 *
-		 * @access public
 		 * @param String $id
 		 * @return Array
 		 */
@@ -143,7 +145,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Returns content id to match on for Pixel fires.
 		 *
-		 * @access public
 		 * @param WC_Product $woo_product
 		 * @return array
 		 */
@@ -158,7 +159,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * 2. strip_tags()
 		 * 3. trim()
 		 *
-		 * @access public
 		 * @param String string
 		 * @return string
 		 */
@@ -191,7 +191,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * Returns flat array of woo IDs for variable products, or
 		 * an array with a single woo ID for simple products.
 		 *
-		 * @access public
 		 * @param WC_Product|WC_Facebook_Product $woo_product
 		 * @return array
 		 */
@@ -210,7 +209,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Returns true if WooCommerce plugin found.
 		 *
-		 * @access public
 		 * @return bool
 		 */
 		public static function isWoocommerceIntegration() {
@@ -220,7 +218,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Returns integration dependent name.
 		 *
-		 * @access public
 		 * @return string
 		 */
 		public static function getIntegrationName() {
@@ -234,7 +231,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Returns user info for the current WP user.
 		 *
-		 * @access public
 		 * @param AAMSettings $aam_settings
 		 * @return array
 		 */
@@ -299,7 +295,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			$ems     = $ems ?: self::$ems;
 			if ( $ems ) {
 				try {
-					facebook_for_woocommerce()->get_api()->log($ems, $message, $error);
+					facebook_for_woocommerce()->get_api()->log( $ems, $message, $error );
 				} catch ( ApiException $e ) {
 					$message = sprintf( 'There was an error trying to log: %s', $e->getMessage() );
 					facebook_for_woocommerce()->log( $message );
@@ -355,7 +351,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Returns true if id is a positive non-zero integer
 		 *
-		 * @access public
 		 * @param string $pixel_id
 		 * @return bool
 		 */

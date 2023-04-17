@@ -14,7 +14,7 @@ use WC_Facebook_Product;
 use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Products handler.
@@ -93,10 +93,9 @@ class Products {
 				}
 
 				// Remove excluded product from FB.
-				if ( "no" === $enabled && self::product_should_be_deleted( $product ) ) {
+				if ( 'no' === $enabled && self::product_should_be_deleted( $product ) ) {
 					facebook_for_woocommerce()->get_integration()->delete_fb_product( $product );
 				}
-
 			}//end if
 		}//end foreach
 	}
@@ -143,6 +142,7 @@ class Products {
 				'include'  => array(),
 			)
 		);
+
 		$products = array();
 		// get all products belonging to the given terms
 		if ( is_array( $args['include'] ) && ! empty( $args['include'] ) ) {
@@ -154,7 +154,7 @@ class Products {
 				)
 			);
 			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-				$taxonomy = $args['taxonomy'] === 'product_tag' ? 'tag' : 'category';
+				$taxonomy = 'product_tag' === $args['taxonomy'] ? 'tag' : 'category';
 				$products = wc_get_products(
 					array(
 						$taxonomy => $terms,
@@ -302,7 +302,7 @@ class Products {
 						break;
 					}
 				}
-			} elseif ( $meta = $product->get_meta( self::VISIBILITY_META_KEY ) ) {
+			} elseif ( $product->get_meta( self::VISIBILITY_META_KEY ) ) {
 				$is_visible = wc_string_to_bool( $product->get_meta( self::VISIBILITY_META_KEY ) );
 			} else {
 				$is_visible = true;
@@ -321,7 +321,6 @@ class Products {
 	 *
 	 * @since 2.0.0-dev.1
 	 *
-	 * @param int         $price product price in cents
 	 * @param \WC_Product $product product object
 	 * @return int
 	 */
@@ -463,7 +462,7 @@ class Products {
 		foreach ( $categories as $category ) {
 			$level           = 0;
 			$parent_category = $category;
-			while ( (int) $parent_category->parent !== 0 ) {
+			while ( 0 !== (int) $parent_category->parent ) {
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
 				if ( ! $parent_category instanceof \WP_Term ) {
 					break;
@@ -491,8 +490,9 @@ class Products {
 		}
 		if ( ! empty( $categories_per_level ) ) {
 			// get highest level categories
-			$categories = current( $categories_per_level );
+			$categories                 = current( $categories_per_level );
 			$google_product_category_id = '';
+
 			foreach ( $categories as $category ) {
 				$category_google_product_category_id = Product_Categories::get_google_product_category_id( $category->term_id );
 				if ( empty( $google_product_category_id && ! empty( $category_google_product_category_id ) ) ) {
@@ -528,7 +528,8 @@ class Products {
 		foreach ( $categories as $category ) {
 			$level           = 0;
 			$parent_category = $category;
-			while ( (int) $parent_category->parent !== 0 ) {
+
+			while ( 0 !== (int) $parent_category->parent ) {
 				$parent_category = get_term( $parent_category->parent, 'product_cat' );
 				if ( ! $parent_category instanceof \WP_Term ) {
 					break;
@@ -628,7 +629,7 @@ class Products {
 			$gender = $product->get_meta( self::GENDER_META_KEY );
 		}
 
-		if ( ! in_array( $gender, array( 'female', 'male', 'unisex' ) ) ) {
+		if ( ! in_array( $gender, array( 'female', 'male', 'unisex' ), true ) ) {
 			$gender = 'unisex';
 		}
 
@@ -709,7 +710,7 @@ class Products {
 			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
-		if ( $attribute_name !== self::get_product_color_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+		if ( self::get_product_color_attribute( $product ) !== $attribute_name && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
@@ -805,7 +806,7 @@ class Products {
 			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
 
-		if ( $attribute_name !== self::get_product_size_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+		if ( self::get_product_size_attribute( $product ) !== $attribute_name && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 
@@ -899,7 +900,8 @@ class Products {
 		if ( ! empty( $attribute_name ) && ! self::product_has_attribute( $product, $attribute_name ) ) {
 			throw new PluginException( "The provided attribute name $attribute_name does not match any of the available attributes for the product {$product->get_name()}" );
 		}
-		if ( $attribute_name !== self::get_product_pattern_attribute( $product ) && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
+		// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+		if ( self::get_product_pattern_attribute( $product ) !== $attribute_name && in_array( $attribute_name, self::get_distinct_product_attributes( $product ) ) ) {
 			throw new PluginException( "The provided attribute $attribute_name is already used for the product {$product->get_name()}" );
 		}
 		$product->update_meta_data( self::PATTERN_ATTRIBUTE_META_KEY, $attribute_name );
@@ -1035,7 +1037,7 @@ class Products {
 	public static function get_enhanced_catalog_attributes_from_request() {
 		$prefix     = Admin\Enhanced_Catalog_Attribute_Fields::FIELD_ENHANCED_CATALOG_ATTRIBUTE_PREFIX;
 		$attributes = array_filter(
-			$_POST,
+			$_POST, // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			function( $key ) use ( $prefix ) {
 				return substr( $key, 0, strlen( $prefix ) ) === $prefix;
 			},
@@ -1118,8 +1120,8 @@ class Products {
 		$products = wc_get_products(
 			array(
 				'limit'      => 1,
-				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID,
-				'meta_value' => $fb_product_id,
+				'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value' => $fb_product_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)
 		);
 
@@ -1132,8 +1134,8 @@ class Products {
 			$products = wc_get_products(
 				array(
 					'limit'      => 1,
-					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID,
-					'meta_value' => $fb_product_id,
+					'meta_key'   => \WC_Facebookcommerce_Integration::FB_PRODUCT_GROUP_ID, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value' => $fb_product_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				)
 			);
 

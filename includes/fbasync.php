@@ -20,6 +20,7 @@ if ( ! class_exists( 'WP_Async_Request', false ) ) {
  */
 class WC_Facebookcommerce_Async_Request extends WP_Async_Request {
 
+	/** @var string The action. */
 	protected $action = 'wc_facebook_async_request';
 
 	/**
