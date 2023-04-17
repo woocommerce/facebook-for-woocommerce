@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -13,7 +12,7 @@ namespace WooCommerce\Facebook\Events;
 
 use InvalidArgumentException;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Normalizer class.
@@ -28,10 +27,10 @@ class Normalizer {
 	 * @param string $field to be normalized.
 	 * @param string $data value to be normalized
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException When we are unable to normalize the field.
 	 */
 	public static function normalize( $field, $data ) {
-		if ( $data == null || strlen( $data ) == 0 ) {
+		if ( null === $data || strlen( $data ) === 0 ) {
 			return null;
 		}
 
@@ -78,7 +77,8 @@ class Normalizer {
 	 *
 	 * @since 2.0.3
 	 *
-	 * @param string[] array with user data to be normalized
+	 * @param string[] $data          Array with user data to be normalized.
+	 * @param bool     $is_pixel_data If the data is a pixel data or not.
 	 * @return string[]
 	 */
 	public static function normalize_array( $data, $is_pixel_data ) {
@@ -109,7 +109,7 @@ class Normalizer {
 	 *
 	 * @param string $email Email address to be normalized.
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException When we are unable to normalize the email.
 	 */
 	private static function normalizeEmail( $email ) {
 		// Validates email against RFC 822
@@ -153,12 +153,12 @@ class Normalizer {
 	 *
 	 * @param string $country country code to be normalized(ISO 3166-2).
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException When we are unable to normalize the country.
 	 */
 	private static function normalizeCountry( $country ) {
 		$result = preg_replace( '/[^a-z]/i', '', $country );
 
-		if ( strlen( $result ) != 2 ) {
+		if ( strlen( $result ) !== 2 ) {
 			throw new InvalidArgumentException( 'Invalid country format passed(' . $country . '). Country Code should be a two-letter ISO Country Code' );
 		}
 
