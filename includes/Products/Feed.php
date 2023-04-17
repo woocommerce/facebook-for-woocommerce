@@ -210,7 +210,7 @@ class Feed {
 			'wc-api' => self::REQUEST_FEED_ACTION,
 			'secret' => self::get_feed_secret(),
 		];
-		return add_query_arg( $query_args, home_url( '/' ) );
+		return esc_url( add_query_arg( $query_args, home_url( '/' ) ) );
 	}
 
 

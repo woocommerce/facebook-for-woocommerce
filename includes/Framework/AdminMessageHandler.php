@@ -370,7 +370,7 @@ class AdminMessageHandler {
 		if ( $this->set_messages() ) {
 			$location = add_query_arg( self::MESSAGE_ID_GET_NAME, $this->get_message_id(), $location );
 		}
-		return $location;
+		return esc_url( $location );
 	}
 
 

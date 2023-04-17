@@ -1036,7 +1036,7 @@ class Admin {
 					)
 				),
 				count( $affected_products ),
-				'<a href="' . add_query_arg( array( 'facebook_show_affected_products' => 1 ) ) . '">',
+				'<a href="' . esc_url( add_query_arg( array( 'facebook_show_affected_products' => 1 ) ) ) . '">',
 				'</a>',
 				'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 				'</a>'
