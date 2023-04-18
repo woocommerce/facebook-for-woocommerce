@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.19 - 2023-04-18 =
+* Tweak - Bump Marketing API version from v16.0.
+
 = 3.0.18 - 2023-04-11 =
 * Fix - Fatal error when facebook_config option is empty.
 * Fix - Selected categories not showing on Product Sets edit page.
