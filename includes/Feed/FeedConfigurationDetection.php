@@ -197,7 +197,7 @@ class FeedConfigurationDetection {
 	 */
 	private function get_feed_nodes_for_catalog( string $product_catalog_id ) {
 		try {
-			$response = facebook_for_woocommerce()->get_api()->read_feeds($product_catalog_id);
+			$response = facebook_for_woocommerce()->get_api()->read_feeds( $product_catalog_id );
 		} catch ( \Exception $e ) {
 			$message = sprintf( 'There was an error trying to get feed nodes for catalog: %s', $e->getMessage() );
 			facebook_for_woocommerce()->log( $message );
@@ -229,7 +229,7 @@ class FeedConfigurationDetection {
 	 */
 	private function get_feed_upload_metadata( $upload_id ) {
 		try {
-			$response = facebook_for_woocommerce()->get_api()->read_upload($upload_id);
+			$response = facebook_for_woocommerce()->get_api()->read_upload( $upload_id );
 		} catch ( \Exception $e ) {
 			$message = sprintf( 'There was an error trying to get feed upload metadata: %s', $e->getMessage() );
 			facebook_for_woocommerce()->log( $message );

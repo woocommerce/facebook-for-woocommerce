@@ -559,7 +559,6 @@ class API extends Base {
 		return $this->perform_request( $request );
 	}
 
-
 	public function log_tip_event( $tip_id, $channel_id, $event ) {
 		$request = new API\Tip\Log\Request( $tip_id, $channel_id, $event );
 		$this->set_response_handler( API\Tip\Log\Response::class );

@@ -116,8 +116,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Return categories for products/pixel
 		 *
-		 * @param String $id
-		 * @return Array
+		 * @param string $wpid
+		 * @return array
 		 */
 		public static function get_product_categories( $wpid ) {
 			$category_path          = wp_get_post_terms(
@@ -159,7 +159,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * 2. strip_tags()
 		 * 3. trim()
 		 *
-		 * @param String string
+		 * @param string $string
 		 * @return string
 		 */
 		public static function clean_string( $string ) {
@@ -236,7 +236,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		public static function get_user_info( $aam_settings ) {
 			$current_user = wp_get_current_user();
-			if ( 0 === $current_user->ID || $aam_settings == null || ! $aam_settings->get_enable_automatic_matching() ) {
+			if ( 0 === $current_user->ID || null === $aam_settings || ! $aam_settings->get_enable_automatic_matching() ) {
 				// User not logged in or pixel not configured with automatic advance matching
 				return [];
 			} else {
@@ -256,8 +256,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 				$user_data['ph']      = get_user_meta( $user_id, 'billing_phone', true );
 				// Each field that is not present in AAM settings or is empty is deleted from user data
 				foreach ( $user_data as $field => $value ) {
-					if ( $value === null || $value === ''
-						|| ! in_array( $field, $aam_settings->get_enabled_automatic_matching_fields() )
+					if ( null === $value || '' === $value
+						|| ! in_array( $field, $aam_settings->get_enabled_automatic_matching_fields(), true )
 					) {
 						unset( $user_data[ $field ] );
 					}
@@ -276,23 +276,24 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		/**
 		 * Utility function for development logging.
+		 *
+		 * @param string $message The Message to log.
+		 * @param array  $object  The log data.
+		 * @param bool   $error   Should log as an error.
+		 * @param string $ems     External merchant ID settings.
 		 */
-		public static function fblog(
-		$message,
-		$object = [],
-		$error = false,
-		$ems = '' ) {
+		public static function fblog( $message, $object = [], $error = false, $ems = '' ) {
 			if ( $error ) {
 				$object['plugin_version'] = self::PLUGIN_VERSION;
 				$object['php_version']    = phpversion();
 			}
-			$message = json_encode(
+			$message = wp_json_encode(
 				array(
 					'message' => $message,
 					'object'  => $object,
 				)
 			);
-			$ems     = $ems ?: self::$ems;
+			$ems     = $ems ? $ems : self::$ems;
 			if ( $ems ) {
 				try {
 					facebook_for_woocommerce()->get_api()->log( $ems, $message, $error );
@@ -301,7 +302,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 					facebook_for_woocommerce()->log( $message );
 				}
 			} else {
-				error_log(
+				error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 					'external merchant setting is null, something wrong here: ' .
 					$message
 				);
@@ -310,27 +311,32 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		/**
 		 * Utility function for development Tip Events logging.
+		 *
+		 * @param string $tip_id Tip ID.
+		 * @param string $channel_id Channel ID.
+		 * @param string $event Event Data.
+		 * @param string $ems External merchant ID settings.
 		 */
 		public static function tip_events_log( $tip_id, $channel_id, $event, $ems = '' ) {
-			$ems = $ems ?: self::$ems;
+			$ems = $ems ? $ems : self::$ems;
 			if ( $ems ) {
 				try {
-					facebook_for_woocommerce()->get_api()->log_tip_event($tip_id, $channel_id, $event);
+					facebook_for_woocommerce()->get_api()->log_tip_event( $tip_id, $channel_id, $event );
 				} catch ( ApiException $e ) {
 					$message = sprintf( 'There was an error while logging tip events: %s', $e->getMessage() );
 					facebook_for_woocommerce()->log( $message );
 				}
 			} else {
-				error_log( 'external merchant setting is null' );
+				error_log( 'external merchant setting is null' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			}
 		}
 
 		public static function is_variation_type( $type ) {
-			return $type == 'variation' || $type == 'subscription_variation';
+			return 'variation' === $type || 'subscription_variation' === $type;
 		}
 
 		public static function is_variable_type( $type ) {
-			return $type == 'variable' || $type == 'variable-subscription';
+			return 'variable' === $type || 'variable-subscription' === $type;
 		}
 
 		public static function check_woo_ajax_permissions( $action_text, $die ) {
@@ -360,14 +366,15 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		/**
 		 * Helper function to query posts.
+		 *
+		 * @param string $product_group_id Group ID of the product.
+		 * @param string $compare_condition Compare condition AND/OR.
+		 * @param string $post_type Post Type.
 		 */
-		public static function get_wp_posts(
-		$product_group_id = null,
-		$compare_condition = null,
-		$post_type = 'product' ) {
+		public static function get_wp_posts( $product_group_id = null, $compare_condition = null, $post_type = 'product' ) {
 			$args = array(
 				'fields'         => 'ids',
-				'meta_query'     => array(
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					( ( $product_group_id ) ?
 					array(
 						'key'     => $product_group_id,
@@ -384,6 +391,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		/**
 		 * Helper log function for debugging
+		 *
+		 * @param string $message The message to log.
 		 */
 		public static function log( $message ) {
 
@@ -393,7 +402,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			}
 
 			if ( is_array( $message ) || is_object( $message ) ) {
-				$message = json_encode( $message );
+				$message = wp_json_encode( $message );
 			} else {
 				$message = sanitize_textarea_field( $message );
 			}
@@ -401,7 +410,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			facebook_for_woocommerce()->log( $message );
 		}
 
-		// Return store name with sanitized apostrophe
+		/**
+		 * Return store name with sanitized apostrophe.
+		 */
 		public static function get_store_name() {
 			if ( self::$store_name ) {
 				return self::$store_name;
@@ -424,12 +435,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			// Fallback to site url
 			$url = get_site_url();
 			if ( $url ) {
-				self::$store_name = parse_url( $url, PHP_URL_HOST );
+				self::$store_name = parse_url( $url, PHP_URL_HOST ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 				return self::$store_name;
 			}
 			// If site url doesn't exist, fall back to http host.
-			if ( $_SERVER['HTTP_HOST'] ) {
-				self::$store_name = $_SERVER['HTTP_HOST'];
+			if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+				self::$store_name = wc_clean( wp_unslash( $_SERVER['HTTP_HOST'] ) );
 				return self::$store_name;
 			}
 
@@ -495,7 +506,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 				$parent_product_ids[ $parent_id ] = true;
 
 				// Include variations with published parents only.
-				if ( in_array( $parent_id, $product_ids ) ) {
+				if ( in_array( $parent_id, $product_ids, true ) ) {
 					$product_ids[] = $post_id;
 				}
 			}
@@ -505,14 +516,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 
-		/*
-		* Change variant product field name from Woo taxonomy to FB name
-		*/
+		/**
+		 * Change variant product field name from Woo taxonomy to FB name.
+		 *
+		 * @param string $name The variant name.
+		 * @param bool   $use_custom_data Should use custom data.
+		 */
 		public static function sanitize_variant_name( $name, $use_custom_data = true ) {
 			$name = str_replace( array( 'attribute_', 'pa_' ), '', strtolower( $name ) );
 
-			// British spelling
-			if ( $name === self::FB_VARIANT_COLOUR ) {
+			// UK English.
+			if ( self::FB_VARIANT_COLOUR === $name ) {
 				$name = self::FB_VARIANT_COLOR;
 			}
 
@@ -533,25 +547,25 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 		public static function validateGender( $gender ) {
-			if ( $gender && ! isset( self::$validGenderArray[ $gender ] ) ) {
+			if ( $gender && ! isset( self::$validGenderArray[ $gender ] ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$first_char = strtolower( substr( $gender, 0, 1 ) );
 				// Men, Man, Boys
-				if ( $first_char === 'm' || $first_char === 'b' ) {
+				if ( 'm' === $first_char || 'b' === $first_char ) {
 					return 'male';
 				}
 				// Women, Woman, Female, Ladies
-				if ( $first_char === 'w' || $first_char === 'f' || $first_char === 'l' ) {
+				if ( 'w' === $first_char || 'f' === $first_char || 'l' === $first_char ) {
 					return 'female';
 				}
-				if ( $first_char === 'u' ) {
+				if ( 'u' === $first_char ) {
 					return 'unisex';
 				}
 				if ( strlen( $gender ) >= 3 ) {
 					$gender = strtolower( substr( $gender, 0, 3 ) );
-					if ( $gender === 'gir' || $gender === 'her' ) {
+					if ( 'gir' === $gender || 'her' === $gender ) {
 						return 'female';
 					}
-					if ( $gender === 'him' || $gender === 'his' || $gender == 'guy' ) {
+					if ( 'him' === $gender || 'his' === $gender || 'guy' === $gender ) {
 						return 'male';
 					}
 				}
@@ -565,7 +579,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 		public static function is_all_caps( $value ) {
-			if ( $value === null || $value === '' ) {
+			if ( null === $value || '' === $value ) {
 				return true;
 			}
 			if ( preg_match( '/[^\\p{Common}\\p{Latin}]/u', $value ) ) {
@@ -574,7 +588,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 				return false;
 			}
 			$latin_string = preg_replace( '/[^\\p{Latin}]/u', '', $value );
-			if ( $latin_string === '' ) {
+			if ( '' === $latin_string ) {
 				// Symbols only
 				return true;
 			}
@@ -585,8 +599,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			// Plugin requires 5.6.0 but for some user use 5.5.9 JSON_BIGINT_AS_STRING
 			// will cause 502 issue when redirect.
 			return version_compare( phpversion(), '5.6.0' ) >= 0
-			? json_decode( $json_string, $assoc, 512, JSON_BIGINT_AS_STRING )
-			: json_decode( $json_string, $assoc, 512 );
+			? wp_json_decode( $json_string, $assoc, 512, JSON_BIGINT_AS_STRING )
+			: wp_json_decode( $json_string, $assoc, 512 );
 		}
 
 		public static function set_test_fail_reason( $msg, $trace ) {
@@ -600,9 +614,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		/**
 		 * Helper function to check time cap.
+		 *
+		 * @param string $from A date/time string.
+		 * @param int    $date_cap Number of days.
 		 */
 		public static function check_time_cap( $from, $date_cap ) {
-			if ( $from == null ) {
+			if ( null === $from ) {
 				return true;
 			}
 			$now         = new DateTime( current_time( 'mysql' ) );

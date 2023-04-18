@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -79,8 +78,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 					<div></div>
 					",
 					esc_attr( $this->page_id ),
-					esc_js( $this->jssdk_version ?: 'v5.0' ),
-					esc_js( facebook_for_woocommerce()->get_integration()->get_messenger_locale() ?: 'en_US' )
+					esc_js( $this->jssdk_version ? $this->jssdk_version : 'v5.0' ),
+					esc_js( facebook_for_woocommerce()->get_integration()->get_messenger_locale() ? facebook_for_woocommerce()->get_integration()->get_messenger_locale() : 'en_US' )
 				);
 
 			endif;

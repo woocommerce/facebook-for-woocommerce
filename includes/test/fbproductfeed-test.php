@@ -21,18 +21,26 @@ if ( ! class_exists( 'WC_Facebook_Product_Feed_Test' ) ) :
 	 */
 	class WC_Facebook_Product_Feed_Test_Mock extends WC_Facebook_Product_Feed {
 
+		/** @var int Product post WordPress ID. */
 		public static $product_post_wpid = null;
 
-		// Return test product post id.
-		// Don't mess up actual products.
+		/**
+		 * Return test product post id.
+		 * Don't mess up actual products.
+		 */
 		public function get_product_wpid() {
 			return self::$product_post_wpid;
 		}
 
-		// Log progress in local log file for testing.
-		// Not to overwhelm DB log to track important signals.
+		/**
+		 * Log progress in local log file for testing.
+		 * Not to overwhelm DB log to track important signals.
+		 *
+		 * @param string $msg The log message.
+		 * @param array  $object The log data.
+		 */
 		public function log_feed_progress( $msg, $object = array() ) {
-			$msg = empty( $object ) ? $msg : $msg . json_encode( $object );
+			$msg = empty( $object ) ? $msg : $msg . wp_json_encode( $object );
 			WC_Facebookcommerce_Utils::log( 'Test - ' . $msg );
 		}
 	}

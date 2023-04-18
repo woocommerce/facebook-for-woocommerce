@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -105,8 +104,8 @@ class WC_Facebook_Loader {
 	 * @since 1.10.0
 	 */
 	public function __clone() {
-
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
+		/* translators: %s - class name */
+		_doing_it_wrong( __FUNCTION__, esc_html( sprintf( __( 'You cannot clone instances of %s.', 'facebook-for-woocommerce' ), get_class( $this ) ) ), '1.10.0' );
 	}
 
 
@@ -116,8 +115,8 @@ class WC_Facebook_Loader {
 	 * @since 1.10.0
 	 */
 	public function __wakeup() {
-
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
+		/* translators: %s - class name */
+		_doing_it_wrong( __FUNCTION__, esc_html( sprintf( __( 'You cannot unserialize instances of %s.', 'facebook-for-woocommerce' ), get_class( $this ) ) ), '1.10.0' );
 	}
 
 
@@ -181,7 +180,7 @@ class WC_Facebook_Loader {
 
 			$this->deactivate_plugin();
 
-			wp_die( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
+			wp_die( esc_html( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() ) );
 		}
 	}
 
@@ -376,8 +375,8 @@ class WC_Facebook_Loader {
 
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 
-		if ( isset( $_GET['activate'] ) ) {
-			unset( $_GET['activate'] );
+		if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 	}
 

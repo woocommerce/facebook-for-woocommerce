@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -27,6 +26,9 @@ use WooCommerce\Facebook\Utilities\Background_Remove_Duplicate_Visibility_Meta;
 use WooCommerce\Facebook\Utilities\DebugTools;
 use WooCommerce\Facebook\Utilities\Heartbeat;
 
+/**
+ * WC Facebookcommerce class.
+ */
 class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var string the plugin version */
 	const VERSION = WC_Facebook_Loader::PLUGIN_VERSION;
@@ -150,7 +152,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		add_filter( 'woocommerce_navigation_get_breadcrumbs', array( $this, 'wc_page_breadcrumbs_filter' ), 99 );
 
 		add_filter(
-			'wc_' . WC_Facebookcommerce::PLUGIN_ID . '_http_request_args',
+			'wc_' . self::PLUGIN_ID . '_http_request_args',
 			array( $this, 'force_user_agent_in_latin' )
 		);
 
@@ -329,7 +331,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		}
 
 		// Maybe remove headers from the debug log.
-		if( ! $this->get_integration()->are_headers_requested_for_debug() ) {
+		if ( ! $this->get_integration()->are_headers_requested_for_debug() ) {
 			unset( $request['headers'] );
 			unset( $response['headers'] );
 		}
@@ -482,8 +484,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 		if ( isset( $http_request_headers['user-agent'] ) ) {
 			$http_request_headers['user-agent'] = sprintf(
 				'%s/%s (WooCommerce/%s; WordPress/%s)',
-				WC_Facebookcommerce::PLUGIN_USER_AGENT_NAME,
-				WC_Facebookcommerce::PLUGIN_VERSION,
+				self::PLUGIN_USER_AGENT_NAME,
+				self::PLUGIN_VERSION,
 				defined( 'WC_VERSION' ) ? WC_VERSION : WC_Facebook_Loader::MINIMUM_WC_VERSION,
 				$GLOBALS['wp_version']
 			);

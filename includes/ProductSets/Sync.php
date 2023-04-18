@@ -75,7 +75,7 @@ class Sync {
 	 *
 	 * @var string
 	 */
-	protected static $prev_product_name = "";
+	protected static $prev_product_name = '';
 
 	/**
 	 * Product's Product Set New List
@@ -93,7 +93,7 @@ class Sync {
 	 *
 	 * @var string
 	 */
-	protected static $new_product_name = "";
+	protected static $new_product_name = '';
 
 	/**
 	 * Categories field name
@@ -254,7 +254,7 @@ class Sync {
 	 * @param int $term_id Term ID.
 	 */
 	public function fb_product_set_hook_before( $term_id ) {
-		self::$prev_product_cat = get_term_meta( $term_id, $this->categories_field, true );
+		self::$prev_product_cat  = get_term_meta( $term_id, $this->categories_field, true );
 		self::$prev_product_name = get_term( $term_id )->name;
 	}
 
@@ -267,7 +267,7 @@ class Sync {
 	 * @param int $term_id Term ID.
 	 */
 	public function fb_product_set_hook_after( $term_id ) {
-		self::$new_product_cat = get_term_meta( $term_id, $this->categories_field, true );
+		self::$new_product_cat  = get_term_meta( $term_id, $this->categories_field, true );
 		self::$new_product_name = get_term( $term_id )->name;
 		if ( ! empty( $this->get_all_diff( 'product_cat' ) ) || self::$prev_product_name !== self::$new_product_name ) {
 			$this->maybe_sync_product_set( $term_id );
@@ -300,7 +300,8 @@ class Sync {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param int $product_set_term_id Product Set Term ID.
+	 * @param int    $product_set_term_id Product Set Term ID.
+	 * @param string $taxonomy Taxonomy name.
 	 */
 	public function sync_remove_product_set( $product_set_term_id, $taxonomy ) {
 
@@ -346,7 +347,7 @@ class Sync {
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				'relation' => 'OR',
 				array(
 					'taxonomy' => 'fb_product_set',
@@ -380,7 +381,7 @@ class Sync {
 			implode( ', ', array_map( 'intval', $product_ids ) )
 		);
 
-		$variation_ids = $wpdb->get_results( $sql );
+		$variation_ids = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! empty( $variation_ids ) ) {
 
 			// product_variations: add retailer id to the products filter
@@ -433,7 +434,7 @@ class Sync {
 			'fields'     => 'ids',
 			'taxonomy'   => 'fb_product_set',
 			'hide_empty' => false,
-			'meta_query' => array(
+			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => \WC_Facebookcommerce::PRODUCT_SET_META,
 					'value'   => sprintf( ':%d;', $product_cat_id ),
