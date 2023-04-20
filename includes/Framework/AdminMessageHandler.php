@@ -103,13 +103,14 @@ class AdminMessageHandler {
 	 * @since 1.0.0
 	 */
 	public function load_messages() {
-		if ( isset( $_GET[ self::MESSAGE_ID_GET_NAME ] ) && $this->get_message_id() == $_GET[ self::MESSAGE_ID_GET_NAME ] ) {
-			$memo = get_transient( self::MESSAGE_TRANSIENT_PREFIX . $_GET[ self::MESSAGE_ID_GET_NAME ] );
+		$message_id_get_name = isset( $_GET[ self::MESSAGE_ID_GET_NAME ] ) ? wc_clean( wp_unslash( $_GET[ self::MESSAGE_ID_GET_NAME ] ) ) : false;
+		if ( $message_id_get_name && $this->get_message_id() == $message_id_get_name ) {
+			$memo = get_transient( self::MESSAGE_TRANSIENT_PREFIX . $message_id_get_name );
 			if ( isset( $memo['errors'] ) )   $this->errors   = $memo['errors'];
 			if ( isset( $memo['warnings'] ) ) $this->warnings = $memo['warnings'];
 			if ( isset( $memo['infos'] ) )    $this->infos    = $memo['infos'];
 			if ( isset( $memo['messages'] ) ) $this->messages = $memo['messages'];
-			$this->clear_messages( $_GET[ self::MESSAGE_ID_GET_NAME ] );
+			$this->clear_messages( $message_id_get_name );
 		}
 	}
 

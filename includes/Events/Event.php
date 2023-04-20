@@ -208,7 +208,10 @@ class Event {
 			 * Additionally, this automatically uses the correct domain when
 			 * using Forward with the WooCommerce Dev Helper plugin.
 			 */
-			$url = home_url() . $_SERVER['REQUEST_URI'];
+			$url = home_url();
+			if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+				$url .= wc_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+			}
 		}
 		return $url;
 	}
@@ -234,7 +237,7 @@ class Event {
 	 * @return string
 	 */
 	protected function get_client_user_agent() {
-		return ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		return ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? wc_clean( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 	}
 
 
@@ -250,13 +253,13 @@ class Event {
 	protected function get_click_id() {
 		$click_id = '';
 		if ( ! empty( $_COOKIE['_fbc'] ) ) {
-			$click_id = $_COOKIE['_fbc'];
+			$click_id = wc_clean( wp_unslash( $_COOKIE['_fbc'] ) );
 		} elseif ( ! empty( $_REQUEST['fbclid'] ) ) {
 			// generate the click ID based on the query parameter
 			$version         = 'fb';
 			$subdomain_index = 1;
 			$creation_time   = time();
-			$fbclid          = $_REQUEST['fbclid'];
+			$fbclid          = wc_clean( wp_unslash( $_REQUEST['fbclid'] ) );
 			$click_id        = "{$version}.{$subdomain_index}.{$creation_time}.{$fbclid}";
 		}
 		return $click_id;
@@ -271,7 +274,7 @@ class Event {
 	 * @return string
 	 */
 	protected function get_browser_id() {
-		return ! empty( $_COOKIE['_fbp'] ) ? $_COOKIE['_fbp'] : '';
+		return ! empty( $_COOKIE['_fbp'] ) ? wc_clean( wp_unslash( $_COOKIE['_fbp'] ) ) : '';
 	}
 
 

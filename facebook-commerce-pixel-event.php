@@ -146,7 +146,7 @@ class WC_Facebookcommerce_Pixel {
 			ob_start();
 
 			?>
-			<script <?php echo self::get_script_attributes(); ?>>
+			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
 				!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 					n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 					n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
@@ -154,9 +154,9 @@ class WC_Facebookcommerce_Pixel {
 					document,'script','https://connect.facebook.net/en_US/fbevents.js');
 			</script>
 			<!-- WooCommerce Facebook Integration Begin -->
-			<script <?php echo self::get_script_attributes(); ?>>
+			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
 
-				<?php echo $this->get_pixel_init_code(); ?>
+				<?php echo $this->get_pixel_init_code(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
 
@@ -264,7 +264,7 @@ class WC_Facebookcommerce_Pixel {
 
 			?>
 			<!-- Facebook Pixel Event Code -->
-			<script <?php echo self::get_script_attributes(); ?>>
+			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
 				<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
 			</script>
 			<!-- End Facebook Pixel Event Code -->

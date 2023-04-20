@@ -116,7 +116,7 @@ class Feed {
 				if ( ! $contents ) {
 					throw new PluginException( 'Could not get feed file contents.', 500 );
 				}
-				echo $contents;
+				echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} catch ( \Exception $exception ) {
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );

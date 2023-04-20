@@ -231,7 +231,8 @@ class Helper {
 		$value = $default;
 
 		if ( isset( $_POST[ $key ] ) ) {
-			$value = is_string( $_POST[ $key ] ) ? trim( $_POST[ $key ] ) : $_POST[ $key ];
+			$sanitized_value = wc_clean( wp_unslash( $_POST[ $key ] ) );
+			$value           = is_string( $sanitized_value ) ? trim( $sanitized_value ) : $sanitized_value;
 		}
 
 		return $value;
@@ -254,7 +255,8 @@ class Helper {
 		$value = $default;
 
 		if ( isset( $_REQUEST[ $key ] ) ) {
-			$value = is_string( $_REQUEST[ $key ] ) ? trim( $_REQUEST[ $key ] ) : $_REQUEST[ $key ];
+			$sanitized_value = wc_clean( wp_unslash( $_REQUEST[ $key ] ) );
+			$value           = is_string( $sanitized_value ) ? trim( $sanitized_value ) : $sanitized_value;
 		}
 
 		return $value;
@@ -388,7 +390,7 @@ class Helper {
 		}
 
 		$rest_prefix         = trailingslashit( rest_get_url_prefix() );
-		$is_rest_api_request = false !== strpos( $_SERVER['REQUEST_URI'], $rest_prefix );
+		$is_rest_api_request = false !== strpos( wc_clean( wp_unslash( $_SERVER['REQUEST_URI'] ) ), $rest_prefix );
 
 		/* applies WooCommerce core filter */
 		return (bool) apply_filters( 'woocommerce_is_rest_api_request', $is_rest_api_request );
