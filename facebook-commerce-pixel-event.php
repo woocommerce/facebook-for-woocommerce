@@ -265,7 +265,7 @@ class WC_Facebookcommerce_Pixel {
 			?>
 			<!-- Facebook Pixel Event Code -->
 			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
-				<?php echo $this->get_event_code( $event_name, $params, $method ); ?>
+				<?php echo $this->get_event_code( $event_name, $params, $method ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
@@ -328,9 +328,9 @@ class WC_Facebookcommerce_Pixel {
 
 			?>
 			<!-- Facebook Pixel Event Code -->
-			<script <?php echo self::get_script_attributes(); ?>>
+			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
 				document.addEventListener( '<?php echo esc_js( $listener ); ?>', function (event) {
-					<?php echo $code; ?>
+					<?php echo $code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				}, false );
 			</script>
 			<!-- End Facebook Pixel Event Code -->
@@ -378,14 +378,14 @@ class WC_Facebookcommerce_Pixel {
 
 			?>
 			<!-- Facebook Pixel Event Code -->
-			<script <?php echo self::get_script_attributes(); ?>>
-				function handle<?php echo $event_name; ?>Event() {
-					<?php echo $code; ?>
+			<script <?php echo esc_html( self::get_script_attributes() ); ?>>
+				function handle<?php echo $event_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>Event() {
+					<?php echo $code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					// Some weird themes (hi, Basel) are running this script twice, so two listeners are added and we need to remove them after running one.
-					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
+					jQuery( document.body ).off( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>Event );
 				}
 
-				jQuery( document.body ).one( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; ?>Event );
+				jQuery( document.body ).one( '<?php echo esc_js( $listened_event ); ?>', handle<?php echo $event_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>Event );
 			</script>
 			<!-- End Facebook Pixel Event Code -->
 			<?php
