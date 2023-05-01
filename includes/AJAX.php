@@ -170,15 +170,15 @@ class AJAX {
 		check_ajax_referer( 'set-product-sync-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_id = isset( $_POST['product'] ) ? (int) $_POST['product'] : 0;
+		$product_id = isset( $_POST['product'] ) ? (int) wc_clean( wp_unslash( $_POST['product'] ) ) : 0;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) $_POST['sync_enabled'] : '';
+		$sync_enabled = isset( $_POST['sync_enabled'] ) ? (string) wc_clean( wp_unslash( $_POST['sync_enabled'] ) ) : '';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$var_sync_enabled = isset( $_POST['var_sync_enabled'] ) ? (string) $_POST['var_sync_enabled'] : '';
+		$var_sync_enabled = isset( $_POST['var_sync_enabled'] ) ? (string) wc_clean( wp_unslash( $_POST['var_sync_enabled'] ) ) : '';
 	    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_cats = isset( $_POST['categories'] ) ? (array) $_POST['categories'] : array();
+		$product_cats = isset( $_POST['categories'] ) ? (array) wc_clean( wp_unslash( $_POST['categories'] ) ) : array();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_tags = isset( $_POST['tags'] ) ? (array) $_POST['tags'] : array();
+		$product_tags = isset( $_POST['tags'] ) ? (array) wc_clean( wp_unslash( $_POST['tags'] ) ) : array();
 
 		if ( $product_id > 0 && in_array( $var_sync_enabled, array( 'enabled', 'disabled' ), true ) && in_array( $sync_enabled, array( 'enabled', 'disabled' ), true ) ) {
 
@@ -196,7 +196,7 @@ class AJAX {
 						$has_excluded_terms = ! empty( $product_cats ) && array_intersect( $product_cats, $integration->get_excluded_product_category_ids() );
 
 						// the form post can send an array with empty items, so filter them out
-						$product_tags = array_filter( $product_tags );
+						$product_tags = array_filter( $product_tags, null ); // $callback = null is the default. If no callback is supplied, all empty entries of array will be removed. 
 
 						// try next with tags, but WordPress only gives us tag names
 						if ( ! $has_excluded_terms && ! empty( $product_tags ) ) {
@@ -275,9 +275,9 @@ class AJAX {
 		check_ajax_referer( 'set-product-sync-bulk-action-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$product_ids = isset( $_POST['products'] ) ? (array) $_POST['products'] : array();
+		$product_ids = isset( $_POST['products'] ) ? (array) wc_clean( wp_unslash( $_POST['products'] ) ) : array();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$toggle = isset( $_POST['toggle'] ) ? (string) $_POST['toggle'] : '';
+		$toggle = isset( $_POST['toggle'] ) ? (string) wc_clean( wp_unslash( $_POST['toggle'] ) ) : '';
 
 		if ( ! empty( $product_ids ) && ! empty( $toggle ) && 'facebook_include' === $toggle ) {
 
@@ -337,9 +337,9 @@ class AJAX {
 		check_ajax_referer( 'set-excluded-terms-prompt', 'security' );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$posted_categories = isset( $_POST['categories'] ) ? wp_unslash( $_POST['categories'] ) : array();
+		$posted_categories = isset( $_POST['categories'] ) ? wc_clean( wp_unslash( $_POST['categories'] ) ) : array();
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$posted_tags = isset( $_POST['tags'] ) ? wp_unslash( $_POST['tags'] ) : array();
+		$posted_tags = isset( $_POST['tags'] ) ? wc_clean( wp_unslash( $_POST['tags'] ) ) : array();
 
 		$new_category_ids = array();
 		$new_tag_ids      = array();

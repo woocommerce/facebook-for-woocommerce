@@ -106,7 +106,7 @@ class WC_Facebook_Loader {
 	 */
 	public function __clone() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
+		wc_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
@@ -117,7 +117,7 @@ class WC_Facebook_Loader {
 	 */
 	public function __wakeup() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
+		wc_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
@@ -181,7 +181,7 @@ class WC_Facebook_Loader {
 
 			$this->deactivate_plugin();
 
-			wp_die( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
+			wp_die( esc_html( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() ) );
 		}
 	}
 

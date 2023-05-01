@@ -752,9 +752,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			$product_id = 0;
 
 			if ( $product instanceof \WC_Product ) {
-				$product_id = $_POST['variation_id'] ?? $product->get_id();
-			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( $_GET['add-to-cart'] ) ) {
-				$product_id = $_GET['add-to-cart'];
+				$product_id = isset( $_POST['variation_id'] ) ?  wc_clean( wp_unslash( $_POST['variation_id'] ) ) : $product->get_id();
+			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( wc_clean( wp_unslash( $_GET['add-to-cart'] ) ) ) ) {
+				$product_id = wc_clean( wp_unslash( $_GET['add-to-cart'] ) );
 			}
 
 			WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $product_id );

@@ -358,7 +358,7 @@ class Admin {
 		<?php
 		printf(
 			/* translators: Placeholders: %1$s - opening <a> link tag, %2$s - closing </a> link tag */
-			__( 'You\'re removing a product from the Facebook sync that is currently listed in your %1$sFacebook catalog%2$s. Would you like to delete the product from the Facebook catalog as well?', 'facebook-for-woocommerce' ),
+			esc_html__( 'You\'re removing a product from the Facebook sync that is currently listed in your %1$sFacebook catalog%2$s. Would you like to delete the product from the Facebook catalog as well?', 'facebook-for-woocommerce' ),
 			'<a href="https://www.facebook.com/products" target="_blank">',
 			'</a>'
 		);
@@ -469,9 +469,9 @@ class Admin {
 		?>
 		<select name="fb_sync_enabled">
 			<option value="" <?php selected( $choice, '' ); ?>><?php esc_html_e( 'Filter by Facebook sync setting', 'facebook-for-woocommerce' ); ?></option>
-			<option value="<?php echo self::SYNC_MODE_SYNC_AND_SHOW; ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_AND_SHOW ); ?>><?php esc_html_e( 'Sync and show', 'facebook-for-woocommerce' ); ?></option>
-			<option value="<?php echo self::SYNC_MODE_SYNC_AND_HIDE; ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_AND_HIDE ); ?>><?php esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' ); ?></option>
-			<option value="<?php echo self::SYNC_MODE_SYNC_DISABLED; ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_DISABLED ); ?>><?php esc_html_e( 'Do not sync', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( self::SYNC_MODE_SYNC_AND_SHOW ); ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_AND_SHOW ); ?>><?php esc_html_e( 'Sync and show', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( self::SYNC_MODE_SYNC_AND_HIDE ); ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_AND_HIDE ); ?>><?php esc_html_e( 'Sync and hide', 'facebook-for-woocommerce' ); ?></option>
+			<option value="<?php echo esc_attr( self::SYNC_MODE_SYNC_DISABLED ); ?>" <?php selected( $choice, self::SYNC_MODE_SYNC_DISABLED ); ?>><?php esc_html_e( 'Do not sync', 'facebook-for-woocommerce' ); ?></option>
 		</select>
 		<?php
 	}
@@ -498,7 +498,7 @@ class Admin {
 			// store original meta query
 			$original_meta_query = ! empty( $query_vars['meta_query'] ) ? $query_vars['meta_query'] : [];
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$filter_value = $_REQUEST['fb_sync_enabled'];
+			$filter_value = wc_clean( wp_unslash( $_REQUEST['fb_sync_enabled'] ) );
 			// by default use an "AND" clause if multiple conditions exist for a meta query
 			if ( ! empty( $query_vars['meta_query'] ) ) {
 				$query_vars['meta_query']['relation'] = 'AND';
@@ -1036,7 +1036,7 @@ class Admin {
 					)
 				),
 				count( $affected_products ),
-				'<a href="' . add_query_arg( array( 'facebook_show_affected_products' => 1 ) ) . '">',
+				'<a href="' . esc_url( add_query_arg( array( 'facebook_show_affected_products' => 1 ) ) ) . '">',
 				'</a>',
 				'<a href="https://www.facebook.com/policies/commerce/prohibited_content/subscriptions_and_digital_products" target="_blank">',
 				'</a>'
@@ -1415,7 +1415,7 @@ class Admin {
 		if ( ! $variation instanceof \WC_Product_Variation ) {
 			return;
 		}
-		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? $_POST['variable_facebook_sync_mode'][ $index ] : self::SYNC_MODE_SYNC_DISABLED;
+		$sync_mode    = isset( $_POST['variable_facebook_sync_mode'][ $index ] ) ? wc_clean( wp_unslash( $_POST['variable_facebook_sync_mode'][ $index ] ) ) : self::SYNC_MODE_SYNC_DISABLED;
 		$sync_enabled = self::SYNC_MODE_SYNC_DISABLED !== $sync_mode;
 		if ( self::SYNC_MODE_SYNC_AND_SHOW === $sync_mode && $variation->is_virtual() ) {
 			// force to Sync and hide
@@ -1432,7 +1432,7 @@ class Admin {
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_IMAGE;
 			$image_url    = isset( $_POST[ $posted_param ][ $index ] ) ? esc_url_raw( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) : null;
 			$posted_param = 'variable_' . \WC_Facebook_Product::FB_PRODUCT_PRICE;
-			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( $_POST[ $posted_param ][ $index ] ) : '';
+			$price        = isset( $_POST[ $posted_param ][ $index ] ) ? wc_format_decimal( wc_clean( wp_unslash( $_POST[ $posted_param ][ $index ] ) ) ) : '';
 			$variation->update_meta_data( \WC_Facebookcommerce_Integration::FB_PRODUCT_DESCRIPTION, $description );
 			$variation->update_meta_data( Products::PRODUCT_IMAGE_SOURCE_META_KEY, $image_source );
 			$variation->update_meta_data( \WC_Facebook_Product::FB_PRODUCT_IMAGE, $image_url );

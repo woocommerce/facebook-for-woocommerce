@@ -116,7 +116,7 @@ class Feed {
 				if ( ! $contents ) {
 					throw new PluginException( 'Could not get feed file contents.', 500 );
 				}
-				echo $contents;
+				echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} catch ( \Exception $exception ) {
 			\WC_Facebookcommerce_Utils::log( 'Could not serve product feed. ' . $exception->getMessage() . ' (' . $exception->getCode() . ')' );
@@ -210,7 +210,7 @@ class Feed {
 			'wc-api' => self::REQUEST_FEED_ACTION,
 			'secret' => self::get_feed_secret(),
 		];
-		return add_query_arg( $query_args, home_url( '/' ) );
+		return esc_url( add_query_arg( $query_args, home_url( '/' ) ) );
 	}
 
 
