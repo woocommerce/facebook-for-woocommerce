@@ -11,12 +11,12 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 3.0.19
+ * Version: 3.0.20
  * Requires at least: 5.6
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.2
  * WC requires at least: 5.4
- * WC tested up to: 7.6
+ * WC tested up to: 7.7
  * Requires PHP: 7.2
  *
  * @package FacebookCommerce
@@ -45,7 +45,7 @@ class WC_Facebook_Loader {
 	/**
 	 * @var string the plugin version. This must be in the main plugin file to be automatically bumped by Woorelease.
 	 */
-	const PLUGIN_VERSION = '3.0.19'; // WRCS: DEFINED_VERSION.
+	const PLUGIN_VERSION = '3.0.20'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
 	const MINIMUM_PHP_VERSION = '7.2.0';
@@ -106,7 +106,7 @@ class WC_Facebook_Loader {
 	 */
 	public function __clone() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
+		wc_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
@@ -117,7 +117,7 @@ class WC_Facebook_Loader {
 	 */
 	public function __wakeup() {
 
-		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
+		wc_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', get_class( $this ) ), '1.10.0' );
 	}
 
 
@@ -181,7 +181,7 @@ class WC_Facebook_Loader {
 
 			$this->deactivate_plugin();
 
-			wp_die( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() );
+			wp_die( esc_html( self::PLUGIN_NAME . ' could not be activated. ' . $this->get_environment_message() ) );
 		}
 	}
 

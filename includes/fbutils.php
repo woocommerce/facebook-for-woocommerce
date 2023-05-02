@@ -434,8 +434,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 				return self::$store_name;
 			}
 			// If site url doesn't exist, fall back to http host.
-			if ( $_SERVER['HTTP_HOST'] ) {
-				self::$store_name = $_SERVER['HTTP_HOST'];
+			if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+				self::$store_name = wc_clean( wp_unslash( $_SERVER['HTTP_HOST'] ) );
 				return self::$store_name;
 			}
 

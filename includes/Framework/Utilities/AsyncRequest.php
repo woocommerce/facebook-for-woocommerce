@@ -75,7 +75,7 @@ abstract class AsyncRequest {
 		$url  = add_query_arg( $this->get_query_args(), $this->get_query_url() );
 		$args = $this->get_request_args();
 
-		return wp_safe_remote_get( esc_url_raw( $url ), $args );
+		return wp_safe_remote_get( esc_url( $url, null, 'db' ), $args );
 	}
 
 
