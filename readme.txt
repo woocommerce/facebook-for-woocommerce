@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.21 - 2023-05-02 =
+* Fix - Issue in admin product search.
+
 = 3.0.20 - 2023-05-02 =
 * Fix - Adds escaping to outputs and sanitizing to inputs.
 * Tweak - WC 7.7 compatibility.
