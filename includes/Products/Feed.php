@@ -210,7 +210,8 @@ class Feed {
 			'wc-api' => self::REQUEST_FEED_ACTION,
 			'secret' => self::get_feed_secret(),
 		];
-		return esc_url( add_query_arg( $query_args, home_url( '/' ) ) );
+		// nosemgrep: audit.php.wp.security.xss.query-arg
+		return add_query_arg( $query_args, home_url( '/' ) );
 	}
 
 

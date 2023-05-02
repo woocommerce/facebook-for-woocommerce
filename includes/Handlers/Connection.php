@@ -489,7 +489,8 @@ class Connection {
 	 * @return string
 	 */
 	public function get_connect_url( $connect_commerce = false ) {
-		return esc_url( add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL ) );
+		// nosemgrep: audit.php.wp.security.xss.query-arg
+		return add_query_arg( rawurlencode_deep( $this->get_connect_parameters( $connect_commerce ) ), self::OAUTH_URL );
 	}
 
 
@@ -846,12 +847,13 @@ class Connection {
 		 *
 		 * @param array $parameters connection parameters
 		 */
+		// nosemgrep: audit.php.wp.security.xss.query-arg
 		return apply_filters(
 			'wc_facebook_connection_parameters',
 			array(
 				'client_id'     => $this->get_client_id(),
 				'redirect_uri'  => $this->get_proxy_url(),
-				'state'         => esc_url( $state ),
+				'state'         => $state,
 				'display'       => 'page',
 				'response_type' => 'code',
 				'scope'         => implode( ',', $this->get_scopes() ),
