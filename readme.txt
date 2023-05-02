@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.20 - 2023-05-02 =
+* Fix - Adds escaping to outputs and sanitizing to inputs.
+* Tweak - WC 7.7 compatibility.
+
 = 3.0.19 - 2023-04-18 =
 * Tweak - Bump Marketing API version from v16.0.
 
