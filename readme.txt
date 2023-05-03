@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.22 - 2023-05-03 =
+* Fix - Pixel code not activated on checkout.
+
 = 3.0.21 - 2023-05-02 =
 * Fix - Issue in admin product search.
 
