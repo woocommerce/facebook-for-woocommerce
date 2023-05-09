@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.23 - 2023-05-09 =
+* Fix - Delete product in the Facebook catalog when products are deleted via WC Rest API.
+
 = 3.0.22 - 2023-05-03 =
 * Fix - Pixel code not activated on checkout.
 
