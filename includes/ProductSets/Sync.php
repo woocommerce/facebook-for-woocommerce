@@ -93,7 +93,7 @@ class Sync {
 	 *
 	 * @var string
 	 */
-	protected static $prev_product_name = "";
+	protected static $prev_product_name = '';
 
 	/**
 	 * Product's Product Set New List
@@ -111,7 +111,7 @@ class Sync {
 	 *
 	 * @var string
 	 */
-	protected static $new_product_name = "";
+	protected static $new_product_name = '';
 
 	/**
 	 * Categories field name
@@ -273,8 +273,7 @@ class Sync {
 		}
 
 		// Check if product tag belongs to a product_set.
-		foreach( $product_tags as $product_tag_id ) {
-
+		foreach ( $product_tags as $product_tag_id ) {
 			$tag_product_sets = $this->get_product_tag_sets( $product_tag_id );
 			if ( ! empty( $tag_product_sets ) ) {
 				$product_set_term_ids = array_merge( $product_set_term_ids, $tag_product_sets );
@@ -344,7 +343,8 @@ class Sync {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param int $product_set_term_id Product Set Term ID.
+	 * @param int    $product_set_term_id Product Set Term ID.
+	 * @param string $taxonomy The taxonmy.
 	 */
 	public function sync_remove_product_set( $product_set_term_id, $taxonomy ) {
 
@@ -393,7 +393,7 @@ class Sync {
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				'relation' => 'OR',
 				array(
 					'taxonomy' => 'fb_product_set',
@@ -406,10 +406,10 @@ class Sync {
 					'field'    => 'term_taxonomy_id',
 					'terms'    => $product_cat_ids,
 					'operator' => 'IN',
-				)
+				),
 			),
 		);
-		
+
 		if ( ! empty( $product_tag_ids ) ) {
 			$product_args['tax_query'][] = array(
 				'taxonomy' => 'product_tag',
@@ -418,7 +418,7 @@ class Sync {
 				'operator' => 'IN',
 			);
 		}
-		
+
 		$product_ids = get_posts( $products_args );
 
 		// Removes the Product Set if it doesn't have products.
@@ -437,7 +437,7 @@ class Sync {
 			implode( ', ', array_map( 'intval', $product_ids ) )
 		);
 
-		$variation_ids = $wpdb->get_results( $sql );
+		$variation_ids = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! empty( $variation_ids ) ) {
 
 			// product_variations: add retailer id to the products filter
@@ -490,7 +490,7 @@ class Sync {
 			'fields'     => 'ids',
 			'taxonomy'   => 'fb_product_set',
 			'hide_empty' => false,
-			'meta_query' => array(
+			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => \WC_Facebookcommerce::PRODUCT_SET_META,
 					'value'   => sprintf( ':%d;', $product_cat_id ),
@@ -514,7 +514,7 @@ class Sync {
 			'fields'     => 'ids',
 			'taxonomy'   => 'fb_product_set',
 			'hide_empty' => false,
-			'meta_query' => array(
+			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				array(
 					'key'     => \WC_Facebookcommerce::PRODUCT_SET_TAGS_META,
 					'value'   => sprintf( ':%d;', $product_tag_id ),
@@ -524,7 +524,7 @@ class Sync {
 		);
 		return get_terms( $args );
 	}
-	 
+
 	/**
 	 * Return the list of differences between two list of terms
 	 *
@@ -544,6 +544,4 @@ class Sync {
 
 		return array_merge( $removed, $added );
 	}
-
-
 }
