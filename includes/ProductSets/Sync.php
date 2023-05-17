@@ -167,9 +167,10 @@ class Sync {
 		add_action( 'edit_fb_product_set', array( $this, 'fb_product_set_hook_before' ), 1 );
 		add_action( 'edited_fb_product_set', array( $this, 'fb_product_set_hook_after' ), 99 );
 
-		// product cat and product set delete hooks, remove or check if must remove any product set
+		// product cat, product tag and product set delete hooks, remove or check if must remove any product set
 		add_action( 'pre_delete_term', array( $this, 'sync_remove_product_set' ), 1, 2 );
 		add_action( 'delete_product_cat', array( $this, 'maybe_sync_product_set_on_product_cat_remove' ), 99 );
+		add_action( 'delete_product_tag', array( $this, 'maybe_sync_product_set_on_product_tag_remove' ), 99 );
 	}
 
 
@@ -212,7 +213,7 @@ class Sync {
 		$product_tags = wc_get_product_term_ids( $post_id, 'product_tag' );
 		$product_sets = wc_get_product_term_ids( $post_id, 'fb_product_set' );
 
-		$this->maybe_sync_product_sets( $product_cats, $product_sets );
+		$this->maybe_sync_product_sets( $product_cats, $product_tags, $product_sets );
 	}
 
 
@@ -243,7 +244,7 @@ class Sync {
 			return;
 		}
 
-		$this->maybe_sync_product_sets( $product_cat_diffs, $product_set_diffs );
+		$this->maybe_sync_product_sets( $product_cat_diffs, $product_tag_diffs, $product_set_diffs );
 	}
 
 
@@ -337,6 +338,23 @@ class Sync {
 		}
 	}
 
+	/**
+	 * Check if must sync Product Set from FB when removing Product Tag.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param int $term_id Product Tag Term ID.
+	 */
+	public function maybe_sync_product_set_on_product_tag_remove( $term_id ) {
+		$product_sets = $this->get_product_tag_sets( $term_id );
+		if ( empty( $product_sets ) ) {
+			return;
+		}
+
+		foreach ( $product_sets as $product_set_id ) {
+			$this->maybe_sync_product_set( $product_set_id );
+		}
+	}
 
 	/**
 	 * Call API to remove Product Set from FB
