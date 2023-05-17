@@ -146,8 +146,8 @@ class Product_Sets {
 		update_term_meta( $term_id, $this->categories_field, $wc_product_cats );
 
 		$wc_product_tags = '';
-		if ( isset( $_POST[ $this->tags_field ] ) && ! empty( $_POST[ $this->tags_field ] ) ) {
-			$wc_product_tags = array_map( 'absint', (array) wp_unslash( $_POST[ $this->tags_field ] ) );
+		if ( isset( $_POST[ $this->tags_field ] ) && ! empty( $_POST[ $this->tags_field ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$wc_product_tags = array_map( 'absint', (array) wp_unslash( $_POST[ $this->tags_field ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 		update_term_meta( $term_id, $this->tags_field, $wc_product_tags );
 	}
@@ -208,6 +208,8 @@ class Product_Sets {
 	 * Outputs the tag field HTML.
 	 *
 	 * @since x.x.x
+	 *
+	 * @param int $term_id The Term ID that is editing.
 	 */
 	protected function get_tag_field( $term_id = '' ) {
 		$saved_items  = get_term_meta( $term_id, $this->tags_field, true );
