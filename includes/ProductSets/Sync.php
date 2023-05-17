@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -61,6 +60,24 @@ class Sync {
 	protected static $new_product_cat = array();
 
 	/**
+	 * Product's Tag Previous List.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var array
+	 */
+	protected static $prev_product_tag = array();
+
+	/**
+	 * Product's Tag New List.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var array
+	 */
+	protected static $new_product_tag = array();
+
+	/**
 	 * Product's Product Set Previous List
 	 *
 	 * @since 2.3.0
@@ -105,6 +122,14 @@ class Sync {
 	 */
 	protected $categories_field = '';
 
+	/**
+	 * Tags field name.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var string
+	 */
+	protected $tags_field = '';
 
 	/**
 	 * Sync constructor.
@@ -114,6 +139,7 @@ class Sync {
 	public function __construct() {
 
 		$this->categories_field = \WC_Facebookcommerce::PRODUCT_SET_META;
+		$this->tags_field       = \WC_Facebookcommerce::PRODUCT_SET_TAGS_META;
 
 		$this->add_hooks();
 	}
@@ -163,6 +189,7 @@ class Sync {
 		// gets product's current categories IDs
 		if ( ! empty( $post ) && 'product' === $post['post_type'] ) {
 			self::$prev_product_cat = wc_get_product_cat_ids( $post['ID'] );
+			self::$prev_product_tag = wc_get_product_term_ids( $post['ID'], 'product_tag' );
 			self::$prev_product_set = wc_get_product_term_ids( $post['ID'], 'fb_product_set' );
 		}
 
@@ -180,8 +207,9 @@ class Sync {
 			return;
 		}
 
-		// get product's categories and sets
+		// get product's categories, tags and sets
 		$product_cats = wc_get_product_cat_ids( $post_id );
+		$product_tags = wc_get_product_term_ids( $post_id, 'product_tag' );
 		$product_sets = wc_get_product_term_ids( $post_id, 'fb_product_set' );
 
 		$this->maybe_sync_product_sets( $product_cats, $product_sets );
@@ -204,12 +232,14 @@ class Sync {
 
 		// gets product's new categories IDs to compare if there are differences to sync
 		self::$new_product_cat = wc_get_product_cat_ids( $post_id );
+		self::$new_product_tag = wc_get_product_term_ids( $post_id, 'product_tag' );
 		self::$new_product_set = wc_get_product_term_ids( $post_id, 'fb_product_set' );
 
 		// get differences
 		$product_cat_diffs = $this->get_all_diff( 'product_cat' );
+		$product_tag_diffs = $this->get_all_diff( 'product_tag' );
 		$product_set_diffs = $this->get_all_diff( 'product_set' );
-		if ( ! $product_cat_diffs && ! $product_set_diffs ) {
+		if ( ! $product_cat_diffs && ! $product_set_diffs && ! $product_tag_diffs ) {
 			return;
 		}
 
@@ -223,9 +253,10 @@ class Sync {
 	 * @since 2.3.0
 	 *
 	 * @param array $product_cats Product Category Term IDs.
+	 * @param array $product_tags Product Tag Term IDs.
 	 * @param array $product_sets Product Set Term IDs.
 	 */
-	public function maybe_sync_product_sets( $product_cats, $product_sets ) {
+	public function maybe_sync_product_sets( $product_cats, $product_tags, $product_sets ) {
 
 		if ( empty( $product_sets ) || ! is_array( $product_sets ) ) {
 			$product_sets = array();
@@ -238,6 +269,15 @@ class Sync {
 			$cat_product_sets = $this->get_product_cat_sets( $product_cat_id );
 			if ( ! empty( $cat_product_sets ) ) {
 				$product_set_term_ids = array_merge( $product_set_term_ids, $cat_product_sets );
+			}
+		}
+
+		// Check if product tag belongs to a product_set.
+		foreach( $product_tags as $product_tag_id ) {
+
+			$tag_product_sets = $this->get_product_tag_sets( $product_tag_id );
+			if ( ! empty( $tag_product_sets ) ) {
+				$product_set_term_ids = array_merge( $product_set_term_ids, $tag_product_sets );
 			}
 		}
 
@@ -255,7 +295,8 @@ class Sync {
 	 * @param int $term_id Term ID.
 	 */
 	public function fb_product_set_hook_before( $term_id ) {
-		self::$prev_product_cat = get_term_meta( $term_id, $this->categories_field, true );
+		self::$prev_product_cat  = get_term_meta( $term_id, $this->categories_field, true );
+		self::$prev_product_tag  = get_term_meta( $term_id, $this->tags_field, true );
 		self::$prev_product_name = get_term( $term_id )->name;
 	}
 
@@ -268,9 +309,11 @@ class Sync {
 	 * @param int $term_id Term ID.
 	 */
 	public function fb_product_set_hook_after( $term_id ) {
-		self::$new_product_cat = get_term_meta( $term_id, $this->categories_field, true );
+		self::$new_product_cat  = get_term_meta( $term_id, $this->categories_field, true );
+		self::$new_product_tag  = get_term_meta( $term_id, $this->tags_field, true );
 		self::$new_product_name = get_term( $term_id )->name;
-		if ( ! empty( $this->get_all_diff( 'product_cat' ) ) || self::$prev_product_name !== self::$new_product_name ) {
+
+		if ( ! empty( $this->get_all_diff( 'product_tag' ) ) || ! empty( $this->get_all_diff( 'product_cat' ) ) || self::$prev_product_name !== self::$new_product_name ) {
 			$this->maybe_sync_product_set( $term_id );
 		}
 	}
@@ -340,6 +383,9 @@ class Sync {
 		// get categories
 		$product_cat_ids = get_term_meta( $product_set_id, $this->categories_field, true );
 
+		// get tags.
+		$product_tag_ids = get_term_meta( $product_set_id, $this->tags_field, true );
+
 		// get products for the taxonomies
 		$products      = array();
 		$products_args = array(
@@ -360,10 +406,20 @@ class Sync {
 					'field'    => 'term_taxonomy_id',
 					'terms'    => $product_cat_ids,
 					'operator' => 'IN',
-				),
+				)
 			),
 		);
-		$product_ids   = get_posts( $products_args );
+		
+		if ( ! empty( $product_tag_ids ) ) {
+			$product_args['tax_query'][] = array(
+				'taxonomy' => 'product_tag',
+				'field'    => 'term_taxonomy_id',
+				'terms'    => $product_tag_ids,
+				'operator' => 'IN',
+			);
+		}
+		
+		$product_ids = get_posts( $products_args );
 
 		// Removes the Product Set if it doesn't have products.
 		if ( empty( $product_ids ) ) {
@@ -445,6 +501,30 @@ class Sync {
 		return get_terms( $args );
 	}
 
+	/**
+	 * Return the list of product sets of a given product tag term.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $product_tag_id Product Tag term ID.
+	 * @return array
+	 */
+	protected function get_product_tag_sets( $product_tag_id ) {
+		$args = array(
+			'fields'     => 'ids',
+			'taxonomy'   => 'fb_product_set',
+			'hide_empty' => false,
+			'meta_query' => array(
+				array(
+					'key'     => \WC_Facebookcommerce::PRODUCT_SET_TAGS_META,
+					'value'   => sprintf( ':%d;', $product_tag_id ),
+					'compare' => 'LIKE',
+				),
+			),
+		);
+		return get_terms( $args );
+	}
+	 
 	/**
 	 * Return the list of differences between two list of terms
 	 *
