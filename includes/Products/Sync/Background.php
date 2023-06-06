@@ -312,10 +312,11 @@ class Background extends BackgroundJobHandler {
 	/**
 	 * Processes a DELETE sync request for the given product.
 	 *
-	 * @param string $retailer_id Product retailer ID.
+	 * @param string $prefixed_retailer_id Product retailer ID.
 	 */
-	private function process_item_delete( $retailer_id ) {
-		$request = [
+	private function process_item_delete( $prefixed_retailer_id ) {
+		$retailer_id = str_replace( Sync::PRODUCT_INDEX_PREFIX, '', $prefixed_retailer_id );
+		$request     = [
 			'data'   => [ 'id' => $retailer_id ],
 			'method' => Sync::ACTION_DELETE,
 		];
@@ -326,9 +327,9 @@ class Background extends BackgroundJobHandler {
 		 * @since 2.0.0
 		 *
 		 * @param array $request request data
-		 * @param string $retailer product retailer ID
+		 * @param string $retailer prefixed product retailer ID
 		 */
-		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $retailer_id );
+		return apply_filters( 'wc_facebook_sync_background_item_delete_request', $request, $prefixed_retailer_id );
 	}
 
 	/**
