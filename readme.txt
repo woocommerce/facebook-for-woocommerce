@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.24 - 2023-06-06 =
+* Fix - Product variants weren't deleted correctly from the Facebook catalog in some instances.
+
 = 3.0.23 - 2023-05-09 =
 * Fix - Delete product in the Facebook catalog when products are deleted via WC Rest API.
 
