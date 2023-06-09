@@ -218,7 +218,7 @@ jQuery( document ).ready( ( $ ) => {
 
 			var $container = $( '#wc-facebook-google-product-category-fields' );
 			var $otherSelects = $container.find( '.wc-facebook-google-product-category-select' );
-			var $select = $( '<select class="wc-enhanced-select wc-facebook-google-product-category-select"></select>' );
+			var $select = $( '<select class="wc-facebook-google-product-category-select"></select>' );
 
 			$otherSelects.addClass( 'locked' );
 
