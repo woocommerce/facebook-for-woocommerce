@@ -196,7 +196,7 @@ class AJAX {
 						$has_excluded_terms = ! empty( $product_cats ) && array_intersect( $product_cats, $integration->get_excluded_product_category_ids() );
 
 						// the form post can send an array with empty items, so filter them out
-						$product_tags = array_filter( $product_tags, null ); // $callback = null is the default. If no callback is supplied, all empty entries of array will be removed. 
+						$product_tags = array_filter( $product_tags ); // $callback = null is the default. If no callback is supplied, all empty entries of array will be removed.
 
 						// try next with tags, but WordPress only gives us tag names
 						if ( ! $has_excluded_terms && ! empty( $product_tags ) ) {
