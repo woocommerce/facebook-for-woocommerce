@@ -82,8 +82,6 @@ class AAMSettings {
 
 		$response_body['matchingConfig']['pixelId'] = $pixel_id;
 		return new AAMSettings( $response_body['matchingConfig'] );
-
-		return null;
 	}
 
 	/**
