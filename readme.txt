@@ -39,6 +39,12 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.25 - 2023-06-13 =
+* Fix - Fatal error when Facebook.net returns an empty response.
+* Fix - PHP Warning caused by array_filter() call.
+* Fix - Remove assigned Google product category at individual product level.
+* Tweak - WC 7.8 compatibility.
+
 = 3.0.24 - 2023-06-06 =
 * Fix - Product variants weren't deleted correctly from the Facebook catalog in some instances.
 
