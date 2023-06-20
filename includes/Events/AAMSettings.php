@@ -69,16 +69,19 @@ class AAMSettings {
 	public static function build_from_pixel_id( $pixel_id ) {
 		$url      = self::get_url( $pixel_id );
 		$response = wp_remote_get( $url );
+
 		if ( is_wp_error( $response ) ) {
 			return null;
-		} else {
-			$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
-			if ( ! array_key_exists( 'errorMessage', $response_body ) ) {
-				$response_body['matchingConfig']['pixelId'] = $pixel_id;
-				return new AAMSettings( $response_body['matchingConfig'] );
-			}
 		}
-		return null;
+
+		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_array( $response_body ) || array_key_exists( 'errorMessage', $response_body ) || ! isset( $response_body['matchingConfig'] ) ) {
+			return null;
+		}
+
+		$response_body['matchingConfig']['pixelId'] = $pixel_id;
+		return new AAMSettings( $response_body['matchingConfig'] );
 	}
 
 	/**

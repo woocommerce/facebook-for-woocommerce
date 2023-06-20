@@ -192,13 +192,13 @@ class AJAX {
 
 					if ( $integration = facebook_for_woocommerce()->get_integration() ) {
 
-						// try with categories first, since we have already IDs
+						// Try with categories first, since we have already IDs.
 						$has_excluded_terms = ! empty( $product_cats ) && array_intersect( $product_cats, $integration->get_excluded_product_category_ids() );
 
-						// the form post can send an array with empty items, so filter them out
-						$product_tags = array_filter( $product_tags, null ); // $callback = null is the default. If no callback is supplied, all empty entries of array will be removed. 
+						// The form post can send an array with empty items, so filter them out.
+						$product_tags = array_filter( $product_tags, 'strlen' );
 
-						// try next with tags, but WordPress only gives us tag names
+						// Try next with tags, but WordPress only gives us tag names.
 						if ( ! $has_excluded_terms && ! empty( $product_tags ) ) {
 
 							$product_tag_ids = array();
