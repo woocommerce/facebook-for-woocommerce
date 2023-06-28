@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.2
-Stable tag: 3.0.25
+Stable tag: 3.0.26
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.26 - 2023-06-28 =
+* Tweak - WC 7.9 compatibility.
 
 = 3.0.25 - 2023-06-13 =
 * Fix - Fatal error when Facebook.net returns an empty response.
