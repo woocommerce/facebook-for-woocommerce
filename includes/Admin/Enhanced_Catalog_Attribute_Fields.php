@@ -90,10 +90,10 @@ class Enhanced_Catalog_Attribute_Fields {
 		 */
 		$priorities = array(
 			'product_length' => 140,
-			'product_width' => 130,
+			'product_width'  => 130,
 			'product_height' => 120,
-			'product_depth' => 110,
-			'default' => 100,
+			'product_depth'  => 110,
+			'default'        => 100,
 		);
 
 		foreach ( $recommended_attributes as $key => &$attribute ) {
