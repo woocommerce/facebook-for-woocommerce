@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.26 - 2023-06-28 =
+* Tweak - WC 7.9 compatibility.
+
 = 3.0.25 - 2023-06-13 =
 * Fix - Fatal error when Facebook.net returns an empty response.
 * Fix - PHP Warning caused by array_filter() call.
