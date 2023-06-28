@@ -96,15 +96,16 @@ class Enhanced_Catalog_Attribute_Fields {
 			'default'        => 100,
 		);
 
-		foreach ( $recommended_attributes as $key => &$attribute ) {
-			$attribute['priority'] = 5; // Assign 5 initially to each attribute
+		foreach ( $recommended_attributes as $key => $attribute ) {
+			$recommended_attributes[ $key ]['priority'] = 5; // Assign 5 initially to each attribute
 			if ( 'measurement' === $attribute['type'] ) {
-				$attribute['priority'] = isset( $priorities[ $attribute['key'] ] ) ? $priorities[ $attribute['key'] ] : $priorities['default'];
+				$recommended_attributes[ $key ]['priority'] = isset( $priorities[ $attribute['key'] ] ) ? $priorities[ $attribute['key'] ] : $priorities['default'];
 			}
-			$priority[ $key ] = $attribute['priority'];
+			$priority[ $key ] = $recommended_attributes[ $key ]['priority'];
 		}
 
 		array_multisort( $priority, SORT_DESC, $recommended_attributes );
+
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
 		}
