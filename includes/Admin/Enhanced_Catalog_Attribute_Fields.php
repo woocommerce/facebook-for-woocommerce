@@ -91,7 +91,11 @@ class Enhanced_Catalog_Attribute_Fields {
 			} else {
 				$recommended_attributes[ $key ][ 'priority' ] = 5;
 			}
+			
+			$priority[ $key ] = $recommended_attributes[ $key ][ 'priority' ];
 		}
+
+		array_multisort( $priority, SORT_DESC, $recommended_attributes );
 
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
