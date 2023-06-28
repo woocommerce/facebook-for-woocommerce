@@ -87,7 +87,23 @@ class Enhanced_Catalog_Attribute_Fields {
 
 		foreach( $recommended_attributes as $key => $attribute ) {
 			if ( 'measurement' === $attribute['type'] ) {
-				$recommended_attributes[ $key ][ 'priority' ] = 10;
+				switch( $attribute['key'] ) {
+					case 'product_length':
+						$attr_priority = 140;
+						break;
+					case 'product_width':
+						$attr_priority = 130;
+						break;
+					case 'product_height':
+						$attr_priority = 120;
+						break;
+					case 'product_depth':
+						$attr_priority = 110;
+						break;
+					default:
+						$attr_priority = 100;
+				}
+				$recommended_attributes[ $key ][ 'priority' ] = $attr_priority;
 			} else {
 				$recommended_attributes[ $key ][ 'priority' ] = 5;
 			}
