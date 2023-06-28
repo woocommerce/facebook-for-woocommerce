@@ -88,34 +88,23 @@ class Enhanced_Catalog_Attribute_Fields {
 		/**
 		 * Attributes should be ordered by priority in this order: Length, Width, Height, Depth, Other measurement attributes, others.
 		 */
-		foreach ( $recommended_attributes as $key => $attribute ) {
-			if ( 'measurement' === $attribute['type'] ) {
-				switch ( $attribute['key'] ) {
-					case 'product_length':
-						$attr_priority = 140;
-						break;
-					case 'product_width':
-						$attr_priority = 130;
-						break;
-					case 'product_height':
-						$attr_priority = 120;
-						break;
-					case 'product_depth':
-						$attr_priority = 110;
-						break;
-					default:
-						$attr_priority = 100;
-				}
-				$recommended_attributes[ $key ]['priority'] = $attr_priority;
-			} else {
-				$recommended_attributes[ $key ]['priority'] = 5;
-			}
+		$priorities = array(
+			'product_length' => 140,
+			'product_width' => 130,
+			'product_height' => 120,
+			'product_depth' => 110,
+			'default' => 100,
+		);
 
-			$priority[ $key ] = $recommended_attributes[ $key ]['priority'];
+		foreach ( $recommended_attributes as $key => &$attribute ) {
+			$attribute['priority'] = 5; // Assign 5 initially to each attribute
+			if ( 'measurement' === $attribute['type'] ) {
+				$attribute['priority'] = isset( $priorities[ $attribute['key'] ] ) ? $priorities[ $attribute['key'] ] : $priorities['default'];
+			}
+			$priority[ $key ] = $attribute['priority'];
 		}
 
 		array_multisort( $priority, SORT_DESC, $recommended_attributes );
-
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
 		}
