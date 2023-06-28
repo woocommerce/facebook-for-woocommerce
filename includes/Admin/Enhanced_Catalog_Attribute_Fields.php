@@ -85,6 +85,14 @@ class Enhanced_Catalog_Attribute_Fields {
 			);
 		}
 
+		foreach( $recommended_attributes as $key => $attribute ) {
+			if ( 'measurement' === $attribute['type'] ) {
+				$recommended_attributes[ $key ][ 'priority' ] = 10;
+			} else {
+				$recommended_attributes[ $key ][ 'priority' ] = 5;
+			}
+		}
+
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
 		}
