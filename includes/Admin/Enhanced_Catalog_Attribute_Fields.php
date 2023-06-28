@@ -85,6 +85,9 @@ class Enhanced_Catalog_Attribute_Fields {
 			);
 		}
 
+		/**
+		 * Attributes should be ordered by priority in this order: Length, Width, Height, Depth, Other measurement attributes, others.
+		 */
 		foreach( $recommended_attributes as $key => $attribute ) {
 			if ( 'measurement' === $attribute['type'] ) {
 				switch( $attribute['key'] ) {
