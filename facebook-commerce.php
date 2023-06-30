@@ -368,13 +368,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		add_action( 'untrashed_post', [ $this, 'fb_restore_untrashed_variable_product' ] );
 
-		// Ensure product is deleted from FB when moved to draft.
-		add_action(
-			'transition_post_status',
-			array( $this, 'delete_draft_product' ),
-			10,
-			3
-		);
+		// Ensure product is deleted from FB when status is changed to draft.
+		add_action( 'publish_to_draft', [ $this, 'on_product_delete' ] );
 
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
@@ -933,25 +928,6 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// clear out both item and group IDs
 		delete_post_meta( $product_id, self::FB_PRODUCT_ITEM_ID );
 		delete_post_meta( $product_id, self::FB_PRODUCT_GROUP_ID );
-	}
-
-	/**
-	 * Deletes a product from Facebook when status is changed to draft.
-	 *
-	 * @param string   $new_status
-	 * @param string   $old_status
-	 * @param \WP_post $post
-	 */
-	public function delete_draft_product( $new_status, $old_status, $post ) {
-
-		if ( ! $post ) {
-			return;
-		}
-
-		if ( $old_status === 'publish' && $new_status === 'draft' ) {
-			$this->on_product_delete ( $post->ID );
-		}
-
 	}
 
 	/**
