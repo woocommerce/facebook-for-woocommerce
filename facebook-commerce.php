@@ -949,8 +949,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $old_status === 'publish' && $new_status === 'draft' ) {
-			$product_id = $post->ID;
-			$this->on_product_delete ( $product_id );
+			$this->on_product_delete ( $post->ID );
 		}
 
 	}
