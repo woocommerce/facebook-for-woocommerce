@@ -938,7 +938,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Deletes a product from Facebook when status is changed to draft.
 	 *
-	 * @param int $product_id product ID
+	 * @param string   $new_status
+	 * @param string   $old_status
+	 * @param \WP_post $post
 	 */
 	public function delete_draft_product( $new_status, $old_status, $post ) {
 
