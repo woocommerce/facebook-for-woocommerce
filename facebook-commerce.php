@@ -368,6 +368,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		add_action( 'untrashed_post', [ $this, 'fb_restore_untrashed_variable_product' ] );
 
+		// Ensure product is deleted from FB when status is changed to draft.
+		add_action( 'publish_to_draft', [ $this, 'delete_draft_product' ] );
+
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
 		add_action( 'fb_wc_product_set_delete', [ $this, 'delete_product_set_item' ], 99 );
