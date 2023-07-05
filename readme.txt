@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.27 - 2023-07-05 =
+* Fix - Products are deleted from facebook once changed to draft.
+
 = 3.0.26 - 2023-06-28 =
 * Tweak - WC 7.9 compatibility.
 
