@@ -85,6 +85,27 @@ class Enhanced_Catalog_Attribute_Fields {
 			);
 		}
 
+		/**
+		 * Attributes should be ordered by priority in this order: Length, Width, Height, Depth, Other measurement attributes, others.
+		 */
+		$priorities = array(
+			'product_length' => 140,
+			'product_width'  => 130,
+			'product_height' => 120,
+			'product_depth'  => 110,
+			'default'        => 100,
+		);
+
+		foreach ( $recommended_attributes as $key => $attribute ) {
+			$recommended_attributes[ $key ]['priority'] = 5; // Assign 5 initially to each attribute
+			if ( 'measurement' === $attribute['type'] ) {
+				$recommended_attributes[ $key ]['priority'] = isset( $priorities[ $attribute['key'] ] ) ? $priorities[ $attribute['key'] ] : $priorities['default'];
+			}
+			$priority[ $key ] = $recommended_attributes[ $key ]['priority'];
+		}
+
+		array_multisort( $priority, SORT_DESC, $recommended_attributes );
+
 		foreach ( $recommended_attributes as $attribute ) {
 			$this->render_attribute( $attribute );
 		}
