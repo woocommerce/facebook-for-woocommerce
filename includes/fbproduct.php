@@ -553,9 +553,7 @@ class WC_Facebook_Product {
 
 		if ( self::PRODUCT_PREP_TYPE_ITEMS_BATCH === $type_to_prepare_for ) {
 			$product_data = array(
-				'title'                 => WC_Facebookcommerce_Utils::clean_string(
-					$this->get_title()
-				),
+				'title'                 => WC_Facebookcommerce_Utils::clean_string( $this->get_title() ),
 				'description'           => $this->get_fb_description(),
 				'image_link'            => $image_urls[0],
 				'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
@@ -569,9 +567,7 @@ class WC_Facebook_Product {
 			$product_data = $this->add_sale_price( $product_data, true );
 		} else {
 			$product_data = array(
-				'name'                  => WC_Facebookcommerce_Utils::clean_string(
-					$this->get_title()
-				),
+				'name'                  => WC_Facebookcommerce_Utils::clean_string( $this->get_title() ),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0],
 				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
