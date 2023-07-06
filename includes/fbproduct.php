@@ -593,7 +593,7 @@ class WC_Facebook_Product {
 
 		// Currently only items batch and feed support enhanced catalog fields
 		if ( self::PRODUCT_PREP_TYPE_NORMAL !== $type_to_prepare_for && $google_product_category ) {
-			$product_data = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
+			$product_data = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category, $gpc_field_name );
 		}
 
 		// add the Commerce values (only stock quantity for the moment)
@@ -650,11 +650,13 @@ class WC_Facebook_Product {
 	 * the main function to make it easier to develop and debug, potentially
 	 * worth refactoring into main prepare_product function when complete.
 	 *
-	 * @param array $product_data map
+	 * @param array  $product_data       The preparted product data map.
+	 * @param string $google_category_id The Google product category id string.
+	 * @param string $gpc_field_name     Google product category field name.
 	 * @return array
 	 */
-	private function apply_enhanced_catalog_fields_from_attributes( $product_data, $google_category_id ) {
-		$google_category_id = $product_data['google_product_category'];
+	private function apply_enhanced_catalog_fields_from_attributes( $product_data, $google_category_id, $gpc_field_name = 'google_product_category' ) {
+		$google_category_id = $product_data[ $gpc_field_name ];
 		$category_handler   = facebook_for_woocommerce()->get_facebook_category_handler();
 		if ( empty( $google_category_id ) || ! $category_handler->is_category( $google_category_id ) ) {
 			return $product_data;
