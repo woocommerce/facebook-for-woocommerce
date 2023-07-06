@@ -584,10 +584,13 @@ class WC_Facebook_Product {
 		}//end if
 
 		$google_product_category = Products::get_google_product_category_id( $this->woo_product );
+		if ( $google_product_category ) {
+			$product_data['google_product_category'] = $google_product_category;
+		}
+
 		// Currently only items batch and feed support enhanced catalog fields
 		if ( self::PRODUCT_PREP_TYPE_NORMAL !== $type_to_prepare_for && $google_product_category ) {
-			$product_data['google_product_category'] = $google_product_category;
-			$product_data                            = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
+			$product_data = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
 		}
 
 		// add the Commerce values (only stock quantity for the moment)
