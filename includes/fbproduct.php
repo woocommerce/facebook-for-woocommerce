@@ -576,7 +576,7 @@ class WC_Facebook_Product {
 				'image_url'             => $image_urls[0],
 				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
-				'category'              => $categories['categories'],
+				'product_type'          => $categories['categories'],
 				'brand'                 => Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
