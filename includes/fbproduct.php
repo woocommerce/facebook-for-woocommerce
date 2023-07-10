@@ -553,30 +553,28 @@ class WC_Facebook_Product {
 
 		if ( self::PRODUCT_PREP_TYPE_ITEMS_BATCH === $type_to_prepare_for ) {
 			$product_data = array(
-				'title'                 => WC_Facebookcommerce_Utils::clean_string(
-					$this->get_title()
-				),
+				'title'                 => WC_Facebookcommerce_Utils::clean_string( $this->get_title() ),
 				'description'           => $this->get_fb_description(),
 				'image_link'            => $image_urls[0],
 				'additional_image_link' => $this->get_additional_image_urls( $image_urls ),
 				'link'                  => $product_url,
+				'product_type'          => $categories['categories'],
 				'brand'                 => Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price( true ),
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
-			$product_data = $this->add_sale_price( $product_data, true );
+			$product_data   = $this->add_sale_price( $product_data, true );
+			$gpc_field_name = 'google_product_category';
 		} else {
 			$product_data = array(
-				'name'                  => WC_Facebookcommerce_Utils::clean_string(
-					$this->get_title()
-				),
+				'name'                  => WC_Facebookcommerce_Utils::clean_string( $this->get_title() ),
 				'description'           => $this->get_fb_description(),
 				'image_url'             => $image_urls[0],
 				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
-				'category'              => $categories['categories'],
+				'product_type'          => $categories['categories'],
 				'brand'                 => Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
 				'price'                 => $this->get_fb_price(),
@@ -584,14 +582,18 @@ class WC_Facebook_Product {
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
-			$product_data = $this->add_sale_price( $product_data );
+			$product_data   = $this->add_sale_price( $product_data );
+			$gpc_field_name = 'category';
 		}//end if
 
 		$google_product_category = Products::get_google_product_category_id( $this->woo_product );
+		if ( $google_product_category ) {
+			$product_data[ $gpc_field_name ] = $google_product_category;
+		}
+
 		// Currently only items batch and feed support enhanced catalog fields
 		if ( self::PRODUCT_PREP_TYPE_NORMAL !== $type_to_prepare_for && $google_product_category ) {
-			$product_data['google_product_category'] = $google_product_category;
-			$product_data                            = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
+			$product_data = $this->apply_enhanced_catalog_fields_from_attributes( $product_data, $google_product_category );
 		}
 
 		// add the Commerce values (only stock quantity for the moment)
@@ -648,11 +650,11 @@ class WC_Facebook_Product {
 	 * the main function to make it easier to develop and debug, potentially
 	 * worth refactoring into main prepare_product function when complete.
 	 *
-	 * @param array $product_data map
+	 * @param array  $product_data       The preparted product data map.
+	 * @param string $google_category_id The Google product category id string.
 	 * @return array
 	 */
 	private function apply_enhanced_catalog_fields_from_attributes( $product_data, $google_category_id ) {
-		$google_category_id = $product_data['google_product_category'];
 		$category_handler   = facebook_for_woocommerce()->get_facebook_category_handler();
 		if ( empty( $google_category_id ) || ! $category_handler->is_category( $google_category_id ) ) {
 			return $product_data;
