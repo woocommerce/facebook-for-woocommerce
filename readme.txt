@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.28 - 2023-07-13 =
+* Add - Priority to enhanced catalog attributes and display as per priority.
+* Fix - Woo category synced as Google Product category.
+
 = 3.0.27 - 2023-07-05 =
 * Fix - Products are deleted from facebook once changed to draft.
 
