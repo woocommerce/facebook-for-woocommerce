@@ -521,6 +521,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		/* Data coming from _POST data. */
 		$facebook_product_data['description'] = 'Facebook product description.';
 		$facebook_product_data['price']       = 19900;
+		$facebook_product_data['category']    = 1718;
 
 		$this->api->expects( $this->once() )
 			->method( 'update_product_item' )
