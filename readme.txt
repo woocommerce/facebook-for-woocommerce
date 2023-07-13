@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.2
-Stable tag: 3.0.27
+Stable tag: 3.0.28
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.28 - 2023-07-13 =
+* Add - Priority to enhanced catalog attributes and display as per priority.
+* Fix - Woo category synced as Google Product category.
 
 = 3.0.27 - 2023-07-05 =
 * Fix - Products are deleted from facebook once changed to draft.
