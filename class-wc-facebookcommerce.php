@@ -368,7 +368,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 				'edit_item'                  => sprintf( esc_html__( 'Edit %s', 'facebook-for-woocommerce' ), $singular ),
 				// translators: Add new label
 				'add_new_item'               => sprintf( esc_html__( 'Add new %s', 'facebook-for-woocommerce' ), $singular ),
-				'menu_name'                  => $plural,
 				// translators: No items found text
 				'not_found'                  => sprintf( esc_html__( 'No %s found.', 'facebook-for-woocommerce' ), $plural ),
 				// translators: Search label
