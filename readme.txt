@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.29 - 2023-07-18 =
+* Fix - Corrects backlink to 'Go to Facebook Product Sets' in success notice on Edit Facebook Product Sets page.
+* Tweak - Removes duplicate code.
+
 = 3.0.28 - 2023-07-13 =
 * Add - Priority to enhanced catalog attributes and display as per priority.
 * Fix - Woo category synced as Google Product category.
