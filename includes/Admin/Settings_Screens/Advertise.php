@@ -277,6 +277,7 @@ class Advertise extends Abstract_Settings_Screen {
 
 
 	private function can_try_experimental_view() {
+		return true;
 		return facebook_for_woocommerce()->get_integration()->get_advertise_asc_status() != self::STATUS_DISABLED;
 	}
 
@@ -287,7 +288,7 @@ class Advertise extends Abstract_Settings_Screen {
 		$translate = function( $text ) {
 			return $this->get_escaped_translation( $text );
 		};
-		$translate_with_link = function( $hyperlink, $link_text, $pretext, $rest_of_text ) {
+		$translate_with_link = function( $hyperlink, $link_text, $pretext, $rest_of_text ) use(&$translate) {
 			return $translate( $pretext ) . " <a href='<?php echo " . $hyperlink . "?>' >" . $translate( $link_text ) . "</a>" . $translate( $rest_of_text );
 		};
 		try {
@@ -300,7 +301,7 @@ class Advertise extends Abstract_Settings_Screen {
 							<td>
 							<hr>
 							<form id='advertise-asc-form-new-buyers'>
-								<?php $this->create_section_headers(esc_html__('New Customers', 'facebook-for-woocommerce') , esc_html__('Reach out to potential new buyers for your products', 'facebook-for-woocommerce') , self::ASC_CAMPAIGN_TYPE_NEW_BUYERS ); ?>
+							<?php $this->create_section_headers(esc_html__('New Customers', 'facebook-for-woocommerce') , esc_html__('Reach out to potential new buyers for your products', 'facebook-for-woocommerce') , self::ASC_CAMPAIGN_TYPE_NEW_BUYERS ); ?>
 								<?php $this->create_cells(facebook_for_woocommerce()->get_advertise_asc_handler(self::ASC_CAMPAIGN_TYPE_NEW_BUYERS)); ?>
 							</form>
 							<hr>
