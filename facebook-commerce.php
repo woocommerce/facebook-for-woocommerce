@@ -374,6 +374,25 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
 		add_action( 'fb_wc_product_set_delete', [ $this, 'delete_product_set_item' ], 99 );
+
+		// Show notice if a product with ALL CAPS name is published or updated.
+		add_action( 'woocommerce_new_product', [ $this, 'show_all_caps_notice' ], 10, 2 );
+		add_action( 'woocommerce_update_product', [ $this, 'show_all_caps_notice' ], 10, 2 );
+	}
+
+	/**
+	 * Validate if product name contains ALL CAPS.
+	 * Show notice if true.
+	 *
+	 * @param int $product_id
+	 * @param object $product
+	 */
+	public function show_all_caps_notice( $product_id, $product ) {
+
+		// Checks if product title contains ALL CAPS.
+		if ( \WC_Facebookcommerce_Utils::is_all_caps( $product->get_name() ) ) {
+			//TODO: pop up modal window to show notice
+		}
 	}
 
 	/**

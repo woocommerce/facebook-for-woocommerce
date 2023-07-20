@@ -388,12 +388,8 @@ class ProductValidator {
 
 		/*
 		 * Requirements:
-		 * - No all caps title.
 		 * - Max length 150.
 		 */
-		if ( \WC_Facebookcommerce_Utils::is_all_caps( $title ) ) {
-			throw new ProductInvalidException( __( 'Product title is all capital letters. Please change the title to sentence case in order to allow synchronization of your product.', 'facebook-for-woocommerce' ) );
-		}
 		if ( mb_strlen( $title, 'UTF-8' ) > self::MAX_TITLE_LENGTH ) {
 			throw new ProductInvalidException( __( 'Product title is too long. Maximum allowed length is 150 characters.', 'facebook-for-woocommerce' ) );
 		}
