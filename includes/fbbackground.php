@@ -17,6 +17,8 @@ if ( ! class_exists( 'WP_Background_Process', false ) ) {
 }
 
 class WC_Facebookcommerce_Background_Process extends WP_Background_Process {
+		/** @var WC_Facebookcommerce_Integration */
+		protected $commerce;
 
 		public function __construct( $commerce ) {
 			$this->commerce = $commerce; // Full WC_Facebookcommerce_Integration obj

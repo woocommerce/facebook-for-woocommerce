@@ -82,6 +82,9 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WooCommerce\Facebook\Products\Sync\Background background sync handler */
 	private $sync_background_handler;
 
+	/** @var WooCommerce\Facebook\Feed\FeedConfigurationDetection feed configuration detection handler */
+	private $configuration_detection;
+
 	/** @var WooCommerce\Facebook\ProductSets\Sync product sets sync handler */
 	private $product_sets_sync_handler;
 
@@ -93,6 +96,9 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 	/** @var WooCommerce\Facebook\Commerce commerce handler */
 	private $commerce_handler;
+
+	/** @var WooCommerce\Facebook\Products\FBCategories categories handler */
+	private $fb_categories;
 
 	/** @var WooCommerce\Facebook\Utilities\Tracker */
 	private $tracker;

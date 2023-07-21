@@ -36,6 +36,9 @@ class Admin {
 	/** @var Product_Categories the product category admin handler */
 	protected $product_categories;
 
+	/** @var Product_Sets the product sets admin handler */
+	protected $product_sets;
+
 	/** @var array screens ids where to include scripts */
 	protected $screen_ids = [];
 

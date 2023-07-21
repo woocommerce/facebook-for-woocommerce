@@ -23,6 +23,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
 	class WC_Facebookcommerce_MessengerChat {
 
 		/**
+		 * Page ID
+		 *
+		 * @var string
+		 */
+		private $page_id;
+
+		/**
+		 * JS SDK version
+		 *
+		 * @var string
+		 */
+		private $jssdk_version;
+
+		/**
 		 * Class constructor.
 		 *
 		 * @param array $settings FB page settings array.
