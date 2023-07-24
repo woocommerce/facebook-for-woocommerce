@@ -43,7 +43,7 @@ jobs:
                - [ ] Publish any new required docs
                - [ ] Update triggers/rules/actions listing pages
             1. [ ] Mark related ideas complete on ideas board
-            1. [ ] Confirm the release deployed correctly to [GitHub](https://github.com/woocommerce/facebook-for-woocommerce/releases) and [WPORG](https://wordpress.org/plugins/facebook-for-woocommerce/).
+            1. [ ] Confirm the release deployed correctly to [WPORG](https://wordpress.org/plugins/facebook-for-woocommerce/).
                - [ ] Ensure you can download and install the latest release from WPORG and WCCOM.
                - [ ] We've had an issue where the release tag (e.g. 2.6.1) wasn't present in the svn `tags/` folder.
                - [ ] Troubleshooting processes when the release version doesn't exist in the svn `tags/` folder:
