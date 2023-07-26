@@ -83,17 +83,6 @@ class Product_Sync_Meta_Box {
 			<?php echo esc_html__( 'Facebook ID:', 'facebook-for-woocommerce' ); ?>
 			<a href="https://facebook.com/<?php echo esc_attr( $fb_product_id ); ?>" target="_blank"><?php echo esc_html( $fb_product_id ); ?></a>
 
-			<?php
-
-			if ( \WC_Facebookcommerce_Utils::is_all_caps( $fb_product->get_title() ) ) {
-				echo esc_html__( 'may have issue with synchronisation as product title is all capital letters. Please change the title to sentence case to ensure product is synchronized.', 'facebook-for-woocommerce' );
-				?>
-				<br/>
-
-				<?php
-			}
-			?>
-
 			<?php if ( \WC_Facebookcommerce_Utils::is_variable_type( $fb_product->get_type() ) ) : ?>
 
 				<?php
@@ -127,6 +116,11 @@ class Product_Sync_Meta_Box {
 					</p>
 
 				<?php endif; ?>
+
+			<?php endif; ?>
+
+			<?php if ( \WC_Facebookcommerce_Utils::is_all_caps( $fb_product->get_title() ) ): ?>
+				<p><b><?php echo esc_html__( 'Product title in all capital letters can lead to the server rejecting the product. To ensure successful product synchronization, please convert the product title to a sentence case.', 'facebook-for-woocommerce' ); ?></b></p>
 
 			<?php endif; ?>
 
