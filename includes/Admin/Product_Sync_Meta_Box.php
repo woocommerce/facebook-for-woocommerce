@@ -119,7 +119,7 @@ class Product_Sync_Meta_Box {
 
 			<?php endif; ?>
 
-			<?php if ( \WC_Facebookcommerce_Utils::is_all_caps( $fb_product->get_title() ) ): ?>
+			<?php if ( \WC_Facebookcommerce_Utils::is_all_caps( $fb_product->get_title() ) ) : ?>
 				<p><b><?php echo esc_html__( 'Product title in all capital letters can lead to the server rejecting the product. To ensure successful product synchronization, please convert the product title to a sentence case.', 'facebook-for-woocommerce' ); ?></b></p>
 
 			<?php endif; ?>
