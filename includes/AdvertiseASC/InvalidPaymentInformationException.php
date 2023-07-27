@@ -5,8 +5,12 @@ namespace WooCommerce\Facebook\AdvertiseASC;
 use Exception;
 
 /**
- * Class AscNotSupportedException
+ * Class InvalidPaymentInformationException
  *
- * Exception for when a the ASC campaign is not created.
+ * Exception for when a the payment setting is invalid.
  */
-class InvalidPaymentInformationException extends Exception {}
+class InvalidPaymentInformationException extends Exception {
+    public function __construct() {
+        parent::__construct('Payment needs to be set up.');
+    }
+}

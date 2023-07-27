@@ -277,25 +277,24 @@ class Advertise extends Abstract_Settings_Screen {
 
 
 	private function can_try_experimental_view() {
-		return true;
 		return facebook_for_woocommerce()->get_integration()->get_advertise_asc_status() != self::STATUS_DISABLED;
+	}
+
+
+	private function translate_with_link( $pretext, $link, $link_text, $rest_of_text ) {
+		return $this->get_escaped_translation( $pretext ) . " <a href='" . $link . "'>" . $this->get_escaped_translation( $link_text ) . "</a>" . $this->get_escaped_translation( $rest_of_text );
 	}
 
 
 	private function try_render_experimental_view() {
 		$title = "Advertise your products on Facebook and Instagram";
 		$subtitle = "Launch campaigns to drive new buyers and bring back website visitors with just a few clicks";
-		$translate = function( $text ) {
-			return $this->get_escaped_translation( $text );
-		};
-		$translate_with_link = function( $hyperlink, $link_text, $pretext, $rest_of_text ) use(&$translate) {
-			return $translate( $pretext ) . " <a href='<?php echo " . $hyperlink . "?>' >" . $translate( $link_text ) . "</a>" . $translate( $rest_of_text );
-		};
 		try {
 			?>
+				
 				<div class="fb-asc-ads">
-					<h1><?php echo $translate( $title ); ?></h1>
-					<h2 style="margin-top: 0px; margin-bottom: 30px; font-weight: 400;"><?php echo $translate( $subtitle ); ?></h2>
+					<h1><?php echo $this->get_escaped_translation( $title ); ?></h1>
+					<h2 style="margin-top: 0px; margin-bottom: 30px; font-weight: 400;"><?php echo $this->get_escaped_translation( $subtitle ); ?></h2>
 					<table>
 						<tr>
 							<td>
@@ -376,12 +375,12 @@ class Advertise extends Abstract_Settings_Screen {
 			$link = "https://business.facebook.com/ads/manager/account_settings/account_billing/?act=" . $ad_acc_id;
 
 			?>
-			<h2><?php echo $translate( "Your payment settings need to be updated before we can proceed." ); ?></h2>
-			<h4><?php echo $translate( "Here's how:" ); ?></h3>
+			<h2><?php echo $this->get_escaped_translation( "Your payment settings need to be updated before we can proceed." ); ?></h2>
+			<h4><?php echo $this->get_escaped_translation( "Here's how:" ); ?></h3>
 			<ul>
-				<li><?php echo $translate_with_link( $link, "Click here", "1.", "to go to the \"Payment Settings\" section in your Ads Manager" ); ?></li>
-				<li><?php echo $translate( "2. Click the \"Add payment method\" button and follow instructions to ad a payment method" ); ?></li>
-				<li><?php echo $translate( "3. Go back to this screen and refresh it" ); ?></li>
+				<li><?php echo $this->translate_with_link( "1.", $link, "Click here", " to go to the \"Payment Settings\" section in your Ads Manager" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "2. Click the \"Add payment method\" button and follow instructions to ad a payment method" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "3. Go back to this screen and refresh it" ); ?></li>
 			</ul>
 			<?php
 		} catch ( NonDiscriminationNotAcceptedException $nde ) {
@@ -390,14 +389,14 @@ class Advertise extends Abstract_Settings_Screen {
 
 			$link = "https://business.facebook.com/settings/system-users?business_id=" . facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id();
 			?>
-			<h2><?php echo $translate( "A business Admin must review and accept our non-discrimination policy before you can run ads." ); ?></h2>
-			<h4><?php echo $translate( "Here's how:" ); ?></h3>
+			<h2><?php echo $this->get_escaped_translation( "A business Admin must review and accept our non-discrimination policy before you can run ads." ); ?></h2>
+			<h4><?php echo $this->get_escaped_translation( "Here's how:" ); ?></h3>
 			<ul>
-				<li><?php echo $translate_with_link( $link, "Click here", "1.", "to go to the \"System Users\" section in your Business Manager" ); ?></li>
-				<li><?php echo $translate( "2. Click the \"Add\" button to review our Discriminatory Practices policy" ); ?></li>
-				<li><?php echo $translate( "3. Click the \"I accept\" button to confirm compliance on behalf of your system users" ); ?></li>
-				<li><?php echo $translate( "4. Close the pop-up window by clicking on X or \"Done\"" ); ?></li>
-				<li><?php echo $translate( "5. Go back to this screen and refresh it" ); ?></li>
+				<li><?php echo $this->translate_with_link( "1.", $link, "Click here", " to go to the \"System Users\" section in your Business Manager" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "2. Click the \"Add\" button to review our Discriminatory Practices policy" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "3. Click the \"I accept\" button to confirm compliance on behalf of your system users" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "4. Close the pop-up window by clicking on X or \"Done\"" ); ?></li>
+				<li><?php echo $this->get_escaped_translation( "5. Go back to this screen and refresh it" ); ?></li>
 			</ul>
 			<?php
 
@@ -421,9 +420,9 @@ class Advertise extends Abstract_Settings_Screen {
 			$subject = $ad_account_id . '_' . 'PluginException';
 			$body = 'message: ' . $pe->getMessage() . '  stack-trace: ' . $pe->getTraceAsString();
 			$body = urlencode($body);
-			$link = 'mailto:woofeedback@meta.com?subject='.$subject.'&body='.$body;
+			$link = 'mailto:woofeedback@meta.com?subject=' . $subject . '&body=' . $body;
 			?>
-			<h2><?php echo $translate_with_link( $link, "Click here", "An unexpected error happened.", " to mail us the bug report." ); ?></h2>
+			<h2><?php echo $this->translate_with_link( "An unexpected error happened.", $link, "Click here", " to mail us the bug report." ); ?></h2>
 			<?php
 			
 		}

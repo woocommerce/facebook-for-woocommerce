@@ -9,4 +9,8 @@ use Exception;
  *
  * Exception for when a the ASC campaign is not created.
  */
-class AscNotSupportedException extends Exception {}
+class AscNotSupportedException extends Exception {
+    public function __construct() {
+        parent::__construct('ASC is not supported.');
+    }
+}

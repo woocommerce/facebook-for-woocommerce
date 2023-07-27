@@ -78,7 +78,7 @@ abstract class CampaignHandler {
             $this->instagram_actor_id = $this->get_instagram_actor_id( $this->facebook_page_id );
             $this->currency           = $this->api->get_currency( $this->ad_account_id )->get_currency();
             $this->min_daily_budget   = $this->get_min_daily_budget();
-        } catch( \Throwable $e ) {
+        } catch( \ApiException $e ) {
 
 			$message = sprintf( 'There was an error trying to create the campaign. message: %s', $e->getMessage() );
 			\WC_Facebookcommerce_Utils::log( $message );
