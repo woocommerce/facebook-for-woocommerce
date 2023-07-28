@@ -369,6 +369,7 @@ class Advertise extends Abstract_Settings_Screen {
 
 		} catch ( InvalidPaymentInformationException $ipie ) {
 
+			\WC_Facebookcommerce_Utils::log( $ipie->getMessage() );
 			$this->remove_rendered_when_exception_happened();
 
 			$ad_acc_id = facebook_for_woocommerce()->get_connection_handler()->get_ad_account_id();
@@ -385,6 +386,7 @@ class Advertise extends Abstract_Settings_Screen {
 			<?php
 		} catch ( NonDiscriminationNotAcceptedException $nde ) {
 
+			\WC_Facebookcommerce_Utils::log( $nde->getMessage() );
 			$this->remove_rendered_when_exception_happened();
 
 			$link = "https://business.facebook.com/settings/system-users?business_id=" . facebook_for_woocommerce()->get_connection_handler()->get_business_manager_id();
@@ -413,6 +415,7 @@ class Advertise extends Abstract_Settings_Screen {
 
 		} catch ( \Throwable $pe ) {
 			
+			\WC_Facebookcommerce_Utils::log( $pe->getMessage() );
 			$this->remove_rendered_when_exception_happened();
 			
 			$ad_account_id = facebook_for_woocommerce()->get_connection_handler()->get_ad_account_id();

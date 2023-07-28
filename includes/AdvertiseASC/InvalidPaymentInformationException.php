@@ -10,7 +10,7 @@ use Exception;
  * Exception for when a the payment setting is invalid.
  */
 class InvalidPaymentInformationException extends Exception {
-    public function __construct() {
-        parent::__construct('Payment needs to be set up.');
-    }
+	public function __construct() {
+		parent::__construct( 'Payment needs to be set up.' );
+	}
 }

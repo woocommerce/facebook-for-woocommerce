@@ -32,7 +32,7 @@ jQuery(window).on('load', function () {
 	}
 
 	function hideBusyIndicator(view, type) {
-		$('#' + view + '-' + type + '	-busy-indicator').removeClass(
+		$('#' + view + '-' + type + '-busy-indicator').removeClass(
 			'busy-indicator'
 		);
 	}

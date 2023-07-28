@@ -12,6 +12,8 @@
 namespace WooCommerce\Facebook;
 
 use WooCommerce\Facebook\Framework\Helper;
+use WooCommerce\Facebook\AdvertiseASC\NewBuyers;
+use WooCommerce\Facebook\AdvertiseASC\Retargeting;
 use WooCommerce\Facebook\Admin\Settings_Screens\Product_Sync;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 
@@ -119,19 +121,19 @@ class AJAX {
 	 */
 	public function publish_ad_changes() {
 
-		$retargetting = isset( $_POST[ \Retargeting::ID ] ) ? $_POST[ \Retargeting::ID ] : null;
-		$new_buyers = isset( $_POST[ \NewBuyers::ID ] ) ? $_POST[ \NewBuyers::ID ] : null;
+		$retargetting = isset( $_POST[ Retargeting::ID ] ) ? $_POST[ Retargeting::ID ] : null;
+		$new_buyers = isset( $_POST[ NewBuyers::ID ] ) ? $_POST[ NewBuyers::ID ] : null;
 
 		$result = '';
 
 		try {
 
 			if ( $retargetting ) {
-				$result = facebook_for_woocommerce()->get_advertise_asc_handler( \Retargeting::ID )->update_asc_campaign( $retargetting );
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( Retargeting::ID )->update_asc_campaign( $retargetting );
 		   }
 
 		   if ( $new_buyers ) {
-				 $result = facebook_for_woocommerce()->get_advertise_asc_handler( \NewBuyers::ID )->update_asc_campaign( $new_buyers );
+				 $result = facebook_for_woocommerce()->get_advertise_asc_handler( NewBuyers::ID )->update_asc_campaign( $new_buyers );
 		   }
 
 		   if ( ! $new_buyers && ! $retargetting ) {
