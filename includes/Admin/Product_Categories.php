@@ -155,7 +155,7 @@ class Product_Categories {
 	 * @return string the explanation text
 	 */
 	public static function get_enhanced_catalog_explanation_text() {
-		return __( 'Facebook catalogs now support category specific fields, to make best use of them you need to select a category. WooCommerce uses the google taxonomy as it is the most widely accepted form of categorisation.', 'facebook-for-woocommerce' );
+		return __( 'Facebook catalogs now support category specific fields, to make best use of them you need to select a category. WooCommerce uses the Google taxonomy as it is the most widely accepted form of categorisation. If no Google product category is chosen, the WooCommerce product category will be used instead.', 'facebook-for-woocommerce' );
 	}
 
 
