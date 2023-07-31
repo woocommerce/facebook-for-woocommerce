@@ -575,7 +575,7 @@ class WC_Facebook_Product {
 				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
 				/**
-				 * 'category' is a required field for creating a ProductItem object by posting to /{product_catalog_id}/products.
+				 * 'category' is a required field for creating a ProductItem object when posting to /{product_catalog_id}/products.
 				 * This field should have the Google product category for the item. Google product category is not a required field
 				 * in the WooCommerce product editor. Hence, we are setting 'category' to Woo product categories by default and overriding
 				 * it when a Google product category is set.
