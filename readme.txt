@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.2
-Stable tag: 3.0.29
+Stable tag: 3.0.30
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.30 - 2023-08-01 =
+* Dev - Add release preparation GH workflow.
+* Fix - Facebook sync for newly published product without Google product category.
+* Fix - Syncs products with All Caps title to Facebook and displays a warning in Facebook meta box.
 
 = 3.0.29 - 2023-07-18 =
 * Fix - Corrects backlink to 'Go to Facebook Product Sets' in success notice on Edit Facebook Product Sets page.
