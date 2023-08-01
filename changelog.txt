@@ -1,5 +1,10 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.0.30 - 2023-08-01 =
+* Dev - Add release preparation GH workflow.
+* Fix - Facebook sync for newly published product without Google product category.
+* Fix - Syncs products with All Caps title to Facebook and displays a warning in Facebook meta box.
+
 = 3.0.29 - 2023-07-18 =
 * Fix - Corrects backlink to 'Go to Facebook Product Sets' in success notice on Edit Facebook Product Sets page.
 * Tweak - Removes duplicate code.
