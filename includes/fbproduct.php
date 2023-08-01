@@ -574,6 +574,17 @@ class WC_Facebook_Product {
 				'image_url'             => $image_urls[0],
 				'additional_image_urls' => $this->get_additional_image_urls( $image_urls ),
 				'url'                   => $product_url,
+				/**
+				 * 'category' is a required field for creating a ProductItem object when posting to /{product_catalog_id}/products.
+				 * This field should have the Google product category for the item. Google product category is not a required field
+				 * in the WooCommerce product editor. Hence, we are setting 'category' to Woo product categories by default and overriding
+				 * it when a Google product category is set.
+				 *
+				 * @see https://developers.facebook.com/docs/marketing-api/reference/product-catalog/products/#parameters-2
+				 * @see https://github.com/woocommerce/facebook-for-woocommerce/pull/2575
+				 * @see https://github.com/woocommerce/facebook-for-woocommerce/issues/2593
+				 */
+				'category'              => $categories['categories'],
 				'product_type'          => $categories['categories'],
 				'brand'                 => Helper::str_truncate( $brand, 100 ),
 				'retailer_id'           => $retailer_id,
