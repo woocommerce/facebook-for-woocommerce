@@ -657,14 +657,28 @@ class WC_Facebookcommerce_Pixel {
 		 * Get PixelID related settings.
 		 */
 		public static function get_options() {
-			return get_option( self::SETTINGS_KEY ) ?: array(
+
+			$default_options = array(
 				self::PIXEL_ID_KEY     => '0',
 				self::USE_PII_KEY      => 0,
 				self::USE_S2S_KEY      => false,
 				self::ACCESS_TOKEN_KEY => '',
 			);
-		}
 
+			$fb_options = get_option( self::SETTINGS_KEY );
+
+			if ( ! is_array( $fb_options ) ) {
+				$fb_options = $default_options;
+			} else {
+				foreach ( $default_options as $key => $value ) {
+					if ( ! isset( $fb_options[ $key ] ) ) {
+						$fb_options[ $key ] = $value;
+					}
+				}
+			}
+
+			return $fb_options;
+		}
 
 		/**
 		 * Gets the logged in user info
