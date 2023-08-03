@@ -6,6 +6,10 @@
 	width: auto;
 }
 
+#woocommerce-product-data ul.wc-tabs li.fb_commerce_tab_options a::before {
+	content: "\f304";
+}
+
 /* added #woocommerce-product-data to increase selector specificity */
 #woocommerce-product-data .fb-product-image-source-field .wc-radios li {
 	margin-bottom: 0;
