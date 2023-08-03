@@ -657,14 +657,16 @@ class WC_Facebookcommerce_Pixel {
 		 * Get PixelID related settings.
 		 */
 		public static function get_options() {
-			return get_option( self::SETTINGS_KEY ) ?: array(
-				self::PIXEL_ID_KEY     => '0',
-				self::USE_PII_KEY      => 0,
-				self::USE_S2S_KEY      => false,
-				self::ACCESS_TOKEN_KEY => '',
-			);
+			$facebook_config = get_option( self::SETTINGS_KEY );
+			return is_array( $facebook_config ) && ! empty( $facebook_config )
+				? $facebook_config
+				: array(
+					self::PIXEL_ID_KEY     => '0',
+					self::USE_PII_KEY      => 0,
+					self::USE_S2S_KEY      => false,
+					self::ACCESS_TOKEN_KEY => '',
+				);
 		}
-
 
 		/**
 		 * Gets the logged in user info
