@@ -39,6 +39,8 @@ class Admin {
 	/** @var array screens ids where to include scripts */
 	protected $screen_ids = [];
 
+	/** @var Product_Sets the product set admin handler. */
+	protected $product_sets;
 
 	/**
 	 * Admin constructor.

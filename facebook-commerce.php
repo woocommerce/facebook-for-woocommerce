@@ -181,6 +181,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var WC_Facebookcommerce */
 	private $facebook_for_woocommerce;
 
+	/** @var WC_Facebookcommerce_EventsTracker instance. */
+	private $events_tracker;
+
+	/** @var WC_Facebookcommerce_MessengerChat instance. */
+	private $messenger_chat;
+
+	/** @var WC_Facebookcommerce_Background_Process instance. */
+	private $background_processor;
+
 	/**
 	 * Init and hook in the integration.
 	 *
