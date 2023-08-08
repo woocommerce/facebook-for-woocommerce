@@ -61,27 +61,27 @@ class WC_Facebook_Product {
 	/**
 	 * @var string Facebook Product Description.
 	 */
-	protected $fb_description;
+	private $fb_description;
 
 	/**
 	 * @var array Gallery URLs.
 	 */
-	protected $gallery_urls;
+	private $gallery_urls;
 
 	/**
 	 * @var bool Use parent image for variable products.
 	 */
-	protected $fb_use_parent_image;
+	private $fb_use_parent_image;
 
 	/**
 	 * @var string Product Description.
 	 */
-	protected $main_description;
+	private $main_description;
 
 	/**
 	 * @var bool  Sync short description.
 	 */
-	protected $sync_short_description;
+	private $sync_short_description;
 
 	/**
 	 * @var bool Product visibility on Facebook.
