@@ -37,23 +37,53 @@ class WC_Facebook_WPML_Injector {
 		}
 	}
 
-
+	/**
+	 * Whether a product should be hidden from the Facebook catalog.
+	 *
+	 * @since 1.9.10
+	 *
+	 * @param int $wp_id The product ID.
+	 *
+	 * @return bool
+	 */
 	public static function should_hide( $wp_id ) {
+		// Apply WPML filters to the product.
 		$product_lang = apply_filters( 'wpml_post_language_details', null, $wp_id );
-		$settings     = self::$settings;
-		if ( $product_lang && isset( $product_lang['language_code'] ) ) {
-			$product_lang = $product_lang['language_code'];
+
+		/*
+		 * The wpml_post_language_details filter is applied to obtain the language data for the product.
+		 *
+		 * Possible values for $product_lang after the filter is applied:
+		 *
+		 * 1. null - The WPML filter wasn't applied.
+		 * 2. array - WPML returned the language data from wpml_get_language_information().
+		 * 3. WP_Error - WPML didn't recognize the post ID.
+		 */
+		if ( ! is_array( $product_lang ) ) {
+			/**
+			 * Whether to hide the product from Facebook.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param bool  $should_hide  Whether to hide the product from Facebook.
+			 * @param int   $wp_id        The product ID.
+			 * @param mixed $product_lang The result of applying the WPML filters.
+			 */
+			return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', true, $wp_id, $product_lang );
 		}
 
-		// Option doesn't exist : Backwards Compatibility
-		if ( ! $settings ) {
-			return ( $product_lang && self::$default_lang !== $product_lang );
+		// Pull out the language code from the language details.
+		$language_code = $product_lang['language_code'] ?? '';
+
+		// Option doesn't exist: Backwards Compatibility
+		if ( ! self::$settings ) {
+			return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', self::$default_lang !== $language_code, $wp_id, $product_lang );
 		}
-		// Hide products from non-active languages.
-		if ( ! isset( $settings[ $product_lang ] ) ) {
-			return true;
-		}
-		return $settings[ $product_lang ] !== FB_WPML_Language_Status::VISIBLE;
+
+		// Hide products from non-active languages, of if the language status isn't visible.
+		$should_hide = ! isset( self::$settings[ $language_code ] ) || self::$settings[ $language_code ] !== FB_WPML_Language_Status::VISIBLE;
+
+		return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', $should_hide, $wp_id, $product_lang );
 	}
 
 	public function wpml_ajax_support( $call, $REQUEST ) {
