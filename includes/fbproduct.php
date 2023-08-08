@@ -48,6 +48,46 @@ class WC_Facebook_Product {
 		'variation' => 1,
 	);
 
+	/**
+	 * @var int Facebook Product ID.
+	 */
+	protected $id;
+
+	/**
+	 * @var WC_Product
+	 */
+	protected $woo_product;
+
+	/**
+	 * @var string Facebook Product Description.
+	 */
+	protected $fb_description;
+
+	/**
+	 * @var array Gallery URLs.
+	 */
+	protected $gallery_urls;
+
+	/**
+	 * @var bool Use parent image for variable products.
+	 */
+	protected $fb_use_parent_image;
+
+	/**
+	 * @var string Product Description.
+	 */
+	protected $main_description;
+
+	/**
+	 * @var bool  Sync short description.
+	 */
+	protected $sync_short_description;
+
+	/**
+	 * @var bool Product visibility on Facebook.
+	 */
+	protected $fb_visibility;
+
 	public function __construct( $wpid, $parent_product = null ) {
 
 		if ( $wpid instanceof WC_Product ) {
