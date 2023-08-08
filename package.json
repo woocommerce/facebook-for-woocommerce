@@ -12,7 +12,7 @@
     "url": "https://wordpress.org/support/plugin/facebook-for-woocommerce"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^14.0.0"
+    "@wordpress/scripts": "^25.1.0"
   },
   "scripts": {
     "prearchive": "rm -rf vendor && composer install --no-dev && composer dump-autoload -o",
