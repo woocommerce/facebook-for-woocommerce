@@ -49,14 +49,14 @@ class WC_Facebook_Product {
 	);
 
 	/**
-	 * @var int Facebook Product ID.
+	 * @var int WC_Product ID.
 	 */
-	protected $id;
+	private $id;
 
 	/**
 	 * @var WC_Product
 	 */
-	protected $woo_product;
+	public $woo_product;
 
 	/**
 	 * @var string Facebook Product Description.
@@ -86,7 +86,7 @@ class WC_Facebook_Product {
 	/**
 	 * @var bool Product visibility on Facebook.
 	 */
-	protected $fb_visibility;
+	public $fb_visibility;
 
 	public function __construct( $wpid, $parent_product = null ) {
 
