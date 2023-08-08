@@ -87,6 +87,7 @@ class WC_Facebook_WPML_Injector {
 	}
 
 	public function wpml_ajax_support( $call, $REQUEST ) {
+		/** @var SitePress $sitepress */
 		global $sitepress;
 		if ( isset( $REQUEST['icl_ajx_action'] ) ) {
 			$call = $REQUEST['icl_ajx_action'];
@@ -111,7 +112,7 @@ class WC_Facebook_WPML_Injector {
 	 * The section is shown at the bottom of the WPML > Languages settings page.
 	 */
 	public function wpml_support() {
-		/** @var object $sitepress */
+		/** @var SitePress $sitepress */
 		global $sitepress;
 
 		// there is no nonce to check here and the value of $_GET['page] is being compared against a known and safe string
