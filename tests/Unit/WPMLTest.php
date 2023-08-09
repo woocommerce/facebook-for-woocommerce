@@ -2,6 +2,9 @@
 
 class WPMLTest extends WP_UnitTestCase {
 
+	/** @var int $fake_product_id */
+	private $fake_product_id = 1;
+
 	/**
 	 * Tears down the fixture, for example, close a network connection.
 	 *
@@ -16,7 +19,7 @@ class WPMLTest extends WP_UnitTestCase {
 	}
 
 	public function test_should_hide_product_when_wpml_filter_not_applied() {
-		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 
 	public function test_product_hidden_when_wpml_filter_returns_wp_error() {
@@ -27,7 +30,7 @@ class WPMLTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 
 	public function test_product_hidden_no_settings_and_not_default() {
@@ -42,7 +45,7 @@ class WPMLTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 
 	public function test_product_not_hidden_no_settings_and_default() {
@@ -56,7 +59,7 @@ class WPMLTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->assertFalse( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertFalse( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 
 	public function test_product_hidden_language_setting_not_visible() {
@@ -73,7 +76,7 @@ class WPMLTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertTrue( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 
 	public function test_product_not_hidden_language_setting_visible() {
@@ -90,6 +93,6 @@ class WPMLTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->assertFalse( WC_Facebook_WPML_Injector::should_hide( 1 ) );
+		$this->assertFalse( WC_Facebook_WPML_Injector::should_hide( $this->fake_product_id ) );
 	}
 }
