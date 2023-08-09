@@ -2,8 +2,8 @@
 Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
-Tested up to: 6.2
-Stable tag: 3.0.30
+Tested up to: 6.3
+Stable tag: 3.0.31
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,15 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.31 - 2023-08-09 =
+* Dev - Filters Business Manager ID.
+* Fix - Fatal error when facebook_config option is empty.
+* Fix - WC_Facebookcommerce_Pixel::get_options() throwing a fatal error if facebook_config is invalid.
+* Tweak - Adds backward arrow to Facebook Product Sets backlink.
+* Tweak - Update product data options icon.
+* Tweak - WC 8.0 compatibility.
+* Tweak - WP 6.3 compatibility.
 
 = 3.0.30 - 2023-08-01 =
 * Dev - Add release preparation GH workflow.

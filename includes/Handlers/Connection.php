@@ -678,7 +678,16 @@ class Connection {
 	 * @return string
 	 */
 	public function get_business_manager_id() {
-		return get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
+		$business_manager_id = get_option( self::OPTION_BUSINESS_MANAGER_ID, '' );
+		/**
+		 * Filters the Business Manager ID.
+		 *
+		 * @since 3.0.31
+		 *
+		 * @param string     $business_manager_id Business Manager ID.
+		 * @param Connection $connection          The Connection handler instance.
+		 */
+		return (string) apply_filters( 'wc_facebook_business_manager_id', $business_manager_id, $this );
 	}
 
 

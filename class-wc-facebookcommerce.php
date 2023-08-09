@@ -376,7 +376,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 				'separate_items_with_commas' => sprintf( esc_html__( 'Separate %s with commas', 'facebook-for-woocommerce' ), $plural ),
 				// translators: Text label
 				'choose_from_most_used'      => sprintf( esc_html__( 'Choose from the most used %s', 'facebook-for-woocommerce' ), $plural ),
-				'back_to_items'              => sprintf( esc_html__( 'Go to %s', 'facebook-for-woocommerce' ), $plural ),
+				// translators: Backlink item label
+				'back_to_items'              => sprintf( esc_html__( '&larr; Go to %s', 'facebook-for-woocommerce' ), $plural ),
 			),
 			'hierarchical'      => true,
 			'public'            => true,
