@@ -682,7 +682,7 @@ class Connection {
 		/**
 		 * Filters the Business Manager ID.
 		 *
-		 * @since x.x.x
+		 * @since 3.0.31
 		 *
 		 * @param string     $business_manager_id Business Manager ID.
 		 * @param Connection $connection          The Connection handler instance.
