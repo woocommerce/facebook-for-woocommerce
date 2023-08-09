@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -7,6 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @package FacebookCommerce
+ *
+ * phpcs:disable Squiz.Commenting.ClassComment.Missing
+ * phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+ * phpcs:disable Squiz.Commenting.VariableComment.Missing
+ * phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -82,7 +86,7 @@ class WC_Facebook_WPML_Injector {
 		}
 
 		// Hide products from non-active languages, of if the language status isn't visible.
-		$should_hide = ! isset( self::$settings[ $language_code ] ) || self::$settings[ $language_code ] !== FB_WPML_Language_Status::VISIBLE;
+		$should_hide = ! isset( self::$settings[ $language_code ] ) || FB_WPML_Language_Status::VISIBLE !== self::$settings[ $language_code ];
 
 		return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', $should_hide, $product_id, $product_lang );
 	}
@@ -93,11 +97,11 @@ class WC_Facebook_WPML_Injector {
 		if ( isset( $REQUEST['icl_ajx_action'] ) ) {
 			$call = $REQUEST['icl_ajx_action'];
 		}
-		if ( $call === 'icl_fb_woo' ) {
+		if ( 'icl_fb_woo' === $call ) {
 			$active_languages = array_keys( $sitepress->get_active_languages() );
 			$settings         = array();
 			foreach ( $active_languages as $lang ) {
-				$settings[ $lang ] = $REQUEST[ $lang ] === 'on' ?
+				$settings[ $lang ] = 'on' === $REQUEST[ $lang ] ?
 				FB_WPML_Language_Status::VISIBLE : FB_WPML_Language_Status::HIDDEN;
 			}
 
@@ -166,7 +170,7 @@ class WC_Facebook_WPML_Injector {
 								<input
 									class="button button-primary"
 									name="save"
-									value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
+									value="<?php esc_attr_e( 'Save', 'facebook-for-woocommerce' ); ?>"
 									type="submit"
 								/>
 							</p>
