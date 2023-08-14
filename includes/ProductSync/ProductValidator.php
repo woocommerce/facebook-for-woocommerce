@@ -78,6 +78,13 @@ class ProductValidator {
 	protected $fb_product_parent;
 
 	/**
+	 * The product object to validate.
+	 *
+	 * @var WC_Facebook_Product
+	 */
+	protected $facebook_product;
+
+	/**
 	 * ProductValidator constructor.
 	 *
 	 * @param WC_Facebookcommerce_Integration $integration The FB integration instance.

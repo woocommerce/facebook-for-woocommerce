@@ -27,6 +27,26 @@ class Enhanced_Catalog_Attribute_Fields {
 	const PAGE_TYPE_ADD_CATEGORY  = 'add_category';
 	const PAGE_TYPE_EDIT_PRODUCT  = 'edit_product';
 
+	/**
+	 * @var string Facebook page type.
+	 */
+	private $page_type;
+
+	/**
+	 * @var \WP_Term
+	 */
+	private $term;
+
+	/**
+	 * @var \WC_Product
+	 */
+	private $product;
+
+	/**
+	 * @var \WooCommerce\Facebook\Products\FBCategories
+	 */
+	private $category_handler;
+
 	public function __construct( $page_type, \WP_Term $term = null, \WC_Product $product = null ) {
 		$this->page_type        = $page_type;
 		$this->term             = $term;
