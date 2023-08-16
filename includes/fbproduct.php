@@ -51,7 +51,7 @@ class WC_Facebook_Product {
 	/**
 	 * @var int WC_Product ID.
 	 */
-	private $id;
+	public $id;
 
 	/**
 	 * @var WC_Product
