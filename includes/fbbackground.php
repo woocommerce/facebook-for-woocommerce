@@ -28,6 +28,24 @@ class WC_Facebookcommerce_Background_Process extends WP_Background_Process {
 		}
 
 		/**
+		 * __get method for backward compatibility.
+		 *
+		 * @param string $key property name
+		 * @return mixed
+		 * @since x.x.x
+		 */
+		public function __get( $key ) {
+			// Add warning for private properties.
+			if ( 'commerce' === $key ) {
+				/* translators: %s property name. */
+				_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), 'x.x.x' );
+				return $this->$key;
+			}
+
+			return null;
+		}
+
+		/**
 		 * @var string
 		 */
 		protected $action = 'fb_commerce_background_process';

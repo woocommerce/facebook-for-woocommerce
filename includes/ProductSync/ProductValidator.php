@@ -108,6 +108,24 @@ class ProductValidator {
 	}
 
 	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since x.x.x
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( 'facebook_product' === $key ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), 'x.x.x' );
+			return $this->$key;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Validate whether the product should be synced to Facebook.
 	 *
 	 * @throws ProductExcludedException If product should not be synced.
