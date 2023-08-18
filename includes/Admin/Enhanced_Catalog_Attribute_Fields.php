@@ -54,6 +54,24 @@ class Enhanced_Catalog_Attribute_Fields {
 		$this->category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
 	}
 
+	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since x.x.x
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( in_array( $key, array( 'page_type', 'term', 'product', 'category_handler' ), true ) ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), 'x.x.x' );
+			return $this->$key;
+		}
+
+		return null;
+	}
+
 	public static function render_hidden_input_can_show_attributes() {
 		?>
 		<input type="hidden" id="<?php echo esc_attr( self::FIELD_CAN_SHOW_ENHANCED_ATTRIBUTES_ID ); ?>"

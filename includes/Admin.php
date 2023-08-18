@@ -111,6 +111,24 @@ class Admin {
 	}
 
 	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since x.x.x
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( 'product_sets' === $key ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is protected and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), 'x.x.x' );
+			return $this->$key;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Change custom taxonomy tip text
 	 *
 	 * @since 2.3.0
