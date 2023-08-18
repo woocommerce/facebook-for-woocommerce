@@ -27,11 +27,49 @@ class Enhanced_Catalog_Attribute_Fields {
 	const PAGE_TYPE_ADD_CATEGORY  = 'add_category';
 	const PAGE_TYPE_EDIT_PRODUCT  = 'edit_product';
 
+	/**
+	 * @var string Facebook page type.
+	 */
+	private $page_type;
+
+	/**
+	 * @var \WP_Term
+	 */
+	private $term;
+
+	/**
+	 * @var \WC_Product
+	 */
+	private $product;
+
+	/**
+	 * @var \WooCommerce\Facebook\Products\FBCategories
+	 */
+	private $category_handler;
+
 	public function __construct( $page_type, \WP_Term $term = null, \WC_Product $product = null ) {
 		$this->page_type        = $page_type;
 		$this->term             = $term;
 		$this->product          = $product;
 		$this->category_handler = facebook_for_woocommerce()->get_facebook_category_handler();
+	}
+
+	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since 3.0.32
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( in_array( $key, array( 'page_type', 'term', 'product', 'category_handler' ), true ) ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), '3.0.32' );
+			return $this->$key;
+		}
+
+		return null;
 	}
 
 	public static function render_hidden_input_can_show_attributes() {

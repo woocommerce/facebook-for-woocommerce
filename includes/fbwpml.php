@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
  *
@@ -7,6 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @package FacebookCommerce
+ *
+ * phpcs:disable Squiz.Commenting.ClassComment.Missing
+ * phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+ * phpcs:disable Squiz.Commenting.VariableComment.Missing
+ * phpcs:disable WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -37,35 +41,67 @@ class WC_Facebook_WPML_Injector {
 		}
 	}
 
+	/**
+	 * Whether a product should be hidden from the Facebook catalog.
+	 *
+	 * @since 1.9.10
+	 *
+	 * @param int $product_id The product ID.
+	 *
+	 * @return bool
+	 */
+	public static function should_hide( $product_id ) {
+		/**
+		 * Apply WPML filters to the product ID.
+		 *
+		 * The wpml_post_language_details filter is applied to obtain the language data for the product.
+		 *
+		 * Possible values for $product_lang after the filter is applied:
+		 *
+		 * 1. null - The WPML filter wasn't applied.
+		 * 2. array - WPML returned the language data from wpml_get_language_information().
+		 * 3. WP_Error - WPML didn't recognize the post ID.
+		 */
+		$product_lang = apply_filters( 'wpml_post_language_details', null, $product_id );
 
-	public static function should_hide( $wp_id ) {
-		$product_lang = apply_filters( 'wpml_post_language_details', null, $wp_id );
-		$settings     = self::$settings;
-		if ( $product_lang && isset( $product_lang['language_code'] ) ) {
-			$product_lang = $product_lang['language_code'];
+		if ( ! is_array( $product_lang ) ) {
+			/**
+			 * Whether to hide the product from Facebook.
+			 *
+			 * @since 3.0.32
+			 *
+			 * @param bool  $should_hide  Whether to hide the product from Facebook.
+			 * @param int   $product_id   The product ID.
+			 * @param mixed $product_lang The result of applying the WPML filters.
+			 */
+			return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', true, $product_id, $product_lang );
 		}
 
-		// Option doesn't exist : Backwards Compatibility
-		if ( ! $settings ) {
-			return ( $product_lang && self::$default_lang !== $product_lang );
+		// Pull out the language code from the language details.
+		$language_code = $product_lang['language_code'] ?? '';
+
+		// Option doesn't exist: Backwards Compatibility
+		if ( ! self::$settings ) {
+			return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', self::$default_lang !== $language_code, $product_id, $product_lang );
 		}
-		// Hide products from non-active languages.
-		if ( ! isset( $settings[ $product_lang ] ) ) {
-			return true;
-		}
-		return $settings[ $product_lang ] !== FB_WPML_Language_Status::VISIBLE;
+
+		// Hide products from non-active languages, of if the language status isn't visible.
+		$should_hide = ! isset( self::$settings[ $language_code ] ) || FB_WPML_Language_Status::VISIBLE !== self::$settings[ $language_code ];
+
+		return (bool) apply_filters( 'wc_facebook_wpml_should_hide_product', $should_hide, $product_id, $product_lang );
 	}
 
 	public function wpml_ajax_support( $call, $REQUEST ) {
+		/** @var SitePress $sitepress */
 		global $sitepress;
 		if ( isset( $REQUEST['icl_ajx_action'] ) ) {
 			$call = $REQUEST['icl_ajx_action'];
 		}
-		if ( $call === 'icl_fb_woo' ) {
+		if ( 'icl_fb_woo' === $call ) {
 			$active_languages = array_keys( $sitepress->get_active_languages() );
 			$settings         = array();
 			foreach ( $active_languages as $lang ) {
-				$settings[ $lang ] = $REQUEST[ $lang ] === 'on' ?
+				$settings[ $lang ] = 'on' === $REQUEST[ $lang ] ?
 				FB_WPML_Language_Status::VISIBLE : FB_WPML_Language_Status::HIDDEN;
 			}
 
@@ -81,7 +117,7 @@ class WC_Facebook_WPML_Injector {
 	 * The section is shown at the bottom of the WPML > Languages settings page.
 	 */
 	public function wpml_support() {
-		/** @var object $sitepress */
+		/** @var SitePress $sitepress */
 		global $sitepress;
 
 		// there is no nonce to check here and the value of $_GET['page] is being compared against a known and safe string
@@ -134,7 +170,7 @@ class WC_Facebook_WPML_Injector {
 								<input
 									class="button button-primary"
 									name="save"
-									value="<?php esc_attr_e( 'Save', 'sitepress' ); ?>"
+									value="<?php esc_attr_e( 'Save', 'facebook-for-woocommerce' ); ?>"
 									type="submit"
 								/>
 							</p>

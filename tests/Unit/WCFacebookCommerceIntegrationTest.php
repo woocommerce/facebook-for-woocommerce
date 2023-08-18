@@ -218,7 +218,12 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 	public function test_load_background_sync_process() {
 		$this->integration->load_background_sync_process();
 
-		$this->assertInstanceOf( WC_Facebookcommerce_Background_Process::class, $this->integration->background_processor );
+        $ref = new \ReflectionClass( $this->integration );
+        $background_processor_prop = $ref->getProperty( 'background_processor' );
+        $background_processor_prop->setAccessible( true );
+        $background_processor = $background_processor_prop->getValue( $this->integration );
+
+        $this->assertInstanceOf(WC_Facebookcommerce_Background_Process::class, $background_processor);
 		$this->assertEquals(
 			10,
 			has_action(

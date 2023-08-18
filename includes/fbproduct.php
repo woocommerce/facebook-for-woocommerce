@@ -48,6 +48,46 @@ class WC_Facebook_Product {
 		'variation' => 1,
 	);
 
+	/**
+	 * @var int WC_Product ID.
+	 */
+	public $id;
+
+	/**
+	 * @var WC_Product
+	 */
+	public $woo_product;
+
+	/**
+	 * @var string Facebook Product Description.
+	 */
+	private $fb_description;
+
+	/**
+	 * @var array Gallery URLs.
+	 */
+	private $gallery_urls;
+
+	/**
+	 * @var bool Use parent image for variable products.
+	 */
+	private $fb_use_parent_image;
+
+	/**
+	 * @var string Product Description.
+	 */
+	private $main_description;
+
+	/**
+	 * @var bool  Sync short description.
+	 */
+	private $sync_short_description;
+
+	/**
+	 * @var bool Product visibility on Facebook.
+	 */
+	public $fb_visibility;
+
 	public function __construct( $wpid, $parent_product = null ) {
 
 		if ( $wpid instanceof WC_Product ) {
@@ -78,6 +118,24 @@ class WC_Facebook_Product {
 			$this->fb_use_parent_image = $parent_product->get_use_parent_image();
 			$this->main_description    = $parent_product->get_fb_description();
 		}
+	}
+
+	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since 3.0.32
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( in_array( $key, array( 'fb_description', 'gallery_urls', 'fb_use_parent_image', 'main_description', 'sync_short_description' ), true ) ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), '3.0.32' );
+			return $this->$key;
+		}
+
+		return null;
 	}
 
 	public function exists() {

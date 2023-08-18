@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.3
-Stable tag: 3.0.31
+Stable tag: 3.0.32
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,13 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.32 - 2023-08-18 =
+* Fix - Changes property access of product id from private to public.
+* Fix - Eliminates dynamic property creation deprecation warnings.
+* Fix - Update WPML compatibility to prevent fatal errors on PHP 8+.
+* Tweak - Bump Marketing API version to v17.0.
+* Tweak - Displays warnings on accessing private/protected properties incorrectly.
 
 = 3.0.31 - 2023-08-09 =
 * Dev - Filters Business Manager ID.

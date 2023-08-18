@@ -181,6 +181,15 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var WC_Facebookcommerce */
 	private $facebook_for_woocommerce;
 
+	/** @var WC_Facebookcommerce_EventsTracker instance. */
+	private $events_tracker;
+
+	/** @var WC_Facebookcommerce_MessengerChat instance. */
+	private $messenger_chat;
+
+	/** @var WC_Facebookcommerce_Background_Process instance. */
+	private $background_processor;
+
 	/**
 	 * Init and hook in the integration.
 	 *
@@ -374,6 +383,24 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		// Product Set hooks.
 		add_action( 'fb_wc_product_set_sync', [ $this, 'create_or_update_product_set_item' ], 99, 2 );
 		add_action( 'fb_wc_product_set_delete', [ $this, 'delete_product_set_item' ], 99 );
+	}
+
+	/**
+	 * __get method for backward compatibility.
+	 *
+	 * @param string $key property name
+	 * @return mixed
+	 * @since 3.0.32
+	 */
+	public function __get( $key ) {
+		// Add warning for private properties.
+		if ( in_array( $key, array( 'events_tracker', 'messenger_chat', 'background_processor' ), true ) ) {
+			/* translators: %s property name. */
+			_doing_it_wrong( __FUNCTION__, sprintf( esc_html__( 'The %s property is private and should not be accessed outside its class.', 'facebook-for-woocommerce' ), esc_html( $key ) ), '3.0.32' );
+			return $this->$key;
+		}
+
+		return null;
 	}
 
 	/**
