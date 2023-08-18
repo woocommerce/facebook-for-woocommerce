@@ -68,7 +68,7 @@ class WC_Facebook_WPML_Injector {
 			/**
 			 * Whether to hide the product from Facebook.
 			 *
-			 * @since x.x.x
+			 * @since 3.0.32
 			 *
 			 * @param bool  $should_hide  Whether to hide the product from Facebook.
 			 * @param int   $product_id   The product ID.
