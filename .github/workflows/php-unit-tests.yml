@@ -55,9 +55,9 @@ jobs:
       #   if: matrix.php >= 8
       #   run: composer require phpunit/phpunit "^8" --dev --update-with-all-dependencies
 
-      - name: PHP8.1+, PHPUnit10 with WordPress v5.9+
-        if: matrix.php >= 8.1
-        run: composer require phpunit/phpunit "^10" --dev --update-with-all-dependencies
+      # - name: PHP8.1+, PHPUnit10 with WordPress v5.9+
+      #   if: matrix.php >= 8.1
+      #   run: composer require phpunit/phpunit "^10" --dev --update-with-all-dependencies
 
       - name: Run PHP unit tests
         run: composer test-unit
