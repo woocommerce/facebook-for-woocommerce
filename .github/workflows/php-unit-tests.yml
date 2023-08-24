@@ -32,9 +32,6 @@ jobs:
       matrix:
         php: [7.4, 8.0, 8.1, 8.2]
         wp-version: [latest]
-        include:
-          - php: 7.4
-            wp-version: 5.9
 
     steps:
       - name: Checkout repository
