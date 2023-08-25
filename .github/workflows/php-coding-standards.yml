@@ -28,6 +28,7 @@ jobs:
       - name: Prepare PHP
         uses: woocommerce/grow/prepare-php@actions-v1
         with:
+          php-version: 8.0
           tools: cs2pr
 
       - name: Log PHPCS information
