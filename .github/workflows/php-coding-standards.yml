@@ -28,6 +28,7 @@ jobs:
       - name: Prepare PHP
         uses: woocommerce/grow/prepare-php@actions-v1
         with:
+        # TODO: Update to PHP8.2 once WPCS (3.0) and woocommerce-sniffs (> 1.3.0) are updated to latest versions.
           php-version: 8.0
           tools: cs2pr
 
