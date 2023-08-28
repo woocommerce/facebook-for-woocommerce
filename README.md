@@ -36,3 +36,9 @@ By default plugin omits headers in the requests to make the logs more readable. 
 
 ### Releasing
 Refer to the [wiki for details of how to build and release the plugin](https://github.com/woocommerce/facebook-for-woocommerce/wiki/Build-&-Release).
+
+### PHPCS Linting and PHP 8.1+
+
+We currently do not support PHPCS on PHP 8.1+ versions. Please run PHPCS checks on PHP 8.0 or lower versions.
+
+Alternately, you can run PHPCS checks on PHP8.1+ versions by appending `?? ''` code within `trim()` at Line 280 of file /vendor/wp-coding-standards/wpcs/WordPress/Sniffs/NamingConventions/PrefixAllGlobalsSniff.php and Line 194 of file /vendor/wp-coding-standards/wpcs/WordPress/Sniffs/WP/I18nSniff.php
