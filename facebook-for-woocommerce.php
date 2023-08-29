@@ -17,7 +17,6 @@
  * Tested up to: 6.3
  * WC requires at least: 5.4
  * WC tested up to: 8.0
- * Requires PHP: 7.2
  *
  * @package FacebookCommerce
  */
@@ -48,7 +47,7 @@ class WC_Facebook_Loader {
 	const PLUGIN_VERSION = '3.0.32'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
-	const MINIMUM_PHP_VERSION = '7.2.0';
+	const MINIMUM_PHP_VERSION = '7.4.0';
 
 	// Minimum WordPress version required by this plugin.
 	const MINIMUM_WP_VERSION = '4.4';

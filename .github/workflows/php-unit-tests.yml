@@ -30,11 +30,8 @@ jobs:
       WP_TESTS_DIR: "/tmp/wordpress/tests/phpunit"
     strategy:
       matrix:
-        php: [7.4]
-        wp-version: [5.8, 5.9, latest]
-        include:
-          - php: 8.0
-            wp-version: latest
+        php: [7.4, 8.0, 8.1, 8.2]
+        wp-version: [latest]
 
     steps:
       - name: Checkout repository
@@ -50,10 +47,6 @@ jobs:
 
       - name: Install WP tests
         run: ./bin/install-wp-tests.sh wordpress_test root root localhost ${{ matrix.wp-version }}
-
-      - name: PHP8, PHPUnit9 with WordPress v5.9+
-        if: matrix.php >= 8
-        run: composer require phpunit/phpunit "^8" --dev --update-with-all-dependencies
 
       - name: Run PHP unit tests
         run: composer test-unit
