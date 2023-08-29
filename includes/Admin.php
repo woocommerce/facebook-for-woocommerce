@@ -459,7 +459,7 @@ class Admin {
 		}
 
 		$product = wc_get_product( $post );
-		if ( $product && Products::product_should_be_synced( $product ) ) {
+		if ( $product && Products::is_sync_enabled_for_product( $product ) ) {
 			if ( Products::is_product_visible( $product ) ) {
 				esc_html_e( 'Sync and show', 'facebook-for-woocommerce' );
 			} else {
