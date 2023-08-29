@@ -39,6 +39,4 @@ Refer to the [wiki for details of how to build and release the plugin](https://g
 
 ### PHPCS Linting and PHP 8.1+
 
-We currently do not support PHPCS on PHP 8.1+ versions. Please run PHPCS checks on PHP 8.0 or lower versions.
-
-Alternately, you can run PHPCS checks on PHP8.1+ versions by appending `?? ''` code within `trim()` at Line 280 of file /vendor/wp-coding-standards/wpcs/WordPress/Sniffs/NamingConventions/PrefixAllGlobalsSniff.php and Line 194 of file /vendor/wp-coding-standards/wpcs/WordPress/Sniffs/WP/I18nSniff.php
+We currently do not support PHPCS on PHP 8.1+ versions. Please run PHPCS checks on PHP 8.0 or lower versions. Refer [#2624 PR](https://github.com/woocommerce/facebook-for-woocommerce/pull/2624/) for additional context.
