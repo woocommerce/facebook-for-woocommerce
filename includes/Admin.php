@@ -458,8 +458,20 @@ class Admin {
 			return;
 		}
 
-		$product = wc_get_product( $post );
-		if ( $product && Products::product_should_be_synced( $product ) ) {
+		$product        = wc_get_product( $post );
+		$should_sync    = false;
+		$no_sync_reason = '';
+
+		if ( $product instanceof \WC_Product ) {
+			try {
+				facebook_for_woocommerce()->get_product_sync_validator( $product )->validate();
+				$should_sync = true;
+			} catch ( \Exception $e ) {
+				$no_sync_reason = $e->getMessage();
+			}
+		}
+
+		if ( $should_sync ) {
 			if ( Products::is_product_visible( $product ) ) {
 				esc_html_e( 'Sync and show', 'facebook-for-woocommerce' );
 			} else {
@@ -467,6 +479,9 @@ class Admin {
 			}
 		} else {
 			esc_html_e( 'Do not sync', 'facebook-for-woocommerce' );
+			if ( ! empty( $no_sync_reason ) ) {
+				echo wc_help_tip( $no_sync_reason );
+			}
 		}
 	}
 
