@@ -39,6 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.33 - 2023-09-05 =
+* Dev - Updates PHP unit tests matrix in git workflow and versions of dev dependencies in composer.
+* Fix - Issues with Facebook Sync status display while product filtering in admin.
+* Tweak - WC 8.1 compatibility.
+
 = 3.0.32 - 2023-08-18 =
 * Fix - Changes property access of product id from private to public.
 * Fix - Eliminates dynamic property creation deprecation warnings.
