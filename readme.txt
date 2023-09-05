@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.3
-Stable tag: 3.0.32
+Stable tag: 3.0.33
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.0.33 - 2023-09-05 =
+* Dev - Updates PHP unit tests matrix in git workflow and versions of dev dependencies in composer.
+* Fix - Issues with Facebook Sync status display while product filtering in admin.
+* Tweak - WC 8.1 compatibility.
 
 = 3.0.32 - 2023-08-18 =
 * Fix - Changes property access of product id from private to public.
