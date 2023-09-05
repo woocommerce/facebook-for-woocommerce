@@ -33,9 +33,9 @@ trait Rate_Limited_API {
 	public function set_rate_limit_delay( $rate_limit_id, $delay ) {
 		if ( ! empty( $delay ) ) {
 			$expiration = min( $delay, 24 * HOUR_IN_SECONDS );
-			set_transient( "wc_facebook_rate_limit_${rate_limit_id}", $delay, $expiration );
+			set_transient( "wc_facebook_rate_limit_{$rate_limit_id}", $delay, $expiration );
 		} else {
-			delete_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
+			delete_transient( "wc_facebook_rate_limit_{$rate_limit_id}" );
 		}
 	}
 
@@ -49,7 +49,7 @@ trait Rate_Limited_API {
 	 * @return int
 	 */
 	public function get_rate_limit_delay( $rate_limit_id ) {
-		return (int) get_transient( "wc_facebook_rate_limit_${rate_limit_id}" );
+		return (int) get_transient( "wc_facebook_rate_limit_{$rate_limit_id}" );
 	}
 
 

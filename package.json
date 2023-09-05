@@ -1,6 +1,6 @@
 {
   "name": "facebook-for-woocommerce",
-  "version": "3.0.32",
+  "version": "3.0.33",
   "author": "Facebook",
   "homepage": "https://woocommerce.com/products/facebook/",
   "license": "GPL-2.0",
@@ -26,7 +26,8 @@
     "lint:php": "vendor/bin/phpcs -p -s --colors",
     "lint:php:summary": "vendor/bin/phpcs --colors --report=summary",
     "build:assets": "NODE_ENV=production wp-scripts build",
-    "start": "wp-scripts start"
+    "start": "wp-scripts start",
+    "test:php": "composer test-unit"
   },
   "woorelease": {
     "wp_org_slug": "facebook-for-woocommerce",

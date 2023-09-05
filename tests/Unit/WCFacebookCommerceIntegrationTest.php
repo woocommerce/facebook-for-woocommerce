@@ -479,7 +479,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$this->assertTrue( wp_script_is( 'wc_facebook_infobanner_jsx' ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_infobanner_css' ) );
 		$this->assertTrue( wp_style_is( 'wc_facebook_css' ) );
-		$this->assertRegExp( '/window.facebookAdsToolboxConfig = {/', $output );
+		$this->assertMatchesRegularExpression( '/window.facebookAdsToolboxConfig = {/', $output );
 	}
 
 	/**

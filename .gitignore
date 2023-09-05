@@ -37,5 +37,8 @@ codeception.yml
 php.ini
 wp-config.php
 
+#PHP Unit
+.phpunit.result.cache
+
 # IDE files
 .vscode/*
