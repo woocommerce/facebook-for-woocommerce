@@ -270,6 +270,29 @@ class WC_Facebook_Product {
 	}
 
 
+	public function get_all_video_urls() {
+
+		$video_urls = array();
+
+		$attached_videos = get_attached_media('video', $this->id);
+		if (empty($attached_videos)) {
+			return $video_urls;
+		}
+		foreach ($attached_videos as $video) {
+            $url = $video->guid;
+			array_push(
+				$video_urls,
+				array(
+					'url' => $url,
+				)
+			);
+        }
+
+		return $video_urls;
+
+	}
+
+
 	/**
 	 * Gets the list of additional image URLs for the product from the complete list of image URLs.
 	 *
@@ -583,6 +606,8 @@ class WC_Facebook_Product {
 		}
 		$image_urls = $this->get_all_image_urls();
 
+		$video_urls = $this->get_all_video_urls();
+
 		// Replace WordPress sanitization's ampersand with a real ampersand.
 		$product_url = str_replace(
 			'&amp%3B',
@@ -625,6 +650,9 @@ class WC_Facebook_Product {
 			);
 			$product_data   = $this->add_sale_price( $product_data, true );
 			$gpc_field_name = 'google_product_category';
+			if ( ! empty( $video_urls ) ) {
+				$product_data['video'] = $video_urls;
+			}
 		} else {
 			$product_data = array(
 				'name'                  => WC_Facebookcommerce_Utils::clean_string( $this->get_title() ),
@@ -651,6 +679,11 @@ class WC_Facebook_Product {
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
+
+			if ( self::PRODUCT_PREP_TYPE_NORMAL !== $type_to_prepare_for && ! empty( $video_urls ) ) {
+				$product_data['video'] = $video_urls;
+			}
+
 			$product_data   = $this->add_sale_price( $product_data );
 			$gpc_field_name = 'category';
 		}//end if

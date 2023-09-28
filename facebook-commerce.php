@@ -16,6 +16,7 @@ use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
+use WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -1175,7 +1176,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $fb_product_item_id ) {
 			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
-			$this->update_product_item( $woo_product, $fb_product_item_id );
+			$this->update_product_item_batch_api( $woo_product, $fb_product_item_id );
 			return $fb_product_item_id;
 		} else {
 			// Check if this is a new product item for an existing product group
@@ -1463,6 +1464,51 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		return $final_attributes;
+	}
+
+	/**
+	 * Update existing product using batch API.
+	 *
+	 * @param WC_Facebook_Product $woo_product
+	 * @param string              $fb_product_item_id
+	 * @return void
+	 */
+	public function update_product_item_batch_api( WC_Facebook_Product $woo_product, string $fb_product_item_id ): void {
+		$product = $woo_product-> prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+		$product['item_group_id'] = $product['retailer_id'];
+		$product_data = WC_Facebookcommerce_Utils::normalize_product_data_for_items_batch( $product );
+
+		// extract the retailer_id
+		$retailer_id = $product_data['retailer_id'];
+
+		// NB: Changing this to get items_batch to work
+		// retailer_id cannot be included in the data object
+		unset( $product_data['retailer_id'] );
+		$product_data['id'] = $retailer_id;
+
+		$requests = array([
+			'method' => Sync::ACTION_UPDATE,
+			'data'   => $product_data,
+		]);
+
+		try {
+			$facebook_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
+			$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+			if ( $response->handles ) {
+				$this->display_success_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
+				);
+			} else {
+				$this->display_error_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to update a product item: %s', $e->getMessage() );
+			WC_Facebookcommerce_Utils::log( $message );
+		}
 	}
 
 	/**
