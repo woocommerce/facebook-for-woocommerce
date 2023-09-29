@@ -30,67 +30,13 @@ class NewBuyers extends CampaignHandler {
 	/** @var string holding the FB Pixel ID */
 	private $facebook_pixel_id;
 
-	/** @var string the default message shown as Ad Message */
-	private $default_creative_message;
-
 	public function __construct() {
-		$this->default_creative_message = __( 'Check out these great products!', 'facebook-for-woocommerce' );
 		parent::__construct( 'New Buyers' );
 	}
 
-	protected function first_time_setup() {
-
-		$this->facebook_pixel_id = $this->integration->get_facebook_pixel_id();
-
-		try {
-
-			$this->campaign = $this->setup_campaign();
-
-		} catch ( ApiException $e ) {
-
-			if ( $e->getCode() === 2 ) {
-
-				throw new AscNotSupportedException();
-
-			} else {
-
-				$message = sprintf( 'An exception happened trying to setup the New Buyers campaign for the first time. ' . $e->getMessage() );
-				\WC_Facebookcommerce_Utils::log( $message );
-				throw new PluginException( $message );
-
-			}
-		}
-
-		try {
-
-			$this->adset      = $this->setup_adset( $this->facebook_pixel_id, $this->campaign['id'], $this->get_ad_daily_budget() * 100, $this->get_ad_targeting() );
-			$this->ad         = $this->setup_ad( $this->adset['id'], $this->ad_name, $this->facebook_page_id, $this->default_creative_message, $this->default_product_set, $this->store_url );
-			$this->adcreative = $this->fetch_adcreative( $this->ad['adcreatives']['data'][0]['id'] );
-
-		} catch ( ApiException $e ) {
-
-			$message = sprintf( 'An exception happened trying to setup the New Buyers campaign objects for the first time. ' . $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
-			if ( str_contains( $e->getMessage(), 'non-discrimination' ) ) {
-				throw new NonDiscriminationNotAcceptedException();
-			} else {
-				throw new PluginException( $message );
-			}
-		}
-	}
-
-	public function get_tooltips(): array {
-
-		return array(
-
-			'p1' => __( 'Activating or pausing your campaign', 'facebook-for-woocommerce' ),
-			'p2' => __( 'Text message shown in your ad', 'facebook-for-woocommerce' ),
-			'p3' => __( "Products shown in your ad's carousel", 'facebook-for-woocommerce' ),
-			'p4' => __( 'Countries where your campaign will be shown', 'facebook-for-woocommerce' ),
-			'p5' => __( 'Your daily budget for this campaign', 'facebook-for-woocommerce' ),
-
-		);
-
+	public function get_allowed_min_daily_budget(){
+		// they would need to spend 1K/month to get good result from ASC.
+		return 34 * $this->conversion_rate;
 	}
 
 	protected function get_id() {
@@ -108,8 +54,24 @@ class NewBuyers extends CampaignHandler {
 			'smart_promotion_type'  => 'AUTOMATED_SHOPPING_ADS',
 			'status'                => 'PAUSED',
 		);
+		try {
+		
+			return $this->create_campaign( $properties );
+		
+		} catch ( ApiException $e ) {
 
-		return $this->create_campaign( $properties );
+			if ( $e->getCode() === 2 ) {
+
+				throw new AscNotSupportedException();
+
+			} else {
+
+				$message = sprintf( 'An error happened trying to setup the New Buyers campaign. ' . $e->getMessage() );
+				\WC_Facebookcommerce_Utils::log( $message );
+				throw new PluginException( $message );
+
+			}
+		}
 	}
 
 	private function setup_adset( $installed_pixel, $campaign_id, $daily_budget, $selected_countries ) {
@@ -143,10 +105,11 @@ class NewBuyers extends CampaignHandler {
 		);
 	}
 
-	private function get_creative_creation_params( $ad_creative_name, $page_id, $store_url, $ad_message, $product_set_id ) {
+	protected function get_adcreative_creation_params( $ad_creative_name, $page_id, $store_url, $ad_message, $product_set_id ) {
 
-		return array(
+		$properties = array(
 			'name'              => $ad_creative_name,
+			'product_set_id'    => $product_set_id,
 			'object_story_spec' => array(
 				'page_id'       => $page_id,
 				'template_data' => array(
@@ -156,9 +119,13 @@ class NewBuyers extends CampaignHandler {
 					'name'        => '{{product.name | titleize}}',
 				),
 			),
-			'product_set_id'    => $product_set_id,
 		);
 
+		if ($this->instagram_actor_id) {
+			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;			
+		}
+		
+		return $properties;
 	}
 
 	private function get_ad_creation_params( $ad_name, $adset_id, $creative ) {
@@ -173,44 +140,89 @@ class NewBuyers extends CampaignHandler {
 
 	private function setup_ad( $adset_id, $ad_name, $page_id, $ad_description_message, $product_set_id, $store_url ) {
 
-		$creative = $this->get_creative_creation_params( $this->ad_creative_name, $page_id, $store_url, $ad_description_message, $product_set_id );
+		$creative = $this->get_adcreative_creation_params( $this->ad_creative_name, $page_id, $store_url, $ad_description_message, $product_set_id );
 		return $this->create_ad( $this->get_ad_creation_params( $ad_name, $adset_id, $creative ) );
 
 	}
 
-	protected function get_ad_message() {
+	public function create_asc_campaign( $props ) {
 
-		if ( $this->load_default ) {
-			return $this->default_creative_message;
+		$status = $props['state'] == 'true' ? 1 : 0;
+		$daily_budget = $props['daily_budget'];
+		$ad_message = $props['ad_message'];
+		$countryList = $props['country'];
+
+		$this->facebook_pixel_id = $this->integration->get_facebook_pixel_id();
+
+		try {
+
+			$this->campaign = $this->setup_campaign();
+
+		} catch ( ApiException $e ) {
+
+			if ( $e->getCode() === 2 ) {
+
+				throw new AscNotSupportedException();
+
+			} else {
+
+				$message = sprintf( 'An exception happened trying to setup the New Buyers campaign for the first time. ' . $e->getMessage() );
+				\WC_Facebookcommerce_Utils::log( $message );
+				throw new PluginException( $message );
+
+			}
 		}
-		return $this->adcreative['body'];
 
+		try {
+
+			$this->adset      = $this->setup_adset( $this->facebook_pixel_id, $this->campaign['id'], $daily_budget * 100, $countryList);
+			$this->ad         = $this->setup_ad( $this->adset['id'], $this->ad_name, $this->facebook_page_id, $ad_message, $this->default_product_set, $this->store_url );
+			$this->adcreative = $this->fetch_adcreative( $this->ad['adcreatives']['data'][0]['id'] );
+
+		} catch ( ApiException $e ) {
+
+			$message = sprintf( 'An exception happened trying to setup the New Buyers campaign objects for the first time. ' . $e->getMessage() );
+			\WC_Facebookcommerce_Utils::log( $message );
+			if ( str_contains( $e->getMessage(), 'non-discrimination' ) ) {
+				throw new NonDiscriminationNotAcceptedException();
+			} else {
+				throw new PluginException( $message );
+			}
+		}
+
+		$this->update_stored_data();
+
+		if ($status) {
+			$this->set_ad_status($status);
+		}
+
+		$this->get_insights();
 	}
 
 	public function update_asc_campaign( $data ) {
 
-		if ( ! $data ) {
-			return true;
-		}
+		// if ( ! $data ) {
+		// 	return true;
+		// }
 
-		$msg = array_key_exists( 'p2', $data ) ? $data['p2'] : '';
+		// $msg = array_key_exists( 'p2', $data ) ? $data['p2'] : '';
 
-		if ( $msg ) {
-			$this->apply_creative_changes( $msg );
-		}
+		// if ( $msg ) {
+		// 	$this->apply_creative_changes( $msg );
+		// }
 
-		$countries    = array_key_exists( 'p4', $data ) ? explode( ',', $data['p4'] ) : [];
-		$daily_budget = array_key_exists( 'p5', $data ) ? $data['p5'] : '';
+		// $countries    = array_key_exists( 'p4', $data ) ? explode( ',', $data['p4'] ) : [];
+		// $daily_budget = array_key_exists( 'p5', $data ) ? $data['p5'] : '';
 
-		if ( $countries || $daily_budget ) {
-			$this->apply_adset_changes( $countries, $daily_budget );
-		}
+		// if ( $countries || $daily_budget ) {
+		// 	$this->apply_adset_changes( $countries, $daily_budget );
+		// }
 
-		if ( array_key_exists( 'p1', $data ) ) {
-			$this->set_ad_status( $data['p1'] );
-		}
+		// if ( array_key_exists( 'p1', $data ) ) {
+		// 	$this->set_ad_status( $data['p1'] );
+		// }
 
-		return true;
+		// return true;
 	}
 
 	private function apply_creative_changes( $message ) {
@@ -221,7 +233,7 @@ class NewBuyers extends CampaignHandler {
 
 		if ( $message ) {
 
-			$creative_props = $this->get_creative_creation_params( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $ad_message, $this->default_product_set );
+			$creative_props = $this->get_adcreative_creation_params( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $ad_message, $this->default_product_set );
 
 			$new_ad = '';
 			try {
@@ -277,28 +289,12 @@ class NewBuyers extends CampaignHandler {
 
 	}
 
-	public function get_properties(): array {
-		return array(
-			'p1' => __( 'Off/On', 'facebook-for-woocommerce' ),
-			'p2' => __( 'Ad Message', 'facebook-for-woocommerce' ),
-			'p3' => '',
-			'p4' => __( 'Country', 'facebook-for-woocommerce' ),
-			'p5' => __( 'Daily Budget', 'facebook-for-woocommerce' ),
-		);
-	}
-
-	public function get_info(): array {
-		return array(
-			'p1' => $this->get_ad_status(),
-			'p2' => $this->get_ad_message(),
-			'p3' => '',
-			'p4' => $this->get_ad_targeting(),
-			'p5' => $this->get_ad_daily_budget(),
-		);
-	}
+    public function get_selected_countries() {
+		return $this->get_ad_targeting();
+    }
 
 	private function get_ad_targeting() {
-		if ( $this->load_default ) {
+		if ( ! $this->is_running() ) {
 			return [ 'US' ];
 		}
 		return $this->adset['targeting']['geo_locations']['countries'];
@@ -306,15 +302,5 @@ class NewBuyers extends CampaignHandler {
 
 	public function get_campaign_type(): string {
 		return self::ID;
-	}
-
-	public function get_choices_for( string $property_name ): array {
-
-		switch ( $property_name ) {
-			case 'p4':
-				return $this->get_countries();
-			default:
-				throw new PluginException( 'Invalid property name: ' . $property_name );
-		}
 	}
 }

@@ -11,13 +11,14 @@
 
 namespace WooCommerce\Facebook\AdvertiseASC;
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as PluginException;
 use WooCommerce\Facebook\AdvertiseASC\InvalidPaymentInformationException;
 
-abstract class CampaignHandler {
+abstract class CampaignHandler
+{
 
     const STATUS_ACTIVE     = 'ACTIVE';
     const STATUS_PAUSED     = 'PAUSED';
@@ -36,9 +37,9 @@ abstract class CampaignHandler {
     protected $store_name;
     protected $adcreative;
     protected $integration;
-    protected $load_default;
     protected $ad_account_id;
     protected $campaign_name;
+    protected $conversion_rate;
     protected $min_daily_budget;
     protected $ad_creative_name;
     protected $facebook_page_id;
@@ -48,7 +49,8 @@ abstract class CampaignHandler {
 
     private $insights;
 
-    protected function __construct( $asc_campaign_type ) {
+    protected function __construct($asc_campaign_type)
+    {
 
         $this->bid_amount         = '3000';
         $facebook_for_woocommerce = facebook_for_woocommerce();
@@ -59,541 +61,575 @@ abstract class CampaignHandler {
             $this->store_name         = \WC_Facebookcommerce_Utils::get_store_name();
             $this->store_url          = \WC_Facebookcommerce_Utils::get_store_url();
 
-            if ( ! $this->is_fresh_account() && $this->is_first_run()) {
-                throw new LWIeUserException();
-            }
-
-            if ( ! $this->is_payment_method_valid() ) {
+            if (!$this->is_payment_method_valid()) {
                 throw new InvalidPaymentInformationException();
             }
 
             $this->product_catalog_id = $this->integration->get_product_catalog_id();
             $this->facebook_page_id   = $this->integration->get_facebook_page_id();
-            $this->default_product_set= $this->get_default_product_set_id( $this->product_catalog_id );
-            $this->campaign_name      = $this->store_name.' '.$asc_campaign_type.' Campaign';
-            $this->adset_name         = $this->store_name.' '.$asc_campaign_type.' Ad Set';
-            $this->ad_name            = $this->store_name.' '.$asc_campaign_type.' Ad Set Ad';
-            $this->ad_creative_name   = $this->store_name.' '.$asc_campaign_type.' Creative';
-            $this->load_default       = true;
-            $this->instagram_actor_id = $this->get_instagram_actor_id( $this->facebook_page_id );
-            $this->currency           = $this->api->get_currency( $this->ad_account_id )->get_currency();
+            $this->default_product_set = $this->get_default_product_set_id($this->product_catalog_id);
+            $this->campaign_name      = $this->store_name . ' ' . $asc_campaign_type . ' Campaign [WOOCOMMERCE-ASC]';
+            $this->adset_name         = $this->store_name . ' ' . $asc_campaign_type . ' Ad Set [WOOCOMMERCE-ASC]';
+            $this->ad_name            = $this->store_name . ' ' . $asc_campaign_type . ' Ad Set Ad [WOOCOMMERCE-ASC]';
+            $this->ad_creative_name   = $this->store_name . ' ' . $asc_campaign_type . ' Creative [WOOCOMMERCE-ASC]';
+            $this->currency           = $this->api->get_currency($this->ad_account_id)->get_currency();
             $this->min_daily_budget   = $this->get_min_daily_budget();
-        } catch( \ApiException $e ) {
 
-			$message = sprintf( 'There was an error trying to create the campaign. message: %s', $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
+            if ($this->is_running()) {
+                $this->get_insights();
+            }
+        } catch (ApiException $e) {
 
-            throw new PluginException( $message );
+            $message = sprintf('There was an error trying to create the campaign. message: %s', $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
+
+            throw new PluginException($message);
         }
-        
-        $this->initialize();
 
-        $this->insights           = $this->api->get_insights( $this->campaign['id'] )->get_result();
+        try{
+            
+            $this->instagram_actor_id = $this->get_instagram_actor_id($this->facebook_page_id);
+        } catch (PluginException $e) { 
+            
+            $message = sprintf('Could not retrieve the instagram actor id. message: %s', $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
 
+        }
     }
 
-    abstract public function get_info(): array;
-    abstract public function get_properties(): array;
-    abstract public function get_choices_for( string $property_name ): array;
     abstract public function get_campaign_type(): string;
-    abstract public function get_tooltips(): array;
-    abstract protected function first_time_setup();
+    abstract public function get_allowed_min_daily_budget();
     abstract protected function get_id();
+    abstract protected function get_adcreative_creation_params( $name, $page_id, $link, $message, $product_set_id );
 
-    private function get_default_product_set_id( $catalog_id ) {
+    public function get_ad_daily_budget()
+    {
+
+        if ( ! $this->is_running() ) {
+
+            $min = $this->get_allowed_min_daily_budget();
+            
+            return strval($min * 1.2);
+        }
+
+        return $this->adset['daily_budget'] / 100;
+    }
+
+	public function get_ad_message(): string {
+
+		if ( ! $this->is_running() ) {
+
+			return '';
+
+		}
+
+		return $this->adcreative['body'];
+
+	}
+
+    private function get_default_product_set_id($catalog_id)
+    {
         try {
-            $result = $this->api->get_product_sets( $catalog_id );
+
+            $result = $this->api->get_product_sets($catalog_id);
             $product_sets = $result->get_data();
 
-            foreach ( $product_sets as $product_set ) {
-                if ( $product_set['name'] == self::ALL_PRODUCTS ) {
+            foreach ($product_sets as $product_set) {
+                if ($product_set['name'] == self::ALL_PRODUCTS) {
                     return $product_set['id'];
                 }
             }
             throw new PluginException("No product sets found on this catalog");
-        } catch( ApiException $e ) {
-			$message = sprintf( 'There was an error trying to get the Ad Insights. message: %s', $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
+
+        } catch (ApiException $e) {
+
+            $message = sprintf('There was an error trying to get the Ad Insights. message: %s', $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
 
             return null;
         }
     }
 
-    private function initialize() {
+    protected function get_insights(){
+        $this->insights = $this->api->get_insights($this->campaign['id'])->get_result();
+    }
 
+    public function is_running()
+    {
         $info = $this->get_stored_data();
 
-        if ( ( ! $info ) ||
-        ( ! array_key_exists( 'campaign_id', $info ) || ! $info[ 'campaign_id' ] || ! $info[ 'adset_id' ] || ! $info[ 'adcreative_id' ] || ! $info[ 'ad_id' ] ) ||
-        ( $this->ad_account_id != $info[ 'ad_account_id' ] ) ) {
+        if ((!$info) ||
+            (!array_key_exists('campaign_id', $info) || !$info['campaign_id'] || !$info['adset_id'] || !$info['adcreative_id'] || !$info['ad_id']) ||
+            ($this->ad_account_id != $info['ad_account_id'])
+        ) {
 
-            $this->first_time_setup();
-            $this->update_stored_data();
-            $this->load_default = true;
+            return false;
 
         } else {
 
-            $this->load( $info[ 'campaign_id' ], $info[ 'adset_id' ], $info[ 'ad_id' ], $info[ 'adcreative_id' ] );
-            $this->load_default = false;
+            if ( ! $this->adcreative['status']) {
+                $this->load($info['campaign_id'], $info['adset_id'], $info['ad_id'], $info['adcreative_id']);
+            }
+            
+            if (
+                $this->adcreative['status'] == self::STATUS_ARCHIVED ||
+                $this->campaign['status']   == self::STATUS_ARCHIVED ||
+                $this->adset['status']      == self::STATUS_ARCHIVED ||
+                $this->ad['status']         == self::STATUS_ARCHIVED
+            ) {
 
-            if ($this->adcreative[ 'status' ] == self::STATUS_ARCHIVED ||
-                $this->campaign[ 'status' ]   == self::STATUS_ARCHIVED ||
-                $this->adset[ 'status' ]      == self::STATUS_ARCHIVED ||
-                $this->ad[ 'status' ]         == self::STATUS_ARCHIVED) {
+                return false;
+            }
 
-                    $this->first_time_setup();
-                    $this->update_stored_data();
-                    $this->load_default = true;
-                }
+            return true;
         }
-
     }
 
-    /**
-	 * Gets the minimum daily budget for the current Adset
-	 *
-	 * @return array
-	 */
-    public function get_min_allowed_daily_budget() {
+    private function is_first_run()
+    {
 
-        $min = ceil( ( $this->min_daily_budget * 1.2 ) / 1000.0 ) * 10;
-        return $min;
-    }
-
-    private function is_first_run() {
-        
         $data = $this->integration->get_advertise_asc_information();
 
-        if ( ! $data ) {
+        if (!$data) {
             return true;
         }
 
-        if ( ! array_key_exists( $this->get_id(), $data ) ) {
+        if (!array_key_exists($this->get_id(), $data)) {
             return true;
         }
 
         return false;
     }
 
-    private function is_fresh_account() {
+	public function generate_ad_preview( $message, $ad_format ) {
 
-        $result = $this->api->get_with_generic_request( 'act_'.$this->ad_account_id, 'campaigns' );
-        
-        return ! ( $result && $result['data'] && count ( $result['data'] ) > 0 );
+        try {
+			$creative_spec = $this->get_adcreative_creation_params( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $message, $this->default_product_set );
+
+			return $this->api->generate_ad_preview( $this->ad_account_id, $ad_format, $creative_spec )->get_preview();
+		} catch ( ApiException $e ) {
+
+			$message = sprintf( 'There was an error trying to generate the Ad preview with format ' . $ad_format . '. message: %s', $e->getMessage() );
+			\WC_Facebookcommerce_Utils::log( $message );
+			throw new PluginException( $message );
+
+		}
+
+	}
+
+    private function is_fresh_account()
+    {
+
+        $result = $this->api->get_with_generic_request('act_' . $this->ad_account_id, 'campaigns');
+
+        return !($result && $result['data'] && count($result['data']) > 0);
     }
 
-    private function get_min_daily_budget() {
-
-        $result = $this->api->get_with_generic_request( 'act_'.$this->ad_account_id, 'minimum_budgets' );
-        $min_budgets = $result[ "minimum_budgets" ][ "data" ];
-
-        foreach($min_budgets as $min_budget ) {
-            if ( $min_budget[ 'currency' ] == $this->get_currency() ) {
-                return $min_budget[ 'min_daily_budget_high_freq' ];
+    protected function get_min_daily_budget()
+    {
+        $get_daily_budget_for_given_currency = function($data, $currency) {
+            foreach ($data as $min_budget) {
+                if ($min_budget['currency'] == $currency) {
+                    return $min_budget['min_daily_budget_high_freq'];
+                }
             }
-        }
+            return -1;
+        };
 
-        return -1;
+        $result = $this->api->get_with_generic_request('act_' . $this->ad_account_id, 'minimum_budgets');
+        $min_budgets = $result["minimum_budgets"]["data"];
+
+        $usd_min_budget = $get_daily_budget_for_given_currency($min_budgets, "USD");
+        $my_currency_min_budget = $get_daily_budget_for_given_currency($min_budgets, $this->get_currency());
+
+        $this->conversion_rate = $my_currency_min_budget/$usd_min_budget;
+
+        return ceil(($my_currency_min_budget * 1.2) / 1000.0) * 10;
     }
 
-    private function is_payment_method_valid() {
+    private function is_payment_method_valid()
+    {
 
-        $result = $this->api->get_with_generic_request( 'act_'.$this->ad_account_id, 'funding_source_details' );
+        $result = $this->api->get_with_generic_request('act_' . $this->ad_account_id, 'funding_source_details');
 
-        return array_key_exists( 'funding_source_details', $result->response_data );
-
+        return array_key_exists('funding_source_details', $result->response_data);
     }
 
-    private function get_stored_data() {
+    private function get_stored_data()
+    {
 
         $data = $this->integration->get_advertise_asc_information();
 
-        if ( ! $data ) {
+        if (!$data) {
 
             $data = array();
-
         }
-        if ( ! array_key_exists( $this->get_id(), $data ) ) {
+        if (!array_key_exists($this->get_id(), $data)) {
 
-            $data[ $this->get_id() ] = array();
-
+            $data[$this->get_id()] = array();
         }
 
-        return $data[ $this->get_id() ];
+        return $data[$this->get_id()];
     }
 
     /**
-	 * Checks whether the insights are available for the current campaign or not
-	 *
-	 * @return array
-	 */
-    public function are_insights_available() {
+     * Checks whether the insights are available for the current campaign or not
+     *
+     * @return array
+     */
+    public function are_insights_available()
+    {
 
-        return ( bool ) $this->insights;
-
+        return (bool) $this->insights;
     }
 
     /**
-	 * Gets the Spend for the current Campaign
-	 *
-	 * @return array
-	 */
-    public function get_insights_spend() {
+     * Gets the Spend for the current Campaign
+     *
+     * @return array
+     */
+    public function get_insights_spend()
+    {
 
-        return $this->insights[ 'spend' ];
-
+        return $this->insights['spend'];
     }
 
     /**
-	 * Gets the Reach count for the current Campaign
-	 *
-	 * @return array
-	 */
-    public function get_insights_reach() {
+     * Gets the Reach count for the current Campaign
+     *
+     * @return array
+     */
+    public function get_insights_reach()
+    {
 
-        return $this->insights[ 'reach' ];
-
+        return $this->insights['reach'];
     }
 
     /**
-	 * Gets the Events from the Ad Insights structure
-	 *
-	 * @return array
-	 */
-    public function get_insights_events() {
+     * Gets the Events from the Ad Insights structure
+     *
+     * @return array
+     */
+    public function get_insights_events()
+    {
 
-        return $this->insights[ 'actions' ];
-
+        return $this->insights['actions'];
     }
 
     /**
-	 * Gets the Ad Preview for the campaign's Ad, in the given format.
-	 *
-	 * @param string $ad_format Facebook Ad Format.
-	 * @return API\Ad\Preview\Response
-	 * @throws ApiException
-	 */
-    public function get_ad_preview( $ad_format ) {
+     * Gets the Ad Preview for the campaign's Ad, in the given format.
+     *
+     * @param string $ad_format Facebook Ad Format.
+     * @return API\Ad\Preview\Response
+     * @throws ApiException
+     */
+    public function get_ad_preview($ad_format)
+    {
 
         try {
 
-            return $this->api->get_ad_previews( $this->ad[ 'id' ], $ad_format )->get_preview();
-
-        } catch ( ApiException $e ) {
-			$message = sprintf( 'There was an error trying to get the Ad preview for Id: ' . $this->ad[ 'id' ] . ' with format ' . $ad_format . '. message: %s', $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
-			throw new PluginException( $message );
-		}
-
+            return $this->api->get_ad_previews($this->ad['id'], $ad_format)->get_preview();
+        } catch (ApiException $e) {
+            $message = sprintf('There was an error trying to get the Ad preview for Id: ' . $this->ad['id'] . ' with format ' . $ad_format . '. message: %s', $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
+            throw new PluginException($message);
+        }
     }
 
-    protected function update_stored_data() {
+    protected function update_stored_data()
+    {
 
         $data = $this->integration->get_advertise_asc_information();
 
-        $data[ $this->get_id() ] = array(
+        $data[$this->get_id()] = array(
             'ad_account_id'     =>  $this->ad_account_id,
-            'campaign_id'       =>  $this->campaign[ 'id' ],
-            'adset_id'          =>  $this->adset[ 'id' ],
-            'ad_id'             =>  $this->ad[ 'id' ],
-            'adcreative_id'     =>  $this->adcreative[ 'id' ]
+            'campaign_id'       =>  $this->campaign['id'],
+            'adset_id'          =>  $this->adset['id'],
+            'ad_id'             =>  $this->ad['id'],
+            'adcreative_id'     =>  $this->adcreative['id']
         );
 
-        $this->integration->update_advertise_asc_information( $data );
+        $this->integration->update_advertise_asc_information($data);
     }
 
-    private function convert_string_to_array( $string, $separator ) {
+    private function convert_string_to_array($string, $separator)
+    {
         return explode($separator, $string);
     }
 
-    private function load( $campaign_id, $adset_id, $ad_id, $adcreative_id ) {
+    private function load($campaign_id, $adset_id, $ad_id, $adcreative_id)
+    {
 
-        $this->adcreative = $this->fetch_adcreative( $adcreative_id );
-        $this->campaign = $this->fetch_campaign( $campaign_id );
-        $this->adset = $this->fetch_adset( $adset_id );
-        $this->ad = $this->fetch_ad( $ad_id );
-
+        $this->adcreative = $this->fetch_adcreative($adcreative_id);
+        $this->campaign = $this->fetch_campaign($campaign_id);
+        $this->adset = $this->fetch_adset($adset_id);
+        $this->ad = $this->fetch_ad($ad_id);
     }
 
-	/**
-	 * Gets the first instagram acount id from the Marketing Api.
-	 *
-	 * @since x.x.x
-	 *
-	 * @return string
-	 * @throws PluginException
-	 */
-	public function get_instagram_actor_id( $page_id ) {
-
-		try {
-			$accounts_data = $this->get_current_user_associated_accounts();
-
-			foreach( $accounts_data as $account_data ) {
-
-				if ( $account_data[ 'id' ] == $page_id ) {
-					$access_token = $account_data[ 'access_token' ];
-
-					$instagram_accounts = $this->get_instagram_accounts( $page_id, $access_token );
-
-					if ( ! $instagram_accounts[ 'data' ] ) {
-
-						$instagram_accounts = $this->get_page_backed_instagram_accounts( $page_id, $access_token );
-
-						if ( ! $instagram_accounts[ 'data' ] ) {
-
-							throw new PluginException( 'There was an error trying to retrieve the instagram actor id.' );
-
-						}
-					}
-
-					return $instagram_accounts[ 'data' ][ 0 ][ 'id' ];
-				}
-
-			}
-
-			throw new PluginException( 'The page with id: \"'.$page_id.'\" is not associated with this user.' );
-		} catch ( ApiException $e ) {
-			$message = sprintf( 'There was an error trying to get the instagram account id for this user. message: %s', $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
-			throw new PluginException( $message );
-		}
-    }
-
-	/**
-	 * Gets the accounts that are associated with 'me' entity.
-	 *
-	 * @since x.x.x
-	 *
-	 * @return array
-	 * @throws ApiException
-	 */
-	private function get_current_user_associated_accounts() {
-
-		$result = $this->api->get_with_generic_request( 'me', 'accounts' );
-		return $result->response_data[ 'accounts' ][ 'data' ];
-
-	}
-
-	/**
-	 * Gets the instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
-	 *
-	 * @since x.x.x
-	 *
-	 * @return array
-	 * @throws ApiException
-	 */
-	private function get_instagram_accounts( $page_id, $page_access_token ) {
-
-		$current_access_token = $this->api->get_access_token();
-
+    /**
+     * Gets the first instagram acount id from the Marketing Api.
+     *
+     * @since x.x.x
+     *
+     * @return string
+     * @throws PluginException
+     */
+    public function get_instagram_actor_id($page_id)
+    {   
         try {
-			$this->api->set_access_token( $page_access_token );
-			$result = $this->api->get_with_generic_request( $page_id, 'instagram_accounts' );
-			return $result->response_data[ 'instagram_accounts' ];
-		}
-		finally {
-            $this->api->set_access_token( $current_access_token );
-		}
-	}
+            $accounts_data = $this->get_current_user_associated_accounts();
 
-	/**
-	 * Gets the page backed instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
-	 *
-	 * @since x.x.x
-	 *
-	 * @return array
-	 * @throws ApiException
-	 */
-	private function get_page_backed_instagram_accounts( $page_id, $page_access_token ) {
+            foreach ($accounts_data as $account_data) {
 
-		$current_access_token = $this->api->get_access_token();
+                if ($account_data['id'] == $page_id) {
+                    $access_token = $account_data['access_token'];
 
-        try {
-			$this->api->set_access_token( $page_access_token );
-			$result = $this->api->get_with_generic_request( $page_id, 'page_backed_instagram_accounts' );
-			return $result->response_data[ 'page_backed_instagram_accounts' ];
-		}
-		finally {
-			$this->api->set_access_token( $current_access_token );
-		}
-	}
+                    $instagram_accounts = $this->get_instagram_accounts($page_id, $access_token);
 
-    /**
-	 * Returns the Ad Campaign based on the argument
-	 *
-	 * @since x.x.x
-	 * @param string @campaign_id Facebook Ad Campaign Id.
-	 * @return mixed
-	 * @throws ApiException
-	 */
-    public function fetch_campaign( $campaign_id ) {
+                    if (!$instagram_accounts['data']) {
 
-        return $this->api->get_with_generic_request( $campaign_id, 'id,name,status' );
+                        $instagram_accounts = $this->get_page_backed_instagram_accounts($page_id, $access_token);
 
-    }
+                        if (!$instagram_accounts['data']) {
 
-    /**
-	 * Returns the Adset based on the argument
-	 *
-	 * @since x.x.x
-	 * @param string @adset_id Facebook Adset Id.
-	 * @return mixed
-	 * @throws ApiException
-	 */
-    public function fetch_adset( $adset_id ) {
+                            throw new PluginException('There was an error trying to retrieve the instagram actor id.');
+                        }
+                    }
 
-        return $this->api->get_with_generic_request( $adset_id, 'id,name,status,daily_budget,targeting,promoted_object' );
+                    return $instagram_accounts['data'][0]['id'];
+                }
+            }
 
-    }
+            throw new PluginException('The page with id: \"' . $page_id . '\" is not associated with this user.');
 
-    /**
-	 * Returns the Ad based on the argument
-	 *
-	 * @since x.x.x
-	 * @param string @ad_id Facebook Ad Id.
-	 * @return mixed
-	 * @throws ApiException
-	 */
-    public function fetch_ad( $ad_id ) {
-
-        return $this->api->get_with_generic_request( $ad_id, 'id,name,status' );
-
-    }
-
-    /**
-	 * Returns the Adcreative based on the argument
-	 *
-	 * @since x.x.x
-	 * @param string @adcreative_id Facebook Adcreative Id.
-	 * @return mixed
-	 * @throws ApiException
-	 */
-    public function fetch_adcreative ( $adcreative_id ) {
-
-        return $this->api->get_with_generic_request( $adcreative_id, 'id,name,status,body,product_set_id' );
-
-    }
-
-    protected function set_ad_status( bool $status ) {
-
-        try {
-        if ( $status ) {
-
-            $this->update_adcreative( array( 'status' => self::STATUS_ACTIVE ) );
-            $this->update_campaign( array( 'status' => self::STATUS_ACTIVE ) );
-            $this->update_adset( array( 'status' => self::STATUS_ACTIVE ) );
-            $this->update_ad( array( 'status' => self::STATUS_ACTIVE ) );
-
-        } else {
-
-            $this->update_campaign( array( 'status' => self::STATUS_PAUSED ) );
-
+        } catch (ApiException $e) {
+            $message = sprintf('There was an error trying to get the instagram account id for this user. message: %s', $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
+            throw new PluginException($message);
         }
-
-        } catch ( ApiException $e ) {
-
-            $message = sprintf( 'An exception happened trying to change ad status. ' . $e->getMessage() );
-            \WC_Facebookcommerce_Utils::log( $message );
-            throw new PluginException( $message );
-
-        }
-
     }
 
-    protected function create_campaign( $campaign_props ) {
+    /**
+     * Gets the accounts that are associated with 'me' entity.
+     *
+     * @since x.x.x
+     *
+     * @return array
+     * @throws ApiException
+     */
+    private function get_current_user_associated_accounts()
+    {
 
-        $result = $this->api->create_campaign( $this->ad_account_id, $campaign_props );
+        $result = $this->api->get_with_generic_request('me', 'accounts');
+        return $result->response_data['accounts']['data'];
+    }
+
+    /**
+     * Gets the instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
+     *
+     * @since x.x.x
+     *
+     * @return array
+     * @throws ApiException
+     */
+    private function get_instagram_accounts($page_id, $page_access_token)
+    {
+
+        $current_access_token = $this->api->get_access_token();
+
+        try {
+            $this->api->set_access_token($page_access_token);
+            $result = $this->api->get_with_generic_request($page_id, 'instagram_accounts');
+            return $result->response_data['instagram_accounts'];
+        } finally {
+            $this->api->set_access_token($current_access_token);
+        }
+    }
+
+    /**
+     * Gets the page backed instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
+     *
+     * @since x.x.x
+     *
+     * @return array
+     * @throws ApiException
+     */
+    private function get_page_backed_instagram_accounts($page_id, $page_access_token)
+    {
+
+        $current_access_token = $this->api->get_access_token();
+
+        try {
+            $this->api->set_access_token($page_access_token);
+            $result = $this->api->get_with_generic_request($page_id, 'page_backed_instagram_accounts');
+            return $result->response_data['page_backed_instagram_accounts'];
+        } finally {
+            $this->api->set_access_token($current_access_token);
+        }
+    }
+
+    /**
+     * Returns the Ad Campaign based on the argument
+     *
+     * @since x.x.x
+     * @param string @campaign_id Facebook Ad Campaign Id.
+     * @return mixed
+     * @throws ApiException
+     */
+    public function fetch_campaign($campaign_id)
+    {
+
+        return $this->api->get_with_generic_request($campaign_id, 'id,name,status');
+    }
+
+    /**
+     * Returns the Adset based on the argument
+     *
+     * @since x.x.x
+     * @param string @adset_id Facebook Adset Id.
+     * @return mixed
+     * @throws ApiException
+     */
+    public function fetch_adset($adset_id)
+    {
+
+        return $this->api->get_with_generic_request($adset_id, 'id,name,status,daily_budget,targeting,promoted_object');
+    }
+
+    /**
+     * Returns the Ad based on the argument
+     *
+     * @since x.x.x
+     * @param string @ad_id Facebook Ad Id.
+     * @return mixed
+     * @throws ApiException
+     */
+    public function fetch_ad($ad_id)
+    {
+
+        return $this->api->get_with_generic_request($ad_id, 'id,name,status');
+    }
+
+    /**
+     * Returns the Adcreative based on the argument
+     *
+     * @since x.x.x
+     * @param string @adcreative_id Facebook Adcreative Id.
+     * @return mixed
+     * @throws ApiException
+     */
+    public function fetch_adcreative($adcreative_id)
+    {
+
+        return $this->api->get_with_generic_request($adcreative_id, 'id,name,status,body,product_set_id');
+    }
+
+    protected function set_ad_status(bool $status)
+    {
+
+        try {
+            if ($status) {
+
+                $this->update_adcreative(array('status' => self::STATUS_ACTIVE));
+                $this->update_campaign(array('status' => self::STATUS_ACTIVE));
+                $this->update_adset(array('status' => self::STATUS_ACTIVE));
+                $this->update_ad(array('status' => self::STATUS_ACTIVE));
+            } else {
+
+                $this->update_campaign(array('status' => self::STATUS_PAUSED));
+            }
+        } catch (ApiException $e) {
+
+            $message = sprintf('An exception happened trying to change ad status. ' . $e->getMessage());
+            \WC_Facebookcommerce_Utils::log($message);
+            throw new PluginException($message);
+        }
+    }
+
+    protected function create_campaign($campaign_props)
+    {
+
+        $result = $this->api->create_campaign($this->ad_account_id, $campaign_props);
         return $result->get_campaign();
-
     }
 
-    protected function create_adset( $adset_props ) {
+    protected function create_adset($adset_props)
+    {
 
-        $result = $this->api->create_adset( $this->ad_account_id, $adset_props );
+        $result = $this->api->create_adset($this->ad_account_id, $adset_props);
         return $result->get_data();
-
     }
 
-    protected function create_adcreative( $adcreative_props ) {
+    protected function create_adcreative($adcreative_props)
+    {
 
-        return $this->api->create_adcreative( $this->ad_account_id, $adcreative_props );
-
+        return $this->api->create_adcreative($this->ad_account_id, $adcreative_props);
     }
 
-    protected function create_ad( $ad_props ) {
+    protected function create_ad($ad_props)
+    {
 
-        $result = $this->api->create_ad( $this->ad_account_id, $ad_props );
+        $result = $this->api->create_ad($this->ad_account_id, $ad_props);
         return $result->get_data();
-
     }
 
-    public function update_campaign( $campaign_props ) {
+    public function update_campaign($campaign_props)
+    {
 
-        $this->campaign = $this->api->update_campaign( $this->campaign[ 'id' ], $campaign_props );
-
+        $this->campaign = $this->api->update_campaign($this->campaign['id'], $campaign_props);
     }
 
-    public function update_adset( $adset_props ) {
+    public function update_adset($adset_props)
+    {
 
-        $this->adset = $this->api->update_adset( $this->adset[ 'id' ], $adset_props );
-
+        $this->adset = $this->api->update_adset($this->adset['id'], $adset_props);
     }
 
-    public function update_ad( $ad_props ) {
+    public function update_ad($ad_props)
+    {
 
-        $this->ad = $this->api->update_ad( $this->ad[ 'id' ], $ad_props );
+        $this->ad = $this->api->update_ad($this->ad['id'], $ad_props);
     }
 
-    public function update_adcreative( $adcreative_props ) {
+    public function update_adcreative($adcreative_props)
+    {
 
-        $this->adcreative = $this->api->update_adcreative( $this->adcreative[ 'id' ], $adcreative_props );
+        $this->adcreative = $this->api->update_adcreative($this->adcreative['id'], $adcreative_props);
     }
 
-    public function delete_item( $id ) {
+    public function delete_item($id)
+    {
 
         try {
-        $this->api->delete_item( $id );
-        } catch( ApiException $e ) {
-            throw new PluginException( $e->getMessage() );
+            $this->api->delete_item($id);
+        } catch (ApiException $e) {
+            throw new PluginException($e->getMessage());
         }
     }
 
-    protected function get_ad_status() {
+    public function get_ad_status()
+    {
 
-        if ($this->load_default){
+        if ( ! $this->is_running()) {
 
             return false;
-
         }
 
         return
-            $this->adcreative && ( $this->adcreative[ 'status' ] == self::STATUS_ACTIVE ) &&
-            $this->campaign   && ( $this->campaign[ 'status' ]   == self::STATUS_ACTIVE ) &&
-            $this->adset      && ( $this->adset[ 'status' ]      == self::STATUS_ACTIVE ) &&
-            $this->ad         && ( $this->ad[ 'status' ]         == self::STATUS_ACTIVE );
+            $this->adcreative && ($this->adcreative['status'] == self::STATUS_ACTIVE) &&
+            $this->campaign   && ($this->campaign['status']   == self::STATUS_ACTIVE) &&
+            $this->adset      && ($this->adset['status']      == self::STATUS_ACTIVE) &&
+            $this->ad         && ($this->ad['status']         == self::STATUS_ACTIVE);
     }
 
-    protected function get_ad_daily_budget() {
-
-        if ( $this->load_default ){
-
-            $min = $this->min_daily_budget;
-            $min = ceil($min/1000.0) * 10;
-
-            return strval( $min * 2 );
-        }
-
-        return $this->adset[ 'daily_budget' ] / 100;
-    }
-
-    public function get_currency() {
+    public function get_currency()
+    {
 
         return $this->currency;
-
     }
 
-    protected function get_countries(): array {
-
+    protected function get_countries(): array
+    {
         $countries = array(
             'AF' => 'Afghanistan',
             'AX' => 'Aland Islands',

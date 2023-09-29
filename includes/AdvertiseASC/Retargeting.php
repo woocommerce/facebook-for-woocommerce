@@ -24,6 +24,7 @@ class Retargeting extends CampaignHandler {
 
 	/** @var string holding the ID for this campangin type */
 	const ID = 'retargeting';
+	const VISIT_PERIOD_SECONDS = 12 * 24 * 3600;
 
 	/** @var string the default message shown as Ad Message */
 	private $default_creative_message = 'These great products are still waiting for you!';
@@ -33,58 +34,22 @@ class Retargeting extends CampaignHandler {
 		parent::__construct( 'Retargeting' );
 	}
 
-	public function get_tooltips(): array {
-		return array(
-			'p1' => __( 'Activating or pausing your campaign', 'facebook-for-woocommerce' ),
-			'p2' => __( 'Text message shown in your ad', 'facebook-for-woocommerce' ),
-			'p3' => __( "Products shown in your ad's carousel", 'facebook-for-woocommerce' ),
-			'p4' => __( 'Time where users visited your website', 'facebook-for-woocommerce' ),
-			'p5' => __( 'Your daily budget for this campaign', 'facebook-for-woocommerce' ),
-		);
-	}
-
 	protected function get_id() {
 
 		return self::ID;
 
 	}
 
-	protected function first_time_setup() {
-
-		try {
-
-			$this->campaign   = $this->setup_campaign( $this->product_catalog_id );
-			$this->adset      = $this->setup_adset( $this->campaign['id'], $this->bid_amount, $this->get_ad_daily_budget() * 100, $this->default_product_set, 1814400 );
-			$this->adcreative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->instagram_actor_id, $this->store_url, $this->default_creative_message, $this->default_product_set );
-			$this->ad         = $this->setup_ad();
-
-		} catch ( ApiException $e ) {
-
-			$message = sprintf( 'An exception happened trying to setup the Retargeting campaign for the first time. ' . $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
-			throw new PluginException( $message );
-
-		}
+	public function update_ad_status( $status ) {
+		$this->set_ad_status( $status );
 	}
 
 	public function update_asc_campaign( $data ) {
 
-		$new_message      = array_key_exists( 'p2', $data ) ? $data['p2'] : '';
-		$new_visit_period = array_key_exists( 'p4', $data ) ? $data['p4'] : '';
-		$new_daily_budget = array_key_exists( 'p5', $data ) ? $data['p5'] : '';
-
-		if ( $new_daily_budget || $new_visit_period ) {
-			$this->apply_adset_changes( $new_daily_budget * 100, $new_visit_period );
-		}
-
-		if ( $new_message ) {
-			$this->apply_adcreative_changes( $new_message );
-		}
-
-		if ( array_key_exists( 'p1', $data ) ) {
-			$this->set_ad_status( $data['p1'] );
-		}
-
+		$new_daily_budget = $data['daily_budget'];
+		$new_ad_message = $data['ad_message'];
+		$this->apply_adset_changes( $new_daily_budget * 100 );
+		$this->apply_adcreative_changes( $new_ad_message );
 		return true;
 	}
 
@@ -98,7 +63,7 @@ class Retargeting extends CampaignHandler {
 			$new_ad_creative = '';
 			try {
 
-				$new_ad_creative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->instagram_actor_id, $this->store_url, $message, $this->default_product_set );
+				$new_ad_creative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $message, $this->default_product_set );
 				$this->update_ad( array( 'creative' => array( 'creative_id' => $this->adcreative['id'] ) ) );
 
 			} catch ( ApiException $e ) {
@@ -123,15 +88,14 @@ class Retargeting extends CampaignHandler {
 		}
 	}
 
-	private function apply_adset_changes( $daily_budget, $visit_period ) {
+	private function apply_adset_changes( $daily_budget ) {
 
-		$new_daily_budget     = $daily_budget ? $daily_budget : $this->adset['daily_budget'];
-		$visit_period_seconds = ( $visit_period ? $visit_period : $this->get_ad_last_visit_period() ) * 24 * 3600;
-
-		if ( $daily_budget || $visit_period ) {
+		$new_daily_budget = $daily_budget ? $daily_budget : $this->adset['daily_budget'];
+		
+		if ( $daily_budget ) {
 			$props                 = [];
 			$props['daily_budget'] = $new_daily_budget;
-			$props['targeting']    = $this->get_adset_targeting_creation_params( $this->default_product_set, $visit_period_seconds );
+			$props['targeting']    = $this->get_adset_targeting_creation_params( $this->default_product_set, self::VISIT_PERIOD_SECONDS );
 			try {
 
 				$this->update_adset( $props );
@@ -161,6 +125,32 @@ class Retargeting extends CampaignHandler {
 
 		return $this->create_campaign( $properties );
 	}
+
+	public function create_asc_campaign( $props ) {
+		
+		$status = $props['state'] == 'true' ? 1 : 0;
+		$this->campaign   = $this->setup_campaign( $this->product_catalog_id );
+		$this->adset      = $this->setup_adset( $this->campaign['id'], $this->bid_amount, $props['daily_budget'] * 100, $this->default_product_set, self::VISIT_PERIOD_SECONDS);
+		$this->adcreative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $props['ad_message'], $this->default_product_set );
+		$this->ad         = $this->setup_ad();
+
+		$this->update_stored_data();
+
+		if ($status) {
+			$this->set_ad_status($status);
+		}
+
+		$this->get_insights();
+
+	}
+
+	public function get_allowed_min_daily_budget(){
+		return $this->get_min_daily_budget();
+	}
+
+    public function get_selected_countries() {
+		return [];
+    }
 
 	private function get_adset_targeting_creation_params( $product_set_id, $seconds ) {
 
@@ -223,14 +213,13 @@ class Retargeting extends CampaignHandler {
 		return $this->create_adset( $params );
 	}
 
-	private function get_adcreative_creation_params( $name, $page_id, $instagram_actor_id, $link, $message, $product_set_id ) {
+	protected function get_adcreative_creation_params( $name, $page_id, $link, $message, $product_set_id ) {
 
 		$properties = array(
 			'name'              => $name,
 			'product_set_id'    => $product_set_id,
 			'object_story_spec' => array(
 				'page_id'              => $page_id,
-				'instagram_actor_id'   => $instagram_actor_id,
 				'multi_share_end_card' => true,
 				'show_multiple_images' => false,
 				'template_data'        => array(
@@ -244,26 +233,18 @@ class Retargeting extends CampaignHandler {
 			),
 		);
 
+		if ($this->instagram_actor_id) {
+			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;
+		}
+
 		return $properties;
 	}
 
-	private function setup_adcreative( string $ad_creative_name, string $page_id, string $instagram_actor_id, string $link, string $message, string $product_set_id ) {
+	private function setup_adcreative( string $ad_creative_name, string $page_id, string $link, string $message, string $product_set_id ) {
 
-		$properties = $this->get_adcreative_creation_params( $ad_creative_name, $page_id, $instagram_actor_id, $link, $message, $product_set_id );
+		$properties = $this->get_adcreative_creation_params( $ad_creative_name, $page_id, $link, $message, $product_set_id );
 
 		return $this->create_adcreative( $properties );
-
-	}
-
-	protected function get_ad_message() {
-
-		if ( $this->load_default ) {
-
-			return $this->default_creative_message;
-
-		}
-
-		return $this->adcreative['body'];
 
 	}
 
@@ -279,30 +260,6 @@ class Retargeting extends CampaignHandler {
 		return $this->create_ad( $properties );
 	}
 
-	public function get_properties(): array {
-
-		return array(
-			'p1' => __( 'Off/On', 'facebook-for-woocommerce' ),
-			'p2' => __( 'Ad Message', 'facebook-for-woocommerce' ),
-			'p3' => '',
-			'p4' => __( 'Visit Period', 'facebook-for-woocommerce' ),
-			'p5' => __( 'Daily Budget', 'facebook-for-woocommerce' ),
-		);
-
-	}
-
-	public function get_info(): array {
-
-		return array(
-			'p1' => $this->get_ad_status(),
-			'p2' => $this->get_ad_message(),
-			'p3' => '',
-			'p4' => $this->get_ad_last_visit_period(),
-			'p5' => $this->get_ad_daily_budget(),
-		);
-
-	}
-
 	public function get_campaign_type(): string {
 
 		return self::ID;
@@ -311,7 +268,7 @@ class Retargeting extends CampaignHandler {
 
 	private function get_ad_last_visit_period() {
 
-		if ( $this->load_default ) {
+		if ( ! $this->is_running() ) {
 
 			return reset( $this->get_visit_periods() );
 		}
@@ -319,27 +276,5 @@ class Retargeting extends CampaignHandler {
 		$val = ( $this->adset['targeting']['product_audience_specs'][0]['inclusions'][0]['retention_seconds'] / 3600 ) / 24;
 
 		return $val;
-	}
-
-	public function get_choices_for( string $property_name ): array {
-
-		switch ( $property_name ) {
-			case 'p4':
-				return $this->get_visit_periods();
-			default:
-				throw new PluginException( 'Invalid property name: ' . $property_name );
-		}
-
-	}
-
-	protected function get_visit_periods(): array {
-
-		return array(
-			1  => 'Yesterday',
-			7  => 'Last 7 days',
-			14 => 'Last 14 days',
-			21 => 'Last 21 days',
-			28 => 'Last 28 days',
-		);
 	}
 }

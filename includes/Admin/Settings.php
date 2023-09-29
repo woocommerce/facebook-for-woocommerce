@@ -181,16 +181,16 @@ class Settings {
 			if ( ! empty( $_GET['tab'] ) ) {
 				switch ( $_GET['tab'] ) {
 					case Connection::ID:
-						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
+						$crumbs[] = __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 						break;
 					case Settings_Screens\Messenger::ID:
-						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
+						$crumbs[] = __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 						break;
 					case Settings_Screens\Product_Sync::ID:
-						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
+						$crumbs[] = __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 						break;
 					case Settings_Screens\Advertise::ID:
-						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
+						$crumbs[] = __( 'Facebook for WooCommerce', 'facebook-for-woocommerce' );
 						break;
 				}
 			}

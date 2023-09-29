@@ -52,6 +52,8 @@ class AJAX {
 		// get the ad preview
 		add_action( 'wp_ajax_wc_facebook_get_ad_preview', array( $this, 'get_ad_preview' ) );
 
+		add_action( 'wp_ajax_wc_facebook_generate_ad_preview', array( $this, 'generate_ad_preview' ) );
+
 		// sync the ad/campaign changes with the marketing api.
 		add_action ( 'wp_ajax_wc_facebook_advertise_asc_publish_changes', array( $this, 'publish_ad_changes' ));
 
@@ -121,26 +123,22 @@ class AJAX {
 	 */
 	public function publish_ad_changes() {
 
-		$retargetting = isset( $_POST[ Retargeting::ID ] ) ? $_POST[ Retargeting::ID ] : null;
-		$new_buyers = isset( $_POST[ NewBuyers::ID ] ) ? $_POST[ NewBuyers::ID ] : null;
-
-		$result = '';
-
+		$data = json_decode(file_get_contents('php://input'), true);
+		$campaign_type = $data[ 'campaignType' ] ;
+		$ad_message = $data[ 'adMessage' ] ;
+		$daily_budget = $data[ 'dailyBudget' ] ;
+		$country = $data[ 'countryList' ];
+		$is_update = $data[ 'isUpdate' ] == "true";
+		$status = $data['status'];
+		
 		try {
 
-			if ( $retargetting ) {
-				$result = facebook_for_woocommerce()->get_advertise_asc_handler( Retargeting::ID )->update_asc_campaign( $retargetting );
-		   }
-
-		   if ( $new_buyers ) {
-				 $result = facebook_for_woocommerce()->get_advertise_asc_handler( NewBuyers::ID )->update_asc_campaign( $new_buyers );
-		   }
-
-		   if ( ! $new_buyers && ! $retargetting ) {
-			   wp_send_json_error('Cannot publish empty form.');
-		   }
-
-		   wp_send_json_success( $result );
+			if ( $is_update ) {
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->update_asc_campaign( array('daily_budget' => $daily_budget, 'ad_message' => $ad_message, 'country' => $country, 'state' => $status) );
+			} else {
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->create_asc_campaign( array('daily_budget' => $daily_budget, 'ad_message' => $ad_message, 'country' => $country, 'state' => $status) );
+		    }
+			wp_send_json_success( $result );
 
 		}
 		catch ( PluginException $e ) {
@@ -150,6 +148,9 @@ class AJAX {
 		}
 	}
 
+	public function asc_turn_on_campaign($campaign_type) {
+		
+	}
 
 	/**
 	 * Gets the Ad Preview for a given ad in different formats and merges the results.
@@ -170,6 +171,21 @@ class AJAX {
 		wp_send_json_success( $result );
 	}
 
+
+	public function generate_ad_preview() {
+		$view = $_GET[ 'view' ];
+		$message = $_GET[ 'message' ];
+		if ( ! $view ) {
+			wp_send_json_error( " No view is selected. " );
+		}
+		$result = array();
+
+		$result[] = facebook_for_woocommerce()->get_advertise_asc_handler( $view )->generate_ad_preview($message, 'MOBILE_FEED_STANDARD');
+		$result[] = facebook_for_woocommerce()->get_advertise_asc_handler( $view )->generate_ad_preview($message, 'INSTAGRAM_STANDARD');
+		$result[] = facebook_for_woocommerce()->get_advertise_asc_handler( $view )->generate_ad_preview($message, 'INSTAGRAM_STORY');
+
+		wp_send_json_success( $result );
+	}
 
 	/**
 	 * Gets the Ad Preview for an ASC Campaign in different formats and merges the results.

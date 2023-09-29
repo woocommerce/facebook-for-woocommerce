@@ -269,6 +269,15 @@ class API extends Base {
 	}
 
 
+	public function generate_ad_preview( $account_id, $ad_format, $creative_spec ): API\Ad\Preview\Generation\Response {
+		$request = new API\Ad\Preview\Generation\Request( $account_id, $ad_format, $creative_spec );
+		$this->set_response_handler( API\Ad\Preview\Generation\Response::class );
+		$response = $this->perform_request( $request );
+		$this->do_post_parse_response_validation();
+		return $response;
+	}
+
+
 	/**
 	 * Creates a GET request to the path provided. If there are fields, this method will append those fields to the end of the path
 	 *
