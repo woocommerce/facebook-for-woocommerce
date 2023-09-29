@@ -3,9 +3,6 @@ import { Button, Form, Space, Spin, Steps } from 'antd';
 import CampaignEditView from './campaign-edit-view';
 import CampaignPreviewView from './campaign-preview-view'
 
-// Todo: Publish failed, error in input or sth
-// update for newBuyers
-
 const CampaignSetupView = (props) => {
 
     const defaultAdMessage = props.campaignType == 'retargeting' ? 'These great products are still waiting for you!' : 'Check out these great products!';
@@ -55,7 +52,8 @@ const CampaignSetupView = (props) => {
                 //TODO: HANDLE ERROR, if success = false;
                 console.log(data);
                 if (data['success'] == false) {
-                                   // show  a modal     
+                                   // show  a modal   
+                                   console.log(data); 
                 } else {
                     props.onFinish();
                 }
@@ -122,7 +120,7 @@ const CampaignSetupView = (props) => {
                 </Space>
             ) : (
                 <Space direction='vertical'>
-                    <CampaignPreviewView message={adMessage} activeKey={activeKey} campaignType={props.campaignType} />
+                    <CampaignPreviewView message={adMessage} activeKey={activeKey} campaignType={props.campaignType} onSizeChange={()=>{}}/>
                     <div style={{ background: 'transparent', minWidth: '400px', width: '100%', height: '50px', position: 'relative' }}>
                         <Button disabled={publishing} style={{ position: 'absolute', left: 0 }} onClick={() => goToEditCampaignPage()}>Back</Button>
                         <div style={{ background: 'transparent', position: 'absolute', right: 0}}>

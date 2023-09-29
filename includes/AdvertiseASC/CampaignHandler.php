@@ -249,7 +249,6 @@ abstract class CampaignHandler
 
     private function is_payment_method_valid()
     {
-
         $result = $this->api->get_with_generic_request('act_' . $this->ad_account_id, 'funding_source_details');
 
         return array_key_exists('funding_source_details', $result->response_data);
@@ -467,6 +466,11 @@ abstract class CampaignHandler
             $this->api->set_access_token($current_access_token);
         }
     }
+
+	public function update_ad_status( $state ) {
+        $status = $state == 'true' ? 1 : 0;
+		$this->set_ad_status( $status );
+	}
 
     /**
      * Returns the Ad Campaign based on the argument

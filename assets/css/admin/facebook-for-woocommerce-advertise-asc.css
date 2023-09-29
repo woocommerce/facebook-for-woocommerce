@@ -57,6 +57,22 @@
   box-shadow: none;
 }
 
+.fb-asc-ads .funnel-table{
+  background: transparent;
+}
+
+.fb-asc-ads .funnel-table-header{
+  margin:0; padding:0;
+  line-height: 10px;
+}
+
+.fb-asc-ads .funnel-table-header label{
+  margin:0; 
+  padding:0; 
+  line-height:10px;
+  font-size: 10px;
+}
+
 .fb-asc-ads .main-ui-container {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
     sans-serif;

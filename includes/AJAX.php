@@ -54,6 +54,8 @@ class AJAX {
 
 		add_action( 'wp_ajax_wc_facebook_generate_ad_preview', array( $this, 'generate_ad_preview' ) );
 
+		add_action( 'wp_ajax_wc_facebook_update_ad_status', array( $this, 'update_ad_status' ) );
+
 		// sync the ad/campaign changes with the marketing api.
 		add_action ( 'wp_ajax_wc_facebook_advertise_asc_publish_changes', array( $this, 'publish_ad_changes' ));
 
@@ -148,8 +150,22 @@ class AJAX {
 		}
 	}
 
-	public function asc_turn_on_campaign($campaign_type) {
-		
+	public function update_ad_status() {
+		$data = json_decode(file_get_contents('php://input'), true);
+		$campaign_type = $data[ 'campaignType' ] ;
+		$status = $data['status'];
+
+		try {
+
+			$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->update_ad_status( $status );
+			wp_send_json_success( $result );
+
+		}
+		catch ( PluginException $e ) {
+
+			wp_send_json_error( $e->getMessage() );
+
+		}
 	}
 
 	/**

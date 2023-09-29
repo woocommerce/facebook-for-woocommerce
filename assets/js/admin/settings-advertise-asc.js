@@ -38,14 +38,31 @@ jQuery(document).ready(function () {
 		});
 	}
 
-	function createInsights(rootElementId, props) {
+	function createInsights(campaignType) {
+		const rootElementId = viewItemsIdPrefix + 'insights-placeholder-root-' + campaignType;
+
 		const el = document.getElementById(rootElementId);
 		if (el) {
+			const countryList = $("#" + viewItemsIdPrefix + "targeting-" + campaignType).val();
+			const props = {
+				spend: $("#" + viewItemsIdPrefix + "ad-insights-spend-" + campaignType).val(),
+				reach: $("#" + viewItemsIdPrefix + "ad-insights-reach-" + campaignType).val(),
+				clicks: $("#" + viewItemsIdPrefix + "ad-insights-clicks-" + campaignType).val(),
+				views: $("#" + viewItemsIdPrefix + "ad-insights-views-" + campaignType).val(),
+				addToCarts: $("#" + viewItemsIdPrefix + "ad-insights-carts-" + campaignType).val(),
+				purchases: $("#" + viewItemsIdPrefix + "ad-insights-purchases-" + campaignType).val(),
+				dailyBudget: $("#" + viewItemsIdPrefix + "ad-daily-budget-" + campaignType).val(),
+				countryList: countryList?.split(',') ?? [],
+				currency: $("#" + viewItemsIdPrefix + "currency-" + campaignType).val(),
+				status: $("#" + viewItemsIdPrefix + "ad-status-" + campaignType).val(),
+				campaignType: campaignType,
+			};
 			window.insightsUILoader(rootElementId, props);
 		}
 	}
-	createInsights('woocommerce-facebook-settings-advertise-asc-insights-placeholder-root-new-buyers', {});
-	createInsights('woocommerce-facebook-settings-advertise-asc-insights-placeholder-root-retargeting', {});
+
+	createInsights(ascTypeNewBuyers);
+	createInsights(ascTypeRetargeting);
 
 	$('#new-buyers-create-campaign-img').prop('src', require('!!url-loader!./../../images/prospecting.png').default);
 	$('#retargeting-create-campaign-img').prop('src', require('!!url-loader!./../../images/retargeting.png').default);
@@ -63,28 +80,21 @@ jQuery(document).ready(function () {
 			$('#' + campaignType + '-create-campaign-btn').prop('disabled', false);
 		};
 
-		const campaignEditHook = (campaignType) => {
-			
+
+		window.editCampaignButtonClicked = (campaignType) => {
 			const selectedCountries = $("#" + viewItemsIdPrefix + "targeting-" + campaignType).val();
-			
-			$('#' + campaignType + '-edit-campaign-btn').click(function () {
-				loadCampaignSetupUi(campaignType, true, {
-					adMessage: $("#" + viewItemsIdPrefix + "ad-message-" + campaignType).val(),
-					dailyBudget: $("#" + viewItemsIdPrefix + "ad-daily-budget-" + campaignType).val(),
-					minDailyBudget: $("#" + viewItemsIdPrefix + "min-ad-daily-budget-" + campaignType).val(),
-					selectedCountries: selectedCountries.split(','),
-					currency: $("#" + viewItemsIdPrefix + "currency-" + campaignType).val(),
-					status: $("#" + viewItemsIdPrefix + "ad-status-" + campaignType).val(),
-				});
+			loadCampaignSetupUi(campaignType, true, {
+				adMessage: $("#" + viewItemsIdPrefix + "ad-message-" + campaignType).val(),
+				dailyBudget: $("#" + viewItemsIdPrefix + "ad-daily-budget-" + campaignType).val(),
+				minDailyBudget: $("#" + viewItemsIdPrefix + "min-ad-daily-budget-" + campaignType).val(),
+				selectedCountries: selectedCountries.split(','),
+				currency: $("#" + viewItemsIdPrefix + "currency-" + campaignType).val(),
+				status: $("#" + viewItemsIdPrefix + "ad-status-" + campaignType).val(),
 			});
-			$('#' + campaignType + '-edit-campaign-btn').prop('disabled', false);
 		};
 
 		campaignCreationHook(ascTypeRetargeting);
 		campaignCreationHook(ascTypeNewBuyers);
-
-		campaignEditHook(ascTypeRetargeting);
-		campaignEditHook(ascTypeNewBuyers);
 	}
 
 	function createModal(link) {

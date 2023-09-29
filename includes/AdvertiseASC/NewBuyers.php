@@ -201,28 +201,22 @@ class NewBuyers extends CampaignHandler {
 
 	public function update_asc_campaign( $data ) {
 
-		// if ( ! $data ) {
-		// 	return true;
-		// }
+		if ( ! $data ) {
+			return true;
+		}
 
-		// $msg = array_key_exists( 'p2', $data ) ? $data['p2'] : '';
+		$message = $data['ad_message'];
+		$countries = $data['country'] ?? [];
+		$daily_budget = $data['daily_budget'];
+		$status = $props['state'] == 'true' ? 1 : 0;
 
-		// if ( $msg ) {
-		// 	$this->apply_creative_changes( $msg );
-		// }
-
-		// $countries    = array_key_exists( 'p4', $data ) ? explode( ',', $data['p4'] ) : [];
-		// $daily_budget = array_key_exists( 'p5', $data ) ? $data['p5'] : '';
-
-		// if ( $countries || $daily_budget ) {
-		// 	$this->apply_adset_changes( $countries, $daily_budget );
-		// }
-
-		// if ( array_key_exists( 'p1', $data ) ) {
-		// 	$this->set_ad_status( $data['p1'] );
-		// }
-
-		// return true;
+		$this->apply_creative_changes( $message );
+		
+		$this->apply_adset_changes( $countries, $daily_budget );
+		
+		$this->set_ad_status( $status );
+		
+		return true;
 	}
 
 	private function apply_creative_changes( $message ) {

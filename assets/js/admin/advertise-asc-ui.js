@@ -9,7 +9,9 @@ function campaignCreationUILoader(rootElementId, props, reset) {
     const root = ReactDOM.createRoot(element);
     root.render(
       <React.StrictMode>
-        <MainView props={props} onFinish={reset}/>
+        <>
+          <MainView props={props} onFinish={reset} />
+        </>
       </React.StrictMode>
     );
   }
@@ -21,7 +23,9 @@ function insightsUILoader(rootElementId, props) {
     const root = ReactDOM.createRoot(element);
     root.render(
       <React.StrictMode>
-        <InsightsView props={props} />
+        <>
+          <InsightsView spend={props.spend} dailyBudget={props.dailyBudget} reach={props.reach} clicks={props.clicks} views={props.views} addToCarts={props.addToCarts} purchases={props.purchases} countryList={props.countryList} status={props.status} currency={props.currency} campaignType={props.campaignType} />
+        </>
       </React.StrictMode>
     );
   }

@@ -286,8 +286,31 @@ class Advertise extends Abstract_Settings_Screen {
 		<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-daily-budget-' . $type ?>" value="<?php echo number_format((float)$daily_budget, 2, '.', '')?>" />
 		<?php
 		if ($campaign_handler->is_running()) {
+			$selected_countries = $campaign_handler->get_selected_countries();
+			$status = $campaign_handler->get_ad_status();
 		?>
-			<div id="woocommerce-facebook-settings-advertise-asc-insights-placeholder-root-<?php echo $type?>" style="width:100%; height:400px;"></div>
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-targeting-' . $type ?>" value="<?php echo implode(',',$selected_countries)?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-status-' . $type ?>" value="<?php echo $status?>" />
+			<?php
+			if ($campaign_handler->are_insights_available()) {
+				$spend = $campaign_handler->get_insights_spend();
+				$reach = $campaign_handler->get_insights_reach();
+				$events = $campaign_handler->get_insights_events();
+				$clicks = $events[ 'clicks' ];
+				$views = $events[ 'views' ];
+				$addToCarts = $events[ 'cart' ];
+				$purchases = $events[ 'purchases' ];
+			} else {
+				$spend = $reach = $events = $clicks = $views = $addToCarts = $purchases = 0;
+			}
+			?>
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-spend-' . $type ?>" value="<?php echo $spend?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-reach-' . $type ?>" value="<?php echo $reach?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-clicks-' . $type ?>" value="<?php echo $clicks?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-views-' . $type ?>" value="<?php echo $views?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-carts-' . $type ?>" value="<?php echo $addToCarts?>" />
+			<input type="hidden" id="<?php echo 'woocommerce-facebook-settings-advertise-asc-ad-insights-purchases-' . $type ?>" value="<?php echo $purchases?>" />
+			<div id="woocommerce-facebook-settings-advertise-asc-insights-placeholder-root-<?php echo $type?>" style="width:100%;"></div>
 		<?php
 		} else {
 		?>
@@ -325,7 +348,6 @@ class Advertise extends Abstract_Settings_Screen {
 	private function try_render_experimental_view() {
 		
 		try {
-				
 			?>
 			<div class="fb-asc-ads">
 				<div id='overlay-view-ui' class='hidden_view'>
@@ -344,7 +366,7 @@ class Advertise extends Abstract_Settings_Screen {
 							</td>
 						</tr>
 					</table>
-				<div>
+				</div>
 			</div>
 			<?php
 
@@ -433,7 +455,7 @@ class Advertise extends Abstract_Settings_Screen {
 	private function remove_rendered_when_exception_happened() {
 
 		?>
-		</table></form></div> <!-- This is to make sure the error message or anything after this won't be a part of the form in which error happened. -->
+		</td></tr></table></div></div> <!-- This is to make sure the error message or anything after this won't be a part of the form in which error happened. -->
 		 <script>
 			jQuery( '.fb-asc-ads' ).remove();
 		</script>
