@@ -565,7 +565,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			$cart = WC()->cart;
 			// Check if we're dealing with cloned cart
-			if (!isset($cart->cart_contents[ $cart_item_key ])) {
+			if ( ! isset( $cart->cart_contents[ $cart_item_key ] ) ) {
 				return;
 			}
 
