@@ -39,6 +39,11 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.0.34 - 2023-10-05 =
+* Add - Filter the size of the Facebook product image.
+* Fix - AddToCart duplication when other plugins clone cart.
+* Tweak - WC 8.2 compatibility.
+
 = 3.0.33 - 2023-09-05 =
 * Dev - Updates PHP unit tests matrix in git workflow and versions of dev dependencies in composer.
 * Fix - Issues with Facebook Sync status display while product filtering in admin.
