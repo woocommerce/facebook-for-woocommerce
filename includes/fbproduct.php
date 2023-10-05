@@ -226,7 +226,15 @@ class WC_Facebook_Product {
 
 		$image_urls = array();
 
-		$product_image_url        = wp_get_attachment_url( $this->woo_product->get_image_id() );
+		/**
+		 * Filters the FB product image size.
+		 *
+		 * @since 3.0.34
+		 *
+		 * @param string $size The image size. e.g. 'full', 'medium', 'thumbnail'.
+		 */
+		$image_size               = apply_filters( 'facebook_for_woocommerce_fb_product_image_size', 'full' );
+		$product_image_url        = wp_get_attachment_image_url( $this->woo_product->get_image_id(), $image_size ); ;
 		$parent_product_image_url = null;
 		$custom_image_url         = $this->woo_product->get_meta( self::FB_PRODUCT_IMAGE );
 
@@ -234,7 +242,7 @@ class WC_Facebook_Product {
 
 			if ( $parent_product = wc_get_product( $this->woo_product->get_parent_id() ) ) {
 
-				$parent_product_image_url = wp_get_attachment_url( $parent_product->get_image_id() );
+				$parent_product_image_url = wp_get_attachment_image_url( $parent_product->get_image_id(), $image_size );
 			}
 		}
 
