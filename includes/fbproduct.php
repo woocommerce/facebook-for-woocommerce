@@ -229,7 +229,7 @@ class WC_Facebook_Product {
 		/**
 		 * Filters the FB product image size.
 		 *
-		 * @since x.x.x
+		 * @since 3.0.34
 		 *
 		 * @param string $size The image size. e.g. 'full', 'medium', 'thumbnail'.
 		 */
