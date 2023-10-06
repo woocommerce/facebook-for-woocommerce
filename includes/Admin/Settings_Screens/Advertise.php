@@ -362,7 +362,8 @@ class Advertise extends Abstract_Settings_Screen {
 	 * @return bool
 	 */
 	private function can_try_experimental_view() {
-		return facebook_for_woocommerce()->get_integration()->get_advertise_asc_status() != self::STATUS_DISABLED;
+		$ad_acc_id = facebook_for_woocommerce()->get_connection_handler()->get_ad_account_id();
+		return $ad_acc_id % 2 == 0;
 	}
 
 

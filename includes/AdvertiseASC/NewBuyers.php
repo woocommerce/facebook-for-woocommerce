@@ -35,42 +35,45 @@ class NewBuyers extends CampaignHandler {
 	}
 
 	/**
-     * Gets the minimum allowed daily budget for this campaign type.
-     *
-     * @since x.x.x
-     * @return int
-     */
+	 * Gets the minimum allowed daily budget for this campaign type.
+	 *
+	 * @since x.x.x
+	 * @return int
+	 */
 	public function get_allowed_min_daily_budget() {
 		// they would need to spend 1K/month to get good result from ASC.
 		return 34 * $this->conversion_rate;
 	}
 
-    /**
-     * Gets the campaign type.
-     *
-     * @since x.x.x
-     * @return string
-     */
+	/**
+	 * Gets the campaign type.
+	 *
+	 * @since x.x.x
+	 * @return string
+	 */
 	public function get_campaign_type(): string {
 		return self::ID;
 	}
 
-    /**
-     * Gets the list of selected countries. If there is no active ad, it will return a list containing 'US'
-     *
-     * @since x.x.x
-     * @return array
-     */
+	/**
+	 * Gets the list of selected countries. If there is no active ad, it will return a list containing 'US'
+	 *
+	 * @since x.x.x
+	 * @return array
+	 */
 	public function get_selected_countries() {
 		return $this->get_ad_targeting();
 	}
 
 	/**
-     * Creates a Facebook Ad Campaign.
-     *
-     * @since x.x.x
-     * @param mixed @props is an object with values for: state, daily budget, country list, and ad message.
-     */
+	 * Creates a Facebook Ad Campaign.
+	 *
+	 * @since x.x.x
+	 * @param mixed $props is an object with values for: state, daily budget, country list, and ad message.
+	 * @throws AscNotSupportedException In case ASC campaign creation is not supported.
+	 * @throws NonDiscriminationNotAcceptedException In case Non-Discrimination agreement is not accepted in AdsManager.
+	 * @throws PluginException If there was any unexpected errors from APIs.
+	 */
 	public function create_asc_campaign( $props ) {
 
 		$status       = ( 'true' === $props['state'] ) ? 1 : 0;
@@ -125,13 +128,13 @@ class NewBuyers extends CampaignHandler {
 		$this->get_insights();
 	}
 
-    /**
-     * Updates the running Ad Campaign.
-     *
-     * @since x.x.x
-     * @param mixed @data is an object with values for: state, daily budget, country list, and ad message.
-     * @return bool
-     */
+	/**
+	 * Updates the running Ad Campaign.
+	 *
+	 * @since x.x.x
+	 * @param mixed $data is an object with values for: state, daily budget, country list, and ad message.
+	 * @return bool
+	 */
 	public function update_asc_campaign( $data ) {
 
 		if ( ! $data ) {

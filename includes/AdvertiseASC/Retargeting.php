@@ -34,13 +34,13 @@ class Retargeting extends CampaignHandler {
 		parent::__construct( 'Retargeting' );
 	}
 
-    /**
-     * Updates the running Ad Campaign.
-     *
-     * @since x.x.x
-     * @param mixed @data is an object with values for: state, daily budget, and ad message.
-     * @return bool
-     */
+	/**
+	 * Updates the running Ad Campaign.
+	 *
+	 * @since x.x.x
+	 * @param mixed $data is an object with values for: state, daily budget, and ad message.
+	 * @return bool
+	 */
 	public function update_asc_campaign( $data ) {
 
 		$status           = ( 'true' === $props['state'] ) ? 1 : 0;
@@ -55,12 +55,12 @@ class Retargeting extends CampaignHandler {
 		return true;
 	}
 
-    /**
-     * Creates a Facebook Ad Campaign.
-     *
-     * @since x.x.x
-     * @param mixed @props is an object with values for: state, daily budget, and ad message.
-     */
+	/**
+	 * Creates a Facebook Ad Campaign.
+	 *
+	 * @since x.x.x
+	 * @param mixed $props is an object with values for: state, daily budget, and ad message.
+	 */
 	public function create_asc_campaign( $props ) {
 
 		$status           = ( 'true' === $props['state'] ) ? 1 : 0;
@@ -80,31 +80,31 @@ class Retargeting extends CampaignHandler {
 	}
 
 	/**
-     * Gets the minimum allowed daily budget for this campaign type.
-     *
-     * @since x.x.x
-     * @return int
-     */
+	 * Gets the minimum allowed daily budget for this campaign type.
+	 *
+	 * @since x.x.x
+	 * @return int
+	 */
 	public function get_allowed_min_daily_budget() {
 		return $this->get_min_daily_budget();
 	}
 
-    /**
-     * Gets the list of selected countries. For this campaign type it only returns an empty array.
-     *
-     * @since x.x.x
-     * @return array
-     */
+	/**
+	 * Gets the list of selected countries. For this campaign type it only returns an empty array.
+	 *
+	 * @since x.x.x
+	 * @return array
+	 */
 	public function get_selected_countries() {
 		return [];
 	}
 
-    /**
-     * Gets the campaign type.
-     *
-     * @since x.x.x
-     * @return string
-     */
+	/**
+	 * Gets the campaign type.
+	 *
+	 * @since x.x.x
+	 * @return string
+	 */
 	public function get_campaign_type(): string {
 
 		return self::ID;
