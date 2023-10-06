@@ -1,4 +1,3 @@
-import React from 'react';
 import CampaignSetupView from './campaign-management-view';
 import { Layout } from 'antd';
 

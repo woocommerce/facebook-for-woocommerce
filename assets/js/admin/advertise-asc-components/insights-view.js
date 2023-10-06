@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from '@wordpress/element';
 import { Button, Card, Form, Modal, Select, Space, Spin, Switch, Tooltip } from 'antd';
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { CountryList } from './eligible-country-list'
@@ -19,29 +19,33 @@ function UpdateState(callback, campaignType, state) {
         .then((response) => response.json())
         .then((data) => {
             if (!data['success']) {
-                console.log(data);
-            }
-
-            callback();
+                Modal.error({
+                    title: 'Failed to update status',
+                    content: data['data'],
+                  });
+            } else {
+                callback();
+            }            
         })
         .catch((err) => {
-            //TODO: HANDLE ERROR
-            console.log(err.message);
+            Modal.error({
+                title: 'Failed to update status',
+                content: err.message,
+              });
         });
-
 }
 
 const FunnelComponentView = (props) => {
 
     const sum = props.reach + props.clicks + props.views + props.addToCarts + props.purchases;
     return (
-        <table class="bar-chart funnel-table">
+        <table class="bar-chart transparent-background">
             <thead style={{ height: '90%' }}>
-                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.reach / sum) + 'px' }}></div></th>
-                <th><div style={{ marginRight:'20px',width:'50px',height: 200.0 * (props.clicks / sum) + 'px' }}></div></th>
-                <th><div style={{ marginRight:'20px',width:'50px',height: 200.0 * (props.views / sum) + 'px' }}></div></th>
-                <th><div style={{ marginRight:'20px',width:'50px',height: 200.0 * (props.addToCarts / sum) + 'px' }}></div></th>
-                <th><div style={{ marginRight:'20px',width:'50px',height: 200.0 * (props.purchases / sum) + 'px' }}></div></th>
+                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.reach        / sum) + 'px' }}></div></th>
+                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.clicks       / sum) + 'px' }}></div></th>
+                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.views        / sum) + 'px' }}></div></th>
+                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.addToCarts   / sum) + 'px' }}></div></th>
+                <th><div style={{ marginRight:'20px', width:'50px', height: 200.0 * (props.purchases    / sum) + 'px' }}></div></th>
                 <th></th>
             </thead>
             <tbody style={{ height: '10%' }}>
@@ -60,13 +64,7 @@ const FunnelComponentView = (props) => {
 
 const InsightsView = (props) => {
 
-    const countryPairs = CountryList.map((c) => {
-        return {
-            key: Object.keys(c)[0],
-            value: Object.values(c)[0]
-        }
-    });
-    const selectedCountries = countryPairs.filter(c => { return props.countryList.indexOf(c.key) >= 0 });
+    const selectedCountries = CountryList.map((c) => { return { key: Object.keys(c)[0], value: Object.values(c)[0]}}).filter(c => { return props.countryList.indexOf(c.key) >= 0 });
     const [loading, setLoading] = useState(false);
     const [state, setState] = useState(props.status);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,6 +74,7 @@ const InsightsView = (props) => {
     const onEditButtonClicked = () => {
         window.editCampaignButtonClicked(props.campaignType);
     };
+
     const onStatusChange = (newValue) => {
         setState(newValue);
         setLoading(true);
@@ -94,42 +93,42 @@ const InsightsView = (props) => {
                         <Space direction='horizontal' style={{ width: '100%' }}>
                             <table style={{ textAlign: 'center', verticalAlign: 'top' }}>
                                 <thead >
-                                    <th><p style={{ margin: '0 20px', padding: 0 }}>Status</p></th>
-                                    <th><p style={{ margin: '0 20px', padding: 0 }}>Spend</p></th>
-                                    <th><p style={{ margin: '0 20px', padding: 0 }}>Daily Budget</p></th>
-                                    {props.campaignType == 'retargeting' ? (<></>) :(<th><p style={{ margin: '0 20px', padding: 0 }}>Country</p></th>)}
+                                    <th><p className="insights-header">Status</p></th>
+                                    <th><p className="insights-header">Spend</p></th>
+                                    <th><p className="insights-header">Daily Budget</p></th>
+                                    {props.campaignType == 'retargeting' ? (<></>) :(<th><p className="insights-header">Country</p></th>)}
                                     
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <Spin spinning={loading} style={{ margin: 0, padding: 0 }}>
-                                                <Form.Item style={{ margin: 0, padding: 0 }}>
+                                            <Spin spinning={loading} className='zero-border-element'>
+                                                <Form.Item className='zero-border-element'>
                                                     <Switch checked={state}
-                                                        style={{ margin: 0, padding: 0 }}
+                                                        className='zero-border-element'
                                                         checkedChildren="On"
                                                         unCheckedChildren="Off"
                                                         onChange={(e) => { onStatusChange(e); }} />
                                                 </Form.Item>
                                             </Spin>
                                         </td>
-                                        <td><p style={{ margin: 0, padding: 0 }}>{props.spend} {props.currency}</p></td>
-                                        <td><p style={{ margin: 0, padding: 0 }}>{props.dailyBudget} {props.currency}</p></td>
+                                        <td><p className='zero-border-element'>{props.spend} {props.currency}</p></td>
+                                        <td><p className='zero-border-element'>{props.dailyBudget} {props.currency}</p></td>
                                         {props.campaignType == 'retargeting' ? (<></>) :(
                                         <td>
                                             <Select mode="multiple"
-                                                showSearch={false}
-                                                maxTagCount={5}
-                                                onChange={() => { }}
-                                                value={selectedCountries.map((item) => ({
-                                                    value: item['key'],
-                                                    label: item['value']
-                                                }))}
-                                                style={{ marginTop: 0, width: '100%', maxWidth: '200px', maxHeight: '150px', whiteSpace: 'nowrap', overflow: 'auto' }}
-                                                options={selectedCountries.map((item) => ({
-                                                    value: item['key'],
-                                                    label: item['value']
-                                                }))} />
+                                                    className='country-selector'
+                                                    showSearch={false}
+                                                    maxTagCount={5}
+                                                    onChange={() => { }}
+                                                    value={selectedCountries.map((item) => ({
+                                                        value: item['key'],
+                                                        label: item['value']
+                                                    }))}
+                                                    options={selectedCountries.map((item) => ({
+                                                        value: item['key'],
+                                                        label: item['value']
+                                                    }))} />
                                         </td>)}
                                     </tr>
                                 </tbody>

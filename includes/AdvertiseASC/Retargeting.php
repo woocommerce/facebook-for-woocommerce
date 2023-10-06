@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 class Retargeting extends CampaignHandler {
 
 	/** @var string holding the ID for this campangin type */
-	const ID = 'retargeting';
+	const ID                   = 'retargeting';
 	const VISIT_PERIOD_SECONDS = 12 * 24 * 3600;
 
 	/** @var string the default message shown as Ad Message */
@@ -34,24 +34,129 @@ class Retargeting extends CampaignHandler {
 		parent::__construct( 'Retargeting' );
 	}
 
+    /**
+     * Updates the running Ad Campaign.
+     *
+     * @since x.x.x
+     * @param mixed @data is an object with values for: state, daily budget, and ad message.
+     * @return bool
+     */
+	public function update_asc_campaign( $data ) {
+
+		$status           = ( 'true' === $props['state'] ) ? 1 : 0;
+		$new_daily_budget = $data['daily_budget'];
+		$new_ad_message   = $data['ad_message'];
+		$this->apply_adset_changes( $new_daily_budget * 100 );
+		$this->apply_adcreative_changes( $new_ad_message );
+
+		if ( $status ) {
+			$this->set_ad_status( $status );
+		}
+		return true;
+	}
+
+    /**
+     * Creates a Facebook Ad Campaign.
+     *
+     * @since x.x.x
+     * @param mixed @props is an object with values for: state, daily budget, and ad message.
+     */
+	public function create_asc_campaign( $props ) {
+
+		$status           = ( 'true' === $props['state'] ) ? 1 : 0;
+		$this->campaign   = $this->setup_campaign( $this->product_catalog_id );
+		$this->adset      = $this->setup_adset( $this->campaign['id'], $this->bid_amount, $props['daily_budget'] * 100, $this->default_product_set, self::VISIT_PERIOD_SECONDS );
+		$this->adcreative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $props['ad_message'], $this->default_product_set );
+		$this->ad         = $this->setup_ad();
+
+		$this->update_stored_data();
+
+		if ( $status ) {
+			$this->set_ad_status( $status );
+		}
+
+		$this->get_insights();
+
+	}
+
+	/**
+     * Gets the minimum allowed daily budget for this campaign type.
+     *
+     * @since x.x.x
+     * @return int
+     */
+	public function get_allowed_min_daily_budget() {
+		return $this->get_min_daily_budget();
+	}
+
+    /**
+     * Gets the list of selected countries. For this campaign type it only returns an empty array.
+     *
+     * @since x.x.x
+     * @return array
+     */
+	public function get_selected_countries() {
+		return [];
+	}
+
+    /**
+     * Gets the campaign type.
+     *
+     * @since x.x.x
+     * @return string
+     */
+	public function get_campaign_type(): string {
+
+		return self::ID;
+
+	}
+
+	protected function get_adcreative_creation_params( $name, $page_id, $link, $message, $product_set_id ) {
+
+		$properties = array(
+			'name'              => $name,
+			'product_set_id'    => $product_set_id,
+			'object_story_spec' => array(
+				'page_id'              => $page_id,
+				'multi_share_end_card' => true,
+				'show_multiple_images' => false,
+				'template_data'        => array(
+					'description'    => '{{product.current_price strip_zeros}}',
+					'link'           => $link,
+					'message'        => $message,
+					'name'           => '{{product.name | titleize}}',
+					'call_to_action' => array( 'type' => 'SHOP_NOW' ),
+				),
+
+			),
+		);
+
+		if ( $this->instagram_actor_id ) {
+			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;
+		}
+
+		return $properties;
+	}
+
 	protected function get_id() {
 
 		return self::ID;
 
 	}
 
-	public function update_asc_campaign( $data ) {
+	protected function setup_campaign( string $catalog_id ) {
 
-		$status = $data['state'] == 'true' ? 1 : 0;
-		$new_daily_budget = $data['daily_budget'];
-		$new_ad_message = $data['ad_message'];
-		$this->apply_adset_changes( $new_daily_budget * 100 );
-		$this->apply_adcreative_changes( $new_ad_message );
+		$properties = array(
+			'name'                  => $this->campaign_name,
+			'objective'             => 'PRODUCT_CATALOG_SALES',
+			'special_ad_categories' => array(),
+			'promoted_object'       => array(
+				'product_catalog_id' => $catalog_id,
+			),
+			'status'                => 'PAUSED',
+		);
 
-		if ($status) {
-			$this->set_ad_status($status);
-		}
-		return true;
+		return $this->create_campaign( $properties );
 	}
 
 	private function apply_adcreative_changes( $new_message ) {
@@ -92,7 +197,7 @@ class Retargeting extends CampaignHandler {
 	private function apply_adset_changes( $daily_budget ) {
 
 		$new_daily_budget = $daily_budget ? $daily_budget : $this->adset['daily_budget'];
-		
+
 		if ( $daily_budget ) {
 			$props                 = [];
 			$props['daily_budget'] = $new_daily_budget;
@@ -111,47 +216,6 @@ class Retargeting extends CampaignHandler {
 			}
 		}
 	}
-
-	protected function setup_campaign( string $catalog_id ) {
-
-		$properties = array(
-			'name'                  => $this->campaign_name,
-			'objective'             => 'PRODUCT_CATALOG_SALES',
-			'special_ad_categories' => array(),
-			'promoted_object'       => array(
-				'product_catalog_id' => $catalog_id,
-			),
-			'status'                => 'PAUSED',
-		);
-
-		return $this->create_campaign( $properties );
-	}
-
-	public function create_asc_campaign( $props ) {
-		
-		$status = $props['state'] == 'true' ? 1 : 0;
-		$this->campaign   = $this->setup_campaign( $this->product_catalog_id );
-		$this->adset      = $this->setup_adset( $this->campaign['id'], $this->bid_amount, $props['daily_budget'] * 100, $this->default_product_set, self::VISIT_PERIOD_SECONDS);
-		$this->adcreative = $this->setup_adcreative( $this->ad_creative_name, $this->facebook_page_id, $this->store_url, $props['ad_message'], $this->default_product_set );
-		$this->ad         = $this->setup_ad();
-
-		$this->update_stored_data();
-
-		if ($status) {
-			$this->set_ad_status($status);
-		}
-
-		$this->get_insights();
-
-	}
-
-	public function get_allowed_min_daily_budget(){
-		return $this->get_min_daily_budget();
-	}
-
-    public function get_selected_countries() {
-		return [];
-    }
 
 	private function get_adset_targeting_creation_params( $product_set_id, $seconds ) {
 
@@ -214,33 +278,6 @@ class Retargeting extends CampaignHandler {
 		return $this->create_adset( $params );
 	}
 
-	protected function get_adcreative_creation_params( $name, $page_id, $link, $message, $product_set_id ) {
-
-		$properties = array(
-			'name'              => $name,
-			'product_set_id'    => $product_set_id,
-			'object_story_spec' => array(
-				'page_id'              => $page_id,
-				'multi_share_end_card' => true,
-				'show_multiple_images' => false,
-				'template_data'        => array(
-					'description'    => '{{product.current_price strip_zeros}}',
-					'link'           => $link,
-					'message'        => $message,
-					'name'           => '{{product.name | titleize}}',
-					'call_to_action' => array( 'type' => 'SHOP_NOW' ),
-				),
-
-			),
-		);
-
-		if ($this->instagram_actor_id) {
-			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;
-		}
-
-		return $properties;
-	}
-
 	private function setup_adcreative( string $ad_creative_name, string $page_id, string $link, string $message, string $product_set_id ) {
 
 		$properties = $this->get_adcreative_creation_params( $ad_creative_name, $page_id, $link, $message, $product_set_id );
@@ -259,23 +296,5 @@ class Retargeting extends CampaignHandler {
 		);
 
 		return $this->create_ad( $properties );
-	}
-
-	public function get_campaign_type(): string {
-
-		return self::ID;
-
-	}
-
-	private function get_ad_last_visit_period() {
-
-		if ( ! $this->is_running() ) {
-
-			return reset( $this->get_visit_periods() );
-		}
-
-		$val = ( $this->adset['targeting']['product_audience_specs'][0]['inclusions'][0]['retention_seconds'] / 3600 ) / 24;
-
-		return $val;
 	}
 }

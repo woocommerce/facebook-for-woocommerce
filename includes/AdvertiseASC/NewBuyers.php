@@ -34,15 +34,151 @@ class NewBuyers extends CampaignHandler {
 		parent::__construct( 'New Buyers' );
 	}
 
-	public function get_allowed_min_daily_budget(){
+	/**
+     * Gets the minimum allowed daily budget for this campaign type.
+     *
+     * @since x.x.x
+     * @return int
+     */
+	public function get_allowed_min_daily_budget() {
 		// they would need to spend 1K/month to get good result from ASC.
 		return 34 * $this->conversion_rate;
+	}
+
+    /**
+     * Gets the campaign type.
+     *
+     * @since x.x.x
+     * @return string
+     */
+	public function get_campaign_type(): string {
+		return self::ID;
+	}
+
+    /**
+     * Gets the list of selected countries. If there is no active ad, it will return a list containing 'US'
+     *
+     * @since x.x.x
+     * @return array
+     */
+	public function get_selected_countries() {
+		return $this->get_ad_targeting();
+	}
+
+	/**
+     * Creates a Facebook Ad Campaign.
+     *
+     * @since x.x.x
+     * @param mixed @props is an object with values for: state, daily budget, country list, and ad message.
+     */
+	public function create_asc_campaign( $props ) {
+
+		$status       = ( 'true' === $props['state'] ) ? 1 : 0;
+		$daily_budget = $props['daily_budget'];
+		$ad_message   = $props['ad_message'];
+		$country_list = $props['country'];
+
+		$this->facebook_pixel_id = $this->integration->get_facebook_pixel_id();
+
+		try {
+
+			$this->campaign = $this->setup_campaign();
+
+		} catch ( ApiException $e ) {
+
+			if ( $e->getCode() === 2 ) {
+
+				throw new AscNotSupportedException();
+
+			} else {
+
+				$message = sprintf( 'An exception happened trying to setup the New Buyers campaign for the first time. ' . $e->getMessage() );
+				\WC_Facebookcommerce_Utils::log( $message );
+				throw new PluginException( $message );
+
+			}
+		}
+
+		try {
+
+			$this->adset      = $this->setup_adset( $this->facebook_pixel_id, $this->campaign['id'], $daily_budget * 100, $country_list );
+			$this->ad         = $this->setup_ad( $this->adset['id'], $this->ad_name, $this->facebook_page_id, $ad_message, $this->default_product_set, $this->store_url );
+			$this->adcreative = $this->fetch_adcreative( $this->ad['adcreatives']['data'][0]['id'] );
+
+		} catch ( ApiException $e ) {
+
+			$message = sprintf( 'An exception happened trying to setup the New Buyers campaign objects for the first time. ' . $e->getMessage() );
+			\WC_Facebookcommerce_Utils::log( $message );
+			if ( str_contains( $e->getMessage(), 'non-discrimination' ) ) {
+				throw new NonDiscriminationNotAcceptedException();
+			} else {
+				throw new PluginException( $message );
+			}
+		}
+
+		$this->update_stored_data();
+
+		if ( $status ) {
+			$this->set_ad_status( $status );
+		}
+
+		$this->get_insights();
+	}
+
+    /**
+     * Updates the running Ad Campaign.
+     *
+     * @since x.x.x
+     * @param mixed @data is an object with values for: state, daily budget, country list, and ad message.
+     * @return bool
+     */
+	public function update_asc_campaign( $data ) {
+
+		if ( ! $data ) {
+			return true;
+		}
+
+		$message      = $data['ad_message'];
+		$countries    = $data['country'] ?? [];
+		$daily_budget = $data['daily_budget'];
+		$status       = ( 'true' === $props['state'] ) ? 1 : 0;
+
+		$this->apply_creative_changes( $message );
+
+		$this->apply_adset_changes( $countries, $daily_budget );
+
+		$this->set_ad_status( $status );
+
+		return true;
 	}
 
 	protected function get_id() {
 
 		return self::ID;
 
+	}
+
+	protected function get_adcreative_creation_params( $ad_creative_name, $page_id, $store_url, $ad_message, $product_set_id ) {
+
+		$properties = array(
+			'name'              => $ad_creative_name,
+			'product_set_id'    => $product_set_id,
+			'object_story_spec' => array(
+				'page_id'       => $page_id,
+				'template_data' => array(
+					'description' => '{{product.price}}',
+					'link'        => $store_url,
+					'message'     => $ad_message,
+					'name'        => '{{product.name | titleize}}',
+				),
+			),
+		);
+
+		if ( $this->instagram_actor_id ) {
+			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;
+		}
+
+		return $properties;
 	}
 
 	private function setup_campaign() {
@@ -55,9 +191,9 @@ class NewBuyers extends CampaignHandler {
 			'status'                => 'PAUSED',
 		);
 		try {
-		
+
 			return $this->create_campaign( $properties );
-		
+
 		} catch ( ApiException $e ) {
 
 			if ( $e->getCode() === 2 ) {
@@ -105,29 +241,6 @@ class NewBuyers extends CampaignHandler {
 		);
 	}
 
-	protected function get_adcreative_creation_params( $ad_creative_name, $page_id, $store_url, $ad_message, $product_set_id ) {
-
-		$properties = array(
-			'name'              => $ad_creative_name,
-			'product_set_id'    => $product_set_id,
-			'object_story_spec' => array(
-				'page_id'       => $page_id,
-				'template_data' => array(
-					'description' => '{{product.price}}',
-					'link'        => $store_url,
-					'message'     => $ad_message,
-					'name'        => '{{product.name | titleize}}',
-				),
-			),
-		);
-
-		if ($this->instagram_actor_id) {
-			$properties['object_story_spec']['instagram_actor_id'] = $this->instagram_actor_id;			
-		}
-		
-		return $properties;
-	}
-
 	private function get_ad_creation_params( $ad_name, $adset_id, $creative ) {
 
 		return array(
@@ -143,80 +256,6 @@ class NewBuyers extends CampaignHandler {
 		$creative = $this->get_adcreative_creation_params( $this->ad_creative_name, $page_id, $store_url, $ad_description_message, $product_set_id );
 		return $this->create_ad( $this->get_ad_creation_params( $ad_name, $adset_id, $creative ) );
 
-	}
-
-	public function create_asc_campaign( $props ) {
-
-		$status = $props['state'] == 'true' ? 1 : 0;
-		$daily_budget = $props['daily_budget'];
-		$ad_message = $props['ad_message'];
-		$countryList = $props['country'];
-
-		$this->facebook_pixel_id = $this->integration->get_facebook_pixel_id();
-
-		try {
-
-			$this->campaign = $this->setup_campaign();
-
-		} catch ( ApiException $e ) {
-
-			if ( $e->getCode() === 2 ) {
-
-				throw new AscNotSupportedException();
-
-			} else {
-
-				$message = sprintf( 'An exception happened trying to setup the New Buyers campaign for the first time. ' . $e->getMessage() );
-				\WC_Facebookcommerce_Utils::log( $message );
-				throw new PluginException( $message );
-
-			}
-		}
-
-		try {
-
-			$this->adset      = $this->setup_adset( $this->facebook_pixel_id, $this->campaign['id'], $daily_budget * 100, $countryList);
-			$this->ad         = $this->setup_ad( $this->adset['id'], $this->ad_name, $this->facebook_page_id, $ad_message, $this->default_product_set, $this->store_url );
-			$this->adcreative = $this->fetch_adcreative( $this->ad['adcreatives']['data'][0]['id'] );
-
-		} catch ( ApiException $e ) {
-
-			$message = sprintf( 'An exception happened trying to setup the New Buyers campaign objects for the first time. ' . $e->getMessage() );
-			\WC_Facebookcommerce_Utils::log( $message );
-			if ( str_contains( $e->getMessage(), 'non-discrimination' ) ) {
-				throw new NonDiscriminationNotAcceptedException();
-			} else {
-				throw new PluginException( $message );
-			}
-		}
-
-		$this->update_stored_data();
-
-		if ($status) {
-			$this->set_ad_status($status);
-		}
-
-		$this->get_insights();
-	}
-
-	public function update_asc_campaign( $data ) {
-
-		if ( ! $data ) {
-			return true;
-		}
-
-		$message = $data['ad_message'];
-		$countries = $data['country'] ?? [];
-		$daily_budget = $data['daily_budget'];
-		$status = $props['state'] == 'true' ? 1 : 0;
-
-		$this->apply_creative_changes( $message );
-		
-		$this->apply_adset_changes( $countries, $daily_budget );
-		
-		$this->set_ad_status( $status );
-		
-		return true;
 	}
 
 	private function apply_creative_changes( $message ) {
@@ -283,18 +322,10 @@ class NewBuyers extends CampaignHandler {
 
 	}
 
-    public function get_selected_countries() {
-		return $this->get_ad_targeting();
-    }
-
 	private function get_ad_targeting() {
 		if ( ! $this->is_running() ) {
 			return [ 'US' ];
 		}
 		return $this->adset['targeting']['geo_locations']['countries'];
-	}
-
-	public function get_campaign_type(): string {
-		return self::ID;
 	}
 }

@@ -71,6 +71,13 @@ class Advertise extends Abstract_Settings_Screen {
 		add_action( 'init', array( $this, 'add_frontend_hooks' ) );
 	}
 
+
+	/**
+	 * Adds the WP hooks to be able to run the frontend
+	 *
+	 * @since x.x.x
+	 *
+	 */
 	public function add_frontend_hooks(){
 
 		wp_enqueue_script(
@@ -176,7 +183,7 @@ class Advertise extends Abstract_Settings_Screen {
 	}
 
 
-	/*
+	/**
 	 * Converts the given timezone string to a name if needed.
 	 *
 	 * @since 2.2.0
@@ -256,7 +263,7 @@ class Advertise extends Abstract_Settings_Screen {
 	}
 
 
-	/*
+	/**
 	 * Renders the ASC Experimental view.
 	 *
 	 * @since x.x.x
@@ -264,18 +271,29 @@ class Advertise extends Abstract_Settings_Screen {
 	 */
 	private function experimental_view_render() {
 
-		// if ( $this->can_try_experimental_view() ) {
+		if ( $this->can_try_experimental_view() ) {
 
 		 	$this->try_render_experimental_view();
 
-		// } else {
+		} else {
 
-		// 	$this->render_lwi_view();
+			$this->render_lwi_view();
 
-		// }
+		}
 	}
 
-	private function render_dashboard( $type, $text1, $text2 ) {
+
+	/**
+	 * Generates the HTML DOM for a given dashboard.
+	 *
+	 * @since x.x.x
+	 * @param string @type. Sets the input type. values: (new-buyers, retargeting)
+	 * @param string @title. The title of the dashboard
+	 * @param string @subtitle_row1. Row1 of the subtitle of the dashboard
+	 * @param string @subtitle_row2. Row2 of the subtitle of the dashboard
+	 *
+	 */
+	private function render_dashboard( $type, $title, $subtitle_row1, $subtitle_row2 ) {
 		$campaign_handler	= facebook_for_woocommerce()->get_advertise_asc_handler($type);
 		$min_daily_budget	= $campaign_handler->get_allowed_min_daily_budget();
 		$currency			= $campaign_handler->get_currency();
@@ -320,14 +338,14 @@ class Advertise extends Abstract_Settings_Screen {
 						<img id="<?php echo $type?>-create-campaign-img" style="width:50px;height:50px;"/>
 					</div>
 					<div class="main-ui-container-item">
-						<p class="main-ui-header">Engage with your website visitors</p>
+						<p class="main-ui-header"><?php echo $title?></p>
 					</div>
 					<div class="main-ui-container-item">
 						<button class='button button-large' id='<?php echo $type?>-create-campaign-btn' disabled>Get Started</button>
 					</div>
 					<div class="main-ui-container-item">
-						<p style="line-height: 10px;"><?php echo $text1?></p>
-						<p style="line-height: 10px;"><?php echo $text2?></p>
+						<p style="line-height: 10px;"><?php echo $subtitle_row1?></p>
+						<p style="line-height: 10px;"><?php echo $subtitle_row2?></p>
 					</div>
 				</div>
 			</div>
@@ -335,16 +353,42 @@ class Advertise extends Abstract_Settings_Screen {
 		}
 	}
 
+
+	/** 
+	 * Checks whether the tool can show the experimental view or not
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
 	private function can_try_experimental_view() {
 		return facebook_for_woocommerce()->get_integration()->get_advertise_asc_status() != self::STATUS_DISABLED;
 	}
 
 
+	/** 
+	 * Creates the translated text including a link
+	 *
+	 * @since x.x.x
+	 * @param string $pretext. Any text before the link text.
+	 * @param string $link. The link url
+	 * @param string $link_text. The text for the link
+	 * @param string $rest_of_text. Any text that should come after the link
+	 * 
+	 * @return bool
+	 */
 	private function translate_with_link( $pretext, $link, $link_text, $rest_of_text ) {
 		return $this->get_escaped_translation( $pretext ) . " <a href='" . $link . "'>" . $this->get_escaped_translation( $link_text ) . "</a>" . $this->get_escaped_translation( $rest_of_text );
 	}
 
 
+	/**
+	 * Tries to render the experimental view. If something fails, it shows the issue.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
 	private function try_render_experimental_view() {
 		
 		try {
@@ -357,12 +401,12 @@ class Advertise extends Abstract_Settings_Screen {
 					<table>
 						<tr>
 							<td>
-								<?php $this->render_dashboard(self::ASC_CAMPAIGN_TYPE_NEW_BUYERS, "Reach out to potential new buyers for your products", "using Advantage+ Shopping (ASC)"); ?>
+								<?php $this->render_dashboard(self::ASC_CAMPAIGN_TYPE_NEW_BUYERS, "Find new customers", "Reach out to potential new buyers for your products", "using Advantage+ Shopping (ASC)"); ?>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<?php $this->render_dashboard(self::ASC_CAMPAIGN_TYPE_RETARGETING, "Bring back visitors who visited your website and didn't complete", "their purchase using Advantage+ Catalog (DPA)"); ?>
+								<?php $this->render_dashboard(self::ASC_CAMPAIGN_TYPE_RETARGETING, "Engage with your website visitors", "Bring back visitors who visited your website and didn't complete", "their purchase using Advantage+ Catalog (DPA)"); ?>
 							</td>
 						</tr>
 					</table>
@@ -452,6 +496,12 @@ class Advertise extends Abstract_Settings_Screen {
 	}
 
 
+	/** 
+	 * Closes the open html tags in case of an exception.
+	 *
+	 * @since x.x.x
+	 * 
+	 */
 	private function remove_rendered_when_exception_happened() {
 
 		?>
@@ -463,7 +513,8 @@ class Advertise extends Abstract_Settings_Screen {
 
 	}
 
-	/*
+
+	/**
 	 * Returns an escaped translation of the input text, in the realm of this plugin
 	 *
 	 * @since x.x.x
@@ -473,10 +524,6 @@ class Advertise extends Abstract_Settings_Screen {
 	 */
 	private function get_escaped_translation( $text ) {
 		return esc_html__( $text, 'facebook-for-woocommerce' );
-	}
-
-	private function get_formatted_number( $number, $floating_points, $separator = '') {
-		return number_format( $number, $floating_points, '.', $separator);
 	}
 
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from '@wordpress/element';
 import { Card, Space, Spin, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons'
 
 const { Title } = Typography;
-
 
 function ExtractIFrame(iFrameText, onLoaded) {
     const urlStartIndex = iFrameText.indexOf("src") + 5;
@@ -12,21 +11,13 @@ function ExtractIFrame(iFrameText, onLoaded) {
     const url = iFrameText.substring(urlStartIndex, urlEndIndex).replace('amp;', '');
 
     return (
-        <div style={{ overflow: 'hidden', background: 'transparent', margin: 0, padding: 0 }}>
-            <iframe
+        <div className='fb-asc-ads zero-border-element preview-object-iframe-parent' >
+            <iframe className='fb-asc-ads zero-border-element preview-object-iframe'
                 src={url}
-                onLoad={() => { onLoaded(); }}
-                style={{
-                    border: 'none',
-                    margin: '0 15px',
-                    overflow: 'hidden',
-                    width: '330px',
-                    height: '550px'
-                }} />
+                onLoad={() => { onLoaded(); }} />
         </div>
     );
 }
-
 
 const CampaignPreviewComponentView = (props) => {
 
@@ -57,9 +48,6 @@ const CampaignPreviewView = (props) => {
             .then((response) => response.json())
             .then((data) => {
                 setResult(data);
-            })
-            .catch((err) => {
-                //console.log(err.message);
             });
     }, [setResult]);
 
@@ -69,7 +57,8 @@ const CampaignPreviewView = (props) => {
             <Space direction='horizontal'>
                 <>
                     {result["data"].map(function (o, i) {
-                        return (<CampaignPreviewComponentView text={o} />);
+                        const iframe = (<CampaignPreviewComponentView text={o} />);
+                        return (i === result['data'].length - 1) ? iframe : (<div style={{ marginRight:'30px' }}>{iframe}</div>);
                     })}
                 </>
             </Space>
@@ -78,8 +67,8 @@ const CampaignPreviewView = (props) => {
     else {
         props.onSizeChange(750, 600);
         return (
-            <Card style={{ width: '700px', height: '550px', display: 'inline-block' }}>
-                <div style={{ width: '650px', height: '475px', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+            <Card className='fb-asc-ads loading-preview-parent'>
+                <div className='fb-asc-ads loading-preview-container '>
                     <div>
                         <Title><LoadingOutlined /> Loading...</Title>
                     </div>

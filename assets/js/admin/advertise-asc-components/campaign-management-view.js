@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Form, Space, Spin, Steps } from 'antd';
+import { useState } from '@wordpress/element';
+import { Button, Form, Modal, Space, Spin, Steps } from 'antd';
 import CampaignEditView from './campaign-edit-view';
 import CampaignPreviewView from './campaign-preview-view'
 
@@ -29,7 +29,6 @@ const CampaignSetupView = (props) => {
         props.firstLoad = false;
     };
 
-
     const publishChanges = () => {
         
         const requestData = JSON.stringify({
@@ -49,19 +48,21 @@ const CampaignSetupView = (props) => {
         })
             .then((response) => response.json())
             .then((data) => {
-                //TODO: HANDLE ERROR, if success = false;
-                console.log(data);
-                if (data['success'] == false) {
-                                   // show  a modal   
-                                   console.log(data); 
+                if ( ! data['success'] ) {
+                    Modal.error({
+                        title: 'Publish changes failed',
+                        content: data['data'],
+                      });
                 } else {
                     props.onFinish();
                 }
                 setPublishing(false);
             })
             .catch((err) => {
-                //TODO: HANDLE ERROR
-                console.log(err.message);
+                Modal.error({
+                title: 'Publish changes failed',
+                content: err.mes,
+              });
             });
     };
 
@@ -108,11 +109,11 @@ const CampaignSetupView = (props) => {
                 <Space direction='vertical'>
                     <Form onFinish={goToPreviewPage} onFinishFailed={onFinishFailed}>
                         <CampaignEditView showCountry={props.campaignType != 'retargeting'} currency={currency} campaignType={props.campaignType} minDailyBudget={minDailyBudget} selectedCountries={countryList} currentStatus={currentState} onCountryListChange={(e) => { setCountryList(e); }} onStatusChange={(e) => { setCurrentState(e); }} message={adMessage} onMessageChange={(msg) => { setAdMessage(msg); }} dailyBudget={dailyBudget} onDailyBudgetChange={(budget) => { setDailyBudget(budget); }} />
-                        <div style={{ background: 'transparent', minWidth: '400px', width: '100%', height: '50px', position: 'relative' }}>
-                            <Form.Item style={{ position: 'absolute', left: 0, top:'5px' }}>
+                        <div className='navigation-footer-container'>
+                            <Form.Item className='navigation-footer-button fit-to-left' >
                                 <Button  onClick={() => props.onFinish()}>Cancel</Button>
                             </Form.Item>
-                            <Form.Item style={{ position: 'absolute', right: 0, top:'5px'  }}>
+                            <Form.Item className='navigation-footer-button fit-to-right'>
                                 <Button  htmlType='submit'>Next</Button>
                             </Form.Item>
                         </div>
@@ -121,18 +122,16 @@ const CampaignSetupView = (props) => {
             ) : (
                 <Space direction='vertical'>
                     <CampaignPreviewView message={adMessage} activeKey={activeKey} campaignType={props.campaignType} onSizeChange={()=>{}}/>
-                    <div style={{ background: 'transparent', minWidth: '400px', width: '100%', height: '50px', position: 'relative' }}>
-                        <Button disabled={publishing} style={{ position: 'absolute', left: 0 }} onClick={() => goToEditCampaignPage()}>Back</Button>
-                        <div style={{ background: 'transparent', position: 'absolute', right: 0}}>
-                        <Spin spinning={publishing} >
-                            <Button onClick={() => publishChanges()}>Publish Changes</Button>
-                        </Spin>
+                    <div className='navigation-footer-container'>
+                        <Button disabled={publishing} className='navigation-footer-button fit-to-left' onClick={() => goToEditCampaignPage()}>Back</Button>
+                        <div className='navigation-footer-button fit-to-right'>
+                            <Spin spinning={publishing} >
+                                <Button onClick={() => publishChanges()}>Publish Changes</Button>
+                            </Spin>
                         </div>
                     </div>
                 </Space>)}
         </Space>
-
-
     );
 };
 

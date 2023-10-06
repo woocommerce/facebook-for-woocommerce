@@ -13,18 +13,6 @@ jQuery(document).ready(function () {
 	const ascTypeRetargeting = 'retargeting';
 	const ascTypeNewBuyers = 'new-buyers';
 
-	function showBusyIndicator(view, type) {
-		$('#' + view + '-' + type + '-busy-indicator').addClass(
-			'busy-indicator'
-		);
-	}
-
-	function hideBusyIndicator(view, type) {
-		$('#' + view + '-' + type + '-busy-indicator').removeClass(
-			'busy-indicator'
-		);
-	}
-
 	function loadCampaignSetupUi(campaignType, isUpdate, campaignDetails) {
 		$('#overlay-view-ui').removeClass('hidden_view');
 		$('#base-view-row').addClass('hidden_view');
@@ -41,8 +29,8 @@ jQuery(document).ready(function () {
 	function createInsights(campaignType) {
 		const rootElementId = viewItemsIdPrefix + 'insights-placeholder-root-' + campaignType;
 
-		const el = document.getElementById(rootElementId);
-		if (el) {
+		const element = document.getElementById(rootElementId);
+		if (element) {
 			const countryList = $("#" + viewItemsIdPrefix + "targeting-" + campaignType).val();
 			const props = {
 				spend: $("#" + viewItemsIdPrefix + "ad-insights-spend-" + campaignType).val(),
@@ -60,9 +48,6 @@ jQuery(document).ready(function () {
 			window.insightsUILoader(rootElementId, props);
 		}
 	}
-
-	createInsights(ascTypeNewBuyers);
-	createInsights(ascTypeRetargeting);
 
 	$('#new-buyers-create-campaign-img').prop('src', require('!!url-loader!./../../images/prospecting.png').default);
 	$('#retargeting-create-campaign-img').prop('src', require('!!url-loader!./../../images/retargeting.png').default);
@@ -83,6 +68,7 @@ jQuery(document).ready(function () {
 
 		window.editCampaignButtonClicked = (campaignType) => {
 			const selectedCountries = $("#" + viewItemsIdPrefix + "targeting-" + campaignType).val();
+
 			loadCampaignSetupUi(campaignType, true, {
 				adMessage: $("#" + viewItemsIdPrefix + "ad-message-" + campaignType).val(),
 				dailyBudget: $("#" + viewItemsIdPrefix + "ad-daily-budget-" + campaignType).val(),
@@ -91,98 +77,13 @@ jQuery(document).ready(function () {
 				currency: $("#" + viewItemsIdPrefix + "currency-" + campaignType).val(),
 				status: $("#" + viewItemsIdPrefix + "ad-status-" + campaignType).val(),
 			});
+			
 		};
 
 		campaignCreationHook(ascTypeRetargeting);
 		campaignCreationHook(ascTypeNewBuyers);
 	}
 
-	function createModal(link) {
-		new $.WCBackboneModal.View({
-			target: 'facebook-for-woocommerce-modal',
-			string: {
-				message: '<iframe src="' + link + '" ></iframe>',
-			},
-		});
-	}
-
-	function getAdPreview(view) {
-		let cont = true;
-		const modal = new $.WCBackboneModal.View({
-			target: 'facebook-for-woocommerce-modal',
-			string: {
-				message:
-					'<div class="fb-asc-ads"><h2>Loading...</h2><br><div id="ad-preview-' +
-					view +
-					'-busy-indicator"></div></div>',
-			},
-		});
-
-		showBusyIndicator('ad-preview', view);
-
-		$(document.body).on('wc_backbone_modal_removed', function () {
-			cont = false;
-		});
-
-		$.get(
-			facebook_for_woocommerce_settings_advertise_asc.ajax_url,
-			{
-				action: 'wc_facebook_get_ad_preview',
-				view,
-			},
-			function (response) {
-				let message = '';
-				try {
-					if (!cont) {
-						return;
-					}
-
-					const parsed = response.data;
-					message =
-						'<div class="fb-asc-ads" ><div class="horizontal-align">';
-					for (const frame of parsed) {
-						const src = $(frame).attr('src');
-						message +=
-							'<iframe src="' +
-							src +
-							'" scrolling="no"></iframe>';
-					}
-					message += '</div></div>';
-				} finally {
-					hideBusyIndicator('ad-preview', view);
-				}
-
-				modal.initialize({
-					target: 'facebook-for-woocommerce-modal',
-					string: {
-						message,
-					},
-				});
-			}
-		);
-	}
-
-	function createModalWithContent(content) {
-		new $.WCBackboneModal.View({
-			target: 'facebook-for-woocommerce-modal',
-			string: {
-				message:
-					content
-			},
-		});
-	}
-
-	$('#' + viewItemsIdPrefix + 'ad-preview-' + ascTypeRetargeting).click(
-		function () {
-			getAdPreview(ascTypeRetargeting);
-		}
-	);
-
-	$('#' + viewItemsIdPrefix + 'ad-preview-' + ascTypeNewBuyers).click(
-		function () {
-			getAdPreview(ascTypeNewBuyers);
-		}
-	);
 
 	$('.woocommerce-help-tip').tipTip({
 		attribute: 'data-tip',
@@ -191,8 +92,7 @@ jQuery(document).ready(function () {
 		delay: 200,
 	});
 
-	window.createModal = createModal;
-	window.createModalWithContent = createModalWithContent;
+	createInsights(ascTypeNewBuyers);
+	createInsights(ascTypeRetargeting);
 	addCampaignSetupHooks();
-
 });

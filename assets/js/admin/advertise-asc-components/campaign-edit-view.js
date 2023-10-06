@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from '@wordpress/element';
 import { Card, Col, Form, Input, InputNumber, Row, Select, Space, Switch, Tooltip } from 'antd';
 import { DollarOutlined, EditOutlined, GlobalOutlined, PoweroffOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { CountryList } from './eligible-country-list'
@@ -17,12 +17,13 @@ const ProspectingViewComponent = (props) => {
 
     return (
         <>
-            <p style={{ color: '#1d2327', margin: '10px 0 0 0', width: '250px' }}>
-                <GlobalOutlined style={{ color: '#1d2327' }} /> {' '} Country {' '} <Tooltip title="Countries where your campaign will be shown."><QuestionCircleFilled style={{ fontSize: '75%', alignContent: 'center' }} /></Tooltip>
+            <p className='campaign-edit-view-header' style={{ margin: '10px 0 0 0', width: '250px' }}>
+                <GlobalOutlined className='campaign-edit-view-header' /> {' '} Country {' '} <Tooltip title="Countries where your campaign will be shown."><QuestionCircleFilled className='campaign-edit-view-header-tooltip' /></Tooltip>
             </p>
-            <div style={{ background: 'transparent', width: '250px' }}>
+            <div className='transparent-background' style={{ width: '250px' }}>
                 <Form.Item
-                    style={{ margin: 0, padding: 0, width: '250px', background: 'transparent' }}
+                    className='zero-border-element transparent-background'
+                    style={{ width: '250px' }}
                     label=''
                     name='n1'
                     initialValue={selectedCountries}
@@ -39,7 +40,7 @@ const ProspectingViewComponent = (props) => {
                             setSelectedCountries(countries); 
                             props.onCountryListChange(countries);
                             }}
-                        style={{ marginTop: 0, width: '100%', maxWidth: '200px', maxHeight: '150px', whiteSpace: 'nowrap', overflow: 'auto' }}
+                        style={{ marginTop: 0, width: '100%', maxWidth: '200px', maxHeight: '180px', whiteSpace: 'nowrap', overflow: 'auto' }}
                         options={availableOptions.map((item) => ({
                             value: item['key'],
                             label: item['value']
@@ -73,18 +74,18 @@ const CampaignEditView = (props) => {
                 </Col>
                 <Col>
                     <Space direction='vertical'>
-                        <p style={{ color: '#1d2327', margin: 0 }}>
-                            <PoweroffOutlined style={{ color: '#1d2327' }} /> {' '} Campaign Off/On {' '} <Tooltip title="Do you want your campaign to actively run? Make sure to select 'On'"><QuestionCircleFilled style={{ fontSize: '75%', alignContent: 'center' }} /></Tooltip>
+                        <p className='zero-border-element campaign-edit-view-header'>
+                            <PoweroffOutlined className='campaign-edit-view-header' /> {' '} Campaign Off/On {' '} <Tooltip title="Do you want your campaign to actively run? Make sure to select 'On'"><QuestionCircleFilled className='campaign-edit-view-header-tooltip' /></Tooltip>
                         </p>
-                        <div style={{ margin: 0, padding: 0 }}>
+                        <div className='zero-border-element'>
                             <Form.Item 
-                                style={{ margin: 0, padding: 0 }}
+                                className='zero-border-element'
                                 label=''
                                 name='n4'
                                 >
                                 <Switch
                                     checked={status}
-                                    style={{ margin: 0, padding: 0 }}
+                                    className='zero-border-element'
                                     checkedChildren="On"
                                     unCheckedChildren="Off"
                                     onChange={(e) => { setStatus(e); props.onStatusChange(e);}}
@@ -93,13 +94,13 @@ const CampaignEditView = (props) => {
                         </div>
                         
 
-                        <p style={{ color: '#1d2327', margin: '10px 0 0 0' }}>
-                            <DollarOutlined style={{ color: '#1d2327' }} /> {' '} Daily Budget {' '} <Tooltip title="How much would you want to spend on a daily basis?"><QuestionCircleFilled style={{ fontSize: '75%', alignContent: 'center' }} />
+                        <p className='campaign-edit-view-header' style={{ margin: '10px 0 0 0' }}>
+                            <DollarOutlined className='campaign-edit-view-header' /> {' '} Daily Budget {' '} <Tooltip title="How much would you want to spend on a daily basis?"><QuestionCircleFilled className='campaign-edit-view-header-tooltip' />
                             </Tooltip>
                         </p>
-                        <div style={{ margin: 0, padding: 0, width:'200px' }}>
+                        <div className='zero-border-element' style={{ width:'200px' }}>
                             <Form.Item
-                                style={{ margin: 0, padding: 0 }}
+                                className='zero-border-element'
                                 label=''
                                 name='n2'
                                 initialValue={dailyBudget}
@@ -142,14 +143,14 @@ const CampaignEditView = (props) => {
                 </Col>
                 <Col style={{ marginLeft: "40px" }}>
                     <Space direction='vertical'>
-                        <div style={{ display: 'inline-block', margin: 0, padding: 0, margin: '4px 0 0 0' }}>
-                            <p style={{ color: '#1d2327', marginLeft: '10px;', marginTop: 0, marginBottom: 0 }}>
-                                <EditOutlined style={{ color: '#1d2327' }} /> {' '} Customize your message <Tooltip title="The pitch for selling your products. Choose it wisely!"><QuestionCircleFilled style={{ fontSize: '75%', alignContent: 'center' }} /></Tooltip>
+                        <div className='zero-border-element' style={{ display: 'inline-block', margin: '4px 0 0 0' }}>
+                            <p className='zero-border-element campaign-edit-view-header' style={{ marginLeft: '10px;' }}>
+                                <EditOutlined className='campaign-edit-view-header' /> {' '} Customize your message <Tooltip title="The pitch for selling your products. Choose it wisely!"><QuestionCircleFilled className='campaign-edit-view-header-tooltip' /></Tooltip>
                             </p>
-                            <p style={{ margin: 0, padding: 0, color: "#949494", fontSize: '75%' }} >{'The carousel will show your products'}</p>
+                            <p className='zero-border-element' style={{ color: "#949494", fontSize: '75%' }} >{'The carousel will show your products'}</p>
                         </div>
-                        <div style={{ margin: '4px 0 0 0', position: 'relative', borderColor: '#5a5a5a', borderWidth: '0.5px', borderStyle: 'solid', background: 'transparent', width: '100%', height: '100%' }}>
-                            <img style={{ display: 'block', top: '20px', width: '300px', marginLeft: 0, marginBottom: '5px' }} src={require('!!url-loader!./../../../images/woo_post1.png').default} />
+                        <div className='transparent-background' style={{ margin: '4px 0 0 0', position: 'relative', borderColor: '#5a5a5a', borderWidth: '0.5px', borderStyle: 'solid', width: '100%', height: '100%' }}>
+                            <img className='campaign-edit-view-img' src={require('!!url-loader!./../../../images/woo_post1.png').default} />
                             <Form.Item
                                 label=''
                                 name='n3'
@@ -162,7 +163,7 @@ const CampaignEditView = (props) => {
                                 ]}>
                                 <TextArea style={{ width: '300px', marginLeft: '5px', marginRight: '5px', resize: 'none' }} compact={true} onChange={(e) => { props.onMessageChange(e.target.value); setMessage(e.target.value); }}></TextArea>
                             </Form.Item>
-                            <img style={{ display: 'block', width: '300px', marginLeft: 0, marginRight: '5px', marginTop: '20px', marginBottom: '5px', marginRight: 0 }} src={require('!!url-loader!./../../../images/woo_post2.png').default} />
+                            <img className='campaign-edit-view-img' style={{ marginRight: 0 }} src={require('!!url-loader!./../../../images/woo_post2.png').default} />
                         </div>
                     </Space>
                 </Col>
