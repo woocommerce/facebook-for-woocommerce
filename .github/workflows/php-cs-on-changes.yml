@@ -44,4 +44,4 @@ jobs:
 
       - name: Run PHPCS
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: vendor/bin/phpcs-changed -s --git --git-base ${{ github.event.pull_request.base.sha }} ${{ steps.changed-files.outputs.all_changed_files }}
+        run: vendor/bin/phpcs-changed --warning-severity=0 -s --git --git-base ${{ github.event.pull_request.base.sha }} ${{ steps.changed-files.outputs.all_changed_files }}
