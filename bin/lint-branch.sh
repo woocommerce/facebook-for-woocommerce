@@ -9,7 +9,7 @@
 # Example:
 # ./lint-branch.sh base-branch
 
-baseBranch=${1:-"trunk"}
+baseBranch=${1:-"develop"}
 
 changedFiles=$(git diff $(git merge-base HEAD $baseBranch) --relative --name-only -- '*.php')
 
