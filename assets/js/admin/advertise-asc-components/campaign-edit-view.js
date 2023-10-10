@@ -112,8 +112,6 @@ const CampaignEditView = (props) => {
                                     {
                                         message: 'Minimum allowed daily budget is ' + props.minDailyBudget + ' ' + props.currency,
                                         validator: (_, value) => {
-                                            console.log(value);
-                                            console.log('validator');
                                             if (value && (parseFloat(value) < minDailyBudget)) {
                                                 return Promise.reject();
                                             } else {

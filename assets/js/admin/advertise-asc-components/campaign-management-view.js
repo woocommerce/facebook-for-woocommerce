@@ -66,7 +66,12 @@ const CampaignSetupView = (props) => {
             });
     };
 
-    const onFinishFailed = (errorInfo) => { console.log('error') };
+    const onFinishFailed = (errorInfo) => { 
+        Modal.error({
+            title: 'Submit form failed',
+            content: errorInfo,
+          });
+    };
 
     const getHeaders = (activeTabIndex) => {
         const otherTabIndex = 1 - activeTabIndex;
