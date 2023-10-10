@@ -175,6 +175,32 @@
   align-content: center;
 }
 
+.fb-asc-ads .campaign-edit-view-messagebox {
+  width: 300px;
+  margin-left: 5px; 
+  margin-right: 5px;
+  resize: none;
+}
+
+.fb-asc-ads .campaign-edit-view-thumbnail-container {
+  margin: 4px 0 0 0;
+  position: relative;
+  border-color: #5a5a5a; 
+  border-width: 0.5px;
+  border-style: solid;
+  width: 100%;
+  height: 100%;
+}
+
+.fb-asc-ads .campaign-edit-secondary-header {
+  color: #949494;
+  font-size: 75%;
+}
+
+.fb-asc-ads .secondary-header-color {
+  color: #949494;
+}
+
 .fb-asc-ads .campaign-edit-view-img {
   display: block;
   margin-left: 0;

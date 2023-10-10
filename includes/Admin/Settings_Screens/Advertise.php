@@ -19,6 +19,7 @@ use WooCommerce\Facebook\Admin\Abstract_Settings_Screen;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\AdvertiseASC\AscNotSupportedException;
 use WooCommerce\Facebook\AdvertiseASC\NonDiscriminationNotAcceptedException;
+use WooCommerce\Facebook\AdvertiseASC\InstagramActorIdNotFoundException;
 use WooCommerce\Facebook\AdvertiseASC\InvalidPaymentInformationException;
 use WooCommerce\Facebook\AdvertiseASC\LWIeUserException;
 /**
@@ -448,6 +449,23 @@ class Advertise extends Abstract_Settings_Screen {
 				<li><?php echo $this->get_escaped_translation( "2. Click the \"Add payment method\" button and follow instructions to ad a payment method" ); ?></li>
 				<li><?php echo $this->get_escaped_translation( "3. Go back to this screen and refresh it" ); ?></li>
 			</ul>
+			<?php
+		} catch ( InstagramActorIdNotFoundException $iaif ) {
+			
+			\WC_Facebookcommerce_Utils::log( $iaif->getMessage() );
+			$this->remove_rendered_when_exception_happened();
+		
+			?>
+			<div class='fb-asc-ads'>
+				<h2 style='margin: 5px 0;'><?php echo $this->get_escaped_translation( "You need to use a page that has an instagram account connected to it." ); ?></h2>
+				<h3 class="zero-border-element secondary-header-color"><?php echo $this->get_escaped_translation( "This requires re-connecting through Meta Business Extension." ); ?></h2>
+				<h4><?php echo $this->get_escaped_translation( "Here's how:" ); ?></h3>
+				<ul>
+					<li><?php echo $this->get_escaped_translation( "1. Click the \"Connection\" tab." ); ?></li>
+					<li><?php echo $this->get_escaped_translation( "2. Click \"disconnect\". This will disconnect your Facebook Account from your WooCommerce store and refreshes the page" ); ?></li>
+					<li><?php echo $this->get_escaped_translation( "3. From the same page, click \"Get Started\". This will take you through the Meta Business Extension onboarding flow. When prompted to select a Page, make sure to select a Page that has an Instagram account linked to it." ) . $this->translate_with_link( "(", "https://www.facebook.com/business/help/connect-instagram-to-page", "How?", ")" ); ?></li>
+				</ul>
+			</div>
 			<?php
 		} catch ( NonDiscriminationNotAcceptedException $nde ) {
 

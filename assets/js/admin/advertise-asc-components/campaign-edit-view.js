@@ -147,9 +147,9 @@ const CampaignEditView = (props) => {
                             <p className='zero-border-element campaign-edit-view-header' style={{ marginLeft: '10px;' }}>
                                 <EditOutlined className='campaign-edit-view-header' /> {' '} Customize your message <Tooltip title="The pitch for selling your products. Choose it wisely!"><QuestionCircleFilled className='campaign-edit-view-header-tooltip' /></Tooltip>
                             </p>
-                            <p className='zero-border-element' style={{ color: "#949494", fontSize: '75%' }} >{'The carousel will show your products'}</p>
+                            <p className='zero-border-element campaign-edit-secondary-header' >{'The carousel will show your products'}</p>
                         </div>
-                        <div className='transparent-background' style={{ margin: '4px 0 0 0', position: 'relative', borderColor: '#5a5a5a', borderWidth: '0.5px', borderStyle: 'solid', width: '100%', height: '100%' }}>
+                        <div className='transparent-background campaign-edit-view-thumbnail-container'>
                             <img className='campaign-edit-view-img' src={require('!!url-loader!./../../../images/woo_post1.png').default} />
                             <Form.Item
                                 label=''
@@ -161,7 +161,7 @@ const CampaignEditView = (props) => {
                                         message: 'Ad message must be set.',
                                     }
                                 ]}>
-                                <TextArea style={{ width: '300px', marginLeft: '5px', marginRight: '5px', resize: 'none' }} compact={true} onChange={(e) => { props.onMessageChange(e.target.value); setMessage(e.target.value); }}></TextArea>
+                                <TextArea className='campaign-edit-view-messagebox' compact={true} onChange={(e) => { props.onMessageChange(e.target.value); setMessage(e.target.value); }}></TextArea>
                             </Form.Item>
                             <img className='campaign-edit-view-img' style={{ marginRight: 0 }} src={require('!!url-loader!./../../../images/woo_post2.png').default} />
                         </div>

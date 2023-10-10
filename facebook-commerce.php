@@ -2209,8 +2209,11 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 */
 	public function get_advertise_asc_information() {
 		$json = $this->get_advertise_asc_saved_data();
-		$information = json_decode( $json, true );
-		return $information;
+		if ( $json ) {
+			return json_decode( $json, true );
+		} else {
+			return '';
+		}
 	}
 
 	/**

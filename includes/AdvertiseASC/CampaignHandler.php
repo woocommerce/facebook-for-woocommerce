@@ -16,6 +16,7 @@ defined('ABSPATH') || exit;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
 use WooCommerce\Facebook\Framework\Api\Exception as PluginException;
 use WooCommerce\Facebook\AdvertiseASC\InvalidPaymentInformationException;
+use WooCommerce\Facebook\AdvertiseASC\InstagramActorIdNotFoundException;
 
 abstract class CampaignHandler {
 
@@ -84,15 +85,7 @@ abstract class CampaignHandler {
             throw new PluginException($message);
         }
 
-        try{
-            
-            $this->instagram_actor_id = $this->get_instagram_actor_id($this->facebook_page_id);
-        } catch (PluginException $e) { 
-            
-            $message = sprintf('Could not retrieve the instagram actor id. message: %s', $e->getMessage());
-            \WC_Facebookcommerce_Utils::log($message);
-
-        }
+        $this->instagram_actor_id = $this->get_instagram_actor_id($this->facebook_page_id);
     }
 
     abstract public function get_campaign_type(): string;
@@ -144,7 +137,7 @@ abstract class CampaignHandler {
 
                         if (!$instagram_accounts['data']) {
 
-                            throw new PluginException('There was an error trying to retrieve the instagram actor id.');
+                            throw new InstagramActorIdNotFoundException();
                         }
                     }
 
@@ -152,7 +145,7 @@ abstract class CampaignHandler {
                 }
             }
 
-            throw new PluginException('The page with id: \"' . $page_id . '\" is not associated with this user.');
+            throw new InstagramActorIdNotFoundException();
 
         } catch (ApiException $e) {
             $message = sprintf('There was an error trying to get the instagram account id for this user. message: %s', $e->getMessage());
