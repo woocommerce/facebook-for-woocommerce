@@ -2212,7 +2212,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		if ( $json ) {
 			return json_decode( $json, true );
 		} else {
-			return '';
+			return array();
 		}
 	}
 
