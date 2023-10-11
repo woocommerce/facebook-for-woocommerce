@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This class creates a wrapper for interacting with ASC NewBuyers campaign type.
  *
- * @since x.x.x
+ * @since 3.1.0
  */
 class NewBuyers extends CampaignHandler {
 
@@ -37,7 +37,7 @@ class NewBuyers extends CampaignHandler {
 	/**
 	 * Gets the minimum allowed daily budget for this campaign type.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @return int
 	 */
 	public function get_allowed_min_daily_budget() {
@@ -48,7 +48,7 @@ class NewBuyers extends CampaignHandler {
 	/**
 	 * Gets the campaign type.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @return string
 	 */
 	public function get_campaign_type(): string {
@@ -58,7 +58,7 @@ class NewBuyers extends CampaignHandler {
 	/**
 	 * Gets the list of selected countries. If there is no active ad, it will return a list containing 'US'
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @return array
 	 */
 	public function get_selected_countries() {
@@ -68,7 +68,7 @@ class NewBuyers extends CampaignHandler {
 	/**
 	 * Creates a Facebook Ad Campaign.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @param mixed $props is an object with values for: state, daily budget, country list, and ad message.
 	 * @throws AscNotSupportedException In case ASC campaign creation is not supported.
 	 * @throws NonDiscriminationNotAcceptedException In case Non-Discrimination agreement is not accepted in AdsManager.
@@ -131,7 +131,7 @@ class NewBuyers extends CampaignHandler {
 	/**
 	 * Updates the running Ad Campaign.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @param mixed $data is an object with values for: state, daily budget, country list, and ad message.
 	 * @return bool
 	 */

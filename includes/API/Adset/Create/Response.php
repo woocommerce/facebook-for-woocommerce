@@ -11,7 +11,7 @@ use WooCommerce\Facebook\API\Response as ApiResponse;
 /**
  * Response object for Facebook Adset Creation request.
  *
- * @since x.x.x
+ * @since 3.1.0
  */
 class Response extends ApiResponse {
 

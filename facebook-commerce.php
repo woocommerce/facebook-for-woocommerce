@@ -2134,7 +2134,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the DB with the new data for the Advertise ASC entry
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param string $data
 	 * @return bool
@@ -2146,7 +2146,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the DB with the new data for the Advertise ASC entry. The input can be an array, which then is transformed to an encoded json string
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param array $data
 	 */
@@ -2158,7 +2158,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Updates the status for Advertise ASC campaign eligibility.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param array $new_status
 	 */
@@ -2181,7 +2181,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the plain Advertise ASC data from the DB.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @return string
 	 */
@@ -2192,7 +2192,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the saved status for Advertise ASC campaign eligibility.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param array $data
 	 */
@@ -2203,7 +2203,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/**
 	 * Gets the json-decoded array of the Advertise ASC information stored in DB.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @return mixed
 	 */
