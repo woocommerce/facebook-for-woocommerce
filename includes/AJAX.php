@@ -119,7 +119,7 @@ class AJAX {
 	 * Retrieves the changeset for each campaign type and posts them to the backend.
 	 * Makes sure that there is something to be sent.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 *
 	 * @return string
 	 */
@@ -171,7 +171,7 @@ class AJAX {
 	/**
 	 * Gets the Ad Preview for a given ad in different formats and merges the results.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 *
 	 * @return string
 	 */
@@ -206,7 +206,7 @@ class AJAX {
 	/**
 	 * Gets the Ad Preview for an ASC Campaign in different formats and merges the results.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 *
 	 * @param string $asc_campaign ASC Campaign type.
 	 * @return string
@@ -225,7 +225,7 @@ class AJAX {
 	/**
 	 * Gets the Ad Preview for an ASC Campaign in a specific format.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 *
 	 * @param string $asc_campaign ASC Campaign type.
 	 * @param string $ad_format Ad Preview Format.

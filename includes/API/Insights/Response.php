@@ -10,7 +10,7 @@ use WooCommerce\Facebook\API\Response as ApiResponse;
 /**
  * Response object for Facebook Ad Campaign Insights request.
  *
- * @since 3.1.0
+ * @since x.x.x
  */
 class Response extends ApiResponse {
 
