@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.1 - 2023-10-12 =
+* Update - Revert "Advandtage+ Shoppings Ads support in Advertise tab".
+
 = 3.0.34 - 2023-10-05 =
 * Add - Filter the size of the Facebook product image.
 * Fix - AddToCart duplication when other plugins clone cart.
