@@ -129,7 +129,7 @@ class WC_Facebook_Loader {
 	 */
 	public function init_plugin() {
 
-		if ( ! Checker::instance()->is_compatible( __FILE__, self::PLUGIN_VERSION ) || ! $this->plugins_compatible() ) {
+		if ( ! Checker::instance()->is_compatible( __FILE__, self::PLUGIN_VERSION ) ) {
 			return;
 		}
 
