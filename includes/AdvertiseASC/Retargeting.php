@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This class creates a wrapper for interacting with ASC Retargeting campaign type.
  *
- * @since 3.1.0
+ * @since x.x.x
  */
 class Retargeting extends CampaignHandler {
 
@@ -37,7 +37,7 @@ class Retargeting extends CampaignHandler {
 	/**
 	 * Updates the running Ad Campaign.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 * @param mixed $data is an object with values for: state, daily budget, and ad message.
 	 * @return bool
 	 */
@@ -58,7 +58,7 @@ class Retargeting extends CampaignHandler {
 	/**
 	 * Creates a Facebook Ad Campaign.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 * @param mixed $props is an object with values for: state, daily budget, and ad message.
 	 */
 	public function create_asc_campaign( $props ) {
@@ -82,7 +82,7 @@ class Retargeting extends CampaignHandler {
 	/**
 	 * Gets the minimum allowed daily budget for this campaign type.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 * @return int
 	 */
 	public function get_allowed_min_daily_budget() {
@@ -92,7 +92,7 @@ class Retargeting extends CampaignHandler {
 	/**
 	 * Gets the list of selected countries. For this campaign type it only returns an empty array.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 * @return array
 	 */
 	public function get_selected_countries() {
@@ -102,7 +102,7 @@ class Retargeting extends CampaignHandler {
 	/**
 	 * Gets the campaign type.
 	 *
-	 * @since 3.1.0
+	 * @since x.x.x
 	 * @return string
 	 */
 	public function get_campaign_type(): string {
