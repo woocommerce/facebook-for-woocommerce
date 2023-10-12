@@ -1,8 +1,5 @@
 *** Facebook for WooCommerce Changelog ***
 
-= 3.1.0 - 2023-10-11 =
-* Add - Advantage+ Shoppings Ads support in the Advertise tab.
-
 = 3.0.34 - 2023-10-05 =
 * Add - Filter the size of the Facebook product image.
 * Fix - AddToCart duplication when other plugins clone cart.

@@ -96,7 +96,7 @@ abstract class CampaignHandler {
     /**
      * Gets the daily budget if the ad is created. Otherwise it returns the 1.2*min daily budget.
      *
-     * @since 3.1.0
+     * @since x.x.x
      *
      * @return string
      */
@@ -115,7 +115,7 @@ abstract class CampaignHandler {
     /**
      * Gets the first instagram acount id from the Marketing Api.
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @page_id Facebook Page Id.
      * @return string
      * @throws PluginException
@@ -157,7 +157,7 @@ abstract class CampaignHandler {
     /**
      * Updates the status of the ad. If the value of state is 'true', then it sets the ad status to 'Active' otherwise paused.
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @state. values: 'true' or 'false'
      * @return string
      */
@@ -179,7 +179,7 @@ abstract class CampaignHandler {
     /**
      * Generates an ad preview with a message in a specified format. 
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @message The message to be shown on the ad.
      * @param string @ad_format The output format of the generated ad.
      * @return string
@@ -253,7 +253,7 @@ abstract class CampaignHandler {
     /**
      * Returns the Ad Campaign based on the argument
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @campaign_id Facebook Ad Campaign Id.
      * @return mixed
      * @throws ApiException
@@ -266,7 +266,7 @@ abstract class CampaignHandler {
     /**
      * Returns the Adset based on the argument
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @adset_id Facebook Adset Id.
      * @return mixed
      * @throws ApiException
@@ -279,7 +279,7 @@ abstract class CampaignHandler {
     /**
      * Returns the Ad based on the argument
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @ad_id Facebook Ad Id.
      * @return mixed
      * @throws ApiException
@@ -292,7 +292,7 @@ abstract class CampaignHandler {
     /**
      * Returns the Adcreative based on the argument
      *
-     * @since 3.1.0
+     * @since x.x.x
      * @param string @adcreative_id Facebook Adcreative Id.
      * @return mixed
      * @throws ApiException
@@ -831,7 +831,7 @@ abstract class CampaignHandler {
     /**
      * Gets the accounts that are associated with 'me' entity.
      *
-     * @since 3.1.0
+     * @since x.x.x
      *
      * @return array
      * @throws ApiException
@@ -845,7 +845,7 @@ abstract class CampaignHandler {
     /**
      * Gets the instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
      *
-     * @since 3.1.0
+     * @since x.x.x
      *
      * @return array
      * @throws ApiException
@@ -866,7 +866,7 @@ abstract class CampaignHandler {
     /**
      * Gets the page backed instagram accounts that are associated with the Page with the given Id. For this, we first need to set the appropriate access token.
      *
-     * @since 3.1.0
+     * @since x.x.x
      *
      * @return array
      * @throws ApiException
