@@ -647,7 +647,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/**
 	 * Gets a campaign handler for the given ASC campaign type
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param string $type The ASC campaign type
 	 * @return WooCommerce\Facebook\AdvertiseASC ASC campaign handler

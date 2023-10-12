@@ -21,7 +21,7 @@ use WooCommerce\Facebook\AdvertiseASC\Retargeting;
  * - Retargeting
  * campaigns.
  *
- * @since x.x.x
+ * @since 3.1.0
  */
 class AscSelector {
 

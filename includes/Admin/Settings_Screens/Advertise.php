@@ -76,7 +76,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Adds the WP hooks to be able to run the frontend
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 */
 	public function add_frontend_hooks(){
@@ -267,7 +267,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Renders the ASC Experimental view.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 */
 	private function experimental_view_render() {
@@ -287,7 +287,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Generates the HTML DOM for a given dashboard.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @param string @type. Sets the input type. values: (new-buyers, retargeting)
 	 * @param string @title. The title of the dashboard
 	 * @param string @subtitle_row1. Row1 of the subtitle of the dashboard
@@ -358,7 +358,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/** 
 	 * Checks whether the tool can show the experimental view or not
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @return bool
 	 */
@@ -371,7 +371,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/** 
 	 * Creates the translated text including a link
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * @param string $pretext. Any text before the link text.
 	 * @param string $link. The link url
 	 * @param string $link_text. The text for the link
@@ -387,7 +387,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Tries to render the experimental view. If something fails, it shows the issue.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @return string
 	 */
@@ -518,7 +518,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/** 
 	 * Closes the open html tags in case of an exception.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 * 
 	 */
 	private function remove_rendered_when_exception_happened() {
@@ -536,7 +536,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Returns an escaped translation of the input text, in the realm of this plugin
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 * @param string $text
 	 * @returns string
@@ -549,7 +549,7 @@ class Advertise extends Abstract_Settings_Screen {
 	/**
 	 * Creates the html elements needed for the LWI-E view.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.0
 	 *
 	 */
 	private function render_lwi_view() {

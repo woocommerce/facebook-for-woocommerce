@@ -10,7 +10,7 @@ use WooCommerce\Facebook\API\Response as ApiResponse;
 /**
  * Generic response object for Facebook Adset request flows.
  *
- * @since x.x.x
+ * @since 3.1.0
  */
 class Response extends ApiResponse {
 
