@@ -178,22 +178,6 @@ class Settings {
 			$crumbs = array(
 				__( 'Facebook for WooCommerce', 'facebook-for-woocommerce' ),
 			);
-			if ( ! empty( $_GET['tab'] ) ) {
-				switch ( $_GET['tab'] ) {
-					case Connection::ID:
-						$crumbs[] = __( 'Connection', 'facebook-for-woocommerce' );
-						break;
-					case Settings_Screens\Messenger::ID:
-						$crumbs[] = __( 'Messenger', 'facebook-for-woocommerce' );
-						break;
-					case Settings_Screens\Product_Sync::ID:
-						$crumbs[] = __( 'Product sync', 'facebook-for-woocommerce' );
-						break;
-					case Settings_Screens\Advertise::ID:
-						$crumbs[] = __( 'Advertise', 'facebook-for-woocommerce' );
-						break;
-				}
-			}
 			wc_admin_connect_page(
 				array(
 					'id'        => self::PAGE_ID,

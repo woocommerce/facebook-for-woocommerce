@@ -563,6 +563,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			$cart = WC()->cart;
+			// Check if we're dealing with cloned cart
+			if ( ! isset( $cart->cart_contents[ $cart_item_key ] ) ) {
+				return;
+			}
+
 			$product = wc_get_product( $variation_id ?: $product_id );
 
 			// bail if invalid product or error
