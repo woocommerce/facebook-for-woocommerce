@@ -9,7 +9,7 @@
  * @package FacebookCommerce
  */
 
- require_once __DIR__ . '/includes/fbutils.php';
+require_once __DIR__ . '/includes/fbutils.php';
 
 use Automattic\WooCommerce\Admin\Features\Features as WooAdminFeatures;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
