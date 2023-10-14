@@ -21,6 +21,9 @@
  * @package FacebookCommerce
  */
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Automattic\WooCommerce\Grow\Tools\CompatChecker\v0_0_1\Checker;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
@@ -88,7 +91,6 @@ class WC_Facebook_Loader {
 
 		add_action( 'admin_init', array( $this, 'check_environment' ) );
 
-		add_action( 'admin_notices', array( $this, 'add_plugin_notices' ) ); // admin_init is too early for the get_current_screen() function.
 		add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
 
 		// If the environment check fails, initialize the plugin.
@@ -127,7 +129,7 @@ class WC_Facebook_Loader {
 	 */
 	public function init_plugin() {
 
-		if ( ! $this->plugins_compatible() ) {
+		if ( ! Checker::instance()->is_compatible( __FILE__, self::PLUGIN_VERSION ) ) {
 			return;
 		}
 
