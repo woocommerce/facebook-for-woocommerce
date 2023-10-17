@@ -529,9 +529,8 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product_data['category']    = 1718;
 
 		$this->api->expects( $this->once() )
-			->method( 'update_product_item' )
-			->with( 'facebook-product-item-id', $facebook_product_data )
-			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->method( 'update_product_item_batch_api' )
+			->with( 'facebook-product-item-id', $facebook_product_data );
 
 		$this->integration->on_product_save( $product_to_update->get_id() );
 
