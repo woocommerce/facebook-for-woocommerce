@@ -102,6 +102,127 @@ class AJAX {
 
 
 	/**
+	 * Syncs the changes with the Marketing Api for different ASC campaigns.
+	 *
+	 * Retrieves the changeset for each campaign type and posts them to the backend.
+	 * Makes sure that there is something to be sent.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function publish_ad_changes() {
+
+		$data = json_decode(file_get_contents('php://input'), true);
+		$campaign_type = $data[ 'campaignType' ] ;
+		$ad_message = $data[ 'adMessage' ] ;
+		$daily_budget = $data[ 'dailyBudget' ] ;
+		$country = $data[ 'countryList' ];
+		$is_update = $data[ 'isUpdate' ] == "true";
+		$status = $data['status'];
+		
+		try {
+
+			if ( $is_update ) {
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->update_asc_campaign( array('daily_budget' => $daily_budget, 'ad_message' => $ad_message, 'country' => $country, 'state' => $status) );
+			} else {
+				$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->create_asc_campaign( array('daily_budget' => $daily_budget, 'ad_message' => $ad_message, 'country' => $country, 'state' => $status) );
+		    }
+			wp_send_json_success( $result );
+
+		}
+		catch ( PluginException $e ) {
+
+			wp_send_json_error( $e->getMessage() );
+
+		}
+	}
+
+	public function update_ad_status() {
+		$data = json_decode(file_get_contents('php://input'), true);
+		$campaign_type = $data[ 'campaignType' ] ;
+		$status = $data['status'];
+
+		try {
+
+			$result = facebook_for_woocommerce()->get_advertise_asc_handler( $campaign_type )->update_ad_status( $status );
+			wp_send_json_success( $result );
+
+		}
+		catch ( PluginException $e ) {
+
+			wp_send_json_error( $e->getMessage() );
+
+		}
+	}
+
+	/**
+	 * Gets the Ad Preview for a given ad in different formats and merges the results.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function get_ad_preview() {
+
+		$view = isset( $_GET[ 'view' ] ) ? $_GET[ 'view' ] : null;
+		if ( ! $view ) {
+			wp_send_json_error( " No view is selected. " );
+		}
+
+		$result = $this->get_previews_and_merge( $view );
+
+		wp_send_json_success( $result );
+	}
+
+
+	public function generate_ad_preview() {
+		$view = $_GET[ 'view' ];
+		$message = $_GET[ 'message' ];
+		if ( ! $view ) {
+			wp_send_json_error( " No view is selected. " );
+		}
+		$result = array();
+
+		$result[] = facebook_for_woocommerce()->get_advertise_asc_handler( $view )->generate_ad_preview($message, 'MOBILE_FEED_STANDARD');
+		$result[] = facebook_for_woocommerce()->get_advertise_asc_handler( $view )->generate_ad_preview($message, 'INSTAGRAM_STANDARD');
+
+		wp_send_json_success( $result );
+	}
+
+	/**
+	 * Gets the Ad Preview for an ASC Campaign in different formats and merges the results.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $asc_campaign ASC Campaign type.
+	 * @return string
+	 */
+	private function get_previews_and_merge ( $asc_campaign ){
+		$previews = array();
+
+		$previews[] = $this->retrieve_ad_preview( $asc_campaign, 'MOBILE_FEED_STANDARD' );
+		$previews[] = $this->retrieve_ad_preview( $asc_campaign, 'INSTAGRAM_STANDARD' );
+
+		return $previews;
+	}
+
+
+	/**
+	 * Gets the Ad Preview for an ASC Campaign in a specific format.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $asc_campaign ASC Campaign type.
+	 * @param string $ad_format Ad Preview Format.
+	 * @return string
+	 */
+	private function retrieve_ad_preview( $asc_campaign, $ad_format ){
+		return facebook_for_woocommerce()->get_advertise_asc_handler( $asc_campaign )->get_ad_preview( $ad_format );
+	}
+
+
+	/**
 	 * Syncs all products via AJAX.
 	 *
 	 * @internal
