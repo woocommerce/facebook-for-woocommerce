@@ -823,9 +823,9 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product_data['additional_image_urls'] = '';
 
 		$this->api->expects( $this->once() )
-			->method( 'update_product_item' )
-			->with( 'facebook-product-item-id', $facebook_product_data )
-			->willReturn( new API\ProductCatalog\Products\Update\Response( '{"success":true}' ) );
+			->method( 'send_item_updates' )
+			->with( $this->anything() )
+			->willReturn( new API\ProductCatalog\ItemsBatch\Create\Response( '{"success":true}' ) );
 
 		$this->integration->on_product_publish( $product->get_id() );
 	}

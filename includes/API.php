@@ -589,7 +589,7 @@ class API extends Base {
 	 * @return API\Response|API\ProductCatalog\ItemsBatch\Create\Response
 	 * @throws ApiException
 	 */
-	public function send_item_updates( string $facebook_product_catalog_id, array $requests ) {
+	public function send_item_updates( string $facebook_product_catalog_id, array $requests ): API\ProductCatalog\ItemsBatch\Create\Response {
 		$request = new API\ProductCatalog\ItemsBatch\Create\Request( $facebook_product_catalog_id, $requests );
 		$this->set_response_handler( API\ProductCatalog\ItemsBatch\Create\Response::class );
 		return $this->perform_request( $request );
