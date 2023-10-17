@@ -1498,8 +1498,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		]);
 
 		try {
-			$facebook_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
-			$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+			$facebook_catalog_id = $this->get_product_catalog_id();
+			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
 			if ( $response->handles ) {
 				$this->display_success_message(
 					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
