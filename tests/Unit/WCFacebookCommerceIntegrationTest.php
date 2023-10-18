@@ -522,10 +522,10 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 
 		$facebook_product                               = new WC_Facebook_Product( $product_to_update->get_id() );
 		$facebook_product_data                          = $facebook_product->prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
-		$this->integration->product_catalog_id = '123123123123123123';
+		$this->integration->product_catalog_id 			= '123123123123123123';
 		/* Data coming from _POST data. */
-		$facebook_product_data['description'] = 'Facebook product description.';
-		$facebook_product_data['price']       = '199 USD';
+		$facebook_product_data['description'] 				 = 'Facebook product description.';
+		$facebook_product_data['price']       				 = '199 USD';
 		$facebook_product_data['google_product_category']    = 1718;
 
 		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch($facebook_product_data);
@@ -828,7 +828,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 			->with( $product )
 			->willReturn( $validator );
 
-		$this->integration->product_catalog_id = '123123123123123123';
+		$this->integration->product_catalog_id 			= '123123123123123123';
 		$facebook_product                               = new WC_Facebook_Product( $product->get_id() );
 		$facebook_product_data                          = $facebook_product->prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
@@ -1058,7 +1058,7 @@ class WCFacebookCommerceIntegrationTest extends WP_UnitTestCase {
 		$facebook_product->woo_product->set_stock_status( 'instock' );
 		add_post_meta( $product->get_id(), WC_Facebookcommerce_Integration::FB_PRODUCT_ITEM_ID, 'facebook-simple-product-item-id' );
 
-		$this->integration->product_catalog_id = '123123123123123123';
+		$this->integration->product_catalog_id 			= '123123123123123123';
 		$facebook_product_data                          = $facebook_product->prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
 
 		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch($facebook_product_data);

@@ -1480,8 +1480,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function update_product_item_batch_api( WC_Facebook_Product $woo_product, string $fb_product_item_id ): void {
-		$product = $woo_product->prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
-		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch($product);
+		$product = $woo_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch( $product );
 
 		try {
 			$facebook_catalog_id = $this->get_product_catalog_id();
