@@ -282,11 +282,11 @@ class WC_Facebook_Product {
 
 		$video_urls = array();
 
-		$attached_videos = get_attached_media('video', $this->id);
-		if (empty($attached_videos)) {
+		$attached_videos = get_attached_media( 'video', $this->id );
+		if ( empty( $attached_videos ) ) {
 			return $video_urls;
 		}
-		foreach ($attached_videos as $video) {
+		foreach ( $attached_videos as $video ) {
             $url = $video->guid;
 			array_push(
 				$video_urls,
@@ -297,7 +297,6 @@ class WC_Facebook_Product {
         }
 
 		return $video_urls;
-
 	}
 
 
