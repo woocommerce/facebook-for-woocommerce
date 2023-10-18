@@ -639,7 +639,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * Normalizes product data to be included in a sync request. /items_batch
 		 * rather than /batch this time.
 		 *
-		 * @since 2.0.0
+		 * @since x.x.x
 		 *
 		 * @param array $data product data.
 		 * @return array
@@ -686,7 +686,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Prepares the product data to be included in a sync request.
 		 *
-		 * @since 2.0.0
+		 * @since x.x.x
 		 *
 		 * @param \WC_Product $product product object
 		 * @return array
@@ -730,7 +730,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		/**
 		 * Prepares the data for a product variation to be included in a sync request.
 		 *
-		 * @since 2.0.0
+		 * @since x.x.x
 		 *
 		 * @param \WC_Product $product product object
 		 * @return array
