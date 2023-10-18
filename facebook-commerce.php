@@ -1480,26 +1480,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function update_product_item_batch_api( WC_Facebook_Product $woo_product, string $fb_product_item_id ): void {
-		$product = $woo_product-> prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
-		$product['item_group_id'] = $product['retailer_id'];
-		$product_data = WC_Facebookcommerce_Utils::normalize_product_data_for_items_batch( $product );
-
-		// extract the retailer_id
-		$retailer_id = $product_data['retailer_id'];
-
-		// NB: Changing this to get items_batch to work
-		// retailer_id cannot be included in the data object
-		unset( $product_data['retailer_id'] );
-		$product_data['id'] = $retailer_id;
-
-		$requests = array([
-			'method' => Sync::ACTION_UPDATE,
-			'data'   => $product_data,
-		]);
+		$product = $woo_product->prepare_product(null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch($product);
 
 		try {
-			$facebook_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
-			$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+			$facebook_catalog_id = $this->get_product_catalog_id();
+			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
 			if ( $response->handles ) {
 				$this->display_success_message(
 					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .

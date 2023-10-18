@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Events\Normalizer;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Products\Sync;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
@@ -699,6 +700,34 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 		/**
+		 * Prepares the requests array to be included in a batch api request.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param array $product Array
+		 * @return array
+		 */
+		public static function prepare_product_requests_items_batch( $product ) {
+			$product['item_group_id'] = $product['retailer_id'];
+			$product_data = self::normalize_product_data_for_items_batch( $product );
+
+			// extract the retailer_id
+			$retailer_id = $product_data['retailer_id'];
+
+			// NB: Changing this to get items_batch to work
+			// retailer_id cannot be included in the data object
+			unset( $product_data['retailer_id'] );
+			$product_data['id'] = $retailer_id;
+
+			$requests = array([
+				'method' => Sync::ACTION_UPDATE,
+				'data'   => $product_data,
+			]);
+
+			return $requests;
+		}
+
+		/**
 		 * Prepares the data for a product variation to be included in a sync request.
 		 *
 		 * @since 2.0.0
@@ -707,7 +736,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @return array
 		 * @throws PluginException In case no product found.
 		 */
-		private function prepare_product_variation_data_items_batch( $product ) {
+		public static function prepare_product_variation_data_items_batch( $product ) {
 			$parent_product = wc_get_product( $product->get_parent_id() );
 
 			if ( ! $parent_product instanceof \WC_Product ) {
