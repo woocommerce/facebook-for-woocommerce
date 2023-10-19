@@ -252,7 +252,7 @@ class Background extends BackgroundJobHandler {
 		$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
 		$response_handles    = $response->handles;
 		// For some reason isset( $response->handles ) is false while isset( $response_handles ) is true
-		$handles             = ( isset( $response_handles ) && is_array( $response_handles ) ) ? $response_handles : [];
+		$handles             = ( isset( $response_handles ) && is_array( $response_handles ) ) ? $response_handles : array();
 		return $handles;
 	}
 }
