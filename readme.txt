@@ -39,6 +39,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.2 - 2023-10-19 =
+* Dev - Add phpcs on changed files only.
+
 = 3.1.1 - 2023-10-12 =
 * Update - Revert "Advandtage+ Shoppings Ads support in Advertise tab".
 
