@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.3
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -38,6 +38,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.1.2 - 2023-10-19 =
+* Dev - Add phpcs on changed files only.
 
 = 3.1.1 - 2023-10-12 =
 * Update - Revert "Advandtage+ Shoppings Ads support in Advertise tab".
