@@ -659,7 +659,6 @@ class WC_Facebook_Product {
 				'availability'          => $this->is_in_stock() ? 'in stock' : 'out of stock',
 				'visibility'            => Products::is_product_visible( $this->woo_product ) ? \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_VISIBLE : \WC_Facebookcommerce_Integration::FB_SHOP_PRODUCT_HIDDEN,
 			);
-
 			$product_data   = $this->add_sale_price( $product_data );
 			$gpc_field_name = 'category';
 		}//end if
