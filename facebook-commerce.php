@@ -1233,8 +1233,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $fb_product_group_id ) {
-			$fb_product_item_id = $this->create_product_item( $woo_product, $retailer_id, $fb_product_group_id );
-			return $fb_product_item_id;
+			return $this->create_product_item_batch_api( $woo_product, $retailer_id, $fb_product_group_id );
 		}
 		return '';
 	}
@@ -1338,6 +1337,29 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$message = sprintf( 'There was an error trying to update Product Group %s: %s', $fb_product_group_id, $e->getMessage() );
 			WC_Facebookcommerce_Utils::log( $message );
 		}
+	}
+
+	public function create_product_item_batch_api( $woo_product, $retailer_id, $product_group_id ): string {
+		try {
+			$product_data        = $woo_product->prepare_product( $retailer_id, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+			$requests            = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch( $product_data );
+			$facebook_catalog_id = $this->get_product_catalog_id();
+			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+
+			if ( $response->handles ) {
+				$this->display_success_message(
+					'Created product item on Facebook.'
+				);
+			} else {
+				$this->display_error_message(
+					'Updated product on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to create a product item: %s', $e->getMessage() );
+			WC_Facebookcommerce_Utils::log( $message );
+		}
+		return '';
 	}
 
 	public function create_product_item( $woo_product, $retailer_id, $product_group_id ): string {
