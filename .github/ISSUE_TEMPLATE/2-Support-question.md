@@ -11,7 +11,7 @@ We’re happy to help with this question! Our support team works in our help des
 
 ## 📖 Read documentation
 
-The [Facebook for WooCommerce documentation](https://docs.woocommerce.com/document/facebook-for-woocommerce/) will help you set up the extension, use its features, and answer frequently asked questions. 
+The [Facebook for WooCommerce documentation](https://woo.com/document/facebook-for-woocommerce/) will help you set up the extension, use its features, and answer frequently asked questions. 
 
 ## 👩‍💻 Check forums
 

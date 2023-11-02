@@ -6,7 +6,7 @@ This is the development repository for the Facebook for WooCommerce plugin.
 
 - [WooCommerce.com product page](https://woocommerce.com/products/facebook)
 - [WordPress.org plugin page](https://wordpress.org/plugins/facebook-for-woocommerce/)
-- [User documentation](https://docs.woocommerce.com/document/facebook-for-woocommerce)
+- [User documentation](https://woo.com/document/facebook-for-woocommerce)
 
 ## Support
 The best place to get support is the [WordPress.org Facebook for WooCommerce forum](https://wordpress.org/support/plugin/facebook-for-woocommerce/).

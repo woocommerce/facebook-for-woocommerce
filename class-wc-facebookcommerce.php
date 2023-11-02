@@ -710,7 +710,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_documentation_url() {
-		return 'https://docs.woocommerce.com/document/facebook-for-woocommerce/';
+		return 'https://woo.com/document/facebook-for-woocommerce/';
 	}
 
 
