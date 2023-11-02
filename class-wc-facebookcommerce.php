@@ -734,7 +734,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 * @return string
 	 */
 	public function get_sales_page_url() {
-		return 'https://woocommerce.com/products/facebook/';
+		return 'https://woo.com/products/facebook/';
 	}
 
 
