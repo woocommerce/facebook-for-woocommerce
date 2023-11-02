@@ -19,4 +19,4 @@ The [Facebook for WooCommerce forums](https://wordpress.org/support/plugin/faceb
 
 ## 🗣 Contact support
 
-Our support team would be happy to help answer your questions! [Click here to get in touch with support.](https://woocommerce.com/my-account/create-a-ticket/)
+Our support team would be happy to help answer your questions! [Click here to get in touch with support.](https://woo.com/my-account/contact-support/)
