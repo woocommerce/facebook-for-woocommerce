@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class for adding diagnostic info to WooCommerce Tracker snapshot.
  *
- * See https://woocommerce.com/usage-tracking/ for more information.
+ * See https://woo.com/usage-tracking/ for more information.
  *
  * @since 2.3.4
  */

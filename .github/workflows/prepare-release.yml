@@ -52,5 +52,5 @@ jobs:
                     1. [ ] Wait for a while, and the zip file should be able to download from: [https://downloads.wordpress.org/plugin/facebook-for-woocommerce.x.x.x.zip](https://downloads.wordpress.org/plugin/facebook-for-woocommerce.x.x.x.zip)
             1. [ ] Close the release milestone.
             1. [ ] Publish any documentation updates relating to the release:
-               - [ ] [User documentation](https://docs.woocommerce.com/document/facebook-for-woocommerce)
-               - [ ] [Any changes to privacy/tracking](https://woocommerce.com/usage-tracking/)
+               - [ ] [User documentation](https://woo.com/document/facebook-for-woocommerce)
+               - [ ] [Any changes to privacy/tracking](https://woo.com/usage-tracking/)
