@@ -73,8 +73,6 @@ class Admin {
 		$this->product_sets       = new Admin\Product_Sets();
 		// add a modal in admin product pages
 		add_action( 'admin_footer', array( $this, 'render_modal_template' ) );
-		// may trigger the modal to open to warn the merchant about a conflict with the current product terms
-		add_action( 'admin_footer', array( $this, 'validate_product_excluded_terms' ) );
 
 		// add admin notice to inform that disabled products may need to be deleted manually
 		add_action( 'admin_notices', array( $this, 'maybe_show_product_disabled_sync_notice' ) );
