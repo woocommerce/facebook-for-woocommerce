@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.5 - 2023-11-29 =
+* Fix - Remove mentions of shops.
+
 = 3.1.3 - 2023-11-07 =
 * Fix - Doc - Use new Woo.com domain.
 * Tweak - WC 8.3 compatibility.
