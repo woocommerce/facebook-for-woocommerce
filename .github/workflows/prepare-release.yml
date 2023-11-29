@@ -1,5 +1,5 @@
-name: 'Prepare New Release'
-run-name:  Prepare New Release `${{ github.event.inputs.type }}/${{ github.event.inputs.version }}` from by @${{ github.actor }}
+name: "Prepare New Release"
+run-name: Prepare New Release `${{ github.event.inputs.type }}/${{ github.event.inputs.version }}` from by @${{ github.actor }}
 
 # **What it does**: Does release preparation: creates the release branch and the PR with a checklist.
 # **Why we have it**: To support devs automating a few manual steps and to leave a nice reference for consumers.
@@ -9,17 +9,16 @@ on:
     inputs:
       ## In the future we could infer that version from the changelog, or bump it via major|minor|patch.
       version:
-        description: 'Version number to be released'
+        description: "Version number to be released"
         required: true
       type:
-        description: 'Type of the release (release|hotfix)'
+        description: "Type of the release (release|hotfix)"
         required: true
-        default: 'release'
+        default: "release"
       wp-version:
-        description: 'WordPress tested up to'
+        description: "WordPress tested up to"
       wc-version:
-        description: 'WooCommerce tested up to'
-
+        description: "WooCommerce tested up to"
 
 jobs:
   PrepareRelease:
@@ -36,13 +35,9 @@ jobs:
           type: ${{ github.event.inputs.type }}
           wp-version: ${{ github.event.inputs.wp-version }}
           wc-version: ${{ github.event.inputs.wc-version }}
-          main-branch: 'trunk'
+          main-branch: "trunk"
           post-steps: |
             ### After deploy
-            1. [ ] Update documentation
-               - [ ] Publish any new required docs
-               - [ ] Update triggers/rules/actions listing pages
-            1. [ ] Mark related ideas complete on ideas board
             1. [ ] Confirm the release deployed correctly to [WPORG](https://wordpress.org/plugins/facebook-for-woocommerce/).
                - [ ] Ensure you can download and install the latest release from WPORG and WCCOM.
                - [ ] We've had an issue where the release tag (e.g. 2.6.1) wasn't present in the svn `tags/` folder.
