@@ -315,6 +315,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 				add_action( 'add_meta_boxes', 'WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
 
+				add_action( 'add_meta_boxes', [ $this, 'display_batch_api_completed' ], 10, 2 );
+
 				add_action(
 					'wp_ajax_ajax_fb_toggle_visibility',
 					array( $this, 'ajax_fb_toggle_visibility' )
@@ -1355,9 +1357,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
 
 			if ( $response->handles ) {
-				$this->display_success_message(
-					'Created product item on Facebook.'
-				);
+				return '';
 			} else {
 				$this->display_error_message(
 					'Updated product on Facebook has failed.'
@@ -1609,6 +1609,48 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
 			WC_Facebookcommerce_Utils::log( $message );
+		}
+	}
+
+	/**
+	 * Displays Batch API completed message on simple_product_publish.
+	 * This is called by the hook `add_meta_boxes` because that is sufficient time
+	 * to retrieve product_item_id for the product item created via batch API.
+	 *
+	 * Some sanity checks are added before displaying the message after publish
+	 *  - product_item_id : if exists, means product was created else not and don't display
+	 *  - should_sync: Don't display if the product is not supposed to be synced.
+	 *
+	 * @param string $post_type Wordpress Post type
+	 * @param WP_Post $post Wordpress Post
+	 * @return void
+	 */
+	public function display_batch_api_completed( string $post_type, WP_Post $post ) {
+		$fb_product     = new \WC_Facebook_Product( $post->ID );
+		$fb_product_item_id  = null;
+		$should_sync    = true;
+		$no_sync_reason = '';
+
+		if ( $fb_product->woo_product instanceof \WC_Product ) {
+			try {
+				facebook_for_woocommerce()->get_product_sync_validator( $fb_product->woo_product )->validate();
+			} catch ( \Exception $e ) {
+				$should_sync    = false;
+				$no_sync_reason = $e->getMessage();
+			}
+		}
+		if( $should_sync ) {
+			if ( $fb_product->woo_product->is_type( 'variable' ) ) {
+				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
+			} else {
+				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product );
+			}
+		}
+		if ( $fb_product_item_id ) {
+			$this->display_success_message(
+				'Created product  <a href="https://facebook.com/' . $fb_product_item_id .
+				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
+			);
 		}
 	}
 
