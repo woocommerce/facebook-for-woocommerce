@@ -185,9 +185,9 @@ class Background extends BackgroundJobHandler {
 		if ( ! Products::product_should_be_deleted( $product ) && Products::product_should_be_synced( $product ) ) {
 
 			if ( $product->is_type( 'variation' ) ) {
-				$product_data = $this->prepare_product_variation_data( $product );
+				$product_data = \WC_Facebookcommerce_Utils::prepare_product_variation_data_items_batch( $product );
 			} else {
-				$product_data = $this->prepare_product_data( $product );
+				$product_data = \WC_Facebookcommerce_Utils::prepare_product_data_items_batch( $product );
 			}
 
 			// extract the retailer_id
@@ -215,98 +215,6 @@ class Background extends BackgroundJobHandler {
 		}
 
 		return $request;
-	}
-
-	/**
-	 * Prepares the data for a product variation to be included in a sync request.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param \WC_Product $product product object
-	 * @return array
-	 * @throws PluginException In case no product found.
-	 */
-	private function prepare_product_variation_data( $product ) {
-		$parent_product = wc_get_product( $product->get_parent_id() );
-
-		if ( ! $parent_product instanceof \WC_Product ) {
-			throw new PluginException( "No parent product found with ID equal to {$product->get_parent_id()}." );
-		}
-
-		$fb_parent_product = new \WC_Facebook_Product( $parent_product->get_id() );
-		$fb_product        = new \WC_Facebook_Product( $product->get_id(), $fb_parent_product );
-
-		$data = $fb_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
-
-		// product variations use the parent product's retailer ID as the retailer product group ID
-		// $data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
-		$data['item_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
-
-		return $this->normalize_product_data( $data );
-	}
-
-	/**
-	 * Normalizes product data to be included in a sync request. /items_batch
-	 * rather than /batch this time.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param array $data product data.
-	 * @return array
-	 */
-	private function normalize_product_data( $data ) {
-		// Allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter.
-		$data['condition'] = 'new';
-		// Attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field.
-		if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
-			$attributes = [];
-			foreach ( $data['custom_data'] as $key => $val ) {
-
-				/**
-				 * Filter: facebook_for_woocommerce_variant_attribute_comma_replacement
-				 *
-				 * The Facebook API expects a comma-separated list of attributes in `additional_variant_attribute` field.
-				 * https://developers.facebook.com/docs/marketing-api/catalog/reference/
-				 * This means that WooCommerce product attributes included in this field should avoid the comma (`,`) character.
-				 * Facebook for WooCommerce replaces any `,` with a space by default.
-				 * This filter allows a site to provide a different replacement string.
-				 *
-				 * @since 2.5.0
-				 *
-				 * @param string $replacement The default replacement string (`,`).
-				 * @param string $value Attribute value.
-				 * @return string Return the desired replacement string.
-				 */
-				$attribute_value = str_replace(
-					',',
-					apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ', $val ),
-					$val
-				);
-				/** Force replacing , and : characters if those were not cleaned up by filters */
-				$attributes[] = str_replace( [ ',', ':' ], ' ', $key ) . ':' . str_replace( [ ',', ':' ], ' ', $attribute_value );
-			}
-
-			$data['additional_variant_attribute'] = implode( ',', $attributes );
-			unset( $data['custom_data'] );
-		}
-
-		return $data;
-	}
-
-	/**
-	 * Prepares the product data to be included in a sync request.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param \WC_Product $product product object
-	 * @return array
-	 */
-	private function prepare_product_data( $product ) {
-		$fb_product = new \WC_Facebook_Product( $product->get_id() );
-		$data       = $fb_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
-		// products that are not variations use their retailer retailer ID as the retailer product group ID
-		$data['item_group_id'] = $data['retailer_id'];
-		return $this->normalize_product_data( $data );
 	}
 
 	/**
@@ -342,7 +250,8 @@ class Background extends BackgroundJobHandler {
 	private function send_item_updates( array $requests ): array {
 		$facebook_catalog_id = facebook_for_woocommerce()->get_integration()->get_product_catalog_id();
 		$response            = facebook_for_woocommerce()->get_api()->send_item_updates( $facebook_catalog_id, $requests );
-		$handles             = ( isset( $response->handles ) && is_array( $response->handles ) ) ? $response->handles : [];
+		$response_handles    = $response->handles;
+		$handles             = ( isset( $response_handles ) && is_array( $response_handles ) ) ? $response_handles : array();
 		return $handles;
 	}
 }
