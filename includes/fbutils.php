@@ -698,7 +698,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		public static function prepare_product_requests_items_batch( $product ) {
 			$product['item_group_id'] = $product['retailer_id'];
-			$product_data = self::normalize_product_data_for_items_batch( $product );
+			$product_data             = self::normalize_product_data_for_items_batch( $product );
 
 			// extract the retailer_id
 			$retailer_id = $product_data['retailer_id'];
@@ -708,10 +708,10 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			unset( $product_data['retailer_id'] );
 			$product_data['id'] = $retailer_id;
 
-			$requests = array([
+			$requests = array( [
 				'method' => Sync::ACTION_UPDATE,
 				'data'   => $product_data,
-			]);
+			] );
 
 			return $requests;
 		}
