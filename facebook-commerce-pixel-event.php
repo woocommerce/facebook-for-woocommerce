@@ -295,7 +295,6 @@ class WC_Facebookcommerce_Pixel {
 					WC_Facebookcommerce_Utils::wc_enqueue_js( $code );
 				}
 			} else {
-				// @TODO: if this one is ever used. Doubts have I.
 				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method ) ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 			}
 		}
