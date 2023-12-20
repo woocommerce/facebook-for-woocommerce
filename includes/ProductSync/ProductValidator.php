@@ -288,6 +288,18 @@ class ProductValidator {
 	 */
 	protected function validate_product_visibility() {
 		$product = $this->product_parent ? $this->product_parent : $this->product;
+		
+		/**
+		 * Filters whether the product must be visible in catalog and search results to be validated.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param boolean $enabled default true
+		 * @param \WC_Product $product product object
+		 */
+		if ( ! apply_filters( 'wc_facebook_validate_product_visibility', true, $product ) ) {
+			return;
+		}
 
 		if ( ! $product->is_visible() ) {
 			throw new ProductExcludedException( __( 'This product cannot be synced to Facebook because it is hidden from your store catalog.', 'facebook-for-woocommerce' ) );
