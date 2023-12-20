@@ -75,14 +75,17 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		private static function load_deferred_events(): array {
 			$transient_key = static::get_deferred_events_transient_key();
-			if ( $transient_key ) {
-				$deferred_events = get_transient( $transient_key );
-				if ( $deferred_events ) {
-					delete_transient( $transient_key );
-					return $deferred_events;
-				}
+			if ( ! $transient_key ) {
+				return array();
 			}
-			return array();
+
+			$deferred_events = get_transient( $transient_key );
+			if ( ! $deferred_events ) {
+				return array();
+			}
+
+			delete_transient( $transient_key );
+			return $deferred_events;
 		}
 
 		/**
