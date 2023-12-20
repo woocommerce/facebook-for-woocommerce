@@ -1225,7 +1225,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param WC_Facebook_Product $woo_product
 	 * @param string|null         $fb_product_group_id
-	 * @return string facebook product item id
+	 * @return string
 	 */
 	public function create_product_simple( WC_Facebook_Product $woo_product, string $fb_product_group_id = null ): string {
 		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
