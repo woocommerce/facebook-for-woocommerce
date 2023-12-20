@@ -110,6 +110,13 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		public static function save_deferred_events() {
 			$transient_key = static::get_deferred_events_transient_key();
+			if ( ! $transient_key ) {
+				return;
+			}
+
+			$existing_events         = static::load_deferred_events();
+			static::$deferred_events = array_merge( $existing_events, static::$deferred_events );
+
 			if ( ! empty( static::$deferred_events ) ) {
 				set_transient( $transient_key, static::$deferred_events, DAY_IN_SECONDS );
 			}
