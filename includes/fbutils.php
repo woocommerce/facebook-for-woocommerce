@@ -67,7 +67,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		}
 
 		/**
-		 * Loads deferred event from the storage.
+		 * Loads deferred events from the storage and cleans the storage immediately after.
 		 *
 		 * @return array
 		 *
@@ -94,7 +94,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @since x.x.x
 		 */
-		private static function add_deferred_event( string $code ): void {
+		public static function add_deferred_event( string $code ): void {
 			static::$deferred_events[] = $code;
 		}
 
@@ -108,7 +108,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		public static function save_deferred_events() {
 			$transient_key = static::get_deferred_events_transient_key();
 			if ( ! empty( static::$deferred_events ) ) {
-				set_transient( $transient_key, static::$deferred_events, 60 * 60 * 24 );
+				set_transient( $transient_key, static::$deferred_events, DAY_IN_SECONDS );
 			}
 		}
 
@@ -135,14 +135,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @param string $code
 		 * @return void
 		 */
-		public static function wc_enqueue_js( $code, $defer = false ) {
+		public static function wc_enqueue_js( $code ) {
 			global $wc_queued_js;
-
-			// Saves for later output with the next page render.
-			if ( $defer ) {
-				static::add_deferred_event( $code );
-				return;
-			}
 
 			// Immediately renders code in the footer.
 			if ( function_exists( 'wc_enqueue_js' ) && empty( $wc_queued_js ) ) {

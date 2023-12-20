@@ -562,7 +562,11 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
-			// Cut off cart clones.
+			/**
+			 * Make sure to proceed only if the cart item exists.
+			 * Some other plugins may clone the WC_Cart object. Calling clone APIs may trigger the 'woocommerce_add_to_cart' action.
+			 * We want to make sure to proceed only if the cart item exists inside the original WC_Cart object.
+			 */
 			$cart = WC()->cart;
 			if ( ! isset( $cart->cart_contents[ $cart_item_key ] ) ) {
 				return;
