@@ -121,7 +121,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 */
 		private static function get_deferred_events_transient_key(): string {
 			if ( is_object( WC()->session ) ) {
-				return 'pinterest_for_woocommerce_async_events_' . md5( WC()->session->get_customer_id() );
+				return 'facebook_for_woocommerce_async_events_' . md5( WC()->session->get_customer_id() );
 			}
 			return '';
 		}
