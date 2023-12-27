@@ -285,14 +285,19 @@ class WC_Facebookcommerce_Pixel {
 		 * @param string $method     Name of the pixel's fbq() function to call.
 		 */
 		public function inject_event( $event_name, $params, $method = 'track' ) {
-
-			if ( \WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
-				\WC_Facebookcommerce_Utils::wc_enqueue_js( $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method ) );
+			// If we have add to cart redirect enabled, we must defer the events to render them the next page load.
+			$should_defer = 'yes' === get_option( 'woocommerce_cart_redirect_after_add', 'no' );
+			if ( WC_Facebookcommerce_Utils::isWoocommerceIntegration() ) {
+				$code = $this->get_event_code( $event_name, self::build_params( $params, $event_name ), $method );
+				if ( $should_defer ) {
+					WC_Facebookcommerce_Utils::add_deferred_event( $code );
+				} else {
+					WC_Facebookcommerce_Utils::wc_enqueue_js( $code );
+				}
 			} else {
 				printf( $this->get_event_script( $event_name, self::build_params( $params, $event_name ), $method ) ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 			}
 		}
-
 
 		/**
 		 * Gets the JavaScript code to track a conditional event wrapped in <script> tag.

@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, shop, catalog, advertise, pixel, product
 Requires at least: 4.4
 Tested up to: 6.4
-Stable tag: 3.1.5
+Stable tag: 3.1.6
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -40,8 +40,14 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.6 - 2023-12-27 =
+* Fix - Facebook Pixel events missing on redirect to cart.
+
 = 3.1.5 - 2023-11-29 =
 * Fix - Remove mentions of shops.
+
+= 3.1.4 - 2023-11-25 =
+* Fix - Remove popup modal blocking product edit when product is using category excluded from sync.
 
 = 3.1.3 - 2023-11-07 =
 * Fix - Doc - Use new Woo.com domain.

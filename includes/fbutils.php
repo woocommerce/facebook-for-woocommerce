@@ -42,6 +42,100 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			'female' => 1,
 			'unisex' => 1,
 		);
+
+		/**
+		 * A deferred events storage.
+		 *
+		 * @var array
+		 *
+		 * @since 3.1.6
+		 */
+		private static $deferred_events = [];
+
+		/**
+		 * Prints deferred events into page header.
+		 *
+		 * @return void
+		 *
+		 * @since 3.1.6
+		 */
+		public static function print_deferred_events() {
+			$deferred_events = static::load_deferred_events();
+			if ( ! empty( $deferred_events ) ) {
+				echo '<script>' . implode( PHP_EOL, $deferred_events ) . '</script>'; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped --- Printing hardcoded JS tracking code.
+			}
+		}
+
+		/**
+		 * Loads deferred events from the storage and cleans the storage immediately after.
+		 *
+		 * @return array
+		 *
+		 * @since 3.1.6
+		 */
+		private static function load_deferred_events(): array {
+			$transient_key = static::get_deferred_events_transient_key();
+			if ( ! $transient_key ) {
+				return array();
+			}
+
+			$deferred_events = get_transient( $transient_key );
+			if ( ! $deferred_events ) {
+				return array();
+			}
+
+			delete_transient( $transient_key );
+			return $deferred_events;
+		}
+
+		/**
+		 * Adds event into the list of events to be saved/rendered.
+		 *
+		 * @param string $code Generated JS code string w/o a script tag.
+		 *
+		 * @return void
+		 *
+		 * @since 3.1.6
+		 */
+		public static function add_deferred_event( string $code ): void {
+			static::$deferred_events[] = $code;
+		}
+
+		/**
+		 * Saves deferred events into the storage.
+		 *
+		 * @return void
+		 *
+		 * @since 3.1.6
+		 */
+		public static function save_deferred_events() {
+			$transient_key = static::get_deferred_events_transient_key();
+			if ( ! $transient_key ) {
+				return;
+			}
+
+			$existing_events         = static::load_deferred_events();
+			static::$deferred_events = array_merge( $existing_events, static::$deferred_events );
+
+			if ( ! empty( static::$deferred_events ) ) {
+				set_transient( $transient_key, static::$deferred_events, DAY_IN_SECONDS );
+			}
+		}
+
+		/**
+		 * Returns the transient key for deferred events based on user session.
+		 *
+		 * @return string
+		 *
+		 * @since 3.1.6
+		 */
+		private static function get_deferred_events_transient_key(): string {
+			if ( is_object( WC()->session ) ) {
+				return 'facebook_for_woocommerce_async_events_' . md5( WC()->session->get_customer_id() );
+			}
+			return '';
+		}
+
 		/**
 		 * WooCommerce 2.1 support for wc_enqueue_js
 		 *
@@ -54,6 +148,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		public static function wc_enqueue_js( $code ) {
 			global $wc_queued_js;
 
+			// Immediately renders code in the footer.
 			if ( function_exists( 'wc_enqueue_js' ) && empty( $wc_queued_js ) ) {
 				wc_enqueue_js( $code );
 			} else {

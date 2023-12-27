@@ -116,9 +116,8 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 			add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'add_filter_for_add_to_cart_fragments' ) );
 			// AddToCart while using redirect to cart page
 			if ( 'yes' === get_option( 'woocommerce_cart_redirect_after_add', 'no' ) ) {
-				add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'set_last_product_added_to_cart_upon_redirect' ), 10, 2 );
-				add_action( 'woocommerce_ajax_added_to_cart', array( $this, 'set_last_product_added_to_cart_upon_ajax_redirect' ) );
-				add_action( 'woocommerce_after_cart', array( $this, 'inject_add_to_cart_redirect_event' ), 10, 2 );
+				add_action( 'wp_head', array( WC_Facebookcommerce_Utils::class, 'print_deferred_events' ) );
+				add_action( 'shutdown', array( WC_Facebookcommerce_Utils::class, 'save_deferred_events' ) );
 			}
 
 			// InitiateCheckout events
@@ -563,8 +562,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 				return;
 			}
 
+			/**
+			 * Make sure to proceed only if the cart item exists.
+			 * Some other plugins may clone the WC_Cart object. Calling clone APIs may trigger the 'woocommerce_add_to_cart' action.
+			 * We want to make sure to proceed only if the cart item exists inside the original WC_Cart object.
+			 */
 			$cart = WC()->cart;
-			// Check if we're dealing with cloned cart
 			if ( ! isset( $cart->cart_contents[ $cart_item_key ] ) ) {
 				return;
 			}
@@ -735,86 +738,6 @@ if ( ! class_exists( 'WC_Facebookcommerce_EventsTracker' ) ) :
 
 			return $fragments;
 		}
-
-
-		/**
-		 * Sets last product added to cart to session when adding to cart a product and redirection to cart is enabled.
-		 *
-		 * @internal
-		 *
-		 * @since 1.10.2
-		 *
-		 * @param string           $redirect URL redirecting to (usually cart)
-		 * @param null|\WC_Product $product the product just added to the cart
-		 * @return string
-		 */
-		public function set_last_product_added_to_cart_upon_redirect( $redirect, $product = null ) {
-
-			// Bail if the session variable has been set or WC()->session is null.
-			if ( ! isset( WC()->session ) || WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 ) > 0 ) {
-				return $redirect;
-			}
-
-			$product_id = 0;
-
-			if ( $product instanceof \WC_Product ) {
-				$product_id = isset( $_POST['variation_id'] ) ?  wc_clean( wp_unslash( $_POST['variation_id'] ) ) : $product->get_id();
-			} elseif ( isset( $_GET['add-to-cart'] ) && is_numeric( wc_clean( wp_unslash( $_GET['add-to-cart'] ) ) ) ) {
-				$product_id = wc_clean( wp_unslash( $_GET['add-to-cart'] ) );
-			}
-
-			WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', (int) $product_id );
-
-			return $redirect;
-
-		}
-
-
-		/**
-		 * Sets last product added to cart to session when adding a product to cart from an archive page and both AJAX adding and redirection to cart are enabled.
-		 *
-		 * @internal
-		 *
-		 * @since 1.10.2
-		 *
-		 * @param null|int $product_id the ID of the product just added to the cart
-		 */
-		public function set_last_product_added_to_cart_upon_ajax_redirect( $product_id = null ) {
-
-			if ( ! $product_id ) {
-				facebook_for_woocommerce()->log( 'Cannot record AddToCart event because the product cannot be determined. Backtrace: ' . print_r( wp_debug_backtrace_summary(), true ) );
-				return;
-			}
-
-			$product = wc_get_product( $product_id );
-
-			if ( $product instanceof \WC_Product ) {
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', $product->get_id() );
-			}
-		}
-
-
-		/**
-		 * Triggers an AddToCart event when redirecting to the cart page.
-		 *
-		 * @internal
-		 */
-		public function inject_add_to_cart_redirect_event() {
-
-			if ( ! $this->is_pixel_enabled() ) {
-				return;
-			}
-
-			$last_product_id = WC()->session->get( 'facebook_for_woocommerce_last_product_added_to_cart', 0 );
-
-			if ( $last_product_id > 0 ) {
-
-				$this->inject_add_to_cart_event( '', $last_product_id, 1, 0 );
-
-				WC()->session->set( 'facebook_for_woocommerce_last_product_added_to_cart', 0 );
-			}
-		}
-
 
 		/**
 		 * Triggers an InitiateCheckout event when customer reaches checkout page.
