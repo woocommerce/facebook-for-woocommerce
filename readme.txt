@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.6 - 2023-12-27 =
+* Fix - Facebook Pixel events missing on redirect to cart.
+
 = 3.1.5 - 2023-11-29 =
 * Fix - Remove mentions of shops.
 
