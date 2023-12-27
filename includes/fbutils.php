@@ -48,7 +48,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @var array
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		private static $deferred_events = [];
 
@@ -57,7 +57,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @return void
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		public static function print_deferred_events() {
 			$deferred_events = static::load_deferred_events();
@@ -71,7 +71,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @return array
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		private static function load_deferred_events(): array {
 			$transient_key = static::get_deferred_events_transient_key();
@@ -95,7 +95,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @return void
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		public static function add_deferred_event( string $code ): void {
 			static::$deferred_events[] = $code;
@@ -106,7 +106,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @return void
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		public static function save_deferred_events() {
 			$transient_key = static::get_deferred_events_transient_key();
@@ -127,7 +127,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 *
 		 * @return string
 		 *
-		 * @since x.x.x
+		 * @since 3.1.6
 		 */
 		private static function get_deferred_events_transient_key(): string {
 			if ( is_object( WC()->session ) ) {
