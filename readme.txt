@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.7 - 2024-01-03 =
+* Add - Create/Update products sync to facebook with Batch API.
+
 = 3.1.6 - 2023-12-27 =
 * Fix - Facebook Pixel events missing on redirect to cart.
 
