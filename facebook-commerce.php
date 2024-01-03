@@ -1345,7 +1345,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 * Creates a product item using the facebook Catalog Batch API. This replaces existing functionality,
 	 * which is currently using facebook Product Item API implemented by `WC_Facebookcommerce_Integration::create_product_item`
 	 *
-	 * @since x.x.x
+	 * @since 3.1.7
 	 * @param WC_Facebook_Product $woo_product
 	 * @param string              $retailer_id
 	 **/
