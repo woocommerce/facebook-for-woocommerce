@@ -1629,16 +1629,18 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$fb_product     = new \WC_Facebook_Product( $post->ID );
 		$fb_product_item_id  = null;
 		$should_sync    = true;
-		$no_sync_reason = '';
 
-		if ( $fb_product->woo_product instanceof \WC_Product ) {
-			try {
-				facebook_for_woocommerce()->get_product_sync_validator( $fb_product->woo_product )->validate();
-			} catch ( \Exception $e ) {
-				$should_sync    = false;
-				$no_sync_reason = $e->getMessage();
-			}
+		// Bail if this is not a WooCommerce product.
+		if ( ! $fb_product->woo_product instanceof \WC_Product ) {
+			return;
 		}
+
+		try {
+			facebook_for_woocommerce()->get_product_sync_validator( $fb_product->woo_product )->validate();
+		} catch ( \Exception $e ) {
+			$should_sync    = false;
+		}
+
 		if( $should_sync ) {
 			if ( $fb_product->woo_product->is_type( 'variable' ) ) {
 				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
@@ -1646,6 +1648,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product );
 			}
 		}
+
 		if ( $fb_product_item_id ) {
 			$this->display_success_message(
 				'Created product  <a href="https://facebook.com/' . $fb_product_item_id .
