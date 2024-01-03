@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.8 - 2024-01-03 =
+* Fix - Fatal Error on order screens.
+
 = 3.1.7 - 2024-01-03 =
 * Add - Create/Update products sync to facebook with Batch API.
 
