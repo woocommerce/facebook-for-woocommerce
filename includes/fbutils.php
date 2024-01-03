@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 use WooCommerce\Facebook\Events\AAMSettings;
 use WooCommerce\Facebook\Events\Normalizer;
 use WooCommerce\Facebook\Framework\Api\Exception as ApiException;
+use WooCommerce\Facebook\Products\Sync;
 
 if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
@@ -717,6 +718,127 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			);
 			return $cached_best_tip;
 		}
+
+		/**
+		 * Normalizes product data to be included in a sync request. /items_batch
+		 * rather than /batch this time.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param array $data product data.
+		 * @return array
+		 */
+		public static function normalize_product_data_for_items_batch( $data ) {
+			// Allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter.
+			$data['condition'] = 'new';
+			// Attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field.
+			if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
+				$attributes = [];
+				foreach ( $data['custom_data'] as $key => $val ) {
+
+					/**
+					 * Filter: facebook_for_woocommerce_variant_attribute_comma_replacement
+					 *
+					 * The Facebook API expects a comma-separated list of attributes in `additional_variant_attribute` field.
+					 * https://developers.facebook.com/docs/marketing-api/catalog/reference/
+					 * This means that WooCommerce product attributes included in this field should avoid the comma (`,`) character.
+					 * Facebook for WooCommerce replaces any `,` with a space by default.
+					 * This filter allows a site to provide a different replacement string.
+					 *
+					 * @since 2.5.0
+					 *
+					 * @param string $replacement The default replacement string (`,`).
+					 * @param string $value Attribute value.
+					 * @return string Return the desired replacement string.
+					 */
+					$attribute_value = str_replace(
+						',',
+						apply_filters( 'facebook_for_woocommerce_variant_attribute_comma_replacement', ' ', $val ),
+						$val
+					);
+					/** Force replacing , and : characters if those were not cleaned up by filters */
+					$attributes[] = str_replace( [ ',', ':' ], ' ', $key ) . ':' . str_replace( [ ',', ':' ], ' ', $attribute_value );
+				}
+
+				$data['additional_variant_attribute'] = implode( ',', $attributes );
+				unset( $data['custom_data'] );
+			}
+
+			return $data;
+		}
+
+		/**
+		 * Prepares the product data to be included in a sync request.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param \WC_Product $product product object
+		 * @return array
+		 */
+		public static function prepare_product_data_items_batch( $product ) {
+			$fb_product = new \WC_Facebook_Product( $product->get_id() );
+			$data       = $fb_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+			// products that are not variations use their retailer retailer ID as the retailer product group ID
+			$data['item_group_id'] = $data['retailer_id'];
+			return self::normalize_product_data_for_items_batch( $data );
+		}
+
+		/**
+		 * Prepares the requests array to be included in a batch api request.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param array $product Array
+		 * @return array
+		 */
+		public static function prepare_product_requests_items_batch( $product ) {
+			$product['item_group_id'] = $product['retailer_id'];
+			$product_data             = self::normalize_product_data_for_items_batch( $product );
+
+			// extract the retailer_id
+			$retailer_id = $product_data['retailer_id'];
+
+			// NB: Changing this to get items_batch to work
+			// retailer_id cannot be included in the data object
+			unset( $product_data['retailer_id'] );
+			$product_data['id'] = $retailer_id;
+
+			$requests = array( [
+				'method' => Sync::ACTION_UPDATE,
+				'data'   => $product_data,
+			] );
+
+			return $requests;
+		}
+
+		/**
+		 * Prepares the data for a product variation to be included in a sync request.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param \WC_Product $product product object
+		 * @return array
+		 * @throws PluginException In case no product found.
+		 */
+		public static function prepare_product_variation_data_items_batch( $product ) {
+			$parent_product = wc_get_product( $product->get_parent_id() );
+
+			if ( ! $parent_product instanceof \WC_Product ) {
+				throw new PluginException( "No parent product found with ID equal to {$product->get_parent_id()}." );
+			}
+
+			$fb_parent_product = new \WC_Facebook_Product( $parent_product->get_id() );
+			$fb_product        = new \WC_Facebook_Product( $product->get_id(), $fb_parent_product );
+
+			$data = $fb_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+
+			// product variations use the parent product's retailer ID as the retailer product group ID
+			// $data['retailer_product_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+			$data['item_group_id'] = \WC_Facebookcommerce_Utils::get_fb_retailer_id( $parent_product );
+
+			return self::normalize_product_data_for_items_batch( $data );
+		}
+
 	}
 
 endif;

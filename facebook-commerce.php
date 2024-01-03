@@ -16,6 +16,7 @@ use WooCommerce\Facebook\Framework\Helper;
 use WooCommerce\Facebook\Framework\Plugin\Exception as PluginException;
 use WooCommerce\Facebook\Products;
 use WooCommerce\Facebook\Products\Feed;
+use WooCommerce\Facebook\Products\Sync;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -313,6 +314,8 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				);
 
 				add_action( 'add_meta_boxes', 'WooCommerce\Facebook\Admin\Product_Sync_Meta_Box::register', 10, 1 );
+
+				add_action( 'add_meta_boxes', [ $this, 'display_batch_api_completed' ], 10, 2 );
 
 				add_action(
 					'wp_ajax_ajax_fb_toggle_visibility',
@@ -1175,7 +1178,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 
 		if ( $fb_product_item_id ) {
 			$woo_product->fb_visibility = Products::is_product_visible( $woo_product->woo_product );
-			$this->update_product_item( $woo_product, $fb_product_item_id );
+			$this->update_product_item_batch_api( $woo_product, $fb_product_item_id );
 			return $fb_product_item_id;
 		} else {
 			// Check if this is a new product item for an existing product group
@@ -1222,7 +1225,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	 *
 	 * @param WC_Facebook_Product $woo_product
 	 * @param string|null         $fb_product_group_id
-	 * @return string facebook product item id
+	 * @return string
 	 */
 	public function create_product_simple( WC_Facebook_Product $woo_product, string $fb_product_group_id = null ): string {
 		$retailer_id = WC_Facebookcommerce_Utils::get_fb_retailer_id( $woo_product );
@@ -1232,8 +1235,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		}
 
 		if ( $fb_product_group_id ) {
-			$fb_product_item_id = $this->create_product_item( $woo_product, $retailer_id, $fb_product_group_id );
-			return $fb_product_item_id;
+			return $this->create_product_item_batch_api( $woo_product, $retailer_id, $fb_product_group_id );
 		}
 		return '';
 	}
@@ -1337,6 +1339,35 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			$message = sprintf( 'There was an error trying to update Product Group %s: %s', $fb_product_group_id, $e->getMessage() );
 			WC_Facebookcommerce_Utils::log( $message );
 		}
+	}
+
+	/**
+	 * Creates a product item using the facebook Catalog Batch API. This replaces existing functionality,
+	 * which is currently using facebook Product Item API implemented by `WC_Facebookcommerce_Integration::create_product_item`
+	 *
+	 * @since 3.1.7
+	 * @param WC_Facebook_Product $woo_product
+	 * @param string              $retailer_id
+	 **/
+	public function create_product_item_batch_api( $woo_product, $retailer_id, $product_group_id ): string {
+		try {
+			$product_data        = $woo_product->prepare_product( $retailer_id, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+			$requests            = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch( $product_data );
+			$facebook_catalog_id = $this->get_product_catalog_id();
+			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+
+			if ( $response->handles ) {
+				return '';
+			} else {
+				$this->display_error_message(
+					'Updated product on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to create a product item: %s', $e->getMessage() );
+			WC_Facebookcommerce_Utils::log( $message );
+		}
+		return '';
 	}
 
 	public function create_product_item( $woo_product, $retailer_id, $product_group_id ): string {
@@ -1466,6 +1497,37 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Update existing product using batch API.
+	 *
+	 * @param WC_Facebook_Product $woo_product
+	 * @param string              $fb_product_item_id
+	 * @return void
+	 */
+	public function update_product_item_batch_api( WC_Facebook_Product $woo_product, string $fb_product_item_id ): void {
+		$product  = $woo_product->prepare_product( null, \WC_Facebook_Product::PRODUCT_PREP_TYPE_ITEMS_BATCH );
+		$requests = WC_Facebookcommerce_Utils::prepare_product_requests_items_batch( $product );
+
+		try {
+			$facebook_catalog_id = $this->get_product_catalog_id();
+			$response            = $this->facebook_for_woocommerce->get_api()->send_item_updates( $facebook_catalog_id, $requests );
+			if ( $response->handles ) {
+				$this->display_success_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
+				);
+			} else {
+				$this->display_error_message(
+					'Updated product  <a href="https://facebook.com/' . $fb_product_item_id .
+					'" target="_blank">' . $fb_product_item_id . '</a> on Facebook has failed.'
+				);
+			}
+		} catch ( ApiException $e ) {
+			$message = sprintf( 'There was an error trying to update a product item: %s', $e->getMessage() );
+			WC_Facebookcommerce_Utils::log( $message );
+		}
+	}
+
+	/**
 	 * Update existing product.
 	 *
 	 * @param WC_Facebook_Product $woo_product
@@ -1547,6 +1609,48 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		} catch ( ApiException $e ) {
 			$message = sprintf( 'There was an error trying to delete a product set item: %s', $e->getMessage() );
 			WC_Facebookcommerce_Utils::log( $message );
+		}
+	}
+
+	/**
+	 * Displays Batch API completed message on simple_product_publish.
+	 * This is called by the hook `add_meta_boxes` because that is sufficient time
+	 * to retrieve product_item_id for the product item created via batch API.
+	 *
+	 * Some sanity checks are added before displaying the message after publish
+	 *  - product_item_id : if exists, means product was created else not and don't display
+	 *  - should_sync: Don't display if the product is not supposed to be synced.
+	 *
+	 * @param string $post_type Wordpress Post type
+	 * @param WP_Post $post Wordpress Post
+	 * @return void
+	 */
+	public function display_batch_api_completed( string $post_type, WP_Post $post ) {
+		$fb_product     = new \WC_Facebook_Product( $post->ID );
+		$fb_product_item_id  = null;
+		$should_sync    = true;
+		$no_sync_reason = '';
+
+		if ( $fb_product->woo_product instanceof \WC_Product ) {
+			try {
+				facebook_for_woocommerce()->get_product_sync_validator( $fb_product->woo_product )->validate();
+			} catch ( \Exception $e ) {
+				$should_sync    = false;
+				$no_sync_reason = $e->getMessage();
+			}
+		}
+		if( $should_sync ) {
+			if ( $fb_product->woo_product->is_type( 'variable' ) ) {
+				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_GROUP_ID, $post->ID, $fb_product->woo_product );
+			} else {
+				$fb_product_item_id = $this->get_product_fbid( self::FB_PRODUCT_ITEM_ID, $post->ID, $fb_product->woo_product );
+			}
+		}
+		if ( $fb_product_item_id ) {
+			$this->display_success_message(
+				'Created product  <a href="https://facebook.com/' . $fb_product_item_id .
+				'" target="_blank">' . $fb_product_item_id . '</a> on Facebook.'
+			);
 		}
 	}
 
