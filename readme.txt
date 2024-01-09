@@ -40,6 +40,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.9 - 2024-01-09 =
+* Tweak - Changed minimum WC version to 6.4.
+* Tweak - WC 8.5 compatibility.
+
 = 3.1.8 - 2024-01-03 =
 * Fix - Fatal Error on order screens.
 
