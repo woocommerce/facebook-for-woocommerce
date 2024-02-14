@@ -11,12 +11,12 @@
  * Description: Grow your business on Facebook! Use this official plugin to help sell more of your products using Facebook. After completing the setup, you'll be ready to create ads that promote your products and you can also create a shop section on your Page where customers can browse your products on Facebook.
  * Author: Facebook
  * Author URI: https://www.facebook.com/
- * Version: 3.1.9
+ * Version: 3.1.10
  * Requires at least: 5.6
  * Text Domain: facebook-for-woocommerce
  * Tested up to: 6.4
  * WC requires at least: 6.4
- * WC tested up to: 8.5
+ * WC tested up to: 8.6
  *
  * @package FacebookCommerce
  */
@@ -44,7 +44,7 @@ class WC_Facebook_Loader {
 	/**
 	 * @var string the plugin version. This must be in the main plugin file to be automatically bumped by Woorelease.
 	 */
-	const PLUGIN_VERSION = '3.1.9'; // WRCS: DEFINED_VERSION.
+	const PLUGIN_VERSION = '3.1.10'; // WRCS: DEFINED_VERSION.
 
 	// Minimum PHP version required by this plugin.
 	const MINIMUM_PHP_VERSION = '7.4.0';
