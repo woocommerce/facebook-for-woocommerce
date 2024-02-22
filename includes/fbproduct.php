@@ -291,13 +291,15 @@ class WC_Facebook_Product {
 			return $video_urls;
 		}
 		foreach ( $attached_videos as $video ) {
-			$url = $video->guid;
-			array_push(
-				$video_urls,
-				array(
-					'url' => $url,
-				)
-			);
+			$url = wp_get_attachment_url( $video->ID );
+			if ( $url ) {
+				array_push(
+					$video_urls,
+					array(
+						'url' => $url,
+					)
+				);
+			}
         }
 
 		return $video_urls;
