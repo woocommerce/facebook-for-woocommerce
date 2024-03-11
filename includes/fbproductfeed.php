@@ -34,6 +34,8 @@ class WC_Facebook_Product_Feed {
 
 	private $has_default_product_count = 0;
 	private $no_default_product_count  = 0;
+	private $facebook_catalog_id;
+	private $feed_id;
 
 	/**
 	 * WC_Facebook_Product_Feed constructor.
