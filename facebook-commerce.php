@@ -1693,7 +1693,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						include_once 'includes/fbproductfeed.php';
 					}
 
-					$this->fbproductfeed = new \WC_Facebook_Product_Feed( $this->get_product_catalog_id() );
+					$this->fbproductfeed = new \WC_Facebook_Product_Feed();
 				}
 
 				$status = $this->fbproductfeed->is_upload_complete( $this->settings );
