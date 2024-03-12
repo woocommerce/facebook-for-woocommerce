@@ -191,6 +191,9 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 	/** @var WC_Facebookcommerce_Background_Process instance. */
 	private $background_processor;
 
+	/** @var WC_Facebook_Product_Feed instance. */
+	private $fbproductfeed;
+
 	/**
 	 * Init and hook in the integration.
 	 *
@@ -1693,7 +1696,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 						include_once 'includes/fbproductfeed.php';
 					}
 
-					$this->fbproductfeed = new \WC_Facebook_Product_Feed( $this->get_product_catalog_id() );
+					$this->fbproductfeed = new \WC_Facebook_Product_Feed();
 				}
 
 				$status = $this->fbproductfeed->is_upload_complete( $this->settings );
