@@ -42,33 +42,3 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 = 3.1.10 - 2024-02-14 =
 * Tweak - WC 8.6 compatibility.
-
-= 3.1.9 - 2024-01-09 =
-* Tweak - Changed minimum WC version to 6.4.
-* Tweak - WC 8.5 compatibility.
-
-= 3.1.8 - 2024-01-03 =
-* Fix - Fatal Error on order screens.
-
-= 3.1.7 - 2024-01-03 =
-* Add - Create/Update products sync to facebook with Batch API.
-
-= 3.1.6 - 2023-12-27 =
-* Fix - Facebook Pixel events missing on redirect to cart.
-
-= 3.1.5 - 2023-11-29 =
-* Fix - Remove mentions of shops.
-
-= 3.1.4 - 2023-11-25 =
-* Fix - Remove popup modal blocking product edit when product is using category excluded from sync.
-
-= 3.1.3 - 2023-11-07 =
-* Fix - Doc - Use new Woo.com domain.
-* Tweak - WC 8.3 compatibility.
-* Tweak - WP 6.4 compatibility.
-
-= 3.1.2 - 2023-10-19 =
-* Dev - Add phpcs on changed files only.
-
-= 3.1.1 - 2023-10-12 =
-* Update - Revert "Advandtage+ Shoppings Ads support in Advertise tab".
