@@ -36,17 +36,6 @@ class WC_Facebook_Product_Feed {
 	private $no_default_product_count  = 0;
 
 	/**
-	 * WC_Facebook_Product_Feed constructor.
-	 *
-	 * @param string|null $facebook_catalog_id Facebook catalog ID, if any
-	 * @param string|null $feed_id Facebook feed ID, if any
-	 */
-	public function __construct( $facebook_catalog_id = null, $feed_id = null ) {
-		$this->facebook_catalog_id = $facebook_catalog_id;
-		$this->feed_id             = $feed_id;
-	}
-
-	/**
 	 * Generates the product catalog feed.
 	 *
 	 * This replaces any previously generated feed file.

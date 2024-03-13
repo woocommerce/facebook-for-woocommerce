@@ -1,5 +1,11 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.1.11 - 2024-03-12 =
+* Fix - Add video syncs to fbproduct.
+* Fix - Deprecation warnings with PHP 8.2.
+* Tweak - WC 8.7 compatibility.
+* Tweak - WP 6.5 compatibility.
+
 = 3.1.10 - 2024-02-14 =
 * Tweak - WC 8.6 compatibility.
 
