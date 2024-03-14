@@ -729,8 +729,14 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 		 * @return array
 		 */
 		public static function normalize_product_data_for_items_batch( $data ) {
-			// Allowed values are 'refurbished', 'used', and 'new', but the plugin has always used the latter.
-			$data['condition'] = 'new';
+			/*
+			 * To avoid overriding the condition value, we check if the value is set or is not one of
+			 * the allowed values before setting it to 'new'. Allowed values are 'refurbished', 'used', and 'new'.
+			 */
+			if ( ! isset( $data['condition'] ) || ! in_array( $data['condition'], array( 'refurbished', 'used', 'new' ), true ) ) {
+				$data['condition'] = 'new';
+			}
+
 			// Attributes other than size, color, pattern, or gender need to be included in the additional_variant_attributes field.
 			if ( isset( $data['custom_data'] ) && is_array( $data['custom_data'] ) ) {
 				$attributes = [];
