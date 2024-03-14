@@ -733,7 +733,7 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			 * To avoid overriding the condition value, we check if the value is set or is not one of
 			 * the allowed values before setting it to 'new'. Allowed values are 'refurbished', 'used', and 'new'.
 			 */
-			if ( ! isset( $data['condition'] ) || ! in_array( $data['condition'], [ 'refurbished', 'used', 'new' ], true ) ) {
+			if ( ! isset( $data['condition'] ) || ! in_array( $data['condition'], array( 'refurbished', 'used', 'new' ), true ) ) {
 				$data['condition'] = 'new';
 			}
 
