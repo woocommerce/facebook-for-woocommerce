@@ -41,7 +41,7 @@ tests_add_filter( 'muplugins_loaded', function () {
 	load_plugins();
 } );
 
-tests_add_filter( 'setup_theme', function () {
+tests_add_filter( 'init', function () {
 	install_woocommerce();
 } );
 
