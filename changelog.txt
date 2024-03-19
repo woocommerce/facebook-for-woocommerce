@@ -1,5 +1,9 @@
 *** Facebook for WooCommerce Changelog ***
 
+= 3.1.12 - 2024-03-19 =
+* Tweak - Check if condition is set before setting a default value.
+* Tweak - Updates readme.txt to meet WordPress requirements.
+
 = 3.1.11 - 2024-03-12 =
 * Fix - Add video syncs to fbproduct.
 * Fix - Deprecation warnings with PHP 8.2.
