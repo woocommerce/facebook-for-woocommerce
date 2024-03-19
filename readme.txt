@@ -3,7 +3,7 @@ Contributors: facebook, automattic, woothemes
 Tags: facebook, woocommerce, marketing, product catalog feed, pixel
 Requires at least: 4.4
 Tested up to: 6.5
-Stable tag: 3.1.11
+Stable tag: 3.1.12
 Requires PHP: 5.6 or greater
 MySQL: 5.6 or greater
 License: GPLv2 or later
@@ -39,6 +39,10 @@ When opening a bug on GitHub, please give us as many details as possible.
 * Current version of Facebook-for-WooCommerce, WooCommerce, Wordpress, PHP
 
 == Changelog ==
+
+= 3.1.12 - 2024-03-19 =
+* Tweak - Check if condition is set before setting a default value.
+* Tweak - Updates readme.txt to meet WordPress requirements.
 
 = 3.1.11 - 2024-03-12 =
 * Fix - Add video syncs to fbproduct.
