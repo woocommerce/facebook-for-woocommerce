@@ -158,20 +158,29 @@ class Messenger extends Abstract_Settings_Screen {
 
 
 	/**
-	 * Gets the upcoming deprecation warning message.
+	 * Gets the upcoming deprecation warning notice.
 	 *
 	 * @since x.x.x
 	 *
 	 * @return string
 	 */
 	public function get_deprecation_warning() {
+		return '<div class="notice notice-warning"><p>' . self::get_deprecation_message() . '</p></div>';
+	}
+
+	/**
+	 * Gets the upcoming deprecation warning message with documentation link.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public static function get_deprecation_message() {
 		return sprintf(
-			/* translators: Placeholders: %1$s - notice <div><p> tag, %2$s - <a> tag, %3$s - </a> tag, %4$s - </p></div> tags */
-			__( '%1$s%2$sMeta plans to discontinue the Chat Plugin%3$s, so Messenger will be removed from Facebook for WooCommerce by May, 2024. %4$s', 'facebook-for-woocommerce' ),
-			'<div class="notice notice-warning"><p>',
+			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
+			__( '%1$sMeta plans to discontinue the Chat Plugin%2$s, so Messenger will be removed from Facebook for WooCommerce by May, 2024.', 'facebook-for-woocommerce' ),
 			'<a href="https://href.li/?https://www.facebook.com/business/help/1524587524402327" target="_blank">',
-			'</a>',
-			'</p></div>'
+			'</a>'
 		);
 	}
 
