@@ -33,9 +33,10 @@ class Messenger extends Abstract_Settings_Screen {
 	 * Connection constructor.
 	 */
 	public function __construct() {
-		$this->id    = self::ID;
-		$this->label = __( 'Messenger', 'facebook-for-woocommerce' );
-		$this->title = __( 'Messenger', 'facebook-for-woocommerce' );
+		$this->id          = self::ID;
+		$this->label       = __( 'Messenger', 'facebook-for-woocommerce' );
+		$this->title       = __( 'Messenger', 'facebook-for-woocommerce' );
+		$this->description = $this->get_deprecation_warning();
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_admin_field_messenger_locale', array( $this, 'render_locale_field' ) );
 		add_action( 'woocommerce_admin_field_messenger_greeting', array( $this, 'render_greeting_field' ) );
@@ -153,6 +154,25 @@ class Messenger extends Abstract_Settings_Screen {
 		}
 		$settings[] = array( 'type' => 'sectionend' );
 		return $settings;
+	}
+
+
+	/**
+	 * Gets the upcoming deprecation warning message.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function get_deprecation_warning() {
+		return sprintf(
+			/* translators: Placeholders: %1$s - notice <div><p> tag, %2$s - <a> tag, %3$s - </a> tag, %4$s - </p></div> tags */
+			__( '%1$s%2$sMeta plans to discontinue the Chat Plugin%3$s, so Messenger will be removed from Facebook for WooCommerce by May, 2024. %4$s', 'facebook-for-woocommerce' ),
+			'<div class="notice notice-warning"><p>',
+			'<a href="https://href.li/?https://www.facebook.com/business/help/1524587524402327" target="_blank">',
+			'</a>',
+			'</p></div>'
+		);
 	}
 
 
