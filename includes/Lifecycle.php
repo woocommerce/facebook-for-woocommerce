@@ -41,6 +41,7 @@ class Lifecycle extends Framework\Lifecycle {
 			'2.0.4',
 			'2.4.0',
 			'2.5.0',
+			'3.1.13'
 		);
 	}
 
@@ -306,5 +307,19 @@ class Lifecycle extends Framework\Lifecycle {
 		 * The Feed class will reschedule new generation with proper cadence.
 		 */
 		as_unschedule_all_actions( Products\Feed::GENERATE_FEED_ACTION );
+	}
+
+	protected function upgrade_to_3_1_13() {
+		$notice_slug          = 'facebook_messenger_deprecation_warning';
+		$is_messenger_enabled = get_option( \WC_Facebookcommerce_Integration::SETTING_ENABLE_MESSENGER, 'no' ) === 'yes';
+
+		// Add Messenger deprecation notice.
+		if ( $is_messenger_enabled && class_exists( 'WC_Admin_Notices' ) ) {
+			\WC_Admin_Notices::add_custom_notice(
+				$notice_slug,
+				Admin\Settings_Screens\Messenger::get_deprecation_message()
+			);
+
+		}
 	}
 }
