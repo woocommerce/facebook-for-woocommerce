@@ -306,3 +306,7 @@
 	vertical-align: middle !important;
 	line-height: 28px !important;
 }
+
+div#message:has(a[href*="facebook_messenger_deprecation_warning"]) {
+	border-left-color: #dba617 !important;
+}
