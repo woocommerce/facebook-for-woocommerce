@@ -178,7 +178,7 @@ class Messenger extends Abstract_Settings_Screen {
 	public static function get_deprecation_message() {
 		return sprintf(
 			/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
-			__( '️<strong>Facebook for WooCommerce</strong>: %1$sMeta plans to discontinue the Chat Plugin%2$s; Messenger functionality will be removed by May, 2024.', 'facebook-for-woocommerce' ),
+			__( '️<strong>Facebook for WooCommerce</strong>: Since %1$sMeta plans to discontinue the Chat Plugin%2$s, the Messenger feature will be removed by May, 2024.', 'facebook-for-woocommerce' ),
 			'<a href="https://href.li/?https://www.facebook.com/business/help/1524587524402327" target="_blank">',
 			'</a>'
 		);
