@@ -160,7 +160,7 @@ class Messenger extends Abstract_Settings_Screen {
 	/**
 	 * Gets the upcoming deprecation warning notice.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.13
 	 *
 	 * @return string
 	 */
@@ -171,7 +171,7 @@ class Messenger extends Abstract_Settings_Screen {
 	/**
 	 * Gets the upcoming deprecation warning message with documentation link.
 	 *
-	 * @since x.x.x
+	 * @since 3.1.13
 	 *
 	 * @return string
 	 */
