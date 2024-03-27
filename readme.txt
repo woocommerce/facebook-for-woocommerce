@@ -40,6 +40,9 @@ When opening a bug on GitHub, please give us as many details as possible.
 
 == Changelog ==
 
+= 3.1.13 - 2024-03-27 =
+* Add - Messenger feature deprecation notices.
+
 = 3.1.12 - 2024-03-19 =
 * Tweak - Check if condition is set before setting a default value.
 * Tweak - Updates readme.txt to meet WordPress requirements.
