@@ -161,10 +161,8 @@ class WC_Facebookcommerce_Pixel {
 				fbq( 'track', 'PageView', <?php echo json_encode( self::build_params( [], 'PageView' ), JSON_PRETTY_PRINT | JSON_FORCE_OBJECT ); ?> );
 
 				document.addEventListener( 'DOMContentLoaded', function() {
-					jQuery && jQuery( function( $ ) {
-						// Insert placeholder for events injected when a product is added to the cart through AJAX.
-						$( document.body ).append( '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
-					} );
+					// Insert placeholder for events injected when a product is added to the cart through AJAX.
+					document.body.insertAdjacentHTML( 'beforeend', '<div class=\"wc-facebook-pixel-event-placeholder\"></div>' );
 				}, false );
 
 			</script>
