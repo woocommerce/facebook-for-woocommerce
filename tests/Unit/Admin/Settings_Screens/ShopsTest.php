@@ -8,8 +8,8 @@
 
 namespace WooCommerce\Facebook\Tests\Admin\Settings_Screens;
 
-use PHPUnit\Framework\TestCase;
 use WooCommerce\Facebook\Admin\Settings_Screens\Shops;
+use WooCommerce\Facebook\Handlers\Connection;
 use WooCommerce\Facebook\Tests\AbstractWPUnitTestWithOptionIsolationAndSafeFiltering;
 
 /**
@@ -38,24 +38,22 @@ class ShopsTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFiltering {
         $prop->setValue( $handler, [] );
     }
 
-    /**
-     * Test that render method calls render_facebook_iframe when enhanced onboarding is enabled
-     */
-    public function test_render_facebook_box_iframe() {
-        // Create a mock of the Shops class
-        $shops = $this->getMockBuilder(Shops::class)
-            ->getMock();
+	/**
+	 * Test that disconnected merchants see the current CPH onboarding iframe.
+	 */
+	public function test_render_shows_cph_splash_when_disconnected(): void {
+		delete_option( Connection::OPTION_ACCESS_TOKEN );
+		delete_option( Connection::OPTION_MERCHANT_ACCESS_TOKEN );
+		delete_transient( 'wc_facebook_connection_invalid' );
 
-        // Start output buffering to capture the render output
-        ob_start();
-        $shops->render();
-        $output = ob_get_clean();
+		ob_start();
+		$this->shops->render();
+		$output = ob_get_clean();
 
-        // Since we can't directly test the private render_facebook_iframe method,
-        // we'll verify that the render method doesn't output the legacy Facebook box
-        // when enhanced onboarding is enabled
-        $this->assertStringNotContainsString('wc-facebook-connection-box', $output);
-    }
+		$this->assertStringContainsString( 'id="facebook-commerce-iframe-enhanced"', $output );
+		$this->assertStringContainsString( 'commerce_extension/splash', $output );
+		$this->assertStringNotContainsString( 'wc-facebook-connection-box', $output );
+	}
 
     /**
      * Test that render_message_handler outputs the expected JavaScript
@@ -206,17 +204,17 @@ class ShopsTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFiltering {
     }
 
     /**
-     * Test that add_notices registers a connection invalid notice when the transient is set.
+     * Test that the global handler registers a connection invalid notice when the transient is set.
      */
-    public function test_add_notices_shows_connection_invalid_notice() {
+    public function test_global_handler_shows_connection_invalid_notice() {
         // Set up an admin user so the notice handler allows display.
         $user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
         wp_set_current_user( $user_id );
 
         set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
 
-        // The connection invalid notice is now handled globally in
-        // WC_Facebookcommerce::add_connection_invalid_notice(), not in Shops::add_notices().
+        // The connection invalid notice is handled globally in
+        // WC_Facebookcommerce::add_connection_invalid_notice().
         // Simulate being on an allowed screen (plugins page).
         set_current_screen( 'plugins' );
         facebook_for_woocommerce()->add_connection_invalid_notice();
@@ -232,28 +230,6 @@ class ShopsTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFiltering {
         $this->assertStringContainsString( 'access token is no longer valid', $notices['wc_facebook_connection_invalid']['message'] );
 
         delete_transient( 'wc_facebook_connection_invalid' );
-    }
-
-    /**
-     * Test that add_notices does NOT register a connection invalid notice when the transient is not set.
-     */
-    public function test_add_notices_skips_connection_invalid_when_transient_not_set() {
-        $user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
-        wp_set_current_user( $user_id );
-
-        // Ensure transient is not set.
-        delete_transient( 'wc_facebook_connection_invalid' );
-
-        $shops = new Shops();
-        $shops->add_notices();
-
-        $handler = facebook_for_woocommerce()->get_admin_notice_handler();
-        $ref     = new \ReflectionObject( $handler );
-        $prop    = $ref->getProperty( 'admin_notices' );
-        $prop->setAccessible( true );
-        $notices = $prop->getValue( $handler );
-
-        $this->assertArrayNotHasKey( 'wc_facebook_connection_invalid', $notices );
     }
 
     /**

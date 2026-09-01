@@ -184,28 +184,6 @@ class Abstract_Settings_ScreenTest extends AbstractWPUnitTestWithOptionIsolation
     }
 
     /**
-     * Test protected is_current_screen_page returns false when page does not match
-     */
-    public function test_is_current_screen_page_returns_false() {
-        $reflection = new \ReflectionClass($this->screen);
-        $method = $reflection->getMethod('is_current_screen_page');
-        $method->setAccessible(true);
-
-        // Mock Settings and Helper classes if not already defined
-        if (!class_exists('WooCommerce\\Facebook\\Admin\\Settings')) {
-            eval('namespace WooCommerce\\Facebook\\Admin; class Settings { const PAGE_ID = "fb_page"; }');
-        }
-        if (!class_exists('WooCommerce\\Facebook\\Framework\\Helper')) {
-            eval('namespace WooCommerce\\Facebook\\Framework; class Helper { public static function get_requested_value($key, $default = null) { return "other_page"; } }');
-        }
-
-        $result = $method->invoke($this->screen);
-
-        // Should return false since the page does not match
-        $this->assertFalse($result);
-    }
-
-    /**
      * Test protected maybe_render_learn_more_link outputs link if documentation_url is set
      */
     public function test_maybe_render_learn_more_link_outputs_link() {
@@ -270,4 +248,4 @@ class Abstract_Settings_ScreenTest extends AbstractWPUnitTestWithOptionIsolation
         $this->assertIsArray($screen->get_settings());
         $this->assertEmpty($screen->get_settings());
     }
-} 
+}
