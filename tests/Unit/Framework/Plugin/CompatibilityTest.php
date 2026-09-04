@@ -256,6 +256,39 @@ class CompatibilityTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFilt
 	}
 
 	/**
+	 * Test whether the marketing feature respects WooCommerce's legacy feature filter.
+	 *
+	 * @dataProvider provider_is_marketing_enabled
+	 *
+	 * @param bool $remove_marketing Whether to remove marketing from the enabled features.
+	 * @param bool $expected         Expected result.
+	 */
+	public function test_is_marketing_enabled( $remove_marketing, $expected ) {
+		if ( $remove_marketing ) {
+			$this->add_filter_with_safe_teardown(
+				'woocommerce_admin_features',
+				static function( $features ) {
+					return array_values( array_diff( $features, [ 'marketing' ] ) );
+				}
+			);
+		}
+
+		$this->assertSame( $expected, Compatibility::is_marketing_enabled() );
+	}
+
+	/**
+	 * Provides marketing feature states.
+	 *
+	 * @return array<string, array{bool, bool}>
+	 */
+	public static function provider_is_marketing_enabled() {
+		return [
+			'marketing enabled by default' => [ false, true ],
+			'marketing removed by filter'  => [ true, false ],
+		];
+	}
+
+	/**
 	 * Test convert_hr_to_bytes with wp_convert_hr_to_bytes available.
 	 */
 	public function test_convert_hr_to_bytes_with_wp_convert_hr_to_bytes_available() {
@@ -562,4 +595,4 @@ class CompatibilityTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFilt
 		$this->assertEquals( 1024, Compatibility::convert_hr_to_bytes( '1.2.3K' ) ); // (int)'1.2.3K' = 1, finds 'k', 1 * 1024 = 1024
 		$this->assertEquals( 1024, Compatibility::convert_hr_to_bytes( '1,000K' ) ); // (int)'1,000K' = 1, finds 'k', 1 * 1024 = 1024
 	}
-} 
+}
