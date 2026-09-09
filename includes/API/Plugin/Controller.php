@@ -34,6 +34,7 @@ class Controller {
 	/** @var array JS-enabled request classes */
 	const JS_ENABLED_REQUESTS = [
 		'WooCommerce\Facebook\API\Plugin\Settings\Update\Request',
+		'WooCommerce\Facebook\API\Plugin\Settings\FinalizeInstall\Request',
 		'WooCommerce\Facebook\API\Plugin\Settings\Uninstall\Request',
 		'WooCommerce\Facebook\API\Plugin\WhatsAppSettings\Update\Request',
 		'WooCommerce\Facebook\API\Plugin\WhatsAppSettings\Uninstall\Request',

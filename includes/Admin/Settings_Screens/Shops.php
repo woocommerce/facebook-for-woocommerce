@@ -426,16 +426,16 @@ class Shops extends Abstract_Settings_Screen {
 						installed_features: message.installed_features
 					};
 
-					fbAPI.updateSettings(requestBody)
+					fbAPI.finalizeInstall(requestBody)
 						.then(function(response) {
 							if (response.success) {
 								window.location.reload();
 							} else {
-								console.error('Error updating Facebook settings:', response);
+								console.error('Error finalizing Facebook installation:', response);
 							}
 						})
 						.catch(function(error) {
-							console.error('Error during settings update:', error);
+							console.error('Error during install finalization:', error);
 						});
 				}
 

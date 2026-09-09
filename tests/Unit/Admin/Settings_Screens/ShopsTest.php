@@ -79,7 +79,7 @@ class ShopsTest extends AbstractWPUnitTestWithOptionIsolationAndSafeFiltering {
 
         // Assert fetch request setup - check for wpApiSettings.root instead of hardcoded path
         $this->assertStringContainsString('GeneratePluginAPIClient', $output);
-        $this->assertStringContainsString('fbAPI.updateSettings', $output);
+        $this->assertStringContainsString('fbAPI.finalizeInstall', $output);
 
         $this->assertStringContainsString("'https://www.commercepartnerhub.com'", $output);
         $this->assertStringContainsString("'https://www.facebook.com'", $output);
