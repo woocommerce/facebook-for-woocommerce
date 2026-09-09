@@ -60,11 +60,8 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	/** @var WooCommerce\Facebook\Admin admin handler instance */
 	private $admin;
 
-	/** @var WooCommerce\Facebook\Admin\Settings */
-	private $admin_settings;
-
 	/** @var WooCommerce\Facebook\Admin\Enhanced_Settings */
-	private $admin_enhanced_settings;
+	private $admin_settings;
 
 	/** @var WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings */
 	private $wa_admin_settings;
@@ -264,11 +261,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 
 			// load admin handlers, before admin_init
 			if ( is_admin() ) {
-				if ( $this->use_enhanced_onboarding() ) {
-					$this->admin_enhanced_settings = new WooCommerce\Facebook\Admin\Enhanced_Settings( $this );
-				} else {
-					$this->admin_settings = new WooCommerce\Facebook\Admin\Settings( $this );
-				}
+				$this->admin_settings        = new WooCommerce\Facebook\Admin\Enhanced_Settings( $this );
 				$this->wa_admin_settings     = new WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings( $this );
 				$this->plugin_render_handler = new \WooCommerce\Facebook\Handlers\PluginRender( $this );
 
@@ -618,17 +611,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	}
 
 	/**
-	 * Gets the advertise tab page URL.
-	 *
-	 * @since 2.6.29
-	 *
-	 * @return string
-	 */
-	public function get_advertise_tab_url() {
-		return admin_url( 'admin.php?page=wc-facebook&tab=advertise' );
-	}
-
-	/**
 	 * Gets the settings page URL.
 	 *
 	 * @since 1.10.0
@@ -737,7 +719,7 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 	 */
 	public function is_plugin_settings() {
 		$page_value = Helper::get_requested_value( 'page' );
-		return is_admin() && in_array( $page_value, [ WooCommerce\Facebook\Admin\Settings::PAGE_ID, WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings::PAGE_ID ], true );
+		return is_admin() && in_array( $page_value, [ WooCommerce\Facebook\Admin\Enhanced_Settings::PAGE_ID, WooCommerce\Facebook\Admin\WhatsApp_Integration_Settings::PAGE_ID ], true );
 	}
 
 	/** Utility methods *******************************************************************************************/
@@ -831,24 +813,6 @@ class WC_Facebookcommerce extends WooCommerce\Facebook\Framework\Plugin {
 				'dismissible'  => false,
 			)
 		);
-	}
-
-	public function use_enhanced_onboarding(): bool {
-		// If the connection is invalid, force enhanced onboarding so the Shops
-		// tab renders the splash iframe for reconnection.
-		if ( get_transient( 'wc_facebook_connection_invalid' ) ) {
-			return true;
-		}
-
-		$connection_handler              = $this->get_connection_handler();
-		$commerce_partner_integration_id = $connection_handler->get_commerce_partner_integration_id();
-
-		// If current connection is using the non-enhanced flow, don't show the new experience
-		if ( $connection_handler->is_connected() && empty( $commerce_partner_integration_id ) ) {
-			return false;
-		}
-		// By default, all net new WooC Merchants will be shown the enhanced onboarding experience
-		return true;
 	}
 }
 
