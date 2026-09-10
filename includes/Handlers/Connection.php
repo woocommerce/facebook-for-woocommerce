@@ -44,13 +44,20 @@ class Connection {
 	/** @var string the ad account ID option name */
 	const OPTION_AD_ACCOUNT_ID = 'wc_facebook_ad_account_id';
 
-	/** @var string the system user ID option name */
+	/**
+	 * @var string the system user ID option name
+	 * @deprecated Legacy FBE 2 leftover, no longer written. Nothing reads the stored ID.
+	 */
 	const OPTION_SYSTEM_USER_ID = 'wc_facebook_system_user_id';
 
 	/** @var string the system user access token option name */
 	const OPTION_ACCESS_TOKEN = 'wc_facebook_access_token';
 
-	/** @var string the merchant access token option name */
+	/**
+	 * @var string the merchant access token option name
+	 * @deprecated Legacy FBE 2 leftover, no longer written. Nothing read it to authenticate a
+	 *             request. Use self::OPTION_ACCESS_TOKEN instead.
+	 */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
 	/** @var string webhook event subscribed object */
@@ -390,8 +397,6 @@ class Connection {
 	 */
 	public function disconnect() {
 		$this->update_access_token( '' );
-		$this->update_merchant_access_token( '' );
-		$this->update_system_user_id( '' );
 		$this->update_business_manager_id( '' );
 		$this->update_ad_account_id( '' );
 		$this->update_instagram_business_id( '' );
@@ -402,6 +407,12 @@ class Connection {
 		update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, '' );
 		facebook_for_woocommerce()->get_integration()->update_product_catalog_id( '' );
 		delete_option( \WC_Facebookcommerce_Integration::OPTION_PAGE_ACCESS_TOKEN );
+
+		// The plugin no longer writes these, but stores connected before they were retired still
+		// hold values — including a stale credential — so disconnecting must still clear them.
+		foreach ( \WC_Facebookcommerce_Integration::DEPRECATED_OPTIONS as $deprecated_option ) {
+			delete_option( $deprecated_option );
+		}
 
 		// Clear facebook_config option to stop pixel tracking and prevent stale data
 		if ( class_exists( 'WC_Facebookcommerce_Pixel' ) ) {
@@ -667,11 +678,13 @@ class Connection {
 	 * Stores the given system user ID.
 	 *
 	 * @since 2.0.0
+	 * @deprecated Legacy FBE 2 leftover. The stored ID is never read, so this no longer writes
+	 *             anything. Kept as a no-op so existing callers do not fatal.
 	 *
 	 * @param string $value the ID
 	 */
-	public function update_system_user_id( $value ) {
-		update_option( self::OPTION_SYSTEM_USER_ID, $value );
+	public function update_system_user_id( $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- signature kept for backwards compatibility.
+		wc_deprecated_function( __METHOD__, '3.7.7' );
 	}
 
 
@@ -715,11 +728,14 @@ class Connection {
 	 * Stores the given merchant access token.
 	 *
 	 * @since 2.0.0
+	 * @deprecated Legacy FBE 2 leftover. The stored value is never used to authenticate a
+	 *             request, so this no longer writes anything. Kept as a no-op so existing
+	 *             callers do not fatal; use update_access_token() instead.
 	 *
 	 * @param string $value the access token
 	 */
-	public function update_merchant_access_token( $value ) {
-		update_option( self::OPTION_MERCHANT_ACCESS_TOKEN, $value );
+	public function update_merchant_access_token( $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- signature kept for backwards compatibility.
+		wc_deprecated_function( __METHOD__, '3.7.7', 'WooCommerce\Facebook\Handlers\Connection::update_access_token()' );
 	}
 
 
@@ -843,18 +859,9 @@ class Connection {
 
 			return;
 		}
-		update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
-		update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
 		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
 		$this->update_access_token( $system_user_access_token );
 		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
-		if ( ! empty( $entry['uid'] ) ) {
-			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
-			$log_data[ self::OPTION_SYSTEM_USER_ID ] = sanitize_text_field( $entry['uid'] );
-		}
-		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
-		$this->update_merchant_access_token( $merchant_access_token );
-		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
 
 		if ( ! empty( $values->install_time ) ) {
 			update_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, sanitize_text_field( $values->install_time ) );
