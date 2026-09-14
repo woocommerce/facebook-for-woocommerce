@@ -10,7 +10,10 @@
 
 namespace WooCommerce\Facebook\API\Plugin\Settings;
 
+use WooCommerce\Facebook\API\CommerceIntegration\Finalize\Client as FinalizeClient;
+use WooCommerce\Facebook\API\CommerceIntegration\Finalize\Exception as FinalizeException;
 use WooCommerce\Facebook\API\Plugin\AbstractRESTEndpoint;
+use WooCommerce\Facebook\API\Plugin\Settings\FinalizeInstall\Request as FinalizeInstallRequest;
 use WooCommerce\Facebook\API\Plugin\Settings\Update\Request as UpdateRequest;
 use WooCommerce\Facebook\API\Plugin\Settings\Uninstall\Request as UninstallRequest;
 use WooCommerce\Facebook\Framework\Logger;
@@ -23,6 +26,18 @@ defined( 'ABSPATH' ) || exit;
  * @since 3.5.0
  */
 class Handler extends AbstractRESTEndpoint {
+
+	/** @var FinalizeClient Commerce Partner Integration finalize-install client. */
+	private $finalize_client;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param FinalizeClient|null $finalize_client Optional finalize-install client.
+	 */
+	public function __construct( ?FinalizeClient $finalize_client = null ) {
+		$this->finalize_client = $finalize_client ?? new FinalizeClient();
+	}
 
 	/**
 	 * Register routes for this endpoint.
@@ -44,6 +59,16 @@ class Handler extends AbstractRESTEndpoint {
 
 		register_rest_route(
 			$this->get_namespace(),
+			'/settings/finalize-install',
+			[
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'handle_finalize_install' ],
+				'permission_callback' => [ $this, 'permission_callback' ],
+			]
+		);
+
+		register_rest_route(
+			$this->get_namespace(),
 			'/settings/uninstall',
 			[
 				'methods'             => \WP_REST_Server::CREATABLE,
@@ -55,6 +80,9 @@ class Handler extends AbstractRESTEndpoint {
 
 	/**
 	 * Handle the update settings request.
+	 *
+	 * Routine settings changes only. Completing a new installation goes through
+	 * handle_finalize_install(), which is the one place that calls finalize-install.
 	 *
 	 * @since 3.5.0
 	 * @http_method POST
@@ -76,21 +104,7 @@ class Handler extends AbstractRESTEndpoint {
 				);
 			}
 
-			// Check if we should trigger product sync and/or metadata feed uploads for this update
-			// Only trigger products and sets sync if catalog id is being updated
-			$should_trigger_products_and_sets_sync = ! empty( $request_data['product_catalog_id'] ) && facebook_for_woocommerce()->get_integration()->get_product_catalog_id() !== $request_data['product_catalog_id'];
-			// Only trigger metadata feed uploads if CPI id is being updated
-			$should_trigger_metadata_feed_uploads = ! empty( $request_data['commerce_partner_integration_id'] ) && facebook_for_woocommerce()->get_connection_handler()->get_commerce_partner_integration_id() !== $request_data['commerce_partner_integration_id'];
-
-			// Map parameters to options and update settings
-			$options = $this->map_params_to_options( $request_data );
-			$this->update_settings( $options );
-
-			// Update connection status flags
-			$this->update_connection_status( $request_data );
-
-			// Maybe trigger products sync and/or metadata feed uploads
-			$this->maybe_trigger_feed_uploads( $should_trigger_products_and_sets_sync, $should_trigger_metadata_feed_uploads, $request_data );
+			$this->apply_installation_settings( $request_data );
 
 			return $this->success_response(
 				[
@@ -103,6 +117,249 @@ class Handler extends AbstractRESTEndpoint {
 				500
 			);
 		}
+	}
+
+	/**
+	 * Handle the finalize install request.
+	 *
+	 * Called once, when the Commerce Extension reports a completed install. The freshly issued
+	 * access token is deposited first because finalize-install authenticates with it, then Meta
+	 * is told about the install once and returns the connected assets. Routine settings changes
+	 * must use handle_update() — finalizing again would re-bind the Commerce Partner Integration.
+	 *
+	 * @since 3.7.7
+	 * @http_method POST
+	 * @description Finalize a new Facebook installation
+	 *
+	 * @param \WP_REST_Request $wp_request The WordPress request object.
+	 * @return \WP_REST_Response
+	 */
+	public function handle_finalize_install( \WP_REST_Request $wp_request ): \WP_REST_Response {
+		try {
+			$request           = new FinalizeInstallRequest( $wp_request );
+			$request_data      = $request->get_data();
+			$validation_result = $request->validate();
+
+			if ( is_wp_error( $validation_result ) ) {
+				return $this->error_response(
+					$validation_result->get_error_message(),
+					400
+				);
+			}
+
+			// finalize-install authenticates with the token, so deposit it first and confirm it
+			// reads back before telling Meta it is there.
+			if ( ! $this->persist_access_token( $request_data ) ) {
+				$this->clear_access_token();
+				return $this->error_response(
+					__( 'Unable to save the Facebook access token. Please try again.', 'facebook-for-woocommerce' ),
+					500
+				);
+			}
+
+			$resolved_assets = $this->resolve_installation_assets( $request_data );
+			if ( is_wp_error( $resolved_assets ) ) {
+				// Meta rejected the token, so drop it and leave the store disconnected. Keeping it
+				// would make is_connected() true on a dead token; the merchant re-onboards instead.
+				$this->clear_access_token();
+				$error_data = $resolved_assets->get_error_data();
+				return $this->error_response(
+					$resolved_assets->get_error_message(),
+					is_array( $error_data ) ? (int) ( $error_data['status'] ?? 500 ) : 500
+				);
+			}
+
+			// The token was already persisted above, so keep it out of the settings mapping.
+			$settings_data = array_replace( $request_data, $resolved_assets );
+			unset( $settings_data['access_token'] );
+
+			$this->apply_installation_settings( $settings_data, ! empty( $resolved_assets['pixel_id'] ) );
+
+			return $this->success_response(
+				[
+					'message' => __( 'Facebook settings updated successfully', 'facebook-for-woocommerce' ),
+				]
+			);
+		} catch ( \Exception $e ) {
+			return $this->error_response(
+				$e->getMessage(),
+				500
+			);
+		}
+	}
+
+	/**
+	 * Maps request parameters to options, stores them and triggers any follow-up syncs.
+	 *
+	 * @since 3.7.7
+	 *
+	 * @param array $request_data Request parameters, with finalized assets merged in when present.
+	 *                           Callers that have already stored the access token themselves
+	 *                           should unset it first so it is not mapped twice.
+	 * @param bool  $has_finalized_pixel Whether a finalized top-level pixel should win over installed features.
+	 * @return void
+	 */
+	private function apply_installation_settings( array $request_data, bool $has_finalized_pixel = false ) {
+		// Check if we should trigger product sync and/or metadata feed uploads for this update
+		// Only trigger products and sets sync if catalog id is being updated
+		$should_trigger_products_and_sets_sync = ! empty( $request_data['product_catalog_id'] ) && facebook_for_woocommerce()->get_integration()->get_product_catalog_id() !== $request_data['product_catalog_id'];
+		// Only trigger metadata feed uploads if CPI id is being updated
+		$should_trigger_metadata_feed_uploads = ! empty( $request_data['commerce_partner_integration_id'] ) && facebook_for_woocommerce()->get_connection_handler()->get_commerce_partner_integration_id() !== $request_data['commerce_partner_integration_id'];
+
+		// Map parameters to options and update settings
+		$options = $this->map_params_to_options( $request_data, $has_finalized_pixel );
+		$this->update_settings( $options );
+
+		// Update connection status flags
+		$this->update_connection_status( $request_data );
+
+		// Maybe trigger products sync and/or metadata feed uploads
+		$this->maybe_trigger_feed_uploads( $should_trigger_products_and_sets_sync, $should_trigger_metadata_feed_uploads, $request_data );
+	}
+
+	/**
+	 * Deposits the durable access token before finalizing the installation.
+	 *
+	 * Reads the value back rather than trusting the write: if the token were to go missing
+	 * locally after Meta had recorded it as deposited, the two sides would disagree with no
+	 * way to notice.
+	 *
+	 * @param array $params Request parameters.
+	 * @return bool Whether the token can be read back after persistence.
+	 */
+	private function persist_access_token( array $params ): bool {
+		$this->update_settings(
+			array(
+				\WC_Facebookcommerce_Integration::OPTION_ACCESS_TOKEN => $params['access_token'],
+			)
+		);
+
+		return get_option( \WC_Facebookcommerce_Integration::OPTION_ACCESS_TOKEN, '' ) === $params['access_token'];
+	}
+
+	/**
+	 * Clears the access token so a failed installation leaves the store disconnected.
+	 *
+	 * @return void
+	 */
+	private function clear_access_token() {
+		$this->update_settings(
+			array(
+				\WC_Facebookcommerce_Integration::OPTION_ACCESS_TOKEN => '',
+			)
+		);
+	}
+
+	/**
+	 * Gets authoritative installation assets, with the current FBE install
+	 * message retained as a temporary fallback during rollout.
+	 *
+	 * TODO: Remove the fallback after finalize-install release monitoring is complete.
+	 *
+	 * @param array $fallback_assets Assets returned by the current FBE install flow.
+	 * @return array|\WP_Error
+	 */
+	private function resolve_installation_assets( array $fallback_assets ) {
+		$external_business_id = facebook_for_woocommerce()->get_connection_handler()->get_external_business_id();
+
+		try {
+			// Call Meta to inform it the client has the token deposited, and retrieve the
+			// connected asset IDs it returns in response.
+			$response = $this->finalize_client->finalize_install(
+				$fallback_assets['access_token'],
+				$external_business_id,
+				facebook_for_woocommerce()->get_version()
+			);
+
+			$assets                       = $response->get_installation_assets();
+			$legacy_asset_fallback_fields = array();
+			foreach ( array( 'commerce_merchant_settings_id', 'product_catalog_id', 'pixel_id' ) as $asset_key ) {
+				if ( empty( $assets[ $asset_key ] ) && ! empty( $fallback_assets[ $asset_key ] ) ) {
+					$legacy_asset_fallback_fields[] = $asset_key;
+				}
+			}
+
+			$this->log_finalize_install_outcome(
+				empty( $legacy_asset_fallback_fields ) ? 'success' : 'success_with_legacy_asset_fallback',
+				$external_business_id,
+				$assets['commerce_partner_integration_id'],
+				'',
+				200,
+				$legacy_asset_fallback_fields
+			);
+
+			return $assets;
+		} catch ( FinalizeException $exception ) {
+			$status_code      = (int) $exception->getCode();
+			$failure_reason   = $exception->get_failure_reason();
+			$is_auth_failure  = 401 === $status_code;
+			$is_ebid_mismatch = 'external_business_id_mismatch' === $failure_reason;
+			$outcome          = $is_auth_failure
+				? 'failed_authentication'
+				: ( $is_ebid_mismatch ? 'failed_identity_validation' : 'fallback' );
+
+			$this->log_finalize_install_outcome(
+				$outcome,
+				$external_business_id,
+				$fallback_assets['commerce_partner_integration_id'] ?? '',
+				$failure_reason,
+				$status_code
+			);
+
+			if ( $is_auth_failure || $is_ebid_mismatch ) {
+				set_transient( 'wc_facebook_connection_invalid', time(), DAY_IN_SECONDS );
+
+				return new \WP_Error(
+					$is_auth_failure ? 'finalize_install_unauthorized' : 'finalize_install_identity_mismatch',
+					__( 'Unable to finalize the Facebook connection. Please reconnect and try again.', 'facebook-for-woocommerce' ),
+					array( 'status' => $is_auth_failure ? 401 : 409 )
+				);
+			}
+
+			// During the monitored rollout, non-401 endpoint failures retain the
+			// existing FBE install behavior. The outcome log records the exact status.
+			return array();
+		}
+	}
+
+	/**
+	 * Logs finalize-install rollout outcomes without access tokens or raw payloads.
+	 *
+	 * @param string $outcome Finalize-install outcome.
+	 * @param string $external_business_id Stable external business ID.
+	 * @param string $commerce_partner_integration_id Commerce Partner Integration ID, if available.
+	 * @param string $failure_reason Machine-readable failure reason, if any.
+	 * @param int    $http_status HTTP status, or zero when unavailable.
+	 * @param array  $legacy_asset_fallback_fields Finalize fields supplied by the legacy payload.
+	 * @return void
+	 */
+	private function log_finalize_install_outcome(
+		string $outcome,
+		string $external_business_id,
+		string $commerce_partner_integration_id,
+		string $failure_reason = '',
+		int $http_status = 0,
+		array $legacy_asset_fallback_fields = array()
+	) {
+		Logger::log(
+			'Commerce Partner Integration finalize-install outcome.',
+			array(
+				'event'      => 'commerce_partner_integration_finalize_install',
+				'event_type' => $outcome,
+				'extra_data' => array(
+					'external_business_id'            => $external_business_id,
+					'commerce_partner_integration_id' => $commerce_partner_integration_id,
+					'failure_reason'                  => $failure_reason,
+					'http_status'                     => $http_status,
+					'legacy_asset_fallback_fields'    => implode( ',', $legacy_asset_fallback_fields ),
+				),
+			),
+			array(
+				'should_send_log_to_meta'        => true,
+				'should_save_log_in_woocommerce' => true,
+				'woocommerce_log_level'          => \WC_Log_Levels::DEBUG,
+			)
+		);
 	}
 
 	/**
@@ -149,9 +406,10 @@ class Handler extends AbstractRESTEndpoint {
 	 * @since 3.5.0
 	 *
 	 * @param array $params Request parameters.
+	 * @param bool  $prefer_explicit_pixel Whether a finalized top-level pixel should override installed features.
 	 * @return array Mapped options.
 	 */
-	private function map_params_to_options( array $params ): array {
+	private function map_params_to_options( array $params, bool $prefer_explicit_pixel = false ): array {
 		$options = [];
 
 		// Map access tokens
@@ -195,7 +453,9 @@ class Handler extends AbstractRESTEndpoint {
 			}
 		}
 
-		$pixel_to_use = ! empty( $pixel_from_features ) ? $pixel_from_features : ( $params['pixel_id'] ?? '' );
+		$pixel_to_use = $prefer_explicit_pixel && ! empty( $params['pixel_id'] )
+			? $params['pixel_id']
+			: ( ! empty( $pixel_from_features ) ? $pixel_from_features : ( $params['pixel_id'] ?? '' ) );
 
 		if ( ! empty( $pixel_to_use ) ) {
 			$options[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID ] = $pixel_to_use;
