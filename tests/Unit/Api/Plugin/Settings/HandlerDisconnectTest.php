@@ -72,8 +72,7 @@ class HandlerDisconnectTest extends AbstractWPUnitTestWithOptionIsolationAndSafe
 		$handler      = new Handler();
 		$mock_request = $this->createMock( \WP_REST_Request::class );
 		$mock_request->method( 'get_params' )->willReturn( [
-			'access_token'          => 'new_valid_token',
-			'merchant_access_token' => 'new_valid_token',
+			'access_token' => 'new_valid_token',
 		] );
 
 		$response = $handler->handle_update( $mock_request );
@@ -89,8 +88,7 @@ class HandlerDisconnectTest extends AbstractWPUnitTestWithOptionIsolationAndSafe
 		$handler      = new Handler();
 		$mock_request = $this->createMock( \WP_REST_Request::class );
 		$mock_request->method( 'get_params' )->willReturn( [
-			'access_token'          => 'test_token',
-			'merchant_access_token' => 'test_token',
+			'access_token' => 'test_token',
 		] );
 
 		$response = $handler->handle_update( $mock_request );
