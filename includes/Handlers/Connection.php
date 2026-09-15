@@ -53,12 +53,6 @@ class Connection {
 	/** @var string the merchant access token option name */
 	const OPTION_MERCHANT_ACCESS_TOKEN = 'wc_facebook_merchant_access_token';
 
-	/** @var string webhook event subscribed object */
-	const WEBHOOK_SUBSCRIBED_OBJECT = 'user';
-
-	/** @var string webhook event subscribed field */
-	const WEBHOOK_SUBSCRIBED_FIELD = 'fbe_install';
-
 	/** @var string Instagram Business ID option name */
 	const OPTION_INSTAGRAM_BUSINESS_ID = 'wc_facebook_instagram_business_id';
 
@@ -92,8 +86,6 @@ class Connection {
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect' ) );
 
 		add_action( 'woocommerce_api_' . self::ACTION_FBE_REDIRECT, array( $this, 'handle_fbe_redirect' ) );
-
-		add_action( 'fbe_webhook', array( $this, 'fbe_install_webhook' ) );
 
 		add_action( 'rest_api_init', array( $this, 'init_extras_endpoint' ) );
 	}
@@ -790,122 +782,6 @@ class Connection {
 	 */
 	public function get_plugin() {
 		return $this->plugin;
-	}
-
-
-	/**
-	 * Process WebHook User object, install field
-	 *
-	 * @since 2.3.0
-	 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#webhook
-	 *
-	 * @param object $data WebHook event data.
-	 */
-	public function fbe_install_webhook( $data ) {
-		// Reject other objects other than subscribed object
-		if ( empty( $data ) || ! isset( $data->object ) || self::WEBHOOK_SUBSCRIBED_OBJECT !== $data->object ) {
-			$this->get_plugin()->log( 'Wrong (or empty) WebHook Event received' );
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-			$this->get_plugin()->log( print_r( $data, true ) );
-			return;
-		}
-		$log_data = array();
-		$this->get_plugin()->log( 'WebHook User Event received' );
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$this->get_plugin()->log( print_r( $data, true ) );
-		$entry = (array) $data->entry[0];
-		if ( empty( $entry ) ) {
-			return;
-		}
-		// Filter event by subscribed field
-		$event  = array_filter(
-			$entry['changes'],
-			function ( $change ) {
-				return self::WEBHOOK_SUBSCRIBED_FIELD === $change->field;
-			}
-		);
-		$values = ! empty( $event[0] ) ? $event[0]->value : '';
-		if ( empty( $values ) ) {
-			return;
-		}
-		/**
-		 * If profiles, pages and instagram_profiles fields are not included in the Webhook payload, this means the business has uninstalled FBE.
-		 * In this case also the field access_token will not be included.
-		 *
-		 * @link https://developers.facebook.com/docs/marketing-api/fbe/fbe2/guides/get-features#what-s-included-with-webhooks-
-		 */
-		if ( empty( $values->access_token ) ) {
-
-			delete_option( 'wc_facebook_has_connected_fbe_2' );
-			delete_option( 'wc_facebook_has_authorized_pages_read_engagement' );
-
-			$this->disconnect();
-
-			return;
-		}
-		update_option( 'wc_facebook_has_connected_fbe_2', 'yes' );
-		update_option( 'wc_facebook_has_authorized_pages_read_engagement', 'yes' );
-		$system_user_access_token = ! empty( $values->access_token ) ? sanitize_text_field( $values->access_token ) : '';
-		$this->update_access_token( $system_user_access_token );
-		$log_data[ self::OPTION_ACCESS_TOKEN ] = 'Token was saved';
-		if ( ! empty( $entry['uid'] ) ) {
-			$this->update_system_user_id( sanitize_text_field( $entry['uid'] ) );
-			$log_data[ self::OPTION_SYSTEM_USER_ID ] = sanitize_text_field( $entry['uid'] );
-		}
-		$merchant_access_token = ! empty( $values->merchant_access_token ) ? sanitize_text_field( $values->merchant_access_token ) : '';
-		$this->update_merchant_access_token( $merchant_access_token );
-		$log_data[ self::OPTION_MERCHANT_ACCESS_TOKEN ] = 'Token was saved';
-
-		if ( ! empty( $values->install_time ) ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME, sanitize_text_field( $values->install_time ) );
-			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PIXEL_INSTALL_TIME ] = sanitize_text_field( $values->install_time );
-		}
-
-		if ( ! empty( $values->business_id ) ) {
-			$this->update_external_business_id( sanitize_text_field( $values->business_id ) );
-			$log_data[ self::OPTION_EXTERNAL_BUSINESS_ID ] = sanitize_text_field( $values->business_id );
-		}
-
-		if ( ! empty( $values->pixel_id ) ) {
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID, sanitize_text_field( $values->pixel_id ) );
-			$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PIXEL_ID ] = sanitize_text_field( $values->pixel_id );
-		}
-
-		if ( ! empty( $values->catalog_id ) ) {
-			update_option( \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID, sanitize_text_field( $values->catalog_id ) );
-			$log_data[ \WC_Facebookcommerce_Integration::OPTION_PRODUCT_CATALOG_ID ] = sanitize_text_field( $values->catalog_id );
-		}
-
-		if ( ! empty( $values->business_manager_id ) ) {
-			$this->update_business_manager_id( sanitize_text_field( $values->business_manager_id ) );
-			$log_data[ self::OPTION_BUSINESS_MANAGER_ID ] = sanitize_text_field( $values->business_manager_id );
-		}
-
-		if ( ! empty( $values->ad_account_id ) ) {
-			$this->update_ad_account_id( sanitize_text_field( $values->ad_account_id ) );
-			$log_data[ self::OPTION_AD_ACCOUNT_ID ] = sanitize_text_field( $values->ad_account_id );
-		}
-
-		if ( ! empty( $values->instagram_profiles ) ) {
-			$instagram_business_id = current( $values->instagram_profiles );
-			$this->update_instagram_business_id( sanitize_text_field( $instagram_business_id ) );
-			$log_data[ self::OPTION_INSTAGRAM_BUSINESS_ID ] = sanitize_text_field( $instagram_business_id );
-		}
-
-		if ( ! empty( $values->commerce_merchant_settings_id ) ) {
-			$this->update_commerce_merchant_settings_id( sanitize_text_field( $values->commerce_merchant_settings_id ) );
-			$log_data[ self::OPTION_COMMERCE_MERCHANT_SETTINGS_ID ] = sanitize_text_field( $values->commerce_merchant_settings_id );
-		}
-
-		if ( ! empty( $values->pages ) ) {
-			$page_id = current( $values->pages );
-			update_option( \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID, sanitize_text_field( $page_id ) );
-			$log_data[ \WC_Facebookcommerce_Integration::SETTING_FACEBOOK_PAGE_ID ] = sanitize_text_field( $page_id );
-		}//end if
-
-		$this->get_plugin()->log( 'WebHook User event saved data' );
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$this->get_plugin()->log( print_r( $log_data, true ) );
 	}
 
 
