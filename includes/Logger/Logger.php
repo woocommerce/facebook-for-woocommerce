@@ -51,6 +51,20 @@ class Logger {
 		],
 		?Throwable $exception = null
 	) {
+		$log_to_woocommerce = 'yes' === get_option( self::SETTING_ENABLE_META_DIAGNOSIS )
+			&& ! empty( $log_options['should_save_log_in_woocommerce'] );
+
+		$log_to_meta = facebook_for_woocommerce()->get_integration()->is_meta_diagnosis_enabled()
+			&& ! empty( $log_options['should_send_log_to_meta'] );
+
+		// Both sinks are opt-in and off by default, so bail before consulting the throttle:
+		// a suppressed log must not spend the caller's throttle budget, or the first clamp on
+		// a store with diagnostics off would silence the hour (and the daily cap) for a log
+		// nobody ever received.
+		if ( ! $log_to_woocommerce && ! $log_to_meta ) {
+			return;
+		}
+
 		if ( ! self::should_log( $log_options ) ) {
 			return;
 		}
@@ -66,13 +80,11 @@ class Logger {
 			$context           = array_merge( $exception_context, $context );
 		}
 
-		$is_debug_mode_enabled = 'yes' === get_option( self::SETTING_ENABLE_META_DIAGNOSIS );
-		if ( $is_debug_mode_enabled && array_key_exists( 'should_save_log_in_woocommerce', $log_options ) && $log_options['should_save_log_in_woocommerce'] ) {
+		if ( $log_to_woocommerce ) {
 			facebook_for_woocommerce()->log( $message . ' : ' . wp_json_encode( $context ), null, $log_options['woocommerce_log_level'] );
 		}
 
-		$is_meta_diagnosis_enabled = facebook_for_woocommerce()->get_integration()->is_meta_diagnosis_enabled();
-		if ( $is_meta_diagnosis_enabled && array_key_exists( 'should_send_log_to_meta', $log_options ) && $log_options['should_send_log_to_meta'] ) {
+		if ( $log_to_meta ) {
 			$extra_data                = $context['extra_data'] ?? [];
 			$extra_data['message']     = $message;
 			$extra_data['php_version'] = phpversion();
@@ -104,6 +116,9 @@ class Logger {
 	 * The interval limits repeats of one occurrence; the group cap limits the total across
 	 * related occurrences, so a caller iterating many distinct keys still cannot flood.
 	 * Omitting 'throttle', or passing an empty 'key', logs unconditionally.
+	 *
+	 * Only reached once self::log() knows a sink will actually receive the message, so the
+	 * budget tracks logs that were written rather than logs that were merely attempted.
 	 *
 	 * @since 3.7.7
 	 *
